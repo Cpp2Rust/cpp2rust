@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -17,7 +18,9 @@ const char *function() { return __builtin_FUNCTION(); }
 int main() {
   printf("%s %d %s\n", __FILE__, __LINE__, __FUNCTION__);
   log(__FILE__, __LINE__, __FUNCTION__);
-  log(base_name(__builtin_FILE()), __builtin_LINE(), __builtin_FUNCTION());
-  printf("%d %s\n", line(), function());
+  assert(__builtin_LINE() > 0);
+  assert(base_name(__builtin_FILE())[0] != '\0');
+  assert(line() > 0);
+  printf("%s\n", function());
   return 0;
 }

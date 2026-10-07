@@ -1328,6 +1328,12 @@ bool ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
   return false;
 }
 
+std::string ConverterRefCount::GetSourceFileAsString(clang::QualType type) {
+  return std::format(
+      "Ptr::<{}>::from_string_literal(concat!(file!(), \"\\0\").as_bytes())",
+      ToStringBase(type->getPointeeType().getUnqualifiedType()));
+}
+
 bool ConverterRefCount::VisitStringLiteral(clang::StringLiteral *expr) {
   if (IsCodeUnitStringLiteral(expr)) {
     auto arr = GetCodeUnitArrayLiteral(expr);

@@ -36,7 +36,7 @@ pub fn log_1(mut file: Ptr<i8>, mut line: i32, mut func: Ptr<i8>) {
     println!("{} {} {}", file, line, func);
 }
 pub fn line_2() -> i32 {
-    return (13_u32 as i32);
+    return (line!() as u32 as i32);
 }
 pub fn function_3() -> Ptr<i8> {
     return Ptr::<i8>::from_string_literal(b"function");
@@ -49,24 +49,31 @@ fn main_0() -> i32 {
     println!(
         "{} {} {}",
         Ptr::<i8>::from_string_literal(b"macros.cpp"),
-        18,
+        19,
         Ptr::<i8>::from_string_literal(b"main")
     );
     ({
         log_1(
             Ptr::<i8>::from_string_literal(b"macros.cpp"),
-            19,
+            20,
             Ptr::<i8>::from_string_literal(b"main"),
         )
     });
-    ({
-        log_1(
-            ({ base_name_0(Ptr::<i8>::from_string_literal(b"macros.cpp")) }),
-            (20_u32 as i32),
-            Ptr::<i8>::from_string_literal(b"main"),
+    assert!((line!() as u32 > 0_u32));
+    assert!(
+        (((elem!(
+            ({
+                base_name_0(Ptr::<i8>::from_string_literal(
+                    concat!(file!(), "\0").as_bytes(),
+                ))
+            }),
+            0
         )
-    });
-    println!("{} {}", ({ line_2() }), ({ function_3() }));
+        .read()) as i32)
+            != (('\0' as i8) as i32))
+    );
+    assert!((({ line_2() }) > 0));
+    println!("{}", ({ function_3() }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

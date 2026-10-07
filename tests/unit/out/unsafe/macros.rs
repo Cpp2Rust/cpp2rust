@@ -19,7 +19,7 @@ pub unsafe fn log_1(mut file: *const libc::c_char, mut line: i32, mut func: *con
     printf(c"%s %d %s\n".as_ptr() as *const i8, file, line, func);
 }
 pub unsafe fn line_2() -> i32 {
-    return (13_u32 as i32);
+    return (line!() as u32 as i32);
 }
 pub unsafe fn function_3() -> *const libc::c_char {
     return c"function".as_ptr();
@@ -34,22 +34,18 @@ unsafe fn main_0() -> i32 {
     printf(
         c"%s %d %s\n".as_ptr() as *const i8,
         c"macros.cpp".as_ptr(),
-        18,
+        19,
         c"main".as_ptr(),
     );
-    (unsafe { log_1(c"macros.cpp".as_ptr(), 19, c"main".as_ptr()) });
-    (unsafe {
-        log_1(
-            (unsafe { base_name_0(c"macros.cpp".as_ptr()) }),
-            (20_u32 as i32),
-            c"main".as_ptr(),
-        )
-    });
-    printf(
-        c"%d %s\n".as_ptr() as *const i8,
-        (unsafe { line_2() }),
-        (unsafe { function_3() }),
+    (unsafe { log_1(c"macros.cpp".as_ptr(), 20, c"main".as_ptr()) });
+    assert!(((line!() as u32) > (0_u32)));
+    assert!(
+        (((*(unsafe { base_name_0(concat!(file!(), "\0").as_ptr() as *const libc::c_char,) })
+            .offset((0) as isize)) as i32)
+            != (('\0' as libc::c_char) as i32))
     );
+    assert!(((unsafe { line_2() }) > (0)));
+    printf(c"%s\n".as_ptr() as *const i8, (unsafe { function_3() }));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

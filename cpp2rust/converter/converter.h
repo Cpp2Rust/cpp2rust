@@ -382,6 +382,8 @@ public:
 
   bool VisitSourceLocExpr(clang::SourceLocExpr *expr);
 
+  virtual std::string GetSourceFileAsString(clang::QualType type);
+
   virtual bool VisitCXXBoolLiteralExpr(clang::CXXBoolLiteralExpr *expr);
 
   void ConvertIntegerToEnumeralCast(clang::Expr *to, clang::Expr *from);

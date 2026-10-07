@@ -2377,23 +2377,35 @@ Converter::GetCodeUnitArrayLiteral(const clang::StringLiteral *expr) {
   return out;
 }
 
+std::string Converter::GetSourceFileAsString(clang::QualType type) {
+  return std::format("concat!(file!(), \"\\0\").as_ptr() as {}",
+                     ToString(type));
+}
+
 bool Converter::VisitSourceLocExpr(clang::SourceLocExpr *expr) {
-  auto value = expr->EvaluateInContext(ctx_, nullptr);
-  clang::Expr *lowered = nullptr;
-  if (value.isInt()) {
-    lowered = clang::IntegerLiteral::Create(
-        ctx_, value.getInt(), expr->getType(), expr->getBeginLoc());
-  } else {
-    auto *str = clang::dyn_cast_or_null<clang::StringLiteral>(
-        value.getLValueBase().dyn_cast<const clang::Expr *>());
-    assert(str && "unsupported SourceLocExpr");
-    lowered = clang::ImplicitCastExpr::Create(
+  switch (expr->getIdentKind()) {
+  case clang::SourceLocIdentKind::Line:
+    StrCat(std::format("line!() as {}", ToString(expr->getType())));
+    computed_expr_type_ = ComputedExprType::FreshValue;
+    return false;
+  case clang::SourceLocIdentKind::File:
+    StrCat(GetSourceFileAsString(expr->getType()));
+    computed_expr_type_ = ComputedExprType::FreshPointer;
+    return false;
+  case clang::SourceLocIdentKind::Function: {
+    auto value = expr->EvaluateInContext(ctx_, nullptr);
+    auto *str = clang::cast<clang::StringLiteral>(
+        value.getLValueBase().get<const clang::Expr *>());
+    Convert(clang::ImplicitCastExpr::Create(
         ctx_, expr->getType(), clang::CK_ArrayToPointerDecay,
         const_cast<clang::StringLiteral *>(str), nullptr, clang::VK_PRValue,
-        clang::FPOptionsOverride());
+        clang::FPOptionsOverride()));
+    return false;
   }
-  Convert(lowered);
-  return false;
+  default:
+    assert(0 && "unsupported SourceLocExpr");
+    return false;
+  }
 }
 
 bool Converter::VisitStringLiteral(clang::StringLiteral *expr) {
