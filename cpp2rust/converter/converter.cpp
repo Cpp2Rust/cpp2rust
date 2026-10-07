@@ -3002,27 +3002,31 @@ bool Converter::VisitStmtExpr(clang::StmtExpr *expr) {
   return false;
 }
 
-bool Converter::ConvertConditionalAsDeref(clang::ConditionalOperator *expr) {
-  if (!expr->isLValue() || !isLValue() || !curr_init_type_.empty() ||
-      expr->getType()->isFunctionType()) {
-    return false;
-  }
-  // Rewrite `(c ? a : b) = v` as `*(c ? &a : &b) = v`
+// `c ? a : b` -> `c ? &a : &b`
+clang::ConditionalOperator *
+Converter::MakeConditionalAddrOf(clang::ConditionalOperator *expr) {
   auto addr_of = [&](clang::Expr *branch) {
     return clang::UnaryOperator::Create(
         ctx_, branch, clang::UO_AddrOf, ctx_.getPointerType(branch->getType()),
         clang::VK_PRValue, clang::OK_Ordinary, branch->getExprLoc(), false,
         clang::FPOptionsOverride());
   };
-  auto *cond = new (ctx_) clang::ConditionalOperator(
+  return new (ctx_) clang::ConditionalOperator(
       expr->getCond(), expr->getQuestionLoc(), addr_of(expr->getTrueExpr()),
       expr->getColonLoc(), addr_of(expr->getFalseExpr()),
       ctx_.getPointerType(expr->getType()), clang::VK_PRValue,
       clang::OK_Ordinary);
-  Convert(clang::UnaryOperator::Create(ctx_, cond, clang::UO_Deref,
-                                       expr->getType(), clang::VK_LValue,
-                                       clang::OK_Ordinary, expr->getExprLoc(),
-                                       false, clang::FPOptionsOverride()));
+}
+
+bool Converter::ConvertConditionalAsDeref(clang::ConditionalOperator *expr) {
+  if (!expr->isLValue() || !isLValue() || expr->getType()->isFunctionType()) {
+    return false;
+  }
+  // Rewrite `(c ? a : b) = v` as `*(c ? &a : &b) = v`
+  Convert(clang::UnaryOperator::Create(
+      ctx_, MakeConditionalAddrOf(expr), clang::UO_Deref, expr->getType(),
+      clang::VK_LValue, clang::OK_Ordinary, expr->getExprLoc(), false,
+      clang::FPOptionsOverride()));
   return true;
 }
 
@@ -4287,13 +4291,8 @@ void Converter::ConvertVarInit(clang::QualType qual_type, clang::Expr *expr) {
     if (auto *cond = clang::dyn_cast<clang::ConditionalOperator>(
             expr->IgnoreParenImpCasts());
         cond && cond->isLValue()) {
-      {
-        PushExprKind push(*this, ExprKind::LValue);
-        PushInitType init_type(*this, qual_type);
-        Convert(cond);
-      }
-      StrCat(keyword::kAs);
-      Convert(qual_type);
+      PushExprKind push(*this, ExprKind::RValue);
+      Convert(MakeConditionalAddrOf(cond));
       return;
     }
     StrCat(token::kRef);
