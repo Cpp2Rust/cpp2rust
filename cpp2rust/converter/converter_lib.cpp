@@ -744,8 +744,14 @@ unsigned GetArraySize(clang::QualType array_type) {
 }
 
 static std::string GetLocationID(const clang::Decl *decl) {
-  return GetFileName(decl) + std::to_string(GetLineNumber(decl)) +
-         std::to_string(GetColumnNumber(decl));
+  auto id = GetFileName(decl) + std::to_string(GetLineNumber(decl)) +
+            std::to_string(GetColumnNumber(decl));
+  if (auto loc = decl->getLocation(); loc.isMacroID()) {
+    const auto &src_mgr = decl->getASTContext().getSourceManager();
+    id += std::to_string(src_mgr.getSpellingLineNumber(loc)) +
+          std::to_string(src_mgr.getSpellingColumnNumber(loc));
+  }
+  return id;
 }
 
 static std::string GetParamSignature(const clang::Decl *decl) {
