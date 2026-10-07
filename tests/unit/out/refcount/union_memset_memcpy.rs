@@ -54,14 +54,14 @@ pub struct anon_0 {
     __bytes: Value<Box<[u8]>>,
 }
 impl anon_0 {
-    pub fn a(&self) -> Ptr<shape_a> {
-        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
+    pub fn a(this: Ptr<Self>) -> Ptr<shape_a> {
+        this.reinterpret_cast()
     }
-    pub fn b(&self) -> Ptr<shape_b> {
-        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
+    pub fn b(this: Ptr<Self>) -> Ptr<shape_b> {
+        this.reinterpret_cast()
     }
-    pub fn raw_(&self) -> Ptr<i8> {
-        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
+    pub fn raw_(this: Ptr<Self>) -> Ptr<i8> {
+        this.reinterpret_cast()
     }
 }
 impl Default for anon_0 {
@@ -90,11 +90,17 @@ fn main_0() -> i32 {
             .memset((0) as u8, 256usize as usize);
         ((c.as_pointer()) as Ptr<Container>).to_any()
     };
-    assert!((((((*c.borrow()).view.a().with(|__s| __s.code) as i32) == 0) as i32) != 0));
-    assert!((((((*c.borrow()).view.b().with(|__s| __s.lo) as i32) == 0) as i32) != 0));
+    assert!(
+        ((((anon_0::a(field_ptr!(c.as_pointer(), view)).with(|__s| __s.code) as i32) == 0) as i32)
+            != 0)
+    );
+    assert!(
+        ((((anon_0::b(field_ptr!(c.as_pointer(), view)).with(|__s| __s.lo) as i32) == 0) as i32)
+            != 0)
+    );
     assert!(
         (((((elem!(
-            ((*c.borrow()).view.raw_().reinterpret_cast::<i8>() as Ptr::<i8>),
+            (anon_0::raw_(field_ptr!(c.as_pointer(), view)).reinterpret_cast::<i8>() as Ptr::<i8>),
             0
         )
         .read()) as i32)
@@ -103,7 +109,7 @@ fn main_0() -> i32 {
     );
     assert!(
         (((((elem!(
-            ((*c.borrow()).view.raw_().reinterpret_cast::<i8>() as Ptr::<i8>),
+            (anon_0::raw_(field_ptr!(c.as_pointer(), view)).reinterpret_cast::<i8>() as Ptr::<i8>),
             255
         )
         .read()) as i32)
@@ -124,18 +130,23 @@ fn main_0() -> i32 {
     let mut len: usize = 16_usize;
     assert!((((len <= ::std::mem::size_of::<[i8; 256]>()) as i32) != 0));
     {
-        (((*c.borrow()).view.raw_().reinterpret_cast::<i8>()) as Ptr<i8>)
+        ((anon_0::raw_(field_ptr!(c.as_pointer(), view)).reinterpret_cast::<i8>()) as Ptr<i8>)
             .to_any()
             .memcpy(
                 &((src.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
                 len as usize,
             );
-        (((*c.borrow()).view.raw_().reinterpret_cast::<i8>()) as Ptr<i8>).to_any()
+        ((anon_0::raw_(field_ptr!(c.as_pointer(), view)).reinterpret_cast::<i8>()) as Ptr<i8>)
+            .to_any()
     };
-    assert!((((((*c.borrow()).view.b().with(|__s| __s.code) as i32) == 2) as i32) != 0));
+    assert!(
+        ((((anon_0::b(field_ptr!(c.as_pointer(), view)).with(|__s| __s.code) as i32) == 2) as i32)
+            != 0)
+    );
     assert!(
         (((((elem!(
-            ((field_ptr!((*c.borrow()).view.b(), lo)).reinterpret_cast::<u8>()),
+            ((field_ptr!(anon_0::b(field_ptr!(c.as_pointer(), view)), lo))
+                .reinterpret_cast::<u8>()),
             0
         )
         .read()) as i32)
@@ -148,7 +159,10 @@ fn main_0() -> i32 {
             .memset((0) as u8, 256usize as usize);
         ((c.as_pointer()) as Ptr<Container>).to_any()
     };
-    assert!((((((*c.borrow()).view.b().with(|__s| __s.code) as i32) == 0) as i32) != 0));
+    assert!(
+        ((((anon_0::b(field_ptr!(c.as_pointer(), view)).with(|__s| __s.code) as i32) == 0) as i32)
+            != 0)
+    );
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

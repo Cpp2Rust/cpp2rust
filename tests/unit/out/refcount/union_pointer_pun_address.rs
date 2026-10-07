@@ -29,8 +29,8 @@ pub fn main() {
 fn main_0() -> i32 {
     let a: Value<node_a> = Rc::new(RefCell::new(node_a { n: 123 }));
     let ptr: Value<anon_0> = <Value<anon_0>>::default();
-    (*ptr.borrow()).to_a().write((a.as_pointer()));
-    let mut out: Ptr<node_b> = ((*ptr.borrow()).to_b().read());
+    anon_0::to_a(ptr.as_pointer()).write((a.as_pointer()));
+    let mut out: Ptr<node_b> = (anon_0::to_b(ptr.as_pointer()).read());
     assert!(((({ (out).to_any() } == { (a.as_pointer()).to_any() }) as i32) != 0));
     return 0;
 }
@@ -42,11 +42,11 @@ pub struct anon_0 {
     __bytes: Value<Box<[u8]>>,
 }
 impl anon_0 {
-    pub fn to_a(&self) -> Ptr<Ptr<node_a>> {
-        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
+    pub fn to_a(this: Ptr<Self>) -> Ptr<Ptr<node_a>> {
+        this.reinterpret_cast()
     }
-    pub fn to_b(&self) -> Ptr<Ptr<node_b>> {
-        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
+    pub fn to_b(this: Ptr<Self>) -> Ptr<Ptr<node_b>> {
+        this.reinterpret_cast()
     }
 }
 impl Default for anon_0 {
