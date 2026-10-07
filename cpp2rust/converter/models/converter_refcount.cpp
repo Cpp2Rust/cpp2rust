@@ -75,7 +75,8 @@ static bool NeedsMutAccess(clang::ASTContext &ctx,
 static bool IsValueField(clang::ASTContext &ctx,
                          const clang::FieldDecl *field) {
   auto type = field->getType();
-  return type->isConstantArrayType() || IsBoxedType(ctx, type);
+  return type->isConstantArrayType() || type->isIncompleteArrayType() ||
+         IsBoxedType(ctx, type);
 }
 
 // Whether `expr` is an array field whose elements are accessed through
@@ -2387,6 +2388,12 @@ bool ConverterRefCount::VisitCXXDefaultArgExpr(clang::CXXDefaultArgExpr *expr) {
 
 std::string
 ConverterRefCount::GetArrayDefaultAsString(clang::QualType qual_type) {
+  if (auto *array_type =
+          clang::dyn_cast<clang::IncompleteArrayType>(qual_type)) {
+    PushConversionKind push(*this, ConversionKind::Unboxed);
+    return std::format("Box::<[{}]>::default()",
+                       ToString(array_type->getElementType()));
+  }
   if (auto *array_type = clang::dyn_cast<clang::ConstantArrayType>(qual_type)) {
     const auto &size = array_type->getSize();
     auto size_as_string = GetNumAsString(size);
