@@ -86,6 +86,9 @@ pub fn classify_option_5(mut option: i32) -> i32 {
 pub fn make_color_6(mut n: i32) -> Color {
     return ((n) as Color);
 }
+pub type Flag = bool;
+pub const Flag_FLAG_OFF: Flag = false;
+pub const Flag_FLAG_ON: Flag = true;
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
@@ -188,6 +191,11 @@ fn main_0() -> i32 {
         (({ (*entries_3.with(Value::clone).borrow())[(2) as usize].opt } as i32)
             == (Option_OPT_C as i32))
     );
+    let mut flag: Flag = Flag_FLAG_ON;
+    assert!(flag);
+    assert!(!(Flag_FLAG_OFF));
+    flag = Flag_FLAG_OFF;
+    assert!(((flag as i32) == (Flag_FLAG_OFF as i32)));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {
