@@ -508,11 +508,11 @@ bool HasDefaultedCopyConstructor(const clang::RecordDecl *decl) {
     return true;
   }
   for (const auto *ctor : cxx->ctors()) {
-    if (ctor->isCopyConstructor()) {
-      return !ctor->isUserProvided() && !ctor->isDeleted();
+    if (ctor->isCopyConstructor() && ctor->isUserProvided()) {
+      return false;
     }
   }
-  return !cxx->defaultedCopyConstructorIsDeleted();
+  return HasCallableCopyConstructor(cxx);
 }
 
 bool RecordHasOnlyReferenceFields(const clang::RecordDecl *decl) {
@@ -542,16 +542,21 @@ bool HasCallableCopyConstructor(const clang::RecordDecl *decl) {
   if (!cxx) {
     return true;
   }
-  if (!cxx->hasUserDeclaredCopyConstructor()) {
-    return !cxx->defaultedCopyConstructorIsDeleted();
+  if (cxx->hasUserDeclaredCopyConstructor()) {
+    return std::ranges::any_of(cxx->ctors(), [](const auto *ctor) {
+      return ctor->isCopyConstructor() && !ctor->isDeleted() &&
+             ctor->getDefinition();
+    });
   }
-  for (const auto *ctor : cxx->ctors()) {
-    if (ctor->isCopyConstructor() && !ctor->isDeleted() &&
-        ctor->getDefinition()) {
-      return true;
-    }
+  if (cxx->defaultedCopyConstructorIsDeleted()) {
+    return false;
   }
-  return false;
+  auto &ctx = cxx->getASTContext();
+  return std::ranges::all_of(cxx->fields(), [&](const clang::FieldDecl *f) {
+    auto *record = ctx.getBaseElementType(f->getType())->getAsCXXRecordDecl();
+    return !record || !IsUserDefinedDecl(record) ||
+           HasCallableCopyConstructor(record);
+  });
 }
 
 bool IsRValueConvertingConstructor(const clang::CXXConstructorDecl *ctor) {
