@@ -39,6 +39,14 @@ struct Owner {
   Box<int> box;
 };
 
+struct OutOfLine {
+  int v;
+  OutOfLine(int v) : v(v) {}
+  OutOfLine(const OutOfLine &o);
+};
+
+OutOfLine::OutOfLine(const OutOfLine &o) : v(o.v + 100) { ++copies; }
+
 static int by_value(Counted c) { return c.v; }
 
 static Counted make(int v) {
@@ -88,6 +96,11 @@ int main() {
   Owner o{Box<int>(3)};
   Owner o2 = std::move(o);
   assert(o2.box.val == 3);
+
+  OutOfLine ol1(5);
+  OutOfLine ol2(ol1);
+  assert(ol2.v == 105);
+  assert(copies == 12);
 
   NonConst n;
   NonConst n1(n);
