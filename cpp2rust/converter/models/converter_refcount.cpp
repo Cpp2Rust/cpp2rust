@@ -500,9 +500,9 @@ ConverterRefCount::MaterializeTemp(const std::string &binding_name,
   std::string binding;
   if (pointee->isConstantArrayType()) {
     PushConversionKind push(*this, ConversionKind::FullRefCount);
-    binding = std::format("{} {} : {} = {};", decl, binding_name,
-                          ToString(pointee),
-                          BoxValue(ConvertVarInitValue(pointee, expr)));
+    binding =
+        std::format("{} {} : {} = {};", decl, binding_name, ToString(pointee),
+                    BoxValue(ConvertVarInitValue(pointee, expr)));
   } else {
     auto value = ConvertFreshRValue(expr, pointee);
     auto type_str = ToStringBase(pointee);
