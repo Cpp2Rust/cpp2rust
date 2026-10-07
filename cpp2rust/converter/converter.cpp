@@ -4874,6 +4874,15 @@ void Converter::ConvertAddrOf(clang::Expr *expr, clang::QualType pointer_type) {
       return;
     }
   }
+  if (auto *cond =
+          clang::dyn_cast<clang::ConditionalOperator>(expr->IgnoreParens());
+      cond && cond->isLValue()) {
+    // `&(c ? a : b)` -> `c ? &a : &b`
+    PushExprKind push(*this, ExprKind::RValue);
+    Convert(MakeConditionalAddrOf(cond));
+    computed_expr_type_ = ComputedExprType::FreshPointer;
+    return;
+  }
   if (IsReferenceType(expr) || pointer_type->isFunctionPointerType()) {
     PushExprKind push(*this, ExprKind::AddrOf);
     Convert(expr);
