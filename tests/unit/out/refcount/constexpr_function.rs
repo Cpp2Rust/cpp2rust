@@ -36,6 +36,13 @@ pub fn checked_5(mut x: i32) -> i32 {
     assert!((x > 0));
     return (x + 1);
 }
+pub fn in_constant_context_6() -> bool {
+    if false {
+        return true;
+    }
+    return (({ runtime_only_0(1) }) == 0);
+}
+const _: () = assert!(true, "in_constant_context()");
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct P {
@@ -47,6 +54,8 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
+    let mut runtime_context: bool = ({ in_constant_context_6() });
+    assert!(!(runtime_context));
     let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([7, 8])));
     assert!((({ first_1((arr.as_pointer() as Ptr::<i32>),) }) == 7));
     assert!((({ first_1((arr.as_pointer() as Ptr::<i32>).offset((1) as isize),) }) == 8));
