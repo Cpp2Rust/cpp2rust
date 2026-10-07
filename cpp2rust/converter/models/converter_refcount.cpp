@@ -496,12 +496,19 @@ ConverterRefCount::MaterializeTemp(const std::string &binding_name,
                                    clang::QualType param_type,
                                    clang::Expr *expr) {
   auto pointee = param_type.getNonReferenceType();
-  auto value = ConvertFreshRValue(expr, pointee);
-  auto type_str = ToStringBase(pointee);
   const auto *decl = in_const_initializer_ ? keyword::kStatic : keyword::kLet;
-
-  auto binding = std::format("{} {} : Value<{}> = Rc::new(RefCell::new({}));",
-                             decl, binding_name, type_str, value);
+  std::string binding;
+  if (pointee->isConstantArrayType()) {
+    PushConversionKind push(*this, ConversionKind::FullRefCount);
+    binding = std::format("{} {} : {} = {};", decl, binding_name,
+                          ToString(pointee),
+                          BoxValue(ConvertVarInitValue(pointee, expr)));
+  } else {
+    auto value = ConvertFreshRValue(expr, pointee);
+    auto type_str = ToStringBase(pointee);
+    binding = std::format("{} {} : Value<{}> = Rc::new(RefCell::new({}));",
+                          decl, binding_name, type_str, value);
+  }
   auto ref =
       in_const_initializer_ ? ".with(Value::as_pointer)" : ".as_pointer()";
   return {binding, binding_name + ref};
@@ -1497,6 +1504,10 @@ bool ConverterRefCount::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
               ->getElementType());
       StrCat(std::format("Ptr::<{}>::from_string_literal({})", code_unit,
                          ToString(sub_expr->IgnoreParens())));
+      computed_expr_type_ = ComputedExprType::FreshPointer;
+      return false;
+    } else if (auto ptr = ConvertArrayPointerDeref(sub_expr); !ptr.empty()) {
+      StrCat(ptr);
       computed_expr_type_ = ComputedExprType::FreshPointer;
       return false;
     } else {
@@ -2569,6 +2580,9 @@ std::string ConverterRefCount::ConvertVarInitValue(clang::QualType qual_type,
         return std::format("Ptr::<{}>::from_string_literal({})", code_unit,
                            ToString(expr->IgnoreParens()->IgnoreImplicit()));
       }
+      if (auto ptr = ConvertArrayPointerDeref(expr); !ptr.empty()) {
+        return ptr;
+      }
     }
     return ConvertFreshPointer(expr, qual_type);
   }
@@ -3183,6 +3197,18 @@ void ConverterRefCount::ConvertConstructedValue(clang::QualType type,
 
 bool ConverterRefCount::DerefReadsValue(clang::QualType pointee_type) {
   return pointee_type.isPODType(ctx_) && !pointee_type->isRecordType();
+}
+
+std::string ConverterRefCount::ConvertArrayPointerDeref(clang::Expr *expr) {
+  auto *op =
+      clang::dyn_cast<clang::UnaryOperator>(expr->IgnoreParenNoopCasts(ctx_));
+  if (!op || op->getOpcode() != clang::UO_Deref ||
+      !op->getType()->isArrayType()) {
+    return {};
+  }
+  PushConversionKind push(*this, ConversionKind::Unboxed);
+  return std::format("({}{}.as_pointer())", ConvertRValue(op->getSubExpr()),
+                     GetPointerDerefSuffix(op->getType()));
 }
 
 const char *

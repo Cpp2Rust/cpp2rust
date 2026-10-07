@@ -65,6 +65,7 @@ int main() {
   assert(len(buf) == 4);
   int arr[3] = {1, 2, 3};
   assert(sum(arr) == 6);
+  assert(sum({1, 2, 3}) == 6);
   fill(arr, 7);
   assert(sum(arr) == 21);
   assert(sum_twice(arr) == 42);
@@ -88,5 +89,14 @@ int main() {
 
   const char *names[2] = {"ab", "cde"};
   assert(total_len(names) == 5);
+
+  int rows[2][3] = {{1, 2, 3}, {4, 5, 6}};
+  int (*p)[3] = rows;
+  ++p;
+  assert(*p == &rows[1][0]);
+  int (&r)[3] = *p;
+  assert(r[0] == 4);
+  assert(sum(r) == 15);
+  assert(sum(*p) == 15);
   return 0;
 }
