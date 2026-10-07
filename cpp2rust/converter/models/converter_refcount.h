@@ -137,6 +137,8 @@ public:
 
   bool VisitStringLiteral(clang::StringLiteral *expr) override;
 
+  std::string GetSourceFileAsString(clang::QualType type) override;
+
   bool VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) override;
 
   bool VisitFunctionPointerCast(clang::ExplicitCastExpr *expr);

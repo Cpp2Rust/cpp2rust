@@ -382,6 +382,10 @@ public:
                                       uint64_t pad_nulls = 0) const;
   virtual bool VisitStringLiteral(clang::StringLiteral *expr);
 
+  bool VisitSourceLocExpr(clang::SourceLocExpr *expr);
+
+  virtual std::string GetSourceFileAsString(clang::QualType type);
+
   virtual bool VisitCXXBoolLiteralExpr(clang::CXXBoolLiteralExpr *expr);
 
   bool VisitCXXNoexceptExpr(clang::CXXNoexceptExpr *expr);

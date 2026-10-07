@@ -2406,6 +2406,37 @@ Converter::GetCodeUnitArrayLiteral(const clang::StringLiteral *expr) {
   return out;
 }
 
+std::string Converter::GetSourceFileAsString(clang::QualType type) {
+  return std::format("concat!(file!(), \"\\0\").as_ptr() as {}",
+                     ToString(type));
+}
+
+bool Converter::VisitSourceLocExpr(clang::SourceLocExpr *expr) {
+  switch (expr->getIdentKind()) {
+  case clang::SourceLocIdentKind::Line:
+    StrCat(std::format("line!() as {}", ToString(expr->getType())));
+    computed_expr_type_ = ComputedExprType::FreshValue;
+    return false;
+  case clang::SourceLocIdentKind::File:
+    StrCat(GetSourceFileAsString(expr->getType()));
+    computed_expr_type_ = ComputedExprType::FreshPointer;
+    return false;
+  case clang::SourceLocIdentKind::Function: {
+    auto value = expr->EvaluateInContext(ctx_, nullptr);
+    auto *str = clang::cast<clang::StringLiteral>(
+        value.getLValueBase().get<const clang::Expr *>());
+    Convert(clang::ImplicitCastExpr::Create(
+        ctx_, expr->getType(), clang::CK_ArrayToPointerDecay,
+        const_cast<clang::StringLiteral *>(str), nullptr, clang::VK_PRValue,
+        clang::FPOptionsOverride()));
+    return false;
+  }
+  default:
+    assert(0 && "unsupported SourceLocExpr");
+    return false;
+  }
+}
+
 bool Converter::VisitStringLiteral(clang::StringLiteral *expr) {
   if (IsCodeUnitStringLiteral(expr)) {
     StrCat(GetCodeUnitArrayLiteral(expr));
