@@ -30,24 +30,24 @@ fn main_0() -> i32 {
     let a: Value<i32> = Rc::new(RefCell::new(1));
     let b: Value<i32> = Rc::new(RefCell::new(2));
     let r: Ptr<i32> = if ((*a.borrow()) < (*b.borrow())) {
-        a.as_pointer()
+        (a.as_pointer())
     } else {
-        b.as_pointer()
+        (b.as_pointer())
     };
     r.write(10);
     assert!(((*a.borrow()) == 10));
     let cr: Ptr<i32> = if ((*a.borrow()) > (*b.borrow())) {
-        a.as_pointer()
+        (a.as_pointer())
     } else {
-        b.as_pointer()
+        (b.as_pointer())
     };
     assert!(((cr.read()) == 10));
     let x: Value<i32> = Rc::new(RefCell::new(1));
     let y: Value<i32> = Rc::new(RefCell::new(2));
     let cx: Ptr<i32> = if ((*x.borrow()) < (*y.borrow())) {
-        x.as_pointer()
+        (x.as_pointer())
     } else {
-        y.as_pointer()
+        (y.as_pointer())
     };
     assert!(((cx.read()) == 1));
     let mut cp: Ptr<i32> = if ((*a.borrow()) > (*b.borrow())) {
@@ -81,9 +81,9 @@ fn main_0() -> i32 {
     };
     assert!(((*b.borrow()) == 25));
     let mut ap: Ptr<i32> = (if ((*a.borrow()) > (*b.borrow())) {
-        a.as_pointer()
+        (a.as_pointer())
     } else {
-        b.as_pointer()
+        (b.as_pointer())
     });
     ap.write(40);
     assert!(((*a.borrow()) == 40));

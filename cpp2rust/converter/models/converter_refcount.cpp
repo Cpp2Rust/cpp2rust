@@ -918,7 +918,7 @@ bool ConverterRefCount::ConvertIncAndDec(clang::UnaryOperator *expr) {
 
 bool ConverterRefCount::VisitConditionalOperator(
     clang::ConditionalOperator *expr) {
-  if (!isAddrOf() && ConvertLValueConditional(expr)) {
+  if (ConvertLValueConditional(expr)) {
     return false;
   }
   StrCat(keyword::kIf);
@@ -3033,6 +3033,14 @@ pub fn main() {{
 
 void ConverterRefCount::ConvertAddrOf(clang::Expr *expr,
                                       clang::QualType pointer_type) {
+  auto pointee_type = pointer_type->getPointeeType();
+  if (isObject() && WantsElementPtr() &&
+      (IsBoxedType(ctx_, pointee_type) || pointee_type->isArrayType())) {
+    StrCat(std::format("Ptr::<{}>::decay(&({}))", ToString(pointee_type),
+                       ConvertPointer(expr)));
+    computed_expr_type_ = ComputedExprType::FreshPointer;
+    return;
+  }
   StrCat(ConvertPointer(expr));
 }
 

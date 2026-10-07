@@ -3008,7 +3008,6 @@ bool Converter::ConvertLValueConditional(clang::ConditionalOperator *expr) {
   }
   // `&(c ? a : b)` -> `c ? &a : &b`
   if (isAddrOf()) {
-    PushExprKind push(*this, ExprKind::RValue);
     Convert(MakeConditionalAddrOf(ctx_, expr));
     return true;
   }
@@ -4860,6 +4859,7 @@ void Converter::ConvertAddrOf(clang::Expr *expr, clang::QualType pointer_type) {
     StrCat("&raw", pointer_type->getPointeeType().isConstQualified()
                        ? keyword::kConst
                        : keyword_mut_);
+    PushExprKind push(*this, ExprKind::LValue);
     Convert(expr);
     ConvertCast(pointer_type);
     computed_expr_type_ = ComputedExprType::FreshPointer;
@@ -4868,6 +4868,7 @@ void Converter::ConvertAddrOf(clang::Expr *expr, clang::QualType pointer_type) {
     if (!pointer_type->getPointeeType().isConstQualified()) {
       StrCat(keyword_mut_);
     }
+    PushExprKind push(*this, ExprKind::LValue);
     Convert(expr);
     ConvertCast(pointer_type);
     computed_expr_type_ = ComputedExprType::FreshPointer;
