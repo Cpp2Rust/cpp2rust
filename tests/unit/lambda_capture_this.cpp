@@ -1,4 +1,3 @@
-// no-compile: refcount
 #include <assert.h>
 
 struct S {

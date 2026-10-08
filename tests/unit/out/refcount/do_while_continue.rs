@@ -7,38 +7,38 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn run_0() -> i32 {
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    let runs: Value<i32> = Rc::new(RefCell::new(0));
+    let mut i: i32 = 0;
+    let mut runs: i32 = 0;
     let mut __do_while = true;
-    'loop_: while __do_while || ((((*i.borrow()) < 4) as i32) != 0) {
+    'loop_: while __do_while || (((i < 4) as i32) != 0) {
         __do_while = false;
-        (*runs.borrow_mut()) += 1;
-        (*i.borrow_mut()) += 1;
-        if ((((*i.borrow()) == 4) as i32) != 0) {
+        runs += 1;
+        i += 1;
+        if (((i == 4) as i32) != 0) {
             continue 'loop_;
         }
     }
-    return (*runs.borrow());
+    return runs;
 }
 pub fn nested_1() -> i32 {
-    let oi: Value<i32> = Rc::new(RefCell::new(0));
-    let runs: Value<i32> = Rc::new(RefCell::new(0));
+    let mut oi: i32 = 0;
+    let mut runs: i32 = 0;
     let mut __do_while = true;
-    'loop_: while __do_while || ((((*oi.borrow()) < 2) as i32) != 0) {
+    'loop_: while __do_while || (((oi < 2) as i32) != 0) {
         __do_while = false;
-        (*oi.borrow_mut()) += 1;
-        let ii: Value<i32> = Rc::new(RefCell::new(0));
+        oi += 1;
+        let mut ii: i32 = 0;
         let mut __do_while = true;
-        'loop_: while __do_while || ((((*ii.borrow()) < 3) as i32) != 0) {
+        'loop_: while __do_while || (((ii < 3) as i32) != 0) {
             __do_while = false;
-            (*runs.borrow_mut()) += 1;
-            (*ii.borrow_mut()) += 1;
-            if ((((*ii.borrow()) == 3) as i32) != 0) {
+            runs += 1;
+            ii += 1;
+            if (((ii == 3) as i32) != 0) {
                 continue 'loop_;
             }
         }
     }
-    return (*runs.borrow());
+    return runs;
 }
 pub fn main() {
     __cpp2rust_init_globals();

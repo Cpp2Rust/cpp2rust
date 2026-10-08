@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg)]
+#[derive(Copy, Clone, VaArg, FnPtrArg)]
 pub struct A {
     pub v: i32,
 }
@@ -27,7 +27,7 @@ impl Default for A {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg)]
+#[derive(Copy, Clone, VaArg, FnPtrArg)]
 pub struct B {
     pub v: i32,
 }
@@ -43,7 +43,7 @@ impl Default for B {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct NoDefault {
     pub v: i32,
 }
@@ -54,22 +54,22 @@ impl NoDefault {
     }
 }
 pub unsafe fn used_0(mut x: Option<A>) -> i32 {
-    let mut x: A = x.unwrap_or(A::new_1());
+    let mut x: A = x.unwrap_or_else(|| unsafe { A::new_1() });
     return x.v;
 }
 pub unsafe fn used_1(mut x: Option<B>) -> i32 {
-    let mut x: B = x.unwrap_or(B::new());
+    let mut x: B = x.unwrap_or_else(|| unsafe { B::new() });
     return x.v;
 }
 pub unsafe fn scaled_2(mut x: A, mut n: Option<i32>) -> i32 {
-    let mut n: i32 = n.unwrap_or((::std::mem::size_of::<A>() as i32));
+    let mut n: i32 = n.unwrap_or_else(|| unsafe { (::std::mem::size_of::<A>() as i32) });
     return ((x.v) * (n));
 }
 pub unsafe fn always_given_3(mut x: NoDefault) -> i32 {
     return x.v;
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S_NoDefault_ {
     pub v: i32,
 }

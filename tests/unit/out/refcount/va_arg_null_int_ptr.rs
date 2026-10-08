@@ -10,17 +10,17 @@ pub fn first_nonnull_0(count: i32, __args: &[VaArg]) -> i32 {
     let count: Value<i32> = Rc::new(RefCell::new(count));
     let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
     (*ap.borrow_mut()) = VaList::new(__args);
-    let result: Value<i32> = Rc::new(RefCell::new(-1_i32));
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((((*i.borrow()) < (*count.borrow())) as i32) != 0) {
-        let p: Value<Ptr<i32>> = Rc::new(RefCell::new((*ap.borrow_mut()).arg::<Ptr<i32>>()));
-        if (((!((*p.borrow()).is_null())) as i32) != 0) {
-            (*result.borrow_mut()) = { ((*p.borrow()).read()) };
+    let mut result: i32 = -1_i32;
+    let mut i: i32 = 0;
+    'loop_: while (((i < (*count.borrow())) as i32) != 0) {
+        let mut p: Ptr<i32> = (*ap.borrow_mut()).arg::<Ptr<i32>>();
+        if (((!((p).is_null())) as i32) != 0) {
+            result = { (p.read()) };
             break;
         }
-        (*i.borrow_mut()).postfix_inc();
+        i.postfix_inc();
     }
-    return (*result.borrow());
+    return result;
 }
 pub fn main() {
     __cpp2rust_init_globals();

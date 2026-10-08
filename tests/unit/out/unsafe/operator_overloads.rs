@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S {
     pub v: i32,
 }
@@ -63,7 +63,7 @@ unsafe fn main_0() -> i32 {
     let mut t: S = S { v: 4 };
     assert!(((unsafe { S::operator_eq_1(&s, 6,) }) == (1)));
     assert!(((unsafe { S::operator_eq_2(&s, 6_i64,) }) == (2)));
-    assert!(((unsafe { S::operator_eq_3(&s, 6.0E+0,) }) == (3)));
+    assert!(((unsafe { S::operator_eq_3(&s, 6_f64,) }) == (3)));
     assert!(((unsafe { S::operator_eq_1(&s, 7,) }) == (0)));
     assert!(((unsafe { S::operator_add(&s, &t,) }) == (10)));
     assert!(((unsafe { S::operator_sub(&s, t,) }) == (2)));

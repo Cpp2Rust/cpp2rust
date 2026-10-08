@@ -49,13 +49,13 @@ fn main_0() -> i32 {
         )
     });
     assert!(({ (*a.borrow()).v } == 14_u32));
-    let c: Value<S> = Rc::new(RefCell::new(S { v: 0_u32 }));
-    (*c.borrow_mut()) = (*({ SImpl::operator_assign_1(&a.as_pointer(), 1_u32) })
+    let mut c: S = S { v: 0_u32 };
+    c = (*({ SImpl::operator_assign_1(&a.as_pointer(), 1_u32) })
         .upgrade()
         .deref())
     .clone();
     assert!(({ (*a.borrow()).v } == 1_u32));
-    assert!(({ (*c.borrow()).v } == 1_u32));
+    assert!((c.v == 1_u32));
     return 0;
 }
 pub trait SImpl {
@@ -72,9 +72,8 @@ pub trait SImpl {
     fn operator_shr_assign(&self, n: i32) -> Ptr<S>;
 }
 impl SImpl for Ptr<S> {
-    fn operator_assign_1(&self, n: u32) -> Ptr<S> {
-        let n: Value<u32> = Rc::new(RefCell::new(n));
-        field!((*self), v).write((*n.borrow()));
+    fn operator_assign_1(&self, mut n: u32) -> Ptr<S> {
+        field!((*self), v).write(n);
         return (*self).clone();
     }
     fn operator_add_assign(&self, o: Ptr<S>) -> Ptr<S> {
@@ -99,38 +98,36 @@ impl SImpl for Ptr<S> {
     }
     fn operator_bitand_assign(&self, o: Ptr<S>) -> Ptr<S> {
         {
-            let _ptr = field!((*self), v);
-            _ptr.write(_ptr.read() & { o.with(|__s| __s.v) })
+            let __rhs = { o.with(|__s| __s.v) };
+            field!((*self), v).with_mut(|__v| *__v = *__v & __rhs)
         };
         return (*self).clone();
     }
     fn operator_bitor_assign(&self, o: Ptr<S>) -> Ptr<S> {
         {
-            let _ptr = field!((*self), v);
-            _ptr.write(_ptr.read() | { o.with(|__s| __s.v) })
+            let __rhs = { o.with(|__s| __s.v) };
+            field!((*self), v).with_mut(|__v| *__v = *__v | __rhs)
         };
         return (*self).clone();
     }
     fn operator_bitxor_assign(&self, o: Ptr<S>) -> Ptr<S> {
         {
-            let _ptr = field!((*self), v);
-            _ptr.write(_ptr.read() ^ { o.with(|__s| __s.v) })
+            let __rhs = { o.with(|__s| __s.v) };
+            field!((*self), v).with_mut(|__v| *__v = *__v ^ __rhs)
         };
         return (*self).clone();
     }
-    fn operator_shl_assign(&self, n: i32) -> Ptr<S> {
-        let n: Value<i32> = Rc::new(RefCell::new(n));
+    fn operator_shl_assign(&self, mut n: i32) -> Ptr<S> {
         {
-            let _ptr = field!((*self), v);
-            _ptr.write(_ptr.read() << (*n.borrow()))
+            let __rhs = n;
+            field!((*self), v).with_mut(|__v| *__v = *__v << __rhs)
         };
         return (*self).clone();
     }
-    fn operator_shr_assign(&self, n: i32) -> Ptr<S> {
-        let n: Value<i32> = Rc::new(RefCell::new(n));
+    fn operator_shr_assign(&self, mut n: i32) -> Ptr<S> {
         {
-            let _ptr = field!((*self), v);
-            _ptr.write(_ptr.read() >> (*n.borrow()))
+            let __rhs = n;
+            field!((*self), v).with_mut(|__v| *__v = *__v >> __rhs)
         };
         return (*self).clone();
     }

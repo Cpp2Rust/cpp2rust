@@ -11,7 +11,17 @@ int foo() {
   return kX1 + kX2 + static_i;
 }
 
+int from_local_class() {
+  static int x = 3;
+  struct S {
+    int get() const { return ++x; }
+  };
+  return S{}.get() + S{}.get();
+}
+
 int main() {
   assert(foo() + foo() + foo() == 15);
+  assert(from_local_class() == 9);
+  assert(from_local_class() == 13);
   return 0;
 }

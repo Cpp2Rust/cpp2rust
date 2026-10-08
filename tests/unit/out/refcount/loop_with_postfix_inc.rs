@@ -11,11 +11,11 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let x: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*x.borrow_mut()).postfix_inc() < 100) && ((*x.borrow()) != 50) {
-        (*x.borrow_mut()).prefix_inc();
+    let mut x: i32 = 0;
+    'loop_: while (x.postfix_inc() < 100) && (x != 50) {
+        x.prefix_inc();
     }
-    assert!(((*x.borrow()) == 101));
+    assert!((x == 101));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

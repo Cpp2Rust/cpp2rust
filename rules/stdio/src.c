@@ -1,9 +1,10 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#define _GNU_SOURCE
 #include <stdio.h>
 
-using t1 = FILE *;
+typedef FILE *t1;
 
 FILE *f1(const char *pathname, const char *mode) {
   return fopen(pathname, mode);
@@ -57,10 +58,7 @@ int f19(FILE *stream, off_t offset, int whence) {
 
 FILE *f20(int fd, const char *mode) { return fdopen(fd, mode); }
 
-template <typename... Args>
-int f21(char *a0, size_t a1, const char *a2, Args... args) {
-  return snprintf(a0, a1, a2, args...);
-}
+int (*f21)(char *, size_t, const char *, ...) = snprintf;
 
 int f22(const char *a0, const char *a1) {
   return rename(a0, a1);

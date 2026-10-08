@@ -18,111 +18,79 @@ pub struct node_t {
     #[offset(16)]
     pub value: i32,
 }
-pub fn find_0(node: Ptr<node_t>, value: i32) -> Ptr<node_t> {
-    let node: Value<Ptr<node_t>> = Rc::new(RefCell::new(node));
-    let value: Value<i32> = Rc::new(RefCell::new(value));
-    if ({ (*value.borrow()) } < { (*node.borrow()).with(|__s| __s.value) })
-        && (!(((*node.borrow()).with(|__s| __s.left.clone())).is_null()))
+pub fn find_0(mut node: Ptr<node_t>, mut value: i32) -> Ptr<node_t> {
+    if ({ value } < { node.with(|__s| __s.value) })
+        && (!((node.with(|__s| __s.left.clone())).is_null()))
     {
-        return ({
-            find_0(
-                (*node.borrow()).with(|__s| __s.left.clone()),
-                (*value.borrow()),
-            )
-        });
-    } else if ({ (*value.borrow()) } > { (*node.borrow()).with(|__s| __s.value) })
-        && (!(((*node.borrow()).with(|__s| __s.right.clone())).is_null()))
+        return ({ find_0(node.with(|__s| __s.left.clone()), value) });
+    } else if ({ value } > { node.with(|__s| __s.value) })
+        && (!((node.with(|__s| __s.right.clone())).is_null()))
     {
-        return ({
-            find_0(
-                (*node.borrow()).with(|__s| __s.right.clone()),
-                (*value.borrow()),
-            )
-        });
-    } else if ({ (*value.borrow()) } == { (*node.borrow()).with(|__s| __s.value) }) {
-        return (*node.borrow()).clone();
+        return ({ find_0(node.with(|__s| __s.right.clone()), value) });
+    } else if ({ value } == { node.with(|__s| __s.value) }) {
+        return node;
     }
     return Ptr::<node_t>::null();
 }
-pub fn insert_1(node: Ptr<node_t>, new_node: Ptr<node_t>) -> Ptr<node_t> {
-    let node: Value<Ptr<node_t>> = Rc::new(RefCell::new(node));
-    let new_node: Value<Ptr<node_t>> = Rc::new(RefCell::new(new_node));
-    if (*node.borrow()).is_null() {
-        return (*new_node.borrow()).clone();
+pub fn insert_1(mut node: Ptr<node_t>, mut new_node: Ptr<node_t>) -> Ptr<node_t> {
+    if (node).is_null() {
+        return new_node;
     }
-    if ({ (*new_node.borrow()).with(|__s| __s.value) } < { (*node.borrow()).with(|__s| __s.value) })
-    {
-        let __rhs = ({
-            insert_1(
-                (*node.borrow()).with(|__s| __s.left.clone()),
-                (*new_node.borrow()).clone(),
-            )
-        });
-        field!((*node.borrow()), left).write(__rhs);
-    } else if ({ (*new_node.borrow()).with(|__s| __s.value) } > {
-        (*node.borrow()).with(|__s| __s.value)
-    }) {
-        let __rhs = ({
-            insert_1(
-                (*node.borrow()).with(|__s| __s.right.clone()),
-                (*new_node.borrow()).clone(),
-            )
-        });
-        field!((*node.borrow()), right).write(__rhs);
+    if ({ new_node.with(|__s| __s.value) } < { node.with(|__s| __s.value) }) {
+        let __rhs = ({ insert_1(node.with(|__s| __s.left.clone()), (new_node).clone()) });
+        field!(node, left).write(__rhs);
+    } else if ({ new_node.with(|__s| __s.value) } > { node.with(|__s| __s.value) }) {
+        let __rhs = ({ insert_1(node.with(|__s| __s.right.clone()), (new_node).clone()) });
+        field!(node, right).write(__rhs);
     }
-    return (*node.borrow()).clone();
+    return node;
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let tree: Value<Option<Value<node_t>>> =
-        Rc::new(RefCell::new(Some(Rc::new(RefCell::new(node_t {
-            left: Ptr::<node_t>::null(),
-            right: Ptr::<node_t>::null(),
-            value: 0,
-        })))));
-    let n1: Value<Option<Value<node_t>>> =
-        Rc::new(RefCell::new(Some(Rc::new(RefCell::new(node_t {
-            left: Ptr::<node_t>::null(),
-            right: Ptr::<node_t>::null(),
-            value: 1,
-        })))));
-    let n2: Value<Option<Value<node_t>>> =
-        Rc::new(RefCell::new(Some(Rc::new(RefCell::new(node_t {
-            left: Ptr::<node_t>::null(),
-            right: Ptr::<node_t>::null(),
-            value: 2,
-        })))));
-    let n3: Value<Option<Value<node_t>>> =
-        Rc::new(RefCell::new(Some(Rc::new(RefCell::new(node_t {
-            left: Ptr::<node_t>::null(),
-            right: Ptr::<node_t>::null(),
-            value: 3,
-        })))));
-    let n4: Value<Option<Value<node_t>>> =
-        Rc::new(RefCell::new(Some(Rc::new(RefCell::new(node_t {
-            left: Ptr::<node_t>::null(),
-            right: Ptr::<node_t>::null(),
-            value: 4,
-        })))));
-    let ptr1: Value<Ptr<node_t>> = Rc::new(RefCell::new(((*tree.borrow()).as_pointer())));
-    let __rhs = ({ insert_1((*ptr1.borrow()).clone(), ((*n1.borrow()).as_pointer())) });
-    (*ptr1.borrow_mut()) = __rhs;
-    let __rhs = ({ insert_1((*ptr1.borrow()).clone(), ((*n2.borrow()).as_pointer())) });
-    (*ptr1.borrow_mut()) = __rhs;
-    let __rhs = ({ insert_1((*ptr1.borrow()).clone(), ((*n3.borrow()).as_pointer())) });
-    (*ptr1.borrow_mut()) = __rhs;
-    let __rhs = ({ insert_1((*ptr1.borrow()).clone(), ((*n4.borrow()).as_pointer())) });
-    (*ptr1.borrow_mut()) = __rhs;
+    let mut tree: Option<Value<node_t>> = Some(Rc::new(RefCell::new(node_t {
+        left: Ptr::<node_t>::null(),
+        right: Ptr::<node_t>::null(),
+        value: 0,
+    })));
+    let mut n1: Option<Value<node_t>> = Some(Rc::new(RefCell::new(node_t {
+        left: Ptr::<node_t>::null(),
+        right: Ptr::<node_t>::null(),
+        value: 1,
+    })));
+    let mut n2: Option<Value<node_t>> = Some(Rc::new(RefCell::new(node_t {
+        left: Ptr::<node_t>::null(),
+        right: Ptr::<node_t>::null(),
+        value: 2,
+    })));
+    let mut n3: Option<Value<node_t>> = Some(Rc::new(RefCell::new(node_t {
+        left: Ptr::<node_t>::null(),
+        right: Ptr::<node_t>::null(),
+        value: 3,
+    })));
+    let mut n4: Option<Value<node_t>> = Some(Rc::new(RefCell::new(node_t {
+        left: Ptr::<node_t>::null(),
+        right: Ptr::<node_t>::null(),
+        value: 4,
+    })));
+    let mut ptr1: Ptr<node_t> = (tree.as_pointer());
+    let __rhs = ({ insert_1((ptr1).clone(), (n1.as_pointer())) });
+    ptr1 = __rhs;
+    let __rhs = ({ insert_1((ptr1).clone(), (n2.as_pointer())) });
+    ptr1 = __rhs;
+    let __rhs = ({ insert_1((ptr1).clone(), (n3.as_pointer())) });
+    ptr1 = __rhs;
+    let __rhs = ({ insert_1((ptr1).clone(), (n4.as_pointer())) });
+    ptr1 = __rhs;
     assert!(
-        (((((({ find_0((*ptr1.borrow()).clone(), 0,) }).with(|__s| __s.value) == 0)
-            && (({ find_0((*ptr1.borrow()).clone(), 1,) }).with(|__s| __s.value) == 1))
-            && (({ find_0((*ptr1.borrow()).clone(), 2,) }).with(|__s| __s.value) == 2))
-            && (({ find_0((*ptr1.borrow()).clone(), 3,) }).with(|__s| __s.value) == 3))
-            && (({ find_0((*ptr1.borrow()).clone(), 4,) }).with(|__s| __s.value) == 4))
-            && (({ find_0((*ptr1.borrow()).clone(), 5,) }).is_null())
+        (((((({ find_0((ptr1).clone(), 0,) }).with(|__s| __s.value) == 0)
+            && (({ find_0((ptr1).clone(), 1,) }).with(|__s| __s.value) == 1))
+            && (({ find_0((ptr1).clone(), 2,) }).with(|__s| __s.value) == 2))
+            && (({ find_0((ptr1).clone(), 3,) }).with(|__s| __s.value) == 3))
+            && (({ find_0((ptr1).clone(), 4,) }).with(|__s| __s.value) == 4))
+            && (({ find_0((ptr1).clone(), 5,) }).is_null())
     );
     return 0;
 }

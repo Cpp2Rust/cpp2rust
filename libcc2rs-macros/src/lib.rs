@@ -7,6 +7,7 @@ mod byte_repr;
 mod deep_clone;
 mod fn_ptr_arg;
 mod goto;
+mod lambda;
 mod record;
 mod state_machine;
 mod switch;
@@ -75,6 +76,16 @@ pub fn switch(input: TokenStream) -> TokenStream {
 #[proc_macro]
 pub fn goto_block(input: TokenStream) -> TokenStream {
     goto::expand(input)
+}
+
+#[proc_macro]
+pub fn lambda(input: TokenStream) -> TokenStream {
+    lambda::expand(input, false)
+}
+
+#[proc_macro]
+pub fn lambda_unsafe(input: TokenStream) -> TokenStream {
+    lambda::expand(input, true)
 }
 
 #[proc_macro]

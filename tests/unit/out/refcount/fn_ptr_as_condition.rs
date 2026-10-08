@@ -6,18 +6,14 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn double_it_0(x: Ptr<i32>) {
-    let x: Value<Ptr<i32>> = Rc::new(RefCell::new(x));
+pub fn double_it_0(mut x: Ptr<i32>) {
     {
-        let _ptr = (*x.borrow()).clone();
-        _ptr.write(_ptr.read() * 2)
+        x.with_mut(|__v| *__v = *__v * 2)
     };
 }
-pub fn maybe_call_1(cb: FnPtr<fn(Ptr<i32>)>, x: Ptr<i32>) {
-    let cb: Value<FnPtr<fn(Ptr<i32>)>> = Rc::new(RefCell::new(cb));
-    let x: Value<Ptr<i32>> = Rc::new(RefCell::new(x));
-    if !(*cb.borrow()).is_null() {
-        ({ (*cb.borrow()).call((*x.borrow()).clone()) });
+pub fn maybe_call_1(mut cb: FnPtr<fn(Ptr<i32>)>, mut x: Ptr<i32>) {
+    if !(cb).is_null() {
+        ({ cb.call((x).clone()) });
     }
 }
 pub fn main() {
@@ -31,13 +27,13 @@ fn main_0() -> i32 {
     let b: Value<i32> = Rc::new(RefCell::new(5));
     ({ maybe_call_1(FnPtr::<fn(Ptr<i32>)>::null(), (b.as_pointer())) });
     assert!(((*b.borrow()) == 5));
-    let fn_: Value<FnPtr<fn(Ptr<i32>)>> = Rc::new(RefCell::new(FnPtr::<fn(Ptr<i32>)>::null()));
-    if !(!(*fn_.borrow()).is_null()) {
-        (*fn_.borrow_mut()) = FnPtr::<fn(Ptr<i32>)>::new(double_it_0);
+    let mut fn_: FnPtr<fn(Ptr<i32>)> = FnPtr::<fn(Ptr<i32>)>::null();
+    if !(!(fn_).is_null()) {
+        fn_ = FnPtr::<fn(Ptr<i32>)>::new(double_it_0);
     }
     let c: Value<i32> = Rc::new(RefCell::new(3));
-    if !(*fn_.borrow()).is_null() {
-        ({ (*fn_.borrow()).call((c.as_pointer())) });
+    if !(fn_).is_null() {
+        ({ fn_.call((c.as_pointer())) });
     }
     assert!(((*c.borrow()) == 6));
     return 0;

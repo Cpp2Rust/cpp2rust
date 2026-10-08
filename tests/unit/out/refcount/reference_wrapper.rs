@@ -14,10 +14,9 @@ pub struct Point {
     #[offset(4)]
     pub y: i32,
 }
-pub fn set_0(ref_: Ptr<i32>, val: i32) {
+pub fn set_0(ref_: Ptr<i32>, mut val: i32) {
     let ref_: Value<Ptr<i32>> = Rc::new(RefCell::new(ref_));
-    let val: Value<i32> = Rc::new(RefCell::new(val));
-    (*ref_.borrow()).write((*val.borrow()));
+    (*ref_.borrow()).write(val);
 }
 pub fn read_1(ref_: Ptr<i32>) -> i32 {
     let ref_: Value<Ptr<i32>> = Rc::new(RefCell::new(ref_));
@@ -34,8 +33,7 @@ fn main_0() -> i32 {
     (*ref_1.borrow()).write(20);
     let i2: Ptr<i32> = (*ref_1.borrow()).clone();
     {
-        let _ptr = i2.clone();
-        _ptr.write(_ptr.read() + 5)
+        i2.with_mut(|__v| *__v = *__v + 5)
     };
     write!(libcc2rs::cout(), "{:}\n", (*i1.borrow()),);
     let i3: Value<i32> = Rc::new(RefCell::new(1));

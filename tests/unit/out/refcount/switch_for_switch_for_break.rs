@@ -6,34 +6,33 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn for_switch_for_break_0(n: i32) -> i32 {
-    let n: Value<i32> = Rc::new(RefCell::new(n));
-    let r: Value<i32> = Rc::new(RefCell::new(0));
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < (*n.borrow())) {
+pub fn for_switch_for_break_0(mut n: i32) -> i32 {
+    let mut r: i32 = 0;
+    let mut i: i32 = 0;
+    'loop_: while (i < n) {
         'switch: {
-            match { (*i.borrow()) } {
+            match { i } {
                 __v if __v == 1 => {
-                    let j: Value<i32> = Rc::new(RefCell::new(0));
-                    'loop_: while ((*j.borrow()) < 10) {
-                        if ((*j.borrow()) == 2) {
+                    let mut j: i32 = 0;
+                    'loop_: while (j < 10) {
+                        if (j == 2) {
                             break;
                         }
-                        (*r.borrow_mut()) += 1;
-                        (*j.borrow_mut()).prefix_inc();
+                        r += 1;
+                        j.prefix_inc();
                     }
-                    (*r.borrow_mut()) += 100;
+                    r += 100;
                     break 'switch;
                 }
                 _ => {
-                    (*r.borrow_mut()) += 10;
+                    r += 10;
                     break 'switch;
                 }
             }
         };
-        (*i.borrow_mut()).prefix_inc();
+        i.prefix_inc();
     }
-    return (*r.borrow());
+    return r;
 }
 pub fn main() {
     __cpp2rust_init_globals();

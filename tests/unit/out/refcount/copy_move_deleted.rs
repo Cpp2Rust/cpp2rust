@@ -13,19 +13,15 @@ pub struct NoCopy {
     pub v: i32,
 }
 impl NoCopy {
-    pub fn new(v: i32) -> Self {
-        let v: Value<i32> = Rc::new(RefCell::new(v));
-        let __this: Value<NoCopy> = Rc::new(RefCell::new(Self { v: (*v.borrow()) }));
-        let this: Ptr<NoCopy> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    pub fn new(mut v: i32) -> Self {
+        Self { v: v }
     }
     pub fn move_from(o: Ptr<NoCopy>) -> Self {
-        let __this: Value<NoCopy> = Rc::new(RefCell::new(Self {
+        let __this: NoCopy = Self {
             v: o.with(|__s| __s.v),
-        }));
-        let this: Ptr<NoCopy> = __this.as_pointer();
+        };
         field!(o, v).write(0);
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        __this
     }
 }
 #[derive(Record, ByteRepr)]
@@ -36,17 +32,14 @@ pub struct PrivateCopy {
 }
 impl PrivateCopy {
     pub fn new() -> Self {
-        let __this: Value<PrivateCopy> = Rc::new(RefCell::new(Self { v: 0 }));
-        let this: Ptr<PrivateCopy> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self { v: 0 }
     }
     pub fn move_from(o: Ptr<PrivateCopy>) -> Self {
-        let __this: Value<PrivateCopy> = Rc::new(RefCell::new(Self {
+        let __this: PrivateCopy = Self {
             v: o.with(|__s| __s.v),
-        }));
-        let this: Ptr<PrivateCopy> = __this.as_pointer();
+        };
         field!(o, v).write(0);
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        __this
     }
 }
 impl Default for PrivateCopy {
@@ -62,9 +55,7 @@ pub struct Immovable {
 }
 impl Immovable {
     pub fn new() -> Self {
-        let __this: Value<Immovable> = Rc::new(RefCell::new(Self { v: 0 }));
-        let this: Ptr<Immovable> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self { v: 0 }
     }
 }
 impl Default for Immovable {
@@ -83,17 +74,14 @@ pub struct Container {
 }
 impl Container {
     pub fn move_from(_a0: Ptr<Container>) -> Self {
-        let __this: Value<Container> = Rc::new(RefCell::new(Self {
+        Self {
             inner: NoCopy::move_from({ field_ptr!(_a0, inner) }),
             tag: { (*_a0.upgrade().deref()).tag },
-        }));
-        let this: Ptr<Container> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
 }
-pub fn bump_0(p: Ptr<NoCopy>) {
-    let p: Value<Ptr<NoCopy>> = Rc::new(RefCell::new(p));
-    field!((*p.borrow()), v).with_mut(|__v| __v.postfix_inc());
+pub fn bump_0(mut p: Ptr<NoCopy>) {
+    field!(p, v).with_mut(|__v| __v.postfix_inc());
 }
 pub fn bump_ref_1(r: Ptr<Immovable>) {
     field!(r, v).with_mut(|__v| __v.postfix_inc());
@@ -119,17 +107,14 @@ fn main_0() -> i32 {
     let im: Value<Immovable> = Rc::new(RefCell::new(Immovable::new()));
     (*im.borrow_mut()).v = 4;
     ({ bump_ref_1(im.as_pointer()) });
-    let pim: Value<Ptr<Immovable>> = Rc::new(RefCell::new((im.as_pointer())));
-    assert!(((*pim.borrow()).with(|__s| __s.v) == 5));
+    let mut pim: Ptr<Immovable> = (im.as_pointer());
+    assert!((pim.with(|__s| __s.v) == 5));
     let c: Value<Container> = Rc::new(RefCell::new(Container {
         inner: NoCopy::new({ 6 }),
         tag: 7,
     }));
-    let d: Value<Container> = Rc::new(RefCell::new(Container::move_from({ c.as_pointer() })));
-    assert!(
-        (({ (*d.borrow()).inner.v } == 6) && ({ (*d.borrow()).tag } == 7))
-            && ({ (*c.borrow()).inner.v } == 0)
-    );
+    let mut d: Container = Container::move_from({ c.as_pointer() });
+    assert!(((d.inner.v == 6) && (d.tag == 7)) && ({ (*c.borrow()).inner.v } == 0));
     return 0;
 }
 pub trait ContainerImpl {

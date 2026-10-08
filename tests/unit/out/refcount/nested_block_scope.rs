@@ -11,38 +11,38 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let x: Value<i32> = Rc::new(RefCell::new(1));
+    let mut x: i32 = 1;
     {
-        let x: Value<i32> = Rc::new(RefCell::new(2));
-        assert!(((*x.borrow()) == 2));
+        let mut x: i32 = 2;
+        assert!((x == 2));
         {
-            let x: Value<i32> = Rc::new(RefCell::new(3));
-            assert!(((*x.borrow()) == 3));
+            let mut x: i32 = 3;
+            assert!((x == 3));
         }
-        assert!(((*x.borrow()) == 2));
+        assert!((x == 2));
     }
-    assert!(((*x.borrow()) == 1));
-    let sum: Value<i32> = Rc::new(RefCell::new(0));
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < 3) {
-        let y: Value<i32> = Rc::new(RefCell::new((*i.borrow())));
+    assert!((x == 1));
+    let mut sum: i32 = 0;
+    let mut i: i32 = 0;
+    'loop_: while (i < 3) {
+        let mut y: i32 = i;
         {
-            let y: Value<i32> = Rc::new(RefCell::new(10));
-            (*sum.borrow_mut()) += (*y.borrow());
+            let mut y: i32 = 10;
+            sum += y;
         }
-        (*sum.borrow_mut()) += (*y.borrow());
-        (*i.borrow_mut()).postfix_inc();
+        sum += y;
+        i.postfix_inc();
     }
-    assert!(((*sum.borrow()) == 33));
-    if ((*x.borrow()) == 1) {
-        let x: Value<i32> = Rc::new(RefCell::new(5));
+    assert!((sum == 33));
+    if (x == 1) {
+        let mut x: i32 = 5;
         {
-            let x: Value<i32> = Rc::new(RefCell::new(6));
-            assert!(((*x.borrow()) == 6));
+            let mut x: i32 = 6;
+            assert!((x == 6));
         }
-        assert!(((*x.borrow()) == 5));
+        assert!((x == 5));
     }
-    assert!(((*x.borrow()) == 1));
+    assert!((x == 1));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

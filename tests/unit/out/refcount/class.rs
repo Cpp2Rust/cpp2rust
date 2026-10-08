@@ -83,26 +83,24 @@ fn main_0() -> i32 {
         },
         cost: 10_f64,
     }));
-    let old_cost: Value<f64> = Rc::new(RefCell::new(
-        ({
-            RouteImpl::SetCost(
-                &route1.as_pointer(),
-                ({ RouteImpl::SetCost(&route2.as_pointer(), 15_f64) }),
-            )
-        }),
-    ));
+    let mut old_cost: f64 = ({
+        RouteImpl::SetCost(
+            &route1.as_pointer(),
+            ({ RouteImpl::SetCost(&route2.as_pointer(), 15_f64) }),
+        )
+    });
     assert!(
         ((((({ RandomRoute_0(route1.as_pointer(),) }) + ({ RandomRoute_0(route2.as_pointer(),) }))
             as f64)
-            + (*old_cost.borrow()))
+            + old_cost)
             == 9_f64)
     );
     let c1: Value<Counter> = Rc::new(RefCell::new(Counter { v: 3, calls: 0 }));
     let c2: Value<Counter> = Rc::new(RefCell::new(Counter { v: 3, calls: 0 }));
-    let pc: Value<Ptr<Counter>> = Rc::new(RefCell::new((c1.as_pointer())));
+    let mut pc: Ptr<Counter> = (c1.as_pointer());
     assert!((({ CounterImpl::Get(&c1.as_pointer(),) }) == 3));
     assert!((({ CounterImpl::Get(&c2.as_pointer(),) }) == 3));
-    assert!((({ CounterImpl::Get(&(*pc.borrow()),) }) == 3));
+    assert!((({ CounterImpl::Get(&pc,) }) == 3));
     assert!(({ CounterImpl::operator_eq(&c1.as_pointer(), c2.as_pointer(),) }));
     assert!(({ CounterImpl::operator_eq(&c2.as_pointer(), c1.as_pointer(),) }));
     assert!(({ (*c1.borrow()).calls } == 3));
@@ -139,27 +137,24 @@ impl PairImpl for Ptr<Pair> {
     fn GetSecond(&self) -> i32 {
         return (*self).with(|__s| __s.second);
     }
-    fn Set(&self, field: Ptr<i32>, new_val: i32) -> i32 {
-        let new_val: Value<i32> = Rc::new(RefCell::new(new_val));
+    fn Set(&self, field: Ptr<i32>, mut new_val: i32) -> i32 {
         ({ PairImpl::NOP(self) });
-        let old_val: Value<i32> = Rc::new(RefCell::new((field.read())));
-        field.write({ (*new_val.borrow()) });
-        return (*old_val.borrow());
+        let mut old_val: i32 = (field.read());
+        field.write({ new_val });
+        return old_val;
     }
-    fn SetFirst(&self, new_first: i32) -> i32 {
-        let new_first: Value<i32> = Rc::new(RefCell::new(new_first));
+    fn SetFirst(&self, mut new_first: i32) -> i32 {
         return (({ PairImpl::GetFirst(self) })
             + ({
                 let _field: Ptr<i32> = field_ptr!((*self), first);
-                PairImpl::Set(self, _field, (*new_first.borrow()))
+                PairImpl::Set(self, _field, new_first)
             }));
     }
-    fn SetSecond(&self, new_second: i32) -> i32 {
-        let new_second: Value<i32> = Rc::new(RefCell::new(new_second));
+    fn SetSecond(&self, mut new_second: i32) -> i32 {
         return (({ PairImpl::GetSecond(self) })
             + ({
                 let _field: Ptr<i32> = field_ptr!((*self), second);
-                PairImpl::Set(self, _field, (*new_second.borrow()))
+                PairImpl::Set(self, _field, new_second)
             }));
     }
 }
@@ -167,11 +162,10 @@ pub trait RouteImpl {
     fn SetCost(&self, new_cost: f64) -> f64;
 }
 impl RouteImpl for Ptr<Route> {
-    fn SetCost(&self, new_cost: f64) -> f64 {
-        let new_cost: Value<f64> = Rc::new(RefCell::new(new_cost));
-        let old_cost: Value<f64> = Rc::new(RefCell::new((*self).with(|__s| __s.cost)));
-        field!((*self), cost).write((*new_cost.borrow()));
-        return (*old_cost.borrow());
+    fn SetCost(&self, mut new_cost: f64) -> f64 {
+        let mut old_cost: f64 = (*self).with(|__s| __s.cost);
+        field!((*self), cost).write(new_cost);
+        return old_cost;
     }
 }
 pub fn __cpp2rust_init_globals() {}

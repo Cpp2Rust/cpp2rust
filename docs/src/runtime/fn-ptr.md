@@ -91,3 +91,24 @@ Casting a function pointer to `void *` is `to_any`, and `AnyPtr::cast_fn::<T>`
 recovers it. `reinterpret_cast` on an `AnyPtr` holding a function currently
 panics, as do [integer casts](./rc.md#integer-casts) on a `Ptr`; both are set to
 be fixed in the near future.
+
+## Lambdas
+
+A lambda is an `FnPtr` too, in both models (see
+[Lambdas](../codegen/types/lambdas.md)). One without captures is built with
+`new` from a closure, like a function. One with captures is built by the
+`lambda!` and `lambda_unsafe!` macros, which declare a struct holding the
+captures, with the body as its method, and pass both to `from_lambda` or
+`from_lambda_unsafe`:
+
+```rust
+impl<A, R> FnPtr<fn(A) -> R> {
+    pub fn from_lambda<L>(lambda: L, call: fn(&L, A) -> R) -> Self;
+    pub fn from_lambda_unsafe<L>(lambda: L, call: fn(&mut L, A) -> R) -> Self;
+}
+```
+
+The unsafe model translates function pointers as `Option<unsafe fn>` and uses
+`FnPtr` only for lambdas. For this, `FnPtrArg` is also implemented for raw
+pointers and for `Option<unsafe fn>`, and derived by the structs and unions of
+the unsafe model.

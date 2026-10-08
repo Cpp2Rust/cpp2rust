@@ -61,41 +61,41 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let p: Value<Point> = Rc::new(RefCell::new(Point { x: 10, y: 20 }));
-    assert!(((({ (*p.borrow()).x } == 10) as i32) != 0));
-    assert!(((({ (*p.borrow()).y } == 20) as i32) != 0));
-    let q: Value<Point> = Rc::new(RefCell::new((*p.borrow()).clone()));
-    (*q.borrow_mut()).x = 99;
-    assert!(((({ (*p.borrow()).x } == 10) as i32) != 0));
-    assert!(((({ (*q.borrow()).x } == 99) as i32) != 0));
-    assert!(((({ (*q.borrow()).y } == 20) as i32) != 0));
-    let l: Value<Line> = Rc::new(RefCell::new(Line {
+    let mut p: Point = Point { x: 10, y: 20 };
+    assert!((((p.x == 10) as i32) != 0));
+    assert!((((p.y == 20) as i32) != 0));
+    let mut q: Point = (p).clone();
+    q.x = 99;
+    assert!((((p.x == 10) as i32) != 0));
+    assert!((((q.x == 99) as i32) != 0));
+    assert!((((q.y == 20) as i32) != 0));
+    let mut l: Line = Line {
         start: Point { x: 1, y: 2 },
         end: Point { x: 3, y: 4 },
-    }));
-    assert!(((({ (*l.borrow()).start.x } == 1) as i32) != 0));
-    assert!(((({ (*l.borrow()).end.y } == 4) as i32) != 0));
+    };
+    assert!((((l.start.x == 1) as i32) != 0));
+    assert!((((l.end.y == 4) as i32) != 0));
     let a: Value<Node> = Rc::new(RefCell::new(Node {
         value: 1,
         next: Ptr::<Node>::null(),
     }));
-    let b: Value<Node> = Rc::new(RefCell::new(Node {
+    let mut b: Node = Node {
         value: 2,
         next: (a.as_pointer()),
-    }));
-    assert!(((({ (*b.borrow()).next.clone() }.with(|__s| __s.value) == 1) as i32) != 0));
-    let c: Value<Container> = Rc::new(RefCell::new(Container {
+    };
+    assert!((((b.next.with(|__s| __s.value) == 1) as i32) != 0));
+    let mut c: Container = Container {
         inner: Inner { a: 5, b: 6 },
         color: Color_GREEN,
         count: 42,
-    }));
-    assert!(((({ (*c.borrow()).inner.a } == 5) as i32) != 0));
-    assert!(((({ (*c.borrow()).inner.b } == 6) as i32) != 0));
-    assert!((((({ (*c.borrow()).color } as u32) == ((Color_GREEN as i32) as u32)) as i32) != 0));
-    assert!(((({ (*c.borrow()).count } == 42) as i32) != 0));
-    let c2: Value<Container> = <Value<Container>>::default();
-    (*c2.borrow_mut()).color = Color_BLUE;
-    assert!((((({ (*c2.borrow()).color } as u32) == 2_u32) as i32) != 0));
+    };
+    assert!((((c.inner.a == 5) as i32) != 0));
+    assert!((((c.inner.b == 6) as i32) != 0));
+    assert!(((((c.color as u32) == ((Color_GREEN as i32) as u32)) as i32) != 0));
+    assert!((((c.count == 42) as i32) != 0));
+    let mut c2: Container = <Container>::default();
+    c2.color = Color_BLUE;
+    assert!(((((c2.color as u32) == 2_u32) as i32) != 0));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

@@ -11,29 +11,26 @@ pub fn test_errno_0() {
     assert!(((((libcc2rs::cpp2rust_errno().read()) == 0) as i32) != 0));
     libcc2rs::cpp2rust_errno().write(42);
     assert!(((((libcc2rs::cpp2rust_errno().read()) == 42) as i32) != 0));
-    let saved: Value<i32> = Rc::new(RefCell::new((libcc2rs::cpp2rust_errno().read())));
-    assert!(((((*saved.borrow()) == 42) as i32) != 0));
+    let mut saved: i32 = (libcc2rs::cpp2rust_errno().read());
+    assert!((((saved == 42) as i32) != 0));
     libcc2rs::cpp2rust_errno().write(0);
 }
 pub fn test_errno_preserved_across_strdup_1() {
     libcc2rs::cpp2rust_errno().write(99);
-    let d: Value<Ptr<u8>> = Rc::new(RefCell::new(libcc2rs::strdup_refcount(
-        Ptr::<u8>::from_string_literal(b"hello"),
-    )));
-    assert!((((!((*d.borrow()).is_null())) as i32) != 0));
+    let mut d: Ptr<i8> = libcc2rs::strdup_refcount(Ptr::<i8>::from_string_literal(b"hello"));
+    assert!((((!((d).is_null())) as i32) != 0));
     assert!(((((libcc2rs::cpp2rust_errno().read()) == 99) as i32) != 0));
-    libcc2rs::free_refcount((*d.borrow()).to_any());
+    libcc2rs::free_refcount((d).to_any());
     libcc2rs::cpp2rust_errno().write(0);
 }
 pub fn test_errno_from_fseek_2() {
     libcc2rs::cpp2rust_errno().write(0);
-    let r: Value<i32> = Rc::new(RefCell::new(
+    let mut r: i32 =
         match libcc2rs::c_stdin().with_mut(|__v: &mut CFile| __v.seek(0_i64, ::libc::SEEK_SET)) {
             -1 => -1,
             _ => 0,
-        },
-    ));
-    assert!(((((*r.borrow()) == -1_i32) as i32) != 0));
+        };
+    assert!((((r == -1_i32) as i32) != 0));
     assert!(((((libcc2rs::cpp2rust_errno().read()) == libc::ESPIPE) as i32) != 0));
     libcc2rs::cpp2rust_errno().write(0);
 }

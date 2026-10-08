@@ -69,12 +69,11 @@ fn f5(a0: Ptr<::libc::time_t>, a1: Ptr<Tm>) -> Ptr<Tm> {
         Ok(__ts) => {
             let __dt = __ts.to_zoned(jiff::tz::TimeZone::system());
             let __info = __dt.time_zone().to_offset_info(__ts);
-            let __zone: Vec<u8> = __info.abbreviation().bytes().chain([0]).collect();
             let __isdst = if __info.dst().is_dst() { 1 } else { 0 };
             __res.with_mut(|__tm| {
                 *__tm = Tm::from_zoned(&__dt);
                 __tm.tm_isdst = __isdst;
-                __tm.tm_zone = Ptr::alloc_array(__zone.into_boxed_slice());
+                __tm.tm_zone = Ptr::alloc_c_str(__info.abbreviation().as_bytes());
             });
             __res
         }
@@ -85,7 +84,7 @@ fn f5(a0: Ptr<::libc::time_t>, a1: Ptr<Tm>) -> Ptr<Tm> {
     }
 }
 
-fn f6(a0: Ptr<u8>, a1: usize, a2: Ptr<u8>, a3: Ptr<Tm>) -> usize {
+fn f6(a0: Ptr<i8>, a1: usize, a2: Ptr<i8>, a3: Ptr<Tm>) -> usize {
     let __dt = a3.with(|__tm| __tm.to_civil());
     let __text = match __dt {
         Ok(__d) => {
@@ -96,15 +95,13 @@ fn f6(a0: Ptr<u8>, a1: usize, a2: Ptr<u8>, a3: Ptr<Tm>) -> usize {
     if __text.is_empty() || __text.len() + 1 > a1 {
         0
     } else {
-        a0.with_slice_mut(__text.len() + 1, |__s| {
-            __s[..__text.len()].copy_from_slice(__text.as_bytes());
-            __s[__text.len()] = 0;
-        });
+        a0.write_c_bytes(__text.as_bytes());
+        elem!(a0, __text.len()).write(0);
         __text.len()
     }
 }
 
-fn f7(a0: Ptr<u8>, a1: Ptr<Timeval>) -> i32 {
+fn f7(a0: Ptr<i8>, a1: Ptr<Timeval>) -> i32 {
     let __times = a1;
     let __at = __times.with(|__tv| {
         nix::sys::time::TimeVal::new(

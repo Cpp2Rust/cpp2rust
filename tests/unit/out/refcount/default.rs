@@ -96,24 +96,24 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let default_pointers: Value<Ptr<Pointers>> = Rc::new(RefCell::new(Ptr::alloc_array(
+    let mut default_pointers: Ptr<Pointers> = Ptr::alloc_array(
         (0..10_usize)
             .map(|_| <Pointers>::default())
             .collect::<Box<[Pointers]>>(),
-    )));
-    (*default_pointers.borrow()).delete();
-    let small: Value<Ptr<SmallArrays>> = Rc::new(RefCell::new(Ptr::alloc_array(
+    );
+    default_pointers.delete();
+    let mut small: Ptr<SmallArrays> = Ptr::alloc_array(
         (0..2_usize)
             .map(|_| <SmallArrays>::default())
             .collect::<Box<[SmallArrays]>>(),
-    )));
-    (*small.borrow()).delete();
-    let big: Value<Ptr<BigArray>> = Rc::new(RefCell::new(Ptr::alloc_array(
+    );
+    small.delete();
+    let mut big: Ptr<BigArray> = Ptr::alloc_array(
         (0..2_usize)
             .map(|_| <BigArray>::default())
             .collect::<Box<[BigArray]>>(),
-    )));
-    (*big.borrow()).delete();
+    );
+    big.delete();
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

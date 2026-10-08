@@ -62,14 +62,12 @@ fn main_0() -> i32 {
     )
     .write(10);
     assert!(({ (*s.borrow()).inner.x } == 10));
-    let p: Value<Ptr<i32>> = Rc::new(RefCell::new(
-        ({
-            let _s: Ptr<S> = s.as_pointer();
-            operator_addr_1(_s)
-        }),
-    ));
-    assert!((((*p.borrow()).read()) == 1));
-    (*p.borrow()).write(5);
+    let mut p: Ptr<i32> = ({
+        let _s: Ptr<S> = s.as_pointer();
+        operator_addr_1(_s)
+    });
+    assert!(((p.read()) == 1));
+    p.write(5);
     assert!(((elem!((array_field_ptr!(s.as_pointer(), data) as Ptr::<i32>), 0).read()) == 5));
     return 0;
 }

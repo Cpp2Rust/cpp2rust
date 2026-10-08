@@ -34,7 +34,7 @@ fn f1(a0: i32, a1: i32, va: &[VaArg]) -> i32 {
     }
 }
 
-fn f2(a0: Ptr<u8>, a1: i32, va: &[VaArg]) -> i32 {
+fn f2(a0: Ptr<i8>, a1: i32, va: &[VaArg]) -> i32 {
     let __mode = match va.first() {
         Some(__m) => nix::sys::stat::Mode::from_bits_truncate(i32::get(__m) as ::libc::mode_t),
         None => nix::sys::stat::Mode::empty(),

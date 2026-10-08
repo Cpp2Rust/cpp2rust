@@ -15,17 +15,11 @@ fn main_0() -> i32 {
         1125912791875585_u64,
         2251829878849541_u64,
     ])));
-    let words: Value<Ptr<u16>> = Rc::new(RefCell::new(
-        (arr.as_pointer() as Ptr<u64>).reinterpret_cast::<u16>(),
-    ));
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < 8) {
-        assert!(
-            ({ ((elem!((*words.borrow()), (*i.borrow())).read()) as i32) } == {
-                ((((*i.borrow()) + 1) as u16) as i32)
-            })
-        );
-        (*i.borrow_mut()).postfix_inc();
+    let mut words: Ptr<u16> = (arr.as_pointer() as Ptr<u64>).reinterpret_cast::<u16>();
+    let mut i: i32 = 0;
+    'loop_: while (i < 8) {
+        assert!(({ ((elem!(words, i).read()) as i32) } == { (((i + 1) as u16) as i32) }));
+        i.postfix_inc();
     }
     return 0;
 }

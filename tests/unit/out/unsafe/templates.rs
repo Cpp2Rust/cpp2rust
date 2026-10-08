@@ -44,14 +44,14 @@ unsafe fn main_0() -> i32 {
             + ((*(unsafe { bar_2((&mut x as *mut i32), true,) })) as f64))
             + (*(unsafe { bar_3((&mut y as *mut f64), true,) })))
             + ((unsafe { func_4(1, 2, 3,) }) as f64))
-            + ((unsafe { func_5(2.0E+0, x, y,) }) as f64))
+            + ((unsafe { func_5(2_f64, x, y,) }) as f64))
             == (68_f64))
     );
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut half_6)) == (0)));
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut half_7)) == (5.0E-1)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut half_7)) == (0.5_f64)));
     (*std::cell::LazyCell::force_mut(&mut *&raw mut half_6)) = 7;
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut half_6)) == (7)));
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut half_7)) == (5.0E-1)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut half_7)) == (0.5_f64)));
     assert!((*std::cell::LazyCell::force_mut(&mut *&raw mut half_8)).is_null());
     (*std::cell::LazyCell::force_mut(&mut *&raw mut half_8)) = (&mut x as *mut i32);
     assert!(((*(*std::cell::LazyCell::force_mut(&mut *&raw mut half_8))) == (10)));

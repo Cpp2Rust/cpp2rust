@@ -9,9 +9,8 @@ use std::rc::{Rc, Weak};
 pub fn test1_0() -> bool {
     return false;
 }
-pub fn test_1(fn_: FnPtr<fn() -> bool>) -> i32 {
-    let fn_: Value<FnPtr<fn() -> bool>> = Rc::new(RefCell::new(fn_));
-    if !({ (*fn_.borrow()).call() }) {
+pub fn test_1(mut fn_: FnPtr<fn() -> bool>) -> i32 {
+    if !({ fn_.call() }) {
         return 1;
     }
     return 0;

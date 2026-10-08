@@ -23,10 +23,10 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let pa: Value<Ptr<usize>> = Rc::new(RefCell::new((c_0.with(|v| v.as_pointer()))));
-    assert!((((*pa.borrow()).read()).wrapping_add(1_usize) == 6_usize));
-    let G: Value<Ptr<usize>> = Rc::new(RefCell::new((table_size_1.with(|v| v.as_pointer()))));
-    assert!((((*G.borrow()).read()) >= 256_usize));
+    let mut pa: Ptr<usize> = (c_0.with(|v| v.as_pointer()));
+    assert!(((pa.read()).wrapping_add(1_usize) == 6_usize));
+    let mut G: Ptr<usize> = (table_size_1.with(|v| v.as_pointer()));
+    assert!(((G.read()) >= 256_usize));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {

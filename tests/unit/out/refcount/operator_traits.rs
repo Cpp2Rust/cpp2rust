@@ -157,131 +157,94 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let w: Value<Wrapped_int_> = Rc::new(RefCell::new(Wrapped_int_ { v: 2 }));
-    assert!(({ (*w.borrow()).v } == 2));
+    let mut w: Wrapped_int_ = Wrapped_int_ { v: 2 };
+    assert!((w.v == 2));
     let lts: Value<Vec<Lt>> = Rc::new(RefCell::new(vec![Lt { v: 3 }, Lt { v: 1 }, Lt { v: 2 }]));
     (lts.as_pointer() as Ptr<Lt>).sort((lts.as_pointer() as Ptr<Lt>).to_end().get_offset());
     assert!(
-        (({
-            (*elem!((lts.as_pointer() as Ptr<Lt>), 0_usize)
-                .upgrade()
-                .deref())
-            .v
-        } == 1)
-            && ({
-                (*elem!((lts.as_pointer() as Ptr<Lt>), 1_usize)
-                    .upgrade()
-                    .deref())
-                .v
-            } == 2))
-            && ({
-                (*elem!((lts.as_pointer() as Ptr<Lt>), 2_usize)
-                    .upgrade()
-                    .deref())
-                .v
-            } == 3)
+        (({ (*lts.borrow())[0_usize].v } == 1) && ({ (*lts.borrow())[1_usize].v } == 2))
+            && ({ (*lts.borrow())[2_usize].v } == 3)
     );
     let eqs: Value<Vec<Eq>> = Rc::new(RefCell::new(vec![Eq { v: 1 }, Eq { v: 2 }, Eq { v: 3 }]));
-    let two: Value<Eq> = Rc::new(RefCell::new(Eq { v: 2 }));
-    let nine: Value<Eq> = Rc::new(RefCell::new(Eq { v: 9 }));
+    let mut two: Eq = Eq { v: 2 };
+    let mut nine: Eq = Eq { v: 9 };
     assert!(
         ({
-            ((eqs.as_pointer() as Ptr<Eq>)
-                .offset(
+            ({
+                let count = ((eqs.as_pointer() as Ptr<Eq>).to_end().get_offset()
+                    - (eqs.as_pointer() as Ptr<Eq>).get_offset())
+                    as usize;
+                (eqs.as_pointer() as Ptr<Eq>).offset(
                     (eqs.as_pointer() as Ptr<Eq>)
                         .clone()
                         .into_iter()
-                        .enumerate()
-                        .position(|(index_0, value_0)| {
-                            index_0 < (eqs.as_pointer() as Ptr<Eq>).to_end().get_offset() as usize
-                                && value_0.read() == (*two.borrow())
-                        })
-                        .unwrap_or((eqs.as_pointer() as Ptr<Eq>).to_end().get_offset() as usize)
-                        as isize,
+                        .take(count)
+                        .position(|value_0| value_0.read() == two)
+                        .unwrap_or(count) as isize,
                 )
-                .read())
+            }
+            .read())
             .v
         } == 2)
     );
     assert!(
-        (eqs.as_pointer() as Ptr<Eq>).offset(
-            (eqs.as_pointer() as Ptr<Eq>)
-                .clone()
-                .into_iter()
-                .enumerate()
-                .position(|(index_0, value_0)| {
-                    index_0 < (eqs.as_pointer() as Ptr<Eq>).to_end().get_offset() as usize
-                        && value_0.read() == (*nine.borrow())
-                })
-                .unwrap_or((eqs.as_pointer() as Ptr<Eq>).to_end().get_offset() as usize)
-                as isize,
-        ) == (eqs.as_pointer() as Ptr<Eq>).to_end()
+        {
+            let count = ((eqs.as_pointer() as Ptr<Eq>).to_end().get_offset()
+                - (eqs.as_pointer() as Ptr<Eq>).get_offset()) as usize;
+            (eqs.as_pointer() as Ptr<Eq>).offset(
+                (eqs.as_pointer() as Ptr<Eq>)
+                    .clone()
+                    .into_iter()
+                    .take(count)
+                    .position(|value_0| value_0.read() == nine)
+                    .unwrap_or(count) as isize,
+            )
+        } == (eqs.as_pointer() as Ptr<Eq>).to_end()
     );
     let cmps: Value<Vec<Cmp>> =
         Rc::new(RefCell::new(vec![Cmp { v: 3 }, Cmp { v: 1 }, Cmp { v: 2 }]));
     (cmps.as_pointer() as Ptr<Cmp>).sort((cmps.as_pointer() as Ptr<Cmp>).to_end().get_offset());
+    assert!(({ (*cmps.borrow())[0_usize].v } == 1) && ({ (*cmps.borrow())[2_usize].v } == 3));
+    let mut three: Cmp = Cmp { v: 3 };
     assert!(
         ({
-            (*elem!((cmps.as_pointer() as Ptr<Cmp>), 0_usize)
-                .upgrade()
-                .deref())
-            .v
-        } == 1)
-            && ({
-                (*elem!((cmps.as_pointer() as Ptr<Cmp>), 2_usize)
-                    .upgrade()
-                    .deref())
-                .v
-            } == 3)
-    );
-    let three: Value<Cmp> = Rc::new(RefCell::new(Cmp { v: 3 }));
-    assert!(
-        ({
-            ((cmps.as_pointer() as Ptr<Cmp>)
-                .offset(
+            ({
+                let count = ((cmps.as_pointer() as Ptr<Cmp>).to_end().get_offset()
+                    - (cmps.as_pointer() as Ptr<Cmp>).get_offset())
+                    as usize;
+                (cmps.as_pointer() as Ptr<Cmp>).offset(
                     (cmps.as_pointer() as Ptr<Cmp>)
                         .clone()
                         .into_iter()
-                        .enumerate()
-                        .position(|(index_0, value_0)| {
-                            index_0 < (cmps.as_pointer() as Ptr<Cmp>).to_end().get_offset() as usize
-                                && value_0.read() == (*three.borrow())
-                        })
-                        .unwrap_or((cmps.as_pointer() as Ptr<Cmp>).to_end().get_offset() as usize)
-                        as isize,
+                        .take(count)
+                        .position(|value_0| value_0.read() == three)
+                        .unwrap_or(count) as isize,
                 )
-                .read())
+            }
+            .read())
             .v
         } == 3)
     );
     let frees: Value<Vec<Free>> = Rc::new(RefCell::new(vec![Free { v: 2 }, Free { v: 1 }]));
     (frees.as_pointer() as Ptr<Free>).sort((frees.as_pointer() as Ptr<Free>).to_end().get_offset());
+    assert!(({ (*frees.borrow())[0_usize].v } == 1));
+    let mut ftwo: Free = Free { v: 2 };
     assert!(
         ({
-            (*elem!((frees.as_pointer() as Ptr<Free>), 0_usize)
-                .upgrade()
-                .deref())
-            .v
-        } == 1)
-    );
-    let ftwo: Value<Free> = Rc::new(RefCell::new(Free { v: 2 }));
-    assert!(
-        ({
-            ((frees.as_pointer() as Ptr<Free>)
-                .offset(
+            ({
+                let count = ((frees.as_pointer() as Ptr<Free>).to_end().get_offset()
+                    - (frees.as_pointer() as Ptr<Free>).get_offset())
+                    as usize;
+                (frees.as_pointer() as Ptr<Free>).offset(
                     (frees.as_pointer() as Ptr<Free>)
                         .clone()
                         .into_iter()
-                        .enumerate()
-                        .position(|(index_0, value_0)| {
-                            index_0
-                                < (frees.as_pointer() as Ptr<Free>).to_end().get_offset() as usize
-                                && value_0.read() == (*ftwo.borrow())
-                        })
-                        .unwrap_or((frees.as_pointer() as Ptr<Free>).to_end().get_offset() as usize)
-                        as isize,
+                        .take(count)
+                        .position(|value_0| value_0.read() == ftwo)
+                        .unwrap_or(count) as isize,
                 )
-                .read())
+            }
+            .read())
             .v
         } == 2)
     );

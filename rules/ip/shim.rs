@@ -1,7 +1,7 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use crate::{AsPointer, ByteRepr, DeepClone, Ptr, Record, Value};
+use crate::{ByteRepr, DeepClone, Ptr, Record, Value};
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -21,8 +21,8 @@ pub struct In6Addr {
 }
 
 impl In6Addr {
-    pub fn s6_addr(&self) -> Ptr<u8> {
-        self.s6_addr.as_pointer()
+    pub fn s6_addr(this: Ptr<Self>) -> Ptr<u8> {
+        this.reinterpret_cast()
     }
 }
 

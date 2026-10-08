@@ -40,21 +40,17 @@ impl Default for Shape {
         }
     }
 }
-pub fn sum_0(p: Ptr<i32>, n: i32) -> i32 {
-    let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p));
-    let n: Value<i32> = Rc::new(RefCell::new(n));
-    let s: Value<i32> = Rc::new(RefCell::new(0));
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < (*n.borrow())) {
-        (*s.borrow_mut()) += { (elem!((*p.borrow()), (*i.borrow())).read()) };
-        (*i.borrow_mut()).prefix_inc();
+pub fn sum_0(mut p: Ptr<i32>, mut n: i32) -> i32 {
+    let mut s: i32 = 0;
+    let mut i: i32 = 0;
+    'loop_: while (i < n) {
+        s += { (elem!(p, i).read()) };
+        i.prefix_inc();
     }
-    return (*s.borrow());
+    return s;
 }
-pub fn set_y_1(p: Ptr<Point>, y: i32) {
-    let p: Value<Ptr<Point>> = Rc::new(RefCell::new(p));
-    let y: Value<i32> = Rc::new(RefCell::new(y));
-    field!((*p.borrow()), y).write((*y.borrow()));
+pub fn set_y_1(mut p: Ptr<Point>, mut y: i32) {
+    field!(p, y).write(y);
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -71,21 +67,20 @@ fn main_0() -> i32 {
         ]))),
         tail: 99,
     }));
-    let c: Value<Ptr<i32>> = Rc::new(RefCell::new(
-        ((array_field_ptr!(s.as_pointer(), coords) as Ptr<i32>).offset((1) as isize)),
-    ));
-    assert!((((*c.borrow()).read()) == 20));
-    (*c.borrow()).write(21);
+    let mut c: Ptr<i32> =
+        ((array_field_ptr!(s.as_pointer(), coords) as Ptr<i32>).offset((1) as isize));
+    assert!(((c.read()) == 20));
+    c.write(21);
     assert!(((elem!((array_field_ptr!(s.as_pointer(), coords) as Ptr::<i32>), 1).read()) == 21));
-    (*c.borrow_mut()) += 2;
-    assert!((((*c.borrow()).read()) == 40));
+    c += 2;
+    assert!(((c.read()) == 40));
     assert!(
-        (((*c.borrow()).clone()
+        (((c).clone()
             - ((array_field_ptr!(s.as_pointer(), coords) as Ptr::<i32>).offset((0) as isize)))
             as i64
             == 3_i64)
     );
-    assert!(((elem!((*c.borrow()), -1_i32).read()) == 30));
+    assert!(((elem!(c, -1_i32).read()) == 30));
     assert!((({ sum_0((array_field_ptr!(s.as_pointer(), coords) as Ptr::<i32>), 4,) }) == 101));
     assert!(
         (({
@@ -95,11 +90,10 @@ fn main_0() -> i32 {
             )
         }) == 70)
     );
-    let p: Value<Ptr<Point>> = Rc::new(RefCell::new(
-        ((array_field_ptr!(s.as_pointer(), points) as Ptr<Point>).offset((1) as isize)),
-    ));
-    assert!(((*p.borrow()).with(|__s| __s.x) == 3));
-    ({ set_y_1((*p.borrow()).offset((1) as isize), 60) });
+    let mut p: Ptr<Point> =
+        ((array_field_ptr!(s.as_pointer(), points) as Ptr<Point>).offset((1) as isize));
+    assert!((p.with(|__s| __s.x) == 3));
+    ({ set_y_1(p.offset((1) as isize), 60) });
     assert!(
         ({
             (*elem!((array_field_ptr!(s.as_pointer(), points) as Ptr<Point>), 2)
@@ -108,13 +102,11 @@ fn main_0() -> i32 {
             .y
         } == 60)
     );
-    let py: Value<Ptr<i32>> = Rc::new(RefCell::new(
-        (field_ptr!(
-            (array_field_ptr!(s.as_pointer(), points) as Ptr<Point>).offset((0) as isize),
-            y
-        )),
+    let mut py: Ptr<i32> = (field_ptr!(
+        (array_field_ptr!(s.as_pointer(), points) as Ptr<Point>).offset((0) as isize),
+        y
     ));
-    (*py.borrow()).write(7);
+    py.write(7);
     assert!(
         ({
             (*elem!((array_field_ptr!(s.as_pointer(), points) as Ptr<Point>), 0)
@@ -123,12 +115,9 @@ fn main_0() -> i32 {
             .y
         } == 7)
     );
-    let px: Value<Ptr<i32>> = Rc::new(RefCell::new(
-        (field_ptr!(((*p.borrow()).offset((1) as isize)), x)),
-    ));
+    let mut px: Ptr<i32> = (field_ptr!((p.offset((1) as isize)), x));
     {
-        let _ptr = (*px.borrow()).clone();
-        _ptr.write(_ptr.read() + 50)
+        px.with_mut(|__v| *__v = *__v + 50)
     };
     assert!(
         ({
@@ -138,20 +127,14 @@ fn main_0() -> i32 {
             .x
         } == 55)
     );
-    let sp: Value<Ptr<Shape>> = Rc::new(RefCell::new((s.as_pointer())));
-    let d: Value<Ptr<i32>> = Rc::new(RefCell::new(
-        (array_field_ptr!((*sp.borrow()), coords) as Ptr<i32>).offset((3) as isize),
-    ));
-    (*d.borrow()).write(41);
+    let mut sp: Ptr<Shape> = (s.as_pointer());
+    let mut d: Ptr<i32> = (array_field_ptr!(sp, coords) as Ptr<i32>).offset((3) as isize);
+    d.write(41);
     assert!(((elem!((array_field_ptr!(s.as_pointer(), coords) as Ptr::<i32>), 3).read()) == 41));
-    field!(
-        elem!((array_field_ptr!((*sp.borrow()), points) as Ptr<Point>), 1),
-        y
-    )
-    .write({
-        ({ (elem!((array_field_ptr!((*sp.borrow()), coords) as Ptr::<i32>), 0).read()) } + {
+    field!(elem!((array_field_ptr!(sp, points) as Ptr<Point>), 1), y).write({
+        ({ (elem!((array_field_ptr!(sp, coords) as Ptr::<i32>), 0).read()) } + {
             {
-                (*elem!((array_field_ptr!((*sp.borrow()), points) as Ptr<Point>), 0)
+                (*elem!((array_field_ptr!(sp, points) as Ptr<Point>), 0)
                     .upgrade()
                     .deref())
                 .x
@@ -166,25 +149,19 @@ fn main_0() -> i32 {
             .y
         } == 11)
     );
-    let q: Value<Ptr<Point>> = Rc::new(RefCell::new(
-        (array_field_ptr!((*sp.borrow()), points) as Ptr<Point>),
-    ));
-    field!(elem!((*q.borrow()), 2), x).write(8);
+    let mut q: Ptr<Point> = (array_field_ptr!(sp, points) as Ptr<Point>);
+    field!(elem!(q, 2), x).write(8);
     assert!(
         ({
-            (*elem!((array_field_ptr!((*sp.borrow()), points) as Ptr<Point>), 2)
+            (*elem!((array_field_ptr!(sp, points) as Ptr<Point>), 2)
                 .upgrade()
                 .deref())
             .x
         } == 8)
     );
-    let t: Value<Shape> = Rc::new(RefCell::new((*s.borrow()).clone()));
-    elem!((array_field_ptr!(t.as_pointer(), coords) as Ptr::<i32>), 0).write(0);
-    field!(
-        elem!((array_field_ptr!(t.as_pointer(), points) as Ptr<Point>), 0),
-        x
-    )
-    .write(0);
+    let mut t: Shape = (*s.borrow()).clone();
+    elem!((t.coords.as_pointer() as Ptr::<i32>), 0).write(0);
+    field!(elem!((t.points.as_pointer() as Ptr<Point>), 0), x).write(0);
     assert!(
         ((elem!((array_field_ptr!(s.as_pointer(), coords) as Ptr::<i32>), 0).read()) == 10)
             && ({
@@ -195,14 +172,14 @@ fn main_0() -> i32 {
             } == 1)
     );
     assert!(
-        (((elem!((array_field_ptr!(t.as_pointer(), coords) as Ptr::<i32>), 1).read()) == 21)
+        (((elem!((t.coords.as_pointer() as Ptr::<i32>), 1).read()) == 21)
             && ({
-                (*elem!((array_field_ptr!(t.as_pointer(), points) as Ptr<Point>), 2)
+                (*elem!((t.points.as_pointer() as Ptr<Point>), 2)
                     .upgrade()
                     .deref())
                 .y
             } == 60))
-            && ({ (*t.borrow()).tail } == 99)
+            && (t.tail == 99)
     );
     return 0;
 }

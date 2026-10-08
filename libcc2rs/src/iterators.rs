@@ -1,7 +1,7 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use crate::{PostfixDec, PostfixInc, PrefixDec, PrefixInc, Ptr, Value};
+use crate::{CChar, PostfixDec, PostfixInc, PrefixDec, PrefixInc, Ptr, Value};
 use std::cell::RefCell;
 use std::collections::BTreeMap;
 use std::ops::Bound;
@@ -226,12 +226,12 @@ impl<K: Ord + Clone, MapRef: MapAccess<Key = K>> PostfixDec for MapIter<K, MapRe
     }
 }
 
-pub struct CStringIterator {
-    pub(crate) ptr: Ptr<u8>,
+pub struct CStringIterator<T: CChar = u8> {
+    pub(crate) ptr: Ptr<T>,
 }
 
-impl Iterator for CStringIterator {
-    type Item = u8;
+impl<T: CChar> Iterator for CStringIterator<T> {
+    type Item = T;
 
     fn count(self) -> usize {
         self.ptr.c_str_len()
@@ -239,13 +239,12 @@ impl Iterator for CStringIterator {
 
     fn next(&mut self) -> Option<Self::Item> {
         // read until the null terminator
-        match self.ptr.read() {
-            0 => None,
-            ch => {
-                self.ptr += 1;
-                Some(ch)
-            }
+        let ch = self.ptr.read();
+        if ch == T::default() {
+            return None;
         }
+        self.ptr += 1;
+        Some(ch)
     }
 }
 

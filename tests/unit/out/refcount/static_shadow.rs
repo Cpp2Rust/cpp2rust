@@ -9,13 +9,12 @@ use std::rc::{Rc, Weak};
 thread_local!(
     pub static value_0: Value<i32> = Rc::new(RefCell::new(5));
 );
-pub fn param_shadow_1(value: i32) -> i32 {
-    let value: Value<i32> = Rc::new(RefCell::new(value));
-    return ((*value.borrow()) + 1);
+pub fn param_shadow_1(mut value: i32) -> i32 {
+    return (value + 1);
 }
 pub fn local_shadow_2() -> i32 {
-    let value: Value<i32> = Rc::new(RefCell::new(99));
-    return (*value.borrow());
+    let mut value: i32 = 99;
+    return value;
 }
 pub fn read_global_3() -> i32 {
     return value_0.with(|rc| *rc.borrow());

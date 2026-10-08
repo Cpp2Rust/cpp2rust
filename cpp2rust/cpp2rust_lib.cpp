@@ -31,7 +31,7 @@ std::string TranspileSrc(std::string_view cc_code, Model model,
                                        rules_dir),
       cc_code, tool_args, std::filesystem::path(filename).filename().string(),
       filename.ends_with(".c") ? CLANG_C_COMPILER : CLANG_CXX_COMPILER);
-  Converter::EmitOpaqueRecords(rs_code);
+  Converter::EmitOpaqueRecords(model, rs_code);
   Converter::EmitVirtualMethods(rs_code);
   if (model == Model::kRefCount) {
     ConverterRefCount::EmitMethodsOnPtr(rs_code);
@@ -76,7 +76,7 @@ std::string TranspileDir(std::string_view build_dir, Model model,
   std::string rs_code;
   FrontendActionFactory factory(rs_code, model, rules_dir);
   Tool.run(&factory);
-  Converter::EmitOpaqueRecords(rs_code);
+  Converter::EmitOpaqueRecords(model, rs_code);
   Converter::EmitVirtualMethods(rs_code);
   if (model == Model::kRefCount) {
     ConverterRefCount::EmitMethodsOnPtr(rs_code);

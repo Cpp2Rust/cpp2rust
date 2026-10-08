@@ -2,7 +2,6 @@
 // Distributed under the MIT license that can be found in the LICENSE file.
 
 #include <cstddef>
-#include <sys/types.h>
 
 #if __cplusplus >= 201703L
 using t1 = std::byte;

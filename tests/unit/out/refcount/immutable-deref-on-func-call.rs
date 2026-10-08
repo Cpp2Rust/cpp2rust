@@ -17,33 +17,30 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let arr: Value<Ptr<Item>> = Rc::new(RefCell::new(Ptr::alloc_array(
+    let mut arr: Ptr<Item> = Ptr::alloc_array(
         (0..2_usize)
             .map(|_| <Item>::default())
             .collect::<Box<[Item]>>(),
-    )));
-    field!(elem!((*arr.borrow()), 0), value).write(1);
-    field!(elem!((*arr.borrow()), 1), value).write(2);
+    );
+    field!(elem!(arr, 0), value).write(1);
+    field!(elem!(arr, 1), value).write(2);
     ({
-        let _other: Ptr<Item> = ((*arr.borrow()).offset((1) as isize));
-        ItemImpl::foo(&(*arr.borrow()).offset((0) as isize), _other)
+        let _other: Ptr<Item> = (arr.offset((1) as isize));
+        ItemImpl::foo(&arr.offset((0) as isize), _other)
     });
-    let result: Value<i32> = Rc::new(RefCell::new(
-        ({ (*elem!((*arr.borrow()), 0).upgrade().deref()).value } + {
-            (*elem!((*arr.borrow()), 1).upgrade().deref()).value
-        }),
-    ));
-    (*arr.borrow()).delete();
-    assert!(((*result.borrow()) == 11));
+    let mut result: i32 = ({ (*elem!(arr, 0).upgrade().deref()).value } + {
+        (*elem!(arr, 1).upgrade().deref()).value
+    });
+    arr.delete();
+    assert!((result == 11));
     return 0;
 }
 pub trait ItemImpl {
     fn foo(&self, other: Ptr<Item>);
 }
 impl ItemImpl for Ptr<Item> {
-    fn foo(&self, other: Ptr<Item>) {
-        let other: Value<Ptr<Item>> = Rc::new(RefCell::new(other));
-        field!((*other.borrow()), value).write(10);
+    fn foo(&self, mut other: Ptr<Item>) {
+        field!(other, value).write(10);
     }
 }
 pub fn __cpp2rust_init_globals() {}

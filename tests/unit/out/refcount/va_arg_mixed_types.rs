@@ -18,24 +18,24 @@ pub fn sum_mixed_0(count: i32, __args: &[VaArg]) -> i32 {
     let count: Value<i32> = Rc::new(RefCell::new(count));
     let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
     (*ap.borrow_mut()) = VaList::new(__args);
-    let total: Value<i32> = Rc::new(RefCell::new(0));
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((((*i.borrow()) < (*count.borrow())) as i32) != 0) {
-        let tag: Value<i32> = Rc::new(RefCell::new((*ap.borrow_mut()).arg::<i32>()));
-        if ((((*tag.borrow()) == 0) as i32) != 0) {
-            (*total.borrow_mut()) += (*ap.borrow_mut()).arg::<i32>();
-        } else if ((((*tag.borrow()) == 1) as i32) != 0) {
-            (*total.borrow_mut()) += ((*ap.borrow_mut()).arg::<f64>() as i32);
-        } else if ((((*tag.borrow()) == 3) as i32) != 0) {
-            let p: Value<pair> = Rc::new(RefCell::new((*ap.borrow_mut()).arg::<pair>()));
-            (*total.borrow_mut()) += ({ (*p.borrow()).a } * { (*p.borrow()).b });
+    let mut total: i32 = 0;
+    let mut i: i32 = 0;
+    'loop_: while (((i < (*count.borrow())) as i32) != 0) {
+        let mut tag: i32 = (*ap.borrow_mut()).arg::<i32>();
+        if (((tag == 0) as i32) != 0) {
+            total += (*ap.borrow_mut()).arg::<i32>();
+        } else if (((tag == 1) as i32) != 0) {
+            total += ((*ap.borrow_mut()).arg::<f64>() as i32);
+        } else if (((tag == 3) as i32) != 0) {
+            let mut p: pair = (*ap.borrow_mut()).arg::<pair>();
+            total += (p.a * p.b);
         } else {
-            let val: Value<i64> = Rc::new(RefCell::new((*ap.borrow_mut()).arg::<i64>()));
-            (*total.borrow_mut()) += ((*val.borrow()) as i32);
+            let mut val: i64 = (*ap.borrow_mut()).arg::<i64>();
+            total += (val as i32);
         }
-        (*i.borrow_mut()).postfix_inc();
+        i.postfix_inc();
     }
-    return (*total.borrow());
+    return total;
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -50,7 +50,7 @@ fn main_0() -> i32 {
                     (0).into(),
                     (10).into(),
                     (1).into(),
-                    (2.05E+1).into(),
+                    (20.5_f64).into(),
                     (2).into(),
                     (30_i64).into(),
                 ],
@@ -63,22 +63,17 @@ fn main_0() -> i32 {
         (((({
             sum_mixed_0(
                 2,
-                &[(1).into(), (3.7E+0).into(), (2).into(), (100_i64).into()],
+                &[(1).into(), (3.7_f64).into(), (2).into(), (100_i64).into()],
             )
         }) == 103) as i32)
             != 0)
     );
-    let p: Value<pair> = Rc::new(RefCell::new(pair { a: 7, b: 8 }));
+    let mut p: pair = pair { a: 7, b: 8 };
     assert!(
         (((({
             sum_mixed_0(
                 2,
-                &[
-                    (3).into(),
-                    ((*p.borrow()).clone()).into(),
-                    (0).into(),
-                    (5).into(),
-                ],
+                &[(3).into(), ((p).clone()).into(), (0).into(), (5).into()],
             )
         }) == 61) as i32)
             != 0)

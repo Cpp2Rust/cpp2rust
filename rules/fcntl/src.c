@@ -1,17 +1,12 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#define _GNU_SOURCE
 #include <fcntl.h>
 
-template <typename... Args>
-int f1(int a0, int a1, Args... args) {
-  return fcntl(a0, a1, args...);
-}
+int (*f1)(int, int, ...) = fcntl;
 
-template <typename... Args>
-int f2(const char *a0, int a1, Args... args) {
-  return open(a0, a1, args...);
-}
+int (*f2)(const char *, int, ...) = open;
 
 int f3(void) { return O_CREAT; }
 int f4(void) { return O_TRUNC; }

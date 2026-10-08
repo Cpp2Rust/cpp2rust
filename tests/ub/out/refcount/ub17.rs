@@ -12,8 +12,8 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(1));
-    let p: Value<Ptr<i32>> = Rc::new(RefCell::new((x.as_pointer())));
-    (*p.borrow()).delete();
+    let mut p: Ptr<i32> = (x.as_pointer());
+    p.delete();
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

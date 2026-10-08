@@ -25,38 +25,34 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let text: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::from(*b"hi\0")));
-    let cp: Value<Ptr<u8>> = Rc::new(RefCell::new((text.as_pointer() as Ptr<u8>)));
-    let u: Value<Ptr<u8>> = Rc::new(RefCell::new((*cp.borrow()).reinterpret_cast::<u8>()));
-    assert!((((((elem!((*u.borrow()), 0).read()) as i32) == ('h' as i32)) as i32) != 0));
-    assert!((((((elem!((*u.borrow()), 1).read()) as i32) == ('i' as i32)) as i32) != 0));
+    let text: Value<Box<[i8]>> = Rc::new(RefCell::new(i8::array_from_literal(b"hi\0")));
+    let mut cp: Ptr<i8> = (text.as_pointer() as Ptr<i8>);
+    let mut u: Ptr<u8> = cp.reinterpret_cast::<u8>();
+    assert!((((((elem!(u, 0).read()) as i32) == ('h' as i32)) as i32) != 0));
+    assert!((((((elem!(u, 1).read()) as i32) == ('i' as i32)) as i32) != 0));
     let h: Value<header> = Rc::new(RefCell::new(header { tag: 7, size: 32 }));
-    let hp: Value<Ptr<header>> = Rc::new(RefCell::new((h.as_pointer())));
-    let v: Value<Ptr<view>> = Rc::new(RefCell::new((*hp.borrow()).reinterpret_cast::<view>()));
-    assert!(((((*v.borrow()).with(|__s| __s.tag) == 7) as i32) != 0));
-    let data: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::from(*b"hi\0")));
-    let vp: Value<AnyPtr> = Rc::new(RefCell::new(
-        ((data.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
-    ));
-    let n: Value<i32> = Rc::new(RefCell::new(2));
-    let sel: Value<Ptr<u8>> = Rc::new(RefCell::new(
-        if ((((*n.borrow()) < 100) as i32) != 0) {
-            (*vp.borrow()).clone()
-        } else {
-            (AnyPtr::default())
-        }
-        .reinterpret_cast::<u8>(),
-    ));
-    assert!((((!((*sel.borrow()).is_null())) as i32) != 0));
-    assert!((((((elem!((*sel.borrow()), 0).read()) as i32) == ('h' as i32)) as i32) != 0));
-    (*n.borrow_mut()) = 200;
-    (*sel.borrow_mut()) = if ((((*n.borrow()) < 100) as i32) != 0) {
-        (*vp.borrow()).clone()
+    let mut hp: Ptr<header> = (h.as_pointer());
+    let mut v: Ptr<view> = hp.reinterpret_cast::<view>();
+    assert!((((v.with(|__s| __s.tag) == 7) as i32) != 0));
+    let data: Value<Box<[i8]>> = Rc::new(RefCell::new(i8::array_from_literal(b"hi\0")));
+    let mut vp: AnyPtr = ((data.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any();
+    let mut n: i32 = 2;
+    let mut sel: Ptr<i8> = if (((n < 100) as i32) != 0) {
+        (vp).clone()
     } else {
         (AnyPtr::default())
     }
-    .reinterpret_cast::<u8>();
-    assert!(((((*sel.borrow()).is_null()) as i32) != 0));
+    .reinterpret_cast::<i8>();
+    assert!((((!((sel).is_null())) as i32) != 0));
+    assert!((((((elem!(sel, 0).read()) as i32) == ('h' as i32)) as i32) != 0));
+    n = 200;
+    sel = if (((n < 100) as i32) != 0) {
+        (vp).clone()
+    } else {
+        (AnyPtr::default())
+    }
+    .reinterpret_cast::<i8>();
+    assert!(((((sel).is_null()) as i32) != 0));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

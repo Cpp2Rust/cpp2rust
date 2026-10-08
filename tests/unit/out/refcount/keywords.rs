@@ -11,8 +11,8 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let in_: Value<i32> = Rc::new(RefCell::new(123));
-    assert!(((*in_.borrow()) == 123));
+    let mut in_: i32 = 123;
+    assert!((in_ == 123));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

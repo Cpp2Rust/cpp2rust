@@ -3,8 +3,8 @@
 
 #include <dirent.h>
 
-using t1 = DIR *;
-using t2 = struct dirent;
+typedef DIR *t1;
+typedef struct dirent t2;
 
 DIR *f1(const char *name) { return opendir(name); }
 

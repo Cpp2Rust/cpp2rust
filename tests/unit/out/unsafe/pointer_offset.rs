@@ -47,6 +47,11 @@ unsafe fn main_0() -> i32 {
         i.prefix_inc();
     }
     assert!(((out) == (51)));
+    let mut step: i64 = 2_i64;
+    let mut offset: *mut i32 = arr.as_mut_ptr().offset((step) as isize);
+    assert!(((*offset) == (arr[(2) as usize])));
+    offset = offset.offset(-((step) as isize));
+    assert!(((offset) == (&mut arr[(0) as usize] as *mut i32)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

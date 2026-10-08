@@ -12,21 +12,20 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let N: Value<i32> = Rc::new(RefCell::new(5));
-    let arr1: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([0, 0, 0, 0, 0])));
-    let arr2: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 1, 1, 1, 1])));
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < (*N.borrow())) {
-        (*arr1.borrow_mut())[(*i.borrow()) as usize] =
-            { ((*i.borrow()) + (*arr2.borrow())[(*i.borrow()) as usize]) };
-        (*i.borrow_mut()).prefix_inc();
+    let mut arr1: [i32; 5] = [0, 0, 0, 0, 0];
+    let mut arr2: [i32; 5] = [1, 1, 1, 1, 1];
+    let mut i: i32 = 0;
+    'loop_: while (i < (*N.borrow())) {
+        arr1[(i) as usize] = { (i + arr2[(i) as usize]) };
+        i.prefix_inc();
     }
-    let fatorial: Value<i32> = Rc::new(RefCell::new(1));
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < (*N.borrow())) {
-        (*fatorial.borrow_mut()) *= (*arr1.borrow())[(*i.borrow()) as usize];
-        (*i.borrow_mut()).prefix_inc();
+    let mut fatorial: i32 = 1;
+    let mut i: i32 = 0;
+    'loop_: while (i < (*N.borrow())) {
+        fatorial *= arr1[(i) as usize];
+        i.prefix_inc();
     }
-    assert!(((*fatorial.borrow()) == 120));
+    assert!((fatorial == 120));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

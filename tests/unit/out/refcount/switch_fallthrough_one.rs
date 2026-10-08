@@ -6,23 +6,22 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn fallthrough_one_0(x: i32) -> i32 {
-    let x: Value<i32> = Rc::new(RefCell::new(x));
-    let r: Value<i32> = Rc::new(RefCell::new(0));
-    switch!(match (*x.borrow()) {
+pub fn fallthrough_one_0(mut x: i32) -> i32 {
+    let mut r: i32 = 0;
+    switch!(match x {
         __v if __v == 1 => {
-            (*r.borrow_mut()) += 10;
+            r += 10;
         }
         __v if __v == 2 => {
-            (*r.borrow_mut()) += 20;
+            r += 20;
             break;
         }
         _ => {
-            (*r.borrow_mut()) = -1_i32;
+            r = -1_i32;
             break;
         }
     });
-    return (*r.borrow());
+    return r;
 }
 pub fn main() {
     __cpp2rust_init_globals();

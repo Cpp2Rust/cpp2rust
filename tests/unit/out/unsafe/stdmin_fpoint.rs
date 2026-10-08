@@ -13,8 +13,8 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut a0: f64 = 3.14E+0;
-    let mut a1: f64 = 2.71E+0;
+    let mut a0: f64 = 3.14_f64;
+    let mut a1: f64 = 2.71_f64;
     if *&mut a0 <= *&mut a1 {
         (&mut a0) as *const _
     } else {

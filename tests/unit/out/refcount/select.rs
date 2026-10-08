@@ -18,7 +18,7 @@ fn main_0() -> i32 {
             Ok((__r, __w)) => {
                 let __fds = (fds.as_pointer() as Ptr<i32>);
                 __fds.write(FdRegistry::register(__r));
-                __fds.offset(1).write(FdRegistry::register(__w));
+                elem!(__fds, 1).write(FdRegistry::register(__w));
                 0
             }
             Err(__e) => {
@@ -169,7 +169,7 @@ fn main_0() -> i32 {
     );
     assert!(
         (((match FdRegistry::with_fd((*fds.borrow())[(1) as usize], |__fd| {
-            Ptr::<u8>::from_string_literal(b"x")
+            Ptr::<i8>::from_string_literal(b"x")
                 .to_any()
                 .reinterpret_cast::<u8>()
                 .with_slice(1_usize, |__buf| nix::unistd::write(__fd, __buf))

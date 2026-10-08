@@ -7,18 +7,17 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn out_param_0(out: Option<Ptr<usize>>) {
-    let out: Value<Ptr<usize>> = Rc::new(RefCell::new(out.unwrap_or(Ptr::<usize>::null())));
-    if !(*out.borrow()).is_null() {
-        (*out.borrow()).write(4_usize);
+    let mut out: Ptr<usize> = out.unwrap_or_else(|| Ptr::<usize>::null());
+    if !(out).is_null() {
+        out.write(4_usize);
     }
 }
-pub fn parse_1(v: i32, idx: Option<Ptr<usize>>) -> i32 {
-    let v: Value<i32> = Rc::new(RefCell::new(v));
-    let idx: Value<Ptr<usize>> = Rc::new(RefCell::new(idx.unwrap_or(Ptr::<usize>::null())));
-    if !(*idx.borrow()).is_null() {
-        (*idx.borrow()).write(3_usize);
+pub fn parse_1(mut v: i32, idx: Option<Ptr<usize>>) -> i32 {
+    let mut idx: Ptr<usize> = idx.unwrap_or_else(|| Ptr::<usize>::null());
+    if !(idx).is_null() {
+        idx.write(3_usize);
     }
-    return (*v.borrow());
+    return v;
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -33,8 +32,8 @@ fn main_0() -> i32 {
     assert!(((*pidx.borrow()) == 3_usize));
     let sv: Value<usize> = Rc::new(RefCell::new(7_usize));
     let sp: Value<Ptr<usize>> = Rc::new(RefCell::new((sv.as_pointer())));
-    let spp: Value<Ptr<Ptr<usize>>> = Rc::new(RefCell::new((sp.as_pointer())));
-    assert!(((((*spp.borrow()).read()).read()) == 7_usize));
+    let mut spp: Ptr<Ptr<usize>> = (sp.as_pointer());
+    assert!((((spp.read()).read()) == 7_usize));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

@@ -26,3 +26,14 @@ public:
 
   int factor;
 };
+
+extern "C" {
+struct Pair {
+  int first;
+  int second;
+};
+
+int pair_sum(const struct Pair *p);
+
+inline int pair_diff(const struct Pair *p) { return p->first - p->second; }
+}

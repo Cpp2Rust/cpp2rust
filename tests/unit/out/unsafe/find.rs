@@ -55,6 +55,34 @@ unsafe fn main_0() -> i32 {
                 it
             } == v.as_mut_ptr())
     );
+    let mut w: Vec<i32> = vec![1, 2, 3, 4, 5];
+    assert!(
+        {
+            let mut it = w.as_mut_ptr().add(2_i64 as usize);
+            while it != w.as_mut_ptr().add(w.len()) && *it != 4 {
+                it = it.add(1);
+            }
+            it
+        } == w.as_mut_ptr().add(3_i64 as usize)
+    );
+    assert!(
+        {
+            let mut it = w.as_mut_ptr().add(2_i64 as usize);
+            while it != w.as_mut_ptr().add(w.len()) && *it != 1 {
+                it = it.add(1);
+            }
+            it
+        } == w.as_mut_ptr().add(w.len())
+    );
+    assert!(
+        {
+            let mut it = w.as_mut_ptr().add(2_i64 as usize);
+            while it != w.as_mut_ptr().add(4_i64 as usize) && *it != 5 {
+                it = it.add(1);
+            }
+            it
+        } == w.as_mut_ptr().add(4_i64 as usize)
+    );
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

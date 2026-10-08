@@ -17,5 +17,11 @@ int main() {
   for (int i = 0; i < 5; ++i)
     out += ptr[i];
   assert(out == 51);
+
+  long step = 2;
+  int *offset = arr + step;
+  assert(*offset == arr[2]);
+  offset = offset - step;
+  assert(offset == &arr[0]);
   return 0;
 }

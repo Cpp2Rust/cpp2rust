@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Clone, VaArg, Default)]
+#[derive(Clone, VaArg, FnPtrArg, Default)]
 pub struct S {
     pub tag: i32,
     pub v: Vec<i32>,
@@ -48,7 +48,12 @@ unsafe fn main_0() -> i32 {
     let mut heap: *mut S = (Box::leak(Box::new(<S>::default())) as *mut S);
     (*heap).tag = 7;
     (unsafe { run_1(heap) });
-    ::std::mem::drop(Box::from_raw(heap));
+    {
+        let __p = heap;
+        if !__p.is_null() {
+            ::std::mem::drop(Box::from_raw(__p))
+        }
+    };
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

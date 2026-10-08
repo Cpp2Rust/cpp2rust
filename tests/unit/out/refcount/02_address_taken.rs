@@ -14,12 +14,11 @@ fn main_0() -> i32 {
     let b: Value<i32> = Rc::new(RefCell::new(2));
     let b_ptr: Value<Ptr<i32>> = Rc::new(RefCell::new((b.as_pointer())));
     (*b_ptr.borrow()).write(3);
-    let b_ptr_ptr: Value<Ptr<Ptr<i32>>> = Rc::new(RefCell::new((b_ptr.as_pointer())));
-    ((*b_ptr_ptr.borrow()).read()).write(4);
-    (*b_ptr.borrow()).write({ (((*b_ptr_ptr.borrow()).read()).read()) });
-    let offset: Value<usize> = Rc::new(RefCell::new(
-        ((((*b_ptr.borrow()).clone() - (*b_ptr.borrow()).clone()) as i64) as usize),
-    ));
+    let mut b_ptr_ptr: Ptr<Ptr<i32>> = (b_ptr.as_pointer());
+    (b_ptr_ptr.read()).write(4);
+    (*b_ptr.borrow()).write({ ((b_ptr_ptr.read()).read()) });
+    let mut offset: usize =
+        ((((*b_ptr.borrow()).clone() - (*b_ptr.borrow()).clone()) as i64) as usize);
     assert!(((*b.borrow()) == 4));
     return 0;
 }

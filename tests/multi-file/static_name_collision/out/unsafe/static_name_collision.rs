@@ -24,13 +24,13 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     assert!(((((unsafe { a_foo_2() }) == (1)) as i32) != 0));
-    assert!(((((unsafe { b_foo_4() }) == (1.0E+0)) as i32) != 0));
+    assert!(((((unsafe { b_foo_4() }) == (1_f32)) as i32) != 0));
     assert!(((((unsafe { a_bar_3() }) == (5)) as i32) != 0));
     assert!(((((unsafe { b_bar_5() }) == (6)) as i32) != 0));
     return 0;
 }
 pub static mut same_name_different_type_6: std::cell::LazyCell<f32> =
-    std::cell::LazyCell::new(|| unsafe { 1.0E+0 });
+    std::cell::LazyCell::new(|| unsafe { 1_f32 });
 pub static mut same_name_same_type_7: std::cell::LazyCell<i32> =
     std::cell::LazyCell::new(|| unsafe { 6 });
 pub unsafe fn b_foo_4() -> f32 {

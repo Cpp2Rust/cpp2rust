@@ -12,7 +12,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let src: Value<Box<[u32]>> = Rc::new(RefCell::new(Box::new([1_u32, 2_u32, 3_u32])));
-    let v1: Value<Vec<u32>> = Rc::new(RefCell::new({
+    let mut v1: Vec<u32> = {
         let __count = (src.as_pointer() as Ptr<u32>)
             .offset((3) as isize)
             .get_offset()
@@ -20,14 +20,10 @@ fn main_0() -> i32 {
         PtrValueIter::new(&(src.as_pointer() as Ptr<u32>), __count)
             .map(|item| u32::try_from(item).ok().unwrap())
             .collect::<Vec<_>>()
-    }));
-    assert!(((*v1.borrow()).len() == 3_usize));
-    assert!(
-        (((elem!((v1.as_pointer() as Ptr<u32>), 0_usize).read()) == 1_u32)
-            && ((elem!((v1.as_pointer() as Ptr<u32>), 1_usize).read()) == 2_u32))
-            && ((elem!((v1.as_pointer() as Ptr<u32>), 2_usize).read()) == 3_u32)
-    );
-    let v2: Value<Vec<u64>> = Rc::new(RefCell::new({
+    };
+    assert!((v1.len() == 3_usize));
+    assert!(((v1[0_usize] == 1_u32) && (v1[1_usize] == 2_u32)) && (v1[2_usize] == 3_u32));
+    let mut v2: Vec<u64> = {
         let __count = (src.as_pointer() as Ptr<u32>)
             .offset((3) as isize)
             .get_offset()
@@ -35,14 +31,10 @@ fn main_0() -> i32 {
         PtrValueIter::new(&(src.as_pointer() as Ptr<u32>), __count)
             .map(|item| u64::try_from(item).ok().unwrap())
             .collect::<Vec<_>>()
-    }));
-    assert!(((*v2.borrow()).len() == 3_usize));
-    assert!(
-        (((elem!((v2.as_pointer() as Ptr<u64>), 0_usize).read()) == 1_u64)
-            && ((elem!((v2.as_pointer() as Ptr<u64>), 1_usize).read()) == 2_u64))
-            && ((elem!((v2.as_pointer() as Ptr<u64>), 2_usize).read()) == 3_u64)
-    );
-    let v3: Value<Vec<i32>> = Rc::new(RefCell::new({
+    };
+    assert!((v2.len() == 3_usize));
+    assert!(((v2[0_usize] == 1_u64) && (v2[1_usize] == 2_u64)) && (v2[2_usize] == 3_u64));
+    let mut v3: Vec<i32> = {
         let __count = (src.as_pointer() as Ptr<u32>)
             .offset((3) as isize)
             .get_offset()
@@ -50,41 +42,27 @@ fn main_0() -> i32 {
         PtrValueIter::new(&(src.as_pointer() as Ptr<u32>), __count)
             .map(|item| i32::try_from(item).ok().unwrap())
             .collect::<Vec<_>>()
-    }));
-    assert!(((*v3.borrow()).len() == 3_usize));
-    assert!(
-        (((elem!((v3.as_pointer() as Ptr<i32>), 0_usize).read()) == 1)
-            && ((elem!((v3.as_pointer() as Ptr<i32>), 1_usize).read()) == 2))
-            && ((elem!((v3.as_pointer() as Ptr<i32>), 2_usize).read()) == 3)
-    );
+    };
+    assert!((v3.len() == 3_usize));
+    assert!(((v3[0_usize] == 1) && (v3[1_usize] == 2)) && (v3[2_usize] == 3));
     let src1: Value<Box<[u32]>> = Rc::new(RefCell::new(Box::new([1_u32, 2_u32, 3_u32])));
-    let v4: Value<Vec<u32>> = Rc::new(RefCell::new({
+    let mut v4: Vec<u32> = {
         let __count = (src1.as_pointer() as Ptr<u32>).to_end().get_offset()
             - (src1.as_pointer() as Ptr<u32>).get_offset();
         PtrValueIter::new(&(src1.as_pointer() as Ptr<u32>), __count).collect::<Vec<_>>()
-    }));
-    assert!(((*v4.borrow()).len() == 3_usize));
-    assert!(
-        (((elem!((v4.as_pointer() as Ptr<u32>), 0_usize).read()) == 1_u32)
-            && ((elem!((v4.as_pointer() as Ptr<u32>), 1_usize).read()) == 2_u32))
-            && ((elem!((v4.as_pointer() as Ptr<u32>), 2_usize).read()) == 3_u32)
-    );
+    };
+    assert!((v4.len() == 3_usize));
+    assert!(((v4[0_usize] == 1_u32) && (v4[1_usize] == 2_u32)) && (v4[2_usize] == 3_u32));
     let buf: Value<Box<[u8]>> =
         Rc::new(RefCell::new(Box::new([10_u8, 20_u8, 30_u8, 40_u8, 50_u8])));
-    let start: Value<Ptr<u8>> = Rc::new(RefCell::new((buf.as_pointer() as Ptr<u8>)));
-    let len: Value<usize> = Rc::new(RefCell::new(5_usize));
-    let v5: Value<Vec<u8>> = Rc::new(RefCell::new({
-        let __count = (*start.borrow())
-            .offset((*len.borrow()) as isize)
-            .get_offset()
-            - (*start.borrow()).get_offset();
-        PtrValueIter::new(&(*start.borrow()), __count).collect::<Vec<_>>()
-    }));
-    assert!(((*v5.borrow()).len() == 5_usize));
-    assert!(
-        (((elem!((v5.as_pointer() as Ptr<u8>), 0_usize).read()) as i32) == 10)
-            && (((elem!((v5.as_pointer() as Ptr<u8>), 4_usize).read()) as i32) == 50)
-    );
+    let mut start: Ptr<u8> = (buf.as_pointer() as Ptr<u8>);
+    let mut len: usize = 5_usize;
+    let mut v5: Vec<u8> = {
+        let __count = start.offset((len) as isize).get_offset() - start.get_offset();
+        PtrValueIter::new(&start, __count).collect::<Vec<_>>()
+    };
+    assert!((v5.len() == 5_usize));
+    assert!(((v5[0_usize] as i32) == 10) && ((v5[4_usize] as i32) == 50));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

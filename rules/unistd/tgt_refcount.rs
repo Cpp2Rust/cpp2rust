@@ -36,7 +36,7 @@ fn f3(a0: i32, a1: AnyPtr, a2: usize) -> isize {
     }
 }
 
-fn f4(a0: Ptr<u8>) -> i32 {
+fn f4(a0: Ptr<i8>) -> i32 {
     match nix::unistd::unlink(a0.to_rust_string().as_str()) {
         Ok(()) => 0,
         Err(__e) => {
@@ -51,7 +51,7 @@ fn f5(a0: Ptr<i32>) -> i32 {
         Ok((__r, __w)) => {
             let __fds = a0;
             __fds.write(FdRegistry::register(__r));
-            __fds.offset(1).write(FdRegistry::register(__w));
+            elem!(__fds, 1).write(FdRegistry::register(__w));
             0
         }
         Err(__e) => {
@@ -85,16 +85,14 @@ fn f8() -> u32 {
     nix::unistd::geteuid().as_raw()
 }
 
-fn f9(a0: Ptr<u8>, a1: usize) -> i32 {
+fn f9(a0: Ptr<i8>, a1: usize) -> i32 {
     match nix::unistd::gethostname() {
         Ok(__name) => {
             let __bytes = __name.as_encoded_bytes();
             let __n = __bytes.len().min(a1.saturating_sub(1));
             if a1 > 0 {
-                a0.with_slice_mut(__n + 1, |__s| {
-                    __s[..__n].copy_from_slice(&__bytes[..__n]);
-                    __s[__n] = 0;
-                });
+                a0.write_c_bytes(&__bytes[..__n]);
+                elem!(a0, __n).write(0);
             }
             0
         }
@@ -118,7 +116,7 @@ fn f10(a0: i32, a1: AnyPtr, a2: usize) -> isize {
     }
 }
 
-fn f11(a0: Ptr<u8>) -> i32 {
+fn f11(a0: Ptr<i8>) -> i32 {
     match ::std::fs::remove_dir(a0.to_rust_string()) {
         Ok(()) => 0,
         Err(__e) => {

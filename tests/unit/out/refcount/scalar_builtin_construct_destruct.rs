@@ -18,23 +18,19 @@ pub fn zero_0() -> Ptr<i32> {
 pub fn zero_1() -> i64 {
     return 0_i64;
 }
-pub fn destroy_2(p: Ptr<i32>) {
-    let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p));
-}
-pub fn destroy_3(p: Ptr<Pod>) {
-    let p: Value<Ptr<Pod>> = Rc::new(RefCell::new(p));
-}
+pub fn destroy_2(mut p: Ptr<i32>) {}
+pub fn destroy_3(mut p: Ptr<Pod>) {}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let i: Value<i32> = Rc::new(RefCell::new(0_i32));
-    let d: Value<f64> = Rc::new(RefCell::new(0_f64));
-    let p: Value<Ptr<i32>> = Rc::new(RefCell::new(({ zero_0() })));
-    assert!(((*i.borrow()) == 0));
-    assert!(((*d.borrow()) == 0.0E+0));
-    assert!((*p.borrow()).is_null());
+    let mut i: i32 = 0_i32;
+    let mut d: f64 = 0_f64;
+    let mut p: Ptr<i32> = ({ zero_0() });
+    assert!((i == 0));
+    assert!((d == 0_f64));
+    assert!((p).is_null());
     assert!((({ zero_1() }) == 0_i64));
     let x: Value<i32> = Rc::new(RefCell::new(5));
     ({ destroy_2((x.as_pointer())) });

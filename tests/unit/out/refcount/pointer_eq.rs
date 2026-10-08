@@ -12,39 +12,26 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(5));
-    let p1: Value<Ptr<i32>> = Rc::new(RefCell::new((x.as_pointer())));
-    let p2: Value<Ptr<i32>> = Rc::new(RefCell::new((x.as_pointer())));
-    assert!(({ (*p1.borrow()).clone() } == { (*p2.borrow()).clone() }));
+    let mut p1: Ptr<i32> = (x.as_pointer());
+    let mut p2: Ptr<i32> = (x.as_pointer());
+    assert!(({ (p1).clone() } == { (p2).clone() }));
     let y: Value<i32> = Rc::new(RefCell::new(5));
-    let p3: Value<Ptr<i32>> = Rc::new(RefCell::new((y.as_pointer())));
-    assert!(({ (*p1.borrow()).clone() } != { (*p3.borrow()).clone() }));
+    let mut p3: Ptr<i32> = (y.as_pointer());
+    assert!(({ (p1).clone() } != { (p3).clone() }));
     let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2, 3])));
-    let p: Value<Ptr<i32>> = Rc::new(RefCell::new((arr.as_pointer() as Ptr<i32>)));
-    assert!(({ (*p.borrow()).clone() } == { (arr.as_pointer() as Ptr::<i32>) }));
-    assert!(
-        ({ (*p.borrow()).offset((1) as isize) } == { ((arr.as_pointer() as Ptr<i32>).offset(1)) })
-    );
-    assert!(
-        ({ (*p.borrow()).offset((2) as isize) } == { ((arr.as_pointer() as Ptr<i32>).offset(2)) })
-    );
+    let mut p: Ptr<i32> = (arr.as_pointer() as Ptr<i32>);
+    assert!(({ (p).clone() } == { (arr.as_pointer() as Ptr::<i32>) }));
+    assert!(({ p.offset((1) as isize) } == { ((arr.as_pointer() as Ptr<i32>).offset(1)) }));
+    assert!(({ p.offset((2) as isize) } == { ((arr.as_pointer() as Ptr<i32>).offset(2)) }));
     let val: Value<i32> = Rc::new(RefCell::new(42));
-    let orig: Value<Ptr<i32>> = Rc::new(RefCell::new((val.as_pointer())));
-    let as_bytes: Value<Ptr<u8>> = Rc::new(RefCell::new((*orig.borrow()).reinterpret_cast::<u8>()));
-    let back: Value<Ptr<i32>> =
-        Rc::new(RefCell::new((*as_bytes.borrow()).reinterpret_cast::<i32>()));
-    assert!(({ (*orig.borrow()).clone() } == { (*back.borrow()).clone() }));
-    let arr_bytes: Value<Ptr<u8>> = Rc::new(RefCell::new(
-        (arr.as_pointer() as Ptr<i32>).reinterpret_cast::<u8>(),
-    ));
-    let arr_back: Value<Ptr<i32>> = Rc::new(RefCell::new(
-        (*arr_bytes.borrow()).reinterpret_cast::<i32>(),
-    ));
-    assert!(({ (*arr_back.borrow()).clone() } == { (arr.as_pointer() as Ptr::<i32>) }));
-    assert!(
-        ({ (*arr_back.borrow()).offset((1) as isize) } == {
-            ((arr.as_pointer() as Ptr<i32>).offset(1))
-        })
-    );
+    let mut orig: Ptr<i32> = (val.as_pointer());
+    let mut as_bytes: Ptr<u8> = orig.reinterpret_cast::<u8>();
+    let mut back: Ptr<i32> = as_bytes.reinterpret_cast::<i32>();
+    assert!(({ (orig).clone() } == { (back).clone() }));
+    let mut arr_bytes: Ptr<u8> = (arr.as_pointer() as Ptr<i32>).reinterpret_cast::<u8>();
+    let mut arr_back: Ptr<i32> = arr_bytes.reinterpret_cast::<i32>();
+    assert!(({ (arr_back).clone() } == { (arr.as_pointer() as Ptr::<i32>) }));
+    assert!(({ arr_back.offset((1) as isize) } == { ((arr.as_pointer() as Ptr<i32>).offset(1)) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

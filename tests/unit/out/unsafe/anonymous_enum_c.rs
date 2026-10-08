@@ -13,7 +13,7 @@ pub type anon_1 = u32;
 pub const anon_1_SECOND_A: anon_1 = 0;
 pub const anon_1_SECOND_B: anon_1 = 1;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S {
     pub a: i32,
 }
@@ -24,7 +24,7 @@ pub type anon_2 = u32;
 pub const anon_2_FIELD_A: anon_2 = 0;
 pub const anon_2_FIELD_B: anon_2 = 1;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct WithAnonField {
     pub a: i32,
     pub field: anon_2,

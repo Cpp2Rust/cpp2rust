@@ -6,43 +6,41 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn nested_0(a: i32, b: i32) -> i32 {
-    let a: Value<i32> = Rc::new(RefCell::new(a));
-    let b: Value<i32> = Rc::new(RefCell::new(b));
-    let r: Value<i32> = Rc::new(RefCell::new(0));
+pub fn nested_0(mut a: i32, mut b: i32) -> i32 {
+    let mut r: i32 = 0;
     'switch: {
-        match { (*a.borrow()) } {
+        match { a } {
             __v if __v == 1 => {
                 'switch: {
-                    match { (*b.borrow()) } {
+                    match { b } {
                         __v if __v == 10 => {
-                            (*r.borrow_mut()) = 11;
+                            r = 11;
                             break 'switch;
                         }
                         __v if __v == 20 => {
-                            (*r.borrow_mut()) = 12;
+                            r = 12;
                             break 'switch;
                         }
                         _ => {
-                            (*r.borrow_mut()) = 13;
+                            r = 13;
                             break 'switch;
                         }
                     }
                 };
-                (*r.borrow_mut()) += 1;
+                r += 1;
                 break 'switch;
             }
             __v if __v == 2 => {
-                (*r.borrow_mut()) = 2;
+                r = 2;
                 break 'switch;
             }
             _ => {
-                (*r.borrow_mut()) = -1_i32;
+                r = -1_i32;
                 break 'switch;
             }
         }
     };
-    return (*r.borrow());
+    return r;
 }
 pub fn main() {
     __cpp2rust_init_globals();

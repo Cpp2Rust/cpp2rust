@@ -12,9 +12,9 @@ pub struct packed {
     #[offset(0)]
     pub a: i32,
     #[offset(4)]
-    pub b: u8,
+    pub b: i8,
     #[offset(5)]
-    pub c: u8,
+    pub c: i8,
     #[offset(6)]
     pub d: i16,
 }
@@ -22,17 +22,17 @@ pub struct packed {
 #[byte_size(12)]
 pub struct reordered {
     #[offset(0)]
-    pub a: u8,
+    pub a: i8,
     #[offset(4)]
     pub b: i32,
     #[offset(8)]
-    pub c: u8,
+    pub c: i8,
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(16)]
 pub struct tail {
     #[offset(0)]
-    pub a: u8,
+    pub a: i8,
     #[offset(8)]
     pub b: f64,
 }
@@ -43,21 +43,21 @@ pub struct nested {
     #[byte_size(16)]
     pub t: tail,
     #[offset(16)]
-    pub c: u8,
+    pub c: i8,
 }
 #[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(8)]
 pub struct array {
     #[offset(0)]
     #[byte_size(3)]
-    pub name: Value<Box<[u8]>>,
+    pub name: Value<Box<[i8]>>,
     #[offset(4)]
     pub x: i32,
 }
 impl Default for array {
     fn default() -> Self {
         array {
-            name: Rc::new(RefCell::new((0..3).map(|_| 0_u8).collect::<Box<[u8]>>())),
+            name: Rc::new(RefCell::new((0..3).map(|_| 0_i8).collect::<Box<[i8]>>())),
             x: 0_i32,
         }
     }
@@ -71,14 +71,14 @@ fn main_0() -> i32 {
     let p: Value<Box<[packed]>> = Rc::new(RefCell::new(Box::new([
         packed {
             a: 1,
-            b: 2_u8,
-            c: 3_u8,
+            b: 2_i8,
+            c: 3_i8,
             d: 4_i16,
         },
         packed {
             a: 5,
-            b: 6_u8,
-            c: 7_u8,
+            b: 6_i8,
+            c: 7_i8,
             d: 8_i16,
         },
     ])));
@@ -122,14 +122,14 @@ fn main_0() -> i32 {
     );
     let r: Value<Box<[reordered]>> = Rc::new(RefCell::new(Box::new([
         reordered {
-            a: 1_u8,
+            a: 1_i8,
             b: 2,
-            c: 3_u8,
+            c: 3_i8,
         },
         reordered {
-            a: 4_u8,
+            a: 4_i8,
             b: 5,
-            c: 6_u8,
+            c: 6_i8,
         },
     ])));
     {
@@ -168,12 +168,18 @@ fn main_0() -> i32 {
     );
     let n: Value<Box<[nested]>> = Rc::new(RefCell::new(Box::new([
         nested {
-            t: tail { a: 1_u8, b: 2.5E+0 },
-            c: 3_u8,
+            t: tail {
+                a: 1_i8,
+                b: 2.5_f64,
+            },
+            c: 3_i8,
         },
         nested {
-            t: tail { a: 4_u8, b: 5.5E+0 },
-            c: 6_u8,
+            t: tail {
+                a: 4_i8,
+                b: 5.5_f64,
+            },
+            c: 6_i8,
         },
     ])));
     {
@@ -204,7 +210,7 @@ fn main_0() -> i32 {
     };
     assert!(
         (((((((((({ (*n2.borrow())[(1) as usize].t.a } as i32) == 4) as i32) != 0)
-            && ((({ (*n2.borrow())[(1) as usize].t.b } == 5.5E+0) as i32) != 0))
+            && ((({ (*n2.borrow())[(1) as usize].t.b } == 5.5_f64) as i32) != 0))
             as i32)
             != 0)
             && (((({ (*n2.borrow())[(1) as usize].c } as i32) == 6) as i32) != 0))
@@ -213,11 +219,11 @@ fn main_0() -> i32 {
     );
     let a: Value<Box<[array]>> = Rc::new(RefCell::new(Box::new([
         array {
-            name: Rc::new(RefCell::new(Box::from(*b"ab\0"))),
+            name: Rc::new(RefCell::new(i8::array_from_literal(b"ab\0"))),
             x: 1,
         },
         array {
-            name: Rc::new(RefCell::new(Box::from(*b"cd\0"))),
+            name: Rc::new(RefCell::new(i8::array_from_literal(b"cd\0"))),
             x: 2,
         },
     ])));
@@ -247,14 +253,14 @@ fn main_0() -> i32 {
     };
     assert!(
         (((((((((((elem!(
-            (array_field_ptr!((a2.as_pointer() as Ptr<array>).offset(1), name) as Ptr::<u8>),
+            (array_field_ptr!((a2.as_pointer() as Ptr<array>).offset(1), name) as Ptr::<i8>),
             1
         )
         .read()) as i32)
             == ('d' as i32)) as i32)
             != 0)
             && (((((elem!(
-                (array_field_ptr!((a2.as_pointer() as Ptr<array>).offset(1), name) as Ptr::<u8>),
+                (array_field_ptr!((a2.as_pointer() as Ptr<array>).offset(1), name) as Ptr::<i8>),
                 2
             )
             .read()) as i32)

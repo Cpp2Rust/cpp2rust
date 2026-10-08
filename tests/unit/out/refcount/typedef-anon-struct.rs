@@ -26,34 +26,28 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let o: Value<Outer> = Rc::new(RefCell::new(<Outer>::default()));
-    let info: Value<Outer_RunInfo> = Rc::new(RefCell::new(<Outer_RunInfo>::default()));
-    (*info.borrow_mut()).block_idx = 1;
-    (*info.borrow_mut()).num_extra_zero_runs = 2;
+    let mut o: Outer = <Outer>::default();
+    let mut info: Outer_RunInfo = <Outer_RunInfo>::default();
+    info.block_idx = 1;
+    info.num_extra_zero_runs = 2;
     {
-        let a0_clone = (*info.borrow()).clone();
-        (*{ (*o.borrow()).runs.clone() }.borrow_mut()).push(a0_clone)
+        let a0_clone = info.clone();
+        (*o.runs.borrow_mut()).push(a0_clone)
     };
-    assert!(((*{ (*o.borrow()).runs.clone() }.borrow()).len() == 1_usize));
+    assert!(((*o.runs.borrow()).len() == 1_usize));
     assert!(
         ({
-            (*elem!(
-                ({ (*o.borrow()).runs.as_pointer() } as Ptr<Outer_RunInfo>),
-                0_usize
-            )
-            .upgrade()
-            .deref())
+            (*elem!((o.runs.as_pointer() as Ptr<Outer_RunInfo>), 0_usize)
+                .upgrade()
+                .deref())
             .block_idx
         } == 1)
     );
     assert!(
         ({
-            (*elem!(
-                ({ (*o.borrow()).runs.as_pointer() } as Ptr<Outer_RunInfo>),
-                0_usize
-            )
-            .upgrade()
-            .deref())
+            (*elem!((o.runs.as_pointer() as Ptr<Outer_RunInfo>), 0_usize)
+                .upgrade()
+                .deref())
             .num_extra_zero_runs
         } == 2)
     );

@@ -11,77 +11,77 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let N: Value<i32> = Rc::new(RefCell::new(10000));
-    let sentinel: Value<i32> = Rc::new(RefCell::new(((*N.borrow()) / 2)));
+    let mut N: i32 = 10000;
+    let mut sentinel: i32 = (N / 2);
     let m: Value<BTreeMap<i32, Value<i32>>> = Rc::new(RefCell::new(BTreeMap::new()));
-    let __rhs = (*sentinel.borrow());
+    let __rhs = sentinel;
     (m.as_pointer() as Ptr<BTreeMap<i32, Value<i32>>>)
         .with_mut(|__v: &mut BTreeMap<i32, Value<i32>>| {
-            __v.entry((*sentinel.borrow()))
+            __v.entry(sentinel)
                 .or_insert_with(|| Rc::new(RefCell::new(<i32>::default())))
                 .as_pointer()
         })
         .write(__rhs);
     let it: Value<RefcountMapIter<i32, i32>> = Rc::new(RefCell::new(RefcountMapIter::find_key(
         (m.as_pointer() as Ptr<BTreeMap<i32, Value<i32>>>),
-        &(*sentinel.borrow()),
+        &sentinel,
     )));
-    let p: Value<Ptr<i32>> = Rc::new(RefCell::new(((*it.borrow()).second().as_pointer())));
+    let mut p: Ptr<i32> = ((*it.borrow()).second().as_pointer());
     assert!(
-        ((*(*it.borrow()).second().borrow()) == (*sentinel.borrow()))
-            && (!(Ptr::<u8>::from_string_literal(
+        ((*(*it.borrow()).second().borrow()) == sentinel)
+            && (!(Ptr::<i8>::from_string_literal(
                 b"iterator does not have correct value before insert"
             ))
             .is_null())
     );
     assert!(
-        ({ ((*p.borrow()).read()) } == { (*sentinel.borrow()) })
-            && (!(Ptr::<u8>::from_string_literal(
+        ({ (p.read()) } == { sentinel })
+            && (!(Ptr::<i8>::from_string_literal(
                 b"pointer does not have correct value before insert"
             ))
             .is_null())
     );
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < (*sentinel.borrow())) {
-        let __rhs = (*i.borrow());
+    let mut i: i32 = 0;
+    'loop_: while (i < sentinel) {
+        let __rhs = i;
         (m.as_pointer() as Ptr<BTreeMap<i32, Value<i32>>>)
             .with_mut(|__v: &mut BTreeMap<i32, Value<i32>>| {
-                __v.entry((*i.borrow()))
+                __v.entry(i)
                     .or_insert_with(|| Rc::new(RefCell::new(<i32>::default())))
                     .as_pointer()
             })
             .write(__rhs);
-        (*i.borrow_mut()).prefix_inc();
+        i.prefix_inc();
     }
-    let i: Value<i32> = Rc::new(RefCell::new(((*sentinel.borrow()) + 1)));
-    'loop_: while ((*i.borrow()) <= (*N.borrow())) {
-        let __rhs = (*i.borrow());
+    let mut i: i32 = (sentinel + 1);
+    'loop_: while (i <= N) {
+        let __rhs = i;
         (m.as_pointer() as Ptr<BTreeMap<i32, Value<i32>>>)
             .with_mut(|__v: &mut BTreeMap<i32, Value<i32>>| {
-                __v.entry((*i.borrow()))
+                __v.entry(i)
                     .or_insert_with(|| Rc::new(RefCell::new(<i32>::default())))
                     .as_pointer()
             })
             .write(__rhs);
-        (*i.borrow_mut()).prefix_inc();
+        i.prefix_inc();
     }
     assert!(
         ((*(*it.borrow()).second().borrow()) != 0)
-            && (!(Ptr::<u8>::from_string_literal(
+            && (!(Ptr::<i8>::from_string_literal(
                 b"in refcount, iterator points to index 0 instead of sentinel"
             ))
             .is_null())
     );
     assert!(
-        ((*(*it.borrow()).second().borrow()) == (*sentinel.borrow()))
-            && (!(Ptr::<u8>::from_string_literal(
+        ((*(*it.borrow()).second().borrow()) == sentinel)
+            && (!(Ptr::<i8>::from_string_literal(
                 b"iterator does not have correct value after insert"
             ))
             .is_null())
     );
     assert!(
-        ({ ((*p.borrow()).read()) } == { (*sentinel.borrow()) })
-            && (!(Ptr::<u8>::from_string_literal(
+        ({ (p.read()) } == { sentinel })
+            && (!(Ptr::<i8>::from_string_literal(
                 b"pointer does not have correct value after insert"
             ))
             .is_null())
@@ -90,19 +90,19 @@ fn main_0() -> i32 {
     assert!(
         (((m.as_pointer() as Ptr<BTreeMap<i32, Value<i32>>>)
             .with_mut(|__v: &mut BTreeMap<i32, Value<i32>>| {
-                __v.entry((*sentinel.borrow()))
+                __v.entry(sentinel)
                     .or_insert_with(|| Rc::new(RefCell::new(<i32>::default())))
                     .as_pointer()
             })
             .read())
             == 57005)
     );
-    assert!((((*p.borrow()).read()) == 57005));
-    assert!(((*m.borrow()).len() == ((((*N.borrow()) + 1) as u32) as usize)));
-    let prev: Value<i32> = Rc::new(RefCell::new(-1_i32));
+    assert!(((p.read()) == 57005));
+    assert!(((*m.borrow()).len() == (((N + 1) as u32) as usize)));
+    let mut prev: i32 = -1_i32;
     'loop_: for pair in RefcountMapIter::begin(m.as_pointer()) {
-        assert!(({ (*pair.first().borrow()) } > { (*prev.borrow()) }));
-        (*prev.borrow_mut()) = (*pair.first().borrow());
+        assert!(({ (*pair.first().borrow()) } > { prev }));
+        prev = (*pair.first().borrow());
     }
     return 0;
 }

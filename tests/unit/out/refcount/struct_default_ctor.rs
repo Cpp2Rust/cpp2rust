@@ -16,9 +16,7 @@ pub struct S {
 }
 impl S {
     pub fn new() -> Self {
-        let __this: Value<S> = Rc::new(RefCell::new(Self { a: 11, b: true }));
-        let this: Ptr<S> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self { a: 11, b: true }
     }
 }
 impl Default for S {
@@ -38,11 +36,11 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let d: Value<Ptr<Declared>> = Rc::new(RefCell::new(Ptr::<Declared>::null()));
-    assert!((*d.borrow()).is_null());
-    let s: Value<S> = Rc::new(RefCell::new(S::new()));
-    assert!(({ (*s.borrow()).a } == 11));
-    assert!((({ (*s.borrow()).b } as i32) == (true as i32)));
+    let mut d: Ptr<Declared> = Ptr::<Declared>::null();
+    assert!((d).is_null());
+    let mut s: S = S::new();
+    assert!((s.a == 11));
+    assert!(((s.b as i32) == (true as i32)));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

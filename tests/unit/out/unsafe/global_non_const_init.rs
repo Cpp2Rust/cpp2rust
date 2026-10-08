@@ -7,9 +7,9 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn next_0() -> i32 {
-    static mut counter_1: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });;
     return (*std::cell::LazyCell::force_mut(&mut *&raw mut counter_1)).prefix_inc();
 }
+static mut counter_1: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 pub unsafe fn marker_2(mut tag: u8) -> u8 {
     return ((((tag as i32) << (3)) | (2)) as u8);
 }
@@ -28,7 +28,7 @@ pub static mut depends_on_call_6: std::cell::LazyCell<i32> = std::cell::LazyCell
     ((*std::cell::LazyCell::force_mut(&mut *&raw mut from_call_5)) + (1))
 });
 #[repr(C)]
-#[derive(Copy, Clone, VaArg)]
+#[derive(Copy, Clone, VaArg, FnPtrArg)]
 pub struct Ctor {
     pub v: i32,
 }
@@ -64,20 +64,20 @@ pub static mut str_9: std::cell::LazyCell<Vec<libc::c_char>> =
 pub static mut inline_member_11: std::cell::LazyCell<Ctor> =
     std::cell::LazyCell::new(|| unsafe { Ctor::new_2({ 5 }) });
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Holder {}
 pub static mut member_10: std::cell::LazyCell<i32> =
     std::cell::LazyCell::new(|| unsafe { (unsafe { next_0() }) });
 pub unsafe fn local_static_12() -> i32 {
-    static mut once_13: std::cell::LazyCell<i32> =
-        std::cell::LazyCell::new(|| unsafe { (unsafe { next_0() }) });;
-    static mut local_ctor_14: std::cell::LazyCell<Ctor> =
-        std::cell::LazyCell::new(|| unsafe { Ctor::new_2({ 3 }) });;
     return ((*std::cell::LazyCell::force_mut(&mut *&raw mut once_13))
         + ((*std::cell::LazyCell::force_mut(&mut *&raw mut local_ctor_14)).v));
 }
+static mut once_13: std::cell::LazyCell<i32> =
+    std::cell::LazyCell::new(|| unsafe { (unsafe { next_0() }) });
+static mut local_ctor_14: std::cell::LazyCell<Ctor> =
+    std::cell::LazyCell::new(|| unsafe { Ctor::new_2({ 3 }) });
 #[repr(C)]
-#[derive(Copy, Clone, VaArg)]
+#[derive(Copy, Clone, VaArg, FnPtrArg)]
 pub struct Singleton {
     pub hits: i32,
 }
@@ -87,8 +87,6 @@ impl Singleton {
         this
     }
     pub unsafe fn instance() -> *mut Singleton {
-        static mut s_15: std::cell::LazyCell<Singleton> =
-            std::cell::LazyCell::new(|| unsafe { Singleton::new() });;
         return &mut (*std::cell::LazyCell::force_mut(&mut *&raw mut s_15));
     }
 }
@@ -97,6 +95,8 @@ impl Default for Singleton {
         unsafe { Singleton::new() }
     }
 }
+static mut s_15: std::cell::LazyCell<Singleton> =
+    std::cell::LazyCell::new(|| unsafe { Singleton::new() });
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();

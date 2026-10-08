@@ -21,6 +21,7 @@ pub mod __field {
 }
 
 mod cstr;
+pub use cstr::CChar;
 
 mod void;
 pub use void::*;
@@ -69,4 +70,6 @@ pub use fd::*;
 mod format;
 pub use format::*;
 
-pub use libcc2rs_macros::{ByteRepr, DeepClone, FnPtrArg, Record, VaArg, goto, goto_block, switch};
+pub use libcc2rs_macros::{
+    ByteRepr, DeepClone, FnPtrArg, Record, VaArg, goto, goto_block, lambda, lambda_unsafe, switch,
+};

@@ -13,9 +13,9 @@ pub struct widget {
     pub id: i32,
 }
 pub fn a_value_0() -> i32 {
-    let w: Value<widget> = <Value<widget>>::default();
-    (*w.borrow_mut()).id = 11;
-    return { (*w.borrow()).id };
+    let mut w: widget = <widget>::default();
+    w.id = 11;
+    return w.id;
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -31,7 +31,7 @@ pub const widget_enum_WIDGET_A: widget_enum = 0;
 pub const widget_enum_WIDGET_B: widget_enum = 1;
 pub const widget_enum_WIDGET_C: widget_enum = 2;
 pub fn b_value_1() -> i32 {
-    let w: Value<widget_enum> = Rc::new(RefCell::new(widget_enum_WIDGET_C));
-    return ((*w.borrow()) as i32);
+    let mut w: widget_enum = widget_enum_WIDGET_C;
+    return (w as i32);
 }
 pub fn __cpp2rust_init_globals() {}

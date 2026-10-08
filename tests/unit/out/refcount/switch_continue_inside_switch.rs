@@ -6,27 +6,26 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn continue_inside_switch_0(n: i32) -> i32 {
-    let n: Value<i32> = Rc::new(RefCell::new(n));
-    let r: Value<i32> = Rc::new(RefCell::new(0));
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < (*n.borrow())) {
+pub fn continue_inside_switch_0(mut n: i32) -> i32 {
+    let mut r: i32 = 0;
+    let mut i: i32 = 0;
+    'loop_: while (i < n) {
         'switch: {
-            match { (*i.borrow()) } {
+            match { i } {
                 __v if __v == 0 || __v == 2 || __v == 4 => {
-                    (*i.borrow_mut()).prefix_inc();
+                    i.prefix_inc();
                     continue 'loop_;
                 }
                 _ => {
-                    (*r.borrow_mut()) += (*i.borrow());
+                    r += i;
                     break 'switch;
                 }
             }
         };
-        (*r.borrow_mut()) += 1000;
-        (*i.borrow_mut()).prefix_inc();
+        r += 1000;
+        i.prefix_inc();
     }
-    return (*r.borrow());
+    return r;
 }
 pub fn main() {
     __cpp2rust_init_globals();

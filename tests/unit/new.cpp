@@ -20,5 +20,8 @@ int main() {
   p->y = 2;
   assert(p->x + p->y == 3);
   delete p;
+
+  int *nullpointer = nullptr;
+  delete nullpointer;
   return 0;
 }

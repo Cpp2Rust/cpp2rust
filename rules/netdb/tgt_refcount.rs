@@ -7,7 +7,7 @@ fn t1() -> libcc2rs::Addrinfo {
     Default::default()
 }
 
-fn f1(a0: Ptr<u8>, a1: Ptr<u8>, a2: Ptr<Addrinfo>, a3: Ptr<Ptr<Addrinfo>>) -> i32 {
+fn f1(a0: Ptr<i8>, a1: Ptr<i8>, a2: Ptr<Addrinfo>, a3: Ptr<Ptr<Addrinfo>>) -> i32 {
     let __node = a0;
     let __service = a1;
     let __hints = a2;

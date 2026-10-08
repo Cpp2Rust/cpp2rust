@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S {
     pub v: i32,
 }
@@ -64,13 +64,13 @@ unsafe fn main_0() -> i32 {
     assert!((unsafe { S::operator_eq(&(*cs), 5,) }));
     assert!((unsafe { S::operator_ne(&(*cs), 4,) }));
     assert!((unsafe { S::operator_lt(&(*cs), 6,) }));
-    assert!((unsafe { S::operator_gt(&(*cs), 4.5E+0,) }));
+    assert!((unsafe { S::operator_gt(&(*cs), 4.5_f64,) }));
     assert!((unsafe { S::operator_le(&(*cs), 5_i64,) }));
     assert!((unsafe { S::operator_ge(&(*cs), c"3".as_ptr(),) }));
     assert!((unsafe { operator_eq_0(5, &s,) }));
     assert!((unsafe { operator_ne_1(4, &s,) }));
     assert!((unsafe { operator_lt_2(4, &s,) }));
-    assert!((unsafe { operator_gt_3(5.5E+0, &s,) }));
+    assert!((unsafe { operator_gt_3(5.5_f64, &s,) }));
     assert!((unsafe { operator_le_4(5_i64, &s,) }));
     assert!((unsafe { operator_ge_5(c"7".as_ptr(), &s,) }));
     assert!(

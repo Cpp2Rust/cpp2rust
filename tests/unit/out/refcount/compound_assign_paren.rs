@@ -18,32 +18,26 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let item: Value<Item> = Rc::new(RefCell::new(Item { flags: 0_u8 }));
-    let ptr: Value<Ptr<Item>> = Rc::new(RefCell::new((item.as_pointer())));
-    field!((*ptr.borrow()), flags)
-        .write({ (((*ptr.borrow()).with(|__s| __s.flags) as i32) | (1 << 0)) as u8 });
-    field!((*ptr.borrow()), flags)
-        .write({ (((*ptr.borrow()).with(|__s| __s.flags) as i32) | (1 << 1)) as u8 });
-    assert!((((*ptr.borrow()).with(|__s| __s.flags) as i32) == 3));
-    field!((*ptr.borrow()), flags).write({
-        (((*ptr.borrow()).with(|__s| __s.flags) as i32) & ((!(1 << 0) as u8) as i32)) as u8
-    });
-    assert!((((*ptr.borrow()).with(|__s| __s.flags) as i32) == 2));
-    let bits: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([0_u8, 0_u8, 0_u8, 0_u8])));
-    (*bits.borrow_mut())[((5) / 8) as usize] = {
-        (((*bits.borrow())[((5) / 8) as usize] as i32) | (((1 << ((5) & 7)) as u8) as i32)) as u8
-    };
-    (*bits.borrow_mut())[((13) / 8) as usize] = {
-        (((*bits.borrow())[((13) / 8) as usize] as i32) | (((1 << ((13) & 7)) as u8) as i32)) as u8
-    };
-    assert!((((*bits.borrow())[(0) as usize] as i32) == 32));
-    assert!((((*bits.borrow())[(1) as usize] as i32) == 32));
-    assert!((((*bits.borrow())[(2) as usize] as i32) == 0));
-    if (((*ptr.borrow()).with(|__s| __s.flags) as i32) != 0) {
-        field!((*ptr.borrow()), flags).write({
-            (((*ptr.borrow()).with(|__s| __s.flags) as i32) & ((!(1 << 1) as u8) as i32)) as u8
-        });
+    let mut ptr: Ptr<Item> = (item.as_pointer());
+    field!((ptr), flags).write({ (((ptr).with(|__s| __s.flags) as i32) | (1 << 0)) as u8 });
+    field!((ptr), flags).write({ (((ptr).with(|__s| __s.flags) as i32) | (1 << 1)) as u8 });
+    assert!(((ptr.with(|__s| __s.flags) as i32) == 3));
+    field!((ptr), flags)
+        .write({ (((ptr).with(|__s| __s.flags) as i32) & ((!(1 << 0) as u8) as i32)) as u8 });
+    assert!(((ptr.with(|__s| __s.flags) as i32) == 2));
+    let mut bits: [u8; 4] = [0_u8, 0_u8, 0_u8, 0_u8];
+    (bits)[((5) / 8) as usize] =
+        { (((bits)[((5) / 8) as usize] as i32) | (((1 << ((5) & 7)) as u8) as i32)) as u8 };
+    (bits)[((13) / 8) as usize] =
+        { (((bits)[((13) / 8) as usize] as i32) | (((1 << ((13) & 7)) as u8) as i32)) as u8 };
+    assert!(((bits[(0) as usize] as i32) == 32));
+    assert!(((bits[(1) as usize] as i32) == 32));
+    assert!(((bits[(2) as usize] as i32) == 0));
+    if ((ptr.with(|__s| __s.flags) as i32) != 0) {
+        field!((ptr), flags)
+            .write({ (((ptr).with(|__s| __s.flags) as i32) & ((!(1 << 1) as u8) as i32)) as u8 });
     }
-    assert!((((*ptr.borrow()).with(|__s| __s.flags) as i32) == 0));
+    assert!(((ptr.with(|__s| __s.flags) as i32) == 0));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

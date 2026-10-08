@@ -18,23 +18,14 @@ pub struct Partial {
     pub keep: i32,
 }
 impl Partial {
-    pub fn new(v: i32, keep: i32) -> Self {
-        let v: Value<i32> = Rc::new(RefCell::new(v));
-        let keep: Value<i32> = Rc::new(RefCell::new(keep));
-        let __this: Value<Partial> = Rc::new(RefCell::new(Self {
-            v: (*v.borrow()),
-            keep: (*keep.borrow()),
-        }));
-        let this: Ptr<Partial> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    pub fn new(mut v: i32, mut keep: i32) -> Self {
+        Self { v: v, keep: keep }
     }
     pub fn copy_from(o: Ptr<Partial>) -> Self {
-        let __this: Value<Partial> = Rc::new(RefCell::new(Self {
+        Self {
             v: o.with(|__s| __s.v),
             keep: o.with(|__s| __s.keep),
-        }));
-        let this: Ptr<Partial> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
 }
 impl Clone for Partial {
@@ -54,9 +45,7 @@ pub struct NonConstAssign {
 }
 impl NonConstAssign {
     pub fn new() -> Self {
-        let __this: Value<NonConstAssign> = Rc::new(RefCell::new(Self { mark: 0 }));
-        let this: Ptr<NonConstAssign> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self { mark: 0 }
     }
 }
 impl Default for NonConstAssign {
@@ -72,9 +61,7 @@ pub struct RefQualified {
 }
 impl RefQualified {
     pub fn new() -> Self {
-        let __this: Value<RefQualified> = Rc::new(RefCell::new(Self { mark: 0 }));
-        let this: Ptr<RefQualified> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self { mark: 0 }
     }
 }
 impl Default for RefQualified {
@@ -140,10 +127,10 @@ fn main_0() -> i32 {
         PartialImpl::copy_assign(&ra, _o)
     });
     assert!(({ (*a.borrow()).v } == 2));
-    let pa: Value<Ptr<Partial>> = Rc::new(RefCell::new((a.as_pointer())));
+    let mut pa: Ptr<Partial> = (a.as_pointer());
     ({
         let _o: Ptr<Partial> = b.as_pointer();
-        PartialImpl::copy_assign(&(*pa.borrow()), _o)
+        PartialImpl::copy_assign(&pa, _o)
     });
     assert!(({ (*a.borrow()).v } == 2));
     assert!((assigns_0.with(|rc| *rc.borrow()) == 6));

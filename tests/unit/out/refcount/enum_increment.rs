@@ -16,26 +16,18 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let count: Value<i32> = Rc::new(RefCell::new(0));
-    let c: Value<color> = Rc::new(RefCell::new(color_RED));
-    'loop_: while (((((*c.borrow()) as u32) < ((color_COLOR_LAST as i32) as u32)) as i32) != 0) {
-        (*count.borrow_mut()).postfix_inc();
-        (*c.borrow_mut()).postfix_inc();
+    let mut count: i32 = 0;
+    let mut c: color = color_RED;
+    'loop_: while ((((c as u32) < ((color_COLOR_LAST as i32) as u32)) as i32) != 0) {
+        count.postfix_inc();
+        c.postfix_inc();
     }
-    assert!(((((*count.borrow()) == 3) as i32) != 0));
-    let c: Value<color> = Rc::new(RefCell::new(color_RED));
-    assert!(
-        (((((*c.borrow_mut()).postfix_inc() as u32) == ((color_RED as i32) as u32)) as i32) != 0)
-    );
-    assert!(
-        (((((*c.borrow_mut()).prefix_inc() as u32) == ((color_BLUE as i32) as u32)) as i32) != 0)
-    );
-    assert!(
-        (((((*c.borrow_mut()).postfix_dec() as u32) == ((color_BLUE as i32) as u32)) as i32) != 0)
-    );
-    assert!(
-        (((((*c.borrow_mut()).prefix_dec() as u32) == ((color_RED as i32) as u32)) as i32) != 0)
-    );
+    assert!((((count == 3) as i32) != 0));
+    let mut c: color = color_RED;
+    assert!(((((c.postfix_inc() as u32) == ((color_RED as i32) as u32)) as i32) != 0));
+    assert!(((((c.prefix_inc() as u32) == ((color_BLUE as i32) as u32)) as i32) != 0));
+    assert!(((((c.postfix_dec() as u32) == ((color_BLUE as i32) as u32)) as i32) != 0));
+    assert!(((((c.prefix_dec() as u32) == ((color_RED as i32) as u32)) as i32) != 0));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

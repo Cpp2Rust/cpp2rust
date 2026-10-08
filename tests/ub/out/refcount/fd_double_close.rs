@@ -11,13 +11,13 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let fd: Value<i32> = Rc::new(RefCell::new({
+    let mut fd: i32 = {
         let __mode = match &[].first() {
             Some(__m) => nix::sys::stat::Mode::from_bits_truncate(i32::get(__m) as ::libc::mode_t),
             None => nix::sys::stat::Mode::empty(),
         };
         match nix::fcntl::open(
-            Ptr::<u8>::from_string_literal(b"/dev/null")
+            Ptr::<i8>::from_string_literal(b"/dev/null")
                 .to_rust_string()
                 .as_str(),
             nix::fcntl::OFlag::from_bits_retain(::libc::O_RDONLY),
@@ -29,9 +29,9 @@ fn main_0() -> i32 {
                 -1
             }
         }
-    }));
-    FdRegistry::close((*fd.borrow()));
-    return if (((FdRegistry::close((*fd.borrow())) == -1_i32) as i32) != 0) {
+    };
+    FdRegistry::close(fd);
+    return if (((FdRegistry::close(fd) == -1_i32) as i32) != 0) {
         0
     } else {
         1

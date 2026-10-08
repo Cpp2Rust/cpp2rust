@@ -37,10 +37,10 @@ fn main_0() -> i32 {
     let cs: Ptr<S> = s.as_pointer();
     assert!(((({ SImpl::f_2(&cs,) }) as i32) == (Overload_kConstOverload as i32)));
     assert!((cs.with(|__s| __s.v) == 9));
-    let p: Value<Ptr<S>> = Rc::new(RefCell::new((s.as_pointer())));
-    field!((*p.borrow()), v).write(11);
+    let mut p: Ptr<S> = (s.as_pointer());
+    field!(p, v).write(11);
     assert!(({ (*s.borrow()).v } == 11));
-    assert!(((({ SImpl::f_1(&(*p.borrow()),) }) as i32) == (Overload_kMutableOverload as i32)));
+    assert!(((({ SImpl::f_1(&p,) }) as i32) == (Overload_kMutableOverload as i32)));
     return 0;
 }
 pub trait SImpl {

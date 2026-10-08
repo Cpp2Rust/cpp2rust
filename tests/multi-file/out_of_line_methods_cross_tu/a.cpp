@@ -12,5 +12,9 @@ int main() {
   Derived derived(3);
   Base *base = &derived;
   assert(base->apply(5) == 15);
+
+  Pair pair{7, 3};
+  assert(pair_sum(&pair) == 10);
+  assert(pair_diff(&pair) == 4);
   return 0;
 }

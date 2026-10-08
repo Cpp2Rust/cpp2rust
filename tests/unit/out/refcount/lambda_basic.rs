@@ -11,28 +11,57 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let zero: Value<_> = Rc::new(RefCell::new(
-        (|| {
-            return 42;
+    let zero: Value<FnPtr<fn() -> i32>> =
+        Rc::new(RefCell::new(FnPtr::<fn() -> i32>::new(|| -> i32 {
+            {
+                return 42;
+            }
+        })));
+    assert!((({ (*zero.borrow()).call() }) == 42));
+    let one: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::new(
+        |x: i32| -> i32 {
+            {
+                return (x + 1);
+            }
+        },
+    )));
+    assert!((({ (*one.borrow()).call(1,) }) == 2));
+    let three: Value<FnPtr<fn(i32, i32, i32) -> i32>> =
+        Rc::new(RefCell::new(FnPtr::<fn(i32, i32, i32) -> i32>::new(
+            |x: i32, y: i32, z: i32| -> i32 {
+                {
+                    return (((x * 100) + (y * 10)) + z);
+                }
+            },
+        )));
+    assert!((({ (*three.borrow()).call(1, 2, 3,) }) == 123));
+    let mut k: i32 = 3;
+    let mut m: i32 = 4;
+    let constants: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(
+        FnPtr::<fn(i32) -> i32>::new(|x: i32| -> i32 {
+            {
+                return ((x + 3) + 4);
+            }
         }),
     ));
-    assert!((({ (*zero.borrow_mut())() }) == 42));
-    let one: Value<_> = Rc::new(RefCell::new(
-        (|x: i32| {
-            let x: Value<i32> = Rc::new(RefCell::new(x));
-            return ((*x.borrow()) + 1);
+    assert!((({ (*constants.borrow()).call(1,) }) == 8));
+    let mut n: i32 = (k + m);
+    let derived: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(
+        FnPtr::<fn(i32) -> i32>::new(|x: i32| -> i32 {
+            {
+                return (x + (3 + 4));
+            }
         }),
     ));
-    assert!((({ (*one.borrow_mut())(1,) }) == 2));
-    let three: Value<_> = Rc::new(RefCell::new(
-        (|x: i32, y: i32, z: i32| {
-            let x: Value<i32> = Rc::new(RefCell::new(x));
-            let y: Value<i32> = Rc::new(RefCell::new(y));
-            let z: Value<i32> = Rc::new(RefCell::new(z));
-            return ((((*x.borrow()) * 100) + ((*y.borrow()) * 10)) + (*z.borrow()));
+    assert!((({ (*derived.borrow()).call(1,) }) == 8));
+    let implicit: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(
+        FnPtr::<fn(i32) -> i32>::new(|x: i32| -> i32 {
+            {
+                return (x + 3);
+            }
         }),
     ));
-    assert!((({ (*three.borrow_mut())(1, 2, 3,) }) == 123));
+    assert!((({ (*implicit.borrow()).call(1,) }) == 4));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

@@ -8,12 +8,12 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub static mut c_0: std::cell::LazyCell<usize> = std::cell::LazyCell::new(|| unsafe { 5_usize });
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S {}
 pub static mut table_size_1: std::cell::LazyCell<usize> =
     std::cell::LazyCell::new(|| unsafe { 256_usize });
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Table_char_ {}
 pub fn main() {
     unsafe {

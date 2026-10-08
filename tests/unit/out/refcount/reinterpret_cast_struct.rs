@@ -22,11 +22,11 @@ fn main_0() -> i32 {
     let p: Value<Point> = Rc::new(RefCell::new(<Point>::default()));
     (*p.borrow_mut()).x = 67305985;
     (*p.borrow_mut()).y = 134678021;
-    let bytes: Value<Ptr<u8>> = Rc::new(RefCell::new((p.as_pointer()).reinterpret_cast::<u8>()));
-    assert!((((elem!((*bytes.borrow()), 0).read()) as i32) == 1));
-    assert!((((elem!((*bytes.borrow()), 3).read()) as i32) == 4));
-    assert!((((elem!((*bytes.borrow()), 4).read()) as i32) == 5));
-    assert!((((elem!((*bytes.borrow()), 7).read()) as i32) == 8));
+    let mut bytes: Ptr<u8> = (p.as_pointer()).reinterpret_cast::<u8>();
+    assert!((((elem!(bytes, 0).read()) as i32) == 1));
+    assert!((((elem!(bytes, 3).read()) as i32) == 4));
+    assert!((((elem!(bytes, 4).read()) as i32) == 5));
+    assert!((((elem!(bytes, 7).read()) as i32) == 8));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

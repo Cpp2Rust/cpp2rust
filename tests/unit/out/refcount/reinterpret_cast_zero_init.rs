@@ -12,11 +12,11 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let val: Value<u32> = Rc::new(RefCell::new(0_u32));
-    let bytes: Value<Ptr<u8>> = Rc::new(RefCell::new((val.as_pointer()).reinterpret_cast::<u8>()));
-    elem!((*bytes.borrow()), 0).write(239_u8);
-    elem!((*bytes.borrow()), 1).write(190_u8);
-    elem!((*bytes.borrow()), 2).write(173_u8);
-    elem!((*bytes.borrow()), 3).write(222_u8);
+    let mut bytes: Ptr<u8> = (val.as_pointer()).reinterpret_cast::<u8>();
+    elem!(bytes, 0).write(239_u8);
+    elem!(bytes, 1).write(190_u8);
+    elem!(bytes, 2).write(173_u8);
+    elem!(bytes, 3).write(222_u8);
     assert!(((*val.borrow()) == 3735928559_u32));
     return 0;
 }

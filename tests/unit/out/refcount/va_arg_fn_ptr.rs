@@ -6,49 +6,36 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn square_0(x: i32) -> i32 {
-    let x: Value<i32> = Rc::new(RefCell::new(x));
-    return ((*x.borrow()) * (*x.borrow()));
+pub fn square_0(mut x: i32) -> i32 {
+    return (x * x);
 }
-pub fn negate_1(x: i32) -> i32 {
-    let x: Value<i32> = Rc::new(RefCell::new(x));
-    return -(*x.borrow());
+pub fn negate_1(mut x: i32) -> i32 {
+    return -x;
 }
-pub fn add_2(a: i32, b: i32) -> i32 {
-    let a: Value<i32> = Rc::new(RefCell::new(a));
-    let b: Value<i32> = Rc::new(RefCell::new(b));
-    return ((*a.borrow()) + (*b.borrow()));
+pub fn add_2(mut a: i32, mut b: i32) -> i32 {
+    return (a + b);
 }
 pub fn apply_unary_3(x: i32, __args: &[VaArg]) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
     (*ap.borrow_mut()) = VaList::new(__args);
-    let fn_: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(
-        (*ap.borrow_mut()).arg::<FnPtr<fn(i32) -> i32>>(),
-    ));
-    let result: Value<i32> = Rc::new(RefCell::new(({ (*fn_.borrow()).call((*x.borrow())) })));
-    return (*result.borrow());
+    let mut fn_: FnPtr<fn(i32) -> i32> = (*ap.borrow_mut()).arg::<FnPtr<fn(i32) -> i32>>();
+    let mut result: i32 = ({ fn_.call((*x.borrow())) });
+    return result;
 }
-pub fn apply_binary_4(a: i32, b: i32, __args: &[VaArg]) -> i32 {
-    let a: Value<i32> = Rc::new(RefCell::new(a));
+pub fn apply_binary_4(mut a: i32, b: i32, __args: &[VaArg]) -> i32 {
     let b: Value<i32> = Rc::new(RefCell::new(b));
     let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
     (*ap.borrow_mut()) = VaList::new(__args);
-    let fn_: Value<FnPtr<fn(i32, i32) -> i32>> = Rc::new(RefCell::new(
-        (*ap.borrow_mut()).arg::<FnPtr<fn(i32, i32) -> i32>>(),
-    ));
-    let result: Value<i32> = Rc::new(RefCell::new(
-        ({ (*fn_.borrow()).call((*a.borrow()), (*b.borrow())) }),
-    ));
-    return (*result.borrow());
+    let mut fn_: FnPtr<fn(i32, i32) -> i32> =
+        (*ap.borrow_mut()).arg::<FnPtr<fn(i32, i32) -> i32>>();
+    let mut result: i32 = ({ fn_.call(a, (*b.borrow())) });
+    return result;
 }
-pub fn not_supported_5(ctx: AnyPtr, fn_: FnPtr<fn(i32) -> i32>, extra: AnyPtr) -> i32 {
-    let ctx: Value<AnyPtr> = Rc::new(RefCell::new(ctx));
-    let fn_: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(fn_));
-    let extra: Value<AnyPtr> = Rc::new(RefCell::new(extra));
-    &(*ctx.borrow());
-    &(*fn_.borrow());
-    &(*extra.borrow());
+pub fn not_supported_5(mut ctx: AnyPtr, mut fn_: FnPtr<fn(i32) -> i32>, mut extra: AnyPtr) -> i32 {
+    &(ctx);
+    &(fn_);
+    &(extra);
     return -3_i32;
 }
 pub fn main() {

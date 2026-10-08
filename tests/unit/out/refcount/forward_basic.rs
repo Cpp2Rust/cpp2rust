@@ -20,34 +20,28 @@ pub struct Tracked {
     pub moves: i32,
 }
 impl Tracked {
-    pub fn new(v: i32) -> Self {
-        let v: Value<i32> = Rc::new(RefCell::new(v));
-        let __this: Value<Tracked> = Rc::new(RefCell::new(Self {
-            v: (*v.borrow()),
+    pub fn new(mut v: i32) -> Self {
+        Self {
+            v: v,
             copies: 0,
             moves: 0,
-        }));
-        let this: Ptr<Tracked> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
     pub fn copy_from(o: Ptr<Tracked>) -> Self {
-        let __this: Value<Tracked> = Rc::new(RefCell::new(Self {
+        Self {
             v: o.with(|__s| __s.v),
             copies: (o.with(|__s| __s.copies) + 1),
             moves: o.with(|__s| __s.moves),
-        }));
-        let this: Ptr<Tracked> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
     pub fn move_from(o: Ptr<Tracked>) -> Self {
-        let __this: Value<Tracked> = Rc::new(RefCell::new(Self {
+        let __this: Tracked = Self {
             v: o.with(|__s| __s.v),
             copies: o.with(|__s| __s.copies),
             moves: (o.with(|__s| __s.moves) + 1),
-        }));
-        let this: Ptr<Tracked> = __this.as_pointer();
+        };
         field!(o, v).write(0);
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        __this
     }
 }
 impl Clone for Tracked {
@@ -68,20 +62,16 @@ pub fn chosen_overload_1(_a0: Ptr<Tracked>) -> Overload {
 }
 impl Holder {
     pub fn new_1(x: Ptr<Tracked>) -> Self {
-        let __this: Value<Holder> = Rc::new(RefCell::new(Self {
+        Self {
             t: Tracked::copy_from({ (x).clone() }),
-        }));
-        let this: Ptr<Holder> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
 }
 impl Holder {
     pub fn new_2(x: Ptr<Tracked>) -> Self {
-        let __this: Value<Holder> = Rc::new(RefCell::new(Self {
+        Self {
             t: Tracked::move_from({ (x).clone() }),
-        }));
-        let this: Ptr<Holder> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
@@ -140,21 +130,18 @@ fn main_0() -> i32 {
             == (Overload_kRvalueOverload as i32))
     );
     let kept: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 11 })));
-    let from_lvalue: Value<Holder> =
-        Rc::new(RefCell::new(({ forward_into_ctor_6(kept.as_pointer()) })));
-    assert!(({ (*from_lvalue.borrow()).t.v } == 11));
-    assert!(({ (*from_lvalue.borrow()).t.copies } == 1));
-    assert!(({ (*from_lvalue.borrow()).t.moves } == 0));
+    let mut from_lvalue: Holder = ({ forward_into_ctor_6(kept.as_pointer()) });
+    assert!((from_lvalue.t.v == 11));
+    assert!((from_lvalue.t.copies == 1));
+    assert!((from_lvalue.t.moves == 0));
     assert!(({ (*kept.borrow()).v } == 11));
-    let from_rvalue: Value<Holder> = Rc::new(RefCell::new(
-        ({
-            let _x: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 12 })));
-            forward_into_ctor_7(_x.as_pointer())
-        }),
-    ));
-    assert!(({ (*from_rvalue.borrow()).t.v } == 12));
-    assert!(({ (*from_rvalue.borrow()).t.copies } == 0));
-    assert!(({ (*from_rvalue.borrow()).t.moves } == 1));
+    let mut from_rvalue: Holder = ({
+        let _x: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 12 })));
+        forward_into_ctor_7(_x.as_pointer())
+    });
+    assert!((from_rvalue.t.v == 12));
+    assert!((from_rvalue.t.copies == 0));
+    assert!((from_rvalue.t.moves == 1));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

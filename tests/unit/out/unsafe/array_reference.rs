@@ -57,7 +57,7 @@ pub unsafe fn pick_10(s: *const [libc::c_char; 5]) -> *const [libc::c_char; 5] {
     return s;
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Point {
     pub x: i32,
     pub y: i32,
@@ -86,6 +86,12 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { len_0(&buf,) }) == (4)));
     let mut arr: [i32; 3] = [1, 2, 3];
     assert!(((unsafe { sum_2(&arr,) }) == (6)));
+    assert!(
+        ((unsafe {
+            let mut _a: [i32; 3] = [1, 2, 3];
+            sum_2(&mut _a)
+        }) == (6))
+    );
     (unsafe { fill_3(&mut arr, 7) });
     assert!(((unsafe { sum_2(&arr,) }) == (21)));
     assert!(((unsafe { sum_twice_4(&arr,) }) == (42)));
@@ -111,6 +117,20 @@ unsafe fn main_0() -> i32 {
     assert!(((arr[(0) as usize]) == (3)));
     let mut names: [*const libc::c_char; 2] = [c"ab".as_ptr(), c"cde".as_ptr()];
     assert!(((unsafe { total_len_13(&mut names,) }) == (5)));
+    let mut rows: [[i32; 3]; 2] = [[1, 2, 3], [4, 5, 6]];
+    let mut p: *mut [i32; 3] = rows.as_mut_ptr();
+    p.prefix_inc();
+    assert!((((*p).as_mut_ptr()) == (&mut rows[(1) as usize][(0) as usize] as *mut i32)));
+    let r: *mut [i32; 3] = &mut (*p);
+    assert!((((*r)[(0) as usize]) == (4)));
+    assert!(((unsafe { sum_2(r,) }) == (15)));
+    assert!(((unsafe { sum_2(&(*p),) }) == (15)));
+    let mut q: *mut [i32; 3] = rows.as_mut_ptr();
+    assert!(((unsafe { sum_2(&(*q.offset((1) as isize)),) }) == (15)));
+    assert!(
+        (((*q.offset((1) as isize)).as_mut_ptr())
+            == (&mut rows[(1) as usize][(0) as usize] as *mut i32))
+    );
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

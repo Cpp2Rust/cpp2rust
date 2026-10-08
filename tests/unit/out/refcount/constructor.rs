@@ -16,11 +16,8 @@ pub struct S {
     pub v: i32,
 }
 impl S {
-    pub fn new(init: i32) -> Self {
-        let init: Value<i32> = Rc::new(RefCell::new(init));
-        let __this: Value<S> = Rc::new(RefCell::new(Self {
-            v: (*init.borrow()),
-        }));
+    pub fn new(mut init: i32) -> Self {
+        let __this: Value<S> = Rc::new(RefCell::new(Self { v: init }));
         let this: Ptr<S> = __this.as_pointer();
         ({ SImpl::mut_method(&this) });
         total_0.with(|rc| *rc.borrow_mut() += ({ SImpl::const_method(&this) }));
@@ -36,25 +33,14 @@ pub struct Point {
     pub y: i32,
 }
 impl Point {
-    pub fn new_1(x: i32, y: i32) -> Self {
-        let x: Value<i32> = Rc::new(RefCell::new(x));
-        let y: Value<i32> = Rc::new(RefCell::new(y));
-        let __this: Value<Point> = Rc::new(RefCell::new(Self {
-            x: (*x.borrow()),
-            y: (*y.borrow()),
-        }));
-        let this: Ptr<Point> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    pub fn new_1(mut x: i32, mut y: i32) -> Self {
+        Self { x: x, y: y }
     }
-    pub fn new_2(v: i32) -> Self {
-        let v: Value<i32> = Rc::new(RefCell::new(v));
-        let __this: Value<Point> = Rc::new(RefCell::new(Point::new_1({ (*v.borrow()) }, {
-            ((*v.borrow()) + 1)
-        })));
+    pub fn new_2(mut v: i32) -> Self {
+        let __this: Value<Point> = Rc::new(RefCell::new(Point::new_1({ v }, { (v + 1) })));
         let this: Ptr<Point> = __this.as_pointer();
         {
-            let _ptr = field!(this, y);
-            _ptr.write(_ptr.read() * 10)
+            field!(this, y).with_mut(|__v| *__v = *__v * 10)
         };
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
@@ -62,8 +48,7 @@ impl Point {
         let __this: Value<Point> = Rc::new(RefCell::new(Point::new_2({ 4 })));
         let this: Ptr<Point> = __this.as_pointer();
         {
-            let _ptr = field!(this, x);
-            _ptr.write(_ptr.read() + 100)
+            field!(this, x).with_mut(|__v| *__v = *__v + 100)
         };
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
@@ -85,12 +70,12 @@ fn main_0() -> i32 {
         assert!((total_0.with(|rc| *rc.borrow()) == 8));
     }
     assert!((total_0.with(|rc| *rc.borrow()) == 18));
-    let p: Value<Point> = Rc::new(RefCell::new(Point::new_3()));
-    assert!(({ (*p.borrow()).x } == 104));
-    assert!(({ (*p.borrow()).y } == 50));
-    let q: Value<Point> = Rc::new(RefCell::new(Point::new_2({ 7 })));
-    assert!(({ (*q.borrow()).x } == 7));
-    assert!(({ (*q.borrow()).y } == 80));
+    let mut p: Point = Point::new_3();
+    assert!((p.x == 104));
+    assert!((p.y == 50));
+    let mut q: Point = Point::new_2({ 7 });
+    assert!((q.x == 7));
+    assert!((q.y == 80));
     return 0;
 }
 pub trait SImpl {
@@ -104,8 +89,7 @@ impl SImpl for Ptr<S> {
     }
     fn mut_method(&self) {
         {
-            let _ptr = field!((*self), v);
-            _ptr.write(_ptr.read() + 1)
+            field!((*self), v).with_mut(|__v| *__v = *__v + 1)
         };
     }
     fn destructor(&self) {

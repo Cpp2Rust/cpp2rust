@@ -10,31 +10,27 @@ pub fn test_promotions_0(count: i32, __args: &[VaArg]) -> i32 {
     let count: Value<i32> = Rc::new(RefCell::new(count));
     let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
     (*ap.borrow_mut()) = VaList::new(__args);
-    let a: Value<i32> = Rc::new(RefCell::new((*ap.borrow_mut()).arg::<i32>()));
-    let b: Value<i32> = Rc::new(RefCell::new((*ap.borrow_mut()).arg::<i32>()));
-    let c: Value<f64> = Rc::new(RefCell::new((*ap.borrow_mut()).arg::<f64>()));
-    assert!(((((*a.borrow()) == 65) as i32) != 0));
-    assert!(((((*b.borrow()) == 10) as i32) != 0));
-    assert!(((((*c.borrow()) == 3.0E+0) as i32) != 0));
-    return (((*a.borrow()) + (*b.borrow())) + ((*c.borrow()) as i32));
+    let mut a: i32 = (*ap.borrow_mut()).arg::<i32>();
+    let mut b: i32 = (*ap.borrow_mut()).arg::<i32>();
+    let mut c: f64 = (*ap.borrow_mut()).arg::<f64>();
+    assert!((((a == 65) as i32) != 0));
+    assert!((((b == 10) as i32) != 0));
+    assert!((((c == 3_f64) as i32) != 0));
+    return ((a + b) + (c as i32));
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let x: Value<u8> = Rc::new(RefCell::new((('A' as i32) as u8)));
-    let y: Value<i16> = Rc::new(RefCell::new(10_i16));
-    let z: Value<f32> = Rc::new(RefCell::new(3.0E+0));
+    let mut x: i8 = (('A' as i32) as i8);
+    let mut y: i16 = 10_i16;
+    let mut z: f32 = 3_f32;
     assert!(
         (((({
             test_promotions_0(
                 3,
-                &[
-                    ((*x.borrow()) as i32).into(),
-                    ((*y.borrow()) as i32).into(),
-                    ((*z.borrow()) as f64).into(),
-                ],
+                &[(x as i32).into(), (y as i32).into(), (z as f64).into()],
             )
         }) == 78) as i32)
             != 0)

@@ -6,23 +6,22 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn stacked_block_0(x: i32) -> i32 {
-    let x: Value<i32> = Rc::new(RefCell::new(x));
-    let r: Value<i32> = Rc::new(RefCell::new(0));
+pub fn stacked_block_0(mut x: i32) -> i32 {
+    let mut r: i32 = 0;
     'switch: {
-        match { (*x.borrow()) } {
+        match { x } {
             __v if __v == 1 || __v == 2 || __v == 3 => {
-                let y: Value<i32> = Rc::new(RefCell::new(((*x.borrow()) * 2)));
-                (*r.borrow_mut()) = ((*y.borrow()) + 1);
+                let mut y: i32 = (x * 2);
+                r = (y + 1);
                 break 'switch;
             }
             _ => {
-                (*r.borrow_mut()) = 0;
+                r = 0;
                 break 'switch;
             }
         }
     };
-    return (*r.borrow());
+    return r;
 }
 pub fn main() {
     __cpp2rust_init_globals();

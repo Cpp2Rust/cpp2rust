@@ -12,20 +12,19 @@ pub struct Test {
     #[offset(0)]
     pub x: i32,
 }
-pub fn Update_0(t: Ptr<Test>) -> Ptr<Test> {
-    let t: Value<Ptr<Test>> = Rc::new(RefCell::new(t));
-    let x: Value<i32> = Rc::new(RefCell::new(1));
-    let y: Value<i32> = Rc::new(RefCell::new(2));
-    (*x.borrow_mut()).prefix_inc();
-    ({ TestImpl::update(&(*t.borrow()), (*x.borrow()), (*y.borrow())) });
-    (*x.borrow_mut()) = (*t.borrow()).with(|__s| (__s).x);
-    (*y.borrow_mut()) = (*t.borrow()).with(|__s| __s.x);
+pub fn Update_0(mut t: Ptr<Test>) -> Ptr<Test> {
+    let mut x: i32 = 1;
+    let mut y: i32 = 2;
+    x.prefix_inc();
+    ({ TestImpl::update(&t, x, y) });
+    x = t.with(|__s| (__s).x);
+    y = t.with(|__s| __s.x);
     ({
-        let _x: i32 = (*x.borrow());
-        let _y: i32 = (*y.borrow());
-        TestImpl::update(&(*t.borrow()), _x, _y)
+        let _x: i32 = x;
+        let _y: i32 = y;
+        TestImpl::update(&(t), _x, _y)
     });
-    return (*t.borrow()).clone();
+    return t;
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -33,18 +32,16 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let t1: Value<Test> = Rc::new(RefCell::new(Test { x: 100 }));
-    let t2: Value<Ptr<Test>> = Rc::new(RefCell::new(({ Update_0((t1.as_pointer())) })));
-    let t3: Value<Ptr<Test>> = Rc::new(RefCell::new(Ptr::<Test>::null()));
-    (*t3.borrow_mut()) = (*t2.borrow()).clone();
-    field!((*t3.borrow()), x).write(15);
+    let mut t2: Ptr<Test> = ({ Update_0((t1.as_pointer())) });
+    let mut t3: Ptr<Test> = Ptr::<Test>::null();
+    t3 = (t2).clone();
+    field!(t3, x).write(15);
     {
-        let _ptr = ({ TestImpl::as_ptr(&(*t3.borrow())) });
-        _ptr.write(_ptr.read() + 10)
+        ({ TestImpl::as_ptr(&t3) }).with_mut(|__v| *__v = *__v + 10)
     };
     assert!(
-        (({ ({ (*t3.borrow()).with(|__s| __s.x) } + { (*t2.borrow()).with(|__s| __s.x) }) } + {
-            { (*t1.borrow()).x }
-        }) == 75)
+        (({ ({ t3.with(|__s| __s.x) } + { t2.with(|__s| __s.x) }) } + { { (*t1.borrow()).x } })
+            == 75)
     );
     return 0;
 }
@@ -64,10 +61,8 @@ impl TestImpl for Ptr<Test> {
     fn as_ptr(&self) -> Ptr<i32> {
         return (field_ptr!((*self), x));
     }
-    fn update(&self, x: i32, y: i32) {
-        let x: Value<i32> = Rc::new(RefCell::new(x));
-        let y: Value<i32> = Rc::new(RefCell::new(y));
-        field!((*self), x).write(((*x.borrow()) + (*y.borrow())));
+    fn update(&self, mut x: i32, mut y: i32) {
+        field!((*self), x).write((x + y));
     }
 }
 pub fn __cpp2rust_init_globals() {}

@@ -6,24 +6,20 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn runtime_only_0(x: i32) -> i32 {
-    let x: Value<i32> = Rc::new(RefCell::new(x));
-    return ((*x.borrow()) * 2);
+pub fn runtime_only_0(mut x: i32) -> i32 {
+    return (x * 2);
 }
-pub fn first_1(p: Ptr<i32>) -> i32 {
-    let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p));
-    return ((*p.borrow()).read());
+pub fn first_1(mut p: Ptr<i32>) -> i32 {
+    return (p.read());
 }
-pub fn scaled_2(x: i32) -> i32 {
-    let x: Value<i32> = Rc::new(RefCell::new(x));
-    if ((*x.borrow()) < 0) {
-        return ({ runtime_only_0(-(*x.borrow())) });
+pub fn scaled_2(mut x: i32) -> i32 {
+    if (x < 0) {
+        return ({ runtime_only_0(-x) });
     }
-    return (*x.borrow());
+    return x;
 }
-pub fn half_3(x: f64) -> f64 {
-    let x: Value<f64> = Rc::new(RefCell::new(x));
-    return ((*x.borrow()) / 2.0E+0);
+pub fn half_3(mut x: f64) -> f64 {
+    return (x / 2_f64);
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
@@ -36,11 +32,15 @@ pub fn use_4(f: Flag) -> i32 {
     assert!(({ FlagImpl::to_bool(&f.as_pointer(),) }));
     return { (*f.borrow()).v };
 }
-pub fn checked_5(x: i32) -> i32 {
-    let x: Value<i32> = Rc::new(RefCell::new(x));
-    assert!(((*x.borrow()) > 0));
-    return ((*x.borrow()) + 1);
+pub fn checked_5(mut x: i32) -> i32 {
+    assert!((x > 0));
+    return (x + 1);
 }
+pub fn in_constant_context_6() -> bool {
+    {}
+    return (({ runtime_only_0(1) }) == 0);
+}
+const _: () = assert!(true, "in_constant_context()");
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct P {
@@ -52,24 +52,26 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
+    let mut runtime_context: bool = ({ in_constant_context_6() });
+    assert!(!(runtime_context));
     let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([7, 8])));
     assert!((({ first_1((arr.as_pointer() as Ptr::<i32>),) }) == 7));
     assert!((({ first_1((arr.as_pointer() as Ptr::<i32>).offset((1) as isize),) }) == 8));
     assert!((({ scaled_2(3,) }) == 3));
     assert!((({ scaled_2(-3_i32,) }) == 6));
-    assert!((({ half_3(5.0E+0,) }) == 2.5E+0));
+    assert!((({ half_3(5_f64,) }) == 2.5_f64));
     assert!((({ checked_5(1,) }) == 2));
-    let c: Value<i32> = Rc::new(RefCell::new(({ checked_5(4) })));
-    assert!(((*c.borrow()) == 5));
+    let mut c: i32 = ({ checked_5(4) });
+    assert!((c == 5));
     assert!((({ use_4(Flag { v: 2 },) }) == 2));
-    let u: Value<i32> = Rc::new(RefCell::new(({ use_4(Flag { v: 3 }) })));
-    assert!(((*u.borrow()) == 3));
-    let ptr: Value<Ptr<i32>> = Rc::new(RefCell::new((arr.as_pointer() as Ptr<i32>)));
-    assert!(!(*ptr.borrow()).is_null());
+    let mut u: i32 = ({ use_4(Flag { v: 3 }) });
+    assert!((u == 3));
+    let mut ptr: Ptr<i32> = (arr.as_pointer() as Ptr<i32>);
+    assert!(!(ptr).is_null());
     let p: Value<P> = Rc::new(RefCell::new(P { v: 9 }));
     assert!((({ PImpl::get(&p.as_pointer(),) }) == 9));
-    let k: Value<i32> = Rc::new(RefCell::new(({ scaled_2(4) })));
-    assert!(((*k.borrow()) == 4));
+    let mut k: i32 = ({ scaled_2(4) });
+    assert!((k == 4));
     return 0;
 }
 pub trait FlagImpl {

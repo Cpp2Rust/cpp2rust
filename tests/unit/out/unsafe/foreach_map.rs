@@ -17,7 +17,7 @@ unsafe fn main_0() -> i32 {
     let mut i: i32 = 0;
     let mut k: i32 = 100;
     'loop_: while ((i) < (100)) {
-        (*m.entry(i).or_default().as_mut()) = ((k as f64) / (2.0E+0));
+        (*m.entry(i).or_default().as_mut()) = ((k as f64) / (2_f64));
         {
             i.prefix_inc();
             k.prefix_dec()

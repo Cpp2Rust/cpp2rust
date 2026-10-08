@@ -22,34 +22,28 @@ pub struct Tracked {
     pub moves: i32,
 }
 impl Tracked {
-    pub fn new(v: i32) -> Self {
-        let v: Value<i32> = Rc::new(RefCell::new(v));
-        let __this: Value<Tracked> = Rc::new(RefCell::new(Self {
-            v: (*v.borrow()),
+    pub fn new(mut v: i32) -> Self {
+        Self {
+            v: v,
             copies: 0,
             moves: 0,
-        }));
-        let this: Ptr<Tracked> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
     pub fn copy_from(o: Ptr<Tracked>) -> Self {
-        let __this: Value<Tracked> = Rc::new(RefCell::new(Self {
+        Self {
             v: o.with(|__s| __s.v),
             copies: (o.with(|__s| __s.copies) + 1),
             moves: o.with(|__s| __s.moves),
-        }));
-        let this: Ptr<Tracked> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
     pub fn move_from(o: Ptr<Tracked>) -> Self {
-        let __this: Value<Tracked> = Rc::new(RefCell::new(Self {
+        let __this: Tracked = Self {
             v: o.with(|__s| __s.v),
             copies: o.with(|__s| __s.copies),
             moves: (o.with(|__s| __s.moves) + 1),
-        }));
-        let this: Ptr<Tracked> = __this.as_pointer();
+        };
         field!(o, v).write(0);
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        __this
     }
 }
 impl Clone for Tracked {
@@ -76,7 +70,7 @@ pub fn chosen_overload_3(_a0: Ptr<i32>) -> Overload {
 }
 pub fn copy_or_move_into_param_4(t: Tracked) -> Tracked {
     let t: Value<Tracked> = Rc::new(RefCell::new(t));
-    return Tracked::move_from({ (t.as_pointer()).clone() });
+    return Tracked::move_from({ t.as_pointer() });
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -93,20 +87,18 @@ fn main_0() -> i32 {
     );
     assert!(({ (*a.borrow()).v } == 5));
     let b: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 6 })));
-    let moved: Value<Tracked> = Rc::new(RefCell::new(
-        ({ copy_or_move_into_param_4(Tracked::move_from({ b.as_pointer() })) }),
-    ));
-    assert!(({ (*moved.borrow()).v } == 6));
-    assert!(({ (*moved.borrow()).copies } == 0));
-    assert!(({ (*moved.borrow()).moves } == 2));
+    let mut moved: Tracked =
+        ({ copy_or_move_into_param_4(Tracked::move_from({ b.as_pointer() })) });
+    assert!((moved.v == 6));
+    assert!((moved.copies == 0));
+    assert!((moved.moves == 2));
     assert!(({ (*b.borrow()).v } == 0));
     let c: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 7 })));
-    let copied: Value<Tracked> = Rc::new(RefCell::new(
-        ({ copy_or_move_into_param_4(Tracked::copy_from({ c.as_pointer() })) }),
-    ));
-    assert!(({ (*copied.borrow()).v } == 7));
-    assert!(({ (*copied.borrow()).copies } == 1));
-    assert!(({ (*copied.borrow()).moves } == 1));
+    let mut copied: Tracked =
+        ({ copy_or_move_into_param_4(Tracked::copy_from({ c.as_pointer() })) });
+    assert!((copied.v == 7));
+    assert!((copied.copies == 1));
+    assert!((copied.moves == 1));
     assert!(({ (*c.borrow()).v } == 7));
     let i: Value<i32> = Rc::new(RefCell::new(8));
     assert!(

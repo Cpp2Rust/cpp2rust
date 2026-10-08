@@ -21,22 +21,10 @@ unsafe fn main_0() -> i32 {
     };
     write!((*os1), "hello\n",);
     let os2: *mut std::fs::File = if cond {
-        &mut std::fs::File::from_raw_fd(
-            std::io::stdout()
-                .as_fd()
-                .try_clone_to_owned()
-                .unwrap()
-                .into_raw_fd(),
-        )
+        libcc2rs::cout_unsafe()
     } else {
-        &mut std::fs::File::from_raw_fd(
-            std::io::stderr()
-                .as_fd()
-                .try_clone_to_owned()
-                .unwrap()
-                .into_raw_fd(),
-        )
-    } as *mut std::fs::File;
+        libcc2rs::cerr_unsafe()
+    };
     write!((*os2), "hello\n",);
     return 0;
 }
