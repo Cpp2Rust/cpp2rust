@@ -30,7 +30,7 @@ unsafe fn main_0() -> i32 {
     let mut d: f64 = 0_f64;
     let mut p: *mut i32 = (unsafe { zero_0() });
     assert!(((i) == (0)));
-    assert!(((d) == (0.0E+0)));
+    assert!(((d) == (0_f64)));
     assert!((p).is_null());
     assert!(((unsafe { zero_1() }) == (0_i64)));
     let mut x: i32 = 5;

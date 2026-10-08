@@ -7,11 +7,11 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn next_0() -> i32 {
-    thread_local!(
-        static counter_1: Value<i32> = Rc::new(RefCell::new(0));
-    );
     return (*counter_1.with(Value::clone).borrow_mut()).prefix_inc();
 }
+thread_local!(
+    static counter_1: Value<i32> = Rc::new(RefCell::new(0));
+);
 pub fn marker_2(mut tag: u8) -> u8 {
     return ((((tag as i32) << 3) | 2) as u8);
 }
@@ -74,14 +74,14 @@ thread_local!(
     pub static member_10: Value<i32> = Rc::new(RefCell::new(({ next_0() })));
 );
 pub fn local_static_12() -> i32 {
-    thread_local!(
-        static once_13: Value<i32> = Rc::new(RefCell::new(({ next_0() })));
-    );
-    thread_local!(
-        static local_ctor_14: Value<Ctor> = Rc::new(RefCell::new(Ctor::new_2({ 3 })));
-    );
     return (once_13.with(|rc| *rc.borrow()) + { (*local_ctor_14.with(Value::clone).borrow()).v });
 }
+thread_local!(
+    static once_13: Value<i32> = Rc::new(RefCell::new(({ next_0() })));
+);
+thread_local!(
+    static local_ctor_14: Value<Ctor> = Rc::new(RefCell::new(Ctor::new_2({ 3 })));
+);
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(4)]
 pub struct Singleton {
@@ -93,9 +93,6 @@ impl Singleton {
         Self { hits: 0 }
     }
     pub fn instance() -> Ptr<Singleton> {
-        thread_local!(
-            static s_15: Value<Singleton> = Rc::new(RefCell::new(Singleton::new()));
-        );
         return s_15.with(|v| v.as_pointer());
     }
 }
@@ -104,6 +101,9 @@ impl Default for Singleton {
         { Singleton::new() }
     }
 }
+thread_local!(
+    static s_15: Value<Singleton> = Rc::new(RefCell::new(Singleton::new()));
+);
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());

@@ -23,6 +23,6 @@ pub fn main() {
     }
 }
 unsafe fn main_0(mut _a0: i32, mut _a1: *mut *mut libc::c_char) -> i32 {
-    return 0;
+    0
 }
 pub unsafe fn __cpp2rust_init_globals() {}

@@ -26,6 +26,12 @@ fn main_0() -> i32 {
         },
         |x: i32| -> i32 {
             return (x + (base.read()));
+        },
+        copy_from {
+            base: (base).clone(),
+        },
+        move_from {
+            base: (base).clone(),
         }
     )));
     assert!((({ (*add_base.borrow()).call(5,) }) == 15));
@@ -38,7 +44,9 @@ fn main_0() -> i32 {
         },
         || -> i32 {
             return (s.with(|__s| __s.x) + s.with(|__s| __s.y));
-        }
+        },
+        copy_from { s: (s).clone() },
+        move_from { s: (s).clone() }
     )));
     assert!((({ (*sum.borrow()).call() }) == 3));
     (*s.borrow_mut()).x = 50;
@@ -50,6 +58,12 @@ fn main_0() -> i32 {
         },
         || {
             counter.with_mut(|__v| __v.postfix_inc());
+        },
+        copy_from {
+            counter: (counter).clone(),
+        },
+        move_from {
+            counter: (counter).clone(),
         }
     )));
     ({ (*bump.borrow()).call() });
@@ -64,7 +78,9 @@ fn main_0() -> i32 {
             let mut t: u16 = (elem!((arr), j).read());
             elem!((arr), j).write({ (elem!((arr), i).read()) });
             elem!((arr), i).write(t);
-        }
+        },
+        copy_from { arr: (arr).clone() },
+        move_from { arr: (arr).clone() }
     )));
     ({ (*swap.borrow()).call(0_usize, 3_usize) });
     assert!((((*arr.borrow())[(0) as usize] as i32) == 0));
@@ -79,7 +95,9 @@ fn main_0() -> i32 {
                 let __rhs = { x };
                 t.with_mut(|__v| *__v = *__v + __rhs)
             };
-        }
+        },
+        copy_from { t: (t).clone() },
+        move_from { t: (t).clone() }
     )));
     ({ (*add.borrow()).call(2) });
     ({ (*add.borrow()).call(3) });
@@ -90,7 +108,9 @@ fn main_0() -> i32 {
         },
         |v: i32| {
             y.write({ v });
-        }
+        },
+        copy_from { y: (y).clone() },
+        move_from { y: (y).clone() }
     )));
     ({ (*set_y.borrow()).call(9) });
     assert!(({ (*s.borrow()).y } == 9));

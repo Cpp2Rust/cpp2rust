@@ -61,12 +61,6 @@ fn main_0() -> i32 {
             == 2)
     );
     assert!(({ (*obj_4.with(Value::clone).borrow()).p.clone() }.with(|__s| __s.value) == 42));
-    thread_local!(
-        static cache_5: Value<Box<[Ptr<Inner>]>> = Rc::new(RefCell::new(Box::new([
-            (alpha_0.with(|v| v.as_pointer())),
-            (beta_1.with(|v| v.as_pointer())),
-        ])));
-    );
     assert!(
         (({
             let __idx = (0) as usize;
@@ -85,6 +79,12 @@ fn main_0() -> i32 {
     );
     return 0;
 }
+thread_local!(
+    static cache_5: Value<Box<[Ptr<Inner>]>> = Rc::new(RefCell::new(Box::new([
+        (alpha_0.with(|v| v.as_pointer())),
+        (beta_1.with(|v| v.as_pointer())),
+    ])));
+);
 pub fn __cpp2rust_init_globals() {
     let _ = alpha_0.with(|_| ());
     let _ = beta_1.with(|_| ());

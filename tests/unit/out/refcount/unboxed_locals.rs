@@ -85,6 +85,12 @@ fn main_0() -> i32 {
         },
         || -> i32 {
             return (captured.read());
+        },
+        copy_from {
+            captured: (captured).clone(),
+        },
+        move_from {
+            captured: (captured).clone(),
         }
     )));
     (*captured.borrow_mut()) = 8;
@@ -115,8 +121,8 @@ fn main_0() -> i32 {
         0_f64, 0_f64, 0_f64, 0_f64, 0_f64, 0_f64, 0_f64, 0_f64, 0_f64, 0_f64, 0_f64, 0_f64, 0_f64,
         0_f64, 0_f64, 0_f64,
     ];
-    zeros[(15) as usize] = 1.5E+0;
-    assert!((zeros[(0) as usize] == 0_f64) && (zeros[(15) as usize] == 1.5E+0));
+    zeros[(15) as usize] = 1.5_f64;
+    assert!((zeros[(0) as usize] == 0_f64) && (zeros[(15) as usize] == 1.5_f64));
     assert!((({ countdown_4(10, None,) }) == 10));
     assert!((({ countdown_4(10, Some(3),) }) == 4));
     let mut init: i32 = 3;

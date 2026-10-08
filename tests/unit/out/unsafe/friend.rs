@@ -77,7 +77,7 @@ unsafe fn main_0() -> i32 {
         })
     );
     assert!(((unsafe { scaled_2(&c, 2,) }) == (8)));
-    assert!(((unsafe { scaled_3(&c, 1.5E+0,) }) == (6.0E+0)));
+    assert!(((unsafe { scaled_3(&c, 1.5_f64,) }) == (6_f64)));
     let mut wi: W_int_ = W_int_ { x: 5 };
     let mut wl: W_long_ = W_long_ { x: 6_i64 };
     assert!(((unsafe { get_4(&wi,) }) == (5)));

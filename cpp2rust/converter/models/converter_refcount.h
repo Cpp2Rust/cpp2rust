@@ -124,6 +124,8 @@ public:
   void ConvertLambdaCapture(const clang::FieldDecl *field,
                             clang::Expr *init) override;
 
+  void ConvertLambdaCopyAndMove(clang::CXXRecordDecl *decl) override;
+
   void ConvertLambdaToFunctionPointer(clang::Expr *lambda) override;
 
   void
@@ -136,6 +138,8 @@ public:
   bool VisitCallExpr(clang::CallExpr *expr) override;
 
   bool VisitStringLiteral(clang::StringLiteral *expr) override;
+
+  std::string GetSourceFileAsString(clang::QualType type) override;
 
   bool VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) override;
 

@@ -38,6 +38,12 @@ unsafe fn main_0() -> i32 {
         c"%d\n".as_ptr() as *const i8,
         ((unsafe { is_negative_1((lit.as_mut_ptr()).cast_const()) }) as i32),
     );
+    let mut u8s: *const libc::c_char = c"\xc3\xa9".as_ptr();
+    printf(
+        c"%d %d\n".as_ptr() as *const i8,
+        ((*u8s.offset((0) as isize)) as i32),
+        ((*u8s.offset((1) as isize)) as i32),
+    );
     let mut p: *const libc::c_char = c"\x80".as_ptr();
     printf(
         c"%d %d\n".as_ptr() as *const i8,

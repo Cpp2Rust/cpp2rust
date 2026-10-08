@@ -60,14 +60,6 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    static mut items_4: std::cell::LazyCell<[*mut libc::c_char; 3]> =
-        std::cell::LazyCell::new(|| unsafe {
-            [
-                c"a".as_ptr().cast_mut(),
-                c"b".as_ptr().cast_mut(),
-                c"c".as_ptr().cast_mut(),
-            ]
-        });;
     let mut p_list: Branch = <Branch>::default();
     p_list.choice = Choice_enum_C_LIST;
     p_list.index = 0;
@@ -100,4 +92,12 @@ unsafe fn main_0() -> i32 {
     assert!(((((p_integers.v.integers.width) == (3)) as i32) != 0));
     return 0;
 }
+static mut items_4: std::cell::LazyCell<[*mut libc::c_char; 3]> =
+    std::cell::LazyCell::new(|| unsafe {
+        [
+            c"a".as_ptr().cast_mut(),
+            c"b".as_ptr().cast_mut(),
+            c"c".as_ptr().cast_mut(),
+        ]
+    });
 pub unsafe fn __cpp2rust_init_globals() {}

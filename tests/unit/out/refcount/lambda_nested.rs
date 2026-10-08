@@ -31,10 +31,20 @@ fn main_0() -> i32 {
                 },
                 |z: i32| -> i32 {
                     return (((x.read()) + (*y.borrow())) + z);
+                },
+                copy_from {
+                    x: (x).clone(),
+                    y: Rc::new(RefCell::new((*y.borrow()))),
+                },
+                move_from {
+                    x: (x).clone(),
+                    y: Rc::new(RefCell::new((*y.borrow()))),
                 }
             )));
             return ({ (*inner.borrow()).call(1) });
-        }
+        },
+        copy_from { x: (x).clone() },
+        move_from { x: (x).clone() }
     )));
     assert!((({ (*outer.borrow()).call(20,) }) == 31));
     (*x.borrow_mut()) = 100;
@@ -61,9 +71,23 @@ impl SImpl for Ptr<S> {
                     },
                     |z: i32| -> i32 {
                         return (((*this_.borrow()).clone().with(|__s| __s.v) + (*y.borrow())) + z);
+                    },
+                    copy_from {
+                        this_: Rc::new(RefCell::new((*this_.borrow()).clone())),
+                        y: Rc::new(RefCell::new((*y.borrow()))),
+                    },
+                    move_from {
+                        this_: Rc::new(RefCell::new((*this_.borrow()).clone())),
+                        y: Rc::new(RefCell::new((*y.borrow()))),
                     }
                 )));
                 return ({ (*inner.borrow()).call(1) });
+            },
+            copy_from {
+                this_: Rc::new(RefCell::new((*this_.borrow()).clone())),
+            },
+            move_from {
+                this_: Rc::new(RefCell::new((*this_.borrow()).clone())),
             }
         )));
         return ({ (*outer.borrow()).call(20) });

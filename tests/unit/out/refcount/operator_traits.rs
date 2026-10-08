@@ -170,36 +170,36 @@ fn main_0() -> i32 {
     let mut nine: Eq = Eq { v: 9 };
     assert!(
         ({
-            ((eqs.as_pointer() as Ptr<Eq>)
-                .offset(
+            ({
+                let count = ((eqs.as_pointer() as Ptr<Eq>).to_end().get_offset()
+                    - (eqs.as_pointer() as Ptr<Eq>).get_offset())
+                    as usize;
+                (eqs.as_pointer() as Ptr<Eq>).offset(
                     (eqs.as_pointer() as Ptr<Eq>)
                         .clone()
                         .into_iter()
-                        .enumerate()
-                        .position(|(index_0, value_0)| {
-                            index_0 < (eqs.as_pointer() as Ptr<Eq>).to_end().get_offset() as usize
-                                && value_0.read() == two
-                        })
-                        .unwrap_or((eqs.as_pointer() as Ptr<Eq>).to_end().get_offset() as usize)
-                        as isize,
+                        .take(count)
+                        .position(|value_0| value_0.read() == two)
+                        .unwrap_or(count) as isize,
                 )
-                .read())
+            }
+            .read())
             .v
         } == 2)
     );
     assert!(
-        (eqs.as_pointer() as Ptr<Eq>).offset(
-            (eqs.as_pointer() as Ptr<Eq>)
-                .clone()
-                .into_iter()
-                .enumerate()
-                .position(|(index_0, value_0)| {
-                    index_0 < (eqs.as_pointer() as Ptr<Eq>).to_end().get_offset() as usize
-                        && value_0.read() == nine
-                })
-                .unwrap_or((eqs.as_pointer() as Ptr<Eq>).to_end().get_offset() as usize)
-                as isize,
-        ) == (eqs.as_pointer() as Ptr<Eq>).to_end()
+        {
+            let count = ((eqs.as_pointer() as Ptr<Eq>).to_end().get_offset()
+                - (eqs.as_pointer() as Ptr<Eq>).get_offset()) as usize;
+            (eqs.as_pointer() as Ptr<Eq>).offset(
+                (eqs.as_pointer() as Ptr<Eq>)
+                    .clone()
+                    .into_iter()
+                    .take(count)
+                    .position(|value_0| value_0.read() == nine)
+                    .unwrap_or(count) as isize,
+            )
+        } == (eqs.as_pointer() as Ptr<Eq>).to_end()
     );
     let cmps: Value<Vec<Cmp>> =
         Rc::new(RefCell::new(vec![Cmp { v: 3 }, Cmp { v: 1 }, Cmp { v: 2 }]));
@@ -208,20 +208,20 @@ fn main_0() -> i32 {
     let mut three: Cmp = Cmp { v: 3 };
     assert!(
         ({
-            ((cmps.as_pointer() as Ptr<Cmp>)
-                .offset(
+            ({
+                let count = ((cmps.as_pointer() as Ptr<Cmp>).to_end().get_offset()
+                    - (cmps.as_pointer() as Ptr<Cmp>).get_offset())
+                    as usize;
+                (cmps.as_pointer() as Ptr<Cmp>).offset(
                     (cmps.as_pointer() as Ptr<Cmp>)
                         .clone()
                         .into_iter()
-                        .enumerate()
-                        .position(|(index_0, value_0)| {
-                            index_0 < (cmps.as_pointer() as Ptr<Cmp>).to_end().get_offset() as usize
-                                && value_0.read() == three
-                        })
-                        .unwrap_or((cmps.as_pointer() as Ptr<Cmp>).to_end().get_offset() as usize)
-                        as isize,
+                        .take(count)
+                        .position(|value_0| value_0.read() == three)
+                        .unwrap_or(count) as isize,
                 )
-                .read())
+            }
+            .read())
             .v
         } == 3)
     );
@@ -231,21 +231,20 @@ fn main_0() -> i32 {
     let mut ftwo: Free = Free { v: 2 };
     assert!(
         ({
-            ((frees.as_pointer() as Ptr<Free>)
-                .offset(
+            ({
+                let count = ((frees.as_pointer() as Ptr<Free>).to_end().get_offset()
+                    - (frees.as_pointer() as Ptr<Free>).get_offset())
+                    as usize;
+                (frees.as_pointer() as Ptr<Free>).offset(
                     (frees.as_pointer() as Ptr<Free>)
                         .clone()
                         .into_iter()
-                        .enumerate()
-                        .position(|(index_0, value_0)| {
-                            index_0
-                                < (frees.as_pointer() as Ptr<Free>).to_end().get_offset() as usize
-                                && value_0.read() == ftwo
-                        })
-                        .unwrap_or((frees.as_pointer() as Ptr<Free>).to_end().get_offset() as usize)
-                        as isize,
+                        .take(count)
+                        .position(|value_0| value_0.read() == ftwo)
+                        .unwrap_or(count) as isize,
                 )
-                .read())
+            }
+            .read())
             .v
         } == 2)
     );

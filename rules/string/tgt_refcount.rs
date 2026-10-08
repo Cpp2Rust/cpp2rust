@@ -6,7 +6,7 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 fn t1() -> Vec<i8> {
-    Vec::new()
+    vec![0]
 }
 
 fn t2() -> Ptr<i8> {

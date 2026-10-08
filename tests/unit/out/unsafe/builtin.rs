@@ -41,15 +41,15 @@ pub unsafe fn test_clzl_8() {
 }
 pub unsafe fn test_inff_9() {
     let mut inf: f32 = f32::INFINITY;
-    assert!(((((inf) > (0.0E+0)) as i32) != 0));
-    assert!(((((inf) == ((inf) * (2.0E+0))) as i32) != 0));
-    assert!((((((1.0E+0) / (inf)) == (0.0E+0)) as i32) != 0));
+    assert!(((((inf) > (0_f32)) as i32) != 0));
+    assert!(((((inf) == ((inf) * (2_f32))) as i32) != 0));
+    assert!((((((1_f32) / (inf)) == (0_f32)) as i32) != 0));
 }
 pub unsafe fn test_nanf_10() {
     let mut nan: f32 = f32::NAN;
     assert!(((((nan) != (nan)) as i32) != 0));
-    assert!(((!((((nan) < (0.0E+0)) as i32) != 0) as i32) != 0));
-    assert!(((!((((nan) > (0.0E+0)) as i32) != 0) as i32) != 0));
+    assert!(((!((((nan) < (0_f32)) as i32) != 0) as i32) != 0));
+    assert!(((!((((nan) > (0_f32)) as i32) != 0) as i32) != 0));
 }
 pub unsafe fn test_mul_overflow_long_11() {
     let mut r: i64 = 0_i64;

@@ -382,6 +382,10 @@ public:
                                       uint64_t pad_nulls = 0) const;
   virtual bool VisitStringLiteral(clang::StringLiteral *expr);
 
+  bool VisitSourceLocExpr(clang::SourceLocExpr *expr);
+
+  virtual std::string GetSourceFileAsString(clang::QualType type);
+
   virtual bool VisitCXXBoolLiteralExpr(clang::CXXBoolLiteralExpr *expr);
 
   bool VisitCXXNoexceptExpr(clang::CXXNoexceptExpr *expr);
@@ -477,6 +481,8 @@ public:
 
   void ConvertLambdaClosure(const clang::CXXRecordDecl *decl);
 
+  virtual void ConvertLambdaCopyAndMove(clang::CXXRecordDecl *decl);
+
   virtual bool VisitImplicitValueInitExpr(clang::ImplicitValueInitExpr *expr);
   virtual bool VisitCXXScalarValueInitExpr(clang::CXXScalarValueInitExpr *expr);
 
@@ -496,6 +502,10 @@ public:
 
   bool TraverseClassTemplateSpecializationDecl(
       clang::ClassTemplateSpecializationDecl *) {
+    return true;
+  }
+
+  bool TraverseExplicitInstantiationDecl(clang::ExplicitInstantiationDecl *) {
     return true;
   }
 
@@ -669,6 +679,10 @@ protected:
                                          std::string_view record_name);
 
   std::string GetComparisonCall(const clang::FunctionDecl *op,
+                                const clang::CXXRecordDecl *decl,
+                                std::string_view lhs, std::string_view rhs);
+
+  std::string GetComparisonBool(const clang::FunctionDecl *op,
                                 const clang::CXXRecordDecl *decl,
                                 std::string_view lhs, std::string_view rhs);
 

@@ -191,6 +191,8 @@ template <class T> llvm::SmallString<16> GetNumAsString(const T &num) {
   return small_string;
 }
 
+std::string GetNumAsString(llvm::APFloat value);
+
 clang::QualType GetReturnTypeOfFunction(const clang::CallExpr *expr);
 
 const char *GetOverloadedOperator(const clang::FunctionDecl *decl);
@@ -210,6 +212,10 @@ const clang::CXXRecordDecl *AsLambdaClass(clang::QualType type);
 const clang::CXXMethodDecl *AsLambdaOperatorCall(const clang::FunctionDecl *fn);
 
 const clang::LambdaCapture *AsLambdaCapture(const clang::FieldDecl *field);
+
+bool IsLambdaCopyOrMoveConstructor(const clang::CXXConstructorDecl *ctor);
+
+bool LambdaNeedsDestruction(const clang::CXXRecordDecl *decl);
 
 clang::Expr *AsLambdaUncapturedConstant(const clang::FunctionDecl *fn,
                                         clang::DeclRefExpr *expr);

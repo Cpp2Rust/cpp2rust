@@ -45,14 +45,14 @@ fn main_0() -> i32 {
             + ((({ bar_2((x.as_pointer()), true,) }).read()) as f64))
             + (({ bar_3((y.as_pointer()), true,) }).read()))
             + (({ func_4(1, 2, 3,) }) as f64))
-            + (({ func_5(2.0E+0, (*x.borrow()), (*y.borrow()),) }) as f64))
+            + (({ func_5(2_f64, (*x.borrow()), (*y.borrow()),) }) as f64))
             == 68_f64)
     );
     assert!((half_6.with(|rc| *rc.borrow()) == 0));
-    assert!((half_7.with(|rc| *rc.borrow()) == 5.0E-1));
+    assert!((half_7.with(|rc| *rc.borrow()) == 0.5_f64));
     half_6.with(|rc| *rc.borrow_mut() = 7);
     assert!((half_6.with(|rc| *rc.borrow()) == 7));
-    assert!((half_7.with(|rc| *rc.borrow()) == 5.0E-1));
+    assert!((half_7.with(|rc| *rc.borrow()) == 0.5_f64));
     assert!((*half_8.with(Value::clone).borrow()).is_null());
     half_8.with(|rc| *rc.borrow_mut() = (x.as_pointer()));
     assert!((((*half_8.with(Value::clone).borrow()).read()) == 10));

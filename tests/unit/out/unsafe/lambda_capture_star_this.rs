@@ -23,7 +23,9 @@ impl S {
             || -> i32 {
                 (*(&raw mut this_)).n += 10;
                 return (*(&raw mut this_)).n;
-            }
+            },
+            copy_from { this_: this_ },
+            move_from { this_: this_ }
         );
         let mut r: i32 = (unsafe { f.call() });
         return (((r) * (100)) + (self.n));
@@ -35,7 +37,9 @@ impl S {
             },
             || -> i32 {
                 return (unsafe { S::twice(&(*(&raw mut this_))) });
-            }
+            },
+            copy_from { this_: this_ },
+            move_from { this_: this_ }
         );
         self.n = 99;
         return (unsafe { f.call() });
@@ -48,7 +52,9 @@ impl S {
             },
             || -> i32 {
                 return (((*(&raw mut this_)).n) + (k));
-            }
+            },
+            copy_from { this_: this_, k: k },
+            move_from { this_: this_, k: k }
         );
         self.n = 0;
         return (unsafe { f.call() });

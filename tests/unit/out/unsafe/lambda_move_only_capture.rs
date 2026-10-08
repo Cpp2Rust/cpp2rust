@@ -38,6 +38,12 @@ impl Owner {
             },
             || -> i32 {
                 return (*self_.p);
+            },
+            move_from {
+                self_: Owner::move_from({ &mut self_ },),
+            },
+            destroy = {
+                Owner::destructor(&mut self.self_);
             }
         );
     }
@@ -57,11 +63,19 @@ unsafe fn main_0() -> i32 {
         },
         || -> i32 {
             return (*h.p);
+        },
+        move_from {
+            h: Owner::move_from({ &mut h },),
+        },
+        destroy = {
+            Owner::destructor(&mut self.h);
         }
     );
+    let _dtor_f = ScopedDestructorUnsafe::new(&raw mut f, |__f| __f.destroy());
     assert!((o.p).is_null());
     assert!(((unsafe { f.call() }) == (5)));
-    let mut g: FnPtr<fn() -> i32> = f;
+    let mut g: FnPtr<fn() -> i32> = f.move_from();
+    let _dtor_g = ScopedDestructorUnsafe::new(&raw mut g, |__f| __f.destroy());
     assert!(((unsafe { g.call() }) == (5)));
     let mut total: i32 = 0;
     let mut consume: FnPtr<fn()> = lambda_unsafe!(
@@ -72,14 +86,23 @@ unsafe fn main_0() -> i32 {
         || {
             (*total) += (*h.p);
             (*h.p) = 0;
+        },
+        move_from {
+            h: Owner::move_from({ &mut h },),
+            total: total,
+        },
+        destroy = {
+            Owner::destructor(&mut self.h);
         }
     );
+    let _dtor_consume = ScopedDestructorUnsafe::new(&raw mut consume, |__f| __f.destroy());
     (unsafe { consume.call() });
     (unsafe { consume.call() });
     assert!(((total) == (7)));
     let mut o2: Owner = Owner::new({ 9 });
     let _dtor_o2 = ScopedDestructorUnsafe::new(&raw mut o2, Owner::destructor);
     let mut t: FnPtr<fn() -> i32> = (unsafe { Owner::take(&mut o2) });
+    let _dtor_t = ScopedDestructorUnsafe::new(&raw mut t, |__f| __f.destroy());
     assert!((o2.p).is_null());
     assert!(((unsafe { t.call() }) == (9)));
     return 0;

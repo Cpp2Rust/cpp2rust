@@ -24,13 +24,13 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     assert!((((({ a_foo_2() }) == 1) as i32) != 0));
-    assert!((((({ b_foo_4() }) == 1.0E+0) as i32) != 0));
+    assert!((((({ b_foo_4() }) == 1_f32) as i32) != 0));
     assert!((((({ a_bar_3() }) == 5) as i32) != 0));
     assert!((((({ b_bar_5() }) == 6) as i32) != 0));
     return 0;
 }
 thread_local!(
-    pub static same_name_different_type_6: Value<f32> = Rc::new(RefCell::new(1.0E+0));
+    pub static same_name_different_type_6: Value<f32> = Rc::new(RefCell::new(1_f32));
 );
 thread_local!(
     pub static same_name_same_type_7: Value<i32> = Rc::new(RefCell::new(6));

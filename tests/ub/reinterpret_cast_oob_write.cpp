@@ -1,4 +1,5 @@
-// panic: refcount
+// panic-ub: refcount
+// nondet-result: unsafe
 #include <cstdint>
 
 // Write past the end of a u32 viewed as u8

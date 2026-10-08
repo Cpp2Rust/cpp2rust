@@ -259,13 +259,41 @@ bool IsStringLiteralExpr(const clang::Expr *expr) {
 
 bool IsCodeUnitStringLiteral(const clang::StringLiteral *expr) {
   return expr->getCharByteWidth() != 1 ||
-         expr->getKind() == clang::StringLiteralKind::UTF8;
+         expr->getType()->getArrayElementTypeNoTypeQual()->isChar8Type();
+}
+
+std::string GetNumAsString(llvm::APFloat value) {
+  switch (llvm::APFloat::SemanticsToEnum(value.getSemantics())) {
+  case llvm::APFloat::S_IEEEsingle:
+    return value.isInfinity() ? "f32::INFINITY"
+                              : std::format("{}_f32", value.convertToFloat());
+  case llvm::APFloat::S_x87DoubleExtended: {
+    bool loses_info = false;
+    value.convert(llvm::APFloat::IEEEdouble(),
+                  llvm::APFloat::rmNearestTiesToEven, &loses_info);
+  }
+    [[fallthrough]];
+  case llvm::APFloat::S_IEEEdouble:
+    return value.isInfinity() ? "f64::INFINITY"
+                              : std::format("{}_f64", value.convertToDouble());
+  default:
+    assert(false && "unsupported floating-point semantics");
+    return {};
+  }
 }
 
 bool IsUserDefinedDecl(const clang::Decl *decl) {
   const auto &ctx = decl->getASTContext();
   const auto &src_mgr = ctx.getSourceManager();
-  const auto src_loc = decl->getLocation();
+  auto src_loc = decl->getLocation();
+  if (auto *spec =
+          clang::dyn_cast<clang::ClassTemplateSpecializationDecl>(decl);
+      spec && (spec->getSpecializationKind() ==
+                   clang::TSK_ExplicitInstantiationDeclaration ||
+               spec->getSpecializationKind() ==
+                   clang::TSK_ExplicitInstantiationDefinition)) {
+    src_loc = spec->getSpecializedTemplate()->getLocation();
+  }
   return !decl->getBeginLoc().isInvalid() && !decl->isImplicit() &&
          !src_mgr.isInSystemHeader(src_loc) &&
          !src_mgr.isInSystemMacro(src_loc);
@@ -338,6 +366,9 @@ bool RustSizeDivergesFromC(clang::QualType qt) {
   }
   if (auto *arr = qt->getAsArrayTypeUnsafe()) {
     return RustSizeDivergesFromC(arr->getElementType());
+  }
+  if (qt->isPointerType()) {
+    return true;
   }
   return false;
 }
@@ -508,11 +539,11 @@ bool HasDefaultedCopyConstructor(const clang::RecordDecl *decl) {
     return true;
   }
   for (const auto *ctor : cxx->ctors()) {
-    if (ctor->isCopyConstructor()) {
-      return !ctor->isUserProvided() && !ctor->isDeleted();
+    if (ctor->isCopyConstructor() && ctor->isUserProvided()) {
+      return false;
     }
   }
-  return !cxx->defaultedCopyConstructorIsDeleted();
+  return HasCallableCopyConstructor(cxx);
 }
 
 bool RecordHasOnlyReferenceFields(const clang::RecordDecl *decl) {
@@ -542,16 +573,21 @@ bool HasCallableCopyConstructor(const clang::RecordDecl *decl) {
   if (!cxx) {
     return true;
   }
-  if (!cxx->hasUserDeclaredCopyConstructor()) {
-    return !cxx->defaultedCopyConstructorIsDeleted();
+  if (cxx->hasUserDeclaredCopyConstructor()) {
+    return std::ranges::any_of(cxx->ctors(), [](const auto *ctor) {
+      return ctor->isCopyConstructor() && !ctor->isDeleted() &&
+             ctor->getDefinition();
+    });
   }
-  for (const auto *ctor : cxx->ctors()) {
-    if (ctor->isCopyConstructor() && !ctor->isDeleted() &&
-        ctor->getDefinition()) {
-      return true;
-    }
+  if (cxx->defaultedCopyConstructorIsDeleted()) {
+    return false;
   }
-  return false;
+  auto &ctx = cxx->getASTContext();
+  return std::ranges::all_of(cxx->fields(), [&](const clang::FieldDecl *f) {
+    auto *record = ctx.getBaseElementType(f->getType())->getAsCXXRecordDecl();
+    return !record || !IsUserDefinedDecl(record) ||
+           HasCallableCopyConstructor(record);
+  });
 }
 
 bool IsRValueConvertingConstructor(const clang::CXXConstructorDecl *ctor) {
@@ -739,8 +775,14 @@ unsigned GetArraySize(clang::QualType array_type) {
 }
 
 static std::string GetLocationID(const clang::Decl *decl) {
-  return GetFileName(decl) + std::to_string(GetLineNumber(decl)) +
-         std::to_string(GetColumnNumber(decl));
+  auto id = GetFileName(decl) + std::to_string(GetLineNumber(decl)) +
+            std::to_string(GetColumnNumber(decl));
+  if (auto loc = decl->getLocation(); loc.isMacroID()) {
+    const auto &src_mgr = decl->getASTContext().getSourceManager();
+    id += std::to_string(src_mgr.getSpellingLineNumber(loc)) +
+          std::to_string(src_mgr.getSpellingColumnNumber(loc));
+  }
+  return id;
 }
 
 static std::string GetParamSignature(const clang::Decl *decl) {
@@ -1130,6 +1172,18 @@ const clang::LambdaCapture *AsLambdaCapture(const clang::FieldDecl *field) {
     return nullptr;
   }
   return decl->captures_begin() + field->getFieldIndex();
+}
+
+bool IsLambdaCopyOrMoveConstructor(const clang::CXXConstructorDecl *ctor) {
+  auto decl = ctor->getParent();
+  return ctor->isCopyOrMoveConstructor() && decl->isLambda() &&
+         !decl->captures().empty();
+}
+
+bool LambdaNeedsDestruction(const clang::CXXRecordDecl *decl) {
+  return llvm::any_of(decl->fields(), [](const clang::FieldDecl *field) {
+    return TypeNeedsDestruction(field->getType());
+  });
 }
 
 clang::Expr *AsLambdaUncapturedConstant(const clang::FunctionDecl *fn,

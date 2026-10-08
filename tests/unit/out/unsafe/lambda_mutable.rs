@@ -20,7 +20,9 @@ unsafe fn main_0() -> i32 {
         },
         || -> i32 {
             return start.postfix_inc();
-        }
+        },
+        copy_from { start: start },
+        move_from { start: start }
     );
     assert!(((unsafe { next.call() }) == (5)));
     assert!(((unsafe { next.call() }) == (6)));
@@ -34,7 +36,9 @@ unsafe fn main_0() -> i32 {
         |x: i32| -> i32 {
             total += x;
             return total;
-        }
+        },
+        copy_from { total: total },
+        move_from { total: total }
     );
     assert!(((unsafe { accumulate.call(1,) }) == (1)));
     assert!(((unsafe { accumulate.call(2,) }) == (3)));
