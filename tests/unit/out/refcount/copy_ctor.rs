@@ -111,7 +111,7 @@ impl Default for Holder {
         }
     }
 }
-#[derive(Record, ByteRepr, Default)]
+#[derive(Record, ByteRepr, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Box_int_ {
     #[offset(0)]
@@ -128,7 +128,7 @@ impl Box_int_ {
         }
     }
 }
-#[derive(Record, ByteRepr, Default)]
+#[derive(Record, ByteRepr, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Owner {
     #[offset(0)]
