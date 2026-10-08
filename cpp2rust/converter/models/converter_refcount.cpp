@@ -286,6 +286,10 @@ bool ConverterRefCount::VisitIncompleteArrayType(
 
 bool ConverterRefCount::VisitReferenceType(clang::ReferenceType *type) {
   auto pointee_type = type->getPointeeType();
+  if (pointee_type->isFunctionType()) {
+    PushConversionKind push(*this, ConversionKind::Unboxed);
+    return Convert(ctx_.getPointerType(pointee_type));
+  }
   if (pointee_type->isArrayType()) {
     // A reference to an array decays straight to a pointer to its first
     // element, the same way a by-value array parameter would, instead of

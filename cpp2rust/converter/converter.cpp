@@ -274,6 +274,9 @@ bool Converter::VisitIncompleteArrayType(clang::IncompleteArrayType *type) {
 
 bool Converter::VisitReferenceType(clang::ReferenceType *type) {
   auto pointee_type = type->getPointeeType();
+  if (pointee_type->isFunctionType()) {
+    return Convert(ctx_.getPointerType(pointee_type));
+  }
   StrCat(pointee_type.isConstQualified() ? "*const" : "*mut");
   return Convert(pointee_type);
 }
@@ -4311,6 +4314,12 @@ std::string Converter::GetUnsafeTypeAsString(clang::QualType qual_type) const {
 }
 
 void Converter::ConvertVarInit(clang::QualType qual_type, clang::Expr *expr) {
+  if (qual_type->isFunctionReferenceType()) {
+    PushExprKind push(*this, ExprKind::AddrOf);
+    PushInitType init_type(*this, qual_type);
+    Convert(expr);
+    return;
+  }
   if (qual_type->isReferenceType() && !IsReferenceType(expr)) {
     if (llvm::isa<clang::MaterializeTemporaryExpr>(expr->IgnoreImpCasts())) {
       StrCat(EmitMaterializedTempBinding(qual_type, expr));
