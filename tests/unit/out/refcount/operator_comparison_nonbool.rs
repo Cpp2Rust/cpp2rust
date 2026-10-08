@@ -15,9 +15,9 @@ pub struct X {
 impl std::cmp::Ord for X {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         {
-            if operator_lt_0(self.clone(), other.clone()) {
+            if ((operator_lt_0(self.clone(), other.clone())) != 0) {
                 std::cmp::Ordering::Less
-            } else if operator_lt_0(other.clone(), self.clone()) {
+            } else if ((operator_lt_0(other.clone(), self.clone())) != 0) {
                 std::cmp::Ordering::Greater
             } else {
                 std::cmp::Ordering::Equal
@@ -32,7 +32,7 @@ impl std::cmp::PartialOrd for X {
 }
 impl std::cmp::PartialEq for X {
     fn eq(&self, other: &Self) -> bool {
-        { operator_eq_1(self.clone(), other.clone()) }
+        { ((operator_eq_1(self.clone(), other.clone())) != 0) }
     }
 }
 impl std::cmp::Eq for X {}
@@ -66,32 +66,6 @@ pub struct Custom {
     #[offset(0)]
     pub v: i32,
 }
-impl std::cmp::Ord for Custom {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        {
-            CustomImpl::operator_cmp(
-                &Rc::new(RefCell::new(Custom { v: self.v.clone() })).as_pointer(),
-                Rc::new(RefCell::new(Custom { v: other.v.clone() })).as_pointer(),
-            )
-        }
-    }
-}
-impl std::cmp::PartialOrd for Custom {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(other))
-    }
-}
-impl std::cmp::PartialEq for Custom {
-    fn eq(&self, other: &Self) -> bool {
-        {
-            CustomImpl::operator_cmp(
-                &Rc::new(RefCell::new(Custom { v: self.v.clone() })).as_pointer(),
-                Rc::new(RefCell::new(Custom { v: other.v.clone() })).as_pointer(),
-            ) == std::cmp::Ordering::Equal
-        }
-    }
-}
-impl std::cmp::Eq for Custom {}
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Mixed {
@@ -101,10 +75,21 @@ pub struct Mixed {
 impl std::cmp::Ord for Mixed {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         {
-            MixedImpl::operator_cmp(
+            if ((MixedImpl::operator_lt(
                 &Rc::new(RefCell::new(Mixed { v: self.v.clone() })).as_pointer(),
                 Rc::new(RefCell::new(Mixed { v: other.v.clone() })).as_pointer(),
-            )
+            )) != 0)
+            {
+                std::cmp::Ordering::Less
+            } else if ((MixedImpl::operator_lt(
+                &Rc::new(RefCell::new(Mixed { v: other.v.clone() })).as_pointer(),
+                Rc::new(RefCell::new(Mixed { v: self.v.clone() })).as_pointer(),
+            )) != 0)
+            {
+                std::cmp::Ordering::Greater
+            } else {
+                std::cmp::Ordering::Equal
+            }
         }
     }
 }
@@ -116,10 +101,10 @@ impl std::cmp::PartialOrd for Mixed {
 impl std::cmp::PartialEq for Mixed {
     fn eq(&self, other: &Self) -> bool {
         {
-            MixedImpl::operator_eq(
+            ((MixedImpl::operator_eq(
                 &Rc::new(RefCell::new(Mixed { v: self.v.clone() })).as_pointer(),
                 Rc::new(RefCell::new(Mixed { v: other.v.clone() })).as_pointer(),
-            )
+            )) != 0)
         }
     }
 }
@@ -144,9 +129,25 @@ pub struct Boolish {
 impl std::cmp::Ord for Boolish {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         {
-            if operator_lt_6(self.clone(), other.clone()) {
+            if {
+                let __cmp = &operator_lt_6(self.clone(), other.clone());
+                MyBoolImpl::to_bool(
+                    &Rc::new(RefCell::new(MyBool {
+                        value: __cmp.value.clone(),
+                    }))
+                    .as_pointer(),
+                )
+            } {
                 std::cmp::Ordering::Less
-            } else if operator_lt_6(other.clone(), self.clone()) {
+            } else if {
+                let __cmp = &operator_lt_6(other.clone(), self.clone());
+                MyBoolImpl::to_bool(
+                    &Rc::new(RefCell::new(MyBool {
+                        value: __cmp.value.clone(),
+                    }))
+                    .as_pointer(),
+                )
+            } {
                 std::cmp::Ordering::Greater
             } else {
                 std::cmp::Ordering::Equal
@@ -161,7 +162,17 @@ impl std::cmp::PartialOrd for Boolish {
 }
 impl std::cmp::PartialEq for Boolish {
     fn eq(&self, other: &Self) -> bool {
-        { operator_eq_7(self.clone(), other.clone()) }
+        {
+            {
+                let __cmp = &operator_eq_7(self.clone(), other.clone());
+                MyBoolImpl::to_bool(
+                    &Rc::new(RefCell::new(MyBool {
+                        value: __cmp.value.clone(),
+                    }))
+                    .as_pointer(),
+                )
+            }
+        }
     }
 }
 impl std::cmp::Eq for Boolish {}

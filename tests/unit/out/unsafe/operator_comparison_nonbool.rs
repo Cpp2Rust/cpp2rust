@@ -14,9 +14,9 @@ pub struct X {
 impl std::cmp::Ord for X {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         unsafe {
-            if operator_lt_0(self.clone(), other.clone()) {
+            if ((operator_lt_0(self.clone(), other.clone())) != 0) {
                 std::cmp::Ordering::Less
-            } else if operator_lt_0(other.clone(), self.clone()) {
+            } else if ((operator_lt_0(other.clone(), self.clone())) != 0) {
                 std::cmp::Ordering::Greater
             } else {
                 std::cmp::Ordering::Equal
@@ -31,7 +31,7 @@ impl std::cmp::PartialOrd for X {
 }
 impl std::cmp::PartialEq for X {
     fn eq(&self, other: &Self) -> bool {
-        unsafe { operator_eq_1(self.clone(), other.clone()) }
+        unsafe { ((operator_eq_1(self.clone(), other.clone())) != 0) }
     }
 }
 impl std::cmp::Eq for X {}
@@ -70,22 +70,6 @@ impl Custom {
         };
     }
 }
-impl std::cmp::Ord for Custom {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        unsafe { Custom::operator_cmp(self, other as *const Custom) }
-    }
-}
-impl std::cmp::PartialOrd for Custom {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(other))
-    }
-}
-impl std::cmp::PartialEq for Custom {
-    fn eq(&self, other: &Self) -> bool {
-        unsafe { Custom::operator_cmp(self, other as *const Custom) == std::cmp::Ordering::Equal }
-    }
-}
-impl std::cmp::Eq for Custom {}
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Mixed {
@@ -106,7 +90,15 @@ impl Mixed {
 }
 impl std::cmp::Ord for Mixed {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        unsafe { Mixed::operator_cmp(self, other as *const Mixed) }
+        unsafe {
+            if ((Mixed::operator_lt(self, other as *const Mixed)) != 0) {
+                std::cmp::Ordering::Less
+            } else if ((Mixed::operator_lt(other, self as *const Mixed)) != 0) {
+                std::cmp::Ordering::Greater
+            } else {
+                std::cmp::Ordering::Equal
+            }
+        }
     }
 }
 impl std::cmp::PartialOrd for Mixed {
@@ -116,7 +108,7 @@ impl std::cmp::PartialOrd for Mixed {
 }
 impl std::cmp::PartialEq for Mixed {
     fn eq(&self, other: &Self) -> bool {
-        unsafe { Mixed::operator_eq(self, other as *const Mixed) }
+        unsafe { ((Mixed::operator_eq(self, other as *const Mixed)) != 0) }
     }
 }
 impl std::cmp::Eq for Mixed {}
@@ -142,9 +134,15 @@ pub struct Boolish {
 impl std::cmp::Ord for Boolish {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         unsafe {
-            if operator_lt_6(self.clone(), other.clone()) {
+            if {
+                let __cmp = &operator_lt_6(self.clone(), other.clone());
+                MyBool::to_bool(__cmp)
+            } {
                 std::cmp::Ordering::Less
-            } else if operator_lt_6(other.clone(), self.clone()) {
+            } else if {
+                let __cmp = &operator_lt_6(other.clone(), self.clone());
+                MyBool::to_bool(__cmp)
+            } {
                 std::cmp::Ordering::Greater
             } else {
                 std::cmp::Ordering::Equal
@@ -159,7 +157,12 @@ impl std::cmp::PartialOrd for Boolish {
 }
 impl std::cmp::PartialEq for Boolish {
     fn eq(&self, other: &Self) -> bool {
-        unsafe { operator_eq_7(self.clone(), other.clone()) }
+        unsafe {
+            {
+                let __cmp = &operator_eq_7(self.clone(), other.clone());
+                MyBool::to_bool(__cmp)
+            }
+        }
     }
 }
 impl std::cmp::Eq for Boolish {}
