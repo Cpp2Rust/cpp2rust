@@ -49,7 +49,11 @@ unsafe fn f8<T1: PartialOrd>(a0: *mut T1, a1: *mut T1) -> *mut T1 {
     std::slice::from_raw_parts(a0, count)
         .iter()
         .enumerate()
-        .max_by(|(_, x), (_, y)| x.partial_cmp(y).unwrap_or(std::cmp::Ordering::Equal))
+        .max_by(|(idx_a, x), (idx_b, y)| {
+            x.partial_cmp(y)
+                .unwrap_or(std::cmp::Ordering::Equal)
+                .then_with(|| idx_b.cmp(idx_a))
+        })
         .map(|(i, _)| a0.add(i))
         .unwrap_or(a0)
 }

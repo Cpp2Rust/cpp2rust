@@ -47,10 +47,11 @@ fn f8<T1: PartialOrd + Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>) -> Ptr<T1> {
     let count = a1.get_offset() - a0.get_offset();
     let max_index = PtrValueIter::new(&a0, count)
         .enumerate()
-        .max_by(|(_, val_a), (_, val_b)| {
+        .max_by(|(idx_a, val_a), (idx_b, val_b)| {
             val_a
                 .partial_cmp(val_b)
                 .unwrap_or(std::cmp::Ordering::Equal)
+                .then_with(|| idx_b.cmp(idx_a))
         })
         .map(|(idx, _)| idx)
         .unwrap_or(0);
