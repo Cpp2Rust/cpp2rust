@@ -25,14 +25,13 @@ fn f2<T1: Clone + PartialOrd + ByteRepr, T2: Clone + From<T1> + ByteRepr>(
 }
 
 fn f3<T1: PartialEq + Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>, a2: T1) -> Ptr<T1> {
+    let count = (a1.get_offset() - a0.get_offset()) as usize;
     a0.offset(
         a0.clone()
             .into_iter()
-            .enumerate()
-            .position(|(index_0, value_0)| {
-                index_0 < a1.get_offset() as usize && value_0.read() == a2
-            })
-            .unwrap_or(a1.get_offset() as usize) as isize,
+            .take(count)
+            .position(|value_0| value_0.read() == a2)
+            .unwrap_or(count) as isize,
     )
 }
 
