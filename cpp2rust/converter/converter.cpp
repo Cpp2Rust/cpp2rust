@@ -555,6 +555,22 @@ void Converter::ConvertVarDecl(clang::VarDecl *decl) {
   }
 
   HoistMaterializedTempBindings hoist_temps(*this);
+  if (decl->isLocalVarDecl() && !IsGlobalVar(decl) &&
+      !decl->getType()->isReferenceType() && decl->hasInit() &&
+      ReferencesVar(decl->getInit(), decl)) {
+    if (DefaultInitHasSideEffects(ctx_, decl->getType())) {
+      llvm::report_fatal_error("self-referential initializer of a variable "
+                               "whose default initialization has side effects "
+                               "is not supported");
+    }
+    hoisted_decls_.insert(decl);
+    if (ConvertVarDeclSkipInit(decl)) {
+      StrCat(token::kAssign, ConvertVarDefaultInit(decl), token::kSemiColon);
+    }
+    EmitHoistedInArmAssignment(decl);
+    return;
+  }
+
   if (!ConvertVarDeclSkipInit(decl)) {
     // Skip global variables declared extern
     return;
@@ -591,6 +607,10 @@ bool Converter::VisitVarDecl(clang::VarDecl *decl) {
   }
 
   if (IsGlobalVar(decl)) {
+    if (decl->hasInit() && ReferencesVar(decl->getInit(), decl)) {
+      llvm::report_fatal_error(
+          "self-referential initializer of a static variable is not supported");
+    }
     ConvertGlobalVarDecl(decl);
   } else {
     ConvertVarDecl(decl);

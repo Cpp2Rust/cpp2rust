@@ -279,6 +279,11 @@ clang::Expr *GetCallee(clang::CallExpr *expr);
 std::unordered_set<const clang::ValueDecl *>
 GetAllVars(const clang::Stmt *stmt);
 
+bool ReferencesVar(const clang::Stmt *stmt, const clang::VarDecl *var);
+
+bool DefaultInitHasSideEffects(const clang::ASTContext &ctx,
+                               clang::QualType type);
+
 bool ReferencesThis(const clang::Stmt *stmt);
 
 // Whether evaluating `stmt` reads a value from memory, e.g., a pointer.
