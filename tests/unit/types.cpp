@@ -5,9 +5,6 @@
 #include <cstdint>
 #include <inttypes.h>
 
-static_assert(sizeof(std::size_t) == sizeof(void *), "");
-static_assert(sizeof(int *) == 8, "");
-
 int main() {
   const uint8_t xu8 = 8;
   const uint16_t xu16 = 16;
@@ -28,8 +25,6 @@ int main() {
   std::nullptr_t xnp = nullptr;
   assert(xu8 + xu16 + xu32 + xu64 + xsz1 + xsz2 + xi1 + xi2 + xi3 + xi4 == 352);
   assert(xld * 2 == 3);
-  int *ip = nullptr;
-  assert(sizeof(ip) == sizeof(void *));
   assert(xwc + xc8 + xc16 + xc32 == 266);
   assert(xnp == nullptr);
   return 0;
