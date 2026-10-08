@@ -31,6 +31,10 @@ impl Default for node_with_defaults {
         }
     }
 }
+pub unsafe fn init_0(mut l: *mut list_head) -> *mut list_head {
+    (*l).next = std::ptr::null_mut();
+    return l;
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -69,6 +73,11 @@ unsafe fn main_0() -> i32 {
     };
     assert!(((d.next) == (&mut d as *mut node_with_defaults)));
     assert!(((d.value) == (3)));
+    let mut called: list_head = <list_head>::default();
+    called = list_head {
+        next: (unsafe { init_0((&mut called as *mut list_head)) }),
+    };
+    assert!(((called.next) == (&mut called as *mut list_head)));
     let mut size: usize = ::std::mem::size_of::<usize>();
     assert!(((size) == (::std::mem::size_of::<usize>())));
     return 0;

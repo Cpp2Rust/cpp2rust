@@ -15,6 +15,11 @@ struct node_with_defaults {
   int value = 3;
 };
 
+static list_head *init(list_head *l) {
+  l->next = nullptr;
+  return l;
+}
+
 int main() {
   list_head list = {&list};
   assert(list.next == &list);
@@ -31,6 +36,9 @@ int main() {
   node_with_defaults d{&d};
   assert(d.next == &d);
   assert(d.value == 3);
+
+  list_head called = {init(&called)};
+  assert(called.next == &called);
 
   size_t size = sizeof(size);
   assert(size == sizeof(size_t));

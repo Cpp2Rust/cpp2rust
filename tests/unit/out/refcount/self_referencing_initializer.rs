@@ -39,6 +39,10 @@ impl Default for node_with_defaults {
         }
     }
 }
+pub fn init_0(mut l: Ptr<list_head>) -> Ptr<list_head> {
+    field!(l, next).write(Ptr::<list_head>::null());
+    return l;
+}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
@@ -87,6 +91,11 @@ fn main_0() -> i32 {
     };
     assert!(({ { (*d.borrow()).next.clone() } } == { (d.as_pointer()) }));
     assert!(({ (*d.borrow()).value } == 3));
+    let called: Value<list_head> = <Value<list_head>>::default();
+    *called.borrow_mut() = list_head {
+        next: ({ init_0((called.as_pointer())) }),
+    };
+    assert!(({ { (*called.borrow()).next.clone() } } == { (called.as_pointer()) }));
     let mut size: usize = ::std::mem::size_of::<usize>();
     assert!((size == ::std::mem::size_of::<usize>()));
     return 0;
