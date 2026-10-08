@@ -153,13 +153,13 @@ fn main_0() -> i32 {
     let fmc: Value<MyContainer_float_> = Rc::new(RefCell::new(<MyContainer_float_>::default()));
     assert!(({ MyContainer_float_Impl::empty(&fmc.as_pointer(),) }));
     ({
-        let _item: Value<f32> = Rc::new(RefCell::new((1.0E+0 as f32)));
+        let _item: Value<f32> = Rc::new(RefCell::new((1_f64 as f32)));
         MyContainer_float_Impl::push_back(&fmc.as_pointer(), _item.as_pointer())
     });
     assert!(
         (({ MyContainer_float_Impl::size(&fmc.as_pointer(),) }) == 1_usize)
             && (((({ MyContainer_float_Impl::back_4(&fmc.as_pointer(),) }).read()) as f64)
-                == 1.0E+0)
+                == 1_f64)
     );
     ({ MyContainer_float_Impl::pop_back(&fmc.as_pointer()) });
     assert!(({ MyContainer_float_Impl::empty(&fmc.as_pointer(),) }));

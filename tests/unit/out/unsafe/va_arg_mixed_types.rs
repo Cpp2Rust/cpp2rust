@@ -49,7 +49,7 @@ unsafe fn main_0() -> i32 {
                     (0).into(),
                     (10).into(),
                     (1).into(),
-                    (2.05E+1).into(),
+                    (20.5_f64).into(),
                     (2).into(),
                     (30_i64).into(),
                 ],
@@ -62,12 +62,7 @@ unsafe fn main_0() -> i32 {
         ((((unsafe {
             sum_mixed_0(
                 2,
-                &[
-                    (1).into(),
-                    (3.7000000000000002E+0).into(),
-                    (2).into(),
-                    (100_i64).into(),
-                ],
+                &[(1).into(), (3.7_f64).into(), (2).into(), (100_i64).into()],
             )
         }) == (103)) as i32)
             != 0)

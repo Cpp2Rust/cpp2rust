@@ -220,12 +220,12 @@ unsafe fn main_0() -> i32 {
     let mut fmc: MyContainer_float_ = <MyContainer_float_>::default();
     assert!((unsafe { MyContainer_float_::empty(&fmc,) }));
     (unsafe {
-        let mut _item: f32 = (1.0E+0 as f32);
+        let mut _item: f32 = (1_f64 as f32);
         MyContainer_float_::push_back(&mut fmc, &mut _item)
     });
     assert!(
         ((unsafe { MyContainer_float_::size(&fmc,) }) == (1_usize))
-            && (((*(unsafe { MyContainer_float_::back_4(&mut fmc,) })) as f64) == (1.0E+0))
+            && (((*(unsafe { MyContainer_float_::back_4(&mut fmc,) })) as f64) == (1_f64))
     );
     (unsafe { MyContainer_float_::pop_back(&mut fmc) });
     assert!((unsafe { MyContainer_float_::empty(&fmc,) }));

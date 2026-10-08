@@ -11,8 +11,8 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let a0: Value<f64> = Rc::new(RefCell::new(3.1400000000000001E+0));
-    let a1: Value<f64> = Rc::new(RefCell::new(2.71E+0));
+    let a0: Value<f64> = Rc::new(RefCell::new(3.14_f64));
+    let a1: Value<f64> = Rc::new(RefCell::new(2.71_f64));
     if a0.as_pointer().read() <= a1.as_pointer().read() {
         a0.as_pointer()
     } else {

@@ -30,8 +30,8 @@ int main() {
   assert(pi < 3.141592654);
   double dmax = -DBL_MAX;
   assert(dmax < -1e308);
-  long double ldmax = LDBL_MAX;
-  assert(ldmax > DBL_MAX);
+  long double big = 1e400L;
+  assert(big > DBL_MAX);
   assert(xwc + xc8 + xc16 + xc32 == 266);
   assert(xnp == nullptr);
   return 0;

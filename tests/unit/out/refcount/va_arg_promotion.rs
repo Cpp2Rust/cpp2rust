@@ -15,7 +15,7 @@ pub fn test_promotions_0(count: i32, __args: &[VaArg]) -> i32 {
     let mut c: f64 = (*ap.borrow_mut()).arg::<f64>();
     assert!((((a == 65) as i32) != 0));
     assert!((((b == 10) as i32) != 0));
-    assert!((((c == 3.0E+0) as i32) != 0));
+    assert!((((c == 3_f64) as i32) != 0));
     return ((a + b) + (c as i32));
 }
 pub fn main() {
@@ -25,7 +25,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let mut x: i8 = (('A' as i32) as i8);
     let mut y: i16 = 10_i16;
-    let mut z: f32 = 3.0E+0;
+    let mut z: f32 = 3_f32;
     assert!(
         (((({
             test_promotions_0(

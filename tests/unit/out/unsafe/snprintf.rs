@@ -77,7 +77,7 @@ unsafe fn main_0() -> i32 {
                 buf.as_mut_ptr() as *mut libc::c_char,
                 ::std::mem::size_of::<[libc::c_char; 32]>() as usize,
                 (c"%.2f".as_ptr().cast_mut()).cast_const() as *const libc::c_char,
-                (3.1415899999999999E+0),
+                (3.14159_f64),
             )
         }) == (4)) as i32)
             != 0)
@@ -170,7 +170,7 @@ unsafe fn main_0() -> i32 {
                 buf.as_mut_ptr() as *mut libc::c_char,
                 ::std::mem::size_of::<[libc::c_char; 32]>() as usize,
                 (c"%e".as_ptr().cast_mut()).cast_const() as *const libc::c_char,
-                (1.2345678E+3),
+                (1234.5678_f64),
             )
         }) == (12)) as i32)
             != 0)
@@ -188,7 +188,7 @@ unsafe fn main_0() -> i32 {
                 buf.as_mut_ptr() as *mut libc::c_char,
                 ::std::mem::size_of::<[libc::c_char; 32]>() as usize,
                 (c"%g".as_ptr().cast_mut()).cast_const() as *const libc::c_char,
-                (1.234567E+6),
+                (1234567_f64),
             )
         }) == (11)) as i32)
             != 0)
@@ -226,7 +226,7 @@ unsafe fn main_0() -> i32 {
                 buf.as_mut_ptr() as *mut libc::c_char,
                 ::std::mem::size_of::<[libc::c_char; 32]>() as usize,
                 (fmt.as_mut_ptr()).cast_const() as *const libc::c_char,
-                (3.2599999999999998E+0),
+                (3.26_f64),
             )
         }) == (5)) as i32)
             != 0)

@@ -96,11 +96,11 @@ fn main_0() -> i32 {
         assert!(((*v5.borrow())[(i as usize)]).is_null());
         i.prefix_inc();
     }
-    let v6: Value<Vec<f64>> = Rc::new(RefCell::new(vec![2.0E+0; s2 as usize]));
+    let v6: Value<Vec<f64>> = Rc::new(RefCell::new(vec![2_f64; s2 as usize]));
     assert!(((*v6.borrow()).len() == s2));
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < s2) {
-        assert!(({ (*v6.borrow())[(i as usize)] } == 2.0E+0));
+        assert!(({ (*v6.borrow())[(i as usize)] } == 2_f64));
         i.prefix_inc();
     }
     let v7: Value<Vec<(Value<Ptr<i32>>, Value<i32>)>> = Rc::new(RefCell::new(
@@ -118,12 +118,12 @@ fn main_0() -> i32 {
         i.prefix_inc();
     }
     let mut p1: Ptr<f64> = (v6.as_pointer() as Ptr<f64>);
-    assert!(((p1.read()) == 2.0E+0));
+    assert!(((p1.read()) == 2_f64));
     let mut p2: Ptr<i32> = (v3.as_pointer() as Ptr<i32>);
     assert!(((p2.read()) == 1));
     assert!(({ (*v3.borrow())[0_usize] } == 1));
     assert!(({ (*v3.borrow())[1_usize] } == 1));
-    p2.write((9.9E+1 as i32));
+    p2.write((99_f64 as i32));
     assert!(((p2.read()) == 99));
     assert!(({ (*v3.borrow())[0_usize] } == 99));
     assert!(({ (*v3.borrow())[1_usize] } == 1));
@@ -161,47 +161,47 @@ fn main_0() -> i32 {
     assert!((((v3.as_pointer() as Ptr<i32>).to_last().read()) == 1));
     assert!(((v4.as_pointer() as Ptr<Ptr::<i32>>).to_last().read()).is_null());
     assert!(((v5.as_pointer() as Ptr<Ptr::<i32>>).to_last().read()).is_null());
-    assert!((((v6.as_pointer() as Ptr<f64>).to_last().read()) == 2.0E+0));
+    assert!((((v6.as_pointer() as Ptr<f64>).to_last().read()) == 2_f64));
     let ref0: Ptr<f64> = (v6.as_pointer() as Ptr<f64>).to_last();
-    ref0.write(5.0E+0);
-    assert!((((v6.as_pointer() as Ptr<f64>).to_last().read()) == 5.0E+0));
+    ref0.write(5_f64);
+    assert!((((v6.as_pointer() as Ptr<f64>).to_last().read()) == 5_f64));
     let mut x0: f64 = ((v6.as_pointer() as Ptr<f64>).to_last().read());
-    assert!((x0 == 5.0E+0));
-    x0 = 6.0E+0;
-    assert!((((v6.as_pointer() as Ptr<f64>).to_last().read()) == 5.0E+0));
+    assert!((x0 == 5_f64));
+    x0 = 6_f64;
+    assert!((((v6.as_pointer() as Ptr<f64>).to_last().read()) == 5_f64));
     let mut idx: i32 = 0;
     assert!(
         (((v6.as_pointer() as Ptr<f64>)
             .offset((idx as usize) as isize)
             .read())
-            == 2.0E+0)
+            == 2_f64)
     );
     assert!(
         (((v6.as_pointer() as Ptr<f64>)
             .offset((s2).wrapping_sub(1_usize) as isize)
             .read())
-            == 5.0E+0)
+            == 5_f64)
     );
     let ref1: Ptr<f64> = (v6.as_pointer() as Ptr<f64>).offset((s2).wrapping_sub(1_usize) as isize);
     {
-        ref1.with_mut(|__v| *__v = *__v + 1.5E+0)
+        ref1.with_mut(|__v| *__v = *__v + 1.5_f64)
     };
     assert!(
         (((v6.as_pointer() as Ptr<f64>)
             .offset((s2).wrapping_sub(1_usize) as isize)
             .read())
-            == 6.5E+0)
+            == 6.5_f64)
     );
     let mut x1: f64 = ((v6.as_pointer() as Ptr<f64>)
         .offset((s2).wrapping_sub(1_usize) as isize)
         .read());
-    assert!((x1 == 6.5E+0));
-    x1 -= 1.5E+0;
+    assert!((x1 == 6.5_f64));
+    x1 -= 1.5_f64;
     assert!(
         (((v6.as_pointer() as Ptr<f64>)
             .offset((s2).wrapping_sub(1_usize) as isize)
             .read())
-            == 6.5E+0)
+            == 6.5_f64)
     );
     assert!(
         (((s1).wrapping_add(s2)).wrapping_add(
