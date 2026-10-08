@@ -262,6 +262,17 @@ bool IsCodeUnitStringLiteral(const clang::StringLiteral *expr) {
          expr->getKind() == clang::StringLiteralKind::UTF8;
 }
 
+std::string GetNumAsString(llvm::APFloat value) {
+  if (&value.getSemantics() == &llvm::APFloat::IEEEsingle()) {
+    return std::format("{}_f32", value.convertToFloat());
+  }
+  bool loses_info = false;
+  value.convert(llvm::APFloat::IEEEdouble(),
+                llvm::APFloat::rmNearestTiesToEven, &loses_info);
+  return value.isInfinity() ? "f64::INFINITY"
+                            : std::format("{}_f64", value.convertToDouble());
+}
+
 bool IsUserDefinedDecl(const clang::Decl *decl) {
   const auto &ctx = decl->getASTContext();
   const auto &src_mgr = ctx.getSourceManager();

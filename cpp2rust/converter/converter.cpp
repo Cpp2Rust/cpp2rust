@@ -2329,16 +2329,7 @@ bool Converter::VisitIntegerLiteral(clang::IntegerLiteral *expr) {
 }
 
 bool Converter::VisitFloatingLiteral(clang::FloatingLiteral *expr) {
-  auto value = expr->getValue();
-  if (&value.getSemantics() == &llvm::APFloat::IEEEsingle()) {
-    StrCat(std::format("{}_f32", value.convertToFloat()));
-  } else {
-    bool loses_info = false;
-    value.convert(llvm::APFloat::IEEEdouble(),
-                  llvm::APFloat::rmNearestTiesToEven, &loses_info);
-    StrCat(value.isInfinity() ? std::string("f64::INFINITY")
-                              : std::format("{}_f64", value.convertToDouble()));
-  }
+  StrCat(GetNumAsString(expr->getValue()));
   computed_expr_type_ = ComputedExprType::FreshValue;
   return false;
 }
