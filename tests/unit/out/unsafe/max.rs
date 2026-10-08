@@ -50,8 +50,11 @@ unsafe fn main_0() -> i32 {
     };
     assert!(((((((r1) + (r2)) + (r3)) + (r4)) + (r5)) == (56)));
     let mut values: [i32; 4] = [1, 7, 7, 3];
-    let mut max: *mut i32 = (unsafe {
-        let count = values.as_mut_ptr().add(4).offset_from(values.as_mut_ptr()) as usize;
+    let mut max: *mut i32 = {
+        let count = values
+            .as_mut_ptr()
+            .offset((4) as isize)
+            .offset_from(values.as_mut_ptr()) as usize;
         std::slice::from_raw_parts(values.as_mut_ptr(), count)
             .iter()
             .enumerate()
@@ -62,8 +65,8 @@ unsafe fn main_0() -> i32 {
             })
             .map(|(i, _)| values.as_mut_ptr().add(i))
             .unwrap_or(values.as_mut_ptr())
-    });
-    assert!(max == values.as_mut_ptr().add(1));
+    };
+    assert!(((max) == (values.as_mut_ptr().offset((1) as isize))));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}
