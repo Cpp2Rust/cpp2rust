@@ -85,6 +85,12 @@ fn main_0() -> i32 {
         },
         || -> i32 {
             return (captured.read());
+        },
+        copy_from {
+            captured: (captured).clone(),
+        },
+        move_from {
+            captured: (captured).clone(),
         }
     )));
     (*captured.borrow_mut()) = 8;

@@ -90,13 +90,19 @@ unsafe fn main_0() -> i32 {
         },
         || -> i32 {
             return (((c.copies) * (10)) + (c.moves));
+        },
+        copy_from {
+            c: Counted::copy_from({ &c },),
+        },
+        move_from {
+            c: Counted::move_from({ &mut c },),
         }
     );
     assert!(((unsafe { f.call() }) == (10)));
-    let mut g: FnPtr<fn() -> i32> = f.clone();
+    let mut g: FnPtr<fn() -> i32> = f.copy_from();
     assert!(((unsafe { g.call() }) == (20)));
     assert!(((unsafe { f.call() }) == (10)));
-    let mut h: FnPtr<fn() -> i32> = f;
+    let mut h: FnPtr<fn() -> i32> = f.move_from();
     assert!(((unsafe { h.call() }) == (11)));
     let mut returned: i32 = (unsafe {
         lambda_unsafe!(
@@ -105,6 +111,12 @@ unsafe fn main_0() -> i32 {
             },
             || -> Counted {
                 return Counted::copy_from({ &c });
+            },
+            copy_from {
+                c: Counted::copy_from({ &c },),
+            },
+            move_from {
+                c: Counted::move_from({ &mut c },),
             }
         )
         .call()
@@ -119,19 +131,38 @@ unsafe fn main_0() -> i32 {
         },
         || -> i32 {
             return ((arr[(0) as usize].copies) + (arr[(1) as usize].copies));
+        },
+        copy_from {
+            arr: std::array::from_fn::<_, 2, _>(|__i: usize| Counted::copy_from({ &arr[(__i)] },)),
+        },
+        move_from {
+            arr: std::array::from_fn::<_, 2, _>(|__i: usize| Counted::move_from({
+                &mut arr[(__i)]
+            },)),
         }
     );
     assert!(((unsafe { a.call() }) == (2)));
-    let mut a2: FnPtr<fn() -> i32> = a.clone();
+    let mut a2: FnPtr<fn() -> i32> = a.copy_from();
     assert!(((unsafe { a2.call() }) == (4)));
     {
         let mut m: FnPtr<fn()> = lambda_unsafe!(
             {
                 let d: Dropped = Dropped::new();
             },
-            || {}
+            || {},
+            copy_from {
+                d: Dropped::copy_from({ &d },),
+            },
+            move_from {
+                d: Dropped::move_from({ &mut d },),
+            },
+            destroy = {
+                Dropped::destructor(&mut self.d);
+            }
         );
-        let mut m2: FnPtr<fn()> = m;
+        let _dtor_m = ScopedDestructorUnsafe::new(&raw mut m, |__f| __f.destroy());
+        let mut m2: FnPtr<fn()> = m.move_from();
+        let _dtor_m2 = ScopedDestructorUnsafe::new(&raw mut m2, |__f| __f.destroy());
     }
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut drops_0)) == (2)));
     {
@@ -139,9 +170,20 @@ unsafe fn main_0() -> i32 {
             {
                 let d: Dropped = Dropped::new();
             },
-            || {}
+            || {},
+            copy_from {
+                d: Dropped::copy_from({ &d },),
+            },
+            move_from {
+                d: Dropped::move_from({ &mut d },),
+            },
+            destroy = {
+                Dropped::destructor(&mut self.d);
+            }
         );
-        let mut k2: FnPtr<fn()> = k.clone();
+        let _dtor_k = ScopedDestructorUnsafe::new(&raw mut k, |__f| __f.destroy());
+        let mut k2: FnPtr<fn()> = k.copy_from();
+        let _dtor_k2 = ScopedDestructorUnsafe::new(&raw mut k2, |__f| __f.destroy());
     }
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut drops_0)) == (4)));
     return 0;

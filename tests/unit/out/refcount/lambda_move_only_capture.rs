@@ -38,11 +38,19 @@ fn main_0() -> i32 {
         },
         || -> i32 {
             return ({ (*h.borrow()).p.clone() }.read());
+        },
+        move_from {
+            h: Rc::new(RefCell::new(Owner::move_from({ h.as_pointer() },))),
+        },
+        destroy = {
+            self.h.as_pointer().destructor();
         }
     )));
+    let _dtor_f = ScopedDestructor::new(&f, |__p| __p.with(|__f| __f.destroy()));
     assert!(({ (*o.borrow()).p.clone() }).is_null());
     assert!((({ (*f.borrow()).call() }) == 5));
-    let g: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new((*f.borrow_mut()).clone()));
+    let g: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new((*f.borrow()).move_from()));
+    let _dtor_g = ScopedDestructor::new(&g, |__p| __p.with(|__f| __f.destroy()));
     assert!((({ (*g.borrow()).call() }) == 5));
     let total: Value<i32> = Rc::new(RefCell::new(0));
     let consume: Value<FnPtr<fn()>> = Rc::new(RefCell::new(lambda!(
@@ -56,8 +64,16 @@ fn main_0() -> i32 {
                 total.with_mut(|__v| *__v = *__v + __rhs)
             };
             { (*h.borrow()).p.clone() }.write(0);
+        },
+        move_from {
+            h: Rc::new(RefCell::new(Owner::move_from({ h.as_pointer() },))),
+            total: (total).clone(),
+        },
+        destroy = {
+            self.h.as_pointer().destructor();
         }
     )));
+    let _dtor_consume = ScopedDestructor::new(&consume, |__p| __p.with(|__f| __f.destroy()));
     ({ (*consume.borrow()).call() });
     ({ (*consume.borrow()).call() });
     assert!(((*total.borrow()) == 7));
@@ -65,6 +81,7 @@ fn main_0() -> i32 {
     let _dtor_o2 = ScopedDestructor::new(&o2, |__p| __p.destructor());
     let t: Value<FnPtr<fn() -> i32>> =
         Rc::new(RefCell::new(({ OwnerImpl::take(&o2.as_pointer()) })));
+    let _dtor_t = ScopedDestructor::new(&t, |__p| __p.with(|__f| __f.destroy()));
     assert!(({ (*o2.borrow()).p.clone() }).is_null());
     assert!((({ (*t.borrow()).call() }) == 9));
     return 0;
@@ -85,6 +102,12 @@ impl OwnerImpl for Ptr<Owner> {
             },
             || -> i32 {
                 return ({ (*self_.borrow()).p.clone() }.read());
+            },
+            move_from {
+                self_: Rc::new(RefCell::new(Owner::move_from({ self_.as_pointer() },))),
+            },
+            destroy = {
+                self.self_.as_pointer().destructor();
             }
         );
     }

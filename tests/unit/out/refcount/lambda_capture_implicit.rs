@@ -22,6 +22,16 @@ fn main_0() -> i32 {
         },
         |x: i32| -> i32 {
             return ((((*a.borrow()) + (*b.borrow())) + (*c.borrow())) + x);
+        },
+        copy_from {
+            a: Rc::new(RefCell::new((*a.borrow()))),
+            b: Rc::new(RefCell::new((*b.borrow()))),
+            c: Rc::new(RefCell::new((*c.borrow()))),
+        },
+        move_from {
+            a: Rc::new(RefCell::new((*a.borrow()))),
+            b: Rc::new(RefCell::new((*b.borrow()))),
+            c: Rc::new(RefCell::new((*c.borrow()))),
         }
     )));
     assert!((({ (*by_value.borrow()).call(10,) }) == 16));
@@ -35,6 +45,16 @@ fn main_0() -> i32 {
         },
         |x: i32| -> i32 {
             return ((((a.read()) + (b.read())) + (c.read())) + x);
+        },
+        copy_from {
+            a: (a).clone(),
+            b: (b).clone(),
+            c: (c).clone(),
+        },
+        move_from {
+            a: (a).clone(),
+            b: (b).clone(),
+            c: (c).clone(),
         }
     )));
     assert!((({ (*by_ref.borrow()).call(10,) }) == 115));
@@ -52,6 +72,16 @@ fn main_0() -> i32 {
                 c.with_mut(|__v| *__v = *__v + __rhs)
             };
             return (((*a.borrow()) + (*b.borrow())) + (c.read()));
+        },
+        copy_from {
+            c: (c).clone(),
+            a: Rc::new(RefCell::new((*a.borrow()))),
+            b: Rc::new(RefCell::new((*b.borrow()))),
+        },
+        move_from {
+            c: (c).clone(),
+            a: Rc::new(RefCell::new((*a.borrow()))),
+            b: Rc::new(RefCell::new((*b.borrow()))),
         }
     )));
     assert!((({ (*mixed.borrow()).call(1,) }) == ((100 + 200) + 4)));

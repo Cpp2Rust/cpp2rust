@@ -25,10 +25,14 @@ impl S {
                     },
                     |z: i32| -> i32 {
                         return ((((*this_).v) + (y)) + (z));
-                    }
+                    },
+                    copy_from { this_: this_, y: y },
+                    move_from { this_: this_, y: y }
                 );
                 return (unsafe { inner.call(1) });
-            }
+            },
+            copy_from { this_: this_ },
+            move_from { this_: this_ }
         );
         return (unsafe { outer.call(20) });
     }
@@ -53,10 +57,14 @@ unsafe fn main_0() -> i32 {
                 },
                 |z: i32| -> i32 {
                     return (((*x) + (y)) + (z));
-                }
+                },
+                copy_from { x: x, y: y },
+                move_from { x: x, y: y }
             );
             return (unsafe { inner.call(1) });
-        }
+        },
+        copy_from { x: x },
+        move_from { x: x }
     );
     assert!(((unsafe { outer.call(20,) }) == (31)));
     x = 100;

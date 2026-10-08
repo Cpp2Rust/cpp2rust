@@ -913,6 +913,14 @@ void ConverterRefCount::EmitScopedDestructor(const clang::VarDecl *decl) {
     return;
   }
   auto type = decl->getType();
+  if (auto lambda = AsLambdaClass(type);
+      lambda && LambdaNeedsDestruction(lambda)) {
+    StrCat(token::kSemiColon,
+           std::format("let _dtor_{0} = ScopedDestructor::new(&{0}, |__p| "
+                       "__p.with(|__f| __f.destroy()))",
+                       GetNamedDeclAsString(decl)));
+    return;
+  }
   if (type->isReferenceType() || type->isArrayType() ||
       !TypeNeedsDestruction(type)) {
     return;
@@ -1564,6 +1572,11 @@ void ConverterRefCount::ConvertLambdaCapture(const clang::FieldDecl *field,
   Converter::ConvertLambdaCapture(field, init);
 }
 
+void ConverterRefCount::ConvertLambdaCopyAndMove(clang::CXXRecordDecl *decl) {
+  PushConversionKind push(*this, ConversionKind::FullRefCount);
+  Converter::ConvertLambdaCopyAndMove(decl);
+}
+
 void ConverterRefCount::ConvertLambdaToFunctionPointer(clang::Expr *lambda) {
   StrCat(ConvertFreshRValue(lambda));
 }
@@ -1980,6 +1993,11 @@ bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
     ConvertDeclRefValue(expr, member);
     return false;
   }
+  if (auto field = clang::dyn_cast<clang::FieldDecl>(member);
+      field && AsLambdaCapture(field)) {
+    ConvertDeclRefValue(expr, member);
+    return false;
+  }
   bool known = Mapper::Contains(ctx_, expr);
 
   if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(member);
@@ -2361,6 +2379,13 @@ bool ConverterRefCount::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
   }
 
   auto *ctor = expr->getConstructor();
+  if (IsLambdaCopyOrMoveConstructor(ctor)) {
+    StrCat(ConvertRValue(expr->getArg(0)),
+           std::format(".{}()", GetCopyOrMoveName(ctor)));
+    SetFreshType(expr->getType());
+    return false;
+  }
+
   if (IsRValueConvertingConstructor(ctor) ||
       (ctor->isMoveConstructor() && !IsUserDefinedDecl(ctor->getParent()))) {
     StrCat(ConvertLValue(expr->getArg(0)));
@@ -3490,6 +3515,12 @@ ConverterRefCount::DestroyMembers(const clang::CXXRecordDecl *decl) {
   std::string out;
   for (auto *field : std::ranges::reverse_view(fields)) {
     auto name = GetNamedDeclAsString(field);
+    if (decl->isLambda()) {
+      assert(!field->getType()->isArrayType());
+      out +=
+          std::format("self.{0}.as_pointer().{1}();\n", name, kDestructorName);
+      continue;
+    }
     if (field->getType()->isArrayType()) {
       auto *elem =
           field->getType()->getBaseElementTypeUnsafe()->getAsCXXRecordDecl();

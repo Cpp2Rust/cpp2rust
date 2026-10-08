@@ -481,6 +481,8 @@ public:
 
   void ConvertLambdaClosure(const clang::CXXRecordDecl *decl);
 
+  virtual void ConvertLambdaCopyAndMove(clang::CXXRecordDecl *decl);
+
   virtual bool VisitImplicitValueInitExpr(clang::ImplicitValueInitExpr *expr);
   virtual bool VisitCXXScalarValueInitExpr(clang::CXXScalarValueInitExpr *expr);
 
