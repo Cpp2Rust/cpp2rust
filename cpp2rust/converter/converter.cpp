@@ -432,7 +432,7 @@ void Converter::ConvertFunctionBody(clang::FunctionDecl *decl) {
   if (decl->isMain() && compound &&
       (compound->body_empty() ||
        !clang::isa<clang::ReturnStmt>(compound->body_back()))) {
-    StrCat("0");
+    StrCat('0');
     return;
   }
   if (!compound || compound->body_empty()) {
