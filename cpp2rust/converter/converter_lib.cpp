@@ -265,7 +265,15 @@ bool IsCodeUnitStringLiteral(const clang::StringLiteral *expr) {
 bool IsUserDefinedDecl(const clang::Decl *decl) {
   const auto &ctx = decl->getASTContext();
   const auto &src_mgr = ctx.getSourceManager();
-  const auto src_loc = decl->getLocation();
+  auto src_loc = decl->getLocation();
+  if (auto *spec =
+          clang::dyn_cast<clang::ClassTemplateSpecializationDecl>(decl);
+      spec && (spec->getSpecializationKind() ==
+                   clang::TSK_ExplicitInstantiationDeclaration ||
+               spec->getSpecializationKind() ==
+                   clang::TSK_ExplicitInstantiationDefinition)) {
+    src_loc = spec->getSpecializedTemplate()->getLocation();
+  }
   return !decl->getBeginLoc().isInvalid() && !decl->isImplicit() &&
          !src_mgr.isInSystemHeader(src_loc) &&
          !src_mgr.isInSystemMacro(src_loc);

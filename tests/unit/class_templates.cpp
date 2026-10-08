@@ -39,7 +39,20 @@ template <typename T> struct Outer {
   Inner<int> with(int n) const { return Inner<int>{v, n}; }
 };
 
+struct Elem {
+  int i;
+};
+
+template class std::vector<Elem>;
+
+template struct Boxed<short>;
+
 int main() {
+  std::vector<Elem> ev;
+  ev.push_back(Elem{2});
+  assert(ev[0].i == 2);
+  assert(Boxed<short>::twice(2) == 4);
+
   Outer<int> oi{3};
   assert(oi.with(4).sum() == 7);
   Outer<long> ol{5};

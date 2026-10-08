@@ -28,6 +28,17 @@ pub struct MyContainer_float_ {
     vec_: Value<Vec<f32>>,
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(2)]
+pub struct Boxed_short_ {
+    #[offset(0)]
+    pub value: i16,
+}
+impl Boxed_short_ {
+    pub fn twice(mut v: i16) -> i16 {
+        return (((v as i32) + (v as i32)) as i16);
+    }
+}
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Boxed_int_ {
     #[offset(0)]
@@ -85,11 +96,24 @@ pub struct Outer_long_ {
     #[offset(0)]
     pub v: i64,
 }
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
+pub struct Elem {
+    #[offset(0)]
+    pub i: i32,
+}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
+    let mut ev: Vec<Elem> = Vec::new();
+    {
+        let __a1 = Elem { i: 2 };
+        ev.push(__a1)
+    };
+    assert!(({ ev[0_usize].i } == 2));
+    assert!(((({ Boxed_short_::twice(2_i16,) }) as i32) == 4));
     let oi: Value<Outer_int_> = Rc::new(RefCell::new(Outer_int_ { v: 3 }));
     assert!(
         (({
@@ -179,6 +203,14 @@ pub trait Boxed_long_Impl {
 impl Boxed_long_Impl for Ptr<Boxed_long_> {
     fn plus(&self, mut other: i64) -> i64 {
         return ((*self).with(|__s| __s.value) + other);
+    }
+}
+pub trait Boxed_short_Impl {
+    fn plus(&self, other: i16) -> i16;
+}
+impl Boxed_short_Impl for Ptr<Boxed_short_> {
+    fn plus(&self, mut other: i16) -> i16 {
+        return ((((*self).with(|__s| __s.value) as i32) + (other as i32)) as i16);
     }
 }
 pub trait MyContainer_char_Impl {
