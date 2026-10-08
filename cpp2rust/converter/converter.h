@@ -676,6 +676,10 @@ protected:
                                 const clang::CXXRecordDecl *decl,
                                 std::string_view lhs, std::string_view rhs);
 
+  std::string GetComparisonBool(const clang::FunctionDecl *op,
+                                const clang::CXXRecordDecl *decl,
+                                std::string_view lhs, std::string_view rhs);
+
   virtual std::string
   GetComparisonReferenceArg(const clang::CXXRecordDecl *decl,
                             std::string_view value);
