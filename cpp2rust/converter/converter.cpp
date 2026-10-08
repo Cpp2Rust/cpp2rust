@@ -555,9 +555,12 @@ void Converter::ConvertVarDecl(clang::VarDecl *decl) {
   }
 
   HoistMaterializedTempBindings hoist_temps(*this);
-  if (decl->isLocalVarDecl() && !IsGlobalVar(decl) &&
-      !decl->getType()->isReferenceType() && decl->hasInit() &&
+  if (decl->isLocalVarDecl() && !IsGlobalVar(decl) && decl->hasInit() &&
       ReferencesVar(decl->getInit(), decl)) {
+    if (decl->getType()->isReferenceType()) {
+      llvm::report_fatal_error(
+          "self-referential initializer of a reference is not supported");
+    }
     if (DefaultInitHasSideEffects(ctx_, decl->getType())) {
       llvm::report_fatal_error("self-referential initializer of a variable "
                                "whose default initialization has side effects "
