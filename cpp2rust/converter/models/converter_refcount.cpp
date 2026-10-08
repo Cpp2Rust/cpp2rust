@@ -1154,9 +1154,8 @@ static std::vector<const char *> printf2fmt(std::string &format) {
       pos += 2;
       continue;
     case '%':
-      types.emplace_back();
       format.replace(pos, 2, "%");
-      pos += 2;
+      pos += 1;
       continue;
     case 'l':
       if (pos + 2 < format.size() &&
@@ -1268,8 +1267,8 @@ void ConverterRefCount::ConvertPrintf(clang::CallExpr *expr) {
   for (unsigned i = is_fprintf + 1, e = expr->getNumArgs(); i < e; ++i) {
     StrCat(token::kComma);
     Convert(expr->getArg(i));
-    if (types[j])
-      StrCat(keyword::kAs, types[j++]);
+    if (auto *type = types[j++])
+      StrCat(keyword::kAs, type);
   }
   StrCat(')');
 }
