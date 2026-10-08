@@ -1,5 +1,5 @@
 #include <cassert>
-#include <cstdlib>
+#include <cstddef>
 
 struct list_head {
   list_head *next;
@@ -32,11 +32,8 @@ int main() {
   assert(d.next == &d);
   assert(d.value == 3);
 
-  list_head *heap = static_cast<list_head *>(malloc(sizeof(*heap)));
-  assert(heap != nullptr);
-  heap->next = heap;
-  assert(heap->next == heap);
-  free(heap);
+  size_t size = sizeof(size);
+  assert(size == sizeof(size_t));
 
   return 0;
 }

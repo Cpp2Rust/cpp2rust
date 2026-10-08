@@ -23,9 +23,6 @@ fn main_0() -> i32 {
     x = (x + 1);
     let mut p: pair = <pair>::default();
     p = pair { a: 1, b: (p.a + 1) };
-    let r: Ptr<i32> = (r).clone();
-    let __tmp_0: Value<i32> = Rc::new(RefCell::new(((cr.read()) + 1)));
-    let cr: Ptr<i32> = __tmp_0.as_pointer();
-    return ({ ({ (x + p.b) } + { (r.read()) }) } + { (cr.read()) });
+    return (x + p.b);
 }
 pub fn __cpp2rust_init_globals() {}

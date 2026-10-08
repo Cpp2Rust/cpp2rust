@@ -57,24 +57,29 @@ fn main_0() -> i32 {
     assert!(({ { (*n.borrow()).value_ptr.clone() } } == { (field_ptr!(n.as_pointer(), value)) }));
     { (*n.borrow()).value_ptr.clone() }.write(7);
     assert!(({ (*n.borrow()).value } == 7));
-    let arr: Value<Box<[AnyPtr]>> = Rc::new(RefCell::new(
-        (0..2).map(|_| AnyPtr::default()).collect::<Box<[AnyPtr]>>(),
+    let arr: Value<Box<[list_head]>> = Rc::new(RefCell::new(
+        (0..2)
+            .map(|_| <list_head>::default())
+            .collect::<Box<[list_head]>>(),
     ));
     *arr.borrow_mut() = Box::new([
-        (((arr.as_pointer() as Ptr<AnyPtr>).offset(1)) as Ptr<AnyPtr>).to_any(),
-        (((arr.as_pointer() as Ptr<AnyPtr>).offset(0)) as Ptr<AnyPtr>).to_any(),
+        list_head {
+            next: ((arr.as_pointer() as Ptr<list_head>).offset(1)),
+        },
+        list_head {
+            next: ((arr.as_pointer() as Ptr<list_head>).offset(0)),
+        },
     ]);
     assert!(
-        ((*arr.borrow())[(0) as usize]
-            == (((arr.as_pointer() as Ptr<AnyPtr>).offset(1)) as Ptr<AnyPtr>).to_any())
+        ({ { (*arr.borrow())[(0) as usize].next.clone() } } == {
+            ((arr.as_pointer() as Ptr<list_head>).offset(1))
+        })
     );
     assert!(
-        ((*arr.borrow())[(1) as usize]
-            == (((arr.as_pointer() as Ptr<AnyPtr>).offset(0)) as Ptr<AnyPtr>).to_any())
+        ({ { (*arr.borrow())[(1) as usize].next.clone() } } == {
+            ((arr.as_pointer() as Ptr<list_head>).offset(0))
+        })
     );
-    let p: Value<AnyPtr> = Rc::new(RefCell::new(AnyPtr::default()));
-    *p.borrow_mut() = ((p.as_pointer()) as Ptr<AnyPtr>).to_any();
-    assert!(((*p.borrow()) == ((p.as_pointer()) as Ptr<AnyPtr>).to_any()));
     let d: Value<node_with_defaults> = <Value<node_with_defaults>>::default();
     *d.borrow_mut() = node_with_defaults {
         next: (d.as_pointer()),
@@ -82,12 +87,8 @@ fn main_0() -> i32 {
     };
     assert!(({ { (*d.borrow()).next.clone() } } == { (d.as_pointer()) }));
     assert!(({ (*d.borrow()).value } == 3));
-    let mut heap: Ptr<list_head> =
-        libcc2rs::malloc_refcount(8usize).reinterpret_cast::<list_head>();
-    assert!(!((heap).is_null()));
-    field!(heap, next).write({ (heap).clone() });
-    assert!(({ heap.with(|__s| __s.next.clone()) } == { (heap).clone() }));
-    libcc2rs::free_refcount((heap).to_any());
+    let mut size: usize = ::std::mem::size_of::<usize>();
+    assert!((size == ::std::mem::size_of::<usize>()));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

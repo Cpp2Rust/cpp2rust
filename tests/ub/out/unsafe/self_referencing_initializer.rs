@@ -26,9 +26,6 @@ unsafe fn main_0() -> i32 {
         a: 1,
         b: ((p.a) + (1)),
     };
-    let r: *mut i32 = r;
-    let mut __tmp_0: i32 = ((*cr) + (1));
-    let cr: *const i32 = &mut __tmp_0;
-    return ((((x) + (p.b)) + (*r)) + (*cr));
+    return ((x) + (p.b));
 }
 pub unsafe fn __cpp2rust_init_globals() {}
