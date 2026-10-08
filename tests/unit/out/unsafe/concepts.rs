@@ -61,7 +61,7 @@ unsafe fn main_0() -> i32 {
     assert!(!(unsafe { has_size_3() }));
     assert!(((unsafe { pick_4(1,) }) == (1)));
     assert!(((unsafe { pick_5(1_i64,) }) == (2)));
-    assert!(((unsafe { pick_6(1.0E+0,) }) == (2)));
+    assert!(((unsafe { pick_6(1_f32,) }) == (2)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

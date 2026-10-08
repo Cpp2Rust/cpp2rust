@@ -40,7 +40,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(((unsafe { f1_2(1.0E+0, 2.0E+0,) }) == (-6_i32 as f64)));
+    assert!(((unsafe { f1_2(1_f64, 2_f64,) }) == (-6_i32 as f64)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

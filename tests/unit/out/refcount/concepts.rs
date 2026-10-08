@@ -54,7 +54,7 @@ fn main_0() -> i32 {
     assert!(!({ has_size_3() }));
     assert!((({ pick_4(1,) }) == 1));
     assert!((({ pick_5(1_i64,) }) == 2));
-    assert!((({ pick_6(1.0E+0,) }) == 2));
+    assert!((({ pick_6(1_f32,) }) == 2));
     return 0;
 }
 pub trait SizedImpl {

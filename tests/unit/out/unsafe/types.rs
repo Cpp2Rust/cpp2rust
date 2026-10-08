@@ -32,7 +32,7 @@ unsafe fn main_0() -> i32 {
     let mut xi3: i32 = 32;
     let mut xi4: i64 = 64_i64;
     let mut b: bool = ((xu64) == (64_u64));
-    let mut xld: f64 = 1.5E+0;
+    let mut xld: f64 = 1.5_f64;
     let mut xwc: i32 = 65_i32;
     let mut xc8: u8 = 66_u8;
     let mut xc16: u16 = 67_u16;
@@ -50,6 +50,14 @@ unsafe fn main_0() -> i32 {
             == (352_u64))
     );
     assert!((((xld) * (2_f64)) == (3_f64)));
+    let mut pi: f64 = 3.14159265358979_f64;
+    assert!(((pi) < (3.141592654_f64)));
+    let mut dmax: f64 = -1.7976931348623157e+308_f64;
+    assert!(((dmax) < (-1e+308_f64)));
+    let mut big: f64 = f64::INFINITY;
+    assert!(((big) > (1.7976931348623157e+308_f64)));
+    let mut fbig: f32 = f32::INFINITY;
+    assert!(((fbig) > (3.4028235e+38_f32)));
     assert!(((((((xwc) + (xc8 as i32)) + (xc16 as i32)) as u32).wrapping_add(xc32)) == (266_u32)));
     assert!((std::ptr::null_mut::<::libc::c_void>()).is_null());
     let mut ip: *mut i32 = std::ptr::null_mut();

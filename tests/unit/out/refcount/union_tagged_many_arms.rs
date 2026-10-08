@@ -88,8 +88,8 @@ fn main_0() -> i32 {
     );
     let d: Value<Slot> = <Value<Slot>>::default();
     (*d.borrow_mut()).tag = Tag_enum_T_FLOAT;
-    anon_0::f(field_ptr!(d.as_pointer(), payload)).write(1.5E+0);
-    assert!(((((anon_0::f(field_ptr!(d.as_pointer(), payload)).read()) == 1.5E+0) as i32) != 0));
+    anon_0::f(field_ptr!(d.as_pointer(), payload)).write(1.5_f64);
+    assert!(((((anon_0::f(field_ptr!(d.as_pointer(), payload)).read()) == 1.5_f64) as i32) != 0));
     let x: Value<i32> = Rc::new(RefCell::new(0));
     let e: Value<Slot> = <Value<Slot>>::default();
     (*e.borrow_mut()).tag = Tag_enum_T_REF;

@@ -19,7 +19,7 @@ pub unsafe fn scaled_2(mut x: i32) -> i32 {
     return x;
 }
 pub unsafe fn half_3(mut x: f64) -> f64 {
-    return ((x) / (2.0E+0));
+    return ((x) / (2_f64));
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
@@ -68,7 +68,7 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { first_1((arr.as_mut_ptr().offset((1) as isize)).cast_const(),) }) == (8)));
     assert!(((unsafe { scaled_2(3,) }) == (3)));
     assert!(((unsafe { scaled_2(-3_i32,) }) == (6)));
-    assert!(((unsafe { half_3(5.0E+0,) }) == (2.5E+0)));
+    assert!(((unsafe { half_3(5_f64,) }) == (2.5_f64)));
     assert!(((unsafe { checked_5(1,) }) == (2)));
     let c: i32 = (unsafe { checked_5(4) });
     assert!(((c) == (5)));

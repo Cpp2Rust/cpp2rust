@@ -38,11 +38,11 @@ unsafe fn main_0() -> i32 {
     x2.prefix_inc();
     assert!(((x1) == (1)));
     assert!(((x2) == (2)));
-    let mut x3: f64 = 3.0E+0;
+    let mut x3: f64 = 3_f64;
     let mut x4: f64 = x3;
     x4.prefix_inc();
-    assert!(((x3) == (3.0E+0)));
-    assert!(((x4) == (4.0E+0)));
+    assert!(((x3) == (3_f64)));
+    assert!(((x4) == (4_f64)));
     let reference: *mut i32 = &mut x1;
     let mut x5: i32 = (*reference);
     x5.prefix_inc();

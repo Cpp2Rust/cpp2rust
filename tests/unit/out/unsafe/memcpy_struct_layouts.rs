@@ -145,14 +145,14 @@ unsafe fn main_0() -> i32 {
         nested {
             t: tail {
                 a: (1 as libc::c_char),
-                b: 2.5E+0,
+                b: 2.5_f64,
             },
             c: (3 as libc::c_char),
         },
         nested {
             t: tail {
                 a: (4 as libc::c_char),
-                b: 5.5E+0,
+                b: 5.5_f64,
             },
             c: (6 as libc::c_char),
         },
@@ -185,7 +185,7 @@ unsafe fn main_0() -> i32 {
     };
     assert!(
         ((((((((((n2[(1) as usize].t.a as i32) == (4)) as i32) != 0)
-            && ((((n2[(1) as usize].t.b) == (5.5E+0)) as i32) != 0)) as i32)
+            && ((((n2[(1) as usize].t.b) == (5.5_f64)) as i32) != 0)) as i32)
             != 0)
             && ((((n2[(1) as usize].c as i32) == (6)) as i32) != 0)) as i32)
             != 0)

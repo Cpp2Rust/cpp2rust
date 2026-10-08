@@ -43,7 +43,7 @@ fn main_0() -> i32 {
     let t: Value<S> = Rc::new(RefCell::new(S { v: 4 }));
     assert!((({ SImpl::operator_eq_1(&s.as_pointer(), 6,) }) == 1));
     assert!((({ SImpl::operator_eq_2(&s.as_pointer(), 6_i64,) }) == 2));
-    assert!((({ SImpl::operator_eq_3(&s.as_pointer(), 6.0E+0,) }) == 3));
+    assert!((({ SImpl::operator_eq_3(&s.as_pointer(), 6_f64,) }) == 3));
     assert!((({ SImpl::operator_eq_1(&s.as_pointer(), 7,) }) == 0));
     assert!((({ SImpl::operator_add(&s.as_pointer(), t.as_pointer(),) }) == 10));
     assert!((({ SImpl::operator_sub(&s.as_pointer(), (*t.borrow()).clone(),) }) == 2));

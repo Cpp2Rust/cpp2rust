@@ -19,7 +19,7 @@ pub fn scaled_2(mut x: i32) -> i32 {
     return x;
 }
 pub fn half_3(mut x: f64) -> f64 {
-    return (x / 2.0E+0);
+    return (x / 2_f64);
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
@@ -59,7 +59,7 @@ fn main_0() -> i32 {
     assert!((({ first_1((arr.as_pointer() as Ptr::<i32>).offset((1) as isize),) }) == 8));
     assert!((({ scaled_2(3,) }) == 3));
     assert!((({ scaled_2(-3_i32,) }) == 6));
-    assert!((({ half_3(5.0E+0,) }) == 2.5E+0));
+    assert!((({ half_3(5_f64,) }) == 2.5_f64));
     assert!((({ checked_5(1,) }) == 2));
     let mut c: i32 = ({ checked_5(4) });
     assert!((c == 5));

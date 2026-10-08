@@ -43,13 +43,13 @@ fn main_0() -> i32 {
     assert!(({ SImpl::operator_eq(&cs, 5,) }));
     assert!(({ SImpl::operator_ne(&cs, 4,) }));
     assert!(({ SImpl::operator_lt(&cs, 6,) }));
-    assert!(({ SImpl::operator_gt(&cs, 4.5E+0,) }));
+    assert!(({ SImpl::operator_gt(&cs, 4.5_f64,) }));
     assert!(({ SImpl::operator_le(&cs, 5_i64,) }));
     assert!(({ SImpl::operator_ge(&cs, Ptr::<i8>::from_string_literal(b"3"),) }));
     assert!(({ operator_eq_0(5, s.as_pointer(),) }));
     assert!(({ operator_ne_1(4, s.as_pointer(),) }));
     assert!(({ operator_lt_2(4, s.as_pointer(),) }));
-    assert!(({ operator_gt_3(5.5E+0, s.as_pointer(),) }));
+    assert!(({ operator_gt_3(5.5_f64, s.as_pointer(),) }));
     assert!(({ operator_le_4(5_i64, s.as_pointer(),) }));
     assert!(({ operator_ge_5(Ptr::<i8>::from_string_literal(b"7"), s.as_pointer(),) }));
     assert!(

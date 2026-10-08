@@ -191,6 +191,8 @@ template <class T> llvm::SmallString<16> GetNumAsString(const T &num) {
   return small_string;
 }
 
+std::string GetNumAsString(llvm::APFloat value);
+
 clang::QualType GetReturnTypeOfFunction(const clang::CallExpr *expr);
 
 const char *GetOverloadedOperator(const clang::FunctionDecl *decl);

@@ -39,8 +39,8 @@ unsafe fn main_0() -> i32 {
     &(e);
     u.i = 42;
     assert!(((u.i) == (42)));
-    u.f = 3.140000105E+0;
-    assert!(((u.f) == (3.140000105E+0)));
+    u.f = 3.14_f32;
+    assert!(((u.f) == (3.14_f32)));
     let mut buf: [u8; 4] = [0_u8; 4];
     {
         let byte_0 = (buf.as_mut_ptr() as *mut ::libc::c_void) as *mut u8;
@@ -56,7 +56,7 @@ unsafe fn main_0() -> i32 {
     assert!(((*pi) == (7)));
     (*pi) = 1065353216;
     assert!((((*ru).i) == (1065353216)));
-    assert!(((*pf) == (1.0E+0)));
+    assert!(((*pf) == (1_f32)));
     assert!(((buf[(3) as usize] as i32) == (63)));
     return 0;
 }

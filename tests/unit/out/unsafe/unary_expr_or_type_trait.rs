@@ -37,7 +37,7 @@ unsafe fn main_0() -> i32 {
     assert!(((::std::mem::align_of::<[i64; 4]>()) == (8_usize)));
     assert!(((::std::mem::align_of::<S>()) == (16_usize)));
     assert!(((unsafe { pack_size_0() }) == (0_u64)));
-    assert!(((unsafe { pack_size_1(1, 2.0E+0,) }) == (4_u64)));
+    assert!(((unsafe { pack_size_1(1, 2_f64,) }) == (4_u64)));
     assert!(true);
     assert!(!(false));
     let mut may: bool = false;

@@ -262,6 +262,26 @@ bool IsCodeUnitStringLiteral(const clang::StringLiteral *expr) {
          expr->getType()->getArrayElementTypeNoTypeQual()->isChar8Type();
 }
 
+std::string GetNumAsString(llvm::APFloat value) {
+  switch (llvm::APFloat::SemanticsToEnum(value.getSemantics())) {
+  case llvm::APFloat::S_IEEEsingle:
+    return value.isInfinity() ? "f32::INFINITY"
+                              : std::format("{}_f32", value.convertToFloat());
+  case llvm::APFloat::S_x87DoubleExtended: {
+    bool loses_info = false;
+    value.convert(llvm::APFloat::IEEEdouble(),
+                  llvm::APFloat::rmNearestTiesToEven, &loses_info);
+  }
+    [[fallthrough]];
+  case llvm::APFloat::S_IEEEdouble:
+    return value.isInfinity() ? "f64::INFINITY"
+                              : std::format("{}_f64", value.convertToDouble());
+  default:
+    assert(false && "unsupported floating-point semantics");
+    return {};
+  }
+}
+
 bool IsUserDefinedDecl(const clang::Decl *decl) {
   const auto &ctx = decl->getASTContext();
   const auto &src_mgr = ctx.getSourceManager();

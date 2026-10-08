@@ -55,7 +55,7 @@ fn main_0() -> i32 {
         } == 343)
     );
     assert!((({ operator_literal__k_1(2_u64,) }) == 2000_i64));
-    assert!((({ operator_literal__half_2(3.0E+0,) }) == 1.5E+0));
+    assert!((({ operator_literal__half_2(3_f64,) }) == 1.5_f64));
     assert!((({ operator_literal__k_1(4_u64,) }) == 4000_i64));
     return 0;
 }
