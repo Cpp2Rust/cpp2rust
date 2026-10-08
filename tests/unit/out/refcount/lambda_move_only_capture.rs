@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, ByteRepr, FnPtrArg, Default)]
+#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, Destructor, Default)]
 #[byte_size(8)]
 pub struct Owner {
     #[offset(0)]
@@ -38,12 +38,6 @@ fn main_0() -> i32 {
         },
         || -> i32 {
             return ({ (*h.borrow()).p.clone() }.read());
-        },
-        move_from {
-            h: Rc::new(RefCell::new(Owner::move_from({ h.as_pointer() },))),
-        },
-        destroy = {
-            self.h.as_pointer().destructor();
         }
     )));
     let _dtor_f = ScopedDestructor::new(&f, |__p| __p.with(|__f| __f.destroy()));
@@ -64,13 +58,6 @@ fn main_0() -> i32 {
                 total.with_mut(|__v| *__v = *__v + __rhs)
             };
             { (*h.borrow()).p.clone() }.write(0);
-        },
-        move_from {
-            h: Rc::new(RefCell::new(Owner::move_from({ h.as_pointer() },))),
-            total: (total).clone(),
-        },
-        destroy = {
-            self.h.as_pointer().destructor();
         }
     )));
     let _dtor_consume = ScopedDestructor::new(&consume, |__p| __p.with(|__f| __f.destroy()));
@@ -102,12 +89,6 @@ impl OwnerImpl for Ptr<Owner> {
             },
             || -> i32 {
                 return ({ (*self_.borrow()).p.clone() }.read());
-            },
-            move_from {
-                self_: Rc::new(RefCell::new(Owner::move_from({ self_.as_pointer() },))),
-            },
-            destroy = {
-                self.self_.as_pointer().destructor();
             }
         );
     }

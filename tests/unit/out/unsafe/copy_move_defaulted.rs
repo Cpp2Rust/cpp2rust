@@ -12,7 +12,7 @@ pub struct Inner {
     pub x: i32,
 }
 #[repr(C)]
-#[derive(Clone, VaArg, FnPtrArg, Default)]
+#[derive(Clone, VaArg, FnPtrArg, DestructorUnsafe, Default)]
 pub struct Explicit {
     pub v: i32,
     pub inner: Inner,
@@ -37,7 +37,7 @@ pub struct Implicit {
     pub arr: [i32; 2],
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, MoveCtorUnsafe, Default)]
 pub struct DefaultCopyUserMove {
     pub v: i32,
 }
@@ -58,7 +58,7 @@ impl DefaultCopyUserMove {
     }
 }
 #[repr(C)]
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(VaArg, FnPtrArg, MoveCtorUnsafe, Default)]
 pub struct UserCopyDefaultMove {
     pub v: i32,
 }
@@ -98,7 +98,7 @@ impl Clone for UserCopyDefaultMove {
     }
 }
 #[repr(C)]
-#[derive(FnPtrArg, Default)]
+#[derive(FnPtrArg, MoveCtorUnsafe, Default)]
 pub struct Buffer {
     pub data: Vec<i32>,
     pub rows: Vec<Vec<i32>>,
@@ -143,7 +143,7 @@ impl Buffer {
     }
 }
 #[repr(C)]
-#[derive(FnPtrArg, Default)]
+#[derive(FnPtrArg, MoveCtorUnsafe, Default)]
 pub struct Owner {
     pub data: Vec<i32>,
     pub n: i32,
@@ -178,7 +178,7 @@ impl Owner {
     }
 }
 #[repr(C)]
-#[derive(FnPtrArg, Default)]
+#[derive(FnPtrArg, MoveCtorUnsafe, DestructorUnsafe, Default)]
 pub struct Holder {
     pub inner: Inner,
     pub e: Explicit,

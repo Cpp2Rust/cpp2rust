@@ -18,12 +18,6 @@ fn main_0() -> i32 {
         },
         || -> i32 {
             return (*start.borrow_mut()).postfix_inc();
-        },
-        copy_from {
-            start: Rc::new(RefCell::new((*start.borrow()))),
-        },
-        move_from {
-            start: Rc::new(RefCell::new((*start.borrow()))),
         }
     )));
     assert!((({ (*next.borrow()).call() }) == 5));
@@ -38,12 +32,6 @@ fn main_0() -> i32 {
         |x: i32| -> i32 {
             (*total.borrow_mut()) += x;
             return (*total.borrow());
-        },
-        copy_from {
-            total: Rc::new(RefCell::new((*total.borrow()))),
-        },
-        move_from {
-            total: Rc::new(RefCell::new((*total.borrow()))),
         }
     )));
     assert!((({ (*accumulate.borrow()).call(1,) }) == 1));

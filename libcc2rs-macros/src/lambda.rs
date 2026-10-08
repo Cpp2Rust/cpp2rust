@@ -6,19 +6,11 @@ use proc_macro2::{Group, Ident, Punct, Spacing, TokenTree};
 use quote::quote;
 use std::collections::HashSet;
 use syn::parse::{Parse, ParseStream};
-use syn::punctuated::Punctuated;
-use syn::{
-    Block, Error, ExprClosure, FieldValue, Pat, Result, Stmt, Token, braced, parse_macro_input,
-};
-
-type CaptureInits = Punctuated<FieldValue, Token![,]>;
+use syn::{Block, Error, ExprClosure, Pat, Result, Stmt, Token, parse_macro_input};
 
 struct Lambda {
     captures: Block,
     closure: ExprClosure,
-    copy_from: Option<CaptureInits>,
-    move_from: Option<CaptureInits>,
-    destroy: Option<proc_macro2::TokenStream>,
 }
 
 impl Parse for Lambda {
@@ -27,37 +19,7 @@ impl Parse for Lambda {
         input.parse::<Token![,]>()?;
         let closure = input.parse()?;
         input.parse::<Option<Token![,]>>()?;
-        let mut copy_from = None;
-        let mut move_from = None;
-        let mut destroy = None;
-        while !input.is_empty() {
-            let name: Ident = input.parse()?;
-            if name == "destroy" {
-                input.parse::<Token![=]>()?;
-            }
-            let body;
-            braced!(body in input);
-            if name == "copy_from" {
-                copy_from = Some(body.parse_terminated(FieldValue::parse, Token![,])?);
-            } else if name == "move_from" {
-                move_from = Some(body.parse_terminated(FieldValue::parse, Token![,])?);
-            } else if name == "destroy" {
-                destroy = Some(body.parse()?);
-            } else {
-                return Err(Error::new(
-                    name.span(),
-                    "expected `copy_from`, `move_from` or `destroy`",
-                ));
-            }
-            input.parse::<Option<Token![,]>>()?;
-        }
-        Ok(Lambda {
-            captures,
-            closure,
-            copy_from,
-            move_from,
-            destroy,
-        })
+        Ok(Lambda { captures, closure })
     }
 }
 
@@ -153,29 +115,6 @@ fn rewrite_captures(
     Ok(out.into_iter().collect())
 }
 
-fn expand_constructor(
-    inits: &Option<CaptureInits>,
-    names: &HashSet<String>,
-    is_unsafe: bool,
-) -> Result<proc_macro2::TokenStream> {
-    let Some(inits) = inits else {
-        return Ok(quote! { unreachable!("the lambda has no such constructor") });
-    };
-    let mut fields = Vec::new();
-    for init in inits {
-        let member = &init.member;
-        let expr = &init.expr;
-        let expr = rewrite_captures(quote! { #expr }, names, false)?;
-        fields.push(quote! { #member: #expr });
-    }
-    let body = quote! { __Lambda { #(#fields,)* } };
-    Ok(if is_unsafe {
-        quote! { unsafe { #body } }
-    } else {
-        body
-    })
-}
-
 fn expand_lambda(lambda: Lambda, is_unsafe: bool) -> Result<proc_macro2::TokenStream> {
     let mut names = Vec::new();
     let mut types = Vec::new();
@@ -212,22 +151,69 @@ fn expand_lambda(lambda: Lambda, is_unsafe: bool) -> Result<proc_macro2::TokenSt
     let body = &lambda.closure.body;
     let captured = names.iter().map(|name| name.to_string()).collect();
     let body = rewrite_captures(quote! { #body }, &captured, false)?;
-    let copy_from = expand_constructor(&lambda.copy_from, &captured, is_unsafe)?;
-    let move_from = expand_constructor(&lambda.move_from, &captured, is_unsafe)?;
-    let destroy = &lambda.destroy;
-    let (receiver, body, destroy, constructor) = if is_unsafe {
+    // The copy and move constructors of the lambda copy and move each
+    // capture, and its destructor destroys them in reverse order, as chosen
+    // from their types by the traits in libcc2rs::__capture.
+    let reversed: Vec<_> = names.iter().rev().collect();
+    let (receiver, body, destroy, constructor, copy_from, move_from) = if is_unsafe {
         (
             quote! { &mut self },
             quote! { unsafe { #body } },
-            quote! { unsafe { #destroy } },
+            quote! {
+                use ::libcc2rs::__capture::{DestroyNoneUnsafe as _, DestroyWithDtorUnsafe as _};
+                unsafe {
+                    #((&&::libcc2rs::__capture::CaptureUnsafe(
+                        &raw mut self.#reversed
+                    )).destroy_capture();)*
+                }
+            },
             quote! { from_lambda_unsafe },
+            quote! {
+                use ::libcc2rs::__capture::{
+                    CopyCloneUnsafe as _, CopyLambdaUnsafe as _, CopyNoneUnsafe as _,
+                };
+                unsafe {
+                    __Lambda { #(#names: (&&&::libcc2rs::__capture::CaptureUnsafe(
+                        &raw mut self.#names
+                    )).copy_capture(),)* }
+                }
+            },
+            quote! {
+                use ::libcc2rs::__capture::{
+                    MoveCloneUnsafe as _, MoveNoneUnsafe as _, MoveWithCtorUnsafe as _,
+                };
+                unsafe {
+                    __Lambda { #(#names: (&&&::libcc2rs::__capture::CaptureUnsafe(
+                        &raw mut self.#names
+                    )).move_capture(),)* }
+                }
+            },
         )
     } else {
         (
             quote! { &self },
             body,
-            quote! { #destroy },
+            quote! {
+                use ::libcc2rs::__capture::{
+                    DestroyElems as _, DestroyNone as _, DestroyWithDtor as _,
+                };
+                #((&&&::libcc2rs::__capture::Capture(&self.#reversed)).destroy_capture();)*
+            },
             quote! { from_lambda },
+            quote! {
+                use ::libcc2rs::__capture::{CopyClone as _, CopyLambda as _, CopyNone as _};
+                __Lambda { #(#names: (&&&::libcc2rs::__capture::Capture(
+                    &self.#names
+                )).copy_capture(),)* }
+            },
+            quote! {
+                use ::libcc2rs::__capture::{
+                    MoveClone as _, MoveElems as _, MoveNone as _, MoveWithCtor as _,
+                };
+                __Lambda { #(#names: (&&&&::libcc2rs::__capture::Capture(
+                    &self.#names
+                )).move_capture(),)* }
+            },
         )
     };
 
@@ -240,15 +226,15 @@ fn expand_lambda(lambda: Lambda, is_unsafe: bool) -> Result<proc_macro2::TokenSt
             fn call(#receiver #(, #params)*) #output {
                 #body
             }
-            #[allow(unused_unsafe)]
+            #[allow(unused_imports, unused_unsafe)]
             fn copy_from(#receiver) -> Self {
                 #copy_from
             }
-            #[allow(unused_unsafe)]
+            #[allow(unused_imports, unused_unsafe)]
             fn move_from(#receiver) -> Self {
                 #move_from
             }
-            #[allow(unused_unsafe)]
+            #[allow(unused_imports, unused_unsafe)]
             fn destroy(#receiver) {
                 #destroy
             }

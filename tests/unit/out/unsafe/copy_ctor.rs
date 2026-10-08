@@ -89,7 +89,7 @@ pub struct Holder {
     pub arr: [Counted; 2],
 }
 #[repr(C)]
-#[derive(FnPtrArg, Default)]
+#[derive(FnPtrArg, MoveCtorUnsafe, Default)]
 pub struct Box_int_ {
     pub val: i32,
 }
@@ -104,7 +104,7 @@ impl Box_int_ {
     }
 }
 #[repr(C)]
-#[derive(FnPtrArg, Default)]
+#[derive(FnPtrArg, MoveCtorUnsafe, Default)]
 pub struct Owner {
     pub box_: Box_int_,
 }

@@ -499,6 +499,14 @@ bool IsConvertibleMoveConstructor(const clang::CXXConstructorDecl *ctor) {
          ctor->hasBody();
 }
 
+bool HasMoveFromConstructor(const clang::RecordDecl *decl) {
+  auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
+  return cxx && llvm::any_of(cxx->ctors(), [](auto *ctor) {
+           return IsConvertibleMoveConstructor(ctor) &&
+                  CanUseCopyOrMoveName(ctor, "move_from");
+         });
+}
+
 bool IsConvertibleMoveAssignment(const clang::CXXMethodDecl *method) {
   return method->isMoveAssignmentOperator() && !method->isDeleted() &&
          IsConvertibleImplicitMemberParent(method->getParent()) &&
@@ -1182,6 +1190,9 @@ bool IsLambdaCopyOrMoveConstructor(const clang::CXXConstructorDecl *ctor) {
 
 bool LambdaNeedsDestruction(const clang::CXXRecordDecl *decl) {
   return llvm::any_of(decl->fields(), [](const clang::FieldDecl *field) {
+    if (auto lambda = AsLambdaClass(field->getType())) {
+      return LambdaNeedsDestruction(lambda);
+    }
     return TypeNeedsDestruction(field->getType());
   });
 }

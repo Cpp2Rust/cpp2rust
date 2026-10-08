@@ -998,7 +998,7 @@ void Converter::DefineImplicitMembers(clang::CXXRecordDecl *decl) {
     }
     if (ctor->isMoveConstructor() && !ctor->isUserProvided() &&
         !ctor->doesThisDeclarationHaveABody() && !ctor->isDeleted() &&
-        (decl->isLambda() || !HasDefaultedCopyConstructor(decl))) {
+        !HasDefaultedCopyConstructor(decl)) {
       sema_->DefineImplicitMoveConstructor(decl->getLocation(), ctor);
     }
   }
@@ -3941,12 +3941,6 @@ bool Converter::VisitLambdaExpr(clang::LambdaExpr *expr) {
   }
   StrCat(token::kComma);
   ConvertLambdaClosure(decl);
-  ConvertLambdaCopyAndMove(decl);
-  if (LambdaNeedsDestruction(decl)) {
-    StrCat(token::kComma, "destroy", token::kAssign);
-    PushBrace destroy(*this);
-    StrCat(DestroyMembers(decl));
-  }
   computed_expr_type_ = ComputedExprType::FreshValue;
   return false;
 }
@@ -3988,25 +3982,6 @@ void Converter::ConvertLambdaClosure(const clang::CXXRecordDecl *decl) {
   EmitFunctionPreamble(call_operator);
   PushCurrFunction push_fn(*this, call_operator);
   ConvertFunctionBody(curr_function_);
-}
-
-void Converter::ConvertLambdaCopyAndMove(clang::CXXRecordDecl *decl) {
-  DefineImplicitMembers(decl);
-  for (auto ctor : decl->ctors()) {
-    if (!ctor->isCopyOrMoveConstructor() || ctor->isDeleted()) {
-      continue;
-    }
-    StrCat(token::kComma, GetCopyOrMoveName(ctor));
-    PushBrace brace(*this);
-    PushCurrFunction push_fn(*this, ctor);
-    for (auto init : ctor->inits()) {
-      assert(init->isMemberInitializer());
-      auto field = init->getMember();
-      StrCat(GetNamedDeclAsString(field), token::kColon);
-      ConvertVarInit(field->getType(), init->getInit());
-      StrCat(token::kComma);
-    }
-  }
 }
 
 bool Converter::VisitImplicitValueInitExpr(clang::ImplicitValueInitExpr *expr) {
@@ -4342,6 +4317,15 @@ Converter::GetStructAttributes(const clang::RecordDecl *decl) {
     struct_attrs.emplace_back("VaArg");
   }
   struct_attrs.emplace_back("FnPtrArg");
+
+  if (HasMoveFromConstructor(decl)) {
+    struct_attrs.emplace_back("MoveCtorUnsafe");
+  }
+
+  if (auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
+      cxx && RecordNeedsDestruction(cxx)) {
+    struct_attrs.emplace_back("DestructorUnsafe");
+  }
 
   if (RecordDerivesDefault(decl)) {
     struct_attrs.emplace_back("Default");

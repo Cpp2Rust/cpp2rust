@@ -35,7 +35,7 @@ impl S {
         return (x + 3);
     }
 }
-#[derive(Record, ByteRepr, FnPtrArg, Default)]
+#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, Default)]
 #[byte_size(4)]
 pub struct MoveOnly {
     #[offset(0)]

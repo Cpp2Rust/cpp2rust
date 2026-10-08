@@ -35,7 +35,7 @@ pub struct Holder {
     #[offset(0)]
     pub field: i32,
 }
-#[derive(Record, ByteRepr, FnPtrArg, Default)]
+#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, Default)]
 #[byte_size(8)]
 pub struct NonCopyable {
     #[offset(0)]

@@ -40,6 +40,9 @@ int main() {
   auto a2 = a;
   assert(a2() == 4);
 
+  auto a3 = std::move(a);
+  assert(a3() == 2);
+
   {
     auto m = [d = Dropped()]() {};
     auto m2 = std::move(m);
@@ -51,6 +54,12 @@ int main() {
     auto k2 = k;
   }
   assert(drops == 4);
+
+  {
+    auto inner = [d = Dropped()]() {};
+    auto outer = [inner]() {};
+  }
+  assert(drops == 6);
 
   return 0;
 }

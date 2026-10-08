@@ -124,8 +124,6 @@ public:
   void ConvertLambdaCapture(const clang::FieldDecl *field,
                             clang::Expr *init) override;
 
-  void ConvertLambdaCopyAndMove(clang::CXXRecordDecl *decl) override;
-
   void ConvertLambdaToFunctionPointer(clang::Expr *lambda) override;
 
   void

@@ -37,6 +37,19 @@ pub use fn_ptr_arg::{ArgRepr, FnPtrArg, record_from_repr};
 mod fn_ptr;
 pub use fn_ptr::FnPtr;
 
+mod capture;
+pub use capture::{Destructor, DestructorUnsafe, MoveCtor, MoveCtorUnsafe};
+// Used by lambda! and lambda_unsafe!.
+#[doc(hidden)]
+pub mod __capture {
+    pub use crate::capture::{
+        Capture, CaptureUnsafe, CopyClone, CopyCloneUnsafe, CopyLambda, CopyLambdaUnsafe, CopyNone,
+        CopyNoneUnsafe, DestroyElems, DestroyNone, DestroyNoneUnsafe, DestroyWithDtor,
+        DestroyWithDtorUnsafe, MoveClone, MoveCloneUnsafe, MoveElems, MoveNone, MoveNoneUnsafe,
+        MoveWithCtor, MoveWithCtorUnsafe,
+    };
+}
+
 mod callable;
 pub use callable::*;
 
@@ -71,5 +84,6 @@ mod format;
 pub use format::*;
 
 pub use libcc2rs_macros::{
-    ByteRepr, DeepClone, FnPtrArg, Record, VaArg, goto, goto_block, lambda, lambda_unsafe, switch,
+    ByteRepr, DeepClone, Destructor, DestructorUnsafe, FnPtrArg, MoveCtor, MoveCtorUnsafe, Record,
+    VaArg, goto, goto_block, lambda, lambda_unsafe, switch,
 };

@@ -104,6 +104,9 @@ bool IsDefaultedMoveConstructor(const clang::CXXConstructorDecl *ctor);
 
 bool IsConvertibleMoveConstructor(const clang::CXXConstructorDecl *ctor);
 
+// Whether decl has a move constructor converted to a move_from method.
+bool HasMoveFromConstructor(const clang::RecordDecl *decl);
+
 bool IsConvertibleMoveAssignment(const clang::CXXMethodDecl *method);
 
 bool IsConvertibleImplicitMember(const clang::CXXMethodDecl *method);

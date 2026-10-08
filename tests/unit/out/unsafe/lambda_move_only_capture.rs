@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(FnPtrArg, Default)]
+#[derive(FnPtrArg, MoveCtorUnsafe, DestructorUnsafe, Default)]
 pub struct Owner {
     pub p: *mut i32,
 }
@@ -38,12 +38,6 @@ impl Owner {
             },
             || -> i32 {
                 return (*self_.p);
-            },
-            move_from {
-                self_: Owner::move_from({ &mut self_ },),
-            },
-            destroy = {
-                Owner::destructor(&mut self.self_);
             }
         );
     }
@@ -63,12 +57,6 @@ unsafe fn main_0() -> i32 {
         },
         || -> i32 {
             return (*h.p);
-        },
-        move_from {
-            h: Owner::move_from({ &mut h },),
-        },
-        destroy = {
-            Owner::destructor(&mut self.h);
         }
     );
     let _dtor_f = ScopedDestructorUnsafe::new(&raw mut f, |__f| __f.destroy());
@@ -86,13 +74,6 @@ unsafe fn main_0() -> i32 {
         || {
             (*total) += (*h.p);
             (*h.p) = 0;
-        },
-        move_from {
-            h: Owner::move_from({ &mut h },),
-            total: total,
-        },
-        destroy = {
-            Owner::destructor(&mut self.h);
         }
     );
     let _dtor_consume = ScopedDestructorUnsafe::new(&raw mut consume, |__f| __f.destroy());

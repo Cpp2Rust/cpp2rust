@@ -29,9 +29,7 @@ unsafe fn main_0() -> i32 {
         },
         |x: i32| -> i32 {
             return ((x) * (factor));
-        },
-        copy_from { factor: factor },
-        move_from { factor: factor }
+        }
     );
     assert!(((unsafe { scale.call(4,) }) == (12)));
     factor = 100;
@@ -44,9 +42,7 @@ unsafe fn main_0() -> i32 {
         },
         || -> i32 {
             return (*p);
-        },
-        copy_from { p: p },
-        move_from { p: p }
+        }
     );
     slot = 8;
     assert!(((unsafe { read_ptr.call() }) == (8)));
@@ -57,9 +53,7 @@ unsafe fn main_0() -> i32 {
         },
         || -> i32 {
             return ((s.x) + (s.y));
-        },
-        copy_from { s: s },
-        move_from { s: s }
+        }
     );
     s.x = 50;
     assert!(((unsafe { sum.call() }) == (3)));
@@ -70,9 +64,7 @@ unsafe fn main_0() -> i32 {
         },
         |x: i32| -> i32 {
             return ((x) + (y));
-        },
-        copy_from { y: y },
-        move_from { y: y }
+        }
     );
     assert!(((unsafe { shifted.call(5,) }) == (16)));
     let k: i32 = 3;
@@ -82,9 +74,7 @@ unsafe fn main_0() -> i32 {
         },
         |x: i32| -> i32 {
             return ((x) + (3));
-        },
-        copy_from { k: k },
-        move_from { k: k }
+        }
     );
     assert!(((unsafe { by_copy.call(1,) }) == (4)));
     let mut by_copy_used: FnPtr<fn(i32) -> i32> = lambda_unsafe!(
@@ -93,9 +83,7 @@ unsafe fn main_0() -> i32 {
         },
         |x: i32| -> i32 {
             return ((x) + (unsafe { read_0(&k) }));
-        },
-        copy_from { k: k },
-        move_from { k: k }
+        }
     );
     assert!(((unsafe { by_copy_used.call(1,) }) == (4)));
     let mut implicit_used: FnPtr<fn(i32) -> i32> = lambda_unsafe!(
@@ -104,9 +92,7 @@ unsafe fn main_0() -> i32 {
         },
         |x: i32| -> i32 {
             return ((x) + (unsafe { read_0(&k) }));
-        },
-        copy_from { k: k },
-        move_from { k: k }
+        }
     );
     assert!(((unsafe { implicit_used.call(1,) }) == (4)));
     let mut by_ref: FnPtr<fn(i32) -> i32> = lambda_unsafe!(
@@ -115,9 +101,7 @@ unsafe fn main_0() -> i32 {
         },
         |x: i32| -> i32 {
             return ((x) + (3));
-        },
-        copy_from { k: k },
-        move_from { k: k }
+        }
     );
     assert!(((unsafe { by_ref.call(1,) }) == (4)));
     return 0;

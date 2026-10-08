@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, MoveCtor)]
 #[byte_size(8)]
 pub struct Counted {
     #[offset(0)]
@@ -51,7 +51,7 @@ impl Default for Counted {
 thread_local!(
     pub static drops_0: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, Destructor)]
 #[byte_size(1)]
 pub struct Dropped {}
 impl Dropped {
@@ -88,12 +88,6 @@ fn main_0() -> i32 {
         },
         || -> i32 {
             return (({ (*c.borrow()).copies } * 10) + { (*c.borrow()).moves });
-        },
-        copy_from {
-            c: Rc::new(RefCell::new(Counted::copy_from({ c.as_pointer() },))),
-        },
-        move_from {
-            c: Rc::new(RefCell::new(Counted::move_from({ c.as_pointer() },))),
         }
     )));
     assert!((({ (*f.borrow()).call() }) == 10));
@@ -111,12 +105,6 @@ fn main_0() -> i32 {
                 },
                 || -> Counted {
                     return Counted::copy_from({ c.as_pointer() });
-                },
-                copy_from {
-                    c: Rc::new(RefCell::new(Counted::copy_from({ c.as_pointer() },))),
-                },
-                move_from {
-                    c: Rc::new(RefCell::new(Counted::move_from({ c.as_pointer() },))),
                 }
             )
             .call()
@@ -139,36 +127,19 @@ fn main_0() -> i32 {
             return ({ (*arr.borrow())[(0) as usize].copies } + {
                 (*arr.borrow())[(1) as usize].copies
             });
-        },
-        copy_from {
-            arr: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 2, _>(
-                |__i: usize| Counted::copy_from({ (arr.as_pointer() as Ptr<Counted>).offset(__i) },)
-            )))),
-        },
-        move_from {
-            arr: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 2, _>(
-                |__i: usize| Counted::move_from({ (arr.as_pointer() as Ptr<Counted>).offset(__i) },)
-            )))),
         }
     )));
     assert!((({ (*a.borrow()).call() }) == 2));
     let a2: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new((*a.borrow()).copy_from()));
     assert!((({ (*a2.borrow()).call() }) == 4));
+    let a3: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new((*a.borrow()).move_from()));
+    assert!((({ (*a3.borrow()).call() }) == 2));
     {
         let m: Value<FnPtr<fn()>> = Rc::new(RefCell::new(lambda!(
             {
                 let d: Value<Dropped> = Rc::new(RefCell::new(Dropped::new()));
             },
-            || {},
-            copy_from {
-                d: Rc::new(RefCell::new(Dropped::copy_from({ d.as_pointer() },))),
-            },
-            move_from {
-                d: Rc::new(RefCell::new(Dropped::move_from({ d.as_pointer() },))),
-            },
-            destroy = {
-                self.d.as_pointer().destructor();
-            }
+            || {}
         )));
         let _dtor_m = ScopedDestructor::new(&m, |__p| __p.with(|__f| __f.destroy()));
         let m2: Value<FnPtr<fn()>> = Rc::new(RefCell::new((*m.borrow()).move_from()));
@@ -180,22 +151,31 @@ fn main_0() -> i32 {
             {
                 let d: Value<Dropped> = Rc::new(RefCell::new(Dropped::new()));
             },
-            || {},
-            copy_from {
-                d: Rc::new(RefCell::new(Dropped::copy_from({ d.as_pointer() },))),
-            },
-            move_from {
-                d: Rc::new(RefCell::new(Dropped::move_from({ d.as_pointer() },))),
-            },
-            destroy = {
-                self.d.as_pointer().destructor();
-            }
+            || {}
         )));
         let _dtor_k = ScopedDestructor::new(&k, |__p| __p.with(|__f| __f.destroy()));
         let k2: Value<FnPtr<fn()>> = Rc::new(RefCell::new((*k.borrow()).copy_from()));
         let _dtor_k2 = ScopedDestructor::new(&k2, |__p| __p.with(|__f| __f.destroy()));
     }
     assert!((drops_0.with(|rc| *rc.borrow()) == 4));
+    {
+        let inner: Value<FnPtr<fn()>> = Rc::new(RefCell::new(lambda!(
+            {
+                let d: Value<Dropped> = Rc::new(RefCell::new(Dropped::new()));
+            },
+            || {}
+        )));
+        let _dtor_inner = ScopedDestructor::new(&inner, |__p| __p.with(|__f| __f.destroy()));
+        let outer: Value<FnPtr<fn()>> = Rc::new(RefCell::new(lambda!(
+            {
+                let inner: Value<FnPtr<fn()>> =
+                    Rc::new(RefCell::new((*inner.borrow()).copy_from()));
+            },
+            || {}
+        )));
+        let _dtor_outer = ScopedDestructor::new(&outer, |__p| __p.with(|__f| __f.destroy()));
+    }
+    assert!((drops_0.with(|rc| *rc.borrow()) == 6));
     return 0;
 }
 pub trait DroppedImpl {

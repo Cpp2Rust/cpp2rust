@@ -1572,11 +1572,6 @@ void ConverterRefCount::ConvertLambdaCapture(const clang::FieldDecl *field,
   Converter::ConvertLambdaCapture(field, init);
 }
 
-void ConverterRefCount::ConvertLambdaCopyAndMove(clang::CXXRecordDecl *decl) {
-  PushConversionKind push(*this, ConversionKind::FullRefCount);
-  Converter::ConvertLambdaCopyAndMove(decl);
-}
-
 void ConverterRefCount::ConvertLambdaToFunctionPointer(clang::Expr *lambda) {
   StrCat(ConvertFreshRValue(lambda));
 }
@@ -2582,6 +2577,15 @@ ConverterRefCount::GetStructAttributes(const clang::RecordDecl *decl) {
   }
   attrs.emplace_back("FnPtrArg");
 
+  if (HasMoveFromConstructor(decl)) {
+    attrs.emplace_back("MoveCtor");
+  }
+
+  if (auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
+      cxx && RecordNeedsDestruction(cxx)) {
+    attrs.emplace_back("Destructor");
+  }
+
   if (RecordDerivesDefault(decl)) {
     attrs.emplace_back("Default");
   }
@@ -3515,12 +3519,6 @@ ConverterRefCount::DestroyMembers(const clang::CXXRecordDecl *decl) {
   std::string out;
   for (auto *field : std::ranges::reverse_view(fields)) {
     auto name = GetNamedDeclAsString(field);
-    if (decl->isLambda()) {
-      assert(!field->getType()->isArrayType());
-      out +=
-          std::format("self.{0}.as_pointer().{1}();\n", name, kDestructorName);
-      continue;
-    }
     if (field->getType()->isArrayType()) {
       auto *elem =
           field->getType()->getBaseElementTypeUnsafe()->getAsCXXRecordDecl();

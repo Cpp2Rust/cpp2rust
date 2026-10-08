@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(FnPtrArg, Default)]
+#[derive(FnPtrArg, MoveCtorUnsafe, Default)]
 pub struct NoCopy {
     pub v: i32,
 }
@@ -28,7 +28,7 @@ impl NoCopy {
     }
 }
 #[repr(C)]
-#[derive(FnPtrArg)]
+#[derive(FnPtrArg, MoveCtorUnsafe)]
 pub struct PrivateCopy {
     pub v: i32,
 }
@@ -70,7 +70,7 @@ impl Default for Immovable {
     }
 }
 #[repr(C)]
-#[derive(FnPtrArg, Default)]
+#[derive(FnPtrArg, MoveCtorUnsafe, Default)]
 pub struct Container {
     pub inner: NoCopy,
     pub tag: i32,
