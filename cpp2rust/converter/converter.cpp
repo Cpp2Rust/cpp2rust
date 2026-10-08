@@ -4697,6 +4697,10 @@ void Converter::AddOrdTrait(const clang::CXXRecordDecl *decl) {
         fn->getDescribedFunctionTemplate() || !IsSameTypeComparison(fn, decl)) {
       return;
     }
+    if (fn->getOverloadedOperator() == clang::OO_Spaceship &&
+        !ctx_.CompCategories.lookupInfoForType(fn->getReturnType())) {
+      return;
+    }
     switch (fn->getOverloadedOperator()) {
     case clang::OO_EqualEqual:
       eq = fn;
