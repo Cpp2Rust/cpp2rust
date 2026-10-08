@@ -202,6 +202,12 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new(1.try_into().expect("failed conversion"))),
     )));
     assert!(((*(*pr.borrow()).0.borrow()) == 21_u64));
+    let sizes: Value<Box<[usize]>> =
+        Rc::new(RefCell::new(Box::new([1_usize, 2_usize, 3_usize, 4_usize])));
+    let mut sizes_end: Ptr<usize> =
+        ((sizes.as_pointer() as Ptr<usize>).to_end()).reinterpret_cast::<usize>();
+    assert!((((sizes_end).clone() - (sizes.as_pointer() as Ptr::<usize>)) as i64 == 4_i64));
+    assert!((((sizes_end.offset(-((1) as isize))).read()) == 4_usize));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

@@ -5019,9 +5019,9 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
   }
 
   if (ph_ctx.declared_in_rule_as_rust_ptr && arg->getType()->isArrayType()) {
-    return std::format(
-        "({} as {})", ConvertFreshPointer(arg),
-        Mapper::GetParamType(ctx_, GetCalleeOrExpr(expr), ph_ctx.arg_idx));
+    auto elem = ctx_.getAsArrayType(arg->getType())->getElementType();
+    return std::format("({} as {})", ConvertFreshPointer(arg),
+                       ToStringBase(ctx_.getPointerType(elem)));
   }
 
   if (ph_ctx.needs_materialization()) {
