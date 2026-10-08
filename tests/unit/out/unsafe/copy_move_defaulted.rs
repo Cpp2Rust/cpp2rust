@@ -98,7 +98,7 @@ impl Clone for UserCopyDefaultMove {
     }
 }
 #[repr(C)]
-#[derive(Default)]
+#[derive(FnPtrArg, Default)]
 pub struct Buffer {
     pub data: Vec<i32>,
     pub rows: Vec<Vec<i32>>,
@@ -143,7 +143,7 @@ impl Buffer {
     }
 }
 #[repr(C)]
-#[derive(Default)]
+#[derive(FnPtrArg, Default)]
 pub struct Owner {
     pub data: Vec<i32>,
     pub n: i32,
@@ -178,7 +178,7 @@ impl Owner {
     }
 }
 #[repr(C)]
-#[derive(Default)]
+#[derive(FnPtrArg, Default)]
 pub struct Holder {
     pub inner: Inner,
     pub e: Explicit,

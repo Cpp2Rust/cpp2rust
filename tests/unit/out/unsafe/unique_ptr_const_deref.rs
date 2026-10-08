@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Default)]
+#[derive(FnPtrArg, Default)]
 pub struct Holder {
     pub val: Option<Box<i32>>,
 }
