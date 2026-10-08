@@ -88,13 +88,6 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    thread_local!(
-        static items_4: Value<Box<[Ptr<i8>]>> = Rc::new(RefCell::new(Box::new([
-            Ptr::<i8>::from_string_literal(b"a"),
-            Ptr::<i8>::from_string_literal(b"b"),
-            Ptr::<i8>::from_string_literal(b"c"),
-        ])));
-    );
     let p_list: Value<Branch> = <Value<Branch>>::default();
     (*p_list.borrow_mut()).choice = Choice_enum_C_LIST;
     (*p_list.borrow_mut()).index = 0;
@@ -165,4 +158,11 @@ fn main_0() -> i32 {
     );
     return 0;
 }
+thread_local!(
+    static items_4: Value<Box<[Ptr<i8>]>> = Rc::new(RefCell::new(Box::new([
+        Ptr::<i8>::from_string_literal(b"a"),
+        Ptr::<i8>::from_string_literal(b"b"),
+        Ptr::<i8>::from_string_literal(b"c"),
+    ])));
+);
 pub fn __cpp2rust_init_globals() {}

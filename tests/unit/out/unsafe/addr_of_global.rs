@@ -48,13 +48,6 @@ unsafe fn main_0() -> i32 {
         (((*(*std::cell::LazyCell::force_mut(&mut *&raw mut items_3))[(1) as usize]).value) == (2))
     );
     assert!((((*(*std::cell::LazyCell::force_mut(&mut *&raw mut obj_4)).p).value) == (42)));
-    static mut cache_5: std::cell::LazyCell<[*mut Inner; 2]> =
-        std::cell::LazyCell::new(|| unsafe {
-            [
-                (&raw mut (*std::cell::LazyCell::force_mut(&mut *&raw mut alpha_0)) as *mut Inner),
-                (&raw mut (*std::cell::LazyCell::force_mut(&mut *&raw mut beta_1)) as *mut Inner),
-            ]
-        });;
     assert!(
         (((*(*std::cell::LazyCell::force_mut(&mut *&raw mut cache_5))[(0) as usize]).value) == (1))
     );
@@ -63,6 +56,12 @@ unsafe fn main_0() -> i32 {
     );
     return 0;
 }
+static mut cache_5: std::cell::LazyCell<[*mut Inner; 2]> = std::cell::LazyCell::new(|| unsafe {
+    [
+        (&raw mut (*std::cell::LazyCell::force_mut(&mut *&raw mut alpha_0)) as *mut Inner),
+        (&raw mut (*std::cell::LazyCell::force_mut(&mut *&raw mut beta_1)) as *mut Inner),
+    ]
+});
 pub unsafe fn __cpp2rust_init_globals() {
     std::cell::LazyCell::force(&*&raw const alpha_0);
     std::cell::LazyCell::force(&*&raw const beta_1);

@@ -118,21 +118,21 @@ thread_local!(
     ])));
 );
 pub fn check_local_static_5() {
-    thread_local!(
-        static local_outer_6: Value<Outer> = Rc::new(RefCell::new(<Outer>::default()));
-    );
-    thread_local!(
-        static local_fn_7: Value<FnPtr<fn(i32) -> i32>> =
-            Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null()));
-    );
-    thread_local!(
-        static local_p_8: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));
-    );
     assert!(({ (*local_outer_6.with(Value::clone).borrow()).p1.clone() }).is_null());
     assert!(({ (*local_outer_6.with(Value::clone).borrow()).fn_.clone() }).is_null());
     assert!((*local_fn_7.with(Value::clone).borrow()).is_null());
     assert!((*local_p_8.with(Value::clone).borrow()).is_null());
 }
+thread_local!(
+    static local_outer_6: Value<Outer> = Rc::new(RefCell::new(<Outer>::default()));
+);
+thread_local!(
+    static local_fn_7: Value<FnPtr<fn(i32) -> i32>> =
+        Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null()));
+);
+thread_local!(
+    static local_p_8: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));
+);
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());

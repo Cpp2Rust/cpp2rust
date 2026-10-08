@@ -68,17 +68,17 @@ pub static mut static_foo_array_4: std::cell::LazyCell<[Foo; 2]> =
         ]
     });
 pub unsafe fn check_local_static_5() {
-    static mut local_outer_6: std::cell::LazyCell<Outer> =
-        std::cell::LazyCell::new(|| unsafe { <Outer>::default() });;
-    static mut local_fn_7: std::cell::LazyCell<Option<unsafe fn(i32) -> i32>> =
-        std::cell::LazyCell::new(|| unsafe { None });;
-    static mut local_p_8: std::cell::LazyCell<*mut i32> =
-        std::cell::LazyCell::new(|| unsafe { std::ptr::null_mut() });;
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut local_outer_6)).p1).is_null());
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut local_outer_6)).fn_).is_none());
     assert!((*std::cell::LazyCell::force_mut(&mut *&raw mut local_fn_7)).is_none());
     assert!((*std::cell::LazyCell::force_mut(&mut *&raw mut local_p_8)).is_null());
 }
+static mut local_outer_6: std::cell::LazyCell<Outer> =
+    std::cell::LazyCell::new(|| unsafe { <Outer>::default() });
+static mut local_fn_7: std::cell::LazyCell<Option<unsafe fn(i32) -> i32>> =
+    std::cell::LazyCell::new(|| unsafe { None });
+static mut local_p_8: std::cell::LazyCell<*mut i32> =
+    std::cell::LazyCell::new(|| unsafe { std::ptr::null_mut() });
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
