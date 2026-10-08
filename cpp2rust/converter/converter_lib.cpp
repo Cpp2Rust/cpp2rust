@@ -263,14 +263,23 @@ bool IsCodeUnitStringLiteral(const clang::StringLiteral *expr) {
 }
 
 std::string GetNumAsString(llvm::APFloat value) {
-  if (&value.getSemantics() == &llvm::APFloat::IEEEsingle()) {
-    return std::format("{}_f32", value.convertToFloat());
+  switch (llvm::APFloat::SemanticsToEnum(value.getSemantics())) {
+  case llvm::APFloat::S_IEEEsingle:
+    return value.isInfinity() ? "f32::INFINITY"
+                              : std::format("{}_f32", value.convertToFloat());
+  case llvm::APFloat::S_x87DoubleExtended: {
+    bool loses_info = false;
+    value.convert(llvm::APFloat::IEEEdouble(),
+                  llvm::APFloat::rmNearestTiesToEven, &loses_info);
   }
-  bool loses_info = false;
-  value.convert(llvm::APFloat::IEEEdouble(),
-                llvm::APFloat::rmNearestTiesToEven, &loses_info);
-  return value.isInfinity() ? "f64::INFINITY"
-                            : std::format("{}_f64", value.convertToDouble());
+    [[fallthrough]];
+  case llvm::APFloat::S_IEEEdouble:
+    return value.isInfinity() ? "f64::INFINITY"
+                              : std::format("{}_f64", value.convertToDouble());
+  default:
+    assert(false && "unsupported floating-point semantics");
+    return {};
+  }
 }
 
 bool IsUserDefinedDecl(const clang::Decl *decl) {
