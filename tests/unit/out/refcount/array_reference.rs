@@ -99,6 +99,12 @@ fn main_0() -> i32 {
     assert!((({ len_0(buf.as_pointer(),) }) == 4));
     let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2, 3])));
     assert!((({ sum_2(arr.as_pointer(),) }) == 6));
+    assert!(
+        (({
+            let _a: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2, 3])));
+            sum_2(_a.as_pointer())
+        }) == 6)
+    );
     ({ fill_3(arr.as_pointer(), 7) });
     assert!((({ sum_2(arr.as_pointer(),) }) == 21));
     assert!((({ sum_twice_4(arr.as_pointer(),) }) == 42));
@@ -130,6 +136,36 @@ fn main_0() -> i32 {
         Ptr::<i8>::from_string_literal(b"cde"),
     ])));
     assert!((({ total_len_13(names.as_pointer(),) }) == 5));
+    let rows: Value<Box<[Value<Box<[i32]>>]>> = Rc::new(RefCell::new(Box::new([
+        Rc::new(RefCell::new(Box::new([1, 2, 3]))),
+        Rc::new(RefCell::new(Box::new([4, 5, 6]))),
+    ])));
+    let mut p: Ptr<Value<Box<[i32]>>> = (rows.as_pointer() as Ptr<Value<Box<[i32]>>>);
+    p.prefix_inc();
+    assert!(
+        ({ ((p).read().as_pointer() as Ptr::<i32>).clone() } == {
+            ((((rows.as_pointer() as Ptr<Value<Box<[i32]>>>)
+                .offset(1)
+                .read()
+                .as_pointer()) as Ptr<i32>)
+                .offset(0))
+        })
+    );
+    let r: Ptr<i32> = ((p).read().as_pointer()).clone();
+    assert!(((elem!((r), 0).read()) == 4));
+    assert!((({ sum_2((r).clone(),) }) == 15));
+    assert!((({ sum_2(((p).read().as_pointer()).clone(),) }) == 15));
+    let mut q: Ptr<Value<Box<[i32]>>> = (rows.as_pointer() as Ptr<Value<Box<[i32]>>>);
+    assert!((({ sum_2(q.offset((1) as isize).read().as_pointer(),) }) == 15));
+    assert!(
+        ({ (q.offset((1) as isize).read().as_pointer() as Ptr::<i32>) } == {
+            ((((rows.as_pointer() as Ptr<Value<Box<[i32]>>>)
+                .offset(1)
+                .read()
+                .as_pointer()) as Ptr<i32>)
+                .offset(0))
+        })
+    );
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

@@ -500,12 +500,19 @@ ConverterRefCount::MaterializeTemp(const std::string &binding_name,
                                    clang::QualType param_type,
                                    clang::Expr *expr) {
   auto pointee = param_type.getNonReferenceType();
-  auto value = ConvertFreshRValue(expr, pointee);
-  auto type_str = ToStringBase(pointee);
   const auto *decl = in_const_initializer_ ? keyword::kStatic : keyword::kLet;
-
-  auto binding = std::format("{} {} : Value<{}> = Rc::new(RefCell::new({}));",
-                             decl, binding_name, type_str, value);
+  std::string binding;
+  if (pointee->isConstantArrayType()) {
+    PushConversionKind push(*this, ConversionKind::FullRefCount);
+    binding =
+        std::format("{} {} : {} = {};", decl, binding_name, ToString(pointee),
+                    BoxValue(ConvertVarInitValue(pointee, expr)));
+  } else {
+    auto value = ConvertFreshRValue(expr, pointee);
+    auto type_str = ToStringBase(pointee);
+    binding = std::format("{} {} : Value<{}> = Rc::new(RefCell::new({}));",
+                          decl, binding_name, type_str, value);
+  }
   auto ref =
       in_const_initializer_ ? ".with(Value::as_pointer)" : ".as_pointer()";
   return {binding, binding_name + ref};
@@ -3041,6 +3048,9 @@ void ConverterRefCount::ConvertPointerSubscript(
     ConvertPointerElem(base, idx);
   } else {
     ConvertPointerOffset(base, idx);
+    if (expr->getType()->isArrayType()) {
+      StrCat(GetPointerDerefSuffix(expr->getType()), ".as_pointer()");
+    }
   }
   if (deref) {
     StrCat(GetPointerDerefSuffix(expr->getType()));
@@ -3120,6 +3130,11 @@ void ConverterRefCount::ConvertDeref(clang::Expr *expr) {
       }
     }
     str = std::move(buf).str();
+  }
+
+  if (isAddrOf() && pointee_type->isArrayType()) {
+    str = std::format("({}){}.as_pointer()", std::move(str),
+                      GetPointerDerefSuffix(pointee_type));
   }
 
   if (isObject() && WantsElementPtr() &&
