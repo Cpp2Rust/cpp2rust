@@ -4665,6 +4665,32 @@ std::string Converter::GetComparisonCall(const clang::FunctionDecl *op,
                      arg(0, lhs), arg(1, rhs));
 }
 
+std::string Converter::GetComparisonBool(const clang::FunctionDecl *op,
+                                         const clang::CXXRecordDecl *decl,
+                                         std::string_view lhs,
+                                         std::string_view rhs) {
+  auto call = GetComparisonCall(op, decl, lhs, rhs);
+  auto ret = op->getReturnType();
+  if (ret->isBooleanType()) {
+    return call;
+  }
+  if (ret->isIntegerType()) {
+    return std::format("(({}) != 0)", call);
+  }
+  const auto *record = ret->getAsCXXRecordDecl();
+  assert(record && "unsupported comparison operator return type");
+  for (const auto *found : record->getVisibleConversionFunctions()) {
+    const auto *conversion = clang::dyn_cast<clang::CXXConversionDecl>(found);
+    if (conversion && conversion->getConversionType()->isBooleanType()) {
+      return std::format("{{ let __cmp = &{}; {}::{}({}) }}", call,
+                         GetUFCSName(conversion), GetMethodName(conversion),
+                         GetComparisonReceiver(conversion, record, "__cmp"));
+    }
+  }
+  assert(0 && "comparison operator result has no conversion to bool");
+  return call;
+}
+
 std::string
 Converter::GetComparisonReferenceArg(const clang::CXXRecordDecl *decl,
                                      std::string_view value) {
@@ -4692,19 +4718,19 @@ void Converter::ConvertOrdAndPartialOrdTraits(const clang::CXXRecordDecl *decl,
     cmp_body = std::format("if {} {{ std::cmp::Ordering::Less }} else if {} {{ "
                            "std::cmp::Ordering::Greater }} else {{ "
                            "std::cmp::Ordering::Equal }}",
-                           GetComparisonCall(lt, decl, "self", "other"),
-                           GetComparisonCall(lt, decl, "other", "self"));
+                           GetComparisonBool(lt, decl, "self", "other"),
+                           GetComparisonBool(lt, decl, "other", "self"));
   }
 
   if (eq) {
-    eq_body = GetComparisonCall(eq, decl, "self", "other");
+    eq_body = GetComparisonBool(eq, decl, "self", "other");
   } else if (cmp) {
     eq_body = std::format("{} == std::cmp::Ordering::Equal",
                           GetComparisonCall(cmp, decl, "self", "other"));
   } else {
     eq_body = std::format("!({}) && !({})",
-                          GetComparisonCall(lt, decl, "self", "other"),
-                          GetComparisonCall(lt, decl, "other", "self"));
+                          GetComparisonBool(lt, decl, "self", "other"),
+                          GetComparisonBool(lt, decl, "other", "self"));
   }
 
   ConvertOrdAndPartialOrdTraitsBase(cmp_body, eq_body, GetRecordName(decl));
@@ -4717,6 +4743,10 @@ void Converter::AddOrdTrait(const clang::CXXRecordDecl *decl) {
   auto consider = [&](const clang::FunctionDecl *fn) {
     if (!fn || fn->isImplicit() || fn->isDeleted() || !fn->hasBody() ||
         fn->getDescribedFunctionTemplate() || !IsSameTypeComparison(fn, decl)) {
+      return;
+    }
+    if (fn->getOverloadedOperator() == clang::OO_Spaceship &&
+        !ctx_.CompCategories.lookupInfoForType(fn->getReturnType())) {
       return;
     }
     switch (fn->getOverloadedOperator()) {
