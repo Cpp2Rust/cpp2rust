@@ -32,6 +32,8 @@ int main() {
   assert(dmax < -1e308);
   long double big = 1e400L;
   assert(big > DBL_MAX);
+  float fbig = 1e40f;
+  assert(fbig > FLT_MAX);
   assert(xwc + xc8 + xc16 + xc32 == 266);
   assert(xnp == nullptr);
   return 0;

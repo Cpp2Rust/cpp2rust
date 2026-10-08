@@ -48,6 +48,8 @@ unsafe fn main_0() -> i32 {
     assert!(((dmax) < (-1e+308_f64)));
     let mut big: f64 = f64::INFINITY;
     assert!(((big) > (1.7976931348623157e+308_f64)));
+    let mut fbig: f32 = f32::INFINITY;
+    assert!(((fbig) > (3.4028235e+38_f32)));
     assert!(((((((xwc) + (xc8 as i32)) + (xc16 as i32)) as u32).wrapping_add(xc32)) == (266_u32)));
     assert!((std::ptr::null_mut::<::libc::c_void>()).is_null());
     return 0;
