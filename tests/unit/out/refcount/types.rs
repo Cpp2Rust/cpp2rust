@@ -6,6 +6,11 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+const _: () = assert!(
+    (::std::mem::size_of::<usize>() == 8usize),
+    "sizeof(std::size_t) == sizeof(void *)"
+);
+const _: () = assert!((8usize == 8_usize), "sizeof(int *) == 8");
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
@@ -42,6 +47,8 @@ fn main_0() -> i32 {
     assert!(((xld * 2_f64) == 3_f64));
     assert!(((((xwc + (xc8 as i32)) + (xc16 as i32)) as u32).wrapping_add(xc32) == 266_u32));
     assert!((AnyPtr::default()).is_null());
+    let mut ip: Ptr<i32> = Ptr::<i32>::null();
+    assert!((8usize == 8usize));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

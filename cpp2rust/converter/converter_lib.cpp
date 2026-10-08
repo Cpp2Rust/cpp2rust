@@ -347,6 +347,9 @@ bool RustSizeDivergesFromC(clang::QualType qt) {
   if (auto *arr = qt->getAsArrayTypeUnsafe()) {
     return RustSizeDivergesFromC(arr->getElementType());
   }
+  if (qt->isPointerType()) {
+    return true;
+  }
   return false;
 }
 
