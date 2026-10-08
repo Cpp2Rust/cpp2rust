@@ -1840,6 +1840,11 @@ bool ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
   if (auto form = expr->getSemanticForm())
     expr = form;
 
+  if (expr->isTransparent()) {
+    Convert(expr->getInit(0));
+    return false;
+  }
+
   auto qual_type = expr->getType();
   if (qual_type->isScalarType()) {
     PushConversionKind push(*this, ConversionKind::Unboxed);
