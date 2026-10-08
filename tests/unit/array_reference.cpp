@@ -98,5 +98,8 @@ int main() {
   assert(r[0] == 4);
   assert(sum(r) == 15);
   assert(sum(*p) == 15);
+  int (*q)[3] = rows;
+  assert(sum(q[1]) == 15);
+  assert(q[1] == &rows[1][0]);
   return 0;
 }

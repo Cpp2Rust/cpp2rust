@@ -348,8 +348,6 @@ private:
   // returns a copy of the pointee, rather than a borrow of it.
   bool DerefReadsValue(clang::QualType pointee_type);
   const char *GetPointerDerefSuffix(clang::QualType pointee_type);
-
-  std::string ConvertArrayPointerDeref(clang::Expr *expr);
   // Sets the freshness of the dereference of a pointer to pointee_type: a
   // copy read with .read() is fresh.
   void SetDerefFreshness(clang::QualType pointee_type);

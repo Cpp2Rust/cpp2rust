@@ -125,6 +125,12 @@ unsafe fn main_0() -> i32 {
     assert!((((*r)[(0) as usize]) == (4)));
     assert!(((unsafe { sum_2(r,) }) == (15)));
     assert!(((unsafe { sum_2(&(*p),) }) == (15)));
+    let mut q: *mut [i32; 3] = rows.as_mut_ptr();
+    assert!(((unsafe { sum_2(&(*q.offset((1) as isize)),) }) == (15)));
+    assert!(
+        (((*q.offset((1) as isize)).as_mut_ptr())
+            == (&mut rows[(1) as usize][(0) as usize] as *mut i32))
+    );
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

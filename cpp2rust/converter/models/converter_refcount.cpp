@@ -1506,10 +1506,6 @@ bool ConverterRefCount::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
                          ToString(sub_expr->IgnoreParens())));
       computed_expr_type_ = ComputedExprType::FreshPointer;
       return false;
-    } else if (auto ptr = ConvertArrayPointerDeref(sub_expr); !ptr.empty()) {
-      StrCat(ptr);
-      computed_expr_type_ = ComputedExprType::FreshPointer;
-      return false;
     } else {
       // we need to write (var.as_pointer as Ptr<T>) because Rust isn't
       // smart enough to pick the right specialization
@@ -2580,9 +2576,6 @@ std::string ConverterRefCount::ConvertVarInitValue(clang::QualType qual_type,
         return std::format("Ptr::<{}>::from_string_literal({})", code_unit,
                            ToString(expr->IgnoreParens()->IgnoreImplicit()));
       }
-      if (auto ptr = ConvertArrayPointerDeref(expr); !ptr.empty()) {
-        return ptr;
-      }
     }
     return ConvertFreshPointer(expr, qual_type);
   }
@@ -3046,6 +3039,9 @@ void ConverterRefCount::ConvertPointerSubscript(
     ConvertPointerElem(base, idx);
   } else {
     ConvertPointerOffset(base, idx);
+    if (expr->getType()->isArrayType()) {
+      StrCat(GetPointerDerefSuffix(expr->getType()), ".as_pointer()");
+    }
   }
   if (deref) {
     StrCat(GetPointerDerefSuffix(expr->getType()));
@@ -3127,6 +3123,11 @@ void ConverterRefCount::ConvertDeref(clang::Expr *expr) {
     str = std::move(buf).str();
   }
 
+  if (isAddrOf() && pointee_type->isArrayType()) {
+    str = std::format("({}){}.as_pointer()", std::move(str),
+                      GetPointerDerefSuffix(pointee_type));
+  }
+
   if (isObject() && WantsElementPtr() &&
       (IsBoxedType(ctx_, pointee_type) || pointee_type->isArrayType())) {
     StrCat(std::format("Ptr::<{}>::decay(&({}))", ToString(pointee_type),
@@ -3197,18 +3198,6 @@ void ConverterRefCount::ConvertConstructedValue(clang::QualType type,
 
 bool ConverterRefCount::DerefReadsValue(clang::QualType pointee_type) {
   return pointee_type.isPODType(ctx_) && !pointee_type->isRecordType();
-}
-
-std::string ConverterRefCount::ConvertArrayPointerDeref(clang::Expr *expr) {
-  auto *op =
-      clang::dyn_cast<clang::UnaryOperator>(expr->IgnoreParenNoopCasts(ctx_));
-  if (!op || op->getOpcode() != clang::UO_Deref ||
-      !op->getType()->isArrayType()) {
-    return {};
-  }
-  PushConversionKind push(*this, ConversionKind::Unboxed);
-  return std::format("({}{}.as_pointer())", ConvertRValue(op->getSubExpr()),
-                     GetPointerDerefSuffix(op->getType()));
 }
 
 const char *
