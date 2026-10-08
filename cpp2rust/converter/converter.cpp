@@ -1140,8 +1140,7 @@ bool Converter::VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl) {
   }
   PushCurrFunction push_fn(*this, decl);
 
-  if (decl->isCopyOrMoveConstructor() &&
-      !decl->doesThisDeclarationHaveABody()) {
+  if (decl->isCopyOrMoveConstructor() && !decl->hasBody()) {
     return false;
   }
 
