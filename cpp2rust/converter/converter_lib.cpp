@@ -259,7 +259,7 @@ bool IsStringLiteralExpr(const clang::Expr *expr) {
 
 bool IsCodeUnitStringLiteral(const clang::StringLiteral *expr) {
   return expr->getCharByteWidth() != 1 ||
-         expr->getKind() == clang::StringLiteralKind::UTF8;
+         expr->getType()->getArrayElementTypeNoTypeQual()->isChar8Type();
 }
 
 bool IsUserDefinedDecl(const clang::Decl *decl) {

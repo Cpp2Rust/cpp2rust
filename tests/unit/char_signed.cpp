@@ -19,6 +19,9 @@ int main() {
   printf("%d %d\n", lit[0], ulit[0]);
   printf("%d\n", is_negative(lit));
 
+  const char *u8s = u8"\u00e9";
+  printf("%d %d\n", u8s[0], u8s[1]);
+
   const char *p = "\x80";
   printf("%d %d\n", p[0], (unsigned char)p[0]);
 
