@@ -24,7 +24,7 @@ fn main_0() -> i32 {
         let mut __found = AnyPtr::default();
         while __lo <= __hi && __found.is_null() {
             let __mid = __lo + (__hi - __lo) / 2;
-            let __elem = __base.offset(__mid as usize * 4usize);
+            let __elem = __base.offset(__mid as usize * ::std::mem::size_of::<i32>());
             let __r = int_cmp_0(
                 (((a1.as_pointer() as Ptr<i32>).offset(0)) as Ptr<i32>)
                     .to_any()

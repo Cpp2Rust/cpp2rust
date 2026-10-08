@@ -176,7 +176,7 @@ pub fn test_strftime_5() {
                 .unwrap_or_default(),
                 Err(_) => String::new(),
             };
-            if __text.is_empty() || __text.len() + 1 > 64usize {
+            if __text.is_empty() || __text.len() + 1 > ::std::mem::size_of::<[i8; 64]>() {
                 0
             } else {
                 (buf.as_pointer() as Ptr<i8>).write_c_bytes(__text.as_bytes());
@@ -200,7 +200,7 @@ pub fn test_strftime_5() {
                 .unwrap_or_default(),
                 Err(_) => String::new(),
             };
-            if __text.is_empty() || __text.len() + 1 > 64usize {
+            if __text.is_empty() || __text.len() + 1 > ::std::mem::size_of::<[i8; 64]>() {
                 0
             } else {
                 (buf.as_pointer() as Ptr<i8>).write_c_bytes(__text.as_bytes());
@@ -224,7 +224,7 @@ pub fn test_strftime_5() {
                 .unwrap_or_default(),
                 Err(_) => String::new(),
             };
-            if __text.is_empty() || __text.len() + 1 > 64usize {
+            if __text.is_empty() || __text.len() + 1 > ::std::mem::size_of::<[i8; 64]>() {
                 0
             } else {
                 (buf.as_pointer() as Ptr<i8>).write_c_bytes(__text.as_bytes());
@@ -248,7 +248,7 @@ pub fn test_strftime_5() {
                 .unwrap_or_default(),
                 Err(_) => String::new(),
             };
-            if __text.is_empty() || __text.len() + 1 > 64usize {
+            if __text.is_empty() || __text.len() + 1 > ::std::mem::size_of::<[i8; 64]>() {
                 0
             } else {
                 (buf.as_pointer() as Ptr<i8>).write_c_bytes(__text.as_bytes());
@@ -274,7 +274,7 @@ pub fn test_strftime_5() {
                 .unwrap_or_default(),
                 Err(_) => String::new(),
             };
-            if __text.is_empty() || __text.len() + 1 > 4usize {
+            if __text.is_empty() || __text.len() + 1 > ::std::mem::size_of::<[i8; 4]>() {
                 0
             } else {
                 (small.as_pointer() as Ptr<i8>).write_c_bytes(__text.as_bytes());

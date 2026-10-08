@@ -50,9 +50,10 @@ fn main_0() -> i32 {
         let buf: Value<Box<[i8]>> =
             Rc::new(RefCell::new((0..16).map(|_| 0_i8).collect::<Box<[i8]>>()));
         {
-            ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>)
-                .to_any()
-                .memset((('X' as i8) as i32) as u8, 16usize as usize);
+            ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any().memset(
+                (('X' as i8) as i32) as u8,
+                ::std::mem::size_of::<[i8; 16]>() as usize,
+            );
             ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any()
         };
         let mut n: usize = {
@@ -93,9 +94,10 @@ fn main_0() -> i32 {
         let buf: Value<Box<[i8]>> =
             Rc::new(RefCell::new((0..16).map(|_| 0_i8).collect::<Box<[i8]>>()));
         {
-            ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>)
-                .to_any()
-                .memset((('X' as i8) as i32) as u8, 16usize as usize);
+            ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any().memset(
+                (('X' as i8) as i32) as u8,
+                ::std::mem::size_of::<[i8; 16]>() as usize,
+            );
             ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any()
         };
         let mut n: usize = ({
@@ -153,9 +155,10 @@ fn main_0() -> i32 {
         let buf: Value<Box<[i8]>> =
             Rc::new(RefCell::new((0..10).map(|_| 0_i8).collect::<Box<[i8]>>()));
         {
-            ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>)
-                .to_any()
-                .memset((('Y' as i8) as i32) as u8, 10usize as usize);
+            ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any().memset(
+                (('Y' as i8) as i32) as u8,
+                ::std::mem::size_of::<[i8; 10]>() as usize,
+            );
             ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any()
         };
         let mut n: usize = {
@@ -186,9 +189,10 @@ fn main_0() -> i32 {
         let buf: Value<Box<[i8]>> =
             Rc::new(RefCell::new((0..10).map(|_| 0_i8).collect::<Box<[i8]>>()));
         {
-            ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>)
-                .to_any()
-                .memset((('Y' as i8) as i32) as u8, 10usize as usize);
+            ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any().memset(
+                (('Y' as i8) as i32) as u8,
+                ::std::mem::size_of::<[i8; 10]>() as usize,
+            );
             ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any()
         };
         let mut n: usize = ({

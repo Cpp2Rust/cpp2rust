@@ -14,13 +14,15 @@ fn main_0() -> i32 {
     let mut __do_while = true;
     'loop_: while __do_while || (0 != 0) {
         __do_while = false;
-        let mut p: Ptr<i32> = libcc2rs::malloc_refcount(4usize).reinterpret_cast::<i32>();
+        let mut p: Ptr<i32> =
+            libcc2rs::malloc_refcount(::std::mem::size_of::<i32>()).reinterpret_cast::<i32>();
         p.write(42);
         assert!(((((p.read()) == 42) as i32) != 0));
         libcc2rs::free_refcount((p).to_any());
-        let mut arr: Ptr<i32> =
-            libcc2rs::malloc_refcount((4_usize).wrapping_mul((4usize as usize)))
-                .reinterpret_cast::<i32>();
+        let mut arr: Ptr<i32> = libcc2rs::malloc_refcount(
+            (4_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize)),
+        )
+        .reinterpret_cast::<i32>();
         let mut i: i32 = 0;
         'loop_: while (((i < 4) as i32) != 0) {
             elem!(arr, i).write({ (i * 10) });
@@ -29,14 +31,17 @@ fn main_0() -> i32 {
         assert!(((((elem!(arr, 0).read()) == 0) as i32) != 0));
         assert!(((((elem!(arr, 3).read()) == 30) as i32) != 0));
         libcc2rs::free_refcount((arr).to_any());
-        let mut grow: Ptr<i32> =
-            libcc2rs::malloc_refcount((2_usize).wrapping_mul((4usize as usize)))
-                .reinterpret_cast::<i32>();
+        let mut grow: Ptr<i32> = libcc2rs::malloc_refcount(
+            (2_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize)),
+        )
+        .reinterpret_cast::<i32>();
         elem!(grow, 0).write(1);
         elem!(grow, 1).write(2);
-        let __rhs =
-            libcc2rs::realloc_refcount((grow).to_any(), (4_usize).wrapping_mul((4usize as usize)))
-                .reinterpret_cast::<i32>();
+        let __rhs = libcc2rs::realloc_refcount(
+            (grow).to_any(),
+            (4_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize)),
+        )
+        .reinterpret_cast::<i32>();
         grow = __rhs;
         elem!(grow, 2).write(3);
         elem!(grow, 3).write(4);
@@ -45,8 +50,8 @@ fn main_0() -> i32 {
         assert!(((((elem!(grow, 2).read()) == 3) as i32) != 0));
         assert!(((((elem!(grow, 3).read()) == 4) as i32) != 0));
         libcc2rs::free_refcount((grow).to_any());
-        let mut zeros: Ptr<i32> =
-            libcc2rs::calloc_refcount(4_usize, 4usize).reinterpret_cast::<i32>();
+        let mut zeros: Ptr<i32> = libcc2rs::calloc_refcount(4_usize, ::std::mem::size_of::<i32>())
+            .reinterpret_cast::<i32>();
         let mut i: i32 = 0;
         'loop_: while (((i < 4) as i32) != 0) {
             assert!(((((elem!(zeros, i).read()) == 0) as i32) != 0));
@@ -64,12 +69,14 @@ fn main_0() -> i32 {
     let mut __do_while = true;
     'loop_: while __do_while || (0 != 0) {
         __do_while = false;
-        let mut p: Ptr<i32> = ({ pmalloc.call(4usize) }).reinterpret_cast::<i32>();
+        let mut p: Ptr<i32> =
+            ({ pmalloc.call(::std::mem::size_of::<i32>()) }).reinterpret_cast::<i32>();
         p.write(42);
         assert!(((((p.read()) == 42) as i32) != 0));
         ({ pfree.call((p).to_any()) });
         let mut arr: Ptr<i32> =
-            ({ pmalloc.call((4_usize).wrapping_mul((4usize as usize))) }).reinterpret_cast::<i32>();
+            ({ pmalloc.call((4_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize))) })
+                .reinterpret_cast::<i32>();
         let mut i: i32 = 0;
         'loop_: while (((i < 4) as i32) != 0) {
             elem!(arr, i).write({ (i * 10) });
@@ -79,11 +86,17 @@ fn main_0() -> i32 {
         assert!(((((elem!(arr, 3).read()) == 30) as i32) != 0));
         ({ pfree.call((arr).to_any()) });
         let mut grow: Ptr<i32> =
-            ({ pmalloc.call((2_usize).wrapping_mul((4usize as usize))) }).reinterpret_cast::<i32>();
+            ({ pmalloc.call((2_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize))) })
+                .reinterpret_cast::<i32>();
         elem!(grow, 0).write(1);
         elem!(grow, 1).write(2);
-        let __rhs = ({ prealloc.call((grow).to_any(), (4_usize).wrapping_mul((4usize as usize))) })
-            .reinterpret_cast::<i32>();
+        let __rhs = ({
+            prealloc.call(
+                (grow).to_any(),
+                (4_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize)),
+            )
+        })
+        .reinterpret_cast::<i32>();
         grow = __rhs;
         elem!(grow, 2).write(3);
         elem!(grow, 3).write(4);
@@ -92,7 +105,8 @@ fn main_0() -> i32 {
         assert!(((((elem!(grow, 2).read()) == 3) as i32) != 0));
         assert!(((((elem!(grow, 3).read()) == 4) as i32) != 0));
         ({ pfree.call((grow).to_any()) });
-        let mut zeros: Ptr<i32> = ({ pcalloc.call(4_usize, 4usize) }).reinterpret_cast::<i32>();
+        let mut zeros: Ptr<i32> =
+            ({ pcalloc.call(4_usize, ::std::mem::size_of::<i32>()) }).reinterpret_cast::<i32>();
         let mut i: i32 = 0;
         'loop_: while (((i < 4) as i32) != 0) {
             assert!(((((elem!(zeros, i).read()) == 0) as i32) != 0));

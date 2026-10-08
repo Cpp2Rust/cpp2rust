@@ -38,7 +38,7 @@ fn main_0() -> i32 {
     assert!(((b as i32) == (false as i32)));
     let mut s: Small = Small_SMALL_MAX;
     assert!(((s as i32) == 255));
-    assert!((1usize == 1_usize));
+    assert!((::std::mem::size_of::<Small>() == 1_usize));
     s = Small_SMALL_ZERO;
     assert!((((s as i32) + 1) == 1));
     let mut sg: Signed = Signed_SIGNED_MIN;
@@ -46,11 +46,11 @@ fn main_0() -> i32 {
     assert!(((sg as i32) < (Signed_SIGNED_ONE as i32)));
     let mut w: Wide = Wide_WIDE_BIG;
     assert!(((w as i64) == (1_i64 << 40)));
-    assert!((8usize == 8_usize));
+    assert!((::std::mem::size_of::<Wide>() == 8_usize));
     assert!(((Wide_WIDE_NEG as i64) < 0_i64));
     let mut z: Sized = Sized_SIZED_B;
     assert!(((z as i32) == 65535));
-    assert!((2usize == 2_usize));
+    assert!((::std::mem::size_of::<Sized>() == 2_usize));
     assert!((((Sized_SIZED_A as i32) + 1) == 2));
     let mut sc: Scoped = Scoped_NEG;
     assert!(((sc as i32) == -2_i32));

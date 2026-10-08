@@ -24,7 +24,7 @@ fn main_0() -> i32 {
     {
         ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().memcpy(
             &((src.as_pointer()) as Ptr<point>).to_any(),
-            8usize as usize,
+            ::std::mem::size_of::<[u8; 8]>() as usize,
         );
         ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()
     };

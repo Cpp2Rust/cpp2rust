@@ -29,8 +29,8 @@ pub fn main() {
 fn main_0() -> i32 {
     let mut arr: [i64; 4] = [0_i64, 0_i64, 0_i64, 0_i64];
     let mut s: S = <S>::default();
-    assert!((4usize == 4_usize));
-    assert!((32usize == 32_usize));
+    assert!((::std::mem::size_of::<i32>() == 4_usize));
+    assert!((::std::mem::size_of::<[i64; 4]>() == 32_usize));
     assert!((16usize == 16_usize));
     assert!((::std::mem::align_of::<i32>() == 4_usize));
     assert!((16usize == 16_usize));

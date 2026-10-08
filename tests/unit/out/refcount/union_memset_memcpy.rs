@@ -128,7 +128,7 @@ fn main_0() -> i32 {
     (*src.borrow_mut())[(6) as usize] = 0_u8;
     (*src.borrow_mut())[(7) as usize] = 1_u8;
     let mut len: usize = 16_usize;
-    assert!((((len <= 256usize) as i32) != 0));
+    assert!((((len <= ::std::mem::size_of::<[i8; 256]>()) as i32) != 0));
     {
         ((anon_0::raw_(field_ptr!(c.as_pointer(), view)).reinterpret_cast::<i8>()) as Ptr<i8>)
             .to_any()

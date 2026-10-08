@@ -69,7 +69,7 @@ fn main_0() -> i32 {
     plain += 2;
     plain.postfix_inc();
     assert!((plain == 4));
-    &(4usize);
+    &(::std::mem::size_of::<i32>());
     let addr: Value<i32> = Rc::new(RefCell::new(0));
     ({ set_0((addr.as_pointer()), 5) });
     assert!(((*addr.borrow()) == 5));

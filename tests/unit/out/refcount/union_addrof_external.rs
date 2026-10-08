@@ -71,8 +71,8 @@ pub fn fill_1(mut out: AnyPtr, mut cap: usize) {
     (*src.borrow_mut())[(5) as usize] = 0_u8;
     (*src.borrow_mut())[(6) as usize] = 0_u8;
     (*src.borrow_mut())[(7) as usize] = 1_u8;
-    let mut n: usize = (if (((16usize < cap) as i32) != 0) {
-        (16usize as u64)
+    let mut n: usize = (if (((::std::mem::size_of::<[u8; 16]>() < cap) as i32) != 0) {
+        (::std::mem::size_of::<[u8; 16]>() as u64)
     } else {
         (cap as u64)
     } as usize);

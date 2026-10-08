@@ -133,14 +133,18 @@ fn main_0() -> i32 {
             ]))
         }) == 258_u32)
     );
-    let mut nw: usize =
-        ((16usize as usize).wrapping_div((4usize as usize)) as usize).wrapping_sub(1_usize);
-    let mut nb: usize =
-        ((4usize as usize).wrapping_div((1usize as usize)) as usize).wrapping_sub(1_usize);
-    let mut ns: usize =
-        ((8usize as usize).wrapping_div((2usize as usize)) as usize).wrapping_sub(1_usize);
-    let mut nl: usize =
-        ((16usize as usize).wrapping_div((4usize as usize)) as usize).wrapping_sub(1_usize);
+    let mut nw: usize = ((::std::mem::size_of::<[i32; 4]>() as usize)
+        .wrapping_div((::std::mem::size_of::<i32>() as usize)) as usize)
+        .wrapping_sub(1_usize);
+    let mut nb: usize = ((::std::mem::size_of::<[u8; 4]>() as usize)
+        .wrapping_div((::std::mem::size_of::<u8>() as usize)) as usize)
+        .wrapping_sub(1_usize);
+    let mut ns: usize = ((::std::mem::size_of::<[u16; 4]>() as usize)
+        .wrapping_div((::std::mem::size_of::<u16>() as usize)) as usize)
+        .wrapping_sub(1_usize);
+    let mut nl: usize = ((::std::mem::size_of::<[u32; 4]>() as usize)
+        .wrapping_div((::std::mem::size_of::<u32>() as usize)) as usize)
+        .wrapping_sub(1_usize);
     assert!((((nw == 3_usize) && (nb == 3_usize)) && (ns == 3_usize)) && (nl == 3_usize));
     let mut pw: [i32; 4] = [258 as i32, 0 as i32, 0 as i32, 0 as i32];
     let mut ps: [u16; 4] = [258 as u16, 0 as u16, 0 as u16, 0 as u16];
@@ -157,7 +161,10 @@ fn main_0() -> i32 {
     let mut lc: u32 = (258 as u32);
     assert!((((wc == 258) && ((bc as i32) == 65)) && ((sc as i32) == 258)) && (lc == 258_u32));
     assert!(
-        (((4usize == 4usize) && (1usize == 1_usize)) && (2usize == 2_usize)) && (4usize == 4_usize)
+        (((::std::mem::size_of::<i32>() == ::std::mem::size_of::<i32>())
+            && (::std::mem::size_of::<u8>() == 1_usize))
+            && (::std::mem::size_of::<u16>() == 2_usize))
+            && (::std::mem::size_of::<u32>() == 4_usize)
     );
     assert!(
         (((elem!(w, 1).read()) == (258 as i32))

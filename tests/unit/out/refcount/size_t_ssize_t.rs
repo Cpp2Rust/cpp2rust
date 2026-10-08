@@ -20,8 +20,8 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let mut n: usize = (4usize as usize).wrapping_add(4_usize);
-    assert!((n == (4usize as usize).wrapping_add(4_usize)));
+    let mut n: usize = (::std::mem::size_of::<i32>() as usize).wrapping_add(4_usize);
+    assert!((n == (::std::mem::size_of::<i32>() as usize).wrapping_add(4_usize)));
     let ul: Value<u64> = Rc::new(RefCell::new(10_u64));
     let sz: Value<usize> = Rc::new(RefCell::new(20_usize));
     let mut mixed: usize = (((*sz.borrow()) as u64).wrapping_add((*ul.borrow())) as usize);
@@ -31,32 +31,38 @@ fn main_0() -> i32 {
     assert!(!((*sz.borrow()) == ((*ul.borrow()) as usize)));
     let mut chain: usize = (((((*sz.borrow()) as u64).wrapping_add((*ul.borrow())))
         .wrapping_add(5_u64))
-    .wrapping_add((8usize as u64)) as usize);
-    assert!((chain == (((20 + 10) + 5) as usize).wrapping_add((8usize as usize))));
+    .wrapping_add((::std::mem::size_of::<i64>() as u64)) as usize);
+    assert!(
+        (chain == (((20 + 10) + 5) as usize).wrapping_add((::std::mem::size_of::<i64>() as usize)))
+    );
     let mut acc: usize = 100_usize;
-    acc = { ((acc as u64).wrapping_add((8usize as u64))) as usize };
+    acc = { ((acc as u64).wrapping_add((::std::mem::size_of::<f64>() as u64))) as usize };
     acc = { (acc).wrapping_mul(2_usize) };
     acc = { ((acc as u64).wrapping_sub((*ul.borrow()))) as usize };
     assert!(
-        (acc == ((((100_usize).wrapping_add((8usize as usize))) as usize).wrapping_mul(2_usize)
-            as usize)
+        (acc == ((((100_usize).wrapping_add((::std::mem::size_of::<f64>() as usize))) as usize)
+            .wrapping_mul(2_usize) as usize)
             .wrapping_sub(10_usize))
     );
     (*sz.borrow_mut()) = { (*sz.borrow()).wrapping_add(1_usize) };
     assert!(((*sz.borrow()) == 21_usize));
     let mut fr: usize = ({
         add_sizes_0(
-            ((4usize as u64).wrapping_add(((*sz.borrow()) as u64)) as usize),
+            ((::std::mem::size_of::<i32>() as u64).wrapping_add(((*sz.borrow()) as u64)) as usize),
             ((*ul.borrow()) as usize),
         )
     });
-    assert!((fr == ((4usize as usize).wrapping_add(21_usize) as usize).wrapping_add(10_usize)));
+    assert!(
+        (fr == ((::std::mem::size_of::<i32>() as usize).wrapping_add(21_usize) as usize)
+            .wrapping_add(10_usize))
+    );
     let mut fr2: u64 = ({ take_ulong_1(((*sz.borrow()) as u64)) });
     assert!((fr2 == 21_u64));
     let mut lo: usize = ({
         let __tmp_0: Value<u64> = Rc::new(RefCell::new(((*sz.borrow()) as u64)));
-        let __tmp_1: Value<u64> =
-            Rc::new(RefCell::new((8usize as u64).wrapping_add((*ul.borrow()))));
+        let __tmp_1: Value<u64> = Rc::new(RefCell::new(
+            (::std::mem::size_of::<i64>() as u64).wrapping_add((*ul.borrow())),
+        ));
         (if __tmp_0.as_pointer().read() <= __tmp_1.as_pointer().read() {
             __tmp_0.as_pointer()
         } else {
@@ -66,7 +72,7 @@ fn main_0() -> i32 {
     } as usize);
     let mut hi: usize = ({
         let __tmp_0: Value<u64> = Rc::new(RefCell::new(
-            (4usize as u64).wrapping_add(((*sz.borrow()) as u64)),
+            (::std::mem::size_of::<i32>() as u64).wrapping_add(((*sz.borrow()) as u64)),
         ));
         (if __tmp_0.as_pointer().read() >= ul.as_pointer().read() {
             __tmp_0.as_pointer()
@@ -75,8 +81,8 @@ fn main_0() -> i32 {
         }
         .read())
     } as usize);
-    assert!((lo == (8usize as usize).wrapping_add(10_usize)));
-    assert!((hi == (4usize as usize).wrapping_add(21_usize)));
+    assert!((lo == (::std::mem::size_of::<i64>() as usize).wrapping_add(10_usize)));
+    assert!((hi == (::std::mem::size_of::<i32>() as usize).wrapping_add(21_usize)));
     let mut bound: usize = ({
         let __tmp_0: Value<u64> = Rc::new(RefCell::new(((*sz.borrow()) as u64)));
         let __tmp_1: Value<u64> = Rc::new(RefCell::new((4_usize as u64)));
@@ -89,7 +95,8 @@ fn main_0() -> i32 {
     } as usize);
     assert!((bound == 4_usize));
     let mut data: [i32; 8] = [0_i32; 8];
-    let mut count: usize = (32usize as usize).wrapping_div((4usize as usize));
+    let mut count: usize = (::std::mem::size_of::<[i32; 8]>() as usize)
+        .wrapping_div((::std::mem::size_of::<i32>() as usize));
     let mut i: usize = 0_usize;
     'loop_: while (i < count) {
         data[(i) as usize] = { (((i).wrapping_mul(2_usize)) as i32) };
@@ -103,13 +110,17 @@ fn main_0() -> i32 {
     }
     assert!((total == 56_usize));
     let mut cond: usize = (if ((*sz.borrow()) > ((*ul.borrow()) as usize)) {
-        ((*sz.borrow()) as u64).wrapping_add((4usize as u64))
+        ((*sz.borrow()) as u64).wrapping_add((::std::mem::size_of::<i32>() as u64))
     } else {
         (*ul.borrow())
     } as usize);
-    assert!((cond == (21_usize).wrapping_add((4usize as usize))));
+    assert!((cond == (21_usize).wrapping_add((::std::mem::size_of::<i32>() as usize))));
     let mut arr: [usize; 4] = [0_usize, 1_usize, 2_usize, 3_usize];
-    let mut idx: usize = (if (4usize > 2_usize) { 2 } else { 0 } as usize);
+    let mut idx: usize = (if (::std::mem::size_of::<i32>() > 2_usize) {
+        2
+    } else {
+        0
+    } as usize);
     assert!((arr[(idx) as usize] == 2_usize));
     let mut s1: isize = 5_isize;
     let mut s2: isize = 12_isize;
