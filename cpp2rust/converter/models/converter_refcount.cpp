@@ -1770,9 +1770,7 @@ bool ConverterRefCount::VisitReturnStmt(clang::ReturnStmt *stmt) {
 
 bool ConverterRefCount::VisitStmtExpr(clang::StmtExpr *expr) {
   PushConversionKind push(*this, ConversionKind::FullRefCount);
-  Converter::VisitStmtExpr(expr);
-  SetFreshType(expr->getType());
-  return false;
+  return Converter::VisitStmtExpr(expr);
 }
 
 void ConverterRefCount::ConvertBinaryOperator(clang::BinaryOperator *expr) {
