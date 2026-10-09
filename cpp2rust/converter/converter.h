@@ -329,9 +329,14 @@ public:
 
   void ConvertGenericCallExpr(clang::CallExpr *expr);
 
-  virtual void EmitFnPtrCall(clang::Expr *callee);
+  virtual void EmitFnPtrCall(clang::CallExpr *expr);
 
-  virtual void ConvertLambdaToFunctionPointer(clang::Expr *lambda);
+  void ConvertLambdaCall(clang::CallExpr *expr,
+                         const clang::CXXRecordDecl *lambda);
+
+  virtual void
+  ConvertLambdaToFunctionPointer(clang::Expr *lambda,
+                                 const clang::CXXConversionDecl *conversion);
 
   virtual void
   ConvertFunctionToFunctionPointer(const clang::FunctionDecl *fn_decl);
@@ -479,7 +484,8 @@ public:
   virtual void ConvertLambdaCapture(const clang::FieldDecl *field,
                                     clang::Expr *init);
 
-  void ConvertLambdaClosure(const clang::CXXRecordDecl *decl);
+  void ConvertLambdaClosure(const clang::CXXRecordDecl *decl,
+                            clang::CXXMethodDecl *call_operator);
 
   virtual bool VisitImplicitValueInitExpr(clang::ImplicitValueInitExpr *expr);
   virtual bool VisitCXXScalarValueInitExpr(clang::CXXScalarValueInitExpr *expr);

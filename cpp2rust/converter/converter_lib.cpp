@@ -1174,6 +1174,58 @@ AsLambdaOperatorCall(const clang::FunctionDecl *fn) {
   return method;
 }
 
+void ForEachLambdaCallOperator(
+    const clang::CXXRecordDecl *decl,
+    llvm::function_ref<void(clang::CXXMethodDecl *)> fn) {
+  if (!decl->isGenericLambda()) {
+    fn(decl->getLambdaCallOperator());
+    return;
+  }
+  for (auto spec : decl->getDependentLambdaCallOperator()->specializations()) {
+    fn(clang::cast<clang::CXXMethodDecl>(spec));
+  }
+}
+
+clang::CXXMethodDecl *
+AsLambdaCallOperator(const clang::CXXConversionDecl *conversion) {
+  auto decl = conversion->getParent();
+  if (!decl->isGenericLambda()) {
+    return decl->getLambdaCallOperator();
+  }
+  auto args = conversion->getTemplateSpecializationArgs()->asArray();
+  clang::CXXMethodDecl *found = nullptr;
+  ForEachLambdaCallOperator(decl, [&](clang::CXXMethodDecl *op) {
+    auto op_args = op->getTemplateSpecializationArgs()->asArray();
+    if (llvm::equal(args, op_args,
+                    [](const clang::TemplateArgument &a,
+                       const clang::TemplateArgument &b) {
+                      return a.structurallyEquals(b);
+                    })) {
+      found = op;
+    }
+  });
+  if (!found) {
+    llvm::report_fatal_error("no call operator matches the lambda conversion");
+  }
+  return found;
+}
+
+unsigned
+GetLambdaSpecializationIndex(const clang::FunctionDecl *call_operator) {
+  std::optional<unsigned> index;
+  unsigned i = 0;
+  ForEachLambdaCallOperator(
+      clang::cast<clang::CXXMethodDecl>(call_operator)->getParent(),
+      [&](const clang::CXXMethodDecl *op) {
+        if (op->getCanonicalDecl() == call_operator->getCanonicalDecl()) {
+          index = i;
+        }
+        ++i;
+      });
+  assert(index);
+  return *index;
+}
+
 const clang::LambdaCapture *AsLambdaCapture(const clang::FieldDecl *field) {
   auto decl = clang::dyn_cast<clang::CXXRecordDecl>(field->getParent());
   if (!decl || !decl->isLambda()) {
@@ -1688,6 +1740,10 @@ clang::Expr *GetCallee(clang::CallExpr *expr) {
     if (op_call->getOperator() == clang::OO_Call) {
       return op_call->getArg(0);
     }
+  }
+  if (auto member_call = clang::dyn_cast<clang::CXXMemberCallExpr>(expr);
+      member_call && AsLambdaOperatorCall(member_call->getMethodDecl())) {
+    return member_call->getImplicitObjectArgument();
   }
   return expr->getCallee();
 }

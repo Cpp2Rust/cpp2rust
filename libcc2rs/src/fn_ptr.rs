@@ -60,6 +60,10 @@ trait Adapted: Any {
     }
 
     fn destroy(&self) {}
+
+    fn specializations(&self) -> &[Rc<dyn Any>] {
+        panic!("ub: not a generic lambda");
+    }
 }
 
 impl<T: FnSig> Adapted for T {
@@ -372,6 +376,96 @@ macro_rules! impl_fn_ptr_call {
     };
 }
 impl_fn_ptr_call!();
+
+#[derive(Clone, Copy)]
+pub struct Generic;
+
+impl FnSig for Generic {
+    type Args = ();
+    type Ret = ();
+    fn fn_addr(&self) -> usize {
+        panic!("ub: a generic lambda has no single function address");
+    }
+    fn call_direct(self, _args: ()) {
+        panic!("ub: calling a generic lambda without a signature");
+    }
+}
+
+struct GenericLambda<Captures> {
+    captures: Captures,
+    specializations: Vec<Rc<dyn Any>>,
+    make_specializations: fn(&Captures) -> Vec<Rc<dyn Any>>,
+    copy_from: fn(&Captures) -> Captures,
+    move_from: fn(&Captures) -> Captures,
+    destroy: fn(&Captures),
+}
+
+impl<Captures: 'static> GenericLambda<Captures> {
+    fn with_captures(&self, captures: Captures) -> Rc<dyn Adapted> {
+        Rc::new(GenericLambda {
+            specializations: (self.make_specializations)(&captures),
+            captures,
+            make_specializations: self.make_specializations,
+            copy_from: self.copy_from,
+            move_from: self.move_from,
+            destroy: self.destroy,
+        })
+    }
+}
+
+impl<Captures: 'static> Adapted for GenericLambda<Captures> {
+    fn call_adapted(&self, _args: ArgList) -> ArgRepr {
+        panic!("ub: calling a generic lambda without a signature");
+    }
+
+    fn copy_from(&self) -> Option<Rc<dyn Adapted>> {
+        Some(self.with_captures((self.copy_from)(&self.captures)))
+    }
+
+    fn move_from(&self) -> Option<Rc<dyn Adapted>> {
+        Some(self.with_captures((self.move_from)(&self.captures)))
+    }
+
+    fn destroy(&self) {
+        (self.destroy)(&self.captures)
+    }
+
+    fn specializations(&self) -> &[Rc<dyn Any>] {
+        &self.specializations
+    }
+}
+
+impl FnPtr<Generic> {
+    pub fn from_generic_lambda<Captures: 'static>(
+        captures: Captures,
+        make_specializations: fn(&Captures) -> Vec<Rc<dyn Any>>,
+        copy_from: fn(&Captures) -> Captures,
+        move_from: fn(&Captures) -> Captures,
+        destroy: fn(&Captures),
+    ) -> Self {
+        let lambda: Rc<dyn Adapted> = Rc::new(GenericLambda {
+            specializations: make_specializations(&captures),
+            captures,
+            make_specializations,
+            copy_from,
+            move_from,
+            destroy,
+        });
+        FnPtr {
+            addr: Rc::as_ptr(&lambda) as *const () as usize,
+            current: None,
+            original: Some(lambda),
+        }
+    }
+
+    pub fn spec<U: FnSig>(&self, index: usize) -> FnPtr<U> {
+        assert!(!self.is_null(), "ub: null fn pointer call");
+        self.original.as_ref().unwrap().specializations()[index]
+            .downcast_ref::<FnPtr<U>>()
+            .expect("ub: calling through incompatible fn pointer type")
+            .clone()
+    }
+}
 
 impl<T: FnSig> Clone for FnPtr<T> {
     fn clone(&self) -> Self {

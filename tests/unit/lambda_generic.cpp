@@ -1,4 +1,4 @@
-// translation-fail
+// ADDITIONAL_COMPILE_FLAGS: -std=c++23
 #include <assert.h>
 
 int main() {

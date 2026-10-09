@@ -170,6 +170,10 @@ bool Converter::VisitBuiltinType(clang::BuiltinType *type) {
 bool Converter::VisitRecordType(clang::RecordType *type) {
   auto *decl = type->getDecl();
   if (auto lambda = AsLambdaClass(clang::QualType(type, 0))) {
+    if (lambda->isGenericLambda()) {
+      StrCat("FnPtr<Generic>");
+      return false;
+    }
     auto proto = lambda->getLambdaCallOperator()
                      ->getType()
                      ->castAs<clang::FunctionProtoType>();
@@ -1877,7 +1881,8 @@ bool Converter::VisitCallExpr(clang::CallExpr *expr) {
           expr->getCalleeDecl());
       conversion && conversion->getParent()->isLambda()) {
     ConvertLambdaToFunctionPointer(clang::cast<clang::CXXMemberCallExpr>(expr)
-                                       ->getImplicitObjectArgument());
+                                       ->getImplicitObjectArgument(),
+                                   conversion);
     return false;
   }
 
@@ -1958,16 +1963,31 @@ bool Converter::VisitCallExpr(clang::CallExpr *expr) {
   return false;
 }
 
-void Converter::ConvertLambdaToFunctionPointer(clang::Expr *lambda) {
+void Converter::ConvertLambdaToFunctionPointer(
+    clang::Expr *lambda, const clang::CXXConversionDecl *conversion) {
   StrCat("Some");
   PushParen paren(*this);
-  ConvertLambdaClosure(AsLambdaClass(lambda->getType()));
+  ConvertLambdaClosure(AsLambdaClass(lambda->getType()),
+                       AsLambdaCallOperator(conversion));
   computed_expr_type_ = ComputedExprType::FreshPointer;
 }
 
-void Converter::EmitFnPtrCall(clang::Expr *callee) {
-  if (AsLambdaClass(callee->getType())) {
-    StrCat(ConvertRValue(callee), ".call");
+void Converter::ConvertLambdaCall(clang::CallExpr *expr,
+                                  const clang::CXXRecordDecl *lambda) {
+  StrCat(ConvertRValue(GetCallee(expr)));
+  if (lambda->isGenericLambda()) {
+    auto call_operator = expr->getDirectCallee();
+    auto proto = call_operator->getType()->castAs<clang::FunctionProtoType>();
+    StrCat(std::format(".spec::<{}>({})", ConvertFunctionPointerType(proto),
+                       GetLambdaSpecializationIndex(call_operator)));
+  }
+  StrCat(".call");
+}
+
+void Converter::EmitFnPtrCall(clang::CallExpr *expr) {
+  auto callee = GetCallee(expr);
+  if (auto lambda = AsLambdaClass(callee->getType())) {
+    ConvertLambdaCall(expr, lambda);
     return;
   }
   {
@@ -2014,8 +2034,9 @@ Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
   auto callee = GetCallee(expr);
   unsigned arg_begin = 0;
   if (auto op_call = llvm::dyn_cast<clang::CXXOperatorCallExpr>(expr)) {
-    if (clang::isa_and_nonnull<clang::CXXMethodDecl>(
-            op_call->getDirectCallee())) {
+    if (auto method = clang::dyn_cast_or_null<clang::CXXMethodDecl>(
+            op_call->getDirectCallee());
+        method && !method->isExplicitObjectMemberFunction()) {
       arg_begin = 1;
     }
   }
@@ -2221,7 +2242,7 @@ void Converter::EmitCall(CallInfo &&info) {
   EmitHoistedArgs(info);
 
   if (info.is_fn_ptr_call) {
-    EmitFnPtrCall(GetCallee(info.expr));
+    EmitFnPtrCall(info.expr);
   } else if (info.is_libc_passthrough) {
     auto *direct_callee = info.expr->getDirectCallee();
     assert(direct_callee);
@@ -3926,12 +3947,15 @@ bool Converter::VisitConstantExpr(clang::ConstantExpr *expr) {
 
 bool Converter::VisitLambdaExpr(clang::LambdaExpr *expr) {
   auto decl = expr->getLambdaClass();
-  if (decl->captures().empty()) {
+  if (decl->captures().empty() && !decl->isGenericLambda()) {
     ConvertCapturelessLambda(decl);
     return false;
   }
   StrCat(LambdaMacro());
   PushParen paren(*this);
+  if (decl->isGenericLambda()) {
+    StrCat("Generic", token::kComma);
+  }
   {
     PushBrace captures(*this);
     auto init = expr->capture_init_begin();
@@ -3939,19 +3963,21 @@ bool Converter::VisitLambdaExpr(clang::LambdaExpr *expr) {
       ConvertLambdaCapture(field, *init++);
     }
   }
-  StrCat(token::kComma);
-  ConvertLambdaClosure(decl);
+  ForEachLambdaCallOperator(decl, [&](clang::CXXMethodDecl *call_operator) {
+    StrCat(token::kComma);
+    ConvertLambdaClosure(decl, call_operator);
+  });
   computed_expr_type_ = ComputedExprType::FreshValue;
   return false;
 }
 
 void Converter::ConvertCapturelessLambda(const clang::CXXRecordDecl *decl) {
-  auto proto = decl->getLambdaCallOperator()
-                   ->getType()
-                   ->castAs<clang::FunctionProtoType>();
+  assert(!decl->isGenericLambda());
+  auto call_operator = decl->getLambdaCallOperator();
+  auto proto = call_operator->getType()->castAs<clang::FunctionProtoType>();
   StrCat(std::format("FnPtr::<{}>::new", ConvertFunctionPointerType(proto)));
   PushParen paren(*this);
-  ConvertLambdaClosure(decl);
+  ConvertLambdaClosure(decl, call_operator);
   computed_expr_type_ = ComputedExprType::FreshValue;
 }
 
@@ -3964,8 +3990,8 @@ void Converter::ConvertLambdaCapture(const clang::FieldDecl *field,
   StrCat(token::kSemiColon);
 }
 
-void Converter::ConvertLambdaClosure(const clang::CXXRecordDecl *decl) {
-  auto call_operator = decl->getLambdaCallOperator();
+void Converter::ConvertLambdaClosure(const clang::CXXRecordDecl *decl,
+                                     clang::CXXMethodDecl *call_operator) {
   StrCat('|');
   for (auto p : call_operator->parameters()) {
     StrCat(GetNamedDeclAsString(p), token::kColon, ToString(p->getType()),
@@ -3975,7 +4001,7 @@ void Converter::ConvertLambdaClosure(const clang::CXXRecordDecl *decl) {
   ConvertFunctionReturnType(call_operator);
   PushBrace body(*this);
   std::optional<PushBrace> unsafe_brace;
-  if (decl->captures().empty()) {
+  if (decl->captures().empty() && !decl->isGenericLambda()) {
     StrCat(keyword_unsafe_);
     unsafe_brace.emplace(*this);
   }

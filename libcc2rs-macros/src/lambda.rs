@@ -9,17 +9,38 @@ use syn::parse::{Parse, ParseStream};
 use syn::{Block, Error, ExprClosure, Pat, Result, Stmt, Token, parse_macro_input};
 
 struct Lambda {
+    is_generic: bool,
     captures: Block,
-    closure: ExprClosure,
+    closures: Vec<ExprClosure>,
 }
 
 impl Parse for Lambda {
     fn parse(input: ParseStream) -> Result<Self> {
+        let is_generic = input.peek(syn::Ident);
+        if is_generic {
+            let marker: Ident = input.parse()?;
+            if marker != "Generic" {
+                return Err(Error::new(marker.span(), "expected `Generic`"));
+            }
+            input.parse::<Token![,]>()?;
+        }
         let captures = input.parse()?;
         input.parse::<Token![,]>()?;
-        let closure = input.parse()?;
-        input.parse::<Option<Token![,]>>()?;
-        Ok(Lambda { captures, closure })
+        let mut closures = vec![input.parse()?];
+        while input.parse::<Option<Token![,]>>()?.is_some() && !input.is_empty() {
+            closures.push(input.parse()?);
+        }
+        if !is_generic && closures.len() != 1 {
+            return Err(Error::new_spanned(
+                &closures[1],
+                "a non-generic lambda has one closure",
+            ));
+        }
+        Ok(Lambda {
+            is_generic,
+            captures,
+            closures,
+        })
     }
 }
 
@@ -137,28 +158,49 @@ fn expand_lambda(lambda: Lambda, is_unsafe: bool) -> Result<proc_macro2::TokenSt
         inits.push(&init.expr);
     }
 
-    let mut params = Vec::new();
-    let mut param_types = Vec::new();
-    for input in &lambda.closure.inputs {
-        let Pat::Type(pat) = input else {
-            return Err(Error::new_spanned(input, "expected a typed parameter"));
+    let captured: HashSet<String> = names.iter().map(|name| name.to_string()).collect();
+    let mut calls = Vec::new();
+    let mut sigs = Vec::new();
+    let mut call_names = Vec::new();
+    for (i, closure) in lambda.closures.iter().enumerate() {
+        let mut params = Vec::new();
+        let mut param_types = Vec::new();
+        for input in &closure.inputs {
+            let Pat::Type(pat) = input else {
+                return Err(Error::new_spanned(input, "expected a typed parameter"));
+            };
+            params.push(pat);
+            param_types.push(&pat.ty);
+        }
+        let output = &closure.output;
+        let body = &closure.body;
+        let body = rewrite_captures(quote! { #body }, &captured, false)?;
+        let (receiver, body) = if is_unsafe {
+            (quote! { &mut self }, quote! { unsafe { #body } })
+        } else {
+            (quote! { &self }, body)
         };
-        params.push(pat);
-        param_types.push(&pat.ty);
+        let call_name = if lambda.is_generic {
+            Ident::new(&format!("call_{i}"), proc_macro2::Span::call_site())
+        } else {
+            Ident::new("call", proc_macro2::Span::call_site())
+        };
+        calls.push(quote! {
+            #[allow(unused_unsafe, clippy::too_many_arguments)]
+            fn #call_name(#receiver #(, #params)*) #output {
+                #body
+            }
+        });
+        sigs.push(quote! { fn(#(#param_types),*) #output });
+        call_names.push((call_name, closure.inputs.len()));
     }
-
-    let output = &lambda.closure.output;
-    let body = &lambda.closure.body;
-    let captured = names.iter().map(|name| name.to_string()).collect();
-    let body = rewrite_captures(quote! { #body }, &captured, false)?;
     // The copy and move constructors of the lambda copy and move each
     // capture, and its destructor destroys them in reverse order, as chosen
     // from their types by the traits in libcc2rs::__capture.
     let reversed: Vec<_> = names.iter().rev().collect();
-    let (receiver, body, destroy, constructor, copy_from, move_from) = if is_unsafe {
+    let (receiver, destroy, constructor, copy_from, move_from) = if is_unsafe {
         (
             quote! { &mut self },
-            quote! { unsafe { #body } },
             quote! {
                 use ::libcc2rs::__capture::{DestroyNoneUnsafe as _, DestroyWithDtorUnsafe as _};
                 unsafe {
@@ -192,7 +234,6 @@ fn expand_lambda(lambda: Lambda, is_unsafe: bool) -> Result<proc_macro2::TokenSt
     } else {
         (
             quote! { &self },
-            body,
             quote! {
                 use ::libcc2rs::__capture::{
                     DestroyElems as _, DestroyNone as _, DestroyWithDtor as _,
@@ -217,15 +258,12 @@ fn expand_lambda(lambda: Lambda, is_unsafe: bool) -> Result<proc_macro2::TokenSt
         )
     };
 
-    Ok(quote! {{
+    let lambda_struct = quote! {
         struct __Lambda {
             #(#names: #types,)*
         }
         impl __Lambda {
-            #[allow(unused_unsafe, clippy::too_many_arguments)]
-            fn call(#receiver #(, #params)*) #output {
-                #body
-            }
+            #(#calls)*
             #[allow(unused_imports, unused_unsafe)]
             fn copy_from(#receiver) -> Self {
                 #copy_from
@@ -239,12 +277,76 @@ fn expand_lambda(lambda: Lambda, is_unsafe: bool) -> Result<proc_macro2::TokenSt
                 #destroy
             }
         }
-        ::libcc2rs::FnPtr::<fn(#(#param_types),*) #output>::#constructor(
-            __Lambda { #(#names: #inits,)* },
-            __Lambda::call,
-            __Lambda::copy_from,
-            __Lambda::move_from,
-            __Lambda::destroy,
+    };
+    let lambda_init = quote! { __Lambda { #(#names: #inits,)* } };
+
+    if !lambda.is_generic {
+        let sig = &sigs[0];
+        return Ok(quote! {{
+            #lambda_struct
+            ::libcc2rs::FnPtr::<#sig>::#constructor(
+                #lambda_init,
+                __Lambda::call,
+                __Lambda::copy_from,
+                __Lambda::move_from,
+                __Lambda::destroy,
+            )
+        }});
+    }
+
+    let mut specs = Vec::new();
+    for (sig, (call_name, arity)) in sigs.iter().zip(&call_names) {
+        let args: Vec<Ident> = (0..*arity)
+            .map(|i| Ident::new(&format!("__a{i}"), proc_macro2::Span::call_site()))
+            .collect();
+        let call = if is_unsafe {
+            quote! {
+                |__l: &mut ::std::rc::Rc<::std::cell::UnsafeCell<__Lambda>> #(, #args)*| {
+                    unsafe { &mut *__l.get() }.#call_name(#(#args),*)
+                }
+            }
+        } else {
+            quote! {
+                |__l: &::std::rc::Rc<__Lambda> #(, #args)*| __l.#call_name(#(#args),*)
+            }
+        };
+        specs.push(quote! {
+            ::std::rc::Rc::new(::libcc2rs::FnPtr::<#sig>::#constructor(
+                ::std::rc::Rc::clone(__l),
+                #call,
+                |__l| ::std::rc::Rc::clone(__l),
+                |__l| ::std::rc::Rc::clone(__l),
+                |_| {},
+            )) as ::std::rc::Rc<dyn ::std::any::Any>
+        });
+    }
+    let (shared, copy_from, move_from, destroy) = if is_unsafe {
+        (
+            quote! { ::std::rc::Rc::new(::std::cell::UnsafeCell::new(#lambda_init)) },
+            quote! { |__l| ::std::rc::Rc::new(::std::cell::UnsafeCell::new(
+                unsafe { &mut *__l.get() }.copy_from()
+            )) },
+            quote! { |__l| ::std::rc::Rc::new(::std::cell::UnsafeCell::new(
+                unsafe { &mut *__l.get() }.move_from()
+            )) },
+            quote! { |__l| unsafe { &mut *__l.get() }.destroy() },
+        )
+    } else {
+        (
+            quote! { ::std::rc::Rc::new(#lambda_init) },
+            quote! { |__l| ::std::rc::Rc::new(__l.copy_from()) },
+            quote! { |__l| ::std::rc::Rc::new(__l.move_from()) },
+            quote! { |__l| __l.destroy() },
+        )
+    };
+    Ok(quote! {{
+        #lambda_struct
+        ::libcc2rs::FnPtr::<::libcc2rs::Generic>::from_generic_lambda(
+            #shared,
+            |__l| vec![#(#specs),*],
+            #copy_from,
+            #move_from,
+            #destroy,
         )
     }})
 }
