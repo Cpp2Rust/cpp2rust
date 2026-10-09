@@ -73,6 +73,7 @@ static const char rust_keywords[][12] = {
     "safe",
     // Standard library keywords
     "vec",
+    "Err",
 };
 
 namespace cpp2rust {
