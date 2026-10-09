@@ -3963,10 +3963,9 @@ bool Converter::VisitLambdaExpr(clang::LambdaExpr *expr) {
       ConvertLambdaCapture(field, *init++);
     }
   }
-  StrCat(token::kComma);
   ForEachLambdaCallOperator(decl, [&](clang::CXXMethodDecl *call_operator) {
-    ConvertLambdaClosure(decl, call_operator);
     StrCat(token::kComma);
+    ConvertLambdaClosure(decl, call_operator);
   });
   computed_expr_type_ = ComputedExprType::FreshValue;
   return false;

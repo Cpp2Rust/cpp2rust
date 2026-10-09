@@ -40,7 +40,7 @@ unsafe fn main_0() -> i32 {
                     .wrapping_add((::std::mem::size_of::<libc::c_char>() as usize))
                     as usize),
             )) as i32;
-        },
+        }
     );
     (unsafe { tally.spec::<fn()>(0).call() });
     (unsafe { tally.spec::<fn()>(1).call() });
@@ -73,7 +73,7 @@ unsafe fn main_0() -> i32 {
                 let _b: Val = (*v);
                 sum_0(_a, _b)
             });
-        },
+        }
     );
     (unsafe { pick.spec::<fn()>(0).call() });
     (unsafe { pick.spec::<fn()>(1).call() });
@@ -87,7 +87,7 @@ unsafe fn main_0() -> i32 {
         },
         |x: i32| -> f64 {
             return ((x as f64) / (2_f64));
-        },
+        }
     );
     assert!(((unsafe { cast_to.spec::<fn(i32) -> i32>(0).call(5,) }) == (2)));
     assert!(((unsafe { cast_to.spec::<fn(i32) -> f64>(1).call(5,) }) == (2.5_f64)));

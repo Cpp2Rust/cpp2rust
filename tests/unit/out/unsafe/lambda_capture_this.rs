@@ -26,7 +26,7 @@ impl S {
             },
             |k: i32| {
                 (*this_).n += k;
-            },
+            }
         );
         (unsafe { inc.call(by) });
         (unsafe { inc.call(by) });
@@ -38,7 +38,7 @@ impl S {
             },
             |k: i32| {
                 (unsafe { S::add(&mut (*this_), k) });
-            },
+            }
         );
         (unsafe { inc.call(by) });
     }
@@ -49,7 +49,7 @@ impl S {
             },
             || -> i32 {
                 return (unsafe { S::scaled(&(*this_)) });
-            },
+            }
         );
         return (unsafe { get.call() });
     }

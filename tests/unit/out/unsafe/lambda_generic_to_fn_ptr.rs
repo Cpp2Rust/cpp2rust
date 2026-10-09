@@ -21,7 +21,7 @@ unsafe fn main_0() -> i32 {
         },
         |x: f64| -> f64 {
             return -x;
-        },
+        }
     );
     let mut fi: Option<unsafe fn(i32) -> i32> = Some(|x: i32| -> i32 {
         return -x;
@@ -39,7 +39,7 @@ unsafe fn main_0() -> i32 {
         },
         |x: f64| -> f64 {
             return ((x) * (x));
-        },
+        }
     );
     let mut si: Option<unsafe fn(i32) -> i32> = Some(|x: i32| -> i32 {
         return ((x) * (x));

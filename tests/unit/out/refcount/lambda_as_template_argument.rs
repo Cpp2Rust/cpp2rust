@@ -50,7 +50,7 @@ fn main_0() -> i32 {
         },
         |x: i32| -> i32 {
             return (x * (*factor.borrow()));
-        },
+        }
     )));
     assert!((({ apply_twice_6((*scale.borrow()).copy_from(), 4,) }) == 36));
     assert!(
@@ -75,7 +75,7 @@ fn main_0() -> i32 {
         },
         |x: f64| -> f64 {
             return (x * ((*factor.borrow()) as f64));
-        },
+        }
     )));
     assert!((({ apply_int_1((*generic_scale.borrow()).copy_from(), 4,) }) == 12));
     assert!((({ apply_double_4((*generic_scale.borrow()).copy_from(), 1.5_f64,) }) == 4.5_f64));
@@ -84,7 +84,7 @@ fn main_0() -> i32 {
             apply_int_2(
                 lambda!(Generic, {}, |x: i32| -> i32 {
                     return -x;
-                },),
+                }),
                 9,
             )
         }) == -9_i32)
@@ -99,7 +99,7 @@ fn main_0() -> i32 {
         },
         |x: f64| -> f64 {
             return (x + ((*factor.borrow()) as f64));
-        },
+        }
     )));
     assert!((({ apply_int_3((*offset.borrow()).copy_from(), 4,) }) == 7));
     assert!((({ apply_double_5((*offset.borrow()).copy_from(), 1.5_f64,) }) == 4.5_f64));

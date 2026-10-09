@@ -44,7 +44,7 @@ unsafe fn main_0() -> i32 {
         },
         |x: i32| -> i32 {
             return ((x) * (factor));
-        },
+        }
     );
     assert!(((unsafe { apply_twice_6(scale.copy_from(), 4,) }) == (36)));
     assert!(
@@ -69,7 +69,7 @@ unsafe fn main_0() -> i32 {
         },
         |x: f64| -> f64 {
             return ((x) * (factor as f64));
-        },
+        }
     );
     assert!(((unsafe { apply_int_1(generic_scale.copy_from(), 4,) }) == (12)));
     assert!(((unsafe { apply_double_4(generic_scale.copy_from(), 1.5_f64,) }) == (4.5_f64)));
@@ -78,7 +78,7 @@ unsafe fn main_0() -> i32 {
             apply_int_2(
                 lambda_unsafe!(Generic, {}, |x: i32| -> i32 {
                     return -x;
-                },),
+                }),
                 9,
             )
         }) == (-9_i32))
@@ -93,7 +93,7 @@ unsafe fn main_0() -> i32 {
         },
         |x: f64| -> f64 {
             return ((x) + (factor as f64));
-        },
+        }
     );
     assert!(((unsafe { apply_int_3(offset.copy_from(), 4,) }) == (7)));
     assert!(((unsafe { apply_double_5(offset.copy_from(), 1.5_f64,) }) == (4.5_f64)));

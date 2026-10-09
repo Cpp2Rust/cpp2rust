@@ -20,7 +20,7 @@ unsafe fn main_0() -> i32 {
         },
         || -> i32 {
             return (v.len() as i32);
-        },
+        }
     );
     let mut g: FnPtr<fn() -> i32> = f.copy_from();
     let mut h: FnPtr<fn() -> i32> = f.move_from();
@@ -43,7 +43,7 @@ unsafe fn main_0() -> i32 {
             } else {
                 0
             };
-        },
+        }
     );
     let mut q: FnPtr<fn() -> i32> = p.move_from();
     assert!(((unsafe { q.call() }) == (5)));
@@ -55,7 +55,7 @@ unsafe fn main_0() -> i32 {
         },
         || -> i32 {
             return n.prefix_inc();
-        },
+        }
     );
     let mut outer: FnPtr<fn() -> i32> = lambda_unsafe!(
         {
@@ -63,7 +63,7 @@ unsafe fn main_0() -> i32 {
         },
         || -> i32 {
             return (unsafe { inner.call() });
-        },
+        }
     );
     assert!(((unsafe { outer.call() }) == (1)));
     let mut outer2: FnPtr<fn() -> i32> = outer.copy_from();

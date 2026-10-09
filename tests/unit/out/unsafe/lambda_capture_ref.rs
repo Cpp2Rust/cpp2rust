@@ -26,7 +26,7 @@ unsafe fn main_0() -> i32 {
         },
         |x: i32| -> i32 {
             return ((x) + (*base));
-        },
+        }
     );
     assert!(((unsafe { add_base.call(5,) }) == (15)));
     base = 100;
@@ -38,7 +38,7 @@ unsafe fn main_0() -> i32 {
         },
         || -> i32 {
             return (((*s).x) + ((*s).y));
-        },
+        }
     );
     assert!(((unsafe { sum.call() }) == (3)));
     s.x = 50;
@@ -50,7 +50,7 @@ unsafe fn main_0() -> i32 {
         },
         || {
             (*counter).postfix_inc();
-        },
+        }
     );
     (unsafe { bump.call() });
     (unsafe { bump.call() });
@@ -64,7 +64,7 @@ unsafe fn main_0() -> i32 {
             let mut t: u16 = (*arr)[(j)];
             (*arr)[(j)] = (*arr)[(i)];
             (*arr)[(i)] = t;
-        },
+        }
     );
     (unsafe { swap.call(0_usize, 3_usize) });
     assert!(((arr[(0) as usize] as i32) == (0)));
@@ -76,7 +76,7 @@ unsafe fn main_0() -> i32 {
         },
         |x: i32| {
             (*t) += x;
-        },
+        }
     );
     (unsafe { add.call(2) });
     (unsafe { add.call(3) });
@@ -87,7 +87,7 @@ unsafe fn main_0() -> i32 {
         },
         |v: i32| {
             (*y) = v;
-        },
+        }
     );
     (unsafe { set_y.call(9) });
     assert!(((s.y) == (9)));

@@ -18,7 +18,7 @@ fn main_0() -> i32 {
         },
         || -> i32 {
             return ((*v.borrow()).len() as i32);
-        },
+        }
     )));
     let g: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new((*f.borrow()).copy_from()));
     let h: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new((*f.borrow()).move_from()));
@@ -36,7 +36,7 @@ fn main_0() -> i32 {
             } else {
                 0
             };
-        },
+        }
     )));
     let q: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new((*p.borrow()).move_from()));
     assert!((({ (*q.borrow()).call() }) == 5));
@@ -48,7 +48,7 @@ fn main_0() -> i32 {
         },
         || -> i32 {
             return (*n.borrow_mut()).prefix_inc();
-        },
+        }
     )));
     let outer: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new(lambda!(
         {
@@ -57,7 +57,7 @@ fn main_0() -> i32 {
         },
         || -> i32 {
             return ({ (*inner.borrow()).call() }).clone();
-        },
+        }
     )));
     assert!((({ (*outer.borrow()).call() }) == 1));
     let outer2: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new((*outer.borrow()).copy_from()));

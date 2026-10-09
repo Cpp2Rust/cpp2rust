@@ -24,7 +24,7 @@ unsafe fn main_0() -> i32 {
         },
         |x: i32| -> i32 {
             return ((((a) + (b)) + (c)) + (x));
-        },
+        }
     );
     assert!(((unsafe { by_value.call(10,) }) == (16)));
     a = 100;
@@ -37,7 +37,7 @@ unsafe fn main_0() -> i32 {
         },
         |x: i32| -> i32 {
             return ((((*a) + (*b)) + (*c)) + (x));
-        },
+        }
     );
     assert!(((unsafe { by_ref.call(10,) }) == (115)));
     b = 200;
@@ -51,7 +51,7 @@ unsafe fn main_0() -> i32 {
         |x: i32| -> i32 {
             (*c) += x;
             return (((a) + (b)) + (*c));
-        },
+        }
     );
     assert!(((unsafe { mixed.call(1,) }) == (((100) + (200)) + (4))));
     assert!(((c) == (4)));

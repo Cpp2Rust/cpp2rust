@@ -22,7 +22,7 @@ fn main_0() -> i32 {
         },
         |x: i32| -> i32 {
             return ((((*a.borrow()) + (*b.borrow())) + (*c.borrow())) + x);
-        },
+        }
     )));
     assert!((({ (*by_value.borrow()).call(10,) }) == 16));
     (*a.borrow_mut()) = 100;
@@ -35,7 +35,7 @@ fn main_0() -> i32 {
         },
         |x: i32| -> i32 {
             return ((((a.read()) + (b.read())) + (c.read())) + x);
-        },
+        }
     )));
     assert!((({ (*by_ref.borrow()).call(10,) }) == 115));
     (*b.borrow_mut()) = 200;
@@ -52,7 +52,7 @@ fn main_0() -> i32 {
                 c.with_mut(|__v| *__v = *__v + __rhs)
             };
             return (((*a.borrow()) + (*b.borrow())) + (c.read()));
-        },
+        }
     )));
     assert!((({ (*mixed.borrow()).call(1,) }) == ((100 + 200) + 4)));
     assert!(((*c.borrow()) == 4));

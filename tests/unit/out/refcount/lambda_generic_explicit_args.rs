@@ -43,7 +43,7 @@ fn main_0() -> i32 {
                         as usize),
                 )) as i32
             });
-        },
+        }
     )));
     ({ (*tally.borrow()).spec::<fn()>(0).call() });
     ({ (*tally.borrow()).spec::<fn()>(1).call() });
@@ -85,7 +85,7 @@ fn main_0() -> i32 {
                 });
                 acc.with_mut(|__v| *__v = *__v + __rhs)
             };
-        },
+        }
     )));
     ({ (*pick.borrow()).spec::<fn()>(0).call() });
     ({ (*pick.borrow()).spec::<fn()>(1).call() });
@@ -99,7 +99,7 @@ fn main_0() -> i32 {
         },
         |x: i32| -> f64 {
             return ((x as f64) / 2_f64);
-        },
+        }
     )));
     assert!((({ (*cast_to.borrow()).spec::<fn(i32) -> i32>(0).call(5,) }) == 2));
     assert!((({ (*cast_to.borrow()).spec::<fn(i32) -> f64>(1).call(5,) }) == 2.5_f64));

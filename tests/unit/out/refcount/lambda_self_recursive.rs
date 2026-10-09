@@ -28,7 +28,7 @@ fn main_0() -> i32 {
                         .spec::<fn(FnPtr<Generic>, i32) -> i32>(0)
                         .call(_self_, (n - 1))
                 }));
-        },)));
+        })));
     assert!(
         (({
             let _self_: FnPtr<Generic> = (*fact.borrow()).clone();
@@ -61,7 +61,7 @@ fn main_0() -> i32 {
                     .spec::<fn(Ptr<FnPtr<Generic>>, i32) -> i32>(0)
                     .call(_self_, _n)
             }));
-        },
+        }
     )));
     assert!(
         (({
@@ -90,7 +90,7 @@ fn main_0() -> i32 {
                     .spec::<fn(Ptr<FnPtr<Generic>>, i32)>(0)
                     .call(_self_, _n)
             });
-        },
+        }
     )));
     ({
         let _self_: Ptr<FnPtr<Generic>> = count_down.as_pointer();

@@ -19,7 +19,7 @@ fn main_0() -> i32 {
         },
         |x: f64| -> f64 {
             return (x + x);
-        },
+        }
     )));
     assert!((({ (*twice.borrow()).spec::<fn(i32) -> i32>(0).call(4,) }) == 8));
     assert!((({ (*twice.borrow()).spec::<fn(f64) -> f64>(1).call(1.5_f64,) }) == 3_f64));
@@ -34,7 +34,7 @@ fn main_0() -> i32 {
         },
         |x: f64| -> f64 {
             return (x + ((*base.borrow()) as f64));
-        },
+        }
     )));
     assert!((({ (*add_base.borrow()).spec::<fn(i32) -> i32>(0).call(5,) }) == 15));
     assert!(
@@ -56,7 +56,7 @@ fn main_0() -> i32 {
         },
         |x: u32, y: u32| {
             total.write({ (((total.read()) as u32).wrapping_add((x).wrapping_mul(y))) as i32 });
-        },
+        }
     )));
     ({ (*accumulate.borrow()).spec::<fn(i32, i32)>(0).call(2, 3) });
     ({
@@ -73,7 +73,7 @@ fn main_0() -> i32 {
         },
         |x: f64, y: f64| -> f64 {
             return (x - y);
-        },
+        }
     )));
     assert!((({ (*sub.borrow()).spec::<fn(i32, i32) -> i32>(0).call(9, 4,) }) == 5));
     assert!(
@@ -93,7 +93,7 @@ fn main_0() -> i32 {
         },
         |x: i32, y: f64| -> f64 {
             return (((x as f64) * y) + ((*base.borrow()) as f64));
-        },
+        }
     )));
     assert!((({ (*mixed.borrow()).spec::<fn(i32, i32) -> i32>(0).call(2, 3,) }) == 16));
     assert!(

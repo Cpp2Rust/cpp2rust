@@ -38,7 +38,7 @@ impl Owner {
             },
             || -> i32 {
                 return (*self_.p);
-            },
+            }
         );
     }
 }
@@ -57,7 +57,7 @@ unsafe fn main_0() -> i32 {
         },
         || -> i32 {
             return (*h.p);
-        },
+        }
     );
     let _dtor_f = ScopedDestructorUnsafe::new(&raw mut f, |__f| __f.destroy());
     assert!((o.p).is_null());
@@ -74,7 +74,7 @@ unsafe fn main_0() -> i32 {
         || {
             (*total) += (*h.p);
             (*h.p) = 0;
-        },
+        }
     );
     let _dtor_consume = ScopedDestructorUnsafe::new(&raw mut consume, |__f| __f.destroy());
     (unsafe { consume.call() });

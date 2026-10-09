@@ -19,7 +19,7 @@ fn main_0() -> i32 {
         },
         |x: f64| -> f64 {
             return -x;
-        },
+        }
     )));
     let mut fi: FnPtr<fn(i32) -> i32> = (*negate.borrow()).clone().spec::<fn(i32) -> i32>(0);
     let mut fd: FnPtr<fn(f64) -> f64> = (*negate.borrow()).clone().spec::<fn(f64) -> f64>(1);
@@ -33,7 +33,7 @@ fn main_0() -> i32 {
         },
         |x: f64| -> f64 {
             return (x * x);
-        },
+        }
     )));
     let mut si: FnPtr<fn(i32) -> i32> = (*square.borrow()).clone().spec::<fn(i32) -> i32>(0);
     let mut sd: FnPtr<fn(f64) -> f64> = (*square.borrow()).clone().spec::<fn(f64) -> f64>(1);
