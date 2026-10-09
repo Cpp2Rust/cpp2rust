@@ -1311,7 +1311,8 @@ bool ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
           expr->getCalleeDecl());
       conversion && conversion->getParent()->isLambda()) {
     ConvertLambdaToFunctionPointer(clang::cast<clang::CXXMemberCallExpr>(expr)
-                                       ->getImplicitObjectArgument());
+                                       ->getImplicitObjectArgument(),
+                                   conversion);
     return false;
   }
 
@@ -1546,9 +1547,10 @@ bool ConverterRefCount::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
   return Converter::VisitImplicitCastExpr(expr);
 }
 
-void ConverterRefCount::EmitFnPtrCall(clang::Expr *callee) {
-  if (AsLambdaClass(callee->getType())) {
-    StrCat(ConvertRValue(callee), ".call");
+void ConverterRefCount::EmitFnPtrCall(clang::CallExpr *expr) {
+  auto callee = GetCallee(expr);
+  if (auto lambda = AsLambdaClass(callee->getType())) {
+    ConvertLambdaCall(expr, lambda);
     return;
   }
   Convert(callee);
@@ -1572,8 +1574,16 @@ void ConverterRefCount::ConvertLambdaCapture(const clang::FieldDecl *field,
   Converter::ConvertLambdaCapture(field, init);
 }
 
-void ConverterRefCount::ConvertLambdaToFunctionPointer(clang::Expr *lambda) {
+void ConverterRefCount::ConvertLambdaToFunctionPointer(
+    clang::Expr *lambda, const clang::CXXConversionDecl *conversion) {
   StrCat(ConvertFreshRValue(lambda));
+  auto decl = AsLambdaClass(lambda->getType());
+  if (decl->isGenericLambda()) {
+    auto proto = conversion->getConversionType()
+                     ->getPointeeType()
+                     ->castAs<clang::FunctionProtoType>();
+    StrCat(std::format(".spec::<{}>()", ConvertFunctionPointerType(proto)));
+  }
 }
 
 void ConverterRefCount::ConvertFunctionToFunctionPointer(

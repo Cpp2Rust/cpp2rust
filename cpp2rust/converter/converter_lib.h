@@ -214,6 +214,13 @@ const clang::CXXRecordDecl *AsLambdaClass(clang::QualType type);
 
 const clang::CXXMethodDecl *AsLambdaOperatorCall(const clang::FunctionDecl *fn);
 
+void ForEachLambdaCallOperator(
+    const clang::CXXRecordDecl *decl,
+    llvm::function_ref<void(clang::CXXMethodDecl *)> fn);
+
+clang::CXXMethodDecl *
+AsLambdaCallOperator(const clang::CXXConversionDecl *conversion);
+
 const clang::LambdaCapture *AsLambdaCapture(const clang::FieldDecl *field);
 
 bool IsLambdaCopyOrMoveConstructor(const clang::CXXConstructorDecl *ctor);
