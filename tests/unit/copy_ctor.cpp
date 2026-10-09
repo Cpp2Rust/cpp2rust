@@ -47,6 +47,18 @@ struct OutOfLine {
 
 OutOfLine::OutOfLine(const OutOfLine &o) : v(o.v + 100) { ++copies; }
 
+struct Tracked {
+  mutable int copied_from = 0;
+  Tracked() = default;
+  Tracked(const Tracked &o) { ++o.copied_from; }
+  Tracked &operator=(const Tracked &o) {
+    ++o.copied_from;
+    return *this;
+  }
+};
+
+static void touch(const Tracked *t) { ++t->copied_from; }
+
 static int by_value(Counted c) { return c.v; }
 
 static Counted make(int v) {
@@ -108,5 +120,14 @@ int main() {
   NonConst n2(cn);
   assert(n1.mark == 1);
   assert(n2.mark == 10);
+
+  Tracked t1;
+  Tracked t2(t1);
+  t2 = t1;
+  assert(t1.copied_from == 2);
+  const Tracked ct;
+  Tracked t3(ct);
+  touch(&ct);
+  assert(ct.copied_from == 2);
   return 0;
 }

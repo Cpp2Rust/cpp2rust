@@ -3378,6 +3378,22 @@ bool Converter::VisitMemberExpr(clang::MemberExpr *expr) {
     str = std::move(buf).str();
   }
 
+  if (auto *field = clang::dyn_cast<clang::FieldDecl>(member);
+      field && field->isMutable()) {
+    auto *base = expr->getBase();
+    auto object_type = expr->isArrow() ? base->getType()->getPointeeType()
+                                       : base->getType().getNonReferenceType();
+    if (!clang::isa<clang::CXXThisExpr>(base->IgnoreParenImpCasts()) &&
+        object_type.isConstQualified()) {
+      if (isAddrOf()) {
+        StrCat(std::format("(&raw const {}).cast_mut()", str));
+        computed_expr_type_ = ComputedExprType::FreshPointer;
+        return false;
+      }
+      str = std::format("(*(&raw const {}).cast_mut())", str);
+    }
+  }
+
   if (isAddrOf()) {
     bool is_reference_type = member->getType()->isReferenceType();
     if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(member)) {
