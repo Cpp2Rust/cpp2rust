@@ -4285,7 +4285,7 @@ std::string Converter::GetDefaultAsStringFallback(clang::QualType qual_type) {
   if (qual_type->isEnumeralType()) {
     auto enum_decl = qual_type->castAs<clang::EnumType>()->getDecl();
     if (enum_decl->enumerators().empty()) {
-      return std::string(1, token::kZero);
+      return GetDefaultAsString(enum_decl->getIntegerType());
     }
     return EnumeratorName(*enum_decl->enumerator_begin());
   }
