@@ -2767,7 +2767,28 @@ bool Converter::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
   }
   // A cast to a reference type only rebinds the operand, it converts nothing
   if (type->isReferenceType()) {
-    Convert(sub_expr);
+    const char *suffix = nullptr;
+    if (isAddrOf()) {
+      switch (
+          GetConstCastType(type.getNonReferenceType(), sub_expr->getType())) {
+      case ConstCastType::MutableToConst:
+        suffix = ".cast_const()";
+        break;
+      case ConstCastType::ConstToMutable:
+        suffix = ".cast_mut()";
+        break;
+      default:
+        break;
+      }
+    }
+    {
+      PushParen paren(*this, suffix);
+      Convert(sub_expr);
+    }
+    if (suffix) {
+      StrCat(suffix);
+      computed_expr_type_ = ComputedExprType::FreshPointer;
+    }
     return false;
   }
   switch (expr->getStmtClass()) {
