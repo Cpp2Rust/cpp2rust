@@ -35,5 +35,11 @@ int main() {
   };
   assert(through_ptr(4) == 8);
 
+  int seed = 5;
+  int boxed = through_ptr(seed);
+  int *boxed_ptr = &boxed;
+  assert(*boxed_ptr == 10);
+  assert(seed == 5);
+
   return 0;
 }
