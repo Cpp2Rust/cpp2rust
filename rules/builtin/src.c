@@ -40,5 +40,3 @@ int f16(unsigned long x) { return __builtin_clzl(x); }
 float f17() { return __builtin_inff(); }
 
 float f18(const char *tagp) { return __builtin_nanf(tagp); }
-
-bool f19() { return __builtin_is_constant_evaluated(); }
