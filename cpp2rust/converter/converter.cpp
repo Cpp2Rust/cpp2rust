@@ -2533,8 +2533,11 @@ bool Converter::VisitStringLiteral(clang::StringLiteral *expr) {
   }
   if (expr->getString().contains('\0')) {
     std::string out = "(&[";
-    for (unsigned char c : expr->getString()) {
-      out += getTypedLiteral(std::to_string(c).c_str(), CharRustType()) + ", ";
+    for (char c : expr->getString()) {
+      auto value = CharRustTypeIsSigned()
+                       ? std::to_string(static_cast<signed char>(c))
+                       : std::to_string(static_cast<unsigned char>(c));
+      out += getTypedLiteral(value.c_str(), CharRustType()) + ", ";
     }
     out += getTypedLiteral("0", CharRustType()) + "])";
     StrCat(out);
