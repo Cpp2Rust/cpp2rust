@@ -25,10 +25,10 @@ impl S {
                     },
                     |z: i32| -> i32 {
                         return ((((*this_).v) + (y)) + (z));
-                    }
+                    },
                 );
                 return (unsafe { inner.call(1) });
-            }
+            },
         );
         return (unsafe { outer.call(20) });
     }
@@ -53,10 +53,10 @@ unsafe fn main_0() -> i32 {
                 },
                 |z: i32| -> i32 {
                     return (((*x) + (y)) + (z));
-                }
+                },
             );
             return (unsafe { inner.call(1) });
-        }
+        },
     );
     assert!(((unsafe { outer.call(20,) }) == (31)));
     x = 100;

@@ -38,7 +38,7 @@ fn main_0() -> i32 {
         },
         || -> i32 {
             return ({ (*h.borrow()).p.clone() }.read());
-        }
+        },
     )));
     let _dtor_f = ScopedDestructor::new(&f, |__p| __p.with(|__f| __f.destroy()));
     assert!(({ (*o.borrow()).p.clone() }).is_null());
@@ -58,7 +58,7 @@ fn main_0() -> i32 {
                 total.with_mut(|__v| *__v = *__v + __rhs)
             };
             { (*h.borrow()).p.clone() }.write(0);
-        }
+        },
     )));
     let _dtor_consume = ScopedDestructor::new(&consume, |__p| __p.with(|__f| __f.destroy()));
     ({ (*consume.borrow()).call() });
@@ -89,7 +89,7 @@ impl OwnerImpl for Ptr<Owner> {
             },
             || -> i32 {
                 return ({ (*self_.borrow()).p.clone() }.read());
-            }
+            },
         );
     }
 }

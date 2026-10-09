@@ -29,7 +29,7 @@ fn main_0() -> i32 {
         },
         |x: i32| -> i32 {
             return (x * (*factor.borrow()));
-        }
+        },
     )));
     assert!((({ (*scale.borrow()).call(4,) }) == 12));
     (*factor.borrow_mut()) = 100;
@@ -42,7 +42,7 @@ fn main_0() -> i32 {
         },
         || -> i32 {
             return ((*p.borrow()).read());
-        }
+        },
     )));
     (*slot.borrow_mut()) = 8;
     assert!((({ (*read_ptr.borrow()).call() }) == 8));
@@ -53,7 +53,7 @@ fn main_0() -> i32 {
         },
         || -> i32 {
             return ({ (*s.borrow()).x } + { (*s.borrow()).y });
-        }
+        },
     )));
     (*s.borrow_mut()).x = 50;
     assert!((({ (*sum.borrow()).call() }) == 3));
@@ -64,7 +64,7 @@ fn main_0() -> i32 {
         },
         |x: i32| -> i32 {
             return (x + (*y.borrow()));
-        }
+        },
     )));
     assert!((({ (*shifted.borrow()).call(5,) }) == 16));
     let k: Value<i32> = Rc::new(RefCell::new(3));
@@ -74,7 +74,7 @@ fn main_0() -> i32 {
         },
         |x: i32| -> i32 {
             return (x + 3);
-        }
+        },
     )));
     assert!((({ (*by_copy.borrow()).call(1,) }) == 4));
     let by_copy_used: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(lambda!(
@@ -83,7 +83,7 @@ fn main_0() -> i32 {
         },
         |x: i32| -> i32 {
             return (x + ({ read_0(k.as_pointer()) }));
-        }
+        },
     )));
     assert!((({ (*by_copy_used.borrow()).call(1,) }) == 4));
     let implicit_used: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(lambda!(
@@ -92,7 +92,7 @@ fn main_0() -> i32 {
         },
         |x: i32| -> i32 {
             return (x + ({ read_0(k.as_pointer()) }));
-        }
+        },
     )));
     assert!((({ (*implicit_used.borrow()).call(1,) }) == 4));
     let by_ref: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(lambda!(
@@ -101,7 +101,7 @@ fn main_0() -> i32 {
         },
         |x: i32| -> i32 {
             return (x + 3);
-        }
+        },
     )));
     assert!((({ (*by_ref.borrow()).call(1,) }) == 4));
     return 0;

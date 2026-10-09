@@ -84,7 +84,7 @@ unsafe fn main_0() -> i32 {
         },
         || -> i32 {
             return (*captured);
-        }
+        },
     );
     captured = 8;
     assert!(((unsafe { get.call() }) == (8)));

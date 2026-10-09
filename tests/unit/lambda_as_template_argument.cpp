@@ -1,4 +1,3 @@
-// translation-fail
 #include <assert.h>
 
 template <typename F> int apply_int(F fn, int x) { return fn(x); }

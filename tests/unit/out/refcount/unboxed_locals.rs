@@ -85,7 +85,7 @@ fn main_0() -> i32 {
         },
         || -> i32 {
             return (captured.read());
-        }
+        },
     )));
     (*captured.borrow_mut()) = 8;
     assert!((({ (*get.borrow()).call() }) == 8));

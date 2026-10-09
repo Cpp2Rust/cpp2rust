@@ -88,7 +88,7 @@ fn main_0() -> i32 {
         },
         || -> i32 {
             return (({ (*c.borrow()).copies } * 10) + { (*c.borrow()).moves });
-        }
+        },
     )));
     assert!((({ (*f.borrow()).call() }) == 10));
     let g: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new((*f.borrow()).copy_from()));
@@ -105,7 +105,7 @@ fn main_0() -> i32 {
                 },
                 || -> Counted {
                     return Counted::copy_from({ c.as_pointer() });
-                }
+                },
             )
             .call()
         })
@@ -127,7 +127,7 @@ fn main_0() -> i32 {
             return ({ (*arr.borrow())[(0) as usize].copies } + {
                 (*arr.borrow())[(1) as usize].copies
             });
-        }
+        },
     )));
     assert!((({ (*a.borrow()).call() }) == 2));
     let a2: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new((*a.borrow()).copy_from()));
@@ -139,7 +139,7 @@ fn main_0() -> i32 {
             {
                 let d: Value<Dropped> = Rc::new(RefCell::new(Dropped::new()));
             },
-            || {}
+            || {},
         )));
         let _dtor_m = ScopedDestructor::new(&m, |__p| __p.with(|__f| __f.destroy()));
         let m2: Value<FnPtr<fn()>> = Rc::new(RefCell::new((*m.borrow()).move_from()));
@@ -151,7 +151,7 @@ fn main_0() -> i32 {
             {
                 let d: Value<Dropped> = Rc::new(RefCell::new(Dropped::new()));
             },
-            || {}
+            || {},
         )));
         let _dtor_k = ScopedDestructor::new(&k, |__p| __p.with(|__f| __f.destroy()));
         let k2: Value<FnPtr<fn()>> = Rc::new(RefCell::new((*k.borrow()).copy_from()));
@@ -163,7 +163,7 @@ fn main_0() -> i32 {
             {
                 let d: Value<Dropped> = Rc::new(RefCell::new(Dropped::new()));
             },
-            || {}
+            || {},
         )));
         let _dtor_inner = ScopedDestructor::new(&inner, |__p| __p.with(|__f| __f.destroy()));
         let outer: Value<FnPtr<fn()>> = Rc::new(RefCell::new(lambda!(
@@ -171,7 +171,7 @@ fn main_0() -> i32 {
                 let inner: Value<FnPtr<fn()>> =
                     Rc::new(RefCell::new((*inner.borrow()).copy_from()));
             },
-            || {}
+            || {},
         )));
         let _dtor_outer = ScopedDestructor::new(&outer, |__p| __p.with(|__f| __f.destroy()));
     }

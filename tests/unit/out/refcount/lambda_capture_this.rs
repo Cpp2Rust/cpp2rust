@@ -54,7 +54,7 @@ impl SImpl for Ptr<S> {
                     let __rhs = k;
                     field!((*this_.borrow()).clone(), n).with_mut(|__v| *__v = *__v + __rhs)
                 };
-            }
+            },
         )));
         ({ (*inc.borrow()).call(by) });
         ({ (*inc.borrow()).call(by) });
@@ -66,7 +66,7 @@ impl SImpl for Ptr<S> {
             },
             |k: i32| {
                 ({ SImpl::add(&(*this_.borrow()).clone(), k) });
-            }
+            },
         )));
         ({ (*inc.borrow()).call(by) });
     }
@@ -77,7 +77,7 @@ impl SImpl for Ptr<S> {
             },
             || -> i32 {
                 return ({ SImpl::scaled(&(*this_.borrow()).clone()) });
-            }
+            },
         )));
         return ({ (*get.borrow()).call() }).clone();
     }

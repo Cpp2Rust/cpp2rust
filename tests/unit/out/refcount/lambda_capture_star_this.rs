@@ -46,7 +46,7 @@ impl SImpl for Ptr<S> {
                     field!(this_.as_pointer(), n).with_mut(|__v| *__v = *__v + 10)
                 };
                 return this_.as_pointer().with(|__s| __s.n);
-            }
+            },
         )));
         let mut r: i32 = ({ (*f.borrow()).call() }).clone();
         return ((r * 100) + (*self).with(|__s| __s.n));
@@ -58,7 +58,7 @@ impl SImpl for Ptr<S> {
             },
             || -> i32 {
                 return ({ SImpl::twice(&this_.as_pointer()) });
-            }
+            },
         )));
         field!((*self), n).write(99);
         return ({ (*f.borrow()).call() }).clone();
@@ -72,7 +72,7 @@ impl SImpl for Ptr<S> {
             },
             || -> i32 {
                 return (this_.as_pointer().with(|__s| __s.n) + (*k.borrow()));
-            }
+            },
         )));
         field!((*self), n).write(0);
         return ({ (*f.borrow()).call() }).clone();

@@ -31,10 +31,10 @@ fn main_0() -> i32 {
                 },
                 |z: i32| -> i32 {
                     return (((x.read()) + (*y.borrow())) + z);
-                }
+                },
             )));
             return ({ (*inner.borrow()).call(1) });
-        }
+        },
     )));
     assert!((({ (*outer.borrow()).call(20,) }) == 31));
     (*x.borrow_mut()) = 100;
@@ -61,10 +61,10 @@ impl SImpl for Ptr<S> {
                     },
                     |z: i32| -> i32 {
                         return (((*this_.borrow()).clone().with(|__s| __s.v) + (*y.borrow())) + z);
-                    }
+                    },
                 )));
                 return ({ (*inner.borrow()).call(1) });
-            }
+            },
         )));
         return ({ (*outer.borrow()).call(20) });
     }

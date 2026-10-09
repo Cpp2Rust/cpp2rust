@@ -90,7 +90,7 @@ unsafe fn main_0() -> i32 {
         },
         || -> i32 {
             return (((c.copies) * (10)) + (c.moves));
-        }
+        },
     );
     assert!(((unsafe { f.call() }) == (10)));
     let mut g: FnPtr<fn() -> i32> = f.copy_from();
@@ -105,7 +105,7 @@ unsafe fn main_0() -> i32 {
             },
             || -> Counted {
                 return Counted::copy_from({ &c });
-            }
+            },
         )
         .call()
     })
@@ -119,7 +119,7 @@ unsafe fn main_0() -> i32 {
         },
         || -> i32 {
             return ((arr[(0) as usize].copies) + (arr[(1) as usize].copies));
-        }
+        },
     );
     assert!(((unsafe { a.call() }) == (2)));
     let mut a2: FnPtr<fn() -> i32> = a.copy_from();
@@ -131,7 +131,7 @@ unsafe fn main_0() -> i32 {
             {
                 let d: Dropped = Dropped::new();
             },
-            || {}
+            || {},
         );
         let _dtor_m = ScopedDestructorUnsafe::new(&raw mut m, |__f| __f.destroy());
         let mut m2: FnPtr<fn()> = m.move_from();
@@ -143,7 +143,7 @@ unsafe fn main_0() -> i32 {
             {
                 let d: Dropped = Dropped::new();
             },
-            || {}
+            || {},
         );
         let _dtor_k = ScopedDestructorUnsafe::new(&raw mut k, |__f| __f.destroy());
         let mut k2: FnPtr<fn()> = k.copy_from();
@@ -155,14 +155,14 @@ unsafe fn main_0() -> i32 {
             {
                 let d: Dropped = Dropped::new();
             },
-            || {}
+            || {},
         );
         let _dtor_inner = ScopedDestructorUnsafe::new(&raw mut inner, |__f| __f.destroy());
         let mut outer: FnPtr<fn()> = lambda_unsafe!(
             {
                 let inner: FnPtr<fn()> = inner.copy_from();
             },
-            || {}
+            || {},
         );
         let _dtor_outer = ScopedDestructorUnsafe::new(&raw mut outer, |__f| __f.destroy());
     }
