@@ -86,6 +86,19 @@ pub struct S {
     #[offset(148)]
     pub vec_: i32,
 }
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
+pub struct type_ {
+    #[offset(0)]
+    pub v: i32,
+}
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
+pub struct loop_ {
+    #[offset(0)]
+    #[byte_size(4)]
+    pub t: type_,
+}
 pub fn foo_0(
     mut as_: i32,
     mut async_: i32,
@@ -212,10 +225,49 @@ fn main_0() -> i32 {
     let mut raw_: i32 = 0;
     let mut safe_: i32 = 0;
     let mut vec_: i32 = 0;
+    let mut l: loop_ = loop_ { t: type_ { v: 3 } };
+    let mut t: type_ = l.t.clone();
     return ({
         foo_0(
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            (t.v - 3),
         )
     });
 }
