@@ -89,7 +89,7 @@ pub struct Holder {
     pub arr: [Counted; 2],
 }
 #[repr(C)]
-#[derive(FnPtrArg, MoveCtorUnsafe, Default)]
+#[derive(VaArg, FnPtrArg, MoveCtorUnsafe, Default)]
 pub struct Box_int_ {
     pub val: i32,
 }
@@ -98,23 +98,24 @@ impl Box_int_ {
         let mut this = Self { val: v };
         this
     }
+    pub unsafe fn copy_from(o: *const Box_int_) -> Self {
+        let mut this = Self { val: (*o).val };
+        this
+    }
     pub unsafe fn move_from(_a0: *mut Box_int_) -> Self {
         let mut this = Self { val: (*_a0).val };
         this
     }
 }
+impl Clone for Box_int_ {
+    fn clone(&self) -> Self {
+        unsafe { Box_int_::copy_from(self as *const Box_int_) }
+    }
+}
 #[repr(C)]
-#[derive(FnPtrArg, MoveCtorUnsafe, Default)]
+#[derive(Clone, VaArg, FnPtrArg, Default)]
 pub struct Owner {
     pub box_: Box_int_,
-}
-impl Owner {
-    pub unsafe fn move_from(_a0: *mut Owner) -> Self {
-        let mut this = Self {
-            box_: Box_int_::move_from({ &mut (*_a0).box_ }),
-        };
-        this
-    }
 }
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, Default)]
@@ -196,7 +197,7 @@ unsafe fn main_0() -> i32 {
     let mut o: Owner = Owner {
         box_: Box_int_::new({ 3 }),
     };
-    let mut o2: Owner = Owner::move_from({ &mut o });
+    let mut o2: Owner = o.clone();
     assert!(((o2.box_.val) == (3)));
     let mut ol1: OutOfLine = OutOfLine::new({ 5 });
     let mut ol2: OutOfLine = OutOfLine::copy_from({ &ol1 });
