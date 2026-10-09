@@ -324,10 +324,11 @@ llvm::APSInt GetIntegerLiteralValue(const clang::ASTContext &ctx,
   if (target->isBuiltinType() && target->isIntegerType() &&
       !target->isBooleanType()) {
     value = value.zextOrTrunc(ctx.getIntWidth(target));
-    is_signed = target->isSpecificBuiltinType(clang::BuiltinType::Char_S) ||
-                        target->isSpecificBuiltinType(clang::BuiltinType::Char_U)
-                    ? char_is_signed
-                    : target->isSignedIntegerType();
+    is_signed =
+        target->isSpecificBuiltinType(clang::BuiltinType::Char_S) ||
+                target->isSpecificBuiltinType(clang::BuiltinType::Char_U)
+            ? char_is_signed
+            : target->isSignedIntegerType();
   }
   return llvm::APSInt(value, !is_signed);
 }
