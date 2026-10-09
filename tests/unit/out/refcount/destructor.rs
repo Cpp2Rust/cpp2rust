@@ -183,6 +183,13 @@ fn main_0() -> i32 {
             order_1.with(|rc| rc.borrow()[__idx])
         }) == 1)
     );
+    let mut before: i32 = global_0.with(|rc| *rc.borrow());
+    {
+        let cs: Value<S> = Rc::new(RefCell::new(<S>::default()));
+        let _dtor_cs = ScopedDestructor::new(&cs, |__p| __p.destructor());
+        &(*cs.borrow_mut());
+    }
+    assert!((global_0.with(|rc| *rc.borrow()) == (before + 1)));
     return 0;
 }
 pub trait ArrayMemberImpl {
