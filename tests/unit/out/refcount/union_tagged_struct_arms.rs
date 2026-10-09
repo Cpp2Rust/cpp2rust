@@ -47,7 +47,7 @@ pub struct anon_3 {
     #[offset(32)]
     pub width: i32,
 }
-#[derive(ByteRepr, DeepClone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, DeepClone)]
 #[byte_size(40)]
 pub struct anon_0 {
     #[offset(0)]
@@ -55,14 +55,14 @@ pub struct anon_0 {
     __bytes: Value<Box<[u8]>>,
 }
 impl anon_0 {
-    pub fn list(&self) -> Ptr<anon_1> {
-        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
+    pub fn list(this: Ptr<Self>) -> Ptr<anon_1> {
+        this.reinterpret_cast()
     }
-    pub fn letters(&self) -> Ptr<anon_2> {
-        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
+    pub fn letters(this: Ptr<Self>) -> Ptr<anon_2> {
+        this.reinterpret_cast()
     }
-    pub fn integers(&self) -> Ptr<anon_3> {
-        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
+    pub fn integers(this: Ptr<Self>) -> Ptr<anon_3> {
+        this.reinterpret_cast()
     }
 }
 impl Default for anon_0 {
@@ -88,51 +88,81 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    thread_local!(
-        static items_4: Value<Box<[Ptr<i8>]>> = Rc::new(RefCell::new(Box::new([
-            Ptr::<i8>::from_string_literal(b"a"),
-            Ptr::<i8>::from_string_literal(b"b"),
-            Ptr::<i8>::from_string_literal(b"c"),
-        ])));
+    let p_list: Value<Branch> = <Value<Branch>>::default();
+    (*p_list.borrow_mut()).choice = Choice_enum_C_LIST;
+    (*p_list.borrow_mut()).index = 0;
+    field!(anon_0::list(field_ptr!(p_list.as_pointer(), v)), items)
+        .write((items_4.with(|v| v.as_pointer()) as Ptr<Ptr<i8>>));
+    field!(anon_0::list(field_ptr!(p_list.as_pointer(), v)), count).write(3_i64);
+    field!(anon_0::list(field_ptr!(p_list.as_pointer(), v)), cursor).write(1_i64);
+    assert!(
+        (((anon_0::list(field_ptr!(p_list.as_pointer(), v)).with(|__s| __s.count) == 3_i64)
+            as i32)
+            != 0)
     );
-    let mut p_list: Branch = <Branch>::default();
-    p_list.choice = Choice_enum_C_LIST;
-    p_list.index = 0;
-    field!(p_list.v.list(), items).write((items_4.with(|v| v.as_pointer()) as Ptr<Ptr<i8>>));
-    field!(p_list.v.list(), count).write(3_i64);
-    field!(p_list.v.list(), cursor).write(1_i64);
-    assert!((((p_list.v.list().with(|__s| __s.count) == 3_i64) as i32) != 0));
     assert!(
         (((((elem!(
-            (elem!(p_list.v.list().with(|__s| __s.items.clone()), 1).read()),
+            (elem!(
+                anon_0::list(field_ptr!(p_list.as_pointer(), v)).with(|__s| __s.items.clone()),
+                1
+            )
+            .read()),
             0
         )
         .read()) as i32)
             == ('b' as i32)) as i32)
             != 0)
     );
-    let mut p_letters: Branch = <Branch>::default();
-    p_letters.choice = Choice_enum_C_LETTERS;
-    p_letters.index = 1;
-    field!(p_letters.v.letters(), lo).write(('a' as i32));
-    field!(p_letters.v.letters(), hi).write(('z' as i32));
-    field!(p_letters.v.letters(), curr).write(('m' as i32));
-    field!(p_letters.v.letters(), step).write(1_u8);
+    let p_letters: Value<Branch> = <Value<Branch>>::default();
+    (*p_letters.borrow_mut()).choice = Choice_enum_C_LETTERS;
+    (*p_letters.borrow_mut()).index = 1;
+    field!(anon_0::letters(field_ptr!(p_letters.as_pointer(), v)), lo).write(('a' as i32));
+    field!(anon_0::letters(field_ptr!(p_letters.as_pointer(), v)), hi).write(('z' as i32));
+    field!(anon_0::letters(field_ptr!(p_letters.as_pointer(), v)), curr).write(('m' as i32));
+    field!(anon_0::letters(field_ptr!(p_letters.as_pointer(), v)), step).write(1_u8);
     assert!(
-        ((((p_letters.v.letters().with(|__s| __s.hi) - p_letters.v.letters().with(|__s| __s.lo))
+        ((((anon_0::letters(field_ptr!(p_letters.as_pointer(), v)).with(|__s| __s.hi)
+            - anon_0::letters(field_ptr!(p_letters.as_pointer(), v)).with(|__s| __s.lo))
             == 25) as i32)
             != 0)
     );
-    let mut p_integers: Branch = <Branch>::default();
-    p_integers.choice = Choice_enum_C_INTEGERS;
-    p_integers.index = 2;
-    field!(p_integers.v.integers(), lo).write(1_i64);
-    field!(p_integers.v.integers(), hi).write(100_i64);
-    field!(p_integers.v.integers(), curr).write(1_i64);
-    field!(p_integers.v.integers(), step).write(1_i64);
-    field!(p_integers.v.integers(), width).write(3);
-    assert!((((p_integers.v.integers().with(|__s| __s.hi) == 100_i64) as i32) != 0));
-    assert!((((p_integers.v.integers().with(|__s| __s.width) == 3) as i32) != 0));
+    let p_integers: Value<Branch> = <Value<Branch>>::default();
+    (*p_integers.borrow_mut()).choice = Choice_enum_C_INTEGERS;
+    (*p_integers.borrow_mut()).index = 2;
+    field!(anon_0::integers(field_ptr!(p_integers.as_pointer(), v)), lo).write(1_i64);
+    field!(anon_0::integers(field_ptr!(p_integers.as_pointer(), v)), hi).write(100_i64);
+    field!(
+        anon_0::integers(field_ptr!(p_integers.as_pointer(), v)),
+        curr
+    )
+    .write(1_i64);
+    field!(
+        anon_0::integers(field_ptr!(p_integers.as_pointer(), v)),
+        step
+    )
+    .write(1_i64);
+    field!(
+        anon_0::integers(field_ptr!(p_integers.as_pointer(), v)),
+        width
+    )
+    .write(3);
+    assert!(
+        (((anon_0::integers(field_ptr!(p_integers.as_pointer(), v)).with(|__s| __s.hi) == 100_i64)
+            as i32)
+            != 0)
+    );
+    assert!(
+        (((anon_0::integers(field_ptr!(p_integers.as_pointer(), v)).with(|__s| __s.width) == 3)
+            as i32)
+            != 0)
+    );
     return 0;
 }
+thread_local!(
+    static items_4: Value<Box<[Ptr<i8>]>> = Rc::new(RefCell::new(Box::new([
+        Ptr::<i8>::from_string_literal(b"a"),
+        Ptr::<i8>::from_string_literal(b"b"),
+        Ptr::<i8>::from_string_literal(b"c"),
+    ])));
+);
 pub fn __cpp2rust_init_globals() {}

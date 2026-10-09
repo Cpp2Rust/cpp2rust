@@ -13,7 +13,7 @@ pub unsafe fn operator_lt_1(x: *const S, y: *const S) -> bool {
     return (((*x).data_) < ((*y).data_));
 }
 #[repr(C)]
-#[derive(Default)]
+#[derive(FnPtrArg, MoveCtorUnsafe, Default)]
 pub struct S {
     data_: i32,
 }

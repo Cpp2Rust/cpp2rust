@@ -2,6 +2,7 @@
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
+#include <iterator>
 #include <sys/types.h>
 #include <utility>
 
@@ -107,5 +108,10 @@ int main() {
 
   std::pair<std::size_t, int> pr(sz, 1);
   assert(pr.first == 21);
+
+  const size_t sizes[] = {1, 2, 3, 4};
+  const size_t *sizes_end = std::end(sizes);
+  assert(sizes_end - sizes == 4);
+  assert(*(sizes_end - 1) == 4);
   return 0;
 }

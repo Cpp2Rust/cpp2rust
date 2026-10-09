@@ -152,7 +152,9 @@ fn f42(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
     let __count = a1.get_offset() - a0.get_offset();
     let max_index = PtrValueIter::new(&a0, __count)
         .enumerate()
-        .max_by_key(|&(_, val)| val)
+        .max_by(|&(idx_a, val_a), &(idx_b, val_b)| {
+            val_a.cmp(&val_b).then_with(|| idx_b.cmp(&idx_a))
+        })
         .map(|(idx, _)| idx)
         .unwrap_or(0);
 
@@ -312,7 +314,9 @@ fn f94(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
     let __count = a1.get_offset() - a0.get_offset();
     let max_index = PtrValueIter::new(&a0, __count)
         .enumerate()
-        .max_by_key(|&(_, val)| val)
+        .max_by(|&(idx_a, val_a), &(idx_b, val_b)| {
+            val_a.cmp(&val_b).then_with(|| idx_b.cmp(&idx_a))
+        })
         .map(|(idx, _)| idx)
         .unwrap_or(0);
 

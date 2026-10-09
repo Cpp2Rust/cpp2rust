@@ -35,6 +35,31 @@ impl S {
         return (x + 3);
     }
 }
+#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, Default)]
+#[byte_size(4)]
+pub struct MoveOnly {
+    #[offset(0)]
+    pub data_: i32,
+}
+impl MoveOnly {
+    pub fn new(mut data: i32) -> Self {
+        Self { data_: data }
+    }
+    pub fn move_from(x: Ptr<MoveOnly>) -> Self {
+        let __this: MoveOnly = Self {
+            data_: x.with(|__s| __s.data_),
+        };
+        field!(x, data_).write(0);
+        __this
+    }
+}
+pub fn make_move_only_2() -> MoveOnly {
+    return MoveOnly::new({ 4 });
+}
+pub fn scale_move_only_3(x: MoveOnly) -> MoveOnly {
+    let x: Value<MoveOnly> = Rc::new(RefCell::new(x));
+    return MoveOnly::new({ (({ MoveOnlyImpl::get(&x.as_pointer()) }) * 10) });
+}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
@@ -64,6 +89,24 @@ fn main_0() -> i32 {
     h1.cb = FnPtr::<fn(i32) -> i32>::new(negate_1);
     assert!((({ h1.cb.call(3,) }) == -3_i32));
     assert!(({ (h1.cb).clone() } == { (h2.cb).clone() }));
+    let mut mk: FnPtr<fn() -> MoveOnly> = FnPtr::<fn() -> MoveOnly>::new(make_move_only_2);
+    let m: Value<MoveOnly> = Rc::new(RefCell::new(({ mk.call() })));
+    assert!((({ MoveOnlyImpl::get(&m.as_pointer(),) }) == 4));
+    let mut sc: FnPtr<fn(MoveOnly) -> MoveOnly> =
+        FnPtr::<fn(MoveOnly) -> MoveOnly>::new(scale_move_only_3);
+    let n: Value<MoveOnly> = Rc::new(RefCell::new(
+        ({ sc.call(MoveOnly::move_from({ m.as_pointer() })) }),
+    ));
+    assert!((({ MoveOnlyImpl::get(&n.as_pointer(),) }) == 40));
+    assert!((({ MoveOnlyImpl::get(&m.as_pointer(),) }) == 0));
     return 0;
+}
+pub trait MoveOnlyImpl {
+    fn get(&self) -> i32;
+}
+impl MoveOnlyImpl for Ptr<MoveOnly> {
+    fn get(&self) -> i32 {
+        return (*self).with(|__s| __s.data_);
+    }
 }
 pub fn __cpp2rust_init_globals() {}

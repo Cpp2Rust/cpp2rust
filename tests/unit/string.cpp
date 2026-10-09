@@ -3,6 +3,8 @@
 #include <string>
 
 int main() {
+  std::string empty;
+  assert(empty.length() == 0);
   std::string s1 = "hello";
   assert(s1.length() == 5);
   assert(s1.size() == s1.length());

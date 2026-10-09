@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, MoveCtor)]
 #[byte_size(8)]
 pub struct Counted {
     #[offset(0)]
@@ -51,7 +51,7 @@ impl Default for Counted {
 thread_local!(
     pub static drops_0: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, Destructor)]
 #[byte_size(1)]
 pub struct Dropped {}
 impl Dropped {
@@ -91,10 +91,10 @@ fn main_0() -> i32 {
         }
     )));
     assert!((({ (*f.borrow()).call() }) == 10));
-    let g: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new((*f.borrow()).clone()));
+    let g: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new((*f.borrow()).copy_from()));
     assert!((({ (*g.borrow()).call() }) == 20));
     assert!((({ (*f.borrow()).call() }) == 10));
-    let h: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new((*f.borrow_mut()).clone()));
+    let h: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new((*f.borrow()).move_from()));
     assert!((({ (*h.borrow()).call() }) == 11));
     let mut returned: i32 = {
         ({
@@ -130,8 +130,10 @@ fn main_0() -> i32 {
         }
     )));
     assert!((({ (*a.borrow()).call() }) == 2));
-    let a2: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new((*a.borrow()).clone()));
+    let a2: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new((*a.borrow()).copy_from()));
     assert!((({ (*a2.borrow()).call() }) == 4));
+    let a3: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new((*a.borrow()).move_from()));
+    assert!((({ (*a3.borrow()).call() }) == 2));
     {
         let m: Value<FnPtr<fn()>> = Rc::new(RefCell::new(lambda!(
             {
@@ -139,7 +141,9 @@ fn main_0() -> i32 {
             },
             || {}
         )));
-        let m2: Value<FnPtr<fn()>> = Rc::new(RefCell::new((*m.borrow_mut()).clone()));
+        let _dtor_m = ScopedDestructor::new(&m, |__p| __p.with(|__f| __f.destroy()));
+        let m2: Value<FnPtr<fn()>> = Rc::new(RefCell::new((*m.borrow()).move_from()));
+        let _dtor_m2 = ScopedDestructor::new(&m2, |__p| __p.with(|__f| __f.destroy()));
     }
     assert!((drops_0.with(|rc| *rc.borrow()) == 2));
     {
@@ -149,9 +153,29 @@ fn main_0() -> i32 {
             },
             || {}
         )));
-        let k2: Value<FnPtr<fn()>> = Rc::new(RefCell::new((*k.borrow()).clone()));
+        let _dtor_k = ScopedDestructor::new(&k, |__p| __p.with(|__f| __f.destroy()));
+        let k2: Value<FnPtr<fn()>> = Rc::new(RefCell::new((*k.borrow()).copy_from()));
+        let _dtor_k2 = ScopedDestructor::new(&k2, |__p| __p.with(|__f| __f.destroy()));
     }
     assert!((drops_0.with(|rc| *rc.borrow()) == 4));
+    {
+        let inner: Value<FnPtr<fn()>> = Rc::new(RefCell::new(lambda!(
+            {
+                let d: Value<Dropped> = Rc::new(RefCell::new(Dropped::new()));
+            },
+            || {}
+        )));
+        let _dtor_inner = ScopedDestructor::new(&inner, |__p| __p.with(|__f| __f.destroy()));
+        let outer: Value<FnPtr<fn()>> = Rc::new(RefCell::new(lambda!(
+            {
+                let inner: Value<FnPtr<fn()>> =
+                    Rc::new(RefCell::new((*inner.borrow()).copy_from()));
+            },
+            || {}
+        )));
+        let _dtor_outer = ScopedDestructor::new(&outer, |__p| __p.with(|__f| __f.destroy()));
+    }
+    assert!((drops_0.with(|rc| *rc.borrow()) == 6));
     return 0;
 }
 pub trait DroppedImpl {

@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(ByteRepr, DeepClone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, DeepClone)]
 #[byte_size(8)]
 pub struct anon_0 {
     #[offset(0)]
@@ -14,11 +14,11 @@ pub struct anon_0 {
     __bytes: Value<Box<[u8]>>,
 }
 impl anon_0 {
-    pub fn bytes(&self) -> Ptr<u8> {
-        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
+    pub fn bytes(this: Ptr<Self>) -> Ptr<u8> {
+        this.reinterpret_cast()
     }
-    pub fn aligner(&self) -> Ptr<AnyPtr> {
-        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
+    pub fn aligner(this: Ptr<Self>) -> Ptr<AnyPtr> {
+        this.reinterpret_cast()
     }
 }
 impl Default for anon_0 {
@@ -52,7 +52,7 @@ fn main_0() -> i32 {
     let mut i: usize = 0_usize;
     'loop_: while (((i < tail_size) as i32) != 0) {
         elem!(
-            ((*n.upgrade().deref()).x.bytes().reinterpret_cast::<u8>() as Ptr::<u8>),
+            (anon_0::bytes(field_ptr!(n, x)).reinterpret_cast::<u8>() as Ptr::<u8>),
             i
         )
         .write({ ((i & 255_usize) as u8) });
@@ -63,7 +63,7 @@ fn main_0() -> i32 {
         assert!(
             ((({
                 ((elem!(
-                    ((*n.upgrade().deref()).x.bytes().reinterpret_cast::<u8>() as Ptr::<u8>),
+                    (anon_0::bytes(field_ptr!(n, x)).reinterpret_cast::<u8>() as Ptr::<u8>),
                     i
                 )
                 .read()) as i32)
@@ -72,13 +72,13 @@ fn main_0() -> i32 {
         );
         i.postfix_inc();
     }
-    let mut p: Ptr<u8> = (((*n.upgrade().deref()).x.bytes().reinterpret_cast::<u8>() as Ptr<u8>)
+    let mut p: Ptr<u8> = ((anon_0::bytes(field_ptr!(n, x)).reinterpret_cast::<u8>() as Ptr<u8>)
         .offset((10) as isize));
     assert!((((((p.read()) as i32) == 10) as i32) != 0));
     p.write(170_u8);
     assert!(
         (((((elem!(
-            ((*n.upgrade().deref()).x.bytes().reinterpret_cast::<u8>() as Ptr::<u8>),
+            (anon_0::bytes(field_ptr!(n, x)).reinterpret_cast::<u8>() as Ptr::<u8>),
             10
         )
         .read()) as i32)
@@ -86,7 +86,7 @@ fn main_0() -> i32 {
             != 0)
     );
     field!(n, pos).write(20_usize);
-    let mut q: Ptr<u8> = (((*n.upgrade().deref()).x.bytes().reinterpret_cast::<u8>() as Ptr<u8>)
+    let mut q: Ptr<u8> = ((anon_0::bytes(field_ptr!(n, x)).reinterpret_cast::<u8>() as Ptr<u8>)
         .offset((n.with(|__s| __s.pos)) as isize));
     assert!((((((q.read()) as i32) == 20) as i32) != 0));
     q.write(187_u8);

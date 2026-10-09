@@ -15,6 +15,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <tuple>
 #include <unordered_set>
 #include <vector>
 
@@ -55,6 +56,9 @@ bool IsComparisonWithNullOp(const clang::BinaryOperator *expr);
 bool IsInMainFile(const clang::Decl *decl);
 
 bool IsUnionArrayMember(const clang::Expr *base);
+
+std::tuple<clang::MemberExpr *, clang::RecordDecl *, std::string>
+ReplaceNonUniformLibcField(clang::MemberExpr *expr);
 
 bool IsStringLiteralExpr(const clang::Expr *expr);
 
@@ -99,6 +103,9 @@ bool IsConvertibleCopyOrMoveConstructor(const clang::CXXConstructorDecl *ctor);
 bool IsDefaultedMoveConstructor(const clang::CXXConstructorDecl *ctor);
 
 bool IsConvertibleMoveConstructor(const clang::CXXConstructorDecl *ctor);
+
+// Whether decl has a move constructor converted to a move_from method.
+bool HasMoveFromConstructor(const clang::RecordDecl *decl);
 
 bool IsConvertibleMoveAssignment(const clang::CXXMethodDecl *method);
 
@@ -157,6 +164,9 @@ GetUserDefinedDefaultConstructor(const clang::CXXRecordDecl *decl);
 
 bool HasUsableDefaultArg(const clang::ParmVarDecl *param);
 
+const clang::MaterializeTemporaryExpr *
+GetDefaultArgTemporary(const clang::ParmVarDecl *param);
+
 std::string GetMainFileName(const clang::ASTContext &ctx);
 
 std::string GetFileName(const clang::Decl *decl);
@@ -187,6 +197,8 @@ template <class T> llvm::SmallString<16> GetNumAsString(const T &num) {
   return small_string;
 }
 
+std::string GetNumAsString(llvm::APFloat value);
+
 clang::QualType GetReturnTypeOfFunction(const clang::CallExpr *expr);
 
 const char *GetOverloadedOperator(const clang::FunctionDecl *decl);
@@ -205,7 +217,20 @@ const clang::CXXRecordDecl *AsLambdaClass(clang::QualType type);
 
 const clang::CXXMethodDecl *AsLambdaOperatorCall(const clang::FunctionDecl *fn);
 
+void ForEachLambdaCallOperator(
+    const clang::CXXRecordDecl *decl,
+    llvm::function_ref<void(clang::CXXMethodDecl *)> fn);
+
+clang::CXXMethodDecl *
+AsLambdaCallOperator(const clang::CXXConversionDecl *conversion);
+
+unsigned GetLambdaSpecializationIndex(const clang::FunctionDecl *call_operator);
+
 const clang::LambdaCapture *AsLambdaCapture(const clang::FieldDecl *field);
+
+bool IsLambdaCopyOrMoveConstructor(const clang::CXXConstructorDecl *ctor);
+
+bool LambdaNeedsDestruction(const clang::CXXRecordDecl *decl);
 
 clang::Expr *AsLambdaUncapturedConstant(const clang::FunctionDecl *fn,
                                         clang::DeclRefExpr *expr);
@@ -231,6 +256,9 @@ bool HasFieldsNeedingDestruction(const clang::CXXRecordDecl *decl);
 bool RecordNeedsDestruction(const clang::CXXRecordDecl *decl);
 
 clang::Expr *ToAddrOf(clang::ASTContext &ctx, clang::Expr *expr);
+
+clang::ConditionalOperator *
+MakeConditionalAddrOf(clang::ASTContext &ctx, clang::ConditionalOperator *expr);
 
 clang::CXXConstructExpr *MakeConstructExpr(clang::ASTContext &ctx,
                                            clang::QualType type,
@@ -265,6 +293,11 @@ clang::Expr *GetCallee(clang::CallExpr *expr);
 
 std::unordered_set<const clang::ValueDecl *>
 GetAllVars(const clang::Stmt *stmt);
+
+bool ReferencesVar(const clang::Stmt *stmt, const clang::VarDecl *var);
+
+bool DefaultInitHasSideEffects(const clang::ASTContext &ctx,
+                               clang::QualType type);
 
 bool ReferencesThis(const clang::Stmt *stmt);
 

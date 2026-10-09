@@ -113,7 +113,7 @@ std::string ToRustName(std::string name) {
 
   std::string_view stem(name);
   stem = stem.substr(0, stem.find_last_not_of('_') + 1);
-  if (stem == "Ptr" || stem == "Value") {
+  if (stem == "Ptr" || stem == "Value" || stem == "Box") {
     name += '_';
   }
   return name;

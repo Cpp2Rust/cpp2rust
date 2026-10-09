@@ -25,11 +25,16 @@ unsafe fn main_0() -> i32 {
     let mut words: *mut u16 = (arr as *mut u16);
     assert!((((*words.offset((((N) * (2)) - (1)) as isize)) as i32) == (48042)));
     assert!((((*words.offset((((N) * (2)) - (2)) as isize)) as i32) == (39304)));
-
-    ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
-        arr,
-        libcc2rs::malloc_usable_size(arr as *mut ::libc::c_void) / ::std::mem::size_of::<u32>(),
-    )));
+    {
+        let __p = arr;
+        if !__p.is_null() {
+            ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
+                __p,
+                libcc2rs::malloc_usable_size(__p as *mut ::libc::c_void)
+                    / ::std::mem::size_of::<u32>(),
+            )))
+        }
+    };
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

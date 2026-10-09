@@ -16,6 +16,12 @@ pub unsafe fn operator_comma_0(a: *const S, b: *const S) -> S {
         v: ((((*a).v) * (10)) + ((*b).v)),
     };
 }
+pub unsafe fn operator_literal__k_1(mut v: u64) -> i64 {
+    return (((v).wrapping_mul(1000_u64)) as i64);
+}
+pub unsafe fn operator_literal__half_2(mut v: f64) -> f64 {
+    return ((v) / (2_f64));
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -43,6 +49,9 @@ unsafe fn main_0() -> i32 {
         })
         .v) == (343))
     );
+    assert!(((unsafe { operator_literal__k_1(2_u64,) }) == (2000_i64)));
+    assert!(((unsafe { operator_literal__half_2(3_f64,) }) == (1.5_f64)));
+    assert!(((unsafe { operator_literal__k_1(4_u64,) }) == (4000_i64)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

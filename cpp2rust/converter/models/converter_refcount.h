@@ -113,7 +113,7 @@ public:
 
   void ConvertPrintf(clang::CallExpr *expr) override;
 
-  void EmitFnPtrCall(clang::Expr *callee) override;
+  void EmitFnPtrCall(clang::CallExpr *expr) override;
 
   bool VisitLambdaExpr(clang::LambdaExpr *expr) override;
 
@@ -124,7 +124,8 @@ public:
   void ConvertLambdaCapture(const clang::FieldDecl *field,
                             clang::Expr *init) override;
 
-  void ConvertLambdaToFunctionPointer(clang::Expr *lambda) override;
+  void ConvertLambdaToFunctionPointer(
+      clang::Expr *lambda, const clang::CXXConversionDecl *conversion) override;
 
   void
   ConvertFunctionToFunctionPointer(const clang::FunctionDecl *fn_decl) override;
@@ -136,6 +137,8 @@ public:
   bool VisitCallExpr(clang::CallExpr *expr) override;
 
   bool VisitStringLiteral(clang::StringLiteral *expr) override;
+
+  std::string GetSourceFileAsString(clang::QualType type) override;
 
   bool VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) override;
 

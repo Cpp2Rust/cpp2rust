@@ -12,7 +12,7 @@ pub struct Data {
     pub v: i32,
 }
 #[repr(C)]
-#[derive(Default)]
+#[derive(FnPtrArg, MoveCtorUnsafe, Default)]
 pub struct Holder {
     pub data: Option<Box<Data>>,
     pub n: i32,

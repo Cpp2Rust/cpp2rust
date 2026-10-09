@@ -212,6 +212,46 @@ bool IsUnionArrayMember(const clang::Expr *base) {
   return false;
 }
 
+// TODO: this will be gone when the AST matcher lands
+std::tuple<clang::MemberExpr *, clang::RecordDecl *, std::string>
+ReplaceNonUniformLibcField(clang::MemberExpr *expr) {
+  // Example: ::struct stat::st_mtim::tv_sec -> ::libc::stat::st_mtime
+  struct Mapping {
+    const char *record;
+    const char *inner_field;
+    const char *leaf_field;
+    const char *replacement;
+  };
+  static constexpr Mapping kFields[] = {
+      {"stat", "st_mtim", "tv_sec", "st_mtime"},      // Linux
+      {"stat", "st_mtimespec", "tv_sec", "st_mtime"}, // macOS
+      {"in6_addr", "__in6_u", "__u6_addr8", "s6_addr"},
+  };
+
+  auto getNamedIdentifierOrNull = [](auto *decl) {
+    return decl && decl->getDeclName().isIdentifier() ? decl : nullptr;
+  };
+
+  if (auto leaf = getNamedIdentifierOrNull(expr->getMemberDecl())) {
+    if (auto inner = clang::dyn_cast<clang::MemberExpr>(
+            expr->getBase()->IgnoreParenImpCasts())) {
+      if (auto field = getNamedIdentifierOrNull(
+              clang::dyn_cast<clang::FieldDecl>(inner->getMemberDecl()))) {
+        if (getNamedIdentifierOrNull(field->getParent())) {
+          for (const auto &m : kFields) {
+            if (field->getParent()->getName() == m.record &&
+                field->getName() == m.inner_field &&
+                leaf->getName() == m.leaf_field) {
+              return {inner, field->getParent(), m.replacement};
+            }
+          }
+        }
+      }
+    }
+  }
+  return {nullptr, nullptr, ""};
+}
+
 bool IsStringLiteralExpr(const clang::Expr *expr) {
   const auto *stripped = expr->IgnoreParens()->IgnoreImplicit();
   return clang::isa<clang::StringLiteral>(stripped) ||
@@ -220,13 +260,41 @@ bool IsStringLiteralExpr(const clang::Expr *expr) {
 
 bool IsCodeUnitStringLiteral(const clang::StringLiteral *expr) {
   return expr->getCharByteWidth() != 1 ||
-         expr->getKind() == clang::StringLiteralKind::UTF8;
+         expr->getType()->getArrayElementTypeNoTypeQual()->isChar8Type();
+}
+
+std::string GetNumAsString(llvm::APFloat value) {
+  switch (llvm::APFloat::SemanticsToEnum(value.getSemantics())) {
+  case llvm::APFloat::S_IEEEsingle:
+    return value.isInfinity() ? "f32::INFINITY"
+                              : std::format("{}_f32", value.convertToFloat());
+  case llvm::APFloat::S_x87DoubleExtended: {
+    bool loses_info = false;
+    value.convert(llvm::APFloat::IEEEdouble(),
+                  llvm::APFloat::rmNearestTiesToEven, &loses_info);
+  }
+    [[fallthrough]];
+  case llvm::APFloat::S_IEEEdouble:
+    return value.isInfinity() ? "f64::INFINITY"
+                              : std::format("{}_f64", value.convertToDouble());
+  default:
+    assert(false && "unsupported floating-point semantics");
+    return {};
+  }
 }
 
 bool IsUserDefinedDecl(const clang::Decl *decl) {
   const auto &ctx = decl->getASTContext();
   const auto &src_mgr = ctx.getSourceManager();
-  const auto src_loc = decl->getLocation();
+  auto src_loc = decl->getLocation();
+  if (auto *spec =
+          clang::dyn_cast<clang::ClassTemplateSpecializationDecl>(decl);
+      spec && (spec->getSpecializationKind() ==
+                   clang::TSK_ExplicitInstantiationDeclaration ||
+               spec->getSpecializationKind() ==
+                   clang::TSK_ExplicitInstantiationDefinition)) {
+    src_loc = spec->getSpecializedTemplate()->getLocation();
+  }
   return !decl->getBeginLoc().isInvalid() && !decl->isImplicit() &&
          !src_mgr.isInSystemHeader(src_loc) &&
          !src_mgr.isInSystemMacro(src_loc);
@@ -299,6 +367,9 @@ bool RustSizeDivergesFromC(clang::QualType qt) {
   }
   if (auto *arr = qt->getAsArrayTypeUnsafe()) {
     return RustSizeDivergesFromC(arr->getElementType());
+  }
+  if (qt->isPointerType()) {
+    return true;
   }
   return false;
 }
@@ -429,6 +500,14 @@ bool IsConvertibleMoveConstructor(const clang::CXXConstructorDecl *ctor) {
          ctor->hasBody();
 }
 
+bool HasMoveFromConstructor(const clang::RecordDecl *decl) {
+  auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
+  return cxx && llvm::any_of(cxx->ctors(), [](auto *ctor) {
+           return IsConvertibleMoveConstructor(ctor) &&
+                  CanUseCopyOrMoveName(ctor, "move_from");
+         });
+}
+
 bool IsConvertibleMoveAssignment(const clang::CXXMethodDecl *method) {
   return method->isMoveAssignmentOperator() && !method->isDeleted() &&
          IsConvertibleImplicitMemberParent(method->getParent()) &&
@@ -469,11 +548,11 @@ bool HasDefaultedCopyConstructor(const clang::RecordDecl *decl) {
     return true;
   }
   for (const auto *ctor : cxx->ctors()) {
-    if (ctor->isCopyConstructor()) {
-      return !ctor->isUserProvided() && !ctor->isDeleted();
+    if (ctor->isCopyConstructor() && ctor->isUserProvided()) {
+      return false;
     }
   }
-  return !cxx->defaultedCopyConstructorIsDeleted();
+  return HasCallableCopyConstructor(cxx);
 }
 
 bool RecordHasOnlyReferenceFields(const clang::RecordDecl *decl) {
@@ -503,16 +582,21 @@ bool HasCallableCopyConstructor(const clang::RecordDecl *decl) {
   if (!cxx) {
     return true;
   }
-  if (!cxx->hasUserDeclaredCopyConstructor()) {
-    return !cxx->defaultedCopyConstructorIsDeleted();
+  if (cxx->hasUserDeclaredCopyConstructor()) {
+    return std::ranges::any_of(cxx->ctors(), [](const auto *ctor) {
+      return ctor->isCopyConstructor() && !ctor->isDeleted() &&
+             ctor->getDefinition();
+    });
   }
-  for (const auto *ctor : cxx->ctors()) {
-    if (ctor->isCopyConstructor() && !ctor->isDeleted() &&
-        ctor->getDefinition()) {
-      return true;
-    }
+  if (cxx->defaultedCopyConstructorIsDeleted()) {
+    return false;
   }
-  return false;
+  auto &ctx = cxx->getASTContext();
+  return std::ranges::all_of(cxx->fields(), [&](const clang::FieldDecl *f) {
+    auto *record = ctx.getBaseElementType(f->getType())->getAsCXXRecordDecl();
+    return !record || !IsUserDefinedDecl(record) ||
+           HasCallableCopyConstructor(record);
+  });
 }
 
 bool IsRValueConvertingConstructor(const clang::CXXConstructorDecl *ctor) {
@@ -637,7 +721,8 @@ unsigned GetCtorIndex(clang::CXXConstructorDecl *ctor) {
 clang::CXXConstructorDecl *
 GetUserDefinedDefaultConstructor(const clang::CXXRecordDecl *decl) {
   for (auto c : decl->ctors()) {
-    if (c->isUserProvided() && c->isDefaultConstructor() && c->hasBody()) {
+    if (c->isUserProvided() && c->isDefaultConstructor() && c->hasBody() &&
+        std::ranges::all_of(c->parameters(), HasUsableDefaultArg)) {
       return c;
     }
   }
@@ -646,6 +731,15 @@ GetUserDefinedDefaultConstructor(const clang::CXXRecordDecl *decl) {
 
 bool HasUsableDefaultArg(const clang::ParmVarDecl *param) {
   return param->hasDefaultArg() && !param->hasUninstantiatedDefaultArg();
+}
+
+const clang::MaterializeTemporaryExpr *
+GetDefaultArgTemporary(const clang::ParmVarDecl *param) {
+  if (!param->getType()->isReferenceType()) {
+    return nullptr;
+  }
+  return clang::dyn_cast<clang::MaterializeTemporaryExpr>(
+      param->getDefaultArg()->IgnoreParens());
 }
 
 std::string GetMainFileName(const clang::ASTContext &ctx) {
@@ -690,8 +784,14 @@ unsigned GetArraySize(clang::QualType array_type) {
 }
 
 static std::string GetLocationID(const clang::Decl *decl) {
-  return GetFileName(decl) + std::to_string(GetLineNumber(decl)) +
-         std::to_string(GetColumnNumber(decl));
+  auto id = GetFileName(decl) + std::to_string(GetLineNumber(decl)) +
+            std::to_string(GetColumnNumber(decl));
+  if (auto loc = decl->getLocation(); loc.isMacroID()) {
+    const auto &src_mgr = decl->getASTContext().getSourceManager();
+    id += std::to_string(src_mgr.getSpellingLineNumber(loc)) +
+          std::to_string(src_mgr.getSpellingColumnNumber(loc));
+  }
+  return id;
 }
 
 static std::string GetParamSignature(const clang::Decl *decl) {
@@ -906,6 +1006,22 @@ std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
       name += '_';
       name += std::to_string(pdecl->getFunctionScopeIndex());
     }
+  } else if (auto *var = llvm::dyn_cast<clang::VarDecl>(decl);
+             var && var->isInitCapture()) {
+    auto lambda =
+        llvm::cast<clang::CXXMethodDecl>(var->getDeclContext())->getParent();
+    if (llvm::count_if(lambda->captures(), [&](const clang::LambdaCapture &c) {
+          return c.capturesVariable() &&
+                 c.getCapturedVar()->getName() == var->getName();
+        }) > 1) {
+      auto captures = lambda->captures();
+      auto it = llvm::find_if(captures, [&](const clang::LambdaCapture &c) {
+        return c.capturesVariable() && c.getCapturedVar() == var;
+      });
+      assert(it != captures.end());
+      name += '_';
+      name += std::to_string(it - captures.begin());
+    }
   }
 
   return name;
@@ -1075,12 +1191,79 @@ AsLambdaOperatorCall(const clang::FunctionDecl *fn) {
   return method;
 }
 
+void ForEachLambdaCallOperator(
+    const clang::CXXRecordDecl *decl,
+    llvm::function_ref<void(clang::CXXMethodDecl *)> fn) {
+  if (!decl->isGenericLambda()) {
+    fn(decl->getLambdaCallOperator());
+    return;
+  }
+  for (auto spec : decl->getDependentLambdaCallOperator()->specializations()) {
+    fn(clang::cast<clang::CXXMethodDecl>(spec));
+  }
+}
+
+clang::CXXMethodDecl *
+AsLambdaCallOperator(const clang::CXXConversionDecl *conversion) {
+  auto decl = conversion->getParent();
+  if (!decl->isGenericLambda()) {
+    return decl->getLambdaCallOperator();
+  }
+  auto args = conversion->getTemplateSpecializationArgs()->asArray();
+  clang::CXXMethodDecl *found = nullptr;
+  ForEachLambdaCallOperator(decl, [&](clang::CXXMethodDecl *op) {
+    auto op_args = op->getTemplateSpecializationArgs()->asArray();
+    if (llvm::equal(args, op_args,
+                    [](const clang::TemplateArgument &a,
+                       const clang::TemplateArgument &b) {
+                      return a.structurallyEquals(b);
+                    })) {
+      found = op;
+    }
+  });
+  if (!found) {
+    llvm::report_fatal_error("no call operator matches the lambda conversion");
+  }
+  return found;
+}
+
+unsigned
+GetLambdaSpecializationIndex(const clang::FunctionDecl *call_operator) {
+  std::optional<unsigned> index;
+  unsigned i = 0;
+  ForEachLambdaCallOperator(
+      clang::cast<clang::CXXMethodDecl>(call_operator)->getParent(),
+      [&](const clang::CXXMethodDecl *op) {
+        if (op->getCanonicalDecl() == call_operator->getCanonicalDecl()) {
+          index = i;
+        }
+        ++i;
+      });
+  assert(index);
+  return *index;
+}
+
 const clang::LambdaCapture *AsLambdaCapture(const clang::FieldDecl *field) {
   auto decl = clang::dyn_cast<clang::CXXRecordDecl>(field->getParent());
   if (!decl || !decl->isLambda()) {
     return nullptr;
   }
   return decl->captures_begin() + field->getFieldIndex();
+}
+
+bool IsLambdaCopyOrMoveConstructor(const clang::CXXConstructorDecl *ctor) {
+  auto decl = ctor->getParent();
+  return ctor->isCopyOrMoveConstructor() && decl->isLambda() &&
+         !decl->captures().empty();
+}
+
+bool LambdaNeedsDestruction(const clang::CXXRecordDecl *decl) {
+  return llvm::any_of(decl->fields(), [](const clang::FieldDecl *field) {
+    if (auto lambda = AsLambdaClass(field->getType())) {
+      return LambdaNeedsDestruction(lambda);
+    }
+    return TypeNeedsDestruction(field->getType());
+  });
 }
 
 clang::Expr *AsLambdaUncapturedConstant(const clang::FunctionDecl *fn,
@@ -1185,6 +1368,9 @@ std::string GetFunctionBaseName(const clang::FunctionDecl *decl) {
   }
   if (decl->isOverloadedOperator()) {
     return GetOverloadedOperator(decl);
+  }
+  if (auto *suffix = decl->getLiteralIdentifier()) {
+    return "operator_literal_" + suffix->getName().str();
   }
   return decl->getNameAsString();
 }
@@ -1373,6 +1559,23 @@ bool IsMethodOnPtr(const clang::CXXMethodDecl *method) {
   return true;
 }
 
+// `c ? a : b` -> `c ? &a : &b`
+clang::ConditionalOperator *
+MakeConditionalAddrOf(clang::ASTContext &ctx,
+                      clang::ConditionalOperator *expr) {
+  auto addr_of = [&](clang::Expr *branch) {
+    return clang::UnaryOperator::Create(
+        ctx, branch, clang::UO_AddrOf, ctx.getPointerType(branch->getType()),
+        clang::VK_PRValue, clang::OK_Ordinary, branch->getExprLoc(), false,
+        clang::FPOptionsOverride());
+  };
+  return new (ctx) clang::ConditionalOperator(
+      expr->getCond(), expr->getQuestionLoc(), addr_of(expr->getTrueExpr()),
+      expr->getColonLoc(), addr_of(expr->getFalseExpr()),
+      ctx.getPointerType(expr->getType()), clang::VK_PRValue,
+      clang::OK_Ordinary);
+}
+
 clang::Expr *ToAddrOf(clang::ASTContext &ctx, clang::Expr *expr) {
   return clang::UnaryOperator::Create(
       ctx, expr, clang::UnaryOperatorKind::UO_AddrOf, expr->getType(),
@@ -1502,6 +1705,48 @@ GetAllVars(const clang::Stmt *stmt) {
   return vars;
 }
 
+bool ReferencesVar(const clang::Stmt *stmt, const clang::VarDecl *var) {
+  if (!stmt) {
+    return false;
+  }
+  if (auto *decl_ref = clang::dyn_cast<clang::DeclRefExpr>(stmt)) {
+    return decl_ref->getDecl() == var;
+  }
+  if (clang::isa<clang::UnaryExprOrTypeTraitExpr>(stmt)) {
+    return false;
+  }
+  return std::ranges::any_of(stmt->children(), [var](const clang::Stmt *child) {
+    return ReferencesVar(child, var);
+  });
+}
+
+bool DefaultInitHasSideEffects(const clang::ASTContext &ctx,
+                               clang::QualType type) {
+  auto *record = ctx.getBaseElementType(type)->getAsCXXRecordDecl();
+  if (!record || record->hasTrivialDefaultConstructor()) {
+    return false;
+  }
+  if (!record->hasDefaultConstructor() ||
+      record->hasUserProvidedDefaultConstructor()) {
+    return true;
+  }
+  for (const auto &base : record->bases()) {
+    if (DefaultInitHasSideEffects(ctx, base.getType())) {
+      return true;
+    }
+  }
+  for (auto *field : record->fields()) {
+    if (auto *init = field->getInClassInitializer()) {
+      if (init->HasSideEffects(ctx)) {
+        return true;
+      }
+    } else if (DefaultInitHasSideEffects(ctx, field->getType())) {
+      return true;
+    }
+  }
+  return false;
+}
+
 bool ReadsMemory(const clang::Stmt *stmt) {
   if (auto *cast = clang::dyn_cast<clang::ImplicitCastExpr>(stmt);
       cast && cast->getCastKind() == clang::CK_LValueToRValue) {
@@ -1600,6 +1845,10 @@ clang::Expr *GetCallee(clang::CallExpr *expr) {
     if (op_call->getOperator() == clang::OO_Call) {
       return op_call->getArg(0);
     }
+  }
+  if (auto member_call = clang::dyn_cast<clang::CXXMemberCallExpr>(expr);
+      member_call && AsLambdaOperatorCall(member_call->getMethodDecl())) {
+    return member_call->getImplicitObjectArgument();
   }
   return expr->getCallee();
 }

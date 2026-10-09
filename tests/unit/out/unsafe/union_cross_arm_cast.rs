@@ -22,7 +22,7 @@ pub struct shape_b {
     pub tail: u32,
 }
 #[repr(C)]
-#[derive(Copy, Clone, FnPtrArg)]
+#[derive(Copy, Clone, FnPtrArg, VaArg)]
 pub union anon_0 {
     pub a: shape_a,
     pub b: shape_b,

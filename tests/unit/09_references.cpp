@@ -1,5 +1,11 @@
 #include <cassert>
 
+int counter = 0;
+
+void inc() { counter += 1; }
+
+void dec() { counter -= 1; }
+
 int main() {
   int h = 15;
 
@@ -32,5 +38,19 @@ int main() {
   int *mp = a < b ? &a : &b;
   *mp = 20;
   assert(b == 20);
+
+  (a < b ? a : b) = 30;
+  assert(a == 30);
+  assert(b == 20);
+  (a < b ? a : b) += 5;
+  assert(b == 25);
+  int *ap = &(a > b ? a : b);
+  *ap = 40;
+  assert(a == 40);
+
+  a < b ? inc() : dec();
+  assert(counter == -1);
+  a > b ? inc() : dec();
+  assert(counter == 0);
   return 0;
 }

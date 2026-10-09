@@ -111,7 +111,7 @@ impl S {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
-pub struct Box {
+pub struct Box_ {
     pub v: i32,
 }
 pub fn main() {
@@ -170,7 +170,7 @@ unsafe fn main_0() -> i32 {
             Access_S_::ref_4(&mut a, _r)
         }) == (103))
     );
-    let mut b: Box = Box { v: 4 };
+    let mut b: Box_ = Box_ { v: 4 };
     assert!(((b.v) == (4)));
     return 0;
 }

@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Default)]
+#[derive(FnPtrArg, MoveCtorUnsafe, Default)]
 pub struct MoveOnly {
     pub v: i32,
 }
@@ -23,7 +23,7 @@ impl MoveOnly {
     }
 }
 #[repr(C)]
-#[derive()]
+#[derive(FnPtrArg)]
 pub struct ConstMove {
     pub mark: i32,
 }
@@ -51,7 +51,7 @@ impl Default for ConstMove {
     }
 }
 #[repr(C)]
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(VaArg, FnPtrArg, MoveCtorUnsafe, Default)]
 pub struct ThrowingMove {
     pub v: i32,
     pub copies: i32,
@@ -90,7 +90,7 @@ impl Clone for ThrowingMove {
     }
 }
 #[repr(C)]
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(VaArg, FnPtrArg, MoveCtorUnsafe, Default)]
 pub struct NoexceptMove {
     pub v: i32,
     pub copies: i32,

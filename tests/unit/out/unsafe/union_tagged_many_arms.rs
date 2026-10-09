@@ -13,7 +13,7 @@ pub const Tag_enum_T_TEXT: Tag_enum = 2;
 pub const Tag_enum_T_FLOAT: Tag_enum = 3;
 pub const Tag_enum_T_REF: Tag_enum = 4;
 #[repr(C)]
-#[derive(Copy, Clone, FnPtrArg)]
+#[derive(Copy, Clone, FnPtrArg, VaArg)]
 pub union anon_0 {
     pub text: *const libc::c_char,
     pub handle: *mut ::libc::c_void,
@@ -53,8 +53,8 @@ unsafe fn main_0() -> i32 {
     assert!((((((*c.payload.text.offset((0) as isize)) as i32) == ('h' as i32)) as i32) != 0));
     let mut d: Slot = <Slot>::default();
     d.tag = Tag_enum_T_FLOAT;
-    d.payload.f = 1.5E+0;
-    assert!(((((d.payload.f) == (1.5E+0)) as i32) != 0));
+    d.payload.f = 1.5_f64;
+    assert!(((((d.payload.f) == (1.5_f64)) as i32) != 0));
     let mut x: i32 = 0;
     let mut e: Slot = <Slot>::default();
     e.tag = Tag_enum_T_REF;

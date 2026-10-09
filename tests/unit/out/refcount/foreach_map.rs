@@ -21,7 +21,7 @@ fn main_0() -> i32 {
                     .or_insert_with(|| Rc::new(RefCell::new(<f64>::default())))
                     .as_pointer()
             })
-            .write(((k as f64) / 2.0E+0));
+            .write(((k as f64) / 2_f64));
         {
             i.prefix_inc();
             k.prefix_dec()

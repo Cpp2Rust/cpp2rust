@@ -32,6 +32,12 @@ fn main_0() -> i32 {
         "{}",
         (({ is_negative_1((lit.as_pointer() as Ptr::<i8>),) }) as i32)
     );
+    let mut u8s: Ptr<i8> = Ptr::<i8>::from_string_literal(b"\xc3\xa9");
+    println!(
+        "{} {}",
+        ((elem!(u8s, 0).read()) as i32),
+        ((elem!(u8s, 1).read()) as i32)
+    );
     let mut p: Ptr<i8> = Ptr::<i8>::from_string_literal(b"\x80");
     println!(
         "{} {}",

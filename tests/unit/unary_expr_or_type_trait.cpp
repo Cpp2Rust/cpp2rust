@@ -10,6 +10,10 @@ template <typename... Args> unsigned long pack_size(Args... args) {
   return sizeof...(args) + sizeof...(Args);
 }
 
+void may_throw() {}
+
+void no_throw() noexcept {}
+
 int main() {
   int64_t arr[4] = {};
   S s{};
@@ -26,5 +30,10 @@ int main() {
 
   assert(pack_size() == 0);
   assert(pack_size(1, 2.0) == 4);
+
+  assert(noexcept(no_throw()));
+  assert(!noexcept(may_throw()));
+  bool may = noexcept(may_throw());
+  assert(!may);
   return 0;
 }

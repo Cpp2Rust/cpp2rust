@@ -52,7 +52,7 @@ public:
 
   virtual void EmitFilePreamble();
 
-  static void EmitOpaqueRecords(std::string &out);
+  static void EmitOpaqueRecords(Model model, std::string &out);
   static void EmitGlobalInits(Model model, std::string &out);
 
   static void EmitVirtualMethods(std::string &out);
@@ -172,6 +172,8 @@ public:
   virtual bool VisitFieldDecl(clang::FieldDecl *decl);
 
   virtual bool VisitNamespaceDecl(clang::NamespaceDecl *decl);
+
+  bool VisitLinkageSpecDecl(clang::LinkageSpecDecl *decl);
 
   virtual bool VisitTypedefDecl(clang::TypedefDecl *decl);
   virtual bool VisitTypeAliasDecl(clang::TypeAliasDecl *decl);
@@ -327,9 +329,14 @@ public:
 
   void ConvertGenericCallExpr(clang::CallExpr *expr);
 
-  virtual void EmitFnPtrCall(clang::Expr *callee);
+  virtual void EmitFnPtrCall(clang::CallExpr *expr);
 
-  virtual void ConvertLambdaToFunctionPointer(clang::Expr *lambda);
+  void ConvertLambdaCall(clang::CallExpr *expr,
+                         const clang::CXXRecordDecl *lambda);
+
+  virtual void
+  ConvertLambdaToFunctionPointer(clang::Expr *lambda,
+                                 const clang::CXXConversionDecl *conversion);
 
   virtual void
   ConvertFunctionToFunctionPointer(const clang::FunctionDecl *fn_decl);
@@ -380,7 +387,13 @@ public:
                                       uint64_t pad_nulls = 0) const;
   virtual bool VisitStringLiteral(clang::StringLiteral *expr);
 
+  bool VisitSourceLocExpr(clang::SourceLocExpr *expr);
+
+  virtual std::string GetSourceFileAsString(clang::QualType type);
+
   virtual bool VisitCXXBoolLiteralExpr(clang::CXXBoolLiteralExpr *expr);
+
+  bool VisitCXXNoexceptExpr(clang::CXXNoexceptExpr *expr);
 
   void ConvertIntegerToEnumeralCast(clang::Expr *to, clang::Expr *from);
 
@@ -400,6 +413,8 @@ public:
   virtual bool VisitUnaryOperator(clang::UnaryOperator *expr);
 
   virtual bool VisitStmtExpr(clang::StmtExpr *expr);
+
+  bool ConvertLValueConditional(clang::ConditionalOperator *expr);
 
   virtual bool VisitConditionalOperator(clang::ConditionalOperator *expr);
 
@@ -469,7 +484,8 @@ public:
   virtual void ConvertLambdaCapture(const clang::FieldDecl *field,
                                     clang::Expr *init);
 
-  void ConvertLambdaClosure(const clang::CXXRecordDecl *decl);
+  void ConvertLambdaClosure(const clang::CXXRecordDecl *decl,
+                            clang::CXXMethodDecl *call_operator);
 
   virtual bool VisitImplicitValueInitExpr(clang::ImplicitValueInitExpr *expr);
   virtual bool VisitCXXScalarValueInitExpr(clang::CXXScalarValueInitExpr *expr);
@@ -487,6 +503,15 @@ public:
   virtual bool VisitPredefinedExpr(clang::PredefinedExpr *expr);
 
   virtual bool VisitClassTemplateDecl(clang::ClassTemplateDecl *decl);
+
+  bool TraverseClassTemplateSpecializationDecl(
+      clang::ClassTemplateSpecializationDecl *) {
+    return true;
+  }
+
+  bool TraverseExplicitInstantiationDecl(clang::ExplicitInstantiationDecl *) {
+    return true;
+  }
 
   virtual bool
   VisitCXXStdInitializerListExpr(clang::CXXStdInitializerListExpr *expr);
@@ -658,6 +683,10 @@ protected:
                                          std::string_view record_name);
 
   std::string GetComparisonCall(const clang::FunctionDecl *op,
+                                const clang::CXXRecordDecl *decl,
+                                std::string_view lhs, std::string_view rhs);
+
+  std::string GetComparisonBool(const clang::FunctionDecl *op,
                                 const clang::CXXRecordDecl *decl,
                                 std::string_view lhs, std::string_view rhs);
 

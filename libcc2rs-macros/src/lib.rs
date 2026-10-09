@@ -5,9 +5,11 @@ use proc_macro::TokenStream;
 
 mod byte_repr;
 mod deep_clone;
+mod destructor;
 mod fn_ptr_arg;
 mod goto;
 mod lambda;
+mod move_ctor;
 mod record;
 mod state_machine;
 mod switch;
@@ -157,4 +159,44 @@ pub fn derive_record(input: TokenStream) -> TokenStream {
 #[proc_macro_derive(DeepClone)]
 pub fn derive_deep_clone(input: TokenStream) -> TokenStream {
     deep_clone::expand(input)
+}
+
+//     #[derive(MoveCtor)]
+//     pub struct S { ... }
+//     impl S {
+//         pub fn move_from(o: Ptr<S>) -> Self { ... }
+//     }
+//
+// Implements libcc2rs::MoveCtor for S with its move constructor, move_from,
+// such that lambda! moves the captures of type S with it. MoveCtorUnsafe is
+// the same for the unsafe model, whose move_from takes a *mut S.
+
+#[proc_macro_derive(MoveCtor)]
+pub fn derive_move_ctor(input: TokenStream) -> TokenStream {
+    move_ctor::expand(input, false)
+}
+
+#[proc_macro_derive(MoveCtorUnsafe)]
+pub fn derive_move_ctor_unsafe(input: TokenStream) -> TokenStream {
+    move_ctor::expand(input, true)
+}
+
+//     #[derive(Destructor)]
+//     pub struct S { ... }
+//     impl SImpl for Ptr<S> {
+//         fn destructor(&self) { ... }
+//     }
+//
+// Implements libcc2rs::Destructor for S with its destructor, such that
+// lambda! destroys the captures of type S with it. DestructorUnsafe is the
+// same for the unsafe model, whose destructor is a method of S.
+
+#[proc_macro_derive(Destructor)]
+pub fn derive_destructor(input: TokenStream) -> TokenStream {
+    destructor::expand(input, false)
+}
+
+#[proc_macro_derive(DestructorUnsafe)]
+pub fn derive_destructor_unsafe(input: TokenStream) -> TokenStream {
+    destructor::expand(input, true)
 }

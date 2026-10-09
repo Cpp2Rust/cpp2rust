@@ -10,7 +10,7 @@ pub unsafe fn identity_0(mut x: i32) -> i32 {
     return x;
 }
 pub unsafe fn apply_1(mut x: i32, mut fn_: Option<Option<unsafe fn(i32) -> i32>>) -> i32 {
-    let mut fn_: Option<unsafe fn(i32) -> i32> = fn_.unwrap_or(None);
+    let mut fn_: Option<unsafe fn(i32) -> i32> = fn_.unwrap_or_else(|| unsafe { None });
     if !(fn_).is_none() {
         return (unsafe { (fn_).unwrap()(x) });
     }

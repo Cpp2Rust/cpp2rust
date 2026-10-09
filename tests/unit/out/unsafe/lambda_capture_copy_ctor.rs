@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(VaArg, FnPtrArg)]
+#[derive(VaArg, FnPtrArg, MoveCtorUnsafe)]
 pub struct Counted {
     pub copies: i32,
     pub moves: i32,
@@ -47,7 +47,7 @@ impl Default for Counted {
 }
 pub static mut drops_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
-#[derive(VaArg, FnPtrArg)]
+#[derive(VaArg, FnPtrArg, MoveCtorUnsafe, DestructorUnsafe)]
 pub struct Dropped {}
 impl Dropped {
     pub unsafe fn new() -> Self {
@@ -93,10 +93,10 @@ unsafe fn main_0() -> i32 {
         }
     );
     assert!(((unsafe { f.call() }) == (10)));
-    let mut g: FnPtr<fn() -> i32> = f.clone();
+    let mut g: FnPtr<fn() -> i32> = f.copy_from();
     assert!(((unsafe { g.call() }) == (20)));
     assert!(((unsafe { f.call() }) == (10)));
-    let mut h: FnPtr<fn() -> i32> = f;
+    let mut h: FnPtr<fn() -> i32> = f.move_from();
     assert!(((unsafe { h.call() }) == (11)));
     let mut returned: i32 = (unsafe {
         lambda_unsafe!(
@@ -122,8 +122,10 @@ unsafe fn main_0() -> i32 {
         }
     );
     assert!(((unsafe { a.call() }) == (2)));
-    let mut a2: FnPtr<fn() -> i32> = a.clone();
+    let mut a2: FnPtr<fn() -> i32> = a.copy_from();
     assert!(((unsafe { a2.call() }) == (4)));
+    let mut a3: FnPtr<fn() -> i32> = a.move_from();
+    assert!(((unsafe { a3.call() }) == (2)));
     {
         let mut m: FnPtr<fn()> = lambda_unsafe!(
             {
@@ -131,7 +133,9 @@ unsafe fn main_0() -> i32 {
             },
             || {}
         );
-        let mut m2: FnPtr<fn()> = m;
+        let _dtor_m = ScopedDestructorUnsafe::new(&raw mut m, |__f| __f.destroy());
+        let mut m2: FnPtr<fn()> = m.move_from();
+        let _dtor_m2 = ScopedDestructorUnsafe::new(&raw mut m2, |__f| __f.destroy());
     }
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut drops_0)) == (2)));
     {
@@ -141,9 +145,28 @@ unsafe fn main_0() -> i32 {
             },
             || {}
         );
-        let mut k2: FnPtr<fn()> = k.clone();
+        let _dtor_k = ScopedDestructorUnsafe::new(&raw mut k, |__f| __f.destroy());
+        let mut k2: FnPtr<fn()> = k.copy_from();
+        let _dtor_k2 = ScopedDestructorUnsafe::new(&raw mut k2, |__f| __f.destroy());
     }
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut drops_0)) == (4)));
+    {
+        let mut inner: FnPtr<fn()> = lambda_unsafe!(
+            {
+                let d: Dropped = Dropped::new();
+            },
+            || {}
+        );
+        let _dtor_inner = ScopedDestructorUnsafe::new(&raw mut inner, |__f| __f.destroy());
+        let mut outer: FnPtr<fn()> = lambda_unsafe!(
+            {
+                let inner: FnPtr<fn()> = inner.copy_from();
+            },
+            || {}
+        );
+        let _dtor_outer = ScopedDestructorUnsafe::new(&raw mut outer, |__f| __f.destroy());
+    }
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut drops_0)) == (6)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {

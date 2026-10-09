@@ -214,8 +214,9 @@ private:
   void AddValueUse(clang::Expr *expr, bool write = false) {
     expr = expr->IgnoreParens();
     if (auto *member = clang::dyn_cast<clang::MemberExpr>(expr)) {
-      if (!member->isArrow() &&
-          clang::isa<clang::FieldDecl>(member->getMemberDecl())) {
+      auto *field = clang::dyn_cast<clang::FieldDecl>(member->getMemberDecl());
+      // A union member is accessed through a pointer to the union.
+      if (!member->isArrow() && field && !field->getParent()->isUnion()) {
         AddValueUse(member->getBase(), write);
       }
     } else if (auto *subscript =

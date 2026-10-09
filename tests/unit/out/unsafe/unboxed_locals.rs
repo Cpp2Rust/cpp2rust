@@ -36,7 +36,7 @@ pub unsafe fn sum_3(mut arr: *const i32, mut n: i32) -> i32 {
     return s;
 }
 pub unsafe fn countdown_4(mut n: i32, mut step: Option<i32>) -> i32 {
-    let mut step: i32 = step.unwrap_or(1);
+    let mut step: i32 = step.unwrap_or_else(|| unsafe { 1 });
     let mut steps: i32 = 0;
     'loop_: while ((n) > (0)) {
         n -= step;
@@ -114,8 +114,8 @@ unsafe fn main_0() -> i32 {
         0_f64, 0_f64, 0_f64, 0_f64, 0_f64, 0_f64, 0_f64, 0_f64, 0_f64, 0_f64, 0_f64, 0_f64, 0_f64,
         0_f64, 0_f64, 0_f64,
     ];
-    zeros[(15) as usize] = 1.5E+0;
-    assert!(((zeros[(0) as usize]) == (0_f64)) && ((zeros[(15) as usize]) == (1.5E+0)));
+    zeros[(15) as usize] = 1.5_f64;
+    assert!(((zeros[(0) as usize]) == (0_f64)) && ((zeros[(15) as usize]) == (1.5_f64)));
     assert!(((unsafe { countdown_4(10, None,) }) == (10)));
     assert!(((unsafe { countdown_4(10, Some(3),) }) == (4)));
     let mut init: i32 = 3;
@@ -128,7 +128,12 @@ unsafe fn main_0() -> i32 {
         second: init,
     })) as *mut Pair);
     assert!(((pair.second) == (4)) && (((*heap).first) == (3)));
-    ::std::mem::drop(Box::from_raw(heap));
+    {
+        let __p = heap;
+        if !__p.is_null() {
+            ::std::mem::drop(Box::from_raw(__p))
+        }
+    };
     let mut vec_: Vec<i32> = vec![1; 3_usize as usize];
     let mut four: i32 = 4;
     {

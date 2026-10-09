@@ -48,7 +48,12 @@ unsafe fn main_0() -> i32 {
     let mut heap: *mut S = (Box::leak(Box::new(<S>::default())) as *mut S);
     (*heap).tag = 7;
     (unsafe { run_1(heap) });
-    ::std::mem::drop(Box::from_raw(heap));
+    {
+        let __p = heap;
+        if !__p.is_null() {
+            ::std::mem::drop(Box::from_raw(__p))
+        }
+    };
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

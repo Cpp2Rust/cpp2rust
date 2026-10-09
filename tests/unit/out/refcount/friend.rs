@@ -84,7 +84,7 @@ fn main_0() -> i32 {
         })
     );
     assert!((({ scaled_2(c.as_pointer(), 2,) }) == 8));
-    assert!((({ scaled_3(c.as_pointer(), 1.5E+0,) }) == 6.0E+0));
+    assert!((({ scaled_3(c.as_pointer(), 1.5_f64,) }) == 6_f64));
     let wi: Value<W_int_> = Rc::new(RefCell::new(W_int_ { x: 5 }));
     let wl: Value<W_long_> = Rc::new(RefCell::new(W_long_ { x: 6_i64 }));
     assert!((({ get_4(wi.as_pointer(),) }) == 5));

@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(ByteRepr, DeepClone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, DeepClone)]
 #[byte_size(8)]
 pub struct anon_0 {
     #[offset(0)]
@@ -14,11 +14,11 @@ pub struct anon_0 {
     __bytes: Value<Box<[u8]>>,
 }
 impl anon_0 {
-    pub fn bytes(&self) -> Ptr<u8> {
-        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
+    pub fn bytes(this: Ptr<Self>) -> Ptr<u8> {
+        this.reinterpret_cast()
     }
-    pub fn aligner(&self) -> Ptr<AnyPtr> {
-        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
+    pub fn aligner(this: Ptr<Self>) -> Ptr<AnyPtr> {
+        this.reinterpret_cast()
     }
 }
 impl Default for anon_0 {
@@ -43,12 +43,20 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let mut n: node = <node>::default();
-    n.next = Ptr::<node>::null();
-    elem!((n.x.bytes().reinterpret_cast::<u8>() as Ptr::<u8>), 0).write(171_u8);
+    let n: Value<node> = <Value<node>>::default();
+    (*n.borrow_mut()).next = Ptr::<node>::null();
+    elem!(
+        (anon_0::bytes(field_ptr!(n.as_pointer(), x)).reinterpret_cast::<u8>() as Ptr::<u8>),
+        0
+    )
+    .write(171_u8);
     assert!(
-        (((((elem!((n.x.bytes().reinterpret_cast::<u8>() as Ptr::<u8>), 0).read()) as i32) == 171)
-            as i32)
+        (((((elem!(
+            (anon_0::bytes(field_ptr!(n.as_pointer(), x)).reinterpret_cast::<u8>() as Ptr::<u8>),
+            0
+        )
+        .read()) as i32)
+            == 171) as i32)
             != 0)
     );
     return 0;

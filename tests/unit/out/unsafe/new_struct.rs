@@ -28,7 +28,12 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut p: *mut Pair = (Box::leak(Box::new(Pair { x: 1, y: 2 })) as *mut Pair);
     let mut out: i32 = (((*p).x) + ((*p).y));
-    ::std::mem::drop(Box::from_raw(p));
+    {
+        let __p = p;
+        if !__p.is_null() {
+            ::std::mem::drop(Box::from_raw(__p))
+        }
+    };
     assert!(((out) == (3)));
     let mut t: Triple = Triple {
         a: 1,
@@ -46,7 +51,12 @@ unsafe fn main_0() -> i32 {
     assert!((((*q).a) == (2)));
     assert!((((*q).b) == (3)));
     assert!((((*q).p.x) == (0)) && (((*q).p.y) == (0)));
-    ::std::mem::drop(Box::from_raw(q));
+    {
+        let __p = q;
+        if !__p.is_null() {
+            ::std::mem::drop(Box::from_raw(__p))
+        }
+    };
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

@@ -14,10 +14,16 @@ impl TestAllocator_int_ {
         return Box::leak((0..n).map(|_| 0_i32).collect::<Box<[i32]>>()).as_mut_ptr();
     }
     pub unsafe fn deallocate(&mut self, mut p: *mut i32, mut _a1: usize) {
-        ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
-            p,
-            libcc2rs::malloc_usable_size(p as *mut ::libc::c_void) / ::std::mem::size_of::<i32>(),
-        )));
+        {
+            let __p = p;
+            if !__p.is_null() {
+                ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
+                    __p,
+                    libcc2rs::malloc_usable_size(__p as *mut ::libc::c_void)
+                        / ::std::mem::size_of::<i32>(),
+                )))
+            }
+        };
     }
 }
 #[repr(C)]
@@ -28,10 +34,16 @@ impl TestAllocator_double_ {
         return Box::leak((0..n).map(|_| 0_f64).collect::<Box<[f64]>>()).as_mut_ptr();
     }
     pub unsafe fn deallocate(&mut self, mut p: *mut f64, mut _a1: usize) {
-        ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
-            p,
-            libcc2rs::malloc_usable_size(p as *mut ::libc::c_void) / ::std::mem::size_of::<f64>(),
-        )));
+        {
+            let __p = p;
+            if !__p.is_null() {
+                ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
+                    __p,
+                    libcc2rs::malloc_usable_size(__p as *mut ::libc::c_void)
+                        / ::std::mem::size_of::<f64>(),
+                )))
+            }
+        };
     }
 }
 pub unsafe fn copy_0(mut copy_vector: Vec<i32>) {}
@@ -45,7 +57,11 @@ pub unsafe fn fn_1(v: *mut Vec<i32>, mut v3: Vec<i32>) {
     v2.push(3);
     x = (&mut (*v))[(2_usize)];
     v2[(0_usize)] = 1;
-    (if true { &mut v3 } else { &mut (*v) })[(0_usize)] = 7;
+    (&mut (*if true {
+        (&mut v3 as *mut Vec<i32>)
+    } else {
+        (v)
+    }))[(0_usize)] = 7;
     (&mut (*v4))[(1_usize)] = 13;
     assert!(((x) == (6)));
     assert!(((*((*v).first_mut().unwrap())) == (4)));
@@ -112,20 +128,20 @@ unsafe fn main_0() -> i32 {
         assert!(((v3[(i as usize)]) == (1)));
         i.prefix_inc();
     }
-    let mut v6: Vec<f64> = vec![2.0E+0; s2 as usize];
+    let mut v6: Vec<f64> = vec![2_f64; s2 as usize];
     assert!(((v6.len()) == (s2)));
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < (s2)) {
-        assert!(((v6[(i as usize)]) == (2.0E+0)));
+        assert!(((v6[(i as usize)]) == (2_f64)));
         i.prefix_inc();
     }
     let mut p1: *const f64 = (v6.as_mut_ptr()).cast_const();
-    assert!(((*p1) == (2.0E+0)));
+    assert!(((*p1) == (2_f64)));
     let mut p2: *mut i32 = v3.as_mut_ptr();
     assert!(((*p2) == (1)));
     assert!(((v3[(0_usize)]) == (1)));
     assert!(((v3[(1_usize)]) == (1)));
-    (*p2) = (9.9E+1 as i32);
+    (*p2) = (99_f64 as i32);
     assert!(((*p2) == (99)));
     assert!(((v3[(0_usize)]) == (99)));
     assert!(((v3[(1_usize)]) == (1)));
@@ -161,24 +177,24 @@ unsafe fn main_0() -> i32 {
     assert!(((v3.len()) == (100_usize)));
     assert!(((*((v2).last_mut().unwrap())) == (3)));
     assert!(((*((v3).last_mut().unwrap())) == (1)));
-    assert!(((*((v6).last_mut().unwrap())) == (2.0E+0)));
+    assert!(((*((v6).last_mut().unwrap())) == (2_f64)));
     let ref0: *mut f64 = ((v6).last_mut().unwrap());
-    (*ref0) = 5.0E+0;
-    assert!(((*((v6).last_mut().unwrap())) == (5.0E+0)));
+    (*ref0) = 5_f64;
+    assert!(((*((v6).last_mut().unwrap())) == (5_f64)));
     let mut x0: f64 = (*((v6).last_mut().unwrap()));
-    assert!(((x0) == (5.0E+0)));
-    x0 = 6.0E+0;
-    assert!(((*((v6).last_mut().unwrap())) == (5.0E+0)));
+    assert!(((x0) == (5_f64)));
+    x0 = 6_f64;
+    assert!(((*((v6).last_mut().unwrap())) == (5_f64)));
     let mut idx: i32 = 0;
-    assert!(((*(&mut (v6)[(idx as usize) as usize] as *mut f64)) == (2.0E+0)));
-    assert!(((*(&mut (v6)[(s2).wrapping_sub(1_usize) as usize] as *mut f64)) == (5.0E+0)));
+    assert!(((*(&mut (v6)[(idx as usize) as usize] as *mut f64)) == (2_f64)));
+    assert!(((*(&mut (v6)[(s2).wrapping_sub(1_usize) as usize] as *mut f64)) == (5_f64)));
     let ref1: *mut f64 = (&mut (v6)[(s2).wrapping_sub(1_usize) as usize] as *mut f64);
-    (*ref1) += 1.5E+0;
-    assert!(((*(&mut (v6)[(s2).wrapping_sub(1_usize) as usize] as *mut f64)) == (6.5E+0)));
+    (*ref1) += 1.5_f64;
+    assert!(((*(&mut (v6)[(s2).wrapping_sub(1_usize) as usize] as *mut f64)) == (6.5_f64)));
     let mut x1: f64 = (*(&mut (v6)[(s2).wrapping_sub(1_usize) as usize] as *mut f64));
-    assert!(((x1) == (6.5E+0)));
-    x1 -= 1.5E+0;
-    assert!(((*(&mut (v6)[(s2).wrapping_sub(1_usize) as usize] as *mut f64)) == (6.5E+0)));
+    assert!(((x1) == (6.5_f64)));
+    x1 -= 1.5_f64;
+    assert!(((*(&mut (v6)[(s2).wrapping_sub(1_usize) as usize] as *mut f64)) == (6.5_f64)));
     let mut v7: Vec<i32> = Vec::new();
     let mut v8: Vec<i32> = Vec::new();
     v7.push(4);

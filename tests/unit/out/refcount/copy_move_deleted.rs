@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, ByteRepr, Default)]
+#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, Default)]
 #[byte_size(4)]
 pub struct NoCopy {
     #[offset(0)]
@@ -24,7 +24,7 @@ impl NoCopy {
         __this
     }
 }
-#[derive(Record, ByteRepr)]
+#[derive(Record, ByteRepr, FnPtrArg, MoveCtor)]
 #[byte_size(4)]
 pub struct PrivateCopy {
     #[offset(0)]
@@ -47,7 +47,7 @@ impl Default for PrivateCopy {
         { PrivateCopy::new() }
     }
 }
-#[derive(Record, ByteRepr)]
+#[derive(Record, ByteRepr, FnPtrArg)]
 #[byte_size(4)]
 pub struct Immovable {
     #[offset(0)]
@@ -63,7 +63,7 @@ impl Default for Immovable {
         { Immovable::new() }
     }
 }
-#[derive(Record, ByteRepr, Default)]
+#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, Default)]
 #[byte_size(8)]
 pub struct Container {
     #[offset(0)]
