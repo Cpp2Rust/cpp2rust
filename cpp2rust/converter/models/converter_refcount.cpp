@@ -291,7 +291,7 @@ bool ConverterRefCount::VisitReferenceType(clang::ReferenceType *type) {
     PushConversionKind push(*this, ConversionKind::Unboxed);
     return Convert(ctx_.getPointerType(pointee_type));
   }
-  if (pointee_type->isArrayType()) {
+  if (pointee_type->isArrayType() && !IsVaListType(pointee_type)) {
     // A reference to an array decays straight to a pointer to its first
     // element, the same way a by-value array parameter would, instead of
     // going through a pointer to the whole boxed array.
@@ -335,10 +335,11 @@ bool ConverterRefCount::VisitPointerType(clang::PointerType *type) {
   }
 
   auto pointee_type = type->getPointeeType();
-  PushConversionKind push1(*this, ConversionKind::Ptr,
-                           !pointee_type->isArrayType());
+  bool pointee_is_array =
+      pointee_type->isArrayType() && !IsVaListType(pointee_type);
+  PushConversionKind push1(*this, ConversionKind::Ptr, !pointee_is_array);
   PushConversionKind push2(*this, ConversionKind::FullRefCount,
-                           pointee_type->isArrayType());
+                           pointee_is_array);
   if (pointee_type->isRecordType() &&
       abstract_structs_.contains(GetID(pointee_type->getAsRecordDecl()))) {
     StrCat("PtrDyn<dyn");
@@ -2462,13 +2463,18 @@ bool ConverterRefCount::VisitVAArgExpr(clang::VAArgExpr *expr) {
   if (auto *cast = clang::dyn_cast<clang::ImplicitCastExpr>(va_list_expr)) {
     va_list_expr = cast->getSubExpr();
   }
-  StrCat(ConvertLValue(va_list_expr));
-  StrCat(".arg::<");
+  auto str = ConvertLValue(va_list_expr);
+  std::string arg_type;
   {
     PushConversionKind push(*this, ConversionKind::Unboxed);
-    StrCat(ToString(expr->getType()));
+    arg_type = ToString(expr->getType());
   }
-  StrCat(">()");
+  if (!pending_deref_.empty()) {
+    StrCat(pending_deref_.take(), ".with_mut(|__v| __v.arg::<", arg_type,
+           ">())");
+  } else {
+    StrCat(str, ".arg::<", arg_type, ">()");
+  }
   SetFreshType(expr->getType());
   return false;
 }

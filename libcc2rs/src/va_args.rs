@@ -52,15 +52,20 @@ impl<T: crate::reinterpret::ByteRepr + 'static> From<crate::rc::Ptr<T>> for VaAr
     }
 }
 
-#[derive(Clone, Copy, Default)]
-pub struct VaList<'a> {
-    args: &'a [VaArg],
+#[derive(Clone, Default)]
+pub struct VaList {
+    args: Rc<[VaArg]>,
     pos: usize,
 }
 
-impl<'a> VaList<'a> {
-    pub fn new(args: &'a [VaArg]) -> Self {
-        VaList { args, pos: 0 }
+impl crate::reinterpret::ByteRepr for VaList {}
+
+impl VaList {
+    pub fn new(args: &[VaArg]) -> Self {
+        VaList {
+            args: Rc::from(args),
+            pos: 0,
+        }
     }
 
     pub fn arg<T: VaArgGet>(&mut self) -> T {
