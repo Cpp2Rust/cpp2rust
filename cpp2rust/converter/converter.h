@@ -150,6 +150,8 @@ public:
 
   virtual std::string DestroyMembers(const clang::CXXRecordDecl *decl);
 
+  bool NeedsScopedDestructor(const clang::VarDecl *decl) const;
+
   virtual void EmitScopedDestructor(const clang::VarDecl *decl);
 
   void EmitDeallocation(clang::CXXDeleteExpr *expr,

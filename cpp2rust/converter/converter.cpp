@@ -480,7 +480,7 @@ bool Converter::NeedsMut(const clang::VarDecl *decl, clang::QualType type,
   auto *method_or_null =
       curr_function_ ? clang::dyn_cast<clang::CXXMethodDecl>(curr_function_)
                      : nullptr;
-  return ((hoisted_decls_.contains(decl) ||
+  return ((hoisted_decls_.contains(decl) || NeedsScopedDestructor(decl) ||
            (!type.isConstQualified() && !type->isReferenceType())) &&
           ((method_or_null == nullptr) || !method_or_null->isVirtual()) &&
           !IsGlobalVar(decl) && name != "_");
@@ -627,8 +627,21 @@ bool Converter::VisitVarDecl(clang::VarDecl *decl) {
   return false;
 }
 
-void Converter::EmitScopedDestructor(const clang::VarDecl *decl) {
+bool Converter::NeedsScopedDestructor(const clang::VarDecl *decl) const {
   if (in_function_formals_ || !decl->isLocalVarDecl() || IsGlobalVar(decl)) {
+    return false;
+  }
+  auto type = decl->getType();
+  if (auto lambda = AsLambdaClass(type);
+      lambda && LambdaNeedsDestruction(lambda)) {
+    return true;
+  }
+  return !type->isReferenceType() && !type->isArrayType() &&
+         TypeNeedsDestruction(type);
+}
+
+void Converter::EmitScopedDestructor(const clang::VarDecl *decl) {
+  if (!NeedsScopedDestructor(decl)) {
     return;
   }
   auto type = decl->getType();
@@ -638,10 +651,6 @@ void Converter::EmitScopedDestructor(const clang::VarDecl *decl) {
            std::format("let _dtor_{0} = ScopedDestructorUnsafe::new(&raw mut "
                        "{0}, |__f| __f.destroy())",
                        GetNamedDeclAsString(decl)));
-    return;
-  }
-  if (type->isReferenceType() || type->isArrayType() ||
-      !TypeNeedsDestruction(type)) {
     return;
   }
   auto name = GetNamedDeclAsString(decl);
