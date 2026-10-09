@@ -33,5 +33,10 @@ int main(void) {
   assert(*pf == 1.0f);
   assert(buf[3] == 0x3F);
 
+  union basic braced{5};
+  assert(braced.i == 5);
+  union basic copied = {7};
+  assert(copied.i == 7);
+
   return 0;
 }

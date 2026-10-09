@@ -1905,6 +1905,21 @@ bool ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
       return false;
     }
 
+    if (record->isUnion()) {
+      auto *field = expr->getInitializedFieldInUnion();
+      assert(field && expr->getNumInits() == 1);
+      PushConversionKind push(*this, ConversionKind::Unboxed);
+      auto name = GetUnsafeTypeAsString(qual_type);
+      StrCat(std::format("{{ let __u: Value<{}> = Rc::new(RefCell::new({}));",
+                         name, GetDefaultAsString(qual_type)));
+      StrCat(std::format("{}::{}(__u.as_pointer()).write(", name,
+                         GetNamedDeclAsString(field)));
+      ConvertVarInit(field->getType(), expr->getInit(0));
+      StrCat("); Rc::try_unwrap(__u).ok().unwrap().into_inner() }");
+      computed_expr_type_ = ComputedExprType::FreshValue;
+      return false;
+    }
+
     StrCat(GetUnsafeTypeAsString(qual_type));
     {
       PushBrace brace(*this);

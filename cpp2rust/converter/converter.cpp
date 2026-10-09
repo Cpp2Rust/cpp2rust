@@ -3567,6 +3567,14 @@ bool Converter::VisitInitListExpr(clang::InitListExpr *expr) {
 
     StrCat(GetUnsafeTypeAsString(qual_type));
     PushBrace brace(*this);
+    if (record->isUnion()) {
+      auto *field = expr->getInitializedFieldInUnion();
+      assert(field && expr->getNumInits() == 1);
+      StrCat(GetNamedDeclAsString(field), token::kColon);
+      ConvertFieldInit(field, expr->getInit(0));
+      SetFreshType(qual_type);
+      return false;
+    }
     int i = 0;
     for (const auto *field : record->fields()) {
       StrCat(GetNamedDeclAsString(field), token::kColon);
