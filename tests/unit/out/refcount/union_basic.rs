@@ -71,6 +71,18 @@ fn main_0() -> i32 {
     assert!(((basic::i(ru.clone()).read()) == 1065353216));
     assert!(((pf.read()) == 1_f32));
     assert!((((*buf.borrow())[(3) as usize] as i32) == 63));
+    let braced: Value<basic> = Rc::new(RefCell::new({
+        let __u: Value<basic> = Rc::new(RefCell::new(<basic>::default()));
+        basic::i(__u.as_pointer()).write(5);
+        Rc::try_unwrap(__u).ok().unwrap().into_inner()
+    }));
+    assert!(((basic::i(braced.as_pointer()).read()) == 5));
+    let copied: Value<basic> = Rc::new(RefCell::new({
+        let __u: Value<basic> = Rc::new(RefCell::new(<basic>::default()));
+        basic::i(__u.as_pointer()).write(7);
+        Rc::try_unwrap(__u).ok().unwrap().into_inner()
+    }));
+    assert!(((basic::i(copied.as_pointer()).read()) == 7));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

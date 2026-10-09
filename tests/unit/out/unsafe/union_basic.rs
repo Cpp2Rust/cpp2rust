@@ -58,6 +58,10 @@ unsafe fn main_0() -> i32 {
     assert!((((*ru).i) == (1065353216)));
     assert!(((*pf) == (1_f32)));
     assert!(((buf[(3) as usize] as i32) == (63)));
+    let mut braced: basic = basic { i: 5 };
+    assert!(((braced.i) == (5)));
+    let mut copied: basic = basic { i: 7 };
+    assert!(((copied.i) == (7)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}
