@@ -2131,6 +2131,8 @@ clang::Expr *NormalizeToBool(clang::Expr *expr, clang::ASTContext &ctx) {
   clang::CastKind cast_kind;
   if (expr->getType()->isPointerType()) {
     cast_kind = clang::CK_PointerToBoolean;
+  } else if (expr->getType()->isFloatingType()) {
+    cast_kind = clang::CK_FloatingToBoolean;
   } else /* expr->getType()->isIntegerType() */ {
     cast_kind = clang::CK_IntegralToBoolean;
   }
