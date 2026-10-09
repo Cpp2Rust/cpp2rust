@@ -3159,6 +3159,7 @@ bool Converter::VisitStmtExpr(clang::StmtExpr *expr) {
       Convert(s);
     }
   }
+  SetFreshType(expr->getType());
   return false;
 }
 

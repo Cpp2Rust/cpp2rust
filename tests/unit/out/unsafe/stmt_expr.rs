@@ -43,6 +43,15 @@ unsafe fn main_0() -> i32 {
             inner
         }) == (100))
     );
+    {
+        counter.postfix_inc()
+    };
+    {
+        if ((counter) != (2)) {
+            counter = 2;
+        }
+    };
+    assert!(((counter) == (2)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}
