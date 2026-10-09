@@ -27,6 +27,17 @@ impl Default for empty {
         unsafe { std::mem::zeroed() }
     }
 }
+#[repr(C)]
+#[derive(Copy, Clone, FnPtrArg, VaArg)]
+pub union underscores {
+    pub __: i32,
+    pub ___: f64,
+}
+impl Default for underscores {
+    fn default() -> Self {
+        unsafe { std::mem::zeroed() }
+    }
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -58,6 +69,14 @@ unsafe fn main_0() -> i32 {
     assert!((((*ru).i) == (1065353216)));
     assert!(((*pf) == (1_f32)));
     assert!(((buf[(3) as usize] as i32) == (63)));
+    let mut us: underscores = <underscores>::default();
+    us.__ = 5;
+    assert!(((us.__) == (5)));
+    us.___ = 2.5_f64;
+    assert!(((us.___) == (2.5_f64)));
+    let mut __: i32 = 1;
+    let mut ___: i32 = 2;
+    assert!((((__) + (___)) == (3)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}
