@@ -4030,6 +4030,7 @@ void Converter::ConvertLambdaClosure(const clang::CXXRecordDecl *decl,
   }
   EmitFunctionPreamble(call_operator);
   PushCurrFunction push_fn(*this, call_operator);
+  PushConstInitializer function_body(*this, false);
   ConvertFunctionBody(curr_function_);
 }
 
