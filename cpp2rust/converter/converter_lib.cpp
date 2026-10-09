@@ -1335,7 +1335,7 @@ bool HasStaticLocal(const clang::Stmt *stmt) {
 
 bool IsUserOperatorCall(const clang::CXXOperatorCallExpr *expr) {
   const auto *callee = expr->getDirectCallee();
-  if (!callee) {
+  if (!callee || AsLambdaOperatorCall(callee)) {
     return false;
   }
   if (callee->isDefaulted() && IsComparisonOperator(callee)) {
