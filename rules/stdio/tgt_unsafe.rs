@@ -116,3 +116,11 @@ unsafe fn f26() -> i32 {
 unsafe fn f27() -> i32 {
     ::libc::SEEK_END
 }
+
+unsafe extern "C" {
+    fn f28(a0: *mut ::libc::FILE, a1: *const libc::c_char, ...) -> i32;
+}
+
+unsafe extern "C" {
+    fn f29(a0: *const libc::c_char, ...) -> i32;
+}

@@ -2311,8 +2311,13 @@ std::optional<Converter::TempMaterializationCtx>
 Converter::ConvertCallExpr(clang::CallExpr *expr) {
   auto *callee = expr->getCallee();
 
-  if (auto fn = Printer::ToString(ctx_, callee);
-      fn.starts_with("int printf") || fn.starts_with("int fprintf")) {
+  auto fn = Printer::ToString(ctx_, callee);
+  bool is_printf = fn.starts_with("int printf");
+  bool is_fprintf = fn.starts_with("int fprintf");
+  unsigned format_arg = is_fprintf ? 1 : 0;
+  if ((is_printf || is_fprintf) &&
+      clang::isa<clang::StringLiteral>(
+          expr->getArg(format_arg)->IgnoreImplicit())) {
     ConvertPrintf(expr);
   } else if (IsTransparentStdCall(expr)) {
     Convert(expr->getArg(0));

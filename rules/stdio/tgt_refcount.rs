@@ -189,3 +189,13 @@ fn f23(a0: Ptr<CFile>) -> i32 {
 fn f24(a0: Ptr<CFile>, a1: Ptr<i8>, a2: i32, a3: usize) -> i32 {
     0
 }
+
+fn f28(a0: Ptr<CFile>, a1: Ptr<i8>, va: &[VaArg]) -> i32 {
+    let __s = libcc2rs::format_c(&a1.to_rust_string(), va);
+    a0.with_mut(|__f| __f.write(__s.as_bytes())) as i32
+}
+
+fn f29(a0: Ptr<i8>, va: &[VaArg]) -> i32 {
+    let __s = libcc2rs::format_c(&a0.to_rust_string(), va);
+    libcc2rs::c_stdout().with_mut(|__f| __f.write(__s.as_bytes())) as i32
+}
