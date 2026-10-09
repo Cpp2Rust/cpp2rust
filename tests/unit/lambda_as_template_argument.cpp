@@ -1,3 +1,4 @@
+// ADDITIONAL_COMPILE_FLAGS: -std=c++23
 #include <assert.h>
 
 template <typename F> int apply_int(F fn, int x) { return fn(x); }

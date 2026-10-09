@@ -12,23 +12,23 @@ pub fn apply_int_0(fn_: FnPtr<fn(i32) -> i32>, mut x: i32) -> i32 {
 }
 pub fn apply_int_1(fn_: FnPtr<Generic>, mut x: i32) -> i32 {
     let fn_: Value<FnPtr<Generic>> = Rc::new(RefCell::new(fn_));
-    return ({ (*fn_.borrow()).spec::<fn(i32) -> i32>().call(x) });
+    return ({ (*fn_.borrow()).spec::<fn(i32) -> i32>(0).call(x) });
 }
 pub fn apply_int_2(fn_: FnPtr<Generic>, mut x: i32) -> i32 {
     let fn_: Value<FnPtr<Generic>> = Rc::new(RefCell::new(fn_));
-    return ({ (*fn_.borrow()).spec::<fn(i32) -> i32>().call(x) });
+    return ({ (*fn_.borrow()).spec::<fn(i32) -> i32>(0).call(x) });
 }
 pub fn apply_int_3(fn_: FnPtr<Generic>, mut x: i32) -> i32 {
     let fn_: Value<FnPtr<Generic>> = Rc::new(RefCell::new(fn_));
-    return ({ (*fn_.borrow()).spec::<fn(i32) -> i32>().call(x) });
+    return ({ (*fn_.borrow()).spec::<fn(i32) -> i32>(0).call(x) });
 }
 pub fn apply_double_4(fn_: FnPtr<Generic>, mut x: f64) -> f64 {
     let fn_: Value<FnPtr<Generic>> = Rc::new(RefCell::new(fn_));
-    return ({ (*fn_.borrow()).spec::<fn(f64) -> f64>().call(x) });
+    return ({ (*fn_.borrow()).spec::<fn(f64) -> f64>(1).call(x) });
 }
 pub fn apply_double_5(fn_: FnPtr<Generic>, mut x: f64) -> f64 {
     let fn_: Value<FnPtr<Generic>> = Rc::new(RefCell::new(fn_));
-    return ({ (*fn_.borrow()).spec::<fn(f64) -> f64>().call(x) });
+    return ({ (*fn_.borrow()).spec::<fn(f64) -> f64>(1).call(x) });
 }
 pub fn apply_twice_6(fn_: FnPtr<fn(i32) -> i32>, mut x: i32) -> i32 {
     let fn_: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(fn_));

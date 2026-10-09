@@ -22,14 +22,14 @@ unsafe fn main_0() -> i32 {
                 * (unsafe {
                     let _self_: FnPtr<Generic> = self_.clone();
                     self_
-                        .spec::<fn(FnPtr<Generic>, i32) -> i32>()
+                        .spec::<fn(FnPtr<Generic>, i32) -> i32>(0)
                         .call(_self_, ((n) - (1)))
                 }));
         },);
     assert!(
         ((unsafe {
             let _self_: FnPtr<Generic> = fact.clone();
-            fact.spec::<fn(FnPtr<Generic>, i32) -> i32>()
+            fact.spec::<fn(FnPtr<Generic>, i32) -> i32>(0)
                 .call(_self_, 5)
         }) == (120))
     );
@@ -48,13 +48,13 @@ unsafe fn main_0() -> i32 {
                 let _self_: *mut FnPtr<Generic> = self_;
                 let _n: i32 = ((n) - (1));
                 (*self_)
-                    .spec::<fn(*mut FnPtr<Generic>, i32) -> i32>()
+                    .spec::<fn(*mut FnPtr<Generic>, i32) -> i32>(0)
                     .call(_self_, _n)
             }) + (unsafe {
                 let _self_: *mut FnPtr<Generic> = self_;
                 let _n: i32 = ((n) - (2));
                 (*self_)
-                    .spec::<fn(*mut FnPtr<Generic>, i32) -> i32>()
+                    .spec::<fn(*mut FnPtr<Generic>, i32) -> i32>(0)
                     .call(_self_, _n)
             }));
         },
@@ -62,7 +62,7 @@ unsafe fn main_0() -> i32 {
     assert!(
         ((unsafe {
             let _self_: *mut FnPtr<Generic> = &mut fib;
-            fib.spec::<fn(*mut FnPtr<Generic>, i32) -> i32>()
+            fib.spec::<fn(*mut FnPtr<Generic>, i32) -> i32>(0)
                 .call(_self_, 6)
         }) == (8))
     );
@@ -82,7 +82,7 @@ unsafe fn main_0() -> i32 {
                 let _self_: *const FnPtr<Generic> = self_;
                 let _n: i32 = ((n) - (1));
                 (*self_)
-                    .spec::<fn(*const FnPtr<Generic>, i32)>()
+                    .spec::<fn(*const FnPtr<Generic>, i32)>(0)
                     .call(_self_, _n)
             });
         },
@@ -90,7 +90,7 @@ unsafe fn main_0() -> i32 {
     (unsafe {
         let _self_: *const FnPtr<Generic> = &count_down;
         count_down
-            .spec::<fn(*const FnPtr<Generic>, i32)>()
+            .spec::<fn(*const FnPtr<Generic>, i32)>(0)
             .call(_self_, 4)
     });
     assert!(((depth) == (4)));

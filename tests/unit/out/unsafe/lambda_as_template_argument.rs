@@ -10,19 +10,19 @@ pub unsafe fn apply_int_0(mut fn_: FnPtr<fn(i32) -> i32>, mut x: i32) -> i32 {
     return (unsafe { fn_.call(x) });
 }
 pub unsafe fn apply_int_1(mut fn_: FnPtr<Generic>, mut x: i32) -> i32 {
-    return (unsafe { fn_.spec::<fn(i32) -> i32>().call(x) });
+    return (unsafe { fn_.spec::<fn(i32) -> i32>(0).call(x) });
 }
 pub unsafe fn apply_int_2(mut fn_: FnPtr<Generic>, mut x: i32) -> i32 {
-    return (unsafe { fn_.spec::<fn(i32) -> i32>().call(x) });
+    return (unsafe { fn_.spec::<fn(i32) -> i32>(0).call(x) });
 }
 pub unsafe fn apply_int_3(mut fn_: FnPtr<Generic>, mut x: i32) -> i32 {
-    return (unsafe { fn_.spec::<fn(i32) -> i32>().call(x) });
+    return (unsafe { fn_.spec::<fn(i32) -> i32>(0).call(x) });
 }
 pub unsafe fn apply_double_4(mut fn_: FnPtr<Generic>, mut x: f64) -> f64 {
-    return (unsafe { fn_.spec::<fn(f64) -> f64>().call(x) });
+    return (unsafe { fn_.spec::<fn(f64) -> f64>(1).call(x) });
 }
 pub unsafe fn apply_double_5(mut fn_: FnPtr<Generic>, mut x: f64) -> f64 {
-    return (unsafe { fn_.spec::<fn(f64) -> f64>().call(x) });
+    return (unsafe { fn_.spec::<fn(f64) -> f64>(1).call(x) });
 }
 pub unsafe fn apply_twice_6(mut fn_: FnPtr<fn(i32) -> i32>, mut x: i32) -> i32 {
     return (unsafe {
