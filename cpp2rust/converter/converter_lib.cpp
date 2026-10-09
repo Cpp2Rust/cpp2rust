@@ -1658,6 +1658,48 @@ GetAllVars(const clang::Stmt *stmt) {
   return vars;
 }
 
+bool ReferencesVar(const clang::Stmt *stmt, const clang::VarDecl *var) {
+  if (!stmt) {
+    return false;
+  }
+  if (auto *decl_ref = clang::dyn_cast<clang::DeclRefExpr>(stmt)) {
+    return decl_ref->getDecl() == var;
+  }
+  if (clang::isa<clang::UnaryExprOrTypeTraitExpr>(stmt)) {
+    return false;
+  }
+  return std::ranges::any_of(stmt->children(), [var](const clang::Stmt *child) {
+    return ReferencesVar(child, var);
+  });
+}
+
+bool DefaultInitHasSideEffects(const clang::ASTContext &ctx,
+                               clang::QualType type) {
+  auto *record = ctx.getBaseElementType(type)->getAsCXXRecordDecl();
+  if (!record || record->hasTrivialDefaultConstructor()) {
+    return false;
+  }
+  if (!record->hasDefaultConstructor() ||
+      record->hasUserProvidedDefaultConstructor()) {
+    return true;
+  }
+  for (const auto &base : record->bases()) {
+    if (DefaultInitHasSideEffects(ctx, base.getType())) {
+      return true;
+    }
+  }
+  for (auto *field : record->fields()) {
+    if (auto *init = field->getInClassInitializer()) {
+      if (init->HasSideEffects(ctx)) {
+        return true;
+      }
+    } else if (DefaultInitHasSideEffects(ctx, field->getType())) {
+      return true;
+    }
+  }
+  return false;
+}
+
 bool ReadsMemory(const clang::Stmt *stmt) {
   if (auto *cast = clang::dyn_cast<clang::ImplicitCastExpr>(stmt);
       cast && cast->getCastKind() == clang::CK_LValueToRValue) {
