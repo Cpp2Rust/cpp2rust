@@ -221,6 +221,8 @@ void ForEachLambdaCallOperator(
 clang::CXXMethodDecl *
 AsLambdaCallOperator(const clang::CXXConversionDecl *conversion);
 
+unsigned GetLambdaSpecializationIndex(const clang::FunctionDecl *call_operator);
+
 const clang::LambdaCapture *AsLambdaCapture(const clang::FieldDecl *field);
 
 bool IsLambdaCopyOrMoveConstructor(const clang::CXXConstructorDecl *ctor);

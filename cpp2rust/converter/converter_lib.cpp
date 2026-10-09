@@ -1210,6 +1210,22 @@ AsLambdaCallOperator(const clang::CXXConversionDecl *conversion) {
   return found;
 }
 
+unsigned
+GetLambdaSpecializationIndex(const clang::FunctionDecl *call_operator) {
+  std::optional<unsigned> index;
+  unsigned i = 0;
+  ForEachLambdaCallOperator(
+      clang::cast<clang::CXXMethodDecl>(call_operator)->getParent(),
+      [&](const clang::CXXMethodDecl *op) {
+        if (op->getCanonicalDecl() == call_operator->getCanonicalDecl()) {
+          index = i;
+        }
+        ++i;
+      });
+  assert(index);
+  return *index;
+}
+
 const clang::LambdaCapture *AsLambdaCapture(const clang::FieldDecl *field) {
   auto decl = clang::dyn_cast<clang::CXXRecordDecl>(field->getParent());
   if (!decl || !decl->isLambda()) {

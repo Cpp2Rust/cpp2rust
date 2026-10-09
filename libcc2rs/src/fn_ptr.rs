@@ -458,14 +458,10 @@ impl FnPtr<Generic> {
         }
     }
 
-    pub fn spec<U: FnSig>(&self) -> FnPtr<U> {
+    pub fn spec<U: FnSig>(&self, index: usize) -> FnPtr<U> {
         assert!(!self.is_null(), "ub: null fn pointer call");
-        self.original
-            .as_ref()
-            .unwrap()
-            .specializations()
-            .iter()
-            .find_map(|spec| spec.downcast_ref::<FnPtr<U>>())
+        self.original.as_ref().unwrap().specializations()[index]
+            .downcast_ref::<FnPtr<U>>()
             .expect("ub: calling through incompatible fn pointer type")
             .clone()
     }

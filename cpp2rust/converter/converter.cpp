@@ -1978,7 +1978,8 @@ void Converter::ConvertLambdaCall(clang::CallExpr *expr,
   if (lambda->isGenericLambda()) {
     auto call_operator = expr->getDirectCallee();
     auto proto = call_operator->getType()->castAs<clang::FunctionProtoType>();
-    StrCat(std::format(".spec::<{}>()", ConvertFunctionPointerType(proto)));
+    StrCat(std::format(".spec::<{}>({})", ConvertFunctionPointerType(proto),
+                       GetLambdaSpecializationIndex(call_operator)));
   }
   StrCat(".call");
 }
@@ -3963,13 +3964,7 @@ bool Converter::VisitLambdaExpr(clang::LambdaExpr *expr) {
     }
   }
   StrCat(token::kComma);
-  std::unordered_set<std::string> signatures;
   ForEachLambdaCallOperator(decl, [&](clang::CXXMethodDecl *call_operator) {
-    auto proto = call_operator->getType()->castAs<clang::FunctionProtoType>();
-    if (!signatures.insert(ConvertFunctionPointerType(proto)).second) {
-      llvm::report_fatal_error("generic lambda with two specializations of "
-                               "the same signature is not supported");
-    }
     ConvertLambdaClosure(decl, call_operator);
     StrCat(token::kComma);
   });

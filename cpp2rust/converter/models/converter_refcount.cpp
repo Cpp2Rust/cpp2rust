@@ -1579,10 +1579,10 @@ void ConverterRefCount::ConvertLambdaToFunctionPointer(
   StrCat(ConvertFreshRValue(lambda));
   auto decl = AsLambdaClass(lambda->getType());
   if (decl->isGenericLambda()) {
-    auto proto = conversion->getConversionType()
-                     ->getPointeeType()
-                     ->castAs<clang::FunctionProtoType>();
-    StrCat(std::format(".spec::<{}>()", ConvertFunctionPointerType(proto)));
+    auto call_operator = AsLambdaCallOperator(conversion);
+    auto proto = call_operator->getType()->castAs<clang::FunctionProtoType>();
+    StrCat(std::format(".spec::<{}>({})", ConvertFunctionPointerType(proto),
+                       GetLambdaSpecializationIndex(call_operator)));
   }
 }
 
