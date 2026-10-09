@@ -21,7 +21,7 @@ pub(crate) trait FnSig: Copy + 'static {
 
 macro_rules! impl_fn_sig {
     () => {
-        impl_fn_sig!(@gen A B C D E F G H I J K L M N O P);
+        impl_fn_sig!(@gen A B C D E F G H I J K L M N O P Q S T U V W X Y);
     };
     (@gen $($a:ident)*) => {
         impl<R: FnPtrArg $(, $a: FnPtrArg)*> FnSig for fn($($a,)*) -> R {
@@ -252,7 +252,7 @@ impl<T: FnSig> FnPtr<T> {
 // invokes, e.g. `fn_ptr.call(a0, a1)`.
 macro_rules! impl_fn_ptr_call {
     () => {
-        impl_fn_ptr_call!(@gen A B C D E F G H I J K L M N O P);
+        impl_fn_ptr_call!(@gen A B C D E F G H I J K L M N O P Q S T U V W X Y);
     };
     (@gen $($a:ident)*) => {
         impl<R: FnPtrArg $(, $a: FnPtrArg)*> FnPtr<fn($($a,)*) -> R> {
