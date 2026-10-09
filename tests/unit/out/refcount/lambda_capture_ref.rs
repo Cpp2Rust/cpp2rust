@@ -24,7 +24,7 @@ fn main_0() -> i32 {
         {
             let base: Ptr<i32> = base.as_pointer();
         },
-        |x: i32| -> i32 {
+        |mut x: i32| -> i32 {
             return (x + (base.read()));
         }
     )));
@@ -60,7 +60,7 @@ fn main_0() -> i32 {
         {
             let arr: Ptr<u16> = arr.as_pointer();
         },
-        |i: usize, j: usize| {
+        |mut i: usize, mut j: usize| {
             let mut t: u16 = (elem!((arr), j).read());
             elem!((arr), j).write({ (elem!((arr), i).read()) });
             elem!((arr), i).write(t);
@@ -74,7 +74,7 @@ fn main_0() -> i32 {
         {
             let t: Ptr<i32> = total.as_pointer();
         },
-        |x: i32| {
+        |mut x: i32| {
             {
                 let __rhs = { x };
                 t.with_mut(|__v| *__v = *__v + __rhs)
@@ -88,7 +88,7 @@ fn main_0() -> i32 {
         {
             let y: Ptr<i32> = field_ptr!(s.as_pointer(), y);
         },
-        |v: i32| {
+        |mut v: i32| {
             y.write({ v });
         }
     )));

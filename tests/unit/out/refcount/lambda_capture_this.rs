@@ -49,7 +49,7 @@ impl SImpl for Ptr<S> {
             {
                 let this_: Value<Ptr<S>> = Rc::new(RefCell::new((*self).clone()));
             },
-            |k: i32| {
+            |mut k: i32| {
                 {
                     let __rhs = k;
                     field!((*this_.borrow()).clone(), n).with_mut(|__v| *__v = *__v + __rhs)
@@ -64,7 +64,7 @@ impl SImpl for Ptr<S> {
             {
                 let this_: Value<Ptr<S>> = Rc::new(RefCell::new((*self).clone()));
             },
-            |k: i32| {
+            |mut k: i32| {
                 ({ SImpl::add(&(*this_.borrow()).clone(), k) });
             }
         )));

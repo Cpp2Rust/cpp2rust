@@ -94,10 +94,10 @@ fn main_0() -> i32 {
     let cast_to: Value<FnPtr<Generic>> = Rc::new(RefCell::new(lambda!(
         Generic,
         {},
-        |x: i32| -> i32 {
+        |mut x: i32| -> i32 {
             return ((x as i32) / 2);
         },
-        |x: i32| -> f64 {
+        |mut x: i32| -> f64 {
             return ((x as f64) / 2_f64);
         }
     )));
