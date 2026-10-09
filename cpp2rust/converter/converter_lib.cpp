@@ -1005,6 +1005,22 @@ std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
       name += '_';
       name += std::to_string(pdecl->getFunctionScopeIndex());
     }
+  } else if (auto *var = llvm::dyn_cast<clang::VarDecl>(decl);
+             var && var->isInitCapture()) {
+    auto lambda =
+        llvm::cast<clang::CXXMethodDecl>(var->getDeclContext())->getParent();
+    if (llvm::count_if(lambda->captures(), [&](const clang::LambdaCapture &c) {
+          return c.capturesVariable() &&
+                 c.getCapturedVar()->getName() == var->getName();
+        }) > 1) {
+      auto captures = lambda->captures();
+      auto it = llvm::find_if(captures, [&](const clang::LambdaCapture &c) {
+        return c.capturesVariable() && c.getCapturedVar() == var;
+      });
+      assert(it != captures.end());
+      name += '_';
+      name += std::to_string(it - captures.begin());
+    }
   }
 
   return name;
