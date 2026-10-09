@@ -1137,6 +1137,14 @@ void ConverterRefCount::ConvertDeclRefValue(clang::Expr *expr,
 
 static std::vector<const char *> printf2fmt(std::string &format) {
   std::vector<const char *> types;
+  std::string escaped;
+  for (char c : format) {
+    escaped += c;
+    if (c == '{' || c == '}') {
+      escaped += c;
+    }
+  }
+  format = std::move(escaped);
   size_t pos = 0;
   while ((pos = format.find('%', pos)) != std::string::npos) {
     if (pos + 1 >= format.size())
@@ -1181,6 +1189,7 @@ static std::vector<const char *> printf2fmt(std::string &format) {
         continue;
       }
       break;
+    case 'j':
     case 'z':
       if (pos + 2 < format.size() &&
           (format[pos + 2] == 'd' || format[pos + 2] == 'u')) {
