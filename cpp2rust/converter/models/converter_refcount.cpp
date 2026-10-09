@@ -1244,16 +1244,8 @@ static std::vector<const char *> printf2fmt(std::string &format) {
 void ConverterRefCount::ConvertPrintf(clang::CallExpr *expr) {
   bool is_fprintf =
       Printer::ToString(ctx_, expr->getCallee()).starts_with("int fprintf");
-  std::string format;
-  if (auto *str = clang::dyn_cast<clang::StringLiteral>(
-          expr->getArg(is_fprintf)->IgnoreImplicit())) {
-    format = GetEscapedStringLiteral(str);
-  } else {
-    llvm::errs() << "Unknown fprintf format: ";
-    expr->getArg(1)->dump();
-    llvm::errs() << '\n';
-    exit(1);
-  }
+  auto format = GetEscapedStringLiteral(clang::cast<clang::StringLiteral>(
+      expr->getArg(is_fprintf)->IgnoreImplicit()));
   bool ends_newline = format.ends_with("\\n\"");
 
   auto fd = is_fprintf ? Printer::ToString(ctx_, expr->getArg(0)) : "stdout";
