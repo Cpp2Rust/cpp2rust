@@ -2,6 +2,10 @@
 
 template <typename T> T foo(T x) { return x; }
 
+template <bool B> int pick() { return 0; }
+
+template <> int pick<true>() { return 1; }
+
 template <typename T> T *bar(T *p, bool flag) { return flag ? p : nullptr; }
 
 template <typename T1, typename T2, typename T3> int func(T1 x1, T2 x2, T3 x3) {
@@ -26,5 +30,7 @@ int main() {
   assert(half<int *> == nullptr);
   half<int *> = &x;
   assert(*half<int *> == 10);
+  assert(pick<true>() == 1);
+  assert(pick<false>() == 0);
   return 0;
 }
