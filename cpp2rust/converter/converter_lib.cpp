@@ -1252,8 +1252,7 @@ const clang::LambdaCapture *AsLambdaCapture(const clang::FieldDecl *field) {
 
 bool IsLambdaCopyOrMoveConstructor(const clang::CXXConstructorDecl *ctor) {
   auto decl = ctor->getParent();
-  return ctor->isCopyOrMoveConstructor() && decl->isLambda() &&
-         !decl->captures().empty();
+  return ctor->isCopyOrMoveConstructor() && decl->isLambda();
 }
 
 bool LambdaNeedsDestruction(const clang::CXXRecordDecl *decl) {
