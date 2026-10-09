@@ -17,6 +17,7 @@
 
 #include <cassert>
 #include <filesystem>
+#include <format>
 #include <ranges>
 #include <string>
 #include <unordered_set>
@@ -283,6 +284,18 @@ const llvm::json::Object &CxxIndex() {
   return index;
 }
 
+std::string WrapRule(const llvm::json::Object &rule, bool is_cxx) {
+  auto dir = rule.getString("dir")->str();
+  auto text = rule.getString("text")->str();
+  if (!is_cxx) {
+    return std::format("#define {0} cpp2rust_rules_{1}_{0}\n{2}#undef {0}\n",
+                       rule.getString("name")->str(), dir, text);
+  }
+  return std::format(
+      "namespace cpp2rust_rules {{\nnamespace cpp2rust_rules_{} {{\n{}}}\n}}\n",
+      dir, text);
+}
+
 std::string BuildRulesEpilogue(const std::unordered_set<std::string> &keys,
                                bool is_cxx) {
   const auto &index = is_cxx ? CxxIndex() : CIndex();
@@ -306,7 +319,7 @@ std::string BuildRulesEpilogue(const std::unordered_set<std::string> &keys,
           })) {
         continue;
       }
-      out += *rule->getString("text");
+      out += WrapRule(*rule, is_cxx);
     }
   }
   return out;
