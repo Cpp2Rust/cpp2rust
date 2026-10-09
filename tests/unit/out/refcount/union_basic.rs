@@ -43,6 +43,28 @@ impl Default for empty {
         }
     }
 }
+#[derive(VaArg, FnPtrArg, ByteRepr, DeepClone)]
+#[byte_size(8)]
+pub struct underscores {
+    #[offset(0)]
+    #[byte_size(8)]
+    __bytes: Value<Box<[u8]>>,
+}
+impl underscores {
+    pub fn __(this: Ptr<Self>) -> Ptr<i32> {
+        this.reinterpret_cast()
+    }
+    pub fn ___(this: Ptr<Self>) -> Ptr<f64> {
+        this.reinterpret_cast()
+    }
+}
+impl Default for underscores {
+    fn default() -> Self {
+        underscores {
+            __bytes: Rc::new(RefCell::new(Box::from([0u8; 8]))),
+        }
+    }
+}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
@@ -71,6 +93,14 @@ fn main_0() -> i32 {
     assert!(((basic::i(ru.clone()).read()) == 1065353216));
     assert!(((pf.read()) == 1_f32));
     assert!((((*buf.borrow())[(3) as usize] as i32) == 63));
+    let us: Value<underscores> = Rc::new(RefCell::new(<underscores>::default()));
+    underscores::__(us.as_pointer()).write(5);
+    assert!(((underscores::__(us.as_pointer()).read()) == 5));
+    underscores::___(us.as_pointer()).write(2.5_f64);
+    assert!(((underscores::___(us.as_pointer()).read()) == 2.5_f64));
+    let mut __: i32 = 1;
+    let mut ___: i32 = 2;
+    assert!(((__ + ___) == 3));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

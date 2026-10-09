@@ -968,6 +968,10 @@ std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
   // keyword -> keyword_
   // keyword_ -> keyword__
   // etc
+  if (!name.empty() &&
+      std::ranges::all_of(name, [](char c) { return c == '_'; })) {
+    name += '_';
+  }
   for (auto &keyword : rust_keywords) {
     if (!name.starts_with(keyword))
       continue;
