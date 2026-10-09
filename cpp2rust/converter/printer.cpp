@@ -116,6 +116,7 @@ std::string ToRustName(std::string name) {
   if (stem == "Ptr" || stem == "Value" || stem == "Box") {
     name += '_';
   }
+  EscapeRustKeyword(name);
   return name;
 }
 

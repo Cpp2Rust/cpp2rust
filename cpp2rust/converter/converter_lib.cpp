@@ -914,6 +914,19 @@ static size_t GetDeclId(const clang::NamedDecl *decl, bool internal) {
   return type_mapping.try_emplace(key, type_mapping.size()).first->second;
 }
 
+void EscapeRustKeyword(std::string &name) {
+  for (auto &keyword : rust_keywords) {
+    if (!name.starts_with(keyword))
+      continue;
+
+    auto suffix = std::string_view(name).substr(strlen(keyword));
+    if (std::ranges::all_of(suffix, [](char c) { return c == '_'; })) {
+      name += '_';
+      break;
+    }
+  }
+}
+
 std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
   auto name = decl->getDeclName().isIdentifier() ? decl->getName().str()
                                                  : decl->getNameAsString();
@@ -964,20 +977,7 @@ std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
     name += std::to_string(*id);
   }
 
-  // transform decl names that are rust keywords:
-  // keyword -> keyword_
-  // keyword_ -> keyword__
-  // etc
-  for (auto &keyword : rust_keywords) {
-    if (!name.starts_with(keyword))
-      continue;
-
-    auto suffix = std::string_view(name).substr(strlen(keyword));
-    if (std::ranges::all_of(suffix, [](char c) { return c == '_'; })) {
-      name += '_';
-      break;
-    }
-  }
+  EscapeRustKeyword(name);
 
   if (name.empty()) {
     auto *pdecl = llvm::dyn_cast<clang::ParmVarDecl>(decl);

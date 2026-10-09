@@ -177,6 +177,8 @@ unsigned GetArraySize(clang::QualType array_type);
 std::string GetID(const clang::Decl *decl);
 std::string GetMethodID(const clang::CXXMethodDecl *decl);
 
+void EscapeRustKeyword(std::string &name);
+
 std::string GetNamedDeclAsString(const clang::NamedDecl *decl);
 
 std::string DisambiguateAnonymousTag(const clang::TagDecl *tag);
