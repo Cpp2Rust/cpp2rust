@@ -35,7 +35,7 @@ mod fn_ptr_arg;
 pub use fn_ptr_arg::{ArgRepr, FnPtrArg, record_from_repr};
 
 mod fn_ptr;
-pub use fn_ptr::FnPtr;
+pub use fn_ptr::{FnPtr, Generic};
 
 mod capture;
 pub use capture::{Destructor, DestructorUnsafe, MoveCtor, MoveCtorUnsafe};
