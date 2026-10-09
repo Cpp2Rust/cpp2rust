@@ -929,13 +929,24 @@ std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
     }
   }
 
+  auto *anonymous_record_var = clang::dyn_cast<clang::VarDecl>(decl);
+  if (anonymous_record_var) {
+    auto *record = anonymous_record_var->getType()->getAsRecordDecl();
+    if (clang::isa<clang::ParmVarDecl>(decl) || !record ||
+        record->getIdentifier()) {
+      anonymous_record_var = nullptr;
+    }
+  }
+
   // Anonymous record or enum
   if (name.empty() && (clang::isa<clang::RecordDecl>(decl) ||
                        clang::isa<clang::FieldDecl>(decl) ||
+                       anonymous_record_var ||
                        clang::isa<clang::EnumDecl>(decl))) {
     const clang::NamedDecl *target = decl;
-    if (auto *field = clang::dyn_cast<clang::FieldDecl>(decl)) {
-      if (auto *record = field->getType()->getAsRecordDecl();
+    if (clang::isa<clang::FieldDecl, clang::VarDecl>(decl)) {
+      auto type = clang::cast<clang::ValueDecl>(decl)->getType();
+      if (auto *record = type->getAsRecordDecl();
           record && !record->getIdentifier()) {
         target = record;
       }

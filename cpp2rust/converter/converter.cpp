@@ -1388,7 +1388,11 @@ bool Converter::VisitDeclStmt(clang::DeclStmt *stmt) {
       hoisted_records_ += std::move(buf).str();
       continue;
     }
-    Convert(decl);
+    if (var && var->isImplicit()) {
+      VisitVarDecl(var);
+    } else {
+      Convert(decl);
+    }
     StrCat(token::kSemiColon);
   }
   return false;
