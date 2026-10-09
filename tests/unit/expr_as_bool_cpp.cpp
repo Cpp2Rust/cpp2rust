@@ -66,5 +66,14 @@ int main() {
   }
   assert(d == 0.0);
 
+  float f = 2.0f;
+  bool fb = f;
+  bool nf = !f;
+  assert(fb);
+  assert(!nf);
+  assert(!0.0);
+  int fi = (bool)f;
+  assert(fi == 1);
+
   return 0;
 }
