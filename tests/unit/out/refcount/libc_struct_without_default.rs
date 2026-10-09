@@ -18,11 +18,13 @@ pub struct UserDefined {
 }
 impl Default for UserDefined {
     fn default() -> Self {
-        UserDefined {
-            a: Rc::new(RefCell::new(
-                std::array::from_fn::<_, 1, _>(|_| Default::default()).to_vec(),
-            )),
-            v: Rc::new(RefCell::new(Default::default())),
+        {
+            UserDefined {
+                a: Rc::new(RefCell::new(
+                    std::array::from_fn::<_, 1, _>(|_| Default::default()).to_vec(),
+                )),
+                v: Rc::new(RefCell::new(Default::default())),
+            }
         }
     }
 }
@@ -35,8 +37,10 @@ pub struct FieldIsLibcType {
 }
 impl Default for FieldIsLibcType {
     fn default() -> Self {
-        FieldIsLibcType {
-            addr: Default::default(),
+        {
+            FieldIsLibcType {
+                addr: Default::default(),
+            }
         }
     }
 }

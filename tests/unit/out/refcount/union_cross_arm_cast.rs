@@ -17,9 +17,11 @@ pub struct shape_a {
 }
 impl Default for shape_a {
     fn default() -> Self {
-        shape_a {
-            code: 0_u16,
-            pad: Rc::new(RefCell::new((0..14).map(|_| 0_i8).collect::<Box<[i8]>>())),
+        {
+            shape_a {
+                code: 0_u16,
+                pad: Rc::new(RefCell::new((0..14).map(|_| 0_i8).collect::<Box<[i8]>>())),
+            }
         }
     }
 }
@@ -40,12 +42,14 @@ pub struct shape_b {
 }
 impl Default for shape_b {
     fn default() -> Self {
-        shape_b {
-            code: 0_u16,
-            lo: 0_u16,
-            mid: 0_u32,
-            fill: Rc::new(RefCell::new((0..16).map(|_| 0_u8).collect::<Box<[u8]>>())),
-            tail: 0_u32,
+        {
+            shape_b {
+                code: 0_u16,
+                lo: 0_u16,
+                mid: 0_u32,
+                fill: Rc::new(RefCell::new((0..16).map(|_| 0_u8).collect::<Box<[u8]>>())),
+                tail: 0_u32,
+            }
         }
     }
 }

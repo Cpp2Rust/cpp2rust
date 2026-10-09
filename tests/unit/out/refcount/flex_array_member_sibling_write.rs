@@ -17,9 +17,11 @@ pub struct S {
 }
 impl Default for S {
     fn default() -> Self {
-        S {
-            n: 0_i32,
-            name: Rc::new(RefCell::new((0..1).map(|_| 0_i8).collect::<Box<[i8]>>())),
+        {
+            S {
+                n: 0_i32,
+                name: Rc::new(RefCell::new((0..1).map(|_| 0_i8).collect::<Box<[i8]>>())),
+            }
         }
     }
 }
@@ -44,12 +46,14 @@ pub struct T {
 }
 impl Default for T {
     fn default() -> Self {
-        T {
-            n: 0_i32,
-            cap: 0_i32,
-            a: Rc::new(RefCell::new(
-                (0..1).map(|_| <E>::default()).collect::<Box<[E]>>(),
-            )),
+        {
+            T {
+                n: 0_i32,
+                cap: 0_i32,
+                a: Rc::new(RefCell::new(
+                    (0..1).map(|_| <E>::default()).collect::<Box<[E]>>(),
+                )),
+            }
         }
     }
 }

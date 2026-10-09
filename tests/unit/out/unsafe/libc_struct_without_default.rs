@@ -14,9 +14,11 @@ pub struct UserDefined {
 }
 impl Default for UserDefined {
     fn default() -> Self {
-        UserDefined {
-            a: std::array::from_fn::<_, 1, _>(|_| Default::default()).to_vec(),
-            v: Default::default(),
+        unsafe {
+            UserDefined {
+                a: std::array::from_fn::<_, 1, _>(|_| Default::default()).to_vec(),
+                v: Default::default(),
+            }
         }
     }
 }
@@ -27,8 +29,10 @@ pub struct FieldIsLibcType {
 }
 impl Default for FieldIsLibcType {
     fn default() -> Self {
-        FieldIsLibcType {
-            addr: unsafe { std::mem::zeroed() },
+        unsafe {
+            FieldIsLibcType {
+                addr: unsafe { std::mem::zeroed() },
+            }
         }
     }
 }

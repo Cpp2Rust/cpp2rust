@@ -21,9 +21,11 @@ pub struct Frame {
 }
 impl Default for Frame {
     fn default() -> Self {
-        Frame {
-            tag: 0_u16,
-            body: [(0 as libc::c_char); 64],
+        unsafe {
+            Frame {
+                tag: 0_u16,
+                body: [(0 as libc::c_char); 64],
+            }
         }
     }
 }

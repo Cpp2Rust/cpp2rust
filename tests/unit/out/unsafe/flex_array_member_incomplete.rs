@@ -14,7 +14,7 @@ pub struct F {
 }
 impl Default for F {
     fn default() -> Self {
-        F { n: 0_i32, tail: [] }
+        unsafe { F { n: 0_i32, tail: [] } }
     }
 }
 pub fn main() {
