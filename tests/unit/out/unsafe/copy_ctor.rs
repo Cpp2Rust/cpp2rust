@@ -140,10 +140,39 @@ impl Clone for OutOfLine {
     }
 }
 impl OutOfLine {}
-pub unsafe fn by_value_1(mut c: Counted) -> i32 {
+#[repr(C)]
+#[derive(VaArg, FnPtrArg)]
+pub struct Tracked {
+    pub copied_from: i32,
+}
+impl Tracked {
+    pub unsafe fn copy_from(o: *const Tracked) -> Self {
+        let mut this = Self { copied_from: 0 };
+        (*(&raw const (*o).copied_from).cast_mut()).prefix_inc();
+        this
+    }
+    pub unsafe fn copy_assign(&mut self, o: *const Tracked) -> *mut Tracked {
+        (*(&raw const (*o).copied_from).cast_mut()).prefix_inc();
+        return &mut (*(self as *mut Tracked));
+    }
+}
+impl Clone for Tracked {
+    fn clone(&self) -> Self {
+        unsafe { Tracked::copy_from(self as *const Tracked) }
+    }
+}
+impl Default for Tracked {
+    fn default() -> Self {
+        Tracked { copied_from: 0 }
+    }
+}
+pub unsafe fn touch_1(mut t: *const Tracked) {
+    (*(&raw const (*t).copied_from).cast_mut()).prefix_inc();
+}
+pub unsafe fn by_value_2(mut c: Counted) -> i32 {
     return c.v;
 }
-pub unsafe fn make_2(mut v: i32) -> Counted {
+pub unsafe fn make_3(mut v: i32) -> Counted {
     let mut c: Counted = Counted::new({ v });
     return Counted::copy_from({ &c });
 }
@@ -160,9 +189,9 @@ unsafe fn main_0() -> i32 {
     let mut d: Counted = Counted::copy_from({ &a });
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (3)));
     assert!((((b.v) == (1)) && ((c.v) == (1))) && ((d.v) == (1)));
-    assert!(((unsafe { by_value_1(Counted::copy_from({ &a },),) }) == (1)));
+    assert!(((unsafe { by_value_2(Counted::copy_from({ &a },),) }) == (1)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (4)));
-    let mut e: Counted = (unsafe { make_2(5) });
+    let mut e: Counted = (unsafe { make_3(5) });
     assert!(((e.v) == (5)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (5)));
     let mut f: Counted = Counted::new({ 6 });
@@ -208,6 +237,14 @@ unsafe fn main_0() -> i32 {
     let mut n2: NonConst = NonConst::new_2({ &cn });
     assert!(((n1.mark) == (1)));
     assert!(((n2.mark) == (10)));
+    let mut t1: Tracked = <Tracked>::default();
+    let mut t2: Tracked = Tracked::copy_from({ &t1 });
+    (unsafe { Tracked::copy_assign(&mut t2, &t1) });
+    assert!(((t1.copied_from) == (2)));
+    let ct: Tracked = <Tracked>::default();
+    let mut t3: Tracked = Tracked::copy_from({ &ct });
+    (unsafe { touch_1((&ct as *const Tracked)) });
+    assert!(((*(&raw const ct.copied_from).cast_mut()) == (2)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
