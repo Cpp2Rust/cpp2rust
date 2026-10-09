@@ -13,6 +13,12 @@ enum Sized : uint16_t { SIZED_A = 1, SIZED_B = 0xFFFF };
 
 enum class Scoped : int8_t { NEG = -2, POS = 2 };
 
+enum Empty : bool {};
+
+struct HoldsEmpty {
+  Empty e{};
+};
+
 int main() {
   Flag flag = FLAG_ON;
   assert(flag);
@@ -45,5 +51,10 @@ int main() {
   Scoped sc = Scoped::NEG;
   assert(static_cast<int>(sc) == -2);
   assert(static_cast<int8_t>(Scoped::POS) == 2);
+
+  HoldsEmpty he;
+  assert(!he.e);
+  Empty ev{};
+  assert(ev == he.e);
   return 0;
 }
