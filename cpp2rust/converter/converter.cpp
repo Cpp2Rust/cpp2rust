@@ -4016,10 +4016,12 @@ void Converter::ConvertLambdaCapture(const clang::FieldDecl *field,
 void Converter::ConvertLambdaClosure(const clang::CXXRecordDecl *decl,
                                      clang::CXXMethodDecl *call_operator) {
   StrCat('|');
+  in_function_formals_ = true;
   for (auto p : call_operator->parameters()) {
-    StrCat(GetNamedDeclAsString(p), token::kColon, ToString(p->getType()),
-           token::kComma);
+    ConvertVarDeclSkipInit(p);
+    StrCat(token::kComma);
   }
+  in_function_formals_ = false;
   StrCat('|');
   ConvertFunctionReturnType(call_operator);
   PushBrace body(*this);
