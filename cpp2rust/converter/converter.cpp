@@ -4753,14 +4753,19 @@ std::string Converter::GetComparisonBool(const clang::FunctionDecl *op,
   if (ret->isIntegerType()) {
     return std::format("(({}) != 0)", call);
   }
-  const auto *record = ret->getAsCXXRecordDecl();
+  bool returns_ref = ret->isReferenceType();
+  const auto *record = ret.getNonReferenceType()->getAsCXXRecordDecl();
   assert(record && "unsupported comparison operator return type");
   for (const auto *found : record->getVisibleConversionFunctions()) {
     const auto *conversion = clang::dyn_cast<clang::CXXConversionDecl>(found);
     if (conversion && conversion->getConversionType()->isBooleanType()) {
-      return std::format("{{ let __cmp = &{}; {}::{}({}) }}", call,
-                         GetUFCSName(conversion), GetMethodName(conversion),
-                         GetComparisonReceiver(conversion, record, "__cmp"));
+      auto receiver =
+          returns_ref
+              ? GetComparisonReferenceReceiver(conversion, record, "__cmp")
+              : GetComparisonReceiver(conversion, record, "__cmp");
+      return std::format("{{ let __cmp = {}{}; {}::{}({}) }}",
+                         returns_ref ? "" : "&", call, GetUFCSName(conversion),
+                         GetMethodName(conversion), receiver);
     }
   }
   assert(0 && "comparison operator result has no conversion to bool");
@@ -4771,6 +4776,13 @@ std::string
 Converter::GetComparisonReferenceArg(const clang::CXXRecordDecl *decl,
                                      std::string_view value) {
   return std::format("{} as *const {}", value, GetRecordName(decl));
+}
+
+std::string
+Converter::GetComparisonReferenceReceiver(const clang::CXXMethodDecl *method,
+                                          const clang::CXXRecordDecl *decl,
+                                          std::string_view ptr) {
+  return GetComparisonReceiver(method, decl, std::format("&*{}", ptr));
 }
 
 std::string Converter::GetComparisonReceiver(const clang::CXXMethodDecl *method,

@@ -45,6 +45,10 @@ public:
   std::string GetComparisonReferenceArg(const clang::CXXRecordDecl *decl,
                                         std::string_view value) override;
 
+  std::string GetComparisonReferenceReceiver(const clang::CXXMethodDecl *method,
+                                             const clang::CXXRecordDecl *decl,
+                                             std::string_view ptr) override;
+
   std::string GetComparisonReceiver(const clang::CXXMethodDecl *method,
                                     const clang::CXXRecordDecl *decl,
                                     std::string_view lhs) override;

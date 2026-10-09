@@ -694,6 +694,11 @@ protected:
   GetComparisonReferenceArg(const clang::CXXRecordDecl *decl,
                             std::string_view value);
 
+  virtual std::string
+  GetComparisonReferenceReceiver(const clang::CXXMethodDecl *method,
+                                 const clang::CXXRecordDecl *decl,
+                                 std::string_view ptr);
+
   virtual std::string GetComparisonReceiver(const clang::CXXMethodDecl *method,
                                             const clang::CXXRecordDecl *decl,
                                             std::string_view lhs);

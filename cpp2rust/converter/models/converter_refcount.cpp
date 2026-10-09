@@ -583,6 +583,12 @@ ConverterRefCount::GetComparisonReferenceArg(const clang::CXXRecordDecl *decl,
   return BoxValue(GetShallowCopy(decl, value)) + ".as_pointer()";
 }
 
+std::string ConverterRefCount::GetComparisonReferenceReceiver(
+    const clang::CXXMethodDecl *, const clang::CXXRecordDecl *,
+    std::string_view ptr) {
+  return std::format("&{}", ptr);
+}
+
 std::string
 ConverterRefCount::GetComparisonReceiver(const clang::CXXMethodDecl *,
                                          const clang::CXXRecordDecl *decl,
