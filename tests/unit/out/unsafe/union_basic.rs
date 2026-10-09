@@ -58,6 +58,24 @@ unsafe fn main_0() -> i32 {
     assert!((((*ru).i) == (1065353216)));
     assert!(((*pf) == (1_f32)));
     assert!(((buf[(3) as usize] as i32) == (63)));
+    {
+        let mut anon_0: anon_0 = <anon_0>::default();
+        anon_0.ai = 11;
+        assert!(((anon_0.ai) == (11)));
+        anon_0.ai = 1065353216;
+        assert!(((anon_0.af) == (1_f32)));
+    }
     return 0;
+}
+#[repr(C)]
+#[derive(Copy, Clone, FnPtrArg, VaArg)]
+pub union anon_0 {
+    pub ai: i32,
+    pub af: f32,
+}
+impl Default for anon_0 {
+    fn default() -> Self {
+        unsafe { std::mem::zeroed() }
+    }
 }
 pub unsafe fn __cpp2rust_init_globals() {}

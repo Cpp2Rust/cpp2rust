@@ -939,10 +939,10 @@ std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
   }
 
   // Anonymous record or enum
-  if (name.empty() && (clang::isa<clang::RecordDecl>(decl) ||
-                       clang::isa<clang::FieldDecl>(decl) ||
-                       anonymous_record_var ||
-                       clang::isa<clang::EnumDecl>(decl))) {
+  if (name.empty() &&
+      (clang::isa<clang::RecordDecl>(decl) ||
+       clang::isa<clang::FieldDecl>(decl) || anonymous_record_var ||
+       clang::isa<clang::EnumDecl>(decl))) {
     const clang::NamedDecl *target = decl;
     if (clang::isa<clang::FieldDecl, clang::VarDecl>(decl)) {
       auto type = clang::cast<clang::ValueDecl>(decl)->getType();
