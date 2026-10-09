@@ -55,5 +55,16 @@ int main() {
   assert(both_null(nullptr, nullptr) == 1);
   assert(both_null(p1, nullptr) == 0);
 
+  double d = 0.5;
+  int taken = 0;
+  if (d) {
+    taken = 1;
+  }
+  assert(taken == 1);
+  while (d) {
+    d = 0.0;
+  }
+  assert(d == 0.0);
+
   return 0;
 }

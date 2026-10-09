@@ -2604,7 +2604,7 @@ void Converter::ConvertIntegralToBooleanCast(clang::ImplicitCastExpr *expr) {
   PushParen paren(*this);
   Convert(sub_expr);
   StrCat(token::kDiff);
-  StrCat(token::kZero);
+  StrCat(sub_expr->getType()->isFloatingType() ? "0.0" : "0");
   computed_expr_type_ = ComputedExprType::FreshValue;
 }
 
