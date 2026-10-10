@@ -101,13 +101,15 @@ pub struct Holder {
 }
 impl Default for Holder {
     fn default() -> Self {
-        Holder {
-            c: <Counted>::default(),
-            arr: Rc::new(RefCell::new(
-                (0..2)
-                    .map(|_| <Counted>::default())
-                    .collect::<Box<[Counted]>>(),
-            )),
+        {
+            Holder {
+                c: <Counted>::default(),
+                arr: Rc::new(RefCell::new(
+                    (0..2)
+                        .map(|_| <Counted>::default())
+                        .collect::<Box<[Counted]>>(),
+                )),
+            }
         }
     }
 }

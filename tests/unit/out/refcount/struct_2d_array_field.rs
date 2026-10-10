@@ -17,13 +17,17 @@ pub struct table {
 }
 impl Default for table {
     fn default() -> Self {
-        table {
-            rows: Rc::new(RefCell::new(
-                (0..3)
-                    .map(|_| Rc::new(RefCell::new((0..10).map(|_| 0_i8).collect::<Box<[i8]>>())))
-                    .collect::<Box<[Value<Box<[i8]>>]>>(),
-            )),
-            count: 0_usize,
+        {
+            table {
+                rows: Rc::new(RefCell::new(
+                    (0..3)
+                        .map(|_| {
+                            Rc::new(RefCell::new((0..10).map(|_| 0_i8).collect::<Box<[i8]>>()))
+                        })
+                        .collect::<Box<[Value<Box<[i8]>>]>>(),
+                )),
+                count: 0_usize,
+            }
         }
     }
 }

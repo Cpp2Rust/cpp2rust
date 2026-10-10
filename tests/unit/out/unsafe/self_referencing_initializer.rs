@@ -25,9 +25,11 @@ pub struct node_with_defaults {
 }
 impl Default for node_with_defaults {
     fn default() -> Self {
-        node_with_defaults {
-            next: std::ptr::null_mut(),
-            value: 3,
+        unsafe {
+            node_with_defaults {
+                next: std::ptr::null_mut(),
+                value: 3,
+            }
         }
     }
 }

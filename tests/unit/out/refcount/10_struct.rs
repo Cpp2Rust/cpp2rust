@@ -38,8 +38,10 @@ impl Partial {
 }
 impl Default for Partial {
     fn default() -> Self {
-        Partial {
-            p: Ptr::<i32>::null(),
+        {
+            Partial {
+                p: Ptr::<i32>::null(),
+            }
         }
     }
 }

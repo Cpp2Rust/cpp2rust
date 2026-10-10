@@ -17,9 +17,11 @@ pub struct Inner {
 }
 impl Default for Inner {
     fn default() -> Self {
-        Inner {
-            a: 0_i32,
-            name: Rc::new(RefCell::new((0..8).map(|_| 0_i8).collect::<Box<[i8]>>())),
+        {
+            Inner {
+                a: 0_i32,
+                name: Rc::new(RefCell::new((0..8).map(|_| 0_i8).collect::<Box<[i8]>>())),
+            }
         }
     }
 }
@@ -54,15 +56,17 @@ pub struct Outer {
 }
 impl Default for Outer {
     fn default() -> Self {
-        Outer {
-            x: 0_i32,
-            inner: <Inner>::default(),
-            items: Rc::new(RefCell::new(
-                (0..3).map(|_| <Inner>::default()).collect::<Box<[Inner]>>(),
-            )),
-            v: Rc::new(RefCell::new(Default::default())),
-            cursor: Ptr::<i32>::null(),
-            buf: Rc::new(RefCell::new((0..4).map(|_| 0_i32).collect::<Box<[i32]>>())),
+        {
+            Outer {
+                x: 0_i32,
+                inner: <Inner>::default(),
+                items: Rc::new(RefCell::new(
+                    (0..3).map(|_| <Inner>::default()).collect::<Box<[Inner]>>(),
+                )),
+                v: Rc::new(RefCell::new(Default::default())),
+                cursor: Ptr::<i32>::null(),
+                buf: Rc::new(RefCell::new((0..4).map(|_| 0_i32).collect::<Box<[i32]>>())),
+            }
         }
     }
 }

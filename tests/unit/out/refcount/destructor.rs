@@ -42,10 +42,12 @@ pub struct ArrayMember {
 }
 impl Default for ArrayMember {
     fn default() -> Self {
-        ArrayMember {
-            items: Rc::new(RefCell::new(
-                (0..3).map(|_| <S>::default()).collect::<Box<[S]>>(),
-            )),
+        {
+            ArrayMember {
+                items: Rc::new(RefCell::new(
+                    (0..3).map(|_| <S>::default()).collect::<Box<[S]>>(),
+                )),
+            }
         }
     }
 }

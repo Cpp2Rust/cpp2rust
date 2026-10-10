@@ -26,8 +26,10 @@ impl Holder {
 }
 impl Default for Holder {
     fn default() -> Self {
-        Holder {
-            p: Pair { a: 0, b: 0 },
+        unsafe {
+            Holder {
+                p: Pair { a: 0, b: 0 },
+            }
         }
     }
 }

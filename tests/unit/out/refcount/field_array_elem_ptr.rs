@@ -30,13 +30,15 @@ pub struct Shape {
 }
 impl Default for Shape {
     fn default() -> Self {
-        Shape {
-            id: 0_i32,
-            coords: Rc::new(RefCell::new((0..4).map(|_| 0_i32).collect::<Box<[i32]>>())),
-            points: Rc::new(RefCell::new(
-                (0..3).map(|_| <Point>::default()).collect::<Box<[Point]>>(),
-            )),
-            tail: 0_i32,
+        {
+            Shape {
+                id: 0_i32,
+                coords: Rc::new(RefCell::new((0..4).map(|_| 0_i32).collect::<Box<[i32]>>())),
+                points: Rc::new(RefCell::new(
+                    (0..3).map(|_| <Point>::default()).collect::<Box<[Point]>>(),
+                )),
+                tail: 0_i32,
+            }
         }
     }
 }

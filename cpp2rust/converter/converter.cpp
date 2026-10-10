@@ -4954,11 +4954,11 @@ void Converter::AddDefaultTrait(const clang::RecordDecl *decl) {
   PushBrace impl_brace(*this);
   StrCat("fn default() -> Self");
   PushBrace fn_brace(*this);
+  StrCat(keyword_unsafe_);
+  PushBrace unsafe_brace(*this);
 
   if (auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl)) {
     if (auto *default_ctor = GetUserDefinedDefaultConstructor(cxx)) {
-      StrCat(keyword_unsafe_);
-      PushBrace unsafe_brace(*this);
       Convert(MakeConstructExpr(ctx_, ctx_.getCanonicalTagType(decl),
                                 default_ctor, {}));
       return;

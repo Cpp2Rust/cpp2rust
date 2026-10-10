@@ -33,7 +33,7 @@ impl Counter {
 }
 impl Default for Counter {
     fn default() -> Self {
-        Counter { n: 0 }
+        unsafe { Counter { n: 0 } }
     }
 }
 pub unsafe fn set_0(mut p: *mut i32, mut v: i32) {
