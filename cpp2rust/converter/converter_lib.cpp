@@ -10,6 +10,7 @@
 #include <clang/AST/Mangle.h>
 #include <clang/AST/ParentMapContext.h>
 #include <clang/Basic/SourceManager.h>
+#include <clang/Basic/Version.h>
 #include <clang/Lex/Lexer.h>
 #include <clang/Sema/Initialization.h>
 #include <clang/Sema/Sema.h>
