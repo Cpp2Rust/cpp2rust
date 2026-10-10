@@ -259,7 +259,7 @@ std::string ConverterRefCount::BoxValue(std::string &&str) const {
 bool ConverterRefCount::Convert(clang::QualType qual_type) {
   // Catch va_list before desugaring
   if (IsVaListType(qual_type)) {
-    StrCat(BoxType("VaList"));
+    StrCat(BoxType("Ptr<VaArg>"));
     return false;
   }
 
@@ -325,7 +325,7 @@ bool ConverterRefCount::VisitPointerType(clang::PointerType *type) {
   }
 
   if (IsVaListType(clang::QualType(type, 0))) {
-    StrCat("VaList");
+    StrCat("Ptr<VaArg>");
     return false;
   }
 
@@ -792,6 +792,10 @@ void ConverterRefCount::EmitFunctionPreamble(clang::FunctionDecl *decl) {
   // name_2)'. We want to get the parameters from the definition if possible,
   // i.e. name_2.
   PushConversionKind push(*this, ConversionKind::FullRefCount);
+  if (decl->isVariadic()) {
+    StrCat("let __args: Value<Box<[VaArg]>> = "
+           "Rc::new(RefCell::new(__args.into()));");
+  }
   auto params = decl->getDefinition() ? decl->getDefinition()->parameters()
                                       : decl->parameters();
   for (auto *param : params) {
@@ -854,7 +858,7 @@ void ConverterRefCount::ConvertVaListVarDecl(clang::VarDecl *decl) {
     StrCat(keyword::kLet);
   }
 
-  StrCat(GetNamedDeclAsString(decl), token::kColon, "Value<VaList>");
+  StrCat(GetNamedDeclAsString(decl), token::kColon, "Value<Ptr<VaArg>>");
 }
 
 bool ConverterRefCount::ConvertVarDeclSkipInit(clang::VarDecl *decl) {
@@ -1283,7 +1287,12 @@ void ConverterRefCount::ConvertPrintf(clang::CallExpr *expr) {
 }
 
 bool ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
-  if (IsBuiltinVaStart(expr) || IsBuiltinVaEnd(expr) || IsBuiltinVaCopy(expr)) {
+  if (IsBuiltinVaStart(expr)) {
+    StrCat(ToString(expr->getArg(0)->IgnoreImpCasts()),
+           "= __args.as_pointer()");
+    return false;
+  }
+  if (IsBuiltinVaEnd(expr) || IsBuiltinVaCopy(expr)) {
     ConvertVAArgCall(expr);
     return false;
   }
@@ -2526,7 +2535,7 @@ std::string ConverterRefCount::GetDefaultAsString(clang::QualType qual_type) {
 
   if (IsVaListType(qual_type)) {
     computed_expr_type_ = ComputedExprType::FreshValue;
-    return BoxValue("VaList::default()");
+    return BoxValue("Ptr::<VaArg>::default()");
   }
 
   if (auto arr = GetArrayDefaultAsString(qual_type); !arr.empty()) {

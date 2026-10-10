@@ -5,6 +5,8 @@ use std::any::Any;
 use std::ffi::c_void;
 use std::rc::Rc;
 
+use crate::inc::PrefixInc;
+use crate::rc::Ptr;
 use crate::void::AnyPtr;
 
 #[derive(Clone)]
@@ -52,26 +54,27 @@ impl<T: crate::reinterpret::ByteRepr + 'static> From<crate::rc::Ptr<T>> for VaAr
     }
 }
 
-#[derive(Clone, Default)]
-pub struct VaList {
-    args: Rc<[VaArg]>,
-    pos: usize,
+impl crate::reinterpret::ByteRepr for VaArg {}
+
+impl Ptr<VaArg> {
+    pub fn arg<T: VaArgGet>(&mut self) -> T {
+        let val = self.with(T::get);
+        self.prefix_inc();
+        val
+    }
 }
 
-impl crate::reinterpret::ByteRepr for VaList {}
+pub trait VaArgs {
+    unsafe fn arg<T: VaArgGet>(&mut self) -> T;
+}
 
-impl VaList {
-    pub fn new(args: &[VaArg]) -> Self {
-        VaList {
-            args: Rc::from(args),
-            pos: 0,
+impl VaArgs for *const VaArg {
+    unsafe fn arg<T: VaArgGet>(&mut self) -> T {
+        unsafe {
+            let val = T::get(&**self);
+            *self = self.add(1);
+            val
         }
-    }
-
-    pub fn arg<T: VaArgGet>(&mut self) -> T {
-        let val = &self.args[self.pos];
-        self.pos += 1;
-        T::get(val)
     }
 }
 
