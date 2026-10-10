@@ -239,7 +239,11 @@ std::pair<std::string, std::string>
 Converter::MaterializeTemp(const std::string &binding_name,
                            clang::QualType param_type, clang::Expr *expr) {
   auto pointee = param_type.getNonReferenceType();
-  auto value = ConvertRValue(expr, pointee);
+  std::string value;
+  {
+    PushInitType init_type(*this, pointee);
+    value = ConvertRValue(expr, pointee);
+  }
   auto type_str = ToStringBase(pointee);
   const auto *decl = in_const_initializer_ ? keyword::kStatic : keyword::kLet;
 
