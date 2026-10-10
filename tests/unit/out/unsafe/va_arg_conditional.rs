@@ -12,8 +12,8 @@ pub unsafe fn conditional_log_0(
     __args: &[VaArg],
 ) -> i32 {
     if (verbose != 0) {
-        let mut ap: VaList = VaList::default();
-        ap = VaList::new(__args);
+        let mut ap: *const VaArg = ::std::ptr::null();
+        ap = __args.as_ptr();
         let mut result: i32 = ap.arg::<i32>();
         return result;
     }

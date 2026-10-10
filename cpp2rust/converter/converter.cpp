@@ -1864,8 +1864,7 @@ void Converter::ConvertVariadicArg(clang::Expr *arg) {
 
 void Converter::ConvertVAArgCall(clang::CallExpr *expr) {
   if (IsBuiltinVaStart(expr)) {
-    StrCat(ToString(expr->getArg(0)->IgnoreImpCasts()),
-           "= __args.as_ptr()");
+    StrCat(ToString(expr->getArg(0)->IgnoreImpCasts()), "= __args.as_ptr()");
     return;
   }
   if (IsBuiltinVaEnd(expr)) {

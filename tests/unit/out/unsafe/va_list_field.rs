@@ -7,8 +7,8 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn sum_0(mut n: i32, __args: &[VaArg]) -> i32 {
-    let mut ap: VaList = VaList::default();
-    ap = VaList::new(__args);
+    let mut ap: *const VaArg = ::std::ptr::null();
+    ap = __args.as_ptr();
     let mut guard: Guard_1 = Guard_1::new({ &mut ap });
     let _dtor_guard = ScopedDestructorUnsafe::new(&raw mut guard, Guard_1::destructor);
     let mut total: i32 = 0;
@@ -22,11 +22,11 @@ pub unsafe fn sum_0(mut n: i32, __args: &[VaArg]) -> i32 {
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, DestructorUnsafe, Default)]
 pub struct Guard_1 {
-    pub ap: *mut VaList,
+    pub ap: *mut *const VaArg,
     pub active: bool,
 }
 impl Guard_1 {
-    pub unsafe fn new(val: *mut VaList) -> Self {
+    pub unsafe fn new(val: *mut *const VaArg) -> Self {
         let mut this = Self {
             ap: val,
             active: true,
@@ -38,10 +38,10 @@ impl Guard_1 {
     }
 }
 pub unsafe fn sum_ptr_2(mut n: i32, __args: &[VaArg]) -> i32 {
-    let mut ap: VaList = VaList::default();
-    ap = VaList::new(__args);
+    let mut ap: *const VaArg = ::std::ptr::null();
+    ap = __args.as_ptr();
     let mut cursor: Cursor_3 = Cursor_3 {
-        ap: (&mut ap as *mut VaList),
+        ap: (&mut ap as *mut *const VaArg),
     };
     let mut total: i32 = 0;
     let mut i: i32 = 0;
@@ -54,7 +54,7 @@ pub unsafe fn sum_ptr_2(mut n: i32, __args: &[VaArg]) -> i32 {
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Cursor_3 {
-    pub ap: *mut VaList,
+    pub ap: *mut *const VaArg,
 }
 pub fn main() {
     unsafe {

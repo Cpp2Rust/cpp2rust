@@ -7,9 +7,10 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn sum_0(n: i32, __args: &[VaArg]) -> i32 {
+    let __args: Value<Box<[VaArg]>> = Rc::new(RefCell::new(__args.into()));
     let n: Value<i32> = Rc::new(RefCell::new(n));
-    let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
-    (*ap.borrow_mut()) = VaList::new(__args);
+    let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
+    (*ap.borrow_mut()) = __args.as_pointer();
     let guard: Value<Guard_1> = Rc::new(RefCell::new(Guard_1::new({ ap.as_pointer() })));
     let _dtor_guard = ScopedDestructor::new(&guard, |__p| __p.destructor());
     let mut total: i32 = 0;
@@ -25,12 +26,12 @@ pub fn sum_0(n: i32, __args: &[VaArg]) -> i32 {
 pub struct Guard_1 {
     #[offset(0)]
     #[byte_size(8)]
-    pub ap: Ptr<VaList>,
+    pub ap: Ptr<Ptr<VaArg>>,
     #[offset(8)]
     pub active: bool,
 }
 impl Guard_1 {
-    pub fn new(val: Ptr<VaList>) -> Self {
+    pub fn new(val: Ptr<Ptr<VaArg>>) -> Self {
         Self {
             ap: (val).clone(),
             active: true,
@@ -38,9 +39,10 @@ impl Guard_1 {
     }
 }
 pub fn sum_ptr_2(n: i32, __args: &[VaArg]) -> i32 {
+    let __args: Value<Box<[VaArg]>> = Rc::new(RefCell::new(__args.into()));
     let n: Value<i32> = Rc::new(RefCell::new(n));
-    let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
-    (*ap.borrow_mut()) = VaList::new(__args);
+    let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
+    (*ap.borrow_mut()) = __args.as_pointer();
     let mut cursor: Cursor_3 = Cursor_3 {
         ap: (ap.as_pointer()),
     };
@@ -57,7 +59,7 @@ pub fn sum_ptr_2(n: i32, __args: &[VaArg]) -> i32 {
 pub struct Cursor_3 {
     #[offset(0)]
     #[byte_size(8)]
-    pub ap: Ptr<VaList>,
+    pub ap: Ptr<Ptr<VaArg>>,
 }
 pub fn main() {
     __cpp2rust_init_globals();

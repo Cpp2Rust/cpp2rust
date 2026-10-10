@@ -6,19 +6,19 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn logf_impl_0(mut fmt: *const libc::c_char, mut ap: VaList) -> i32 {
+pub unsafe fn logf_impl_0(mut fmt: *const libc::c_char, mut ap: *const VaArg) -> i32 {
     &(fmt);
     return ((ap.arg::<i32>()) + (ap.arg::<i32>()));
 }
 pub unsafe fn logf_1(mut fmt: *const libc::c_char, __args: &[VaArg]) -> i32 {
-    let mut ap: VaList = VaList::default();
-    ap = VaList::new(__args);
+    let mut ap: *const VaArg = ::std::ptr::null();
+    ap = __args.as_ptr();
     let mut result: i32 = (unsafe { logf_impl_0(fmt, ap) });
     return result;
 }
 pub unsafe fn lenf_2(mut fmt: *const libc::c_char, __args: &[VaArg]) -> i32 {
-    let mut ap: VaList = VaList::default();
-    ap = VaList::new(__args);
+    let mut ap: *const VaArg = ::std::ptr::null();
+    ap = __args.as_ptr();
     let mut s: *const libc::c_char = ap.arg::<*const libc::c_char>();
     let mut result: i32 = (libc::strlen(s) as i32);
     return result;

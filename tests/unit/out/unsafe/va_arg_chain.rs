@@ -6,7 +6,7 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn extract_nth_0(mut n: i32, mut ap: VaList) -> i32 {
+pub unsafe fn extract_nth_0(mut n: i32, mut ap: *const VaArg) -> i32 {
     let mut i: i32 = 0;
     'loop_: while ((((i) < (n)) as i32) != 0) {
         ap.arg::<i32>();
@@ -14,12 +14,12 @@ pub unsafe fn extract_nth_0(mut n: i32, mut ap: VaList) -> i32 {
     }
     return ap.arg::<i32>();
 }
-pub unsafe fn middle_layer_1(mut n: i32, mut ap: VaList) -> i32 {
+pub unsafe fn middle_layer_1(mut n: i32, mut ap: *const VaArg) -> i32 {
     return (unsafe { extract_nth_0(n, ap) });
 }
 pub unsafe fn top_level_2(mut n: i32, __args: &[VaArg]) -> i32 {
-    let mut ap: VaList = VaList::default();
-    ap = VaList::new(__args);
+    let mut ap: *const VaArg = ::std::ptr::null();
+    ap = __args.as_ptr();
     let mut result: i32 = (unsafe { middle_layer_1(n, ap) });
     return result;
 }

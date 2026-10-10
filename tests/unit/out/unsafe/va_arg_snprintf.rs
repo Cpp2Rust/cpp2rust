@@ -12,8 +12,8 @@ pub unsafe fn extract_first_0(
     mut fmt: *const libc::c_char,
     __args: &[VaArg],
 ) -> i32 {
-    let mut ap: VaList = VaList::default();
-    ap = VaList::new(__args);
+    let mut ap: *const VaArg = ::std::ptr::null();
+    ap = __args.as_ptr();
     let mut n: i32 = ap.arg::<i32>();
     (*buf.offset((0) as isize)) = (n as libc::c_char);
     return n;
