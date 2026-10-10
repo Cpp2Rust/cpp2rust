@@ -33,8 +33,10 @@ pub struct HoldsEmpty {
 }
 impl Default for HoldsEmpty {
     fn default() -> Self {
-        HoldsEmpty {
-            e: <Empty>::default(),
+        {
+            HoldsEmpty {
+                e: <Empty>::default(),
+            }
         }
     }
 }

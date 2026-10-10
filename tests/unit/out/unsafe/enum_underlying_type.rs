@@ -32,7 +32,7 @@ pub struct HoldsEmpty {
 }
 impl Default for HoldsEmpty {
     fn default() -> Self {
-        HoldsEmpty { e: false }
+        unsafe { HoldsEmpty { e: false } }
     }
 }
 pub fn main() {
