@@ -7,9 +7,9 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn sum_ints_0(mut first: i32, __args: &[VaArg]) -> i32 {
-    let mut args: VaList = VaList::default();
+    let mut args: *const VaArg = ::std::ptr::null();
     let mut total: i32 = first;
-    args = VaList::new(__args);
+    args = __args.as_ptr();
     let mut val: i32 = 0_i32;
     'loop_: while (((({
         val = args.arg::<i32>();

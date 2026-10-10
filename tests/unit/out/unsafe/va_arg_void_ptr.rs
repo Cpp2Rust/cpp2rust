@@ -17,8 +17,8 @@ pub const field_FIELD_SLOT: field = 0;
 pub const field_FIELD_LEVEL: field = 1;
 pub unsafe fn registry_update_0(mut r: *mut registry, mut field: field, __args: &[VaArg]) -> i32 {
     let mut result: i32 = 0;
-    let mut ap: VaList = VaList::default();
-    ap = VaList::new(__args);
+    let mut ap: *const VaArg = ::std::ptr::null();
+    ap = __args.as_ptr();
     'switch: {
         match { (field as u32) } {
             __v if __v == ((field_FIELD_SLOT as i32) as u32) => {

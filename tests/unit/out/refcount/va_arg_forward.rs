@@ -6,8 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn inner_0(mut count: i32, ap: VaList) -> i32 {
-    let ap: Value<VaList> = Rc::new(RefCell::new(ap));
+pub fn inner_0(mut count: i32, ap: Ptr<VaArg>) -> i32 {
+    let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(ap));
     let mut total: i32 = 0;
     let mut i: i32 = 0;
     'loop_: while (((i < count) as i32) != 0) {
@@ -17,9 +17,10 @@ pub fn inner_0(mut count: i32, ap: VaList) -> i32 {
     return total;
 }
 pub fn outer_1(count: i32, __args: &[VaArg]) -> i32 {
+    let __args: Value<Box<[VaArg]>> = Rc::new(RefCell::new(__args.into()));
     let count: Value<i32> = Rc::new(RefCell::new(count));
-    let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
-    (*ap.borrow_mut()) = VaList::new(__args);
+    let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
+    (*ap.borrow_mut()) = __args.as_pointer();
     let mut result: i32 = ({ inner_0((*count.borrow()), (*ap.borrow()).clone()) });
     return result;
 }

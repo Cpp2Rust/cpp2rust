@@ -16,17 +16,19 @@ pub fn add_2(mut a: i32, mut b: i32) -> i32 {
     return (a + b);
 }
 pub fn apply_unary_3(x: i32, __args: &[VaArg]) -> i32 {
+    let __args: Value<Box<[VaArg]>> = Rc::new(RefCell::new(__args.into()));
     let x: Value<i32> = Rc::new(RefCell::new(x));
-    let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
-    (*ap.borrow_mut()) = VaList::new(__args);
+    let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
+    (*ap.borrow_mut()) = __args.as_pointer();
     let mut fn_: FnPtr<fn(i32) -> i32> = (*ap.borrow_mut()).arg::<FnPtr<fn(i32) -> i32>>();
     let mut result: i32 = ({ fn_.call((*x.borrow())) });
     return result;
 }
 pub fn apply_binary_4(mut a: i32, b: i32, __args: &[VaArg]) -> i32 {
+    let __args: Value<Box<[VaArg]>> = Rc::new(RefCell::new(__args.into()));
     let b: Value<i32> = Rc::new(RefCell::new(b));
-    let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
-    (*ap.borrow_mut()) = VaList::new(__args);
+    let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
+    (*ap.borrow_mut()) = __args.as_pointer();
     let mut fn_: FnPtr<fn(i32, i32) -> i32> =
         (*ap.borrow_mut()).arg::<FnPtr<fn(i32, i32) -> i32>>();
     let mut result: i32 = ({ fn_.call(a, (*b.borrow())) });

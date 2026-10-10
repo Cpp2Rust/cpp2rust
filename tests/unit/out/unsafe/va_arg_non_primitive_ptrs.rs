@@ -18,8 +18,8 @@ pub const opt_OPT_FILE: opt = 1;
 pub const opt_OPT_NODE: opt = 2;
 pub const opt_OPT_NODE_OUT: opt = 3;
 pub unsafe fn dispatch_0(mut option: i32, __args: &[VaArg]) -> i32 {
-    let mut ap: VaList = VaList::default();
-    ap = VaList::new(__args);
+    let mut ap: *const VaArg = ::std::ptr::null();
+    ap = __args.as_ptr();
     let mut result: i32 = 0;
     'switch: {
         match { option } {

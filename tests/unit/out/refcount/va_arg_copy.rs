@@ -7,10 +7,11 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn sum_with_copy_0(count: i32, __args: &[VaArg]) -> i32 {
+    let __args: Value<Box<[VaArg]>> = Rc::new(RefCell::new(__args.into()));
     let count: Value<i32> = Rc::new(RefCell::new(count));
-    let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
-    let aq: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
-    (*ap.borrow_mut()) = VaList::new(__args);
+    let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
+    let aq: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
+    (*ap.borrow_mut()) = __args.as_pointer();
     (*aq.borrow_mut()) = (*ap.borrow_mut()).clone();
     let mut sum1: i32 = 0;
     let mut i: i32 = 0;

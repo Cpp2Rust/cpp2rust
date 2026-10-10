@@ -116,7 +116,7 @@ bool Converter::VisitRecoveryExpr(clang::RecoveryExpr *expr) {
 bool Converter::Convert(clang::QualType qual_type) {
   // Catch va_list before desugaring
   if (IsVaListType(qual_type)) {
-    StrCat("VaList");
+    StrCat("*const VaArg");
     return false;
   }
 
@@ -311,7 +311,7 @@ bool Converter::VisitPointerType(clang::PointerType *type) {
   }
 
   if (IsVaListType(clang::QualType(type, 0))) {
-    StrCat("VaList");
+    StrCat("*const VaArg");
     return false;
   }
 
@@ -480,7 +480,8 @@ void Converter::ConvertVaListVarDecl(clang::VarDecl *decl) {
     // va_list local variable
     StrCat(keyword::kLet);
   }
-  StrCat(keyword_mut_, GetNamedDeclAsString(decl), token::kColon, "VaList");
+  StrCat(keyword_mut_, GetNamedDeclAsString(decl), token::kColon,
+         "*const VaArg");
 }
 
 bool Converter::NeedsMut(const clang::VarDecl *decl, clang::QualType type,
@@ -1838,8 +1839,7 @@ void Converter::ConvertVariadicArg(clang::Expr *arg) {
 
 void Converter::ConvertVAArgCall(clang::CallExpr *expr) {
   if (IsBuiltinVaStart(expr)) {
-    StrCat(ToString(expr->getArg(0)->IgnoreImpCasts()),
-           "= VaList::new(__args)");
+    StrCat(ToString(expr->getArg(0)->IgnoreImpCasts()), "= __args.as_ptr()");
     return;
   }
   if (IsBuiltinVaEnd(expr)) {
@@ -4252,7 +4252,7 @@ std::string Converter::GetDefaultAsString(clang::QualType qual_type) {
 
   if (IsVaListType(qual_type)) {
     computed_expr_type_ = ComputedExprType::FreshValue;
-    return "VaList::default()";
+    return "::std::ptr::null()";
   }
 
   if (auto arr = GetArrayDefaultAsString(qual_type); !arr.empty()) {
