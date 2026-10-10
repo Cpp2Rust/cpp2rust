@@ -1,11 +1,9 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use crate::{CChar, PostfixDec, PostfixInc, PrefixDec, PrefixInc, Ptr, Value};
-use std::cell::RefCell;
+use crate::{AsPointer, CChar, PostfixDec, PostfixInc, PrefixDec, PrefixInc, Ptr, Value};
 use std::collections::BTreeMap;
 use std::ops::Bound;
-use std::rc::Rc;
 
 pub trait MapAccess: Clone + Default {
     type Key: Ord + Clone;
@@ -45,8 +43,8 @@ pub struct MapIter<K, MapRef> {
     key: Option<K>,
 }
 
-pub type RefcountMapIter<K, V> = MapIter<K, Ptr<BTreeMap<K, Value<V>>>>;
-pub type UnsafeMapIterator<K, V> = MapIter<K, *const BTreeMap<K, Box<V>>>;
+pub type RefcountMapIter<K, V> = MapIter<K, Ptr<BTreeMap<K, Value<(Value<K>, Value<V>)>>>>;
+pub type UnsafeMapIterator<K, V> = MapIter<K, *const BTreeMap<K, Box<(K, V)>>>;
 
 impl<K: Clone, MapRef: Clone> Clone for MapIter<K, MapRef> {
     fn clone(&self) -> Self {
@@ -141,44 +139,31 @@ impl<K: Ord + Clone, MapRef: MapAccess<Key = K>> MapIter<K, MapRef> {
 }
 
 pub trait MapIterator {
-    type First;
-    type Second;
-    fn first(&self) -> Self::First;
-    fn second(&self) -> Self::Second;
+    type Entry;
+    fn deref(&self) -> Self::Entry;
 }
 
 impl<K: Ord + Clone + 'static, V: 'static> MapIterator for RefcountMapIter<K, V> {
-    type First = Value<K>;
-    type Second = Value<V>;
+    type Entry = Ptr<(Value<K>, Value<V>)>;
 
-    fn first(&self) -> Value<K> {
-        let key = self.key.as_ref().expect("ub: dereference of end iterator");
-        Rc::new(RefCell::new(key.clone()))
-    }
-
-    fn second(&self) -> Value<V> {
+    fn deref(&self) -> Ptr<(Value<K>, Value<V>)> {
         let key = self.key.as_ref().expect("ub: dereference of end iterator");
         self.map
-            .with(|m| m.get(key).expect("ub: key not found in map").clone())
+            .with(|m| m.get(key).expect("ub: key not found in map").as_pointer())
     }
 }
 
 impl<K: Ord + Clone, V> MapIterator for UnsafeMapIterator<K, V> {
-    type First = *const K;
-    type Second = *mut V;
+    type Entry = *mut (K, V);
 
-    fn first(&self) -> *const K {
-        self.key.as_ref().expect("ub: dereference of end iterator") as *const K
-    }
-
-    fn second(&self) -> *mut V {
+    fn deref(&self) -> *mut (K, V) {
         unsafe {
-            let map_mut = self.map as *mut BTreeMap<K, Box<V>>;
+            let map_mut = self.map as *mut BTreeMap<K, Box<(K, V)>>;
             let key = self.key.as_ref().expect("ub: dereference of end iterator");
             (*map_mut)
                 .get_mut(key)
                 .expect("ub: key not found in map")
-                .as_mut() as *mut V
+                .as_mut() as *mut (K, V)
         }
     }
 }

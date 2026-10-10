@@ -1044,12 +1044,6 @@ void ConverterRefCount::ConvertDeclRefValue(clang::Expr *expr,
   }
 
   if (auto *ref = decl_t->getAs<clang::ReferenceType>()) {
-    if (map_iter_decls_.contains(clang::dyn_cast<clang::VarDecl>(decl))) {
-      StrCat(str);
-      SetValueFreshness(expr->getType());
-      return;
-    }
-
     if (auto pointee = ref->getPointeeType();
         isObject() && WantsElementPtr() && IsBoxedType(ctx_, pointee)) {
       StrCat(std::format("Ptr::<{}>::decay(&({}))", ToString(pointee),
@@ -2269,19 +2263,19 @@ void ConverterRefCount::EmitByValueShadow(const clang::VarDecl *loop_var,
 }
 
 bool ConverterRefCount::VisitCXXForRangeStmtMap(clang::CXXForRangeStmt *stmt) {
-  auto *loop_var = stmt->getLoopVariable();
-  auto loop_var_name = GetNamedDeclAsString(loop_var);
+  auto begin =
+      llvm::cast<clang::VarDecl>(stmt->getBeginStmt()->getSingleDecl());
+  auto begin_name = GetNamedDeclAsString(begin);
 
   StrCat("'loop_:");
-  StrCat(keyword::kFor, loop_var_name, keyword::kIn, "RefcountMapIter::begin(",
+  StrCat(keyword::kFor, begin_name, keyword::kIn, "RefcountMapIter::begin(",
          ConvertObject(stmt->getRangeInit()), ')');
   PushBrace brace(*this);
 
-  EmitByValueShadow(
-      loop_var, std::string(loop_var_name),
-      "Value<" + Mapper::Map(*this, GetForRangeIteratorType(stmt)) + '>');
+  EmitByValueShadow(begin, std::string(begin_name));
+  Convert(stmt->getLoopVarStmt());
 
-  ConvertForRangeBody(stmt, loop_var);
+  ConvertForRangeBody(stmt);
 
   return false;
 }

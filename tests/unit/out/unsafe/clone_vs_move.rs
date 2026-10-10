@@ -165,23 +165,48 @@ unsafe fn main_0() -> i32 {
         }
         i.prefix_inc();
     }
-    let mut map1: BTreeMap<i32, Box<i32>> = BTreeMap::new();
+    let mut map1: BTreeMap<i32, Box<(i32, i32)>> = BTreeMap::new();
     let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {
-        (*map1.entry(i).or_default().as_mut()) = i;
+        (*&mut map1
+            .entry(i.clone())
+            .or_insert_with(|| Box::new((i, i32::default())))
+            .1) = i;
         i.prefix_inc();
     }
-    let mut map2: BTreeMap<i32, Box<i32>> = map1.clone();
+    let mut map2: BTreeMap<i32, Box<(i32, i32)>> = map1.clone();
     let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {
-        assert!(((*map2.entry(i).or_default().as_mut()) == (i)));
-        (*map2.entry(i).or_default().as_mut()).prefix_inc();
+        assert!(
+            ((*&mut map2
+                .entry(i.clone())
+                .or_insert_with(|| Box::new((i, i32::default())))
+                .1)
+                == (i))
+        );
+        (*&mut map2
+            .entry(i.clone())
+            .or_insert_with(|| Box::new((i, i32::default())))
+            .1)
+            .prefix_inc();
         i.prefix_inc();
     }
     let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {
-        assert!(((*map1.entry(i).or_default().as_mut()) == (i)));
-        assert!(((*map2.entry(i).or_default().as_mut()) == ((i) + (1))));
+        assert!(
+            ((*&mut map1
+                .entry(i.clone())
+                .or_insert_with(|| Box::new((i, i32::default())))
+                .1)
+                == (i))
+        );
+        assert!(
+            ((*&mut map2
+                .entry(i.clone())
+                .or_insert_with(|| Box::new((i, i32::default())))
+                .1)
+                == ((i) + (1)))
+        );
         i.prefix_inc();
     }
     let mut pair1: (i32, i32) = (1.into(), 2.into());
@@ -200,10 +225,7 @@ unsafe fn main_0() -> i32 {
         0.into(),
     );
     let mut pair4: (Vec<i32>, i32) = pair3.clone();
-    {
-        let __a1 = 1;
-        pair4.0.push(__a1)
-    };
+    pair4.0.push(1);
     pair4.1 = 1;
     assert!(((pair4.0.len()) == (1_usize)));
     assert!(((pair4.1) == (1)));

@@ -1902,38 +1902,6 @@ GetStrongestIteratorCategory(clang::ASTContext &ctx, clang::QualType type) {
   return std::nullopt;
 }
 
-const clang::CXXForRangeStmt *
-GetParentForRange(clang::ASTContext &ctx, const clang::MemberExpr *member) {
-  auto base = member->getBase()->IgnoreParenImpCasts();
-  if (auto decl_ref = llvm::dyn_cast<clang::DeclRefExpr>(base)) {
-    if (auto var = llvm::dyn_cast<clang::VarDecl>(decl_ref->getDecl())) {
-      for (const auto &parent : ctx.getParents(*var)) {
-        if (auto decl_stmt = parent.get<clang::DeclStmt>()) {
-          for (const auto &grandparent : ctx.getParents(*decl_stmt)) {
-            if (auto for_range = grandparent.get<clang::CXXForRangeStmt>()) {
-              return for_range;
-            }
-          }
-        }
-      }
-    }
-  }
-  return nullptr;
-}
-
-clang::QualType
-GetForRangeIteratorType(const clang::CXXForRangeStmt *for_range) {
-  if (auto begin_stmt = for_range->getBeginStmt()) {
-    if (auto begin_decl_stmt = llvm::dyn_cast<clang::DeclStmt>(begin_stmt)) {
-      if (auto begin_var = llvm::dyn_cast<clang::VarDecl>(
-              begin_decl_stmt->getSingleDecl())) {
-        return begin_var->getType();
-      }
-    }
-  }
-  return {};
-}
-
 std::string GetClassName(clang::QualType type) {
   if (auto *record = type->getAsCXXRecordDecl())
     return record->getQualifiedNameAsString();

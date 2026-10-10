@@ -134,3 +134,25 @@ template <typename T1, typename T2>
 std::map<T1, T2> &f26(std::map<T1, T2> &dst, const std::map<T1, T2> &src) {
   return dst.operator=(src);
 }
+
+template <
+    typename It,
+    typename T1 = typename std::remove_const<
+        typename std::iterator_traits<It>::value_type::first_type>::type,
+    typename T2 = typename std::iterator_traits<It>::value_type::second_type,
+    typename = typename std::enable_if<
+        std::is_same<It, typename std::map<T1, T2>::iterator>::value>::type>
+std::pair<const T1, T2> &f27(It it) {
+  return *it;
+}
+
+template <
+    typename It,
+    typename T1 = typename std::remove_const<
+        typename std::iterator_traits<It>::value_type::first_type>::type,
+    typename T2 = typename std::iterator_traits<It>::value_type::second_type,
+    typename = typename std::enable_if<std::is_same<
+        It, typename std::map<T1, T2>::const_iterator>::value>::type>
+const std::pair<const T1, T2> &f28(It it) {
+  return *it;
+}

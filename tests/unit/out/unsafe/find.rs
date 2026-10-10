@@ -14,18 +14,9 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut v: Vec<i32> = Vec::new();
-    {
-        let __a1 = 1;
-        v.push(__a1)
-    };
-    {
-        let __a1 = 2;
-        v.push(__a1)
-    };
-    {
-        let __a1 = 3;
-        v.push(__a1)
-    };
+    v.push(1);
+    v.push(2);
+    v.push(3);
     let mut v_begin: *mut i32 = v.as_mut_ptr();
     let mut v_end: *mut i32 = v.as_mut_ptr().add(v.len());
     let mut it: *mut i32 = {
@@ -36,14 +27,23 @@ unsafe fn main_0() -> i32 {
         it
     };
     let mut v_result_true: bool = it != v.as_mut_ptr().add(v.len());
-    let mut m: BTreeMap<i32, Box<f64>> = BTreeMap::new();
-    (*m.entry(1).or_default().as_mut()) = 1_f64;
-    (*m.entry(2).or_default().as_mut()) = 2_f64;
-    (*m.entry(3).or_default().as_mut()) = 3_f64;
+    let mut m: BTreeMap<i32, Box<(i32, f64)>> = BTreeMap::new();
+    (*&mut m
+        .entry(1.clone())
+        .or_insert_with(|| Box::new((1, f64::default())))
+        .1) = 1_f64;
+    (*&mut m
+        .entry(2.clone())
+        .or_insert_with(|| Box::new((2, f64::default())))
+        .1) = 2_f64;
+    (*&mut m
+        .entry(3.clone())
+        .or_insert_with(|| Box::new((3, f64::default())))
+        .1) = 3_f64;
     let mut m_begin: UnsafeMapIterator<i32, f64> =
-        UnsafeMapIterator::begin(&m as *const BTreeMap<i32, Box<f64>>);
+        UnsafeMapIterator::begin(&m as *const BTreeMap<i32, Box<(i32, f64)>>);
     let mut m_end: UnsafeMapIterator<i32, f64> =
-        UnsafeMapIterator::end(&m as *const BTreeMap<i32, Box<f64>>);
+        UnsafeMapIterator::end(&m as *const BTreeMap<i32, Box<(i32, f64)>>);
     let mut m_result_true: bool = m_begin != m_end;
     assert!(
         ((v_result_true) && (m_result_true))
