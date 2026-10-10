@@ -2372,6 +2372,11 @@ std::string ConverterRefCount::ConvertStream(clang::Expr *expr) {
 }
 
 bool ConverterRefCount::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
+  if (expr->isElidable()) {
+    Convert(expr->getArg(0));
+    return false;
+  }
+
   // An array is boxed unless it initializes an unboxed variable.
   bool boxed_array = expr->getType()->isArrayType() &&
                      getConversionKind() != ConversionKind::Unboxed;
