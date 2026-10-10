@@ -65,13 +65,11 @@ pub fn operator_le_4(a: Ptr<S>, b: Ptr<S>) -> bool {
 pub fn operator_ge_5(a: Ptr<S>, b: Ptr<S>) -> bool {
     return ({ a.with(|__s| __s.v) } >= { b.with(|__s| __s.v) });
 }
-pub fn operator_lt_6(a: Ptr<S>, b: i32) -> bool {
-    let b: Value<i32> = Rc::new(RefCell::new(b));
-    return ({ a.with(|__s| __s.v) } < { (*b.borrow()) });
+pub fn operator_lt_6(a: Ptr<S>, mut b: i32) -> bool {
+    return ({ a.with(|__s| __s.v) } < { b });
 }
-pub fn operator_lt_7(a: i32, b: Ptr<S>) -> bool {
-    let a: Value<i32> = Rc::new(RefCell::new(a));
-    return ({ (*a.borrow()) } < { b.with(|__s| __s.v) });
+pub fn operator_lt_7(mut a: i32, b: Ptr<S>) -> bool {
+    return ({ a } < { b.with(|__s| __s.v) });
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
@@ -103,62 +101,54 @@ impl std::cmp::PartialEq for V {
     }
 }
 impl std::cmp::Eq for V {}
-pub fn operator_eq_9(a: V, b: V) -> bool {
-    let a: Value<V> = Rc::new(RefCell::new(a));
-    let b: Value<V> = Rc::new(RefCell::new(b));
-    return ({ (*a.borrow()).v } == { (*b.borrow()).v });
+pub fn operator_eq_9(mut a: V, mut b: V) -> bool {
+    return (a.v == b.v);
 }
-pub fn operator_ne_10(a: V, b: V) -> bool {
-    let a: Value<V> = Rc::new(RefCell::new(a));
-    let b: Value<V> = Rc::new(RefCell::new(b));
-    return ({ (*a.borrow()).v } != { (*b.borrow()).v });
+pub fn operator_ne_10(mut a: V, mut b: V) -> bool {
+    return (a.v != b.v);
 }
-pub fn operator_lt_8(a: V, b: V) -> bool {
-    let a: Value<V> = Rc::new(RefCell::new(a));
-    let b: Value<V> = Rc::new(RefCell::new(b));
-    return ({ (*a.borrow()).v } < { (*b.borrow()).v });
+pub fn operator_lt_8(mut a: V, mut b: V) -> bool {
+    return (a.v < b.v);
 }
-pub fn operator_gt_11(a: V, b: V) -> bool {
-    let a: Value<V> = Rc::new(RefCell::new(a));
-    let b: Value<V> = Rc::new(RefCell::new(b));
-    return ({ (*a.borrow()).v } > { (*b.borrow()).v });
+pub fn operator_gt_11(mut a: V, mut b: V) -> bool {
+    return (a.v > b.v);
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let x: Value<V> = Rc::new(RefCell::new(V { v: 1 }));
-    let y: Value<V> = Rc::new(RefCell::new(V { v: 2 }));
-    let z: Value<V> = Rc::new(RefCell::new(V { v: 1 }));
+    let mut x: V = V { v: 1 };
+    let mut y: V = V { v: 2 };
+    let mut z: V = V { v: 1 };
     assert!(
         ({
-            let _a: V = (*x.borrow()).clone();
-            operator_eq_9(_a, (*z.borrow()).clone())
+            let _a: V = (x).clone();
+            operator_eq_9(_a, (z).clone())
         })
     );
     assert!(
         ({
-            let _a: V = (*x.borrow()).clone();
-            operator_ne_10(_a, (*y.borrow()).clone())
+            let _a: V = (x).clone();
+            operator_ne_10(_a, (y).clone())
         })
     );
     assert!(
         ({
-            let _a: V = (*x.borrow()).clone();
-            operator_lt_8(_a, (*y.borrow()).clone())
+            let _a: V = (x).clone();
+            operator_lt_8(_a, (y).clone())
         })
     );
     assert!(
         ({
-            let _a: V = (*y.borrow()).clone();
-            operator_gt_11(_a, (*x.borrow()).clone())
+            let _a: V = (y).clone();
+            operator_gt_11(_a, (x).clone())
         })
     );
     assert!(
         !({
-            let _a: V = (*y.borrow()).clone();
-            operator_lt_8(_a, (*x.borrow()).clone())
+            let _a: V = (y).clone();
+            operator_lt_8(_a, (x).clone())
         })
     );
     let a: Value<S> = Rc::new(RefCell::new(S { v: 1 }));

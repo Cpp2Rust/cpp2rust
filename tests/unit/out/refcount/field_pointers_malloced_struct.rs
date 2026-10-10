@@ -16,69 +16,61 @@ pub struct S {
     #[offset(8)]
     pub c: i32,
 }
-pub fn bump_0(s: Ptr<S>) -> i32 {
-    let s: Value<Ptr<S>> = Rc::new(RefCell::new(s));
+pub fn bump_0(mut s: Ptr<S>) -> i32 {
     {
-        let _ptr = field!((*s.borrow()), b);
-        _ptr.write(_ptr.read() + 10)
+        field!(s, b).with_mut(|__v| *__v = *__v + 10)
     };
-    return (*s.borrow()).with(|__s| __s.b);
+    return s.with(|__s| __s.b);
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let s: Value<Ptr<S>> = Rc::new(RefCell::new(
-        libcc2rs::calloc_refcount(1_usize, 12usize).reinterpret_cast::<S>(),
-    ));
-    assert!(!((*s.borrow()).is_null()));
-    field!((*s.borrow()), b).write(1);
-    let __rhs = ({ bump_0((*s.borrow()).clone()) });
-    field!((*s.borrow()), a).write(__rhs);
-    assert!(((*s.borrow()).with(|__s| __s.a) == 11));
-    assert!(((*s.borrow()).with(|__s| __s.b) == 11));
-    field!((*s.borrow()), a).write(1);
-    field!((*s.borrow()), b).write(2);
-    field!((*s.borrow()), c).write(0);
-    if ({ (*s.borrow()).with(|__s| __s.a) } < { (*s.borrow()).with(|__s| __s.b) })
-        && (field!((*s.borrow()), c).with_mut(|__v| __v.postfix_inc()) == 0)
+    let mut s: Ptr<S> = libcc2rs::calloc_refcount(1_usize, 12usize).reinterpret_cast::<S>();
+    assert!(!((s).is_null()));
+    field!(s, b).write(1);
+    let __rhs = ({ bump_0((s).clone()) });
+    field!(s, a).write(__rhs);
+    assert!((s.with(|__s| __s.a) == 11));
+    assert!((s.with(|__s| __s.b) == 11));
+    field!(s, a).write(1);
+    field!(s, b).write(2);
+    field!(s, c).write(0);
+    if ({ s.with(|__s| __s.a) } < { s.with(|__s| __s.b) })
+        && (field!(s, c).with_mut(|__v| __v.postfix_inc()) == 0)
     {
-        field!((*s.borrow()), a).write(5);
+        field!(s, a).write(5);
     }
-    assert!(((*s.borrow()).with(|__s| __s.a) == 5) && ((*s.borrow()).with(|__s| __s.c) == 1));
-    if ({ (*s.borrow()).with(|__s| __s.a) } < { (*s.borrow()).with(|__s| __s.b) })
-        && (field!((*s.borrow()), c).with_mut(|__v| __v.postfix_inc()) == 0)
+    assert!((s.with(|__s| __s.a) == 5) && (s.with(|__s| __s.c) == 1));
+    if ({ s.with(|__s| __s.a) } < { s.with(|__s| __s.b) })
+        && (field!(s, c).with_mut(|__v| __v.postfix_inc()) == 0)
     {
-        field!((*s.borrow()), a).write(6);
+        field!(s, a).write(6);
     }
-    assert!(((*s.borrow()).with(|__s| __s.a) == 5) && ((*s.borrow()).with(|__s| __s.c) == 1));
-    let x: Value<i32> = Rc::new(RefCell::new(
-        ({ (*s.borrow()).with(|__s| __s.a) } + {
-            ({
-                field!((*s.borrow()), b).write(3);
-                (*s.borrow()).with(|__s| __s.b)
-            })
-        }),
-    ));
-    assert!(((*x.borrow()) == 8) && ((*s.borrow()).with(|__s| __s.b) == 3));
-    let y: Value<i32> = Rc::new(RefCell::new(0));
-    let __rhs = ({
-        (*y.borrow_mut()) = 99;
-        (*y.borrow())
+    assert!((s.with(|__s| __s.a) == 5) && (s.with(|__s| __s.c) == 1));
+    let mut x: i32 = ({ s.with(|__s| __s.a) } + {
+        ({
+            field!(s, b).write(3);
+            s.with(|__s| __s.b)
+        })
     });
-    field!((*s.borrow()), c).write(__rhs);
-    assert!(((*s.borrow()).with(|__s| __s.c) == 99) && ((*y.borrow()) == 99));
-    let __rhs = ({ bump_0((*s.borrow()).clone()) });
+    assert!((x == 8) && (s.with(|__s| __s.b) == 3));
+    let mut y: i32 = 0;
+    let __rhs = ({
+        y = 99;
+        y
+    });
+    field!(s, c).write(__rhs);
+    assert!((s.with(|__s| __s.c) == 99) && (y == 99));
+    let __rhs = ({ bump_0((s).clone()) });
     {
-        let _ptr = field!((*s.borrow()), a);
-        _ptr.write(_ptr.read() + __rhs)
+        field!(s, a).with_mut(|__v| *__v = *__v + __rhs)
     };
     assert!(
-        (((*s.borrow()).with(|__s| __s.a) == 18) && ((*s.borrow()).with(|__s| __s.b) == 13))
-            && ((*s.borrow()).with(|__s| __s.c) == 99)
+        ((s.with(|__s| __s.a) == 18) && (s.with(|__s| __s.b) == 13)) && (s.with(|__s| __s.c) == 99)
     );
-    libcc2rs::free_refcount((*s.borrow()).to_any());
+    libcc2rs::free_refcount((s).to_any());
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

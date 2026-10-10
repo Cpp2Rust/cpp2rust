@@ -4,14 +4,16 @@
 #include <cstddef>
 #include <memory>
 
-template <typename T, typename A> using Init = A;
+#include "../common/init.h"
 
 template <typename T1> using t1 = std::unique_ptr<T1>;
 template <typename T1> using t2 = std::unique_ptr<T1[]>;
 
+#if __cplusplus >= 201402L
 template <typename T2, typename T1> std::unique_ptr<T1[]> f1(std::size_t n) {
   return std::make_unique<T1[]>(n);
 }
+#endif
 
 template <typename T1> T1 *f2(std::unique_ptr<T1> &o) { return o.get(); }
 
@@ -33,10 +35,12 @@ template <typename T1> void f6(std::unique_ptr<T1[]> &o, T1 *p) {
 
 template <typename T1> T1 *f7(std::unique_ptr<T1[]> &o) { return o.get(); }
 
+#if __cplusplus >= 201402L
 template <typename T1, typename... Args>
 std::unique_ptr<T1> f8(Init<T1, Args> &&...args) {
   return std::make_unique<T1>(std::forward<Args>(args)...);
 }
+#endif
 
 template <typename T1> void f9(std::unique_ptr<T1[]> &o) {
   return o.reset(nullptr);

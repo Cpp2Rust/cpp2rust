@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, FnPtrArg, VaArg)]
 pub union anon_0 {
     pub bytes: [u8; 1],
     pub aligner: *mut ::libc::c_void,
@@ -18,7 +18,7 @@ impl Default for anon_0 {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct node {
     pub next: *mut node,
     pub x: anon_0,

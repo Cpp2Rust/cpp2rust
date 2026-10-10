@@ -6,26 +6,25 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn classify_0(n: i32) -> i32 {
-    let n: Value<i32> = Rc::new(RefCell::new(n));
-    let ret: Value<i32> = Rc::new(RefCell::new(0_i32));
+pub fn classify_0(mut n: i32) -> i32 {
+    let mut ret: i32 = 0_i32;
     goto_block!({
         '__entry: {
-            *ret.borrow_mut() = 0;
-            if ((((*n.borrow()) < 0) as i32) != 0) {
+            ret = 0;
+            if (((n < 0) as i32) != 0) {
                 goto!('error);
             }
-            if ((((*n.borrow()) == 0) as i32) != 0) {
+            if (((n == 0) as i32) != 0) {
                 goto!('out);
             }
-            (*ret.borrow_mut()) = (*n.borrow());
+            ret = n;
             goto!('out);
         }
         'error: {
-            (*ret.borrow_mut()) = -1_i32;
+            ret = -1_i32;
         }
         'out: {
-            return (*ret.borrow());
+            return ret;
         }
     });
     panic!("ub: non-void function does not return a value")

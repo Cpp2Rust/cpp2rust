@@ -7,18 +7,18 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg)]
+#[derive(Copy, Clone, VaArg, FnPtrArg)]
 pub struct Inner {
     pub x: i32,
     pub y: i32,
 }
 impl Default for Inner {
     fn default() -> Self {
-        Inner { x: 3, y: 4 }
+        unsafe { Inner { x: 3, y: 4 } }
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg)]
+#[derive(Copy, Clone, VaArg, FnPtrArg)]
 pub struct S {
     pub a: i32,
     pub b: libc::c_char,
@@ -27,16 +27,18 @@ pub struct S {
 }
 impl Default for S {
     fn default() -> Self {
-        S {
-            a: 1,
-            b: (2 as libc::c_char),
-            c: <Inner>::default(),
-            d: <Inner>::default(),
+        unsafe {
+            S {
+                a: 1,
+                b: (2 as libc::c_char),
+                c: <Inner>::default(),
+                d: <Inner>::default(),
+            }
         }
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg)]
+#[derive(Copy, Clone, VaArg, FnPtrArg)]
 pub struct Boxed_int_ {
     pub v: i32,
     pub tag: i32,
@@ -49,9 +51,11 @@ impl Boxed_int_ {
 }
 impl Default for Boxed_int_ {
     fn default() -> Self {
-        Boxed_int_ {
-            v: 0_i32,
-            tag: 0_i32,
+        unsafe {
+            Boxed_int_ {
+                v: 0_i32,
+                tag: 0_i32,
+            }
         }
     }
 }

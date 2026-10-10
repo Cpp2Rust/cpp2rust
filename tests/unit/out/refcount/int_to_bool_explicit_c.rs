@@ -11,11 +11,11 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let flag: Value<u32> = Rc::new(RefCell::new(7_u32));
-    let b1: Value<bool> = Rc::new(RefCell::new(((*flag.borrow()) != 0)));
-    let b2: Value<bool> = Rc::new(RefCell::new((0_u32 != 0)));
-    assert!((*b1.borrow()));
-    assert!(((!(*b2.borrow()) as i32) != 0));
+    let mut flag: u32 = 7_u32;
+    let mut b1: bool = (flag != 0);
+    let mut b2: bool = (0_u32 != 0);
+    assert!(b1);
+    assert!(((!(b2) as i32) != 0));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

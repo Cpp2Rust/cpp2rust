@@ -28,12 +28,23 @@ constexpr int checked(int x) {
   return x + 1;
 }
 
+constexpr bool in_constant_context() {
+  if (__builtin_is_constant_evaluated()) {
+    return true;
+  }
+  return runtime_only(1) == 0;
+}
+
+static_assert(in_constant_context());
+
 struct P {
   int v;
   constexpr int get() const { return v; }
 };
 
 int main() {
+  bool runtime_context = in_constant_context();
+  assert(!runtime_context);
   int arr[2] = {7, 8};
   assert(first(arr) == 7);
   assert(first(arr + 1) == 8);

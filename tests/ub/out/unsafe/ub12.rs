@@ -7,7 +7,12 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn escape_0(mut ptr: *mut i32) {
-    ::std::mem::drop(Box::from_raw(ptr));
+    {
+        let __p = ptr;
+        if !__p.is_null() {
+            ::std::mem::drop(Box::from_raw(__p))
+        }
+    };
 }
 pub fn main() {
     unsafe {
@@ -18,7 +23,12 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut alloc: *mut i32 = (Box::leak(Box::new(1)) as *mut i32);
     (unsafe { escape_0(alloc) });
-    ::std::mem::drop(Box::from_raw(alloc));
+    {
+        let __p = alloc;
+        if !__p.is_null() {
+            ::std::mem::drop(Box::from_raw(__p))
+        }
+    };
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

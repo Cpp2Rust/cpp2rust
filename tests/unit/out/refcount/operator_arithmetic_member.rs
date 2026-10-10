@@ -104,21 +104,19 @@ impl SImpl for Ptr<S> {
         field!((*self), v).with_mut(|__v| __v.prefix_inc());
         return (*self).clone();
     }
-    fn operator_post_inc_9(&self, _a0: i32) -> S {
-        let _a0: Value<i32> = Rc::new(RefCell::new(_a0));
-        let old: Value<S> = Rc::new(RefCell::new((*(*self).upgrade().deref()).clone()));
+    fn operator_post_inc_9(&self, mut _a0: i32) -> S {
+        let mut old: S = (*(*self).upgrade().deref()).clone();
         field!((*self), v).with_mut(|__v| __v.prefix_inc());
-        return (*old.borrow()).clone();
+        return old;
     }
     fn operator_dec_10(&self) -> Ptr<S> {
         field!((*self), v).with_mut(|__v| __v.prefix_dec());
         return (*self).clone();
     }
-    fn operator_post_dec_11(&self, _a0: i32) -> S {
-        let _a0: Value<i32> = Rc::new(RefCell::new(_a0));
-        let old: Value<S> = Rc::new(RefCell::new((*(*self).upgrade().deref()).clone()));
+    fn operator_post_dec_11(&self, mut _a0: i32) -> S {
+        let mut old: S = (*(*self).upgrade().deref()).clone();
         field!((*self), v).with_mut(|__v| __v.prefix_dec());
-        return (*old.borrow()).clone();
+        return old;
     }
 }
 pub fn __cpp2rust_init_globals() {}

@@ -142,17 +142,17 @@ impl<T: 'static> ByteRepr for *mut T {}
 impl<A: ByteRepr, B: ByteRepr> ByteRepr for (A, B) {}
 impl<K: 'static, V: 'static> ByteRepr for std::collections::BTreeMap<K, V> {}
 
-// Runs `f` with a zeroed scratch buffer of `len` bytes. Small buffers live on
-// the stack so that accessing memory through a reinterpreted pointer does not
-// hit the allocator.
+// Runs `f` with a zeroed scratch buffer of `len` elements. Small buffers live
+// on the stack so that accessing memory through a reinterpreted pointer does
+// not hit the allocator.
 #[inline]
-pub(crate) fn with_scratch<R>(len: usize, f: impl FnOnce(&mut [u8]) -> R) -> R {
+pub(crate) fn with_scratch<T: Copy + Default, R>(len: usize, f: impl FnOnce(&mut [T]) -> R) -> R {
     const INLINE_LEN: usize = 64;
     if len <= INLINE_LEN {
-        let mut buf = [0u8; INLINE_LEN];
+        let mut buf = [T::default(); INLINE_LEN];
         f(&mut buf[..len])
     } else {
-        f(&mut vec![0u8; len])
+        f(&mut vec![T::default(); len])
     }
 }
 
@@ -339,6 +339,9 @@ pub(crate) trait AsSlice: 'static {
     // the generic (de)serialization of the elements.
     fn as_u8_slice(&self) -> Option<&[u8]>;
     fn as_u8_slice_mut(&mut self) -> Option<&mut [u8]>;
+    // Likewise for `i8` (char), e.g., a std::string accessed as uint8_t*.
+    fn as_i8_slice(&self) -> Option<&[i8]>;
+    fn as_i8_slice_mut(&mut self) -> Option<&mut [i8]>;
 }
 
 impl<S: ByteRepr> AsSlice for Vec<S> {
@@ -355,6 +358,14 @@ impl<S: ByteRepr> AsSlice for Vec<S> {
     fn as_u8_slice_mut(&mut self) -> Option<&mut [u8]> {
         (self as &mut dyn Any)
             .downcast_mut::<Vec<u8>>()
+            .map(|v| &mut v[..])
+    }
+    fn as_i8_slice(&self) -> Option<&[i8]> {
+        (self as &dyn Any).downcast_ref::<Vec<i8>>().map(|v| &v[..])
+    }
+    fn as_i8_slice_mut(&mut self) -> Option<&mut [i8]> {
+        (self as &mut dyn Any)
+            .downcast_mut::<Vec<i8>>()
             .map(|v| &mut v[..])
     }
 }
@@ -377,6 +388,16 @@ impl<S: ByteRepr> AsSlice for Box<[S]> {
             .downcast_mut::<Box<[u8]>>()
             .map(|v| &mut v[..])
     }
+    fn as_i8_slice(&self) -> Option<&[i8]> {
+        (self as &dyn Any)
+            .downcast_ref::<Box<[i8]>>()
+            .map(|v| &v[..])
+    }
+    fn as_i8_slice_mut(&mut self) -> Option<&mut [i8]> {
+        (self as &mut dyn Any)
+            .downcast_mut::<Box<[i8]>>()
+            .map(|v| &mut v[..])
+    }
 }
 
 struct SliceOps<T>(PhantomData<fn() -> T>);
@@ -385,19 +406,33 @@ impl<T: AsSlice> AllocOps for SliceOps<T> {
     fn read_bytes(&self, cell: &dyn Any, byte_offset: usize, buf: &mut [u8]) {
         let cell = cell.downcast_ref::<RefCell<T>>().unwrap();
         let val = cell.borrow();
-        match val.as_u8_slice() {
-            Some(bytes) => buf.copy_from_slice(&bytes[byte_offset..byte_offset + buf.len()]),
-            None => slice_read_bytes(val.as_slice(), byte_offset, buf),
+        if let Some(bytes) = val.as_u8_slice() {
+            buf.copy_from_slice(&bytes[byte_offset..byte_offset + buf.len()]);
+        } else if let Some(chars) = val.as_i8_slice() {
+            let chars = &chars[byte_offset..byte_offset + buf.len()];
+            for (b, &c) in buf.iter_mut().zip(chars) {
+                *b = c as u8;
+            }
+        } else {
+            slice_read_bytes(val.as_slice(), byte_offset, buf);
         }
     }
 
     fn write_bytes(&self, cell: &dyn Any, byte_offset: usize, data: &[u8]) {
         let cell = cell.downcast_ref::<RefCell<T>>().unwrap();
         let mut val = cell.borrow_mut();
-        match val.as_u8_slice_mut() {
-            Some(bytes) => bytes[byte_offset..byte_offset + data.len()].copy_from_slice(data),
-            None => slice_write_bytes(val.as_slice_mut(), byte_offset, data),
+        if let Some(bytes) = val.as_u8_slice_mut() {
+            bytes[byte_offset..byte_offset + data.len()].copy_from_slice(data);
+            return;
         }
+        if let Some(chars) = val.as_i8_slice_mut() {
+            let chars = &mut chars[byte_offset..byte_offset + data.len()];
+            for (c, &b) in chars.iter_mut().zip(data) {
+                *c = b as i8;
+            }
+            return;
+        }
+        slice_write_bytes(val.as_slice_mut(), byte_offset, data);
     }
 
     fn total_byte_len(&self, cell: &dyn Any) -> usize {

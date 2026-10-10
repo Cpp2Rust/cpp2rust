@@ -188,6 +188,15 @@ unsafe fn main_0() -> i32 {
     assert!(((mins[(2) as usize]) == (2_usize)));
     let mut pr: (u64, i32) = ((sz as u64).into(), 1.into());
     assert!(((pr.0) == (21_u64)));
+    let sizes: [usize; 4] = [1_usize, 2_usize, 3_usize, 4_usize];
+    let mut sizes_end: *const usize =
+        (sizes.as_ptr().add(sizes.len()) as *const u64).cast::<usize>();
+    assert!(
+        ((((sizes_end as usize - sizes.as_ptr() as usize) / ::std::mem::size_of::<usize>())
+            as i64)
+            == (4_i64))
+    );
+    assert!(((*(sizes_end.offset(-((1) as isize)))) == (4_usize)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

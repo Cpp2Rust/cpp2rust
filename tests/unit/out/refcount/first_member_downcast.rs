@@ -26,23 +26,20 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let d: Value<Ptr<derived>> = Rc::new(RefCell::new(
-        libcc2rs::malloc_refcount(16usize).reinterpret_cast::<derived>(),
-    ));
-    assert!((((!((*d.borrow()).is_null())) as i32) != 0));
-    field!(field!((*d.borrow()), head), kind).write(3);
-    field!((*d.borrow()), value).write(7_usize);
-    let b: Value<Ptr<base>> = Rc::new(RefCell::new((field_ptr!((*d.borrow()), head))));
-    let back: Value<Ptr<derived>> =
-        Rc::new(RefCell::new((*b.borrow()).reinterpret_cast::<derived>()));
-    assert!(((({ (*back.borrow()).clone() } == { (*d.borrow()).clone() }) as i32) != 0));
-    assert!(((((*back.borrow()).with(|__s| __s.value) == 7_usize) as i32) != 0));
-    assert!(((((*back.borrow()).with(|__s| __s.head.kind) == 3) as i32) != 0));
-    field!((*back.borrow()), value).write(8_usize);
-    assert!(((((*d.borrow()).with(|__s| __s.value) == 8_usize) as i32) != 0));
-    field!((*b.borrow()), kind).write(4);
-    assert!(((((*d.borrow()).with(|__s| __s.head.kind) == 4) as i32) != 0));
-    libcc2rs::free_refcount((*back.borrow()).to_any());
+    let mut d: Ptr<derived> = libcc2rs::malloc_refcount(16usize).reinterpret_cast::<derived>();
+    assert!((((!((d).is_null())) as i32) != 0));
+    field!(field!(d, head), kind).write(3);
+    field!(d, value).write(7_usize);
+    let mut b: Ptr<base> = (field_ptr!(d, head));
+    let mut back: Ptr<derived> = b.reinterpret_cast::<derived>();
+    assert!(((({ (back).clone() } == { (d).clone() }) as i32) != 0));
+    assert!((((back.with(|__s| __s.value) == 7_usize) as i32) != 0));
+    assert!((((back.with(|__s| __s.head.kind) == 3) as i32) != 0));
+    field!(back, value).write(8_usize);
+    assert!((((d.with(|__s| __s.value) == 8_usize) as i32) != 0));
+    field!(b, kind).write(4);
+    assert!((((d.with(|__s| __s.head.kind) == 4) as i32) != 0));
+    libcc2rs::free_refcount((back).to_any());
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

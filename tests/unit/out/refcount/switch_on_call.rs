@@ -6,14 +6,12 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn double_it_0(v: i32) -> i32 {
-    let v: Value<i32> = Rc::new(RefCell::new(v));
-    return ((*v.borrow()) * 2);
+pub fn double_it_0(mut v: i32) -> i32 {
+    return (v * 2);
 }
-pub fn switch_on_call_1(x: i32) -> i32 {
-    let x: Value<i32> = Rc::new(RefCell::new(x));
+pub fn switch_on_call_1(mut x: i32) -> i32 {
     'switch: {
-        match { ({ double_it_0((*x.borrow())) }) } {
+        match { ({ double_it_0(x) }) } {
             __v if __v == 0 => {
                 return 100;
             }

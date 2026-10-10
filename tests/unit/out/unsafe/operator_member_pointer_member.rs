@@ -7,12 +7,12 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Inner {
     pub x: i32,
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Table {}
 impl Table {
     pub unsafe fn operator_index(mut i: i32) -> *mut i32 {
@@ -22,7 +22,7 @@ impl Table {
 pub static mut table_0: std::cell::LazyCell<[i32; 3]> =
     std::cell::LazyCell::new(|| unsafe { [7, 8, 9] });
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S {
     pub data: [i32; 3],
     pub inner: Inner,

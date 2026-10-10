@@ -6,29 +6,28 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn sm_0(n: i32) -> i32 {
-    let n: Value<i32> = Rc::new(RefCell::new(n));
-    let ret: Value<i32> = Rc::new(RefCell::new(0_i32));
+pub fn sm_0(mut n: i32) -> i32 {
+    let mut ret: i32 = 0_i32;
     goto_block!({
         '__entry: {
-            *ret.borrow_mut() = 0;
-            switch!(match (*n.borrow()) {
+            ret = 0;
+            switch!(match n {
                 __v if __v == 0 => {
-                    (*ret.borrow_mut()) += 1;
+                    ret += 1;
                 }
                 __v if __v == 1 => {
-                    (*ret.borrow_mut()) += 10;
+                    ret += 10;
                     goto!('out);
                 }
                 _ => {
-                    (*ret.borrow_mut()) += 100;
+                    ret += 100;
                     break;
                 }
             });
-            (*ret.borrow_mut()) += 1000;
+            ret += 1000;
         }
         'out: {
-            return (*ret.borrow());
+            return ret;
         }
     });
     panic!("ub: non-void function does not return a value")

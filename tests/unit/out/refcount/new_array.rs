@@ -6,42 +6,38 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn sum_0(p: Ptr<i32>, n: i32) -> i32 {
-    let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p));
-    let n: Value<i32> = Rc::new(RefCell::new(n));
-    let total: Value<i32> = Rc::new(RefCell::new(0));
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < (*n.borrow())) {
-        (*total.borrow_mut()) += { (elem!((*p.borrow()), (*i.borrow())).read()) };
-        (*i.borrow_mut()).prefix_inc();
+pub fn sum_0(mut p: Ptr<i32>, mut n: i32) -> i32 {
+    let mut total: i32 = 0;
+    let mut i: i32 = 0;
+    'loop_: while (i < n) {
+        total += { (elem!(p, i).read()) };
+        i.prefix_inc();
     }
-    return (*total.borrow());
+    return total;
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let array: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::alloc_array(
-        (0..100_usize).map(|_| 0_i32).collect::<Box<[i32]>>(),
-    )));
-    (*array.borrow()).delete();
-    let filled: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::alloc_array(
-        (0..4_usize).map(|_| 0_i32).collect::<Box<[i32]>>(),
-    )));
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < 4) {
-        elem!((*filled.borrow()), (*i.borrow())).write({ ((*i.borrow()) + 1) });
-        (*i.borrow_mut()).prefix_inc();
+    let mut array: Ptr<i32> =
+        Ptr::alloc_array((0..100_usize).map(|_| 0_i32).collect::<Box<[i32]>>());
+    array.delete();
+    let mut filled: Ptr<i32> =
+        Ptr::alloc_array((0..4_usize).map(|_| 0_i32).collect::<Box<[i32]>>());
+    let mut i: i32 = 0;
+    'loop_: while (i < 4) {
+        elem!(filled, i).write({ (i + 1) });
+        i.prefix_inc();
     }
     if (({
-        let _p: Ptr<i32> = (*filled.borrow()).clone();
+        let _p: Ptr<i32> = (filled).clone();
         sum_0(_p, 4)
     }) != 10)
     {
         return 1;
     }
-    (*filled.borrow()).delete();
+    filled.delete();
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

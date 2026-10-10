@@ -22,9 +22,9 @@ fn f4(a0: AnyPtr, a1: AnyPtr, a2: usize) -> AnyPtr {
     a0
 }
 
-fn f5(a0: Ptr<u8>, a1: i32) -> Ptr<u8> {
+fn f5(a0: Ptr<i8>, a1: i32) -> Ptr<i8> {
     let __s = a0;
-    let __t = a1 as u8;
+    let __t = a1 as i8;
     match __s.to_c_string_iterator().position(|__c| __c == __t) {
         Some(__i) => __s.offset(__i),
         None => {
@@ -37,18 +37,18 @@ fn f5(a0: Ptr<u8>, a1: i32) -> Ptr<u8> {
     }
 }
 
-fn f7(a0: Ptr<u8>) -> usize {
+fn f7(a0: Ptr<i8>) -> usize {
     a0.to_c_string_iterator().count()
 }
 
-fn f8(a0: Ptr<u8>, a1: Ptr<u8>) -> i32 {
+fn f8(a0: Ptr<i8>, a1: Ptr<i8>) -> i32 {
     let mut __it1 = a0.to_c_string_iterator();
     let mut __it2 = a1.to_c_string_iterator();
     loop {
         let __c1 = __it1.next();
         let __c2 = __it2.next();
         if __c1 != __c2 {
-            break (__c1.unwrap_or(0) as i32) - (__c2.unwrap_or(0) as i32);
+            break (__c1.unwrap_or(0) as u8 as i32) - (__c2.unwrap_or(0) as u8 as i32);
         }
         if __c1.is_none() {
             break 0;
@@ -56,7 +56,7 @@ fn f8(a0: Ptr<u8>, a1: Ptr<u8>) -> i32 {
     }
 }
 
-fn f9(a0: Ptr<u8>, a1: Ptr<u8>, a2: usize) -> i32 {
+fn f9(a0: Ptr<i8>, a1: Ptr<i8>, a2: usize) -> i32 {
     let __n = a2;
     let mut __it1 = a0.to_c_string_iterator().take(__n);
     let mut __it2 = a1.to_c_string_iterator().take(__n);
@@ -64,7 +64,7 @@ fn f9(a0: Ptr<u8>, a1: Ptr<u8>, a2: usize) -> i32 {
         let __c1 = __it1.next();
         let __c2 = __it2.next();
         if __c1 != __c2 {
-            break (__c1.unwrap_or(0) as i32) - (__c2.unwrap_or(0) as i32);
+            break (__c1.unwrap_or(0) as u8 as i32) - (__c2.unwrap_or(0) as u8 as i32);
         }
         if __c1.is_none() {
             break 0;
@@ -87,9 +87,9 @@ fn f10(a0: AnyPtr, a1: i32, a2: usize) -> AnyPtr {
     }
 }
 
-fn f11(a0: Ptr<u8>, a1: i32) -> Ptr<u8> {
+fn f11(a0: Ptr<i8>, a1: i32) -> Ptr<i8> {
     let __s = a0;
-    let __t = a1 as u8;
+    let __t = a1 as i8;
     match __s
         .to_c_string_iterator()
         .enumerate()
@@ -107,25 +107,25 @@ fn f11(a0: Ptr<u8>, a1: i32) -> Ptr<u8> {
     }
 }
 
-fn f15(a0: Ptr<u8>) -> Ptr<u8> {
+fn f15(a0: Ptr<i8>) -> Ptr<i8> {
     libcc2rs::strdup_refcount(a0)
 }
 
-fn f16(a0: Ptr<u8>, a1: Ptr<u8>) -> usize {
+fn f16(a0: Ptr<i8>, a1: Ptr<i8>) -> usize {
     let __set = a1;
     a0.to_c_string_iterator()
         .take_while(|__c| !__set.to_c_string_iterator().any(|__r| __r == *__c))
         .count()
 }
 
-fn f17(a0: Ptr<u8>, a1: Ptr<u8>) -> usize {
+fn f17(a0: Ptr<i8>, a1: Ptr<i8>) -> usize {
     let __set = a1;
     a0.to_c_string_iterator()
         .take_while(|__c| __set.to_c_string_iterator().any(|__r| __r == *__c))
         .count()
 }
 
-fn f18(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
+fn f18(a0: Ptr<i8>, a1: Ptr<i8>) -> Ptr<i8> {
     let __needle = a1;
     let mut __p = a0;
     loop {
@@ -143,7 +143,7 @@ fn f18(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
     }
 }
 
-fn f21(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
+fn f21(a0: Ptr<i8>, a1: Ptr<i8>) -> Ptr<i8> {
     let __s = a0;
     let __set = a1;
     match __s
@@ -171,18 +171,18 @@ fn f24(a0: AnyPtr, a1: i32, a2: usize) -> AnyPtr {
     }
 }
 
-fn f27(a0: Ptr<u8>, a1: Ptr<u8>) -> i32 {
+fn f27(a0: Ptr<i8>, a1: Ptr<i8>) -> i32 {
     let mut __it1 = a0
         .to_c_string_iterator()
-        .map(|__c| __c.to_ascii_lowercase());
+        .map(|__c| (__c as u8).to_ascii_lowercase());
     let mut __it2 = a1
         .to_c_string_iterator()
-        .map(|__c| __c.to_ascii_lowercase());
+        .map(|__c| (__c as u8).to_ascii_lowercase());
     loop {
         let __c1 = __it1.next();
         let __c2 = __it2.next();
         if __c1 != __c2 {
-            break (__c1.unwrap_or(0) as i32) - (__c2.unwrap_or(0) as i32);
+            break (__c1.unwrap_or(0) as u8 as i32) - (__c2.unwrap_or(0) as u8 as i32);
         }
         if __c1.is_none() {
             break 0;
@@ -191,38 +191,38 @@ fn f27(a0: Ptr<u8>, a1: Ptr<u8>) -> i32 {
 }
 
 #[cfg(target_os = "linux")]
-fn f28(a0: i32, a1: Ptr<u8>, a2: usize) -> Ptr<u8> {
+fn f28(a0: i32, a1: Ptr<i8>, a2: usize) -> Ptr<i8> {
     let __msg = std::io::Error::from_raw_os_error(a0).to_string();
     let __len = __msg.len().min(a2.saturating_sub(1));
     let mut __p = a1.clone();
     for __i in 0..__len {
-        __p.write(__msg.as_bytes()[__i]);
+        __p.write(__msg.as_bytes()[__i] as i8);
         __p += 1;
     }
     if a2 > 0 {
-        a1.offset(__len).write(0);
+        elem!(a1, __len).write(0);
     }
     a1
 }
 
 #[cfg(target_os = "macos")]
-fn f28(a0: i32, a1: Ptr<u8>, a2: usize) -> i32 {
+fn f28(a0: i32, a1: Ptr<i8>, a2: usize) -> i32 {
     let __msg = std::io::Error::from_raw_os_error(a0).to_string();
     let __len = __msg.len().min(a2.saturating_sub(1));
     let mut __p = a1.clone();
     for __i in 0..__len {
-        __p.write(__msg.as_bytes()[__i]);
+        __p.write(__msg.as_bytes()[__i] as i8);
         __p += 1;
     }
     if a2 > 0 {
-        a1.offset(__len).write(0);
+        elem!(a1, __len).write(0);
     }
     0
 }
 
-fn f6(a0: Ptr<u8>, a1: i32) -> Ptr<u8> {
+fn f6(a0: Ptr<i8>, a1: i32) -> Ptr<i8> {
     let __s = a0;
-    let __t = a1 as u8;
+    let __t = a1 as i8;
     match __s.to_c_string_iterator().position(|__c| __c == __t) {
         Some(__i) => __s.offset(__i),
         None => {
@@ -250,9 +250,9 @@ fn f12(a0: AnyPtr, a1: i32, a2: usize) -> AnyPtr {
     }
 }
 
-fn f13(a0: Ptr<u8>, a1: i32) -> Ptr<u8> {
+fn f13(a0: Ptr<i8>, a1: i32) -> Ptr<i8> {
     let __s = a0;
-    let __t = a1 as u8;
+    let __t = a1 as i8;
     match __s
         .to_c_string_iterator()
         .enumerate()
@@ -270,9 +270,9 @@ fn f13(a0: Ptr<u8>, a1: i32) -> Ptr<u8> {
     }
 }
 
-fn f14(a0: Ptr<u8>, a1: i32) -> Ptr<u8> {
+fn f14(a0: Ptr<i8>, a1: i32) -> Ptr<i8> {
     let __s = a0;
-    let __t = a1 as u8;
+    let __t = a1 as i8;
     match __s
         .to_c_string_iterator()
         .enumerate()
@@ -290,7 +290,7 @@ fn f14(a0: Ptr<u8>, a1: i32) -> Ptr<u8> {
     }
 }
 
-fn f19(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
+fn f19(a0: Ptr<i8>, a1: Ptr<i8>) -> Ptr<i8> {
     let __needle = a1;
     let mut __p = a0;
     loop {
@@ -308,7 +308,7 @@ fn f19(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
     }
 }
 
-fn f20(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
+fn f20(a0: Ptr<i8>, a1: Ptr<i8>) -> Ptr<i8> {
     let __needle = a1;
     let mut __p = a0;
     loop {
@@ -326,7 +326,7 @@ fn f20(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
     }
 }
 
-fn f22(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
+fn f22(a0: Ptr<i8>, a1: Ptr<i8>) -> Ptr<i8> {
     let __s = a0;
     let __set = a1;
     match __s
@@ -338,7 +338,7 @@ fn f22(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
     }
 }
 
-fn f23(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
+fn f23(a0: Ptr<i8>, a1: Ptr<i8>) -> Ptr<i8> {
     let __s = a0;
     let __set = a1;
     match __s

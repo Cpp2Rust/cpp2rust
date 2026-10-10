@@ -17,13 +17,10 @@ pub struct PtrCtor_unsigned_long_ {
     pub v: u64,
 }
 impl PtrCtor_unsigned_long_ {
-    pub fn new(p: Ptr<u64>) -> Self {
-        let p: Value<Ptr<u64>> = Rc::new(RefCell::new(p));
-        let __this: Value<PtrCtor_unsigned_long_> = Rc::new(RefCell::new(Self {
-            v: (elem!((*p.borrow()), 1).read()),
-        }));
-        let this: Ptr<PtrCtor_unsigned_long_> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    pub fn new(mut p: Ptr<u64>) -> Self {
+        Self {
+            v: (elem!(p, 1).read()),
+        }
     }
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
@@ -34,12 +31,19 @@ pub struct RefCtor_unsigned_long_ {
 }
 impl RefCtor_unsigned_long_ {
     pub fn new(x: Ptr<u64>) -> Self {
-        let __this: Value<RefCtor_unsigned_long_> = Rc::new(RefCell::new(Self {
+        Self {
             v: (x.read()).wrapping_add(1_u64),
-        }));
-        let this: Ptr<RefCtor_unsigned_long_> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
+}
+pub fn neg_ll_1() -> i64 {
+    return -9000000_i64;
+}
+pub fn neg_char_2() -> i8 {
+    return (b'\x80' as i8);
+}
+pub fn neg_int_3() -> i32 {
+    return -1;
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -52,15 +56,16 @@ fn main_0() -> i32 {
     );
     assert!(((*a1.borrow())[(0) as usize] == 2_usize));
     let a2: Value<Box<[usize]>> = Rc::new(RefCell::new(Box::new([4_usize, 5_usize])));
-    let pc: Value<PtrCtor_unsigned_long_> = Rc::new(RefCell::new(PtrCtor_unsigned_long_::new({
-        (a2.as_pointer() as Ptr<usize>).reinterpret_cast::<u64>()
-    })));
-    assert!(({ (*pc.borrow()).v } == 5_u64));
+    let mut pc: PtrCtor_unsigned_long_ =
+        PtrCtor_unsigned_long_::new({ (a2.as_pointer() as Ptr<usize>).reinterpret_cast::<u64>() });
+    assert!((pc.v == 5_u64));
     let v1: Value<usize> = Rc::new(RefCell::new(6_usize));
-    let rc: Value<RefCtor_unsigned_long_> = Rc::new(RefCell::new(RefCtor_unsigned_long_::new({
-        (v1.as_pointer()).reinterpret_cast::<u64>()
-    })));
-    assert!(({ (*rc.borrow()).v } == 7_u64));
+    let mut rc: RefCtor_unsigned_long_ =
+        RefCtor_unsigned_long_::new({ (v1.as_pointer()).reinterpret_cast::<u64>() });
+    assert!((rc.v == 7_u64));
+    assert!((({ neg_ll_1() }) == (-9000000_i32 as i64)));
+    assert!(((({ neg_char_2() }) as i32) == ((b'\x80' as i8) as i32)));
+    assert!((({ neg_int_3() }) == -1_i32));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

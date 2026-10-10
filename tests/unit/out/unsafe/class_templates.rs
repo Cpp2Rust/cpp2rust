@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Clone, VaArg, Default)]
+#[derive(Clone, VaArg, FnPtrArg, Default)]
 pub struct MyContainer_int_ {
     vec_: Vec<i32>,
 }
@@ -33,7 +33,7 @@ impl MyContainer_int_ {
     }
 }
 #[repr(C)]
-#[derive(Clone, VaArg, Default)]
+#[derive(Clone, VaArg, FnPtrArg, Default)]
 pub struct MyContainer_char_ {
     vec_: Vec<libc::c_char>,
 }
@@ -59,7 +59,7 @@ impl MyContainer_char_ {
     }
 }
 #[repr(C)]
-#[derive(Clone, VaArg, Default)]
+#[derive(Clone, VaArg, FnPtrArg, Default)]
 pub struct MyContainer_float_ {
     vec_: Vec<f32>,
 }
@@ -85,7 +85,20 @@ impl MyContainer_float_ {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+pub struct Boxed_short_ {
+    pub value: i16,
+}
+impl Boxed_short_ {
+    pub unsafe fn twice(mut v: i16) -> i16 {
+        return (((v as i32) + (v as i32)) as i16);
+    }
+    pub unsafe fn plus(&self, mut other: i16) -> i16 {
+        return (((self.value as i32) + (other as i32)) as i16);
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Boxed_int_ {
     pub value: i32,
 }
@@ -98,7 +111,7 @@ impl Boxed_int_ {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Boxed_long_ {
     pub value: i64,
 }
@@ -111,7 +124,7 @@ impl Boxed_long_ {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Outer_int__Inner_int_ {
     pub t: i32,
     pub u: i32,
@@ -122,7 +135,7 @@ impl Outer_int__Inner_int_ {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Outer_int_ {
     pub v: i32,
 }
@@ -132,7 +145,7 @@ impl Outer_int_ {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Outer_long__Inner_int_ {
     pub t: i64,
     pub u: i32,
@@ -143,7 +156,7 @@ impl Outer_long__Inner_int_ {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Outer_long__Inner_char_ {
     pub t: i64,
     pub u: libc::c_char,
@@ -154,7 +167,7 @@ impl Outer_long__Inner_char_ {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Outer_long_ {
     pub v: i64,
 }
@@ -163,6 +176,11 @@ impl Outer_long_ {
         return Outer_long__Inner_int_ { t: self.v, u: n };
     }
 }
+#[repr(C)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+pub struct Elem {
+    pub i: i32,
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -170,6 +188,13 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
+    let mut ev: Vec<Elem> = Vec::new();
+    {
+        let __a1 = Elem { i: 2 };
+        ev.push(__a1)
+    };
+    assert!(((ev[(0_usize)].i) == (2)));
+    assert!((((unsafe { Boxed_short_::twice(2_i16,) }) as i32) == (4)));
     let mut oi: Outer_int_ = Outer_int_ { v: 3 };
     assert!(
         ((unsafe { Outer_int__Inner_int_::sum(&(unsafe { Outer_int_::with(&oi, 4,) }),) }) == (7))
@@ -220,12 +245,12 @@ unsafe fn main_0() -> i32 {
     let mut fmc: MyContainer_float_ = <MyContainer_float_>::default();
     assert!((unsafe { MyContainer_float_::empty(&fmc,) }));
     (unsafe {
-        let mut _item: f32 = (1.0E+0 as f32);
+        let mut _item: f32 = (1_f64 as f32);
         MyContainer_float_::push_back(&mut fmc, &mut _item)
     });
     assert!(
         ((unsafe { MyContainer_float_::size(&fmc,) }) == (1_usize))
-            && (((*(unsafe { MyContainer_float_::back_4(&mut fmc,) })) as f64) == (1.0E+0))
+            && (((*(unsafe { MyContainer_float_::back_4(&mut fmc,) })) as f64) == (1_f64))
     );
     (unsafe { MyContainer_float_::pop_back(&mut fmc) });
     assert!((unsafe { MyContainer_float_::empty(&fmc,) }));

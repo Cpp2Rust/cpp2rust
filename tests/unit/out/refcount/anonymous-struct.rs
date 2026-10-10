@@ -86,42 +86,42 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let o: Value<Outer> = Rc::new(RefCell::new(<Outer>::default()));
-    (*o.borrow_mut()).named.a = 1;
-    (*o.borrow_mut()).named.b = 2;
-    (*o.borrow_mut()).anonymous_named_0.c = 3;
-    (*o.borrow_mut()).anonymous_named_0.d = 4;
-    (*o.borrow_mut()).anonymous_named_1.g = 5;
-    (*o.borrow_mut()).anonymous_named_1.h = 6;
-    (*o.borrow_mut()).anon_2.e = 7;
-    (*o.borrow_mut()).anon_2.f = 8;
-    (*o.borrow_mut()).anon_3.i = 9;
-    (*o.borrow_mut()).anon_3.inner_named.j = 10;
-    (*o.borrow_mut()).anon_3.anon_5.k = 11;
-    assert!(({ (*o.borrow()).named.a } == 1));
-    assert!(({ (*o.borrow()).named.b } == 2));
-    assert!(({ (*o.borrow()).anonymous_named_0.c } == 3));
-    assert!(({ (*o.borrow()).anonymous_named_0.d } == 4));
-    assert!(({ (*o.borrow()).anonymous_named_1.g } == 5));
-    assert!(({ (*o.borrow()).anonymous_named_1.h } == 6));
-    assert!(({ (*o.borrow()).anon_2.e } == 7));
-    assert!(({ (*o.borrow()).anon_2.f } == 8));
-    assert!(({ (*o.borrow()).anon_3.i } == 9));
-    assert!(({ (*o.borrow()).anon_3.inner_named.j } == 10));
-    assert!(({ (*o.borrow()).anon_3.anon_5.k } == 11));
-    let s: Value<anon_6> = Rc::new(RefCell::new(<anon_6>::default()));
-    (*s.borrow_mut()).x = 1;
-    (*s.borrow_mut()).z = 2;
+    let mut o: Outer = <Outer>::default();
+    o.named.a = 1;
+    o.named.b = 2;
+    o.anonymous_named_0.c = 3;
+    o.anonymous_named_0.d = 4;
+    o.anonymous_named_1.g = 5;
+    o.anonymous_named_1.h = 6;
+    o.anon_2.e = 7;
+    o.anon_2.f = 8;
+    o.anon_3.i = 9;
+    o.anon_3.inner_named.j = 10;
+    o.anon_3.anon_5.k = 11;
+    assert!((o.named.a == 1));
+    assert!((o.named.b == 2));
+    assert!((o.anonymous_named_0.c == 3));
+    assert!((o.anonymous_named_0.d == 4));
+    assert!((o.anonymous_named_1.g == 5));
+    assert!((o.anonymous_named_1.h == 6));
+    assert!((o.anon_2.e == 7));
+    assert!((o.anon_2.f == 8));
+    assert!((o.anon_3.i == 9));
+    assert!((o.anon_3.inner_named.j == 10));
+    assert!((o.anon_3.anon_5.k == 11));
+    let mut s: anon_6 = <anon_6>::default();
+    s.x = 1;
+    s.z = 2;
     assert!(
         ({
-            (*s.borrow_mut()).x = 1;
-            { (*s.borrow()).x }
+            s.x = 1;
+            s.x
         } != 0)
     );
     assert!(
         ({
-            (*s.borrow_mut()).z = 2;
-            { (*s.borrow()).z }
+            s.z = 2;
+            s.z
         } != 0)
     );
     return 0;

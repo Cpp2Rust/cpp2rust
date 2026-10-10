@@ -6,9 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn unused_param_0(x: i32) {
-    let x: Value<i32> = Rc::new(RefCell::new(x));
-    &(*x.borrow_mut());
+pub fn unused_param_0(mut x: i32) {
+    &(x);
 }
 #[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(24)]
@@ -20,9 +19,8 @@ pub struct NonTrivial {
 pub fn unused_ref_param_1(x: Ptr<NonTrivial>) {
     &(*x.upgrade().deref());
 }
-pub fn unused_ptr_param_2(p: Ptr<NonTrivial>) {
-    let p: Value<Ptr<NonTrivial>> = Rc::new(RefCell::new(p));
-    &(*(*p.borrow()).upgrade().deref());
+pub fn unused_ptr_param_2(mut p: Ptr<NonTrivial>) {
+    &(*p.upgrade().deref());
 }
 thread_local!(
     pub static side_effect_counter_3: Value<i32> = Rc::new(RefCell::new(0));
@@ -37,7 +35,7 @@ pub struct Holder {
     #[offset(0)]
     pub field: i32,
 }
-#[derive(Record, ByteRepr, Default)]
+#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, Default)]
 #[byte_size(8)]
 pub struct NonCopyable {
     #[offset(0)]
@@ -46,11 +44,9 @@ pub struct NonCopyable {
 }
 impl NonCopyable {
     pub fn move_from(_a0: Ptr<NonCopyable>) -> Self {
-        let __this: Value<NonCopyable> = Rc::new(RefCell::new(Self {
+        Self {
             value: field!(_a0, value).with_mut(|__v: &mut Option<Value<i32>>| __v.take()),
-        }));
-        let this: Ptr<NonCopyable> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
 }
 pub fn unused_noncopyable_param_5(x: Ptr<NonCopyable>) {
@@ -62,45 +58,45 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     ({ unused_param_0(42) });
-    let y: Value<i32> = Rc::new(RefCell::new(5));
-    &(*y.borrow_mut());
-    let z: Value<i32> = Rc::new(RefCell::new({
-        &(*y.borrow_mut());
+    let mut y: i32 = 5;
+    &(y);
+    let mut z: i32 = {
+        &(y);
         7
-    }));
-    assert!(((*z.borrow()) == 7));
+    };
+    assert!((z == 7));
     let counter: Value<i32> = Rc::new(RefCell::new(0));
-    let w: Value<i32> = Rc::new(RefCell::new({
+    let mut w: i32 = {
         {
             &(*counter.borrow_mut());
             (*counter.borrow_mut()) = 3
         };
         (*counter.borrow())
-    }));
-    assert!(((*w.borrow()) == 3));
+    };
+    assert!((w == 3));
     assert!(((*counter.borrow()) == 3));
     &({ bump_and_return_4() });
     assert!((side_effect_counter_3.with(|rc| *rc.borrow()) == 1));
-    let v: Value<i32> = Rc::new(RefCell::new({
+    let mut v: i32 = {
         &({ bump_and_return_4() });
         99
-    }));
+    };
     assert!((side_effect_counter_3.with(|rc| *rc.borrow()) == 2));
-    assert!(((*v.borrow()) == 99));
+    assert!((v == 99));
     &(0);
     &(0);
-    &(*y.borrow_mut());
+    &(y);
     (&(0));
-    (&(*y.borrow_mut()));
-    let err: Value<i32> = Rc::new(RefCell::new(0));
-    (&((*err.borrow_mut()) = 42));
-    assert!(((*err.borrow()) == 42));
-    let chosen: Value<i32> = Rc::new(RefCell::new({
-        &((*err.borrow_mut()) = 7);
+    (&(y));
+    let mut err: i32 = 0;
+    (&(err = 42));
+    assert!((err == 42));
+    let mut chosen: i32 = {
+        &(err = 7);
         123
-    }));
-    assert!(((*err.borrow()) == 7));
-    assert!(((*chosen.borrow()) == 123));
+    };
+    assert!((err == 7));
+    assert!((chosen == 123));
     &(bump_and_return_4);
     assert!((side_effect_counter_3.with(|rc| *rc.borrow()) == 2));
     &(FnPtr::<fn() -> i32>::new(bump_and_return_4));
@@ -108,15 +104,15 @@ fn main_0() -> i32 {
     &((FnPtr::<fn() -> i32>::new(bump_and_return_4)).cast::<fn() -> i32>());
     assert!((side_effect_counter_3.with(|rc| *rc.borrow()) == 2));
     let storage: Value<i32> = Rc::new(RefCell::new(11));
-    let p: Value<Ptr<i32>> = Rc::new(RefCell::new((storage.as_pointer())));
-    &((*p.borrow()).read());
-    &(*p.borrow_mut());
-    let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2, 3])));
-    &((*arr.borrow_mut())[(1) as usize]);
+    let mut p: Ptr<i32> = (storage.as_pointer());
+    &(p.read());
+    &(p);
+    let mut arr: [i32; 3] = [1, 2, 3];
+    &(arr[(1) as usize]);
     let h: Value<Holder> = Rc::new(RefCell::new(Holder { field: 17 }));
     &((*h.borrow()).field);
-    let hp: Value<Ptr<Holder>> = Rc::new(RefCell::new((h.as_pointer())));
-    &((*(*hp.borrow()).upgrade().deref()).field);
+    let mut hp: Ptr<Holder> = (h.as_pointer());
+    &((*hp.upgrade().deref()).field);
     let nt: Value<NonTrivial> = Rc::new(RefCell::new(<NonTrivial>::default()));
     ({ unused_ref_param_1(nt.as_pointer()) });
     ({ unused_ptr_param_2((nt.as_pointer())) });

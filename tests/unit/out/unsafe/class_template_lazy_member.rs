@@ -7,12 +7,12 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Point {
     pub x: i32,
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Box_int_ {
     pub val: i32,
 }
@@ -22,11 +22,31 @@ impl Box_int_ {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Box_Point_ {
     pub val: Point,
 }
 impl Box_Point_ {
+    pub unsafe fn get(&mut self) -> Point {
+        return self.val;
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+pub struct Deduced_int_ {
+    pub val: i32,
+}
+impl Deduced_int_ {
+    pub unsafe fn twice(&mut self) -> i32 {
+        return ((self.val) + (self.val));
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+pub struct Deduced_Point_ {
+    pub val: Point,
+}
+impl Deduced_Point_ {
     pub unsafe fn get(&mut self) -> Point {
         return self.val;
     }
@@ -44,6 +64,12 @@ unsafe fn main_0() -> i32 {
         val: Point { x: 4 },
     };
     assert!((((unsafe { Box_Point_::get(&mut p,) }).x) == (4)));
+    let mut d: Deduced_int_ = Deduced_int_ { val: 5 };
+    assert!(((unsafe { Deduced_int_::twice(&mut d,) }) == (10)));
+    let mut dp: Deduced_Point_ = Deduced_Point_ {
+        val: Point { x: 6 },
+    };
+    assert!((((unsafe { Deduced_Point_::get(&mut dp,) }).x) == (6)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

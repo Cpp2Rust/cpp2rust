@@ -6,33 +6,27 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, Default)]
 #[byte_size(4)]
 pub struct Chain {
     #[offset(0)]
     pub v: i32,
 }
 impl Chain {
-    pub fn new(v: i32) -> Self {
-        let v: Value<i32> = Rc::new(RefCell::new(v));
-        let __this: Value<Chain> = Rc::new(RefCell::new(Self { v: (*v.borrow()) }));
-        let this: Ptr<Chain> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    pub fn new(mut v: i32) -> Self {
+        Self { v: v }
     }
     pub fn copy_from(o: Ptr<Chain>) -> Self {
-        let __this: Value<Chain> = Rc::new(RefCell::new(Self {
+        Self {
             v: (o.with(|__s| __s.v) + 100),
-        }));
-        let this: Ptr<Chain> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
     pub fn move_from(o: Ptr<Chain>) -> Self {
-        let __this: Value<Chain> = Rc::new(RefCell::new(Self {
+        let __this: Chain = Self {
             v: (o.with(|__s| __s.v) + 1),
-        }));
-        let this: Ptr<Chain> = __this.as_pointer();
+        };
         field!(o, v).write(0);
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        __this
     }
 }
 impl Clone for Chain {
@@ -41,9 +35,8 @@ impl Clone for Chain {
         Chain::copy_from(__src.as_pointer())
     }
 }
-pub fn consume_0(c: Chain) -> i32 {
-    let c: Value<Chain> = Rc::new(RefCell::new(c));
-    return { (*c.borrow()).v };
+pub fn consume_0(mut c: Chain) -> i32 {
+    return c.v;
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -54,16 +47,16 @@ fn main_0() -> i32 {
     ({ ChainImpl::add_4(&({ ChainImpl::add_4(&a.as_pointer(), 1) }), 1) });
     assert!(({ (*a.borrow()).v } == 3));
     let b0: Value<Chain> = Rc::new(RefCell::new(Chain::new({ 5 })));
-    let b: Value<Chain> = Rc::new(RefCell::new(Chain::move_from({
+    let mut b: Chain = Chain::move_from({
         ({ ChainImpl::add_5(&({ ChainImpl::add_5(&b0.as_pointer(), 1) }), 1) })
-    })));
-    assert!(({ (*b.borrow()).v } == 8) && ({ (*b0.borrow()).v } == 0));
+    });
+    assert!((b.v == 8) && ({ (*b0.borrow()).v } == 0));
     let c: Value<Chain> = Rc::new(RefCell::new(
         ({ ChainImpl::take(&Rc::new(RefCell::new(Chain::new({ 10 }))).as_pointer()) }),
     ));
     assert!(({ (*c.borrow()).v } == 11));
-    let d: Value<Chain> = Rc::new(RefCell::new(({ ChainImpl::copy(&c.as_pointer()) })));
-    assert!(({ (*d.borrow()).v } == 111) && ({ (*c.borrow()).v } == 11));
+    let mut d: Chain = ({ ChainImpl::copy(&c.as_pointer()) });
+    assert!((d.v == 111) && ({ (*c.borrow()).v } == 11));
     let g: Value<Chain> = Rc::new(RefCell::new(Chain::new({ 20 })));
     assert!(
         (({
@@ -73,8 +66,8 @@ fn main_0() -> i32 {
         }) == 21)
     );
     let e: Value<Chain> = Rc::new(RefCell::new(Chain::new({ 30 })));
-    let f: Value<Chain> = Rc::new(RefCell::new(({ ChainImpl::take(&e.as_pointer()) })));
-    assert!(({ (*f.borrow()).v } == 31) && ({ (*e.borrow()).v } == 0));
+    let mut f: Chain = ({ ChainImpl::take(&e.as_pointer()) });
+    assert!((f.v == 31) && ({ (*e.borrow()).v } == 0));
     return 0;
 }
 pub trait ChainImpl {
@@ -85,19 +78,17 @@ pub trait ChainImpl {
     fn self_(&self) -> Ptr<Chain>;
 }
 impl ChainImpl for Ptr<Chain> {
-    fn add_4(&self, n: i32) -> Ptr<Chain> {
-        let n: Value<i32> = Rc::new(RefCell::new(n));
+    fn add_4(&self, mut n: i32) -> Ptr<Chain> {
         {
-            let _ptr = field!((*self), v);
-            _ptr.write(_ptr.read() + (*n.borrow()))
+            let __rhs = n;
+            field!((*self), v).with_mut(|__v| *__v = *__v + __rhs)
         };
         return (*self).clone();
     }
-    fn add_5(&self, n: i32) -> Ptr<Chain> {
-        let n: Value<i32> = Rc::new(RefCell::new(n));
+    fn add_5(&self, mut n: i32) -> Ptr<Chain> {
         {
-            let _ptr = field!((*self), v);
-            _ptr.write(_ptr.read() + (*n.borrow()))
+            let __rhs = n;
+            field!((*self), v).with_mut(|__v| *__v = *__v + __rhs)
         };
         return (*self).clone();
     }

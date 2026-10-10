@@ -1,91 +1,189 @@
 # Lambdas
 
-A lambda becomes a Rust closure with the same parameters and a translated body.
+A lambda becomes an [`FnPtr`](../../runtime/fn-ptr.md) in both models. Its type
+is `FnPtr<fn(A) -> R>`, with the signature of the lambda's call operator, so it
+can be written wherever C++ names the closure type: a variable, a struct field,
+a parameter of an instantiated template, or `decltype`. A call is
+`f.call(args)`.
+
 Given
 
 ```cpp
-template <typename F> int apply(F fn, int x) { return fn(x); }
-
-int main() {
-  int base = 10;
-  auto add_base = [&base](int x) { return x + base; };
-  return apply(add_base, 5);
-}
+int total = 0;
+auto accumulate = [total](int x) mutable {
+  total += x;
+  return total;
+};
+accumulate(1);
 ```
 
 the unsafe model produces
 
 ```rust
-pub unsafe fn apply_0(mut fn_: impl Fn(i32) -> i32, mut x: i32) -> i32 {
-    return fn_(x);
-}
-unsafe fn main_0() -> i32 {
-    let mut base: i32 = 10;
-    return apply_0(
-        (|x: i32| {
-            return x + base;
-        })
-        .clone(),
-        5,
-    );
-}
+let mut total: i32 = 0;
+let mut accumulate: FnPtr<fn(i32) -> i32> = lambda_unsafe!(
+    {
+        let total: i32 = total;
+    },
+    |x: i32| -> i32 {
+        total += x;
+        return total;
+    }
+);
+(unsafe { accumulate.call(1) });
 ```
 
 and the refcount model produces
 
 ```rust
-pub fn apply_0(fn_: impl Fn(i32) -> i32, x: i32) -> i32 {
-    let fn_: Value<_> = Rc::new(RefCell::new(fn_));
-    let x: Value<i32> = Rc::new(RefCell::new(x));
-    return (*fn_.borrow_mut())(*x.borrow());
-}
-fn main_0() -> i32 {
-    let base: Value<i32> = Rc::new(RefCell::new(10));
-    let add_base: Value<_> = Rc::new(RefCell::new(
-        (|x: i32| {
+let total: Value<i32> = Rc::new(RefCell::new(0));
+let accumulate: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(lambda!(
+    {
+        let total: Value<i32> = Rc::new(RefCell::new((*total.borrow())));
+    },
+    |x: i32| -> i32 {
+        let x: Value<i32> = Rc::new(RefCell::new(x));
+        (*total.borrow_mut()) += (*x.borrow());
+        return (*total.borrow());
+    }
+)));
+({ (*accumulate.borrow()).call(1) });
+```
+
+## The lambda macros
+
+A lambda with captures is written with `lambda!` in the refcount model and
+`lambda_unsafe!` in the unsafe model. Both take two arguments:
+
+- a block with one `let` per capture, giving its name, its type and the value it
+  is initialized with when the lambda is created;
+- a closure with the lambda's parameters, its return type and the translated
+  body.
+
+The macro declares a hidden struct with one field per capture, and makes the
+body the `call` method of that struct. The body is written with the names of the
+captures, as the C++ body is, so the macro adds `self.` in front of each capture
+name in it, which makes the name refer to the field of the struct. The `lambda!`
+above expands to
+
+```rust
+{
+    struct __Lambda {
+        total: Value<i32>,
+    }
+    impl __Lambda {
+        fn call(&self, x: i32) -> i32 {
             let x: Value<i32> = Rc::new(RefCell::new(x));
-            return *x.borrow() + *base.borrow();
-        }),
-    ));
-    return apply_0((*add_base.borrow()).clone(), 5);
+            (*self.total.borrow_mut()) += (*x.borrow());
+            return (*self.total.borrow());
+        }
+    }
+    FnPtr::<fn(i32) -> i32>::from_lambda(
+        __Lambda {
+            total: Rc::new(RefCell::new((*total.borrow()))),
+        },
+        __Lambda::call,
+    )
 }
 ```
 
-## Closure and type
+The struct is local to the expression and its type is erased by the `FnPtr`, so
+it never appears in the translated program. The initializers are not part of the
+method: they are evaluated where the lambda is written, so `total` there is the
+enclosing variable, while `total` in the body is `self.total`.
 
-The closure lists the lambda's parameters with their translated types and
-contains the body converted like a function body, including, in the refcount
-model, the preamble that boxes each parameter. The lambda's own type is never
-spelled: a variable holding one is `Value<_>` in the refcount model and the type
-is inferred, and a function template parameter that receives one is
-`impl Fn(A) -> R`, as `apply` shows. A call through such a parameter is a plain
-call, `fn_(x)`, with the refcount model borrowing the boxed closure first.
+The two macros differ in how the method receives the struct. `lambda!` takes it
+by immutable reference, since the captures of the refcount model are `Value`s
+and are written through their cells. `lambda_unsafe!` takes it by mutable
+reference, since the captures of the unsafe model are plain fields, and wraps
+the body in `unsafe`.
+
+Every use of a capture name in the body gets the `self.`, so the body cannot
+give that name to something else: a variable declared in the body, or a
+parameter of a closure in it, with the name of a capture is a compile error.
 
 ## Captures
 
-The C++ capture list is not translated. A Rust closure captures whatever it
-mentions by reference, so `[&base]` and `[base]` produce the same closure and
-both see the variable's current value at call time. For a by-reference capture
-this is C++'s semantics; for a by-value capture it is not, since C++ copies the
-variable when the lambda is created.
+The captures are the ones of the C++ closure type, which clang computes also for
+`[=]` and `[&]`.
 
-## Where the closure is emitted
+| Capture      | Unsafe model | Refcount model  |
+| ------------ | ------------ | --------------- |
+| `[x]`        | `T`          | `Value<T>`      |
+| `[&x]`       | `*mut T`     | `Ptr<T>`        |
+| `[n = expr]` | `T`          | `Value<T>`      |
+| `[this]`     | `*mut S`     | `Value<Ptr<S>>` |
+| `[*this]`    | `S`          | `Value<S>`      |
 
-The refcount model emits a variable initialized with a lambda as a boxed closure
-once and clones it out of the box at each use.
+A capture by copy holds its own copy, made when the lambda is created, and keeps
+its value between calls. A capture by reference holds a pointer to the variable
+and is dereferenced in the body:
 
-> [!WARNING]
->
-> The unsafe model does not emit a `let` for such a variable; the closure is
-> emitted again at every use, which is why the example above shows it inline in
-> the `apply_0` call. This was a workaround: a stored closure that captures
-> locals by reference keeps them borrowed for as long as it lives, so
-> `let foo = || { a += 1; a }; return foo() + a;` does not compile, while
-> re-emitting the closure at each call keeps every borrow inside that call. It
-> is a bug, since the lambda's creation and its uses are no longer the same
-> object ([#314](https://github.com/Cpp2Rust/cpp2rust/issues/314)).
+```cpp
+int base = 10;
+auto add_base = [&base](int x) { return x + base; };
+```
 
-A capture-less lambda assigned to a function pointer becomes a function pointer
-value: `Some(|...| ...)` in the unsafe model and `FnPtr::new(|...| ...)` in the
-refcount model (see [Function Pointers](./fn-pointers.md)). Lambdas with
-captures cannot be converted to function pointers, as in C++.
+```rust
+let mut base: i32 = 10;
+let mut add_base: FnPtr<fn(i32) -> i32> = lambda_unsafe!(
+    {
+        let base: *mut i32 = &mut base;
+    },
+    |x: i32| -> i32 {
+        return ((x) + (*base));
+    }
+);
+```
+
+A captured `this` is the capture `this_`. Inside the body `this` refers to it,
+and members are accessed through that pointer.
+
+A constant that the body uses without capturing, such as a `const int` local
+read by value, is replaced by its initializer.
+
+## Lambdas without captures
+
+A lambda without captures needs no struct and is a function pointer built from a
+closure:
+
+```cpp
+auto one = [](int x) { return x + 1; };
+```
+
+```rust
+let mut one: FnPtr<fn(i32) -> i32> = FnPtr::<fn(i32) -> i32>::new(|x: i32| -> i32 {
+    unsafe {
+        return ((x) + (1));
+    }
+});
+```
+
+Converting it to a function pointer gives, in the refcount model, the lambda
+itself, which already has the type of the function pointer. The unsafe model
+translates function pointers as `Option<unsafe fn(A) -> R>`, so the conversion
+emits `Some(|...| ...)` with the closure again (see
+[Function Pointers](./fn-pointers.md)). Lambdas with captures cannot be
+converted to function pointers, as in C++.
+
+A lambda without captures can be default-constructed since C++20. The
+translation of `decltype(one) other;` emits the closure again, as do the fields
+of that type in the `Default` of a struct.
+
+## Limitations
+
+- Copying a lambda does not copy its captures: the copy shares them with the
+  original, so a `mutable` lambda and its copy update the same state, and the
+  copy constructors of the captures do not run.
+- Moving a lambda does not run the move constructors of its captures.
+- Destroying a lambda does not run the destructors of its captures.
+- A lambda that is default-constructed by a type translated with a
+  [rule](../../rules/writing-rules.md) is wrong. The rule only has the type of
+  the lambda, `FnPtr<fn(A) -> R>`, whose default is the null pointer and not the
+  lambda, so calling it panics. This affects, for example,
+  `std::set<int, decltype(cmp)> s;`, where the set constructs the comparator.
+- Generic lambdas, whose call operator is a template, are not translated.
+- A default-constructed lambda whose body declares a `static` local is rejected,
+  as each emitted closure would get its own copy of the variable.
+- The parameter and return types of a lambda must implement `FnPtrArg`, like
+  those of any `FnPtr`.

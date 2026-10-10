@@ -16,6 +16,10 @@ fn t3<T1: Clone + Ord, T2>() -> UnsafeMapIterator<T1, T2> {
     UnsafeMapIterator::null()
 }
 
+fn t4() -> usize {
+    0_usize
+}
+
 unsafe fn f1<T1: Ord + Clone, T2: Default>(a0: &mut BTreeMap<T1, Box<T2>>, a1: T1) -> &mut T2 {
     a0.entry(a1).or_default().as_mut()
 }

@@ -12,7 +12,7 @@ pub struct Data {
     #[offset(0)]
     pub v: i32,
 }
-#[derive(Record, ByteRepr, Default)]
+#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, Default)]
 #[byte_size(16)]
 pub struct Holder {
     #[offset(0)]
@@ -23,12 +23,10 @@ pub struct Holder {
 }
 impl Holder {
     pub fn move_from(_a0: Ptr<Holder>) -> Self {
-        let __this: Value<Holder> = Rc::new(RefCell::new(Self {
+        Self {
             data: field!(_a0, data).with_mut(|__v: &mut Option<Value<Data>>| __v.take()),
             n: { (*_a0.upgrade().deref()).n },
-        }));
-        let this: Ptr<Holder> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
 }
 pub fn main() {
@@ -38,26 +36,16 @@ pub fn main() {
 fn main_0() -> i32 {
     let h: Value<Holder> = Rc::new(RefCell::new(<Holder>::default()));
     (*h.borrow_mut()).n = 1;
-    let hp: Value<Ptr<Holder>> = Rc::new(RefCell::new((h.as_pointer())));
+    let mut hp: Ptr<Holder> = (h.as_pointer());
     {
         let _p: Ptr<_> = Ptr::alloc(Data { v: 3 });
-        (field_ptr!((*hp.borrow()), data) as Ptr<Option<Value<Data>>>).write(_p.to_owned_opt())
+        (field_ptr!(hp, data) as Ptr<Option<Value<Data>>>).write(_p.to_owned_opt())
     };
     assert!(({ (*{ (*h.borrow()).data.clone() }.as_ref().unwrap().borrow()).v } == 3));
     ({ HolderImpl::set(&h.as_pointer(), Ptr::alloc(Data { v: 4 })) });
-    assert!(
-        ({
-            (*(*hp.borrow())
-                .with(|__s| __s.data.clone())
-                .as_ref()
-                .unwrap()
-                .borrow())
-            .v
-        } == 4)
-    );
-    let __rhs = (*hp.borrow()).with(|__s| __s.n);
-    (*(*hp.borrow())
-        .with(|__s| __s.data.clone())
+    assert!(({ (*hp.with(|__s| __s.data.clone()).as_ref().unwrap().borrow()).v } == 4));
+    let __rhs = hp.with(|__s| __s.n);
+    (*hp.with(|__s| __s.data.clone())
         .as_ref()
         .unwrap()
         .borrow_mut())
@@ -70,10 +58,9 @@ pub trait HolderImpl {
     fn move_assign(&self, _a0: Ptr<Holder>) -> Ptr<Holder>;
 }
 impl HolderImpl for Ptr<Holder> {
-    fn set(&self, p: Ptr<Data>) {
-        let p: Value<Ptr<Data>> = Rc::new(RefCell::new(p));
+    fn set(&self, mut p: Ptr<Data>) {
         {
-            let _p: Ptr<_> = (*p.borrow()).clone();
+            let _p: Ptr<_> = (p).clone();
             (field_ptr!((*self), data) as Ptr<Option<Value<Data>>>).write(_p.to_owned_opt())
         };
     }

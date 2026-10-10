@@ -5,7 +5,7 @@
 #include <initializer_list>
 #include <vector>
 
-template <typename T, typename A> using Init = A;
+#include "../common/init.h"
 
 template <typename T1> using t1 = std::vector<T1>;
 template <typename T1> using t2 = typename std::vector<T1>::iterator;
@@ -21,6 +21,11 @@ using t6 = typename std::vector<T1, T2>::iterator;
 template <typename T1, typename T2 = std::allocator<T1>>
 using t7 = typename std::vector<T1, T2>::const_iterator;
 #endif
+
+template <typename T1> using t8 = typename std::vector<T1>::size_type;
+
+template <typename T1, typename T2 = std::allocator<T1>>
+using t9 = typename std::vector<T1, T2>::size_type;
 
 template <typename T1>
 typename std::vector<T1>::iterator

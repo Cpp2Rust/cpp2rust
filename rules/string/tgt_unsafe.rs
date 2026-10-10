@@ -2,7 +2,7 @@
 // Distributed under the MIT license that can be found in the LICENSE file.
 
 fn t1() -> Vec<libc::c_char> {
-    Vec::new()
+    vec![0]
 }
 
 fn t2() -> *mut libc::c_char {

@@ -32,19 +32,16 @@ pub struct Partial {
     pub p: Ptr<i32>,
 }
 impl Partial {
-    pub fn new_1(q: Ptr<i32>) -> Self {
-        let q: Value<Ptr<i32>> = Rc::new(RefCell::new(q));
-        let __this: Value<Partial> = Rc::new(RefCell::new(Self {
-            p: (*q.borrow()).clone(),
-        }));
-        let this: Ptr<Partial> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    pub fn new_1(mut q: Ptr<i32>) -> Self {
+        Self { p: (q).clone() }
     }
 }
 impl Default for Partial {
     fn default() -> Self {
-        Partial {
-            p: Ptr::<i32>::null(),
+        {
+            Partial {
+                p: Ptr::<i32>::null(),
+            }
         }
     }
 }
@@ -66,26 +63,24 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let g: Value<Graph> = Rc::new(RefCell::new(Graph {
+    let mut g: Graph = Graph {
         V: 5_u32,
         adj: Ptr::<Ptr<GraphNode>>::null(),
-    }));
+    };
     let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([3, 1, 4])));
-    let it: Value<Partial> = Rc::new(RefCell::new(Partial::new_1({
-        (arr.as_pointer() as Ptr<i32>)
-    })));
-    if ({ { (*it.borrow()).p.clone() } } != { (arr.as_pointer() as Ptr<i32>) }) {
+    let mut it: Partial = Partial::new_1({ (arr.as_pointer() as Ptr<i32>) });
+    if ({ (it.p).clone() } != { (arr.as_pointer() as Ptr<i32>) }) {
         return 1;
     }
-    let def: Value<Partial> = Rc::new(RefCell::new(<Partial>::default()));
-    if !(({ (*def.borrow()).p.clone() }).is_null()) {
+    let mut def: Partial = <Partial>::default();
+    if !((def.p).is_null()) {
         return 1;
     }
-    let s: Value<S> = Rc::new(RefCell::new(S {
+    let mut s: S = S {
         i: 7,
         d: Ptr::<Declared>::null(),
-    }));
-    if ({ (*s.borrow()).i } != 7) || (!(({ (*s.borrow()).d.clone() }).is_null())) {
+    };
+    if (s.i != 7) || (!((s.d).is_null())) {
         return 1;
     }
     return 0;
@@ -94,19 +89,17 @@ pub trait GraphImpl {
     fn push(&self, src: u32, dst: u32);
 }
 impl GraphImpl for Ptr<Graph> {
-    fn push(&self, src: u32, dst: u32) {
-        let src: Value<u32> = Rc::new(RefCell::new(src));
-        let dst: Value<u32> = Rc::new(RefCell::new(dst));
+    fn push(&self, mut src: u32, mut dst: u32) {
         let __rhs = Ptr::alloc(GraphNode {
-            dst: (*dst.borrow()),
-            next: (elem!((*self).with(|__s| __s.adj.clone()), (*src.borrow())).read()).clone(),
+            dst: dst,
+            next: (elem!((*self).with(|__s| __s.adj.clone()), src).read()),
         });
-        elem!((*self).with(|__s| __s.adj.clone()), (*src.borrow())).write(__rhs);
+        elem!((*self).with(|__s| __s.adj.clone()), src).write(__rhs);
         let __rhs = Ptr::alloc(GraphNode {
-            dst: (*src.borrow()),
-            next: (elem!((*self).with(|__s| __s.adj.clone()), (*dst.borrow())).read()).clone(),
+            dst: src,
+            next: (elem!((*self).with(|__s| __s.adj.clone()), dst).read()),
         });
-        elem!((*self).with(|__s| __s.adj.clone()), (*dst.borrow())).write(__rhs);
+        elem!((*self).with(|__s| __s.adj.clone()), dst).write(__rhs);
     }
 }
 pub trait PartialImpl {
@@ -116,7 +109,7 @@ pub trait PartialImpl {
     fn next_4(&self) -> Ptr<Partial> {
         unimplemented!()
     }
-    fn next_5(&self, _a0: i32) -> Partial {
+    fn next_5(&self, mut _a0: i32) -> Partial {
         unimplemented!()
     }
 }

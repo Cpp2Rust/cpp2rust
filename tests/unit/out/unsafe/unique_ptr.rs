@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Default)]
+#[derive(FnPtrArg, MoveCtorUnsafe, Default)]
 pub struct SafePointer {
     pub ptr: Option<Box<i32>>,
 }
@@ -27,7 +27,7 @@ impl SafePointer {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Pair {
     pub x: i32,
     pub y: i32,

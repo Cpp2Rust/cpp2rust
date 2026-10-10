@@ -106,5 +106,12 @@ int main() {
   assert(order[1] == 2);
   assert(order[2] == 1);
 
+  int before = global;
+  {
+    const S cs;
+    (void)cs;
+  }
+  assert(global == before + 1);
+
   return 0;
 }

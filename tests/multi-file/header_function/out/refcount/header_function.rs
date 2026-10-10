@@ -23,11 +23,10 @@ pub fn unrelated2_2() -> i32 {
 pub fn unrelated3_3() -> i32 {
     return 3;
 }
-pub fn helper_0(x: i32) -> i32 {
-    let x: Value<i32> = Rc::new(RefCell::new(x));
+pub fn helper_0(mut x: i32) -> i32 {
     &({ unrelated1_1() });
     &({ unrelated2_2() });
     &({ unrelated3_3() });
-    return ((*x.borrow()) + 1);
+    return (x + 1);
 }
 pub fn __cpp2rust_init_globals() {}

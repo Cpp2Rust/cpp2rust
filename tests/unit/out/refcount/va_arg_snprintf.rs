@@ -6,28 +6,26 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn extract_first_0(buf: Ptr<u8>, size: i32, fmt: Ptr<u8>, __args: &[VaArg]) -> i32 {
-    let buf: Value<Ptr<u8>> = Rc::new(RefCell::new(buf));
-    let size: Value<i32> = Rc::new(RefCell::new(size));
-    let fmt: Value<Ptr<u8>> = Rc::new(RefCell::new(fmt));
+pub fn extract_first_0(mut buf: Ptr<i8>, mut size: i32, fmt: Ptr<i8>, __args: &[VaArg]) -> i32 {
+    let fmt: Value<Ptr<i8>> = Rc::new(RefCell::new(fmt));
     let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
     (*ap.borrow_mut()) = VaList::new(__args);
-    let n: Value<i32> = Rc::new(RefCell::new((*ap.borrow_mut()).arg::<i32>()));
-    elem!((*buf.borrow()), 0).write({ ((*n.borrow()) as u8) });
-    return (*n.borrow());
+    let mut n: i32 = (*ap.borrow_mut()).arg::<i32>();
+    elem!(buf, 0).write({ (n as i8) });
+    return n;
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let buf: Value<Box<[u8]>> = Rc::new(RefCell::new((0..64).map(|_| 0_u8).collect::<Box<[u8]>>()));
+    let buf: Value<Box<[i8]>> = Rc::new(RefCell::new((0..64).map(|_| 0_i8).collect::<Box<[i8]>>()));
     assert!(
         (((({
             extract_first_0(
-                (buf.as_pointer() as Ptr<u8>),
+                (buf.as_pointer() as Ptr<i8>),
                 1,
-                Ptr::<u8>::from_string_literal(b"%d"),
+                Ptr::<i8>::from_string_literal(b"%d"),
                 &[(42).into()],
             )
         }) == 42) as i32)
@@ -37,9 +35,9 @@ fn main_0() -> i32 {
     assert!(
         (((({
             extract_first_0(
-                (buf.as_pointer() as Ptr<u8>),
+                (buf.as_pointer() as Ptr<i8>),
                 1,
-                Ptr::<u8>::from_string_literal(b"%d"),
+                Ptr::<i8>::from_string_literal(b"%d"),
                 &[(65).into()],
             )
         }) == 65) as i32)

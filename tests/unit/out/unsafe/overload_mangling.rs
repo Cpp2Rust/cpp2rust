@@ -16,7 +16,7 @@ pub unsafe fn twice_2(mut n: i32) -> i32 {
     return ((n) * (2));
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Access_S_ {}
 impl Access_S_ {
     pub unsafe fn get_1(&mut self, mut p: *mut S) -> i32 {
@@ -33,7 +33,7 @@ impl Access_S_ {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S {
     pub base: i32,
 }
@@ -110,8 +110,8 @@ impl S {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
-pub struct Box {
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+pub struct Box_ {
     pub v: i32,
 }
 pub fn main() {
@@ -170,7 +170,7 @@ unsafe fn main_0() -> i32 {
             Access_S_::ref_4(&mut a, _r)
         }) == (103))
     );
-    let mut b: Box = Box { v: 4 };
+    let mut b: Box_ = Box_ { v: 4 };
     assert!(((b.v) == (4)));
     return 0;
 }

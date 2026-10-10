@@ -20,7 +20,7 @@ pub struct Dirent {
     pub d_type: u8,
     #[offset(offset_of!(::libc::dirent, d_name))]
     #[byte_size(size_of_field!(::libc::dirent, d_name))]
-    pub d_name: Value<Box<[u8]>>,
+    pub d_name: Value<Box<[i8]>>,
 }
 
 impl Default for Dirent {
@@ -31,7 +31,7 @@ impl Default for Dirent {
             d_reclen: 0,
             d_type: 0,
             d_name: Rc::new(RefCell::new(
-                vec![0u8; size_of_field!(::libc::dirent, d_name)].into_boxed_slice(),
+                vec![0i8; size_of_field!(::libc::dirent, d_name)].into_boxed_slice(),
             )),
         }
     }
@@ -47,7 +47,9 @@ impl Dirent {
         {
             let mut nm = de.d_name.borrow_mut();
             let n = name.len().min(nm.len() - 1);
-            nm[..n].copy_from_slice(&name[..n]);
+            for (d, &c) in nm.iter_mut().zip(&name[..n]) {
+                *d = c as i8;
+            }
             nm[n] = 0;
         }
         de

@@ -17,19 +17,21 @@ pub struct record {
     pub hi: u32,
     #[offset(8)]
     #[byte_size(8)]
-    pub pad: Value<Box<[u8]>>,
+    pub pad: Value<Box<[i8]>>,
 }
 impl Default for record {
     fn default() -> Self {
-        record {
-            code: 0_u16,
-            lo: 0_u16,
-            hi: 0_u32,
-            pad: Rc::new(RefCell::new((0..8).map(|_| 0_u8).collect::<Box<[u8]>>())),
+        {
+            record {
+                code: 0_u16,
+                lo: 0_u16,
+                hi: 0_u32,
+                pad: Rc::new(RefCell::new((0..8).map(|_| 0_i8).collect::<Box<[i8]>>())),
+            }
         }
     }
 }
-#[derive(ByteRepr, DeepClone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, DeepClone)]
 #[byte_size(128)]
 pub struct anon_0 {
     #[offset(0)]
@@ -37,11 +39,11 @@ pub struct anon_0 {
     __bytes: Value<Box<[u8]>>,
 }
 impl anon_0 {
-    pub fn h(&self) -> Ptr<record> {
-        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
+    pub fn h(this: Ptr<Self>) -> Ptr<record> {
+        this.reinterpret_cast()
     }
-    pub fn raw_(&self) -> Ptr<u8> {
-        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
+    pub fn raw_(this: Ptr<Self>) -> Ptr<i8> {
+        this.reinterpret_cast()
     }
 }
 impl Default for anon_0 {
@@ -58,9 +60,7 @@ pub struct Container {
     #[byte_size(128)]
     pub view: anon_0,
 }
-pub fn fill_1(out: AnyPtr, cap: usize) {
-    let out: Value<AnyPtr> = Rc::new(RefCell::new(out));
-    let cap: Value<usize> = Rc::new(RefCell::new(cap));
+pub fn fill_1(mut out: AnyPtr, mut cap: usize) {
     let src: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
         0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8,
         0_u8,
@@ -73,19 +73,17 @@ pub fn fill_1(out: AnyPtr, cap: usize) {
     (*src.borrow_mut())[(5) as usize] = 0_u8;
     (*src.borrow_mut())[(6) as usize] = 0_u8;
     (*src.borrow_mut())[(7) as usize] = 1_u8;
-    let n: Value<usize> = Rc::new(RefCell::new(
-        (if (((::std::mem::size_of::<[u8; 16]>() < (*cap.borrow())) as i32) != 0) {
-            (::std::mem::size_of::<[u8; 16]>() as u64)
-        } else {
-            ((*cap.borrow()) as u64)
-        } as usize),
-    ));
+    let mut n: usize = (if (((::std::mem::size_of::<[u8; 16]>() < cap) as i32) != 0) {
+        (::std::mem::size_of::<[u8; 16]>() as u64)
+    } else {
+        (cap as u64)
+    } as usize);
     {
-        (*out.borrow()).memcpy(
+        out.memcpy(
             &((src.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
-            (*n.borrow()) as usize,
+            n as usize,
         );
-        (*out.borrow()).clone()
+        (out).clone()
     };
 }
 pub fn main() {
@@ -105,10 +103,14 @@ fn main_0() -> i32 {
         let _cap: usize = 128usize;
         fill_1(_out, _cap)
     });
-    assert!((((((*c.borrow()).view.h().with(|__s| __s.code) as i32) == 2) as i32) != 0));
+    assert!(
+        ((((anon_0::h(field_ptr!(c.as_pointer(), view)).with(|__s| __s.code) as i32) == 2) as i32)
+            != 0)
+    );
     assert!(
         (((((elem!(
-            ((field_ptr!((*c.borrow()).view.h(), lo)).reinterpret_cast::<u8>()),
+            ((field_ptr!(anon_0::h(field_ptr!(c.as_pointer(), view)), lo))
+                .reinterpret_cast::<u8>()),
             0
         )
         .read()) as i32)
@@ -117,7 +119,8 @@ fn main_0() -> i32 {
     );
     assert!(
         (((((elem!(
-            ((field_ptr!((*c.borrow()).view.h(), lo)).reinterpret_cast::<u8>()),
+            ((field_ptr!(anon_0::h(field_ptr!(c.as_pointer(), view)), lo))
+                .reinterpret_cast::<u8>()),
             1
         )
         .read()) as i32)
@@ -126,7 +129,7 @@ fn main_0() -> i32 {
     );
     assert!(
         (((((elem!(
-            ((*c.borrow()).view.raw_().reinterpret_cast::<u8>() as Ptr::<u8>),
+            (anon_0::raw_(field_ptr!(c.as_pointer(), view)).reinterpret_cast::<i8>() as Ptr::<i8>),
             0
         )
         .read()) as i32)
@@ -135,7 +138,7 @@ fn main_0() -> i32 {
     );
     assert!(
         ((((((elem!(
-            ((*c.borrow()).view.raw_().reinterpret_cast::<u8>() as Ptr::<u8>),
+            (anon_0::raw_(field_ptr!(c.as_pointer(), view)).reinterpret_cast::<i8>() as Ptr::<i8>),
             3
         )
         .read()) as u8) as i32)

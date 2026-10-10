@@ -12,39 +12,39 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let storage: Value<i32> = Rc::new(RefCell::new(7));
-    let p: Value<Ptr<i32>> = Rc::new(RefCell::new((storage.as_pointer())));
-    let np: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));
-    if !(*p.borrow()).is_null() {
+    let mut p: Ptr<i32> = (storage.as_pointer());
+    let mut np: Ptr<i32> = Ptr::<i32>::null();
+    if !(p).is_null() {
         assert!((1 != 0));
     }
-    if !(!(*p.borrow()).is_null()) {
+    if !(!(p).is_null()) {
         assert!((0 != 0));
     }
-    if !(*np.borrow()).is_null() {
+    if !(np).is_null() {
         assert!((0 != 0));
     }
-    if !(!(*np.borrow()).is_null()) {
+    if !(!(np).is_null()) {
         assert!((1 != 0));
     }
-    let iter: Value<Ptr<i32>> = Rc::new(RefCell::new((*p.borrow()).clone()));
-    let iters: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while !(*iter.borrow()).is_null() {
-        (*iters.borrow_mut()).prefix_inc();
-        (*iter.borrow_mut()) = Ptr::<i32>::null();
+    let mut iter: Ptr<i32> = (p).clone();
+    let mut iters: i32 = 0;
+    'loop_: while !(iter).is_null() {
+        iters.prefix_inc();
+        iter = Ptr::<i32>::null();
     }
-    assert!(((((*iters.borrow()) == 1) as i32) != 0));
-    let t3: Value<i32> = Rc::new(RefCell::new(if !(*p.borrow()).is_null() { 1 } else { 0 }));
-    assert!(((((*t3.borrow()) == 1) as i32) != 0));
-    let t4: Value<i32> = Rc::new(RefCell::new(if !(*np.borrow()).is_null() { 1 } else { 0 }));
-    assert!(((((*t4.borrow()) == 0) as i32) != 0));
-    let t5: Value<i32> = Rc::new(RefCell::new((!(!(*p.borrow()).is_null()) as i32)));
-    assert!(((((*t5.borrow()) == 0) as i32) != 0));
-    let t6: Value<i32> = Rc::new(RefCell::new((!(!(*np.borrow()).is_null()) as i32)));
-    assert!(((((*t6.borrow()) == 1) as i32) != 0));
-    let b2: Value<bool> = Rc::new(RefCell::new(!(*p.borrow()).is_null()));
-    let b3: Value<bool> = Rc::new(RefCell::new(!(*np.borrow()).is_null()));
-    assert!((*b2.borrow()));
-    assert!(((!(*b3.borrow()) as i32) != 0));
+    assert!((((iters == 1) as i32) != 0));
+    let mut t3: i32 = if !(p).is_null() { 1 } else { 0 };
+    assert!((((t3 == 1) as i32) != 0));
+    let mut t4: i32 = if !(np).is_null() { 1 } else { 0 };
+    assert!((((t4 == 0) as i32) != 0));
+    let mut t5: i32 = (!(!(p).is_null()) as i32);
+    assert!((((t5 == 0) as i32) != 0));
+    let mut t6: i32 = (!(!(np).is_null()) as i32);
+    assert!((((t6 == 1) as i32) != 0));
+    let mut b2: bool = !(p).is_null();
+    let mut b3: bool = !(np).is_null();
+    assert!(b2);
+    assert!(((!(b3) as i32) != 0));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

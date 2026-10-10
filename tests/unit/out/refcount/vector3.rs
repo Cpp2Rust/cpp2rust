@@ -66,15 +66,15 @@ fn main_0() -> i32 {
     'loop_: for mut v2 in v.as_pointer() as Ptr<Value<Vec<i32>>> {
         let v2: Ptr<Vec<i32>> = v2.upgrade().deref().as_pointer();
         'loop_: for mut i in Ptr::<Vec<i32>>::decay(&(v2)) as Ptr<i32> {
-            let i: Value<i32> = Rc::new(RefCell::new(i.read()));
-            println!("{}", ((*i.borrow()) + 3));
+            let mut i: i32 = i.read();
+            println!("{}", (i + 3));
         }
     }
     'loop_: for mut v2 in v.as_pointer() as Ptr<Value<Vec<i32>>> {
         let v2: Value<Vec<i32>> = Rc::new(RefCell::new(v2.upgrade().deref().borrow().clone()));
         'loop_: for mut i in v2.as_pointer() as Ptr<i32> {
-            let i: Value<i32> = Rc::new(RefCell::new(i.read()));
-            println!("{}", (*i.borrow()));
+            let mut i: i32 = i.read();
+            println!("{}", i);
         }
     }
     return 0;

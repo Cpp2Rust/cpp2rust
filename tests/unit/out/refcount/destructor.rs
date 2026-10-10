@@ -9,31 +9,31 @@ use std::rc::{Rc, Weak};
 thread_local!(
     pub static global_0: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Destructor, Default)]
 #[byte_size(1)]
 pub struct S {}
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Destructor, Default)]
 #[byte_size(1)]
 pub struct Defaulted {
     #[offset(0)]
     #[byte_size(1)]
     pub s: S,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Destructor, Default)]
 #[byte_size(1)]
 pub struct Middle {
     #[offset(0)]
     #[byte_size(1)]
     pub s: S,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Destructor, Default)]
 #[byte_size(1)]
 pub struct Outer {
     #[offset(0)]
     #[byte_size(1)]
     pub m: Middle,
 }
-#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg, Destructor)]
 #[byte_size(3)]
 pub struct ArrayMember {
     #[offset(0)]
@@ -42,33 +42,35 @@ pub struct ArrayMember {
 }
 impl Default for ArrayMember {
     fn default() -> Self {
-        ArrayMember {
-            items: Rc::new(RefCell::new(
-                (0..3).map(|_| <S>::default()).collect::<Box<[S]>>(),
-            )),
+        {
+            ArrayMember {
+                items: Rc::new(RefCell::new(
+                    (0..3).map(|_| <S>::default()).collect::<Box<[S]>>(),
+                )),
+            }
         }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Destructor, Default)]
 #[byte_size(1)]
 pub struct EmptyBody {
     #[offset(0)]
     #[byte_size(1)]
     pub s: S,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Destructor, Default)]
 #[byte_size(1)]
 pub struct Templated_char_ {
     #[offset(0)]
-    pub v: u8,
+    pub v: i8,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Destructor, Default)]
 #[byte_size(4)]
 pub struct Templated_int_ {
     #[offset(0)]
     pub v: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Destructor, Default)]
 #[byte_size(4)]
 pub struct Copied {
     #[offset(0)]
@@ -81,13 +83,13 @@ thread_local!(
 thread_local!(
     pub static order_count_2: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Destructor, Default)]
 #[byte_size(4)]
 pub struct Tagged {
     #[offset(0)]
     pub tag: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Destructor, Default)]
 #[byte_size(20)]
 pub struct Ordered {
     #[offset(0)]
@@ -183,6 +185,13 @@ fn main_0() -> i32 {
             order_1.with(|rc| rc.borrow()[__idx])
         }) == 1)
     );
+    let mut before: i32 = global_0.with(|rc| *rc.borrow());
+    {
+        let cs: Value<S> = Rc::new(RefCell::new(<S>::default()));
+        let _dtor_cs = ScopedDestructor::new(&cs, |__p| __p.destructor());
+        &(*cs.borrow_mut());
+    }
+    assert!((global_0.with(|rc| *rc.borrow()) == (before + 1)));
     return 0;
 }
 pub trait ArrayMemberImpl {
@@ -274,7 +283,7 @@ impl Templated_char_Impl for Ptr<Templated_char_> {
         global_0.with(|rc| {
             *rc.borrow_mut() = {
                 ((global_0.with(|rc| *rc.borrow()) as usize)
-                    .wrapping_add((::std::mem::size_of::<u8>() as usize))) as i32
+                    .wrapping_add((::std::mem::size_of::<i8>() as usize))) as i32
             }
         });
     }

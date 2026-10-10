@@ -6,29 +6,28 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn compound_case_body_0(x: i32) -> i32 {
-    let x: Value<i32> = Rc::new(RefCell::new(x));
-    let r: Value<i32> = Rc::new(RefCell::new(0));
+pub fn compound_case_body_0(mut x: i32) -> i32 {
+    let mut r: i32 = 0;
     'switch: {
-        match { (*x.borrow()) } {
+        match { x } {
             __v if __v == 1 => {
-                let y: Value<i32> = Rc::new(RefCell::new(10));
-                let z: Value<i32> = Rc::new(RefCell::new(20));
-                (*r.borrow_mut()) = ((*y.borrow()) + (*z.borrow()));
+                let mut y: i32 = 10;
+                let mut z: i32 = 20;
+                r = (y + z);
                 break 'switch;
             }
             __v if __v == 2 => {
-                let y: Value<i32> = Rc::new(RefCell::new(100));
-                (*r.borrow_mut()) = ((*y.borrow()) - 1);
+                let mut y: i32 = 100;
+                r = (y - 1);
                 break 'switch;
             }
             _ => {
-                (*r.borrow_mut()) = -1_i32;
+                r = -1_i32;
                 break 'switch;
             }
         }
     };
-    return (*r.borrow());
+    return r;
 }
 pub fn main() {
     __cpp2rust_init_globals();

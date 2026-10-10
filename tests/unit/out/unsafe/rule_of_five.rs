@@ -10,7 +10,7 @@ pub static mut alive_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| u
 pub static mut copies_1: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 pub static mut moves_2: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
-#[derive(VaArg, Default)]
+#[derive(VaArg, FnPtrArg, MoveCtorUnsafe, DestructorUnsafe, Default)]
 pub struct Buffer {
     pub data: [i32; 4],
     pub size: i32,

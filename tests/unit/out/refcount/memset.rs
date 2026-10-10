@@ -11,27 +11,24 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let N: Value<i32> = Rc::new(RefCell::new(3));
-    let arr: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::alloc_array(
-        (0..((*N.borrow()) as usize))
-            .map(|_| 0_i32)
-            .collect::<Box<[i32]>>(),
-    )));
+    let mut N: i32 = 3;
+    let mut arr: Ptr<i32> =
+        Ptr::alloc_array((0..(N as usize)).map(|_| 0_i32).collect::<Box<[i32]>>());
     {
-        (*arr.borrow()).to_any().memset(
+        (arr).to_any().memset(
             (1) as u8,
-            (::std::mem::size_of::<i32>() as usize).wrapping_mul(((*N.borrow()) as usize)) as usize,
+            (::std::mem::size_of::<i32>() as usize).wrapping_mul((N as usize)) as usize,
         );
-        (*arr.borrow()).to_any()
+        (arr).to_any()
     };
-    let sum: Value<i32> = Rc::new(RefCell::new(0));
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < (*N.borrow())) {
-        (*sum.borrow_mut()) += { (elem!((*arr.borrow()), (*i.borrow())).read()) };
-        (*i.borrow_mut()).prefix_inc();
+    let mut sum: i32 = 0;
+    let mut i: i32 = 0;
+    'loop_: while (i < N) {
+        sum += { (elem!(arr, i).read()) };
+        i.prefix_inc();
     }
-    (*arr.borrow()).delete();
-    assert!(((*sum.borrow()) == 50529027));
+    arr.delete();
+    assert!((sum == 50529027));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

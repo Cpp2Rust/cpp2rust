@@ -35,60 +35,51 @@ fn main_0() -> i32 {
         in_: In { a: 2_i16, b: 3_i16 },
         z: 4,
     }));
-    let p: Value<Ptr<S>> = Rc::new(RefCell::new(
-        libcc2rs::malloc_refcount(12usize).reinterpret_cast::<S>(),
-    ));
-    assert!((((!((*p.borrow()).is_null())) as i32) != 0));
+    let mut p: Ptr<S> = libcc2rs::malloc_refcount(12usize).reinterpret_cast::<S>();
+    assert!((((!((p).is_null())) as i32) != 0));
     {
-        ((field_ptr!((*p.borrow()), x)) as Ptr<i32>)
+        ((field_ptr!(p, x)) as Ptr<i32>)
             .to_any()
             .memcpy(&((src.as_pointer()) as Ptr<S>).to_any(), 12usize as usize);
-        ((field_ptr!((*p.borrow()), x)) as Ptr<i32>).to_any()
+        ((field_ptr!(p, x)) as Ptr<i32>).to_any()
     };
     assert!(
-        (((((((((((((*p.borrow()).with(|__s| __s.x) == 1) as i32) != 0)
-            && (((((*p.borrow()).with(|__s| __s.in_.a) as i32) == 2) as i32) != 0))
-            as i32)
+        ((((((((((((p.with(|__s| __s.x) == 1) as i32) != 0)
+            && ((((p.with(|__s| __s.in_.a) as i32) == 2) as i32) != 0)) as i32)
             != 0)
-            && (((((*p.borrow()).with(|__s| __s.in_.b) as i32) == 3) as i32) != 0))
-            as i32)
+            && ((((p.with(|__s| __s.in_.b) as i32) == 3) as i32) != 0)) as i32)
             != 0)
-            && ((((*p.borrow()).with(|__s| __s.z) == 4) as i32) != 0)) as i32)
+            && (((p.with(|__s| __s.z) == 4) as i32) != 0)) as i32)
             != 0)
     );
     let n: Value<In> = Rc::new(RefCell::new(In { a: 5_i16, b: 6_i16 }));
     {
-        ((field_ptr!((*p.borrow()), in_)) as Ptr<In>)
+        ((field_ptr!(p, in_)) as Ptr<In>)
             .to_any()
             .memcpy(&((n.as_pointer()) as Ptr<In>).to_any(), 4usize as usize);
-        ((field_ptr!((*p.borrow()), in_)) as Ptr<In>).to_any()
+        ((field_ptr!(p, in_)) as Ptr<In>).to_any()
     };
     assert!(
-        (((((((((((((*p.borrow()).with(|__s| __s.x) == 1) as i32) != 0)
-            && (((((*p.borrow()).with(|__s| __s.in_.a) as i32) == 5) as i32) != 0))
-            as i32)
+        ((((((((((((p.with(|__s| __s.x) == 1) as i32) != 0)
+            && ((((p.with(|__s| __s.in_.a) as i32) == 5) as i32) != 0)) as i32)
             != 0)
-            && (((((*p.borrow()).with(|__s| __s.in_.b) as i32) == 6) as i32) != 0))
-            as i32)
+            && ((((p.with(|__s| __s.in_.b) as i32) == 6) as i32) != 0)) as i32)
             != 0)
-            && ((((*p.borrow()).with(|__s| __s.z) == 4) as i32) != 0)) as i32)
+            && (((p.with(|__s| __s.z) == 4) as i32) != 0)) as i32)
             != 0)
     );
-    let bz: Value<Ptr<u8>> = Rc::new(RefCell::new(
-        (field_ptr!((*p.borrow()), z)).reinterpret_cast::<u8>(),
-    ));
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((((*i.borrow()) < 4) as i32) != 0) {
-        elem!((*bz.borrow()), (*i.borrow())).write(1_u8);
-        (*i.borrow_mut()).postfix_inc();
+    let mut bz: Ptr<u8> = (field_ptr!(p, z)).reinterpret_cast::<u8>();
+    let mut i: i32 = 0;
+    'loop_: while (((i < 4) as i32) != 0) {
+        elem!(bz, i).write(1_u8);
+        i.postfix_inc();
     }
     assert!(
-        (((((((*p.borrow()).with(|__s| __s.z) == 16843009) as i32) != 0)
-            && (((((*p.borrow()).with(|__s| __s.in_.b) as i32) == 6) as i32) != 0))
-            as i32)
+        ((((((p.with(|__s| __s.z) == 16843009) as i32) != 0)
+            && ((((p.with(|__s| __s.in_.b) as i32) == 6) as i32) != 0)) as i32)
             != 0)
     );
-    libcc2rs::free_refcount((*p.borrow()).to_any());
+    libcc2rs::free_refcount((p).to_any());
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

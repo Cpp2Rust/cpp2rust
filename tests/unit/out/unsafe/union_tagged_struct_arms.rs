@@ -11,14 +11,14 @@ pub const Choice_enum_C_LIST: Choice_enum = 1;
 pub const Choice_enum_C_LETTERS: Choice_enum = 2;
 pub const Choice_enum_C_INTEGERS: Choice_enum = 3;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct anon_1 {
     pub items: *mut *mut libc::c_char,
     pub count: i64,
     pub cursor: i64,
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct anon_2 {
     pub lo: i32,
     pub hi: i32,
@@ -26,7 +26,7 @@ pub struct anon_2 {
     pub step: u8,
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct anon_3 {
     pub lo: i64,
     pub hi: i64,
@@ -35,7 +35,7 @@ pub struct anon_3 {
     pub width: i32,
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, FnPtrArg, VaArg)]
 pub union anon_0 {
     pub list: anon_1,
     pub letters: anon_2,
@@ -47,7 +47,7 @@ impl Default for anon_0 {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Branch {
     pub choice: Choice_enum,
     pub index: i32,
@@ -60,14 +60,6 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    static mut items_4: std::cell::LazyCell<[*mut libc::c_char; 3]> =
-        std::cell::LazyCell::new(|| unsafe {
-            [
-                c"a".as_ptr().cast_mut(),
-                c"b".as_ptr().cast_mut(),
-                c"c".as_ptr().cast_mut(),
-            ]
-        });;
     let mut p_list: Branch = <Branch>::default();
     p_list.choice = Choice_enum_C_LIST;
     p_list.index = 0;
@@ -100,4 +92,12 @@ unsafe fn main_0() -> i32 {
     assert!(((((p_integers.v.integers.width) == (3)) as i32) != 0));
     return 0;
 }
+static mut items_4: std::cell::LazyCell<[*mut libc::c_char; 3]> =
+    std::cell::LazyCell::new(|| unsafe {
+        [
+            c"a".as_ptr().cast_mut(),
+            c"b".as_ptr().cast_mut(),
+            c"c".as_ptr().cast_mut(),
+        ]
+    });
 pub unsafe fn __cpp2rust_init_globals() {}

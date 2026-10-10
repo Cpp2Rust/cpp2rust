@@ -7,38 +7,32 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn test_getpwuid_0() {
-    let pw: Value<Ptr<libcc2rs::Passwd>> = Rc::new(RefCell::new(
-        match nix::unistd::User::from_uid(nix::unistd::Uid::from_raw(
-            nix::unistd::geteuid().as_raw(),
-        )) {
-            Ok(Some(__u)) => Ptr::alloc(Passwd::from_user(&__u)),
-            Ok(None) => Ptr::null(),
-            Err(__e) => {
-                libcc2rs::cpp2rust_errno().write(__e as i32);
-                Ptr::null()
-            }
-        },
-    ));
-    assert!((((!((*pw.borrow()).is_null())) as i32) != 0));
+    let mut pw: Ptr<libcc2rs::Passwd> = match nix::unistd::User::from_uid(
+        nix::unistd::Uid::from_raw(nix::unistd::geteuid().as_raw()),
+    ) {
+        Ok(Some(__u)) => Ptr::alloc(Passwd::from_user(&__u)),
+        Ok(None) => Ptr::null(),
+        Err(__e) => {
+            libcc2rs::cpp2rust_errno().write(__e as i32);
+            Ptr::null()
+        }
+    };
+    assert!((((!((pw).is_null())) as i32) != 0));
+    assert!(((({ pw.with(|__s| __s.pw_uid) } == { nix::unistd::geteuid().as_raw() }) as i32) != 0));
     assert!(
-        ((({ (*pw.borrow()).with(|__s| __s.pw_uid) } == { nix::unistd::geteuid().as_raw() })
-            as i32)
-            != 0)
-    );
-    assert!(
-        ((((*pw.borrow())
+        (((pw
             .with(|__s| __s.pw_name.clone())
             .to_c_string_iterator()
             .count()
             > 0_usize) as i32)
             != 0)
     );
-    assert!((((!(((*pw.borrow()).with(|__s| __s.pw_dir.clone())).is_null())) as i32) != 0));
-    println!("{}", (*pw.borrow()).with(|__s| __s.pw_name.clone()));
+    assert!((((!((pw.with(|__s| __s.pw_dir.clone())).is_null())) as i32) != 0));
+    println!("{}", pw.with(|__s| __s.pw_name.clone()));
 }
 pub fn test_getpwuid_missing_1() {
     libcc2rs::cpp2rust_errno().write(0);
-    let pw: Value<Ptr<libcc2rs::Passwd>> = Rc::new(RefCell::new(
+    let mut pw: Ptr<libcc2rs::Passwd> =
         match nix::unistd::User::from_uid(nix::unistd::Uid::from_raw(2147483646_u32)) {
             Ok(Some(__u)) => Ptr::alloc(Passwd::from_user(&__u)),
             Ok(None) => Ptr::null(),
@@ -46,22 +40,21 @@ pub fn test_getpwuid_missing_1() {
                 libcc2rs::cpp2rust_errno().write(__e as i32);
                 Ptr::null()
             }
-        },
-    ));
-    assert!(((((*pw.borrow()).is_null()) as i32) != 0));
+        };
+    assert!(((((pw).is_null()) as i32) != 0));
     assert!(((((libcc2rs::cpp2rust_errno().read()) == 0) as i32) != 0));
 }
 pub fn test_getpwuid_r_2() {
     let pw: Value<libcc2rs::Passwd> = Rc::new(RefCell::new(Default::default()));
-    let buf: Value<Box<[u8]>> =
-        Rc::new(RefCell::new((0..4096).map(|_| 0_u8).collect::<Box<[u8]>>()));
+    let buf: Value<Box<[i8]>> =
+        Rc::new(RefCell::new((0..4096).map(|_| 0_i8).collect::<Box<[i8]>>()));
     let result: Value<Ptr<libcc2rs::Passwd>> =
         Rc::new(RefCell::new(Ptr::<libcc2rs::Passwd>::null()));
     assert!(
         ((({
             let __pwbuf = (pw.as_pointer());
-            let __buf = (buf.as_pointer() as Ptr<u8>);
-            let __buflen = ::std::mem::size_of::<[u8; 4096]>();
+            let __buf = (buf.as_pointer() as Ptr<i8>);
+            let __buflen = ::std::mem::size_of::<[i8; 4096]>();
             let __out = (result.as_pointer());
             match nix::unistd::User::from_uid(nix::unistd::Uid::from_raw(
                 nix::unistd::geteuid().as_raw(),
@@ -79,15 +72,13 @@ pub fn test_getpwuid_r_2() {
                         __out.write(Ptr::null());
                         ::libc::ERANGE
                     } else {
-                        let mut __ptrs: Vec<Ptr<u8>> = Vec::new();
+                        let mut __ptrs: Vec<Ptr<i8>> = Vec::new();
                         let mut __off: usize = 0;
                         for __s in &__strs {
                             __ptrs.push(__buf.offset(__off));
                             let __end = __s.len();
-                            __buf.offset(__off).with_slice_mut(__end + 1, |__sl| {
-                                __sl[..__end].copy_from_slice(__s);
-                                __sl[__end] = 0;
-                            });
+                            __buf.offset(__off).write_c_bytes(__s);
+                            elem!(__buf, __off + __end).write(0);
                             __off += __end + 1;
                         }
                         __pwbuf.with_mut(|__pw| *__pw = Passwd::from_user_in(&__u, &__ptrs));
@@ -116,30 +107,26 @@ pub fn test_getpwuid_r_2() {
             > 0_usize) as i32)
             != 0)
     );
-    let pw2: Value<Ptr<libcc2rs::Passwd>> = Rc::new(RefCell::new(
-        match nix::unistd::User::from_uid(nix::unistd::Uid::from_raw(
-            nix::unistd::geteuid().as_raw(),
-        )) {
-            Ok(Some(__u)) => Ptr::alloc(Passwd::from_user(&__u)),
-            Ok(None) => Ptr::null(),
-            Err(__e) => {
-                libcc2rs::cpp2rust_errno().write(__e as i32);
-                Ptr::null()
-            }
-        },
-    ));
-    assert!((((!((*pw2.borrow()).is_null())) as i32) != 0));
+    let mut pw2: Ptr<libcc2rs::Passwd> = match nix::unistd::User::from_uid(
+        nix::unistd::Uid::from_raw(nix::unistd::geteuid().as_raw()),
+    ) {
+        Ok(Some(__u)) => Ptr::alloc(Passwd::from_user(&__u)),
+        Ok(None) => Ptr::null(),
+        Err(__e) => {
+            libcc2rs::cpp2rust_errno().write(__e as i32);
+            Ptr::null()
+        }
+    };
+    assert!((((!((pw2).is_null())) as i32) != 0));
     assert!(
         ((({
             let mut __it1 = { (*pw.borrow()).pw_name.clone() }.to_c_string_iterator();
-            let mut __it2 = (*pw2.borrow())
-                .with(|__s| __s.pw_name.clone())
-                .to_c_string_iterator();
+            let mut __it2 = pw2.with(|__s| __s.pw_name.clone()).to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
                 if __c1 != __c2 {
-                    break (__c1.unwrap_or(0) as i32) - (__c2.unwrap_or(0) as i32);
+                    break (__c1.unwrap_or(0) as u8 as i32) - (__c2.unwrap_or(0) as u8 as i32);
                 }
                 if __c1.is_none() {
                     break 0;
@@ -152,14 +139,14 @@ pub fn test_getpwuid_r_2() {
 }
 pub fn test_getpwuid_r_erange_3() {
     let pw: Value<libcc2rs::Passwd> = Rc::new(RefCell::new(Default::default()));
-    let tiny: Value<Box<[u8]>> = Rc::new(RefCell::new((0..1).map(|_| 0_u8).collect::<Box<[u8]>>()));
+    let tiny: Value<Box<[i8]>> = Rc::new(RefCell::new((0..1).map(|_| 0_i8).collect::<Box<[i8]>>()));
     let result: Value<Ptr<libcc2rs::Passwd>> =
         Rc::new(RefCell::new(Ptr::<libcc2rs::Passwd>::null()));
     assert!(
         ((({
             let __pwbuf = (pw.as_pointer());
-            let __buf = (tiny.as_pointer() as Ptr<u8>);
-            let __buflen = ::std::mem::size_of::<[u8; 1]>();
+            let __buf = (tiny.as_pointer() as Ptr<i8>);
+            let __buflen = ::std::mem::size_of::<[i8; 1]>();
             let __out = (result.as_pointer());
             match nix::unistd::User::from_uid(nix::unistd::Uid::from_raw(
                 nix::unistd::geteuid().as_raw(),
@@ -177,15 +164,13 @@ pub fn test_getpwuid_r_erange_3() {
                         __out.write(Ptr::null());
                         ::libc::ERANGE
                     } else {
-                        let mut __ptrs: Vec<Ptr<u8>> = Vec::new();
+                        let mut __ptrs: Vec<Ptr<i8>> = Vec::new();
                         let mut __off: usize = 0;
                         for __s in &__strs {
                             __ptrs.push(__buf.offset(__off));
                             let __end = __s.len();
-                            __buf.offset(__off).with_slice_mut(__end + 1, |__sl| {
-                                __sl[..__end].copy_from_slice(__s);
-                                __sl[__end] = 0;
-                            });
+                            __buf.offset(__off).write_c_bytes(__s);
+                            elem!(__buf, __off + __end).write(0);
                             __off += __end + 1;
                         }
                         __pwbuf.with_mut(|__pw| *__pw = Passwd::from_user_in(&__u, &__ptrs));

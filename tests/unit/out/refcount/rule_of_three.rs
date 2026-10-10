@@ -12,7 +12,7 @@ thread_local!(
 thread_local!(
     pub static copies_1: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, Destructor)]
 #[byte_size(20)]
 pub struct Buffer {
     #[offset(0)]
@@ -22,23 +22,17 @@ pub struct Buffer {
     pub size: i32,
 }
 impl Buffer {
-    pub fn new(size: i32) -> Self {
-        let size: Value<i32> = Rc::new(RefCell::new(size));
+    pub fn new(mut size: i32) -> Self {
         let __this: Value<Buffer> = Rc::new(RefCell::new(Self {
             data: Rc::new(RefCell::new((0..4).map(|_| 0_i32).collect::<Box<[i32]>>())),
-            size: (*size.borrow()),
+            size: size,
         }));
         let this: Ptr<Buffer> = __this.as_pointer();
-        let i: Value<i32> = Rc::new(RefCell::new(0));
-        'loop_: while ((*i.borrow()) < 4) {
-            elem!((array_field_ptr!(this, data) as Ptr::<i32>), (*i.borrow())).write({
-                if ((*i.borrow()) < (*size.borrow())) {
-                    (*i.borrow())
-                } else {
-                    -1_i32
-                }
-            });
-            (*i.borrow_mut()).prefix_inc();
+        let mut i: i32 = 0;
+        'loop_: while (i < 4) {
+            elem!((array_field_ptr!(this, data) as Ptr::<i32>), i)
+                .write({ if (i < size) { i } else { -1_i32 } });
+            i.prefix_inc();
         }
         (*alive_0.with(Value::clone).borrow_mut()).prefix_inc();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
@@ -49,12 +43,11 @@ impl Buffer {
             size: o.with(|__s| __s.size),
         }));
         let this: Ptr<Buffer> = __this.as_pointer();
-        let i: Value<i32> = Rc::new(RefCell::new(0));
-        'loop_: while ((*i.borrow()) < 4) {
-            elem!((array_field_ptr!(this, data) as Ptr::<i32>), (*i.borrow())).write({
-                (elem!((array_field_ptr!(o, data) as Ptr::<i32>), (*i.borrow())).read())
-            });
-            (*i.borrow_mut()).prefix_inc();
+        let mut i: i32 = 0;
+        'loop_: while (i < 4) {
+            elem!((array_field_ptr!(this, data) as Ptr::<i32>), i)
+                .write({ (elem!((array_field_ptr!(o, data) as Ptr::<i32>), i).read()) });
+            i.prefix_inc();
         }
         (*alive_0.with(Value::clone).borrow_mut()).prefix_inc();
         (*copies_1.with(Value::clone).borrow_mut()).prefix_inc();
@@ -72,21 +65,22 @@ impl Clone for Buffer {
 }
 impl Default for Buffer {
     fn default() -> Self {
-        Buffer {
-            data: Rc::new(RefCell::new((0..4).map(|_| 0_i32).collect::<Box<[i32]>>())),
-            size: 0_i32,
+        {
+            Buffer {
+                data: Rc::new(RefCell::new((0..4).map(|_| 0_i32).collect::<Box<[i32]>>())),
+                size: 0_i32,
+            }
         }
     }
 }
 pub fn sum_2(b: Ptr<Buffer>) -> i32 {
-    let s: Value<i32> = Rc::new(RefCell::new(0));
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ({ (*i.borrow()) } < { b.with(|__s| __s.size) }) {
-        (*s.borrow_mut()) +=
-            (elem!((array_field_ptr!(b, data) as Ptr::<i32>), (*i.borrow())).read());
-        (*i.borrow_mut()).prefix_inc();
+    let mut s: i32 = 0;
+    let mut i: i32 = 0;
+    'loop_: while ({ i } < { b.with(|__s| __s.size) }) {
+        s += (elem!((array_field_ptr!(b, data) as Ptr::<i32>), i).read());
+        i.prefix_inc();
     }
-    return (*s.borrow());
+    return s;
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -147,14 +141,11 @@ impl BufferImpl for Ptr<Buffer> {
             return (*self).clone();
         }
         field!((*self), size).write({ o.with(|__s| __s.size) });
-        let i: Value<i32> = Rc::new(RefCell::new(0));
-        'loop_: while ((*i.borrow()) < 4) {
-            elem!(
-                (array_field_ptr!((*self), data) as Ptr::<i32>),
-                (*i.borrow())
-            )
-            .write({ (elem!((array_field_ptr!(o, data) as Ptr::<i32>), (*i.borrow())).read()) });
-            (*i.borrow_mut()).prefix_inc();
+        let mut i: i32 = 0;
+        'loop_: while (i < 4) {
+            elem!((array_field_ptr!((*self), data) as Ptr::<i32>), i)
+                .write({ (elem!((array_field_ptr!(o, data) as Ptr::<i32>), i).read()) });
+            i.prefix_inc();
         }
         (*copies_1.with(Value::clone).borrow_mut()).prefix_inc();
         return (*self).clone();

@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S {
     pub n: i32,
     pub step: i32,
@@ -20,30 +20,38 @@ impl S {
         return ((self.n) * (self.step));
     }
     pub unsafe fn bump(&mut self, mut by: i32) {
-        (unsafe {
-            (|k: i32| {
-                self.n += k;
-            })(by)
-        });
-        (unsafe {
-            (|k: i32| {
-                self.n += k;
-            })(by)
-        });
+        let mut inc: FnPtr<fn(i32)> = lambda_unsafe!(
+            {
+                let this_: *mut S = (self as *mut S);
+            },
+            |mut k: i32| {
+                (*this_).n += k;
+            }
+        );
+        (unsafe { inc.call(by) });
+        (unsafe { inc.call(by) });
     }
     pub unsafe fn bump_via_method(&mut self, mut by: i32) {
-        (unsafe {
-            (|k: i32| {
-                (unsafe { S::add(self, k) });
-            })(by)
-        });
+        let mut inc: FnPtr<fn(i32)> = lambda_unsafe!(
+            {
+                let this_: *mut S = (self as *mut S);
+            },
+            |mut k: i32| {
+                (unsafe { S::add(&mut (*this_), k) });
+            }
+        );
+        (unsafe { inc.call(by) });
     }
     pub unsafe fn read_scaled(&self) -> i32 {
-        return (unsafe {
-            (|| {
-                return (unsafe { S::scaled(self) });
-            })()
-        });
+        let mut get: FnPtr<fn() -> i32> = lambda_unsafe!(
+            {
+                let this_: *const S = (self as *const S);
+            },
+            || -> i32 {
+                return (unsafe { S::scaled(&(*this_)) });
+            }
+        );
+        return (unsafe { get.call() });
     }
 }
 pub fn main() {

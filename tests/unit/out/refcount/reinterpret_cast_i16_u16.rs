@@ -16,13 +16,11 @@ fn main_0() -> i32 {
         256_i16,
         (-32768_i32 as i16),
     ])));
-    let uvals: Value<Ptr<u16>> = Rc::new(RefCell::new(
-        (vals.as_pointer() as Ptr<i16>).reinterpret_cast::<u16>(),
-    ));
-    assert!((((elem!((*uvals.borrow()), 0).read()) as i32) == 65535));
-    assert!((((elem!((*uvals.borrow()), 1).read()) as i32) == 256));
-    assert!((((elem!((*uvals.borrow()), 2).read()) as i32) == 32768));
-    elem!((*uvals.borrow()), 0).write(42_u16);
+    let mut uvals: Ptr<u16> = (vals.as_pointer() as Ptr<i16>).reinterpret_cast::<u16>();
+    assert!((((elem!(uvals, 0).read()) as i32) == 65535));
+    assert!((((elem!(uvals, 1).read()) as i32) == 256));
+    assert!((((elem!(uvals, 2).read()) as i32) == 32768));
+    elem!(uvals, 0).write(42_u16);
     assert!((((*vals.borrow())[(0) as usize] as i32) == 42));
     return 0;
 }

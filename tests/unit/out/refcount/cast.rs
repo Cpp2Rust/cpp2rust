@@ -15,17 +15,17 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let size: Value<usize> = Rc::new(RefCell::new(1_usize));
-    assert!(((*size.borrow()) == 1_usize));
-    let ul: Value<u64> = Rc::new(RefCell::new(5_u64));
-    let s1: Value<usize> = Rc::new(RefCell::new(((*ul.borrow()) as usize)));
-    assert!(((*s1.borrow()) == 5_usize));
-    (*ul.borrow_mut()) = (7_usize as u64);
-    assert!(((*ul.borrow()) == 7_u64));
-    let i: Value<i32> = Rc::new(RefCell::new(2));
-    let e: Value<E> = Rc::new(RefCell::new(((*i.borrow()) as E)));
-    assert!((((*e.borrow()) as i32) == (E_C as i32)));
-    assert!((((*e.borrow()) as i32) == 2));
+    let mut size: usize = 1_usize;
+    assert!((size == 1_usize));
+    let mut ul: u64 = 5_u64;
+    let mut s1: usize = (ul as usize);
+    assert!((s1 == 5_usize));
+    ul = (7_usize as u64);
+    assert!((ul == 7_u64));
+    let mut i: i32 = 2;
+    let mut e: E = ((i) as E);
+    assert!(((e as i32) == (E_C as i32)));
+    assert!(((e as i32) == 2));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

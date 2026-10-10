@@ -82,7 +82,12 @@ unsafe fn main_0() -> i32 {
         "{:}\n",
         (*h),
     );
-    ::std::mem::drop(Box::from_raw(h));
+    {
+        let __p = h;
+        if !__p.is_null() {
+            ::std::mem::drop(Box::from_raw(__p))
+        }
+    };
     let mut i: *mut i32 = Box::leak(Box::new([7, 8, 0_i32])).as_mut_ptr();
     write!(
         std::fs::File::from_raw_fd(
@@ -96,11 +101,16 @@ unsafe fn main_0() -> i32 {
         (*i.offset((0) as isize)),
         (*i.offset((1) as isize)),
     );
-
-    ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
-        i,
-        libcc2rs::malloc_usable_size(i as *mut ::libc::c_void) / ::std::mem::size_of::<i32>(),
-    )));
+    {
+        let __p = i;
+        if !__p.is_null() {
+            ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
+                __p,
+                libcc2rs::malloc_usable_size(__p as *mut ::libc::c_void)
+                    / ::std::mem::size_of::<i32>(),
+            )))
+        }
+    };
     (unsafe {
         swap_by_ptr_1(
             (Box::leak(Box::new(7)) as *mut i32),

@@ -11,12 +11,11 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let fd: Value<i32> = Rc::new(RefCell::new(0));
+    let mut fd: i32 = 0;
     let ssloc: Value<libcc2rs::SockaddrStorage> = Rc::new(RefCell::new(Default::default()));
     let slen: Value<u32> = Rc::new(RefCell::new((128usize as u32)));
     assert!(
-        (((match nix::sys::socket::getsockname::<nix::sys::socket::SockaddrStorage>((*fd.borrow()))
-        {
+        (((match nix::sys::socket::getsockname::<nix::sys::socket::SockaddrStorage>(fd) {
             Ok(__ss) => {
                 Sockaddr::encode(
                     &__ss,
@@ -35,8 +34,7 @@ fn main_0() -> i32 {
     let sin: Value<libcc2rs::SockaddrIn> = Rc::new(RefCell::new(Default::default()));
     let inlen: Value<u32> = Rc::new(RefCell::new((16usize as u32)));
     assert!(
-        (((match nix::sys::socket::getsockname::<nix::sys::socket::SockaddrStorage>((*fd.borrow()))
-        {
+        (((match nix::sys::socket::getsockname::<nix::sys::socket::SockaddrStorage>(fd) {
             Ok(__ss) => {
                 Sockaddr::encode(
                     &__ss,

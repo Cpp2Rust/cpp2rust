@@ -8,10 +8,10 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 
 pub fn main() {
-    let argv: Vec<Value<Vec<u8>>> = ::std::env::args()
-        .map(|x| Rc::new(RefCell::new(x.as_bytes().to_vec())))
+    let argv: Vec<Value<Vec<i8>>> = ::std::env::args()
+        .map(|x| Rc::new(RefCell::new(x.bytes().map(|c| c as i8).collect())))
         .collect();
-    let mut argv: Value<Vec<Ptr<u8>>> = Rc::new(RefCell::new(
+    let mut argv: Value<Vec<Ptr<i8>>> = Rc::new(RefCell::new(
         argv.iter()
             .map(|x| {
                 x.borrow_mut().push(0);
@@ -23,9 +23,7 @@ pub fn main() {
     __cpp2rust_init_globals();
     ::std::process::exit(main_0(::std::env::args().len() as i32, argv.as_pointer()));
 }
-fn main_0(_a0: i32, _a1: Ptr<Ptr<u8>>) -> i32 {
-    let _a0: Value<i32> = Rc::new(RefCell::new(_a0));
-    let _a1: Value<Ptr<Ptr<u8>>> = Rc::new(RefCell::new(_a1));
-    return 0;
+fn main_0(_a0: i32, _a1: Ptr<Ptr<i8>>) -> i32 {
+    0
 }
 pub fn __cpp2rust_init_globals() {}

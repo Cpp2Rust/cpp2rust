@@ -13,7 +13,7 @@ thread_local!(
     pub static p_const_1: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));
 );
 thread_local!(
-    pub static cp_2: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::null()));
+    pub static cp_2: Value<Ptr<i8>> = Rc::new(RefCell::new(Ptr::<i8>::null()));
 );
 thread_local!(
     pub static arr_of_ptr_3: Value<Box<[Ptr<i32>]>> = Rc::new(RefCell::new(
@@ -33,7 +33,7 @@ thread_local!(
     ));
 );
 thread_local!(
-    pub static cp_explicit_null_6: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::null()));
+    pub static cp_explicit_null_6: Value<Ptr<i8>> = Rc::new(RefCell::new(Ptr::<i8>::null()));
 );
 thread_local!(
     pub static p_zero_7: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));
@@ -46,28 +46,28 @@ fn main_0() -> i32 {
     assert!((*p_mut_0.with(Value::clone).borrow()).is_null());
     assert!((*p_const_1.with(Value::clone).borrow()).is_null());
     assert!((*cp_2.with(Value::clone).borrow()).is_null());
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < 4) {
+    let mut i: i32 = 0;
+    'loop_: while (i < 4) {
         assert!(
             ({
-                let __idx = (*i.borrow()) as usize;
+                let __idx = (i) as usize;
                 arr_of_ptr_3.with(|rc| rc.borrow()[__idx].clone())
             })
             .is_null()
         );
-        (*i.borrow_mut()).prefix_inc();
+        i.prefix_inc();
     }
     assert!((*pp_4.with(Value::clone).borrow()).is_null());
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < 3) {
+    let mut i: i32 = 0;
+    'loop_: while (i < 3) {
         assert!(
             ({
-                let __idx = (*i.borrow()) as usize;
+                let __idx = (i) as usize;
                 const_arr_of_ptr_5.with(|rc| rc.borrow()[__idx].clone())
             })
             .is_null()
         );
-        (*i.borrow_mut()).prefix_inc();
+        i.prefix_inc();
     }
     assert!((*cp_explicit_null_6.with(Value::clone).borrow()).is_null());
     assert!((*p_zero_7.with(Value::clone).borrow()).is_null());

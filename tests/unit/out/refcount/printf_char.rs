@@ -11,9 +11,17 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let val: Value<u32> = Rc::new(RefCell::new(67305985_u32));
-    let bytes: Value<Ptr<u8>> = Rc::new(RefCell::new((val.as_pointer()).reinterpret_cast::<u8>()));
-    elem!((*bytes.borrow()), 4).write(255_u8);
+    let mut c: i8 = (('a' as i32) as i8);
+    let mut n: i32 = 3;
+    println!("{}", (c as i32) as u8 as char);
+    println!("{} {}", n, (c as i32) as u8 as char);
+    println!("100% {}", (c as i32) as u8 as char);
+    println!(
+        "{}{}{}",
+        (c as i32) as u8 as char,
+        ((c as i32) + 1) as u8 as char,
+        n
+    );
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

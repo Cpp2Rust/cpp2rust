@@ -20,7 +20,7 @@ pub struct Addrinfo {
     #[offset(offset_of!(::libc::addrinfo, ai_addr))]
     pub ai_addr: Ptr<Sockaddr>,
     #[offset(offset_of!(::libc::addrinfo, ai_canonname))]
-    pub ai_canonname: Ptr<u8>,
+    pub ai_canonname: Ptr<i8>,
     #[offset(offset_of!(::libc::addrinfo, ai_next))]
     pub ai_next: Ptr<Addrinfo>,
 }

@@ -32,5 +32,13 @@ int main() {
            });
            inner;
          }) == 100);
+
+  ({ counter++; });
+  __extension__({
+    if (counter != 2) {
+      counter = 2;
+    }
+  });
+  assert(counter == 2);
   return 0;
 }

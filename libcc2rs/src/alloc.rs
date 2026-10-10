@@ -30,7 +30,7 @@ pub fn calloc_refcount(a0: usize, a1: usize) -> AnyPtr {
     Ptr::alloc_array(vec![0u8; a0 * a1].into_boxed_slice()).to_any()
 }
 
-pub fn strdup_refcount(a0: Ptr<u8>) -> Ptr<u8> {
+pub fn strdup_refcount(a0: Ptr<i8>) -> Ptr<i8> {
     let mut bytes = a0.to_c_bytes();
     bytes.push(0);
     Ptr::alloc_array(bytes.into_boxed_slice())

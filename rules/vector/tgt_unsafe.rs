@@ -33,6 +33,14 @@ fn t7<T1>() -> *const T1 {
     Default::default()
 }
 
+fn t8() -> usize {
+    0_usize
+}
+
+fn t9() -> usize {
+    0_usize
+}
+
 unsafe fn f1<T1>(a0: &mut Vec<T1>, a1: *const T1) -> *const T1 {
     let pos = a1.offset_from(a0.as_ptr()) as usize;
     a0.remove(pos);
@@ -184,7 +192,9 @@ unsafe fn f41<T1>(a0: &mut Vec<T1>) -> *const T1 {
 unsafe fn f42<T1: Ord>(a0: *const T1, a1: *const T1) -> *const T1 {
     core::slice::from_raw_parts(a0, (a1).offset_from(a0) as usize)
         .iter()
-        .max()
+        .enumerate()
+        .max_by(|(idx_a, val_a), (idx_b, val_b)| val_a.cmp(val_b).then_with(|| idx_b.cmp(idx_a)))
+        .map(|(_, value)| value)
         .unwrap()
 }
 
@@ -407,7 +417,9 @@ unsafe fn f93<T1>(a0: &mut Vec<T1>) -> *const T1 {
 unsafe fn f94<T1: Ord>(a0: *const T1, a1: *const T1) -> *const T1 {
     core::slice::from_raw_parts(a0, (a1).offset_from(a0) as usize)
         .iter()
-        .max()
+        .enumerate()
+        .max_by(|(idx_a, val_a), (idx_b, val_b)| val_a.cmp(val_b).then_with(|| idx_b.cmp(idx_a)))
+        .map(|(_, value)| value)
         .unwrap()
 }
 

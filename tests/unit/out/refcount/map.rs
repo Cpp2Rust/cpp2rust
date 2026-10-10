@@ -6,9 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn foo_0(x: u32) {
-    let x: Value<u32> = Rc::new(RefCell::new(x));
-    (*x.borrow_mut()) = { (*x.borrow()).wrapping_add(1_u32) };
+pub fn foo_0(mut x: u32) {
+    x = { (x).wrapping_add(1_u32) };
 }
 pub fn bar_1(x: Ptr<u32>) {
     x.write({ (x.read()).wrapping_add(1_u32) });
@@ -71,14 +70,14 @@ fn main_0() -> i32 {
             .read())
             == 3_u32)
     );
-    let x: Value<i32> = Rc::new(RefCell::new(4));
+    let mut x: i32 = 4;
     (m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)
         .with_mut(|__v: &mut BTreeMap<i16, Value<u32>>| {
             __v.entry(1_i16)
                 .or_insert_with(|| Rc::new(RefCell::new(<u32>::default())))
                 .as_pointer()
         })
-        .write(((*x.borrow()) as u32));
+        .write((x as u32));
     assert!(((*m.borrow()).len() == 3_usize));
     assert!(
         (((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)
@@ -193,38 +192,34 @@ fn main_0() -> i32 {
     let const_it: Value<RefcountMapIter<i16, u32>> = Rc::new(RefCell::new(
         RefcountMapIter::find_key((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>), &10_i16),
     ));
-    let x1: Value<u32> = Rc::new(RefCell::new(if (*it.borrow()) == (*end.borrow()) {
+    let mut x1: u32 = if (*it.borrow()) == (*end.borrow()) {
         0_u32
     } else {
         (*(*it.borrow()).second().borrow())
-    }));
-    assert!(((*x1.borrow()) == 4_u32));
-    let x2: Value<u32> = Rc::new(RefCell::new(if (*const_it.borrow()) == (*end.borrow()) {
+    };
+    assert!((x1 == 4_u32));
+    let mut x2: u32 = if (*const_it.borrow()) == (*end.borrow()) {
         0_u32
     } else {
         (*(*const_it.borrow()).second().borrow())
-    }));
-    assert!(((*x2.borrow()) == 0_u32));
-    let x3: Value<u32> = Rc::new(RefCell::new(
-        if (*it.borrow())
-            == RefcountMapIter::end((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>))
-        {
-            0_u32
-        } else {
-            (*(*it.borrow()).second().borrow())
-        },
-    ));
-    assert!(((*x3.borrow()) == 4_u32));
-    let x4: Value<u32> = Rc::new(RefCell::new(
-        if (*const_it.borrow())
-            == RefcountMapIter::end((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>))
-        {
-            0_u32
-        } else {
-            (*(*const_it.borrow()).second().borrow())
-        },
-    ));
-    assert!(((*x4.borrow()) == 0_u32));
+    };
+    assert!((x2 == 0_u32));
+    let mut x3: u32 = if (*it.borrow())
+        == RefcountMapIter::end((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>))
+    {
+        0_u32
+    } else {
+        (*(*it.borrow()).second().borrow())
+    };
+    assert!((x3 == 4_u32));
+    let mut x4: u32 = if (*const_it.borrow())
+        == RefcountMapIter::end((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>))
+    {
+        0_u32
+    } else {
+        (*(*const_it.borrow()).second().borrow())
+    };
+    assert!((x4 == 0_u32));
     (m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)
         .with_mut(|__v: &mut BTreeMap<i16, Value<u32>>| {
             __v.entry(4_i16)
@@ -236,8 +231,8 @@ fn main_0() -> i32 {
         (m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>),
         &4_i16,
     )));
-    let p: Value<Ptr<u32>> = Rc::new(RefCell::new(((*it4.borrow()).second().as_pointer())));
-    let x5: Value<u32> = Rc::new(RefCell::new(((*p.borrow()).read())));
+    let mut p: Ptr<u32> = ((*it4.borrow()).second().as_pointer());
+    let mut x5: u32 = (p.read());
     assert!(
         (((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)
             .with_mut(|__v: &mut BTreeMap<i16, Value<u32>>| {
@@ -249,9 +244,9 @@ fn main_0() -> i32 {
             == 5_u32)
     );
     assert!(((*(*it4.borrow()).second().borrow()) == 5_u32));
-    assert!((((*p.borrow()).read()) == 5_u32));
-    assert!(((*x5.borrow()) == 5_u32));
-    (*p.borrow()).with_mut(|__v| __v.prefix_inc());
+    assert!(((p.read()) == 5_u32));
+    assert!((x5 == 5_u32));
+    p.with_mut(|__v| __v.prefix_inc());
     assert!(
         (((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)
             .with_mut(|__v: &mut BTreeMap<i16, Value<u32>>| {
@@ -263,8 +258,8 @@ fn main_0() -> i32 {
             == 6_u32)
     );
     assert!(((*(*it4.borrow()).second().borrow()) == 6_u32));
-    assert!((((*p.borrow()).read()) == 6_u32));
-    assert!(((*x5.borrow()) == 5_u32));
+    assert!(((p.read()) == 6_u32));
+    assert!((x5 == 5_u32));
     let r: Ptr<BTreeMap<i16, Value<u32>>> = m.as_pointer();
     assert!(((*r.upgrade().deref()).len() == 4_usize));
     assert!(
@@ -287,16 +282,15 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new(1.try_into().expect("failed conversion"))),
         Rc::new(RefCell::new(1.try_into().expect("failed conversion"))),
     )));
-    let value: Value<f64> = Rc::new(RefCell::new(2_f64));
+    let mut value: f64 = 2_f64;
     (other_map.as_pointer() as Ptr<BTreeMap<(Value<i32>, Value<i64>), Value<f64>>>)
         .with_mut(|__v: &mut BTreeMap<(Value<i32>, Value<i64>), Value<f64>>| {
             __v.entry((*key0.borrow()).clone())
                 .or_insert_with(|| Rc::new(RefCell::new(<f64>::default())))
                 .as_pointer()
         })
-        .write((*value.borrow()));
-    (*value.borrow_mut()) = ((other_map.as_pointer()
-        as Ptr<BTreeMap<(Value<i32>, Value<i64>), Value<f64>>>)
+        .write(value);
+    value = ((other_map.as_pointer() as Ptr<BTreeMap<(Value<i32>, Value<i64>), Value<f64>>>)
         .with_mut(|__v: &mut BTreeMap<(Value<i32>, Value<i64>), Value<f64>>| {
             __v.entry((*key0.borrow()).clone())
                 .or_insert_with(|| Rc::new(RefCell::new(<f64>::default())))
@@ -312,31 +306,31 @@ fn main_0() -> i32 {
                     .as_pointer()
             })
             .read())
-            == (*value.borrow()))
+            == value)
     );
     assert!(((*m.borrow()).len() == 3_usize));
-    let k: Value<i32> = Rc::new(RefCell::new(0));
+    let mut k: i32 = 0;
     assert!(
         (((*m.borrow())
-            .get(&((*k.borrow()) as i16))
+            .get(&(k as i16))
             .expect("out of range!")
             .as_pointer()
             .read())
             == 5_u32)
     );
-    (*k.borrow_mut()).prefix_inc();
+    k.prefix_inc();
     assert!(
         (((*m.borrow())
-            .get(&((*k.borrow()) as i16))
+            .get(&(k as i16))
             .expect("out of range!")
             .as_pointer()
             .read())
             == 4_u32)
     );
-    (*k.borrow_mut()).prefix_inc();
+    k.prefix_inc();
     assert!(
         (((*m.borrow())
-            .get(&((*k.borrow()) as i16))
+            .get(&(k as i16))
             .expect("out of range!")
             .as_pointer()
             .read())
@@ -344,63 +338,60 @@ fn main_0() -> i32 {
     );
     let m2: Value<BTreeMap<i32, Value<bool>>> = Rc::new(RefCell::new(BTreeMap::new()));
     assert!(((*m2.borrow()).len() == 0_usize));
-    let indexes: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
-    let i: Value<u32> = Rc::new(RefCell::new(60_u32));
-    'loop_: while ((*i.borrow()) > 30_u32) {
+    let mut indexes: Vec<i32> = Vec::new();
+    let mut i: u32 = 60_u32;
+    'loop_: while (i > 30_u32) {
         {
-            let __a1 = ((*i.borrow()) as i32);
-            (*indexes.borrow_mut()).push(__a1)
+            let __a1 = (i as i32);
+            indexes.push(__a1)
         };
-        (*i.borrow_mut()).prefix_dec();
+        i.prefix_dec();
     }
-    let i: Value<u32> = Rc::new(RefCell::new(100_u32));
-    'loop_: while ((*i.borrow()) > 60_u32) {
+    let mut i: u32 = 100_u32;
+    'loop_: while (i > 60_u32) {
         {
-            let __a1 = ((*i.borrow()) as i32);
-            (*indexes.borrow_mut()).push(__a1)
+            let __a1 = (i as i32);
+            indexes.push(__a1)
         };
-        (*i.borrow_mut()).prefix_dec();
+        i.prefix_dec();
     }
-    let i: Value<u32> = Rc::new(RefCell::new(30_u32));
-    'loop_: while ((*i.borrow()) > 0_u32) {
+    let mut i: u32 = 30_u32;
+    'loop_: while (i > 0_u32) {
         {
-            let __a1 = ((*i.borrow()) as i32);
-            (*indexes.borrow_mut()).push(__a1)
+            let __a1 = (i as i32);
+            indexes.push(__a1)
         };
-        (*i.borrow_mut()).prefix_dec();
+        i.prefix_dec();
     }
-    let i: Value<u32> = Rc::new(RefCell::new(0_u32));
-    'loop_: while (((*i.borrow()) as usize) < (*indexes.borrow()).len()) {
-        let __rhs = ((*i.borrow()).wrapping_rem(2_u32) != 0);
+    let mut i: u32 = 0_u32;
+    'loop_: while ((i as usize) < indexes.len()) {
+        let __rhs = ((i).wrapping_rem(2_u32) != 0);
         (m2.as_pointer() as Ptr<BTreeMap<i32, Value<bool>>>)
             .with_mut(|__v: &mut BTreeMap<i32, Value<bool>>| {
-                __v.entry(
-                    (elem!((indexes.as_pointer() as Ptr<i32>), ((*i.borrow()) as usize)).read()),
-                )
-                .or_insert_with(|| Rc::new(RefCell::new(<bool>::default())))
-                .as_pointer()
+                __v.entry(indexes[(i as usize)])
+                    .or_insert_with(|| Rc::new(RefCell::new(<bool>::default())))
+                    .as_pointer()
             })
             .write(__rhs);
-        (*i.borrow_mut()).prefix_inc();
+        i.prefix_inc();
     }
-    assert!(((*m2.borrow()).len() == (*indexes.borrow()).len()));
-    let last: Value<i32> = Rc::new(RefCell::new(-1_i32));
+    assert!(((*m2.borrow()).len() == indexes.len()));
+    let mut last: i32 = -1_i32;
     'loop_: for pair in RefcountMapIter::begin(m2.as_pointer()) {
-        assert!(({ (*pair.first().borrow()) } > { (*last.borrow()) }));
+        assert!(({ (*pair.first().borrow()) } > { last }));
         assert!(({ ((*pair.second().borrow()) as i32) } == { ((*pair.first().borrow()) % 2) }));
-        (*last.borrow_mut()) = (*pair.first().borrow());
+        last = (*pair.first().borrow());
     }
-    (*k.borrow_mut()) = 0;
+    k = 0;
     let value_0: Ptr<u32> = (*m.borrow())
-        .get(&((*k.borrow()) as i16))
+        .get(&(k as i16))
         .expect("out of range!")
         .as_pointer();
     assert!(
-        ((((((((*m.borrow()).len()).wrapping_add(((*x1.borrow()) as usize)))
-            .wrapping_add(((*x2.borrow()) as usize)))
-        .wrapping_add(((*x3.borrow()) as usize)))
-        .wrapping_add(((*x4.borrow()) as usize)))
-        .wrapping_add(((*x5.borrow()) as usize)))
+        ((((((((*m.borrow()).len()).wrapping_add((x1 as usize))).wrapping_add((x2 as usize)))
+            .wrapping_add((x3 as usize)))
+        .wrapping_add((x4 as usize)))
+        .wrapping_add((x5 as usize)))
         .wrapping_add(((value_0.read()) as usize))
             == 21_usize)
     );

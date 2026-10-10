@@ -7,6 +7,10 @@ fn t1<T1>() -> Vec<T1> {
     Default::default()
 }
 
+fn t2() -> usize {
+    0_usize
+}
+
 unsafe fn f1<T1>(a0: Vec<T1>) -> *const T1 {
     a0.as_ptr()
 }

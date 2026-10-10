@@ -12,13 +12,11 @@ pub fn get_0(v: Ptr<V>) -> i32 {
 pub fn operator_eq_1(a: Ptr<V>, b: Ptr<V>) -> bool {
     return ({ a.with(|__s| __s.x) } == { b.with(|__s| __s.x) });
 }
-pub fn scaled_2(v: Ptr<V>, k: i32) -> i32 {
-    let k: Value<i32> = Rc::new(RefCell::new(k));
-    return ({ v.with(|__s| __s.x) } * { (*k.borrow()) });
+pub fn scaled_2(v: Ptr<V>, mut k: i32) -> i32 {
+    return ({ v.with(|__s| __s.x) } * { k });
 }
-pub fn scaled_3(v: Ptr<V>, k: f64) -> f64 {
-    let k: Value<f64> = Rc::new(RefCell::new(k));
-    return ({ (v.with(|__s| __s.x) as f64) } * { (*k.borrow()) });
+pub fn scaled_3(v: Ptr<V>, mut k: f64) -> f64 {
+    return ({ (v.with(|__s| __s.x) as f64) } * { k });
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
@@ -86,7 +84,7 @@ fn main_0() -> i32 {
         })
     );
     assert!((({ scaled_2(c.as_pointer(), 2,) }) == 8));
-    assert!((({ scaled_3(c.as_pointer(), 1.5E+0,) }) == 6.0E+0));
+    assert!((({ scaled_3(c.as_pointer(), 1.5_f64,) }) == 6_f64));
     let wi: Value<W_int_> = Rc::new(RefCell::new(W_int_ { x: 5 }));
     let wl: Value<W_long_> = Rc::new(RefCell::new(W_long_ { x: 6_i64 }));
     assert!((({ get_4(wi.as_pointer(),) }) == 5));

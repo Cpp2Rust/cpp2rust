@@ -11,69 +11,69 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let special: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(
+    let mut special: Ptr<i8> = Ptr::<i8>::from_string_literal(
         b"\x07\x08\t\n\x0b\x0c\r !\"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~\xff",
-    )));
-    thread_local!(
-        static expected_0: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
-            7_u8,
-            8_u8,
-            9_u8,
-            10_u8,
-            11_u8,
-            12_u8,
-            13_u8,
-            32_u8,
-            33_u8,
-            34_u8,
-            35_u8,
-            36_u8,
-            37_u8,
-            38_u8,
-            39_u8,
-            40_u8,
-            41_u8,
-            42_u8,
-            43_u8,
-            44_u8,
-            45_u8,
-            46_u8,
-            47_u8,
-            58_u8,
-            59_u8,
-            60_u8,
-            61_u8,
-            62_u8,
-            63_u8,
-            64_u8,
-            91_u8,
-            92_u8,
-            93_u8,
-            94_u8,
-            95_u8,
-            96_u8,
-            123_u8,
-            124_u8,
-            125_u8,
-            126_u8,
-            (b'\xff' as u8),
-        ])));
     );
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow())
-        < (((::std::mem::size_of::<[u8; 41]>() as usize)
-            .wrapping_div((::std::mem::size_of::<u8>() as usize))) as i32))
+    let mut i: i32 = 0;
+    'loop_: while (i
+        < (((::std::mem::size_of::<[i8; 41]>() as usize)
+            .wrapping_div((::std::mem::size_of::<i8>() as usize))) as i32))
     {
         assert!(
-            ({ ((elem!((*special.borrow()), (*i.borrow())).read()) as i32) } == {
+            ({ ((elem!(special, i).read()) as i32) } == {
                 (({
-                    let __idx = (*i.borrow()) as usize;
+                    let __idx = (i) as usize;
                     expected_0.with(|rc| rc.borrow()[__idx])
                 }) as i32)
             })
         );
-        (*i.borrow_mut()).postfix_inc();
+        i.postfix_inc();
     }
     return 0;
 }
+thread_local!(
+    static expected_0: Value<Box<[i8]>> = Rc::new(RefCell::new(Box::new([
+        7_i8,
+        8_i8,
+        9_i8,
+        10_i8,
+        11_i8,
+        12_i8,
+        13_i8,
+        32_i8,
+        33_i8,
+        34_i8,
+        35_i8,
+        36_i8,
+        37_i8,
+        38_i8,
+        39_i8,
+        40_i8,
+        41_i8,
+        42_i8,
+        43_i8,
+        44_i8,
+        45_i8,
+        46_i8,
+        47_i8,
+        58_i8,
+        59_i8,
+        60_i8,
+        61_i8,
+        62_i8,
+        63_i8,
+        64_i8,
+        91_i8,
+        92_i8,
+        93_i8,
+        94_i8,
+        95_i8,
+        96_i8,
+        123_i8,
+        124_i8,
+        125_i8,
+        126_i8,
+        (b'\xff' as i8),
+    ])));
+);
 pub fn __cpp2rust_init_globals() {}

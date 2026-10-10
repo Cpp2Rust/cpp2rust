@@ -15,24 +15,25 @@ pub struct StackArray {
 }
 impl Default for StackArray {
     fn default() -> Self {
-        StackArray {
-            arr: Rc::new(RefCell::new(
-                (0..3)
-                    .map(|_| Ptr::<i32>::null())
-                    .collect::<Box<[Ptr<i32>]>>(),
-            )),
+        {
+            StackArray {
+                arr: Rc::new(RefCell::new(
+                    (0..3)
+                        .map(|_| Ptr::<i32>::null())
+                        .collect::<Box<[Ptr<i32>]>>(),
+                )),
+            }
         }
     }
 }
 pub fn IncrementAll_0(s: Ptr<StackArray>) {
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < 3) {
+    let mut i: i32 = 0;
+    'loop_: while (i < 3) {
         {
-            let _ptr = (elem!((array_field_ptr!(s, arr) as Ptr<Ptr::<i32>>), (*i.borrow())).read())
-                .clone();
-            _ptr.write(_ptr.read() + 1)
+            (elem!((array_field_ptr!(s, arr) as Ptr<Ptr::<i32>>), i).read())
+                .with_mut(|__v| *__v = *__v + 1)
         };
-        (*i.borrow_mut()).prefix_inc();
+        i.prefix_inc();
     }
 }
 pub fn main() {

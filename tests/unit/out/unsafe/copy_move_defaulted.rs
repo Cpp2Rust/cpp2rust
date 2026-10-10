@@ -7,12 +7,12 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Inner {
     pub x: i32,
 }
 #[repr(C)]
-#[derive(Clone, VaArg, Default)]
+#[derive(Clone, VaArg, FnPtrArg, DestructorUnsafe, Default)]
 pub struct Explicit {
     pub v: i32,
     pub inner: Inner,
@@ -30,14 +30,14 @@ impl Explicit {
     pub unsafe fn destructor(&mut self) {}
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Implicit {
     pub v: i32,
     pub inner: Inner,
     pub arr: [i32; 2],
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, MoveCtorUnsafe, Default)]
 pub struct DefaultCopyUserMove {
     pub v: i32,
 }
@@ -58,7 +58,7 @@ impl DefaultCopyUserMove {
     }
 }
 #[repr(C)]
-#[derive(VaArg, Default)]
+#[derive(VaArg, FnPtrArg, MoveCtorUnsafe, Default)]
 pub struct UserCopyDefaultMove {
     pub v: i32,
 }
@@ -98,7 +98,7 @@ impl Clone for UserCopyDefaultMove {
     }
 }
 #[repr(C)]
-#[derive(Default)]
+#[derive(FnPtrArg, MoveCtorUnsafe, Default)]
 pub struct Buffer {
     pub data: Vec<i32>,
     pub rows: Vec<Vec<i32>>,
@@ -143,7 +143,7 @@ impl Buffer {
     }
 }
 #[repr(C)]
-#[derive(Default)]
+#[derive(FnPtrArg, MoveCtorUnsafe, Default)]
 pub struct Owner {
     pub data: Vec<i32>,
     pub n: i32,
@@ -178,7 +178,7 @@ impl Owner {
     }
 }
 #[repr(C)]
-#[derive(Default)]
+#[derive(FnPtrArg, MoveCtorUnsafe, DestructorUnsafe, Default)]
 pub struct Holder {
     pub inner: Inner,
     pub e: Explicit,

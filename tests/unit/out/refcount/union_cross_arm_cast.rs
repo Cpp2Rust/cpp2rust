@@ -13,13 +13,15 @@ pub struct shape_a {
     pub code: u16,
     #[offset(2)]
     #[byte_size(14)]
-    pub pad: Value<Box<[u8]>>,
+    pub pad: Value<Box<[i8]>>,
 }
 impl Default for shape_a {
     fn default() -> Self {
-        shape_a {
-            code: 0_u16,
-            pad: Rc::new(RefCell::new((0..14).map(|_| 0_u8).collect::<Box<[u8]>>())),
+        {
+            shape_a {
+                code: 0_u16,
+                pad: Rc::new(RefCell::new((0..14).map(|_| 0_i8).collect::<Box<[i8]>>())),
+            }
         }
     }
 }
@@ -40,16 +42,18 @@ pub struct shape_b {
 }
 impl Default for shape_b {
     fn default() -> Self {
-        shape_b {
-            code: 0_u16,
-            lo: 0_u16,
-            mid: 0_u32,
-            fill: Rc::new(RefCell::new((0..16).map(|_| 0_u8).collect::<Box<[u8]>>())),
-            tail: 0_u32,
+        {
+            shape_b {
+                code: 0_u16,
+                lo: 0_u16,
+                mid: 0_u32,
+                fill: Rc::new(RefCell::new((0..16).map(|_| 0_u8).collect::<Box<[u8]>>())),
+                tail: 0_u32,
+            }
         }
     }
 }
-#[derive(ByteRepr, DeepClone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, DeepClone)]
 #[byte_size(64)]
 pub struct anon_0 {
     #[offset(0)]
@@ -57,14 +61,14 @@ pub struct anon_0 {
     __bytes: Value<Box<[u8]>>,
 }
 impl anon_0 {
-    pub fn a(&self) -> Ptr<shape_a> {
-        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
+    pub fn a(this: Ptr<Self>) -> Ptr<shape_a> {
+        this.reinterpret_cast()
     }
-    pub fn b(&self) -> Ptr<shape_b> {
-        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
+    pub fn b(this: Ptr<Self>) -> Ptr<shape_b> {
+        this.reinterpret_cast()
     }
-    pub fn raw_(&self) -> Ptr<u8> {
-        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
+    pub fn raw_(this: Ptr<Self>) -> Ptr<i8> {
+        this.reinterpret_cast()
     }
 }
 impl Default for anon_0 {
@@ -95,19 +99,28 @@ fn main_0() -> i32 {
             .memset((0) as u8, 68usize as usize);
         ((c.as_pointer()) as Ptr<Container>).to_any()
     };
-    field!((*c.borrow_mut()).u.a(), code).write(10_u16);
+    field!(anon_0::a(field_ptr!(c.as_pointer(), u)), code).write(10_u16);
     (*c.borrow_mut()).len = (28usize as u32);
     field!(
-        (((*c.borrow()).u.a()).to_any().reinterpret_cast::<shape_b>()),
+        ((anon_0::a(field_ptr!(c.as_pointer(), u)))
+            .to_any()
+            .reinterpret_cast::<shape_b>()),
         tail
     )
     .write(3735928559_u32);
-    assert!(((((*c.borrow()).u.b().with(|__s| __s.tail) == 3735928559_u32) as i32) != 0));
-    assert!((((((*c.borrow()).u.b().with(|__s| __s.code) as i32) == 10) as i32) != 0));
-    field!((*c.borrow_mut()).u.b(), lo).write(8080_u16);
+    assert!(
+        (((anon_0::b(field_ptr!(c.as_pointer(), u)).with(|__s| __s.tail) == 3735928559_u32)
+            as i32)
+            != 0)
+    );
+    assert!(
+        ((((anon_0::b(field_ptr!(c.as_pointer(), u)).with(|__s| __s.code) as i32) == 10) as i32)
+            != 0)
+    );
+    field!(anon_0::b(field_ptr!(c.as_pointer(), u)), lo).write(8080_u16);
     assert!(
         (((((elem!(
-            ((((*c.borrow()).u.raw_().reinterpret_cast::<u8>()) as Ptr<u8>)
+            (((anon_0::raw_(field_ptr!(c.as_pointer(), u)).reinterpret_cast::<i8>()) as Ptr<i8>)
                 .reinterpret_cast::<u8>()),
             2
         )
@@ -117,7 +130,7 @@ fn main_0() -> i32 {
     );
     assert!(
         (((((elem!(
-            ((((*c.borrow()).u.raw_().reinterpret_cast::<u8>()) as Ptr<u8>)
+            (((anon_0::raw_(field_ptr!(c.as_pointer(), u)).reinterpret_cast::<i8>()) as Ptr<i8>)
                 .reinterpret_cast::<u8>()),
             3
         )

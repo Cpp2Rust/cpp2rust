@@ -7,13 +7,13 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct GraphNode {
     pub dst: u32,
     pub next: *mut GraphNode,
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Graph {
     pub V: u32,
     pub adj: *mut *mut GraphNode,
@@ -31,7 +31,7 @@ impl Graph {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg)]
+#[derive(Copy, Clone, VaArg, FnPtrArg)]
 pub struct Partial {
     pub p: *mut i32,
 }
@@ -43,17 +43,19 @@ impl Partial {
 }
 impl Default for Partial {
     fn default() -> Self {
-        Partial {
-            p: std::ptr::null_mut(),
+        unsafe {
+            Partial {
+                p: std::ptr::null_mut(),
+            }
         }
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Declared {}
 impl Declared {}
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S {
     pub i: i32,
     pub d: *mut Declared,

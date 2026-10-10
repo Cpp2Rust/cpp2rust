@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct MinHeapNode {
     pub data: libc::c_char,
     pub freq: i32,
@@ -40,7 +40,7 @@ pub unsafe fn Swap_0(a: *mut MinHeapNode, b: *mut MinHeapNode) {
     };
 }
 #[repr(C)]
-#[derive(Default)]
+#[derive(FnPtrArg, MoveCtorUnsafe, Default)]
 pub struct MinHeap {
     pub size: i32,
     pub capacity: i32,

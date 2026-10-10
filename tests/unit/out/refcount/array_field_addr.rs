@@ -19,10 +19,12 @@ pub struct S {
 }
 impl Default for S {
     fn default() -> Self {
-        S {
-            before: 0_i32,
-            mask: Rc::new(RefCell::new((0..4).map(|_| 0_u8).collect::<Box<[u8]>>())),
-            after: 0_i32,
+        {
+            S {
+                before: 0_i32,
+                mask: Rc::new(RefCell::new((0..4).map(|_| 0_u8).collect::<Box<[u8]>>())),
+                after: 0_i32,
+            }
         }
     }
 }
@@ -31,23 +33,21 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let s: Value<Ptr<S>> = Rc::new(RefCell::new(
-        libcc2rs::malloc_refcount(12usize).reinterpret_cast::<S>(),
-    ));
-    assert!((((!((*s.borrow()).is_null())) as i32) != 0));
-    field!((*s.borrow()), before).write(1);
+    let mut s: Ptr<S> = libcc2rs::malloc_refcount(12usize).reinterpret_cast::<S>();
+    assert!((((!((s).is_null())) as i32) != 0));
+    field!(s, before).write(1);
     {
-        ((array_field_ptr!((*s.borrow()), mask) as Ptr<u8>) as Ptr<u8>)
+        ((array_field_ptr!(s, mask) as Ptr<u8>) as Ptr<u8>)
             .to_any()
             .memset((5) as u8, ::std::mem::size_of::<[u8; 4]>() as usize);
-        ((array_field_ptr!((*s.borrow()), mask) as Ptr<u8>) as Ptr<u8>).to_any()
+        ((array_field_ptr!(s, mask) as Ptr<u8>) as Ptr<u8>).to_any()
     };
-    field!((*s.borrow()), after).write(2);
-    ((array_field_ptr!((*s.borrow()), mask)) as Ptr<u8>).write(7_u8);
+    field!(s, after).write(2);
+    ((array_field_ptr!(s, mask)) as Ptr<u8>).write(7_u8);
     let out: Value<Box<[u8]>> = Rc::new(RefCell::new((0..4).map(|_| 0_u8).collect::<Box<[u8]>>()));
     {
         ((out.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().memcpy(
-            &((array_field_ptr!((*s.borrow()), mask)) as Ptr<u8>).to_any(),
+            &((array_field_ptr!(s, mask)) as Ptr<u8>).to_any(),
             ::std::mem::size_of::<[u8; 4]>() as usize,
         );
         ((out.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()
@@ -58,11 +58,11 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        (((((((*s.borrow()).with(|__s| __s.before) == 1) as i32) != 0)
-            && ((((*s.borrow()).with(|__s| __s.after) == 2) as i32) != 0)) as i32)
+        ((((((s.with(|__s| __s.before) == 1) as i32) != 0)
+            && (((s.with(|__s| __s.after) == 2) as i32) != 0)) as i32)
             != 0)
     );
-    libcc2rs::free_refcount((*s.borrow()).to_any());
+    libcc2rs::free_refcount((s).to_any());
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

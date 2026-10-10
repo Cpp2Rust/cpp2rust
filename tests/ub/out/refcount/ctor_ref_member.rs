@@ -15,9 +15,7 @@ pub struct S {
 }
 impl S {
     pub fn new(x: Ptr<i32>) -> Self {
-        let __this: Value<S> = Rc::new(RefCell::new(Self { r: (x).clone() }));
-        let this: Ptr<S> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self { r: (x).clone() }
     }
 }
 pub fn main() {
@@ -25,11 +23,11 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let s: Value<S> = Rc::new(RefCell::new({
+    let mut s: S = {
         let __tmp_0: Value<i32> = Rc::new(RefCell::new(5));
         S::new({ __tmp_0.as_pointer() })
-    }));
-    assert!((({ (*s.borrow()).r.clone() }.read()) == 5));
+    };
+    assert!(((s.r.read()) == 5));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

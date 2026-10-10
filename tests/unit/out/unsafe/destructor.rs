@@ -8,7 +8,7 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub static mut global_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
-#[derive(Clone, VaArg, Default)]
+#[derive(Clone, VaArg, FnPtrArg, DestructorUnsafe, Default)]
 pub struct S {}
 impl S {
     pub unsafe fn destructor(&mut self) {
@@ -16,7 +16,7 @@ impl S {
     }
 }
 #[repr(C)]
-#[derive(Clone, VaArg, Default)]
+#[derive(Clone, VaArg, FnPtrArg, DestructorUnsafe, Default)]
 pub struct Defaulted {
     pub s: S,
 }
@@ -26,7 +26,7 @@ impl Defaulted {
     }
 }
 #[repr(C)]
-#[derive(Clone, VaArg, Default)]
+#[derive(Clone, VaArg, FnPtrArg, DestructorUnsafe, Default)]
 pub struct Middle {
     pub s: S,
 }
@@ -36,7 +36,7 @@ impl Middle {
     }
 }
 #[repr(C)]
-#[derive(Clone, VaArg, Default)]
+#[derive(Clone, VaArg, FnPtrArg, DestructorUnsafe, Default)]
 pub struct Outer {
     pub m: Middle,
 }
@@ -46,7 +46,7 @@ impl Outer {
     }
 }
 #[repr(C)]
-#[derive(Clone, VaArg, Default)]
+#[derive(Clone, VaArg, FnPtrArg, DestructorUnsafe, Default)]
 pub struct ArrayMember {
     pub items: [S; 3],
 }
@@ -58,7 +58,7 @@ impl ArrayMember {
     }
 }
 #[repr(C)]
-#[derive(Clone, VaArg, Default)]
+#[derive(Clone, VaArg, FnPtrArg, DestructorUnsafe, Default)]
 pub struct EmptyBody {
     pub s: S,
 }
@@ -68,7 +68,7 @@ impl EmptyBody {
     }
 }
 #[repr(C)]
-#[derive(Clone, VaArg, Default)]
+#[derive(Clone, VaArg, FnPtrArg, DestructorUnsafe, Default)]
 pub struct Templated_char_ {
     pub v: libc::c_char,
 }
@@ -80,7 +80,7 @@ impl Templated_char_ {
     }
 }
 #[repr(C)]
-#[derive(Clone, VaArg, Default)]
+#[derive(Clone, VaArg, FnPtrArg, DestructorUnsafe, Default)]
 pub struct Templated_int_ {
     pub v: i32,
 }
@@ -92,7 +92,7 @@ impl Templated_int_ {
     }
 }
 #[repr(C)]
-#[derive(Clone, VaArg, Default)]
+#[derive(Clone, VaArg, FnPtrArg, DestructorUnsafe, Default)]
 pub struct Copied {
     pub v: i32,
 }
@@ -105,7 +105,7 @@ pub static mut order_1: std::cell::LazyCell<[i32; 3]> =
     std::cell::LazyCell::new(|| unsafe { [0_i32; 3] });
 pub static mut order_count_2: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
-#[derive(Clone, VaArg, Default)]
+#[derive(Clone, VaArg, FnPtrArg, DestructorUnsafe, Default)]
 pub struct Tagged {
     pub tag: i32,
 }
@@ -117,7 +117,7 @@ impl Tagged {
     }
 }
 #[repr(C)]
-#[derive(Clone, VaArg, Default)]
+#[derive(Clone, VaArg, FnPtrArg, DestructorUnsafe, Default)]
 pub struct Ordered {
     pub first: Tagged,
     pub dummy1: i32,
@@ -198,6 +198,13 @@ unsafe fn main_0() -> i32 {
     assert!((((*std::cell::LazyCell::force_mut(&mut *&raw mut order_1))[(0) as usize]) == (3)));
     assert!((((*std::cell::LazyCell::force_mut(&mut *&raw mut order_1))[(1) as usize]) == (2)));
     assert!((((*std::cell::LazyCell::force_mut(&mut *&raw mut order_1))[(2) as usize]) == (1)));
+    let mut before: i32 = (*std::cell::LazyCell::force_mut(&mut *&raw mut global_0));
+    {
+        let mut cs: S = <S>::default();
+        let _dtor_cs = ScopedDestructorUnsafe::new(&raw mut cs, S::destructor);
+        &(cs);
+    }
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut global_0)) == ((before) + (1))));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {

@@ -16,14 +16,16 @@ pub struct S {
     pub tail: Value<Box<[i32]>>,
     #[offset(16)]
     #[byte_size(4)]
-    pub buf: Value<Box<[u8]>>,
+    pub buf: Value<Box<[i8]>>,
 }
 impl Default for S {
     fn default() -> Self {
-        S {
-            head: 0_i32,
-            tail: Rc::new(RefCell::new((0..3).map(|_| 0_i32).collect::<Box<[i32]>>())),
-            buf: Rc::new(RefCell::new((0..4).map(|_| 0_u8).collect::<Box<[u8]>>())),
+        {
+            S {
+                head: 0_i32,
+                tail: Rc::new(RefCell::new((0..3).map(|_| 0_i32).collect::<Box<[i32]>>())),
+                buf: Rc::new(RefCell::new((0..4).map(|_| 0_i8).collect::<Box<[i8]>>())),
+            }
         }
     }
 }
@@ -40,31 +42,31 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     assert!(((({ (*s_0.with(Value::clone).borrow()).head } == 5) as i32) != 0));
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((((*i.borrow()) < 3) as i32) != 0) {
+    let mut i: i32 = 0;
+    'loop_: while (((i < 3) as i32) != 0) {
         assert!(
             ((((elem!(
                 (array_field_ptr!(s_0.with(|v| v.as_pointer()), tail) as Ptr::<i32>),
-                (*i.borrow())
+                i
             )
             .read())
                 == 0) as i32)
                 != 0)
         );
-        (*i.borrow_mut()).postfix_inc();
+        i.postfix_inc();
     }
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((((*i.borrow()) < 4) as i32) != 0) {
+    let mut i: i32 = 0;
+    'loop_: while (((i < 4) as i32) != 0) {
         assert!(
             (((((elem!(
-                (array_field_ptr!(s_0.with(|v| v.as_pointer()), buf) as Ptr::<u8>),
-                (*i.borrow())
+                (array_field_ptr!(s_0.with(|v| v.as_pointer()), buf) as Ptr::<i8>),
+                i
             )
             .read()) as i32)
                 == 0) as i32)
                 != 0)
         );
-        (*i.borrow_mut()).postfix_inc();
+        i.postfix_inc();
     }
     return 0;
 }

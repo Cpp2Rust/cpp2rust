@@ -11,10 +11,10 @@ pub fn expand(input: TokenStream) -> TokenStream {
     quote::quote! {
         impl #impl_generics ::libcc2rs::FnPtrArg for #name #ty_generics #where_clause {
             #[inline]
-            fn to_repr(&self) -> ::libcc2rs::ArgRepr<'_> {
-                ::libcc2rs::ArgRepr::Record(self)
+            fn to_repr(self) -> ::libcc2rs::ArgRepr {
+                ::libcc2rs::ArgRepr::Record(Box::new(self))
             }
-            fn from_repr(r: &::libcc2rs::ArgRepr) -> Self {
+            fn from_repr(r: ::libcc2rs::ArgRepr) -> Self {
                 ::libcc2rs::record_from_repr(r)
             }
         }

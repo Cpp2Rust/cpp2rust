@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct node_t {
     pub left: *mut node_t,
     pub right: *mut node_t,
@@ -45,7 +45,12 @@ pub unsafe fn del_2(mut node: *mut node_t) {
     if !(((*node).right).is_null()) {
         (unsafe { del_2((*node).right) });
     }
-    ::std::mem::drop(Box::from_raw(node));
+    {
+        let __p = node;
+        if !__p.is_null() {
+            ::std::mem::drop(Box::from_raw(__p))
+        }
+    };
 }
 pub fn main() {
     unsafe {

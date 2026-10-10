@@ -11,19 +11,19 @@ pub const widget_enum_MODE_IDLE: widget_enum = 0;
 pub const widget_enum_MODE_ACTIVE: widget_enum = 1;
 pub const widget_enum_MODE_DONE: widget_enum = 2;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct widget {
     pub id: i32,
     pub mode: widget_enum,
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct point_struct {
     pub x: i32,
     pub y: i32,
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, FnPtrArg, VaArg)]
 pub union point {
     pub whole: i32,
     pub half: i16,
@@ -34,7 +34,7 @@ impl Default for point {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, FnPtrArg, VaArg)]
 pub union slot_union {
     pub i: i32,
     pub u: u32,
@@ -48,17 +48,17 @@ pub type slot = u32;
 pub const slot_SLOT_A: slot = 0;
 pub const slot_SLOT_B: slot = 1;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Inner {
     pub tag_field: i32,
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Outer {
     pub field: Inner,
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Inner_struct {
     pub typedef_field: i32,
 }

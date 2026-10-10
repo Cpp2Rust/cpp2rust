@@ -4,9 +4,10 @@
 #![allow(private_bounds)]
 
 use std::any::{Any, TypeId};
+use std::cell::UnsafeCell;
 use std::rc::Rc;
 
-use crate::fn_ptr_arg::{ArgList, ArgRepr, FnPtrArg, FnPtrArgs};
+use crate::fn_ptr_arg::{ArgList, ArgRepr, FnPtrArg, FnPtrArgs, record_from_repr};
 use crate::rc::Ptr;
 use crate::reinterpret::ByteRepr;
 use crate::void::{AnyPtr, ErasedPtr};
@@ -20,7 +21,7 @@ pub(crate) trait FnSig: Copy + 'static {
 
 macro_rules! impl_fn_sig {
     () => {
-        impl_fn_sig!(@gen A B C D E F G H I J K L M N O P);
+        impl_fn_sig!(@gen A B C D E F G H I J K L M N O P Q S T U V W X Y);
     };
     (@gen $($a:ident)*) => {
         impl<R: FnPtrArg $(, $a: FnPtrArg)*> FnSig for fn($($a,)*) -> R {
@@ -48,14 +49,71 @@ impl_fn_sig!();
 // Build a trampoline adaptor for a function pointer of one type to be called
 // through a different type.
 trait Adapted: Any {
-    fn call_adapted(&self, args: ArgList<'_>, sink: &mut dyn FnMut(ArgRepr<'_>));
+    fn call_adapted(&self, args: ArgList) -> ArgRepr;
+
+    fn copy_from(&self) -> Option<Rc<dyn Adapted>> {
+        None
+    }
+
+    fn move_from(&self) -> Option<Rc<dyn Adapted>> {
+        None
+    }
+
+    fn destroy(&self) {}
+
+    fn specializations(&self) -> &[Rc<dyn Any>] {
+        panic!("ub: not a generic lambda");
+    }
 }
 
 impl<T: FnSig> Adapted for T {
-    fn call_adapted(&self, args: ArgList<'_>, sink: &mut dyn FnMut(ArgRepr<'_>)) {
-        let converted_args = T::Args::from_list(&args);
-        let result = self.call_direct(converted_args);
-        sink(result.to_repr());
+    fn call_adapted(&self, args: ArgList) -> ArgRepr {
+        let converted_args = T::Args::from_list(args);
+        self.call_direct(converted_args).to_repr()
+    }
+}
+
+trait Lambda<T: FnSig> {
+    fn call(&self, args: T::Args) -> T::Ret;
+    fn copy_from(&self) -> Box<dyn Lambda<T>>;
+    fn move_from(&self) -> Box<dyn Lambda<T>>;
+    fn destroy(&self);
+}
+
+struct LambdaSafe<L, C> {
+    captures: L,
+    call: C,
+    copy_from: fn(&L) -> L,
+    move_from: fn(&L) -> L,
+    destroy: fn(&L),
+}
+
+struct LambdaUnsafe<L, C> {
+    captures: UnsafeCell<L>,
+    call: C,
+    copy_from: fn(&mut L) -> L,
+    move_from: fn(&mut L) -> L,
+    destroy: fn(&mut L),
+}
+
+struct Closure<T: FnSig>(Box<dyn Lambda<T>>);
+
+impl<T: FnSig> Adapted for Closure<T> {
+    fn call_adapted(&self, args: ArgList) -> ArgRepr {
+        let converted_args = T::Args::from_list(args);
+        self.0.call(converted_args).to_repr()
+    }
+
+    fn copy_from(&self) -> Option<Rc<dyn Adapted>> {
+        Some(Rc::new(Closure::<T>(self.0.copy_from())))
+    }
+
+    fn move_from(&self) -> Option<Rc<dyn Adapted>> {
+        Some(Rc::new(Closure::<T>(self.0.move_from())))
+    }
+
+    fn destroy(&self) {
+        self.0.destroy();
     }
 }
 
@@ -107,11 +165,11 @@ impl<T: FnSig> FnPtr<T> {
             return f.call_direct(args);
         }
         if let Some(original) = &self.original {
-            let mut result = None;
-            original.call_adapted(args.to_list(), &mut |repr| {
-                result = Some(T::Ret::from_repr(&repr));
-            });
-            return result.expect("ub: calling through incompatible fn pointer type");
+            let closure: &dyn Any = &**original;
+            if let Some(closure) = closure.downcast_ref::<Closure<T>>() {
+                return closure.0.call(args);
+            }
+            return T::Ret::from_repr(original.call_adapted(args.to_list()));
         }
         panic!("ub: calling through incompatible fn pointer type");
     }
@@ -152,6 +210,34 @@ impl<T: FnSig> FnPtr<T> {
         }
     }
 
+    pub fn copy_from(&self) -> Self {
+        FnPtr {
+            addr: self.addr,
+            current: self.current,
+            original: self
+                .original
+                .as_ref()
+                .map(|original| original.copy_from().unwrap_or_else(|| original.clone())),
+        }
+    }
+
+    pub fn move_from(&self) -> Self {
+        FnPtr {
+            addr: self.addr,
+            current: self.current,
+            original: self
+                .original
+                .as_ref()
+                .map(|original| original.move_from().unwrap_or_else(|| original.clone())),
+        }
+    }
+
+    pub fn destroy(&self) {
+        if let Some(original) = &self.original {
+            original.destroy();
+        }
+    }
+
     fn boxed_original(&self) -> Option<Rc<dyn Adapted>> {
         match &self.original {
             Some(original) => Some(original.clone()),
@@ -166,7 +252,7 @@ impl<T: FnSig> FnPtr<T> {
 // invokes, e.g. `fn_ptr.call(a0, a1)`.
 macro_rules! impl_fn_ptr_call {
     () => {
-        impl_fn_ptr_call!(@gen A B C D E F G H I J K L M N O P);
+        impl_fn_ptr_call!(@gen A B C D E F G H I J K L M N O P Q S T U V W X Y);
     };
     (@gen $($a:ident)*) => {
         impl<R: FnPtrArg $(, $a: FnPtrArg)*> FnPtr<fn($($a,)*) -> R> {
@@ -174,6 +260,112 @@ macro_rules! impl_fn_ptr_call {
             #[allow(non_snake_case, clippy::too_many_arguments)]
             pub fn call(&self $(, $a: $a)*) -> R {
                 self.call_args(($($a,)*))
+            }
+
+            pub fn from_lambda<Captures: 'static>(
+                captures: Captures,
+                call: fn(&Captures $(, $a)*) -> R,
+                copy_from: fn(&Captures) -> Captures,
+                move_from: fn(&Captures) -> Captures,
+                destroy: fn(&Captures),
+            ) -> Self {
+                let lambda = LambdaSafe { captures, call, copy_from, move_from, destroy };
+                FnPtr {
+                    addr: call as usize,
+                    current: None,
+                    original: Some(Rc::new(Closure::<fn($($a,)*) -> R>(Box::new(lambda)))),
+                }
+            }
+
+            pub fn from_lambda_unsafe<Captures: 'static>(
+                captures: Captures,
+                call: fn(&mut Captures $(, $a)*) -> R,
+                copy_from: fn(&mut Captures) -> Captures,
+                move_from: fn(&mut Captures) -> Captures,
+                destroy: fn(&mut Captures),
+            ) -> Self {
+                let lambda = LambdaUnsafe {
+                    captures: UnsafeCell::new(captures),
+                    call,
+                    copy_from,
+                    move_from,
+                    destroy,
+                };
+                FnPtr {
+                    addr: call as usize,
+                    current: None,
+                    original: Some(Rc::new(Closure::<fn($($a,)*) -> R>(Box::new(lambda)))),
+                }
+            }
+        }
+
+        impl<Captures: 'static, R: FnPtrArg $(, $a: FnPtrArg)*> Lambda<fn($($a,)*) -> R>
+            for LambdaSafe<Captures, fn(&Captures $(, $a)*) -> R>
+        {
+            #[allow(non_snake_case)]
+            fn call(&self, ($($a,)*): ($($a,)*)) -> R {
+                (self.call)(&self.captures $(, $a)*)
+            }
+
+            fn copy_from(&self) -> Box<dyn Lambda<fn($($a,)*) -> R>> {
+                Box::new(LambdaSafe {
+                    captures: (self.copy_from)(&self.captures),
+                    call: self.call,
+                    copy_from: self.copy_from,
+                    move_from: self.move_from,
+                    destroy: self.destroy,
+                })
+            }
+
+            fn move_from(&self) -> Box<dyn Lambda<fn($($a,)*) -> R>> {
+                Box::new(LambdaSafe {
+                    captures: (self.move_from)(&self.captures),
+                    call: self.call,
+                    copy_from: self.copy_from,
+                    move_from: self.move_from,
+                    destroy: self.destroy,
+                })
+            }
+
+            fn destroy(&self) {
+                (self.destroy)(&self.captures)
+            }
+        }
+
+        impl<Captures: 'static, R: FnPtrArg $(, $a: FnPtrArg)*> Lambda<fn($($a,)*) -> R>
+            for LambdaUnsafe<Captures, fn(&mut Captures $(, $a)*) -> R>
+        {
+            #[allow(non_snake_case)]
+            fn call(&self, ($($a,)*): ($($a,)*)) -> R {
+                (self.call)(unsafe { &mut *self.captures.get() } $(, $a)*)
+            }
+
+            fn copy_from(&self) -> Box<dyn Lambda<fn($($a,)*) -> R>> {
+                Box::new(LambdaUnsafe {
+                    captures: UnsafeCell::new((self.copy_from)(unsafe {
+                        &mut *self.captures.get()
+                    })),
+                    call: self.call,
+                    copy_from: self.copy_from,
+                    move_from: self.move_from,
+                    destroy: self.destroy,
+                })
+            }
+
+            fn move_from(&self) -> Box<dyn Lambda<fn($($a,)*) -> R>> {
+                Box::new(LambdaUnsafe {
+                    captures: UnsafeCell::new((self.move_from)(unsafe {
+                        &mut *self.captures.get()
+                    })),
+                    call: self.call,
+                    copy_from: self.copy_from,
+                    move_from: self.move_from,
+                    destroy: self.destroy,
+                })
+            }
+
+            fn destroy(&self) {
+                (self.destroy)(unsafe { &mut *self.captures.get() })
             }
         }
         impl_fn_ptr_call!(@peel $($a)*);
@@ -184,6 +376,96 @@ macro_rules! impl_fn_ptr_call {
     };
 }
 impl_fn_ptr_call!();
+
+#[derive(Clone, Copy)]
+pub struct Generic;
+
+impl FnSig for Generic {
+    type Args = ();
+    type Ret = ();
+    fn fn_addr(&self) -> usize {
+        panic!("ub: a generic lambda has no single function address");
+    }
+    fn call_direct(self, _args: ()) {
+        panic!("ub: calling a generic lambda without a signature");
+    }
+}
+
+struct GenericLambda<Captures> {
+    captures: Captures,
+    specializations: Vec<Rc<dyn Any>>,
+    make_specializations: fn(&Captures) -> Vec<Rc<dyn Any>>,
+    copy_from: fn(&Captures) -> Captures,
+    move_from: fn(&Captures) -> Captures,
+    destroy: fn(&Captures),
+}
+
+impl<Captures: 'static> GenericLambda<Captures> {
+    fn with_captures(&self, captures: Captures) -> Rc<dyn Adapted> {
+        Rc::new(GenericLambda {
+            specializations: (self.make_specializations)(&captures),
+            captures,
+            make_specializations: self.make_specializations,
+            copy_from: self.copy_from,
+            move_from: self.move_from,
+            destroy: self.destroy,
+        })
+    }
+}
+
+impl<Captures: 'static> Adapted for GenericLambda<Captures> {
+    fn call_adapted(&self, _args: ArgList) -> ArgRepr {
+        panic!("ub: calling a generic lambda without a signature");
+    }
+
+    fn copy_from(&self) -> Option<Rc<dyn Adapted>> {
+        Some(self.with_captures((self.copy_from)(&self.captures)))
+    }
+
+    fn move_from(&self) -> Option<Rc<dyn Adapted>> {
+        Some(self.with_captures((self.move_from)(&self.captures)))
+    }
+
+    fn destroy(&self) {
+        (self.destroy)(&self.captures)
+    }
+
+    fn specializations(&self) -> &[Rc<dyn Any>] {
+        &self.specializations
+    }
+}
+
+impl FnPtr<Generic> {
+    pub fn from_generic_lambda<Captures: 'static>(
+        captures: Captures,
+        make_specializations: fn(&Captures) -> Vec<Rc<dyn Any>>,
+        copy_from: fn(&Captures) -> Captures,
+        move_from: fn(&Captures) -> Captures,
+        destroy: fn(&Captures),
+    ) -> Self {
+        let lambda: Rc<dyn Adapted> = Rc::new(GenericLambda {
+            specializations: make_specializations(&captures),
+            captures,
+            make_specializations,
+            copy_from,
+            move_from,
+            destroy,
+        });
+        FnPtr {
+            addr: Rc::as_ptr(&lambda) as *const () as usize,
+            current: None,
+            original: Some(lambda),
+        }
+    }
+
+    pub fn spec<U: FnSig>(&self, index: usize) -> FnPtr<U> {
+        assert!(!self.is_null(), "ub: null fn pointer call");
+        self.original.as_ref().unwrap().specializations()[index]
+            .downcast_ref::<FnPtr<U>>()
+            .expect("ub: calling through incompatible fn pointer type")
+            .clone()
+    }
+}
 
 impl<T: FnSig> Clone for FnPtr<T> {
     fn clone(&self) -> Self {
@@ -210,6 +492,16 @@ impl<T: FnSig> PartialEq for FnPtr<T> {
 impl<T: FnSig> Eq for FnPtr<T> {}
 
 impl<T: FnSig> ByteRepr for FnPtr<T> {}
+
+impl<T: FnSig> FnPtrArg for FnPtr<T> {
+    #[inline]
+    fn to_repr(self) -> ArgRepr {
+        ArgRepr::Record(Box::new(self))
+    }
+    fn from_repr(r: ArgRepr) -> Self {
+        record_from_repr(r)
+    }
+}
 
 impl<T: FnSig> ErasedPtr for FnPtr<T> {
     fn as_bytes(&self) -> Ptr<u8> {

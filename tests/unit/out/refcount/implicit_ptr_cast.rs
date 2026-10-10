@@ -6,9 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn write_ulong_0(p: Ptr<u64>) {
-    let p: Value<Ptr<u64>> = Rc::new(RefCell::new(p));
-    (*p.borrow()).write(42_u64);
+pub fn write_ulong_0(mut p: Ptr<u64>) {
+    p.write(42_u64);
 }
 pub fn main() {
     __cpp2rust_init_globals();

@@ -16,7 +16,7 @@ pub struct Inner {
 }
 impl Default for Inner {
     fn default() -> Self {
-        Inner { x: 3, y: 4 }
+        { Inner { x: 3, y: 4 } }
     }
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
@@ -25,7 +25,7 @@ pub struct S {
     #[offset(0)]
     pub a: i32,
     #[offset(4)]
-    pub b: u8,
+    pub b: i8,
     #[offset(8)]
     #[byte_size(8)]
     pub c: Inner,
@@ -35,11 +35,13 @@ pub struct S {
 }
 impl Default for S {
     fn default() -> Self {
-        S {
-            a: 1,
-            b: 2_u8,
-            c: <Inner>::default(),
-            d: <Inner>::default(),
+        {
+            S {
+                a: 1,
+                b: 2_i8,
+                c: <Inner>::default(),
+                d: <Inner>::default(),
+            }
         }
     }
 }
@@ -52,22 +54,17 @@ pub struct Boxed_int_ {
     pub tag: i32,
 }
 impl Boxed_int_ {
-    pub fn new(x: i32, t: i32) -> Self {
-        let x: Value<i32> = Rc::new(RefCell::new(x));
-        let t: Value<i32> = Rc::new(RefCell::new(t));
-        let __this: Value<Boxed_int_> = Rc::new(RefCell::new(Self {
-            v: (*x.borrow()),
-            tag: (*t.borrow()),
-        }));
-        let this: Ptr<Boxed_int_> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    pub fn new(mut x: i32, mut t: i32) -> Self {
+        Self { v: x, tag: t }
     }
 }
 impl Default for Boxed_int_ {
     fn default() -> Self {
-        Boxed_int_ {
-            v: 0_i32,
-            tag: 0_i32,
+        {
+            Boxed_int_ {
+                v: 0_i32,
+                tag: 0_i32,
+            }
         }
     }
 }
@@ -76,16 +73,16 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let s: Value<S> = Rc::new(RefCell::new(<S>::default()));
-    assert!(({ (*s.borrow()).a } == 1));
-    assert!((({ (*s.borrow()).b } as i32) == 2));
-    assert!(({ (*s.borrow()).c.x } == 3));
-    assert!(({ (*s.borrow()).c.y } == 4));
-    assert!(({ (*s.borrow()).d.x } == 3));
-    assert!(({ (*s.borrow()).d.y } == 4));
-    let boxed: Value<Boxed_int_> = Rc::new(RefCell::new(Boxed_int_::new({ 5 }, { 9 })));
-    assert!(({ (*boxed.borrow()).v } == 5));
-    assert!(({ (*boxed.borrow()).tag } == 9));
+    let mut s: S = <S>::default();
+    assert!((s.a == 1));
+    assert!(((s.b as i32) == 2));
+    assert!((s.c.x == 3));
+    assert!((s.c.y == 4));
+    assert!((s.d.x == 3));
+    assert!((s.d.y == 4));
+    let mut boxed: Boxed_int_ = Boxed_int_::new({ 5 }, { 9 });
+    assert!((boxed.v == 5));
+    assert!((boxed.tag == 9));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

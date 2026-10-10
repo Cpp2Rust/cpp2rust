@@ -19,7 +19,7 @@ pub unsafe fn via_size_t_return_3(mut b: u64) -> usize {
     return (b as usize);
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct pair {
     pub a: i32,
     pub b: i32,

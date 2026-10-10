@@ -12,27 +12,20 @@ pub fn operator_eq_0(x: Ptr<S>, y: Ptr<S>) -> bool {
 pub fn operator_lt_1(x: Ptr<S>, y: Ptr<S>) -> bool {
     return ({ x.with(|__s| __s.data_) } < { y.with(|__s| __s.data_) });
 }
-#[derive(Record, ByteRepr, Default)]
+#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, Default)]
 #[byte_size(4)]
 pub struct S {
     #[offset(0)]
     data_: i32,
 }
 impl S {
-    pub fn new(data: i32) -> Self {
-        let data: Value<i32> = Rc::new(RefCell::new(data));
-        let __this: Value<S> = Rc::new(RefCell::new(Self {
-            data_: (*data.borrow()),
-        }));
-        let this: Ptr<S> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    pub fn new(mut data: i32) -> Self {
+        Self { data_: data }
     }
     pub fn move_from(_a0: Ptr<S>) -> Self {
-        let __this: Value<S> = Rc::new(RefCell::new(Self {
+        Self {
             data_: { (*_a0.upgrade().deref()).data_ },
-        }));
-        let this: Ptr<S> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
 }
 impl std::cmp::Ord for S {

@@ -11,7 +11,7 @@ pub unsafe fn array_ref_0(a: *mut [u64; 3]) -> u64 {
     return (*a)[((3_u64 as u64).wrapping_sub(1_u64)) as usize];
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct PtrCtor_unsigned_long_ {
     pub v: u64,
 }
@@ -24,7 +24,7 @@ impl PtrCtor_unsigned_long_ {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct RefCtor_unsigned_long_ {
     pub v: u64,
 }
@@ -35,6 +35,15 @@ impl RefCtor_unsigned_long_ {
         };
         this
     }
+}
+pub unsafe fn neg_ll_1() -> i64 {
+    return -9000000_i64;
+}
+pub unsafe fn neg_char_2() -> libc::c_char {
+    return (b'\x80' as libc::c_char);
+}
+pub unsafe fn neg_int_3() -> i32 {
+    return -1;
 }
 pub fn main() {
     unsafe {
@@ -55,6 +64,9 @@ unsafe fn main_0() -> i32 {
     let mut rc: RefCtor_unsigned_long_ =
         RefCtor_unsigned_long_::new({ &*(&raw const v1).cast::<u64>() });
     assert!(((rc.v) == (7_u64)));
+    assert!(((unsafe { neg_ll_1() }) == (-9000000_i32 as i64)));
+    assert!((((unsafe { neg_char_2() }) as i32) == ((b'\x80' as libc::c_char) as i32)));
+    assert!(((unsafe { neg_int_3() }) == (-1_i32)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

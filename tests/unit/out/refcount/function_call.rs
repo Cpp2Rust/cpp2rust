@@ -6,19 +6,17 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn function_0(y: i32, z: i32) -> i32 {
-    let y: Value<i32> = Rc::new(RefCell::new(y));
-    let z: Value<i32> = Rc::new(RefCell::new(z));
-    let x: Value<i32> = Rc::new(RefCell::new(5));
-    return (((*x.borrow()) + (*y.borrow())) + (*z.borrow()));
+pub fn function_0(mut y: i32, mut z: i32) -> i32 {
+    let mut x: i32 = 5;
+    return ((x + y) + z);
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let y: Value<i32> = Rc::new(RefCell::new(({ function_0(10, 1) })));
-    assert!(((*y.borrow()) == 16));
+    let mut y: i32 = ({ function_0(10, 1) });
+    assert!((y == 16));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

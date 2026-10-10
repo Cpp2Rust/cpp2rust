@@ -14,239 +14,182 @@ pub struct Complex {
     #[offset(8)]
     pub img: f64,
 }
-pub fn Product_0(z1: Complex, z2: Complex) -> Complex {
-    let z1: Value<Complex> = Rc::new(RefCell::new(z1));
-    let z2: Value<Complex> = Rc::new(RefCell::new(z2));
-    let ac: Value<f64> = Rc::new(RefCell::new(
-        ({ (*z1.borrow()).re } * { (*z2.borrow()).re }),
-    ));
-    let bd: Value<f64> = Rc::new(RefCell::new(
-        ({ (*z1.borrow()).img } * { (*z2.borrow()).img }),
-    ));
-    let ad: Value<f64> = Rc::new(RefCell::new(
-        ({ (*z1.borrow()).re } * { (*z2.borrow()).img }),
-    ));
-    let bc: Value<f64> = Rc::new(RefCell::new(
-        ({ (*z1.borrow()).img } * { (*z2.borrow()).re }),
-    ));
+pub fn Product_0(mut z1: Complex, mut z2: Complex) -> Complex {
+    let mut ac: f64 = (z1.re * z2.re);
+    let mut bd: f64 = (z1.img * z2.img);
+    let mut ad: f64 = (z1.re * z2.img);
+    let mut bc: f64 = (z1.img * z2.re);
     return Complex {
-        re: ((*ac.borrow()) - (*bd.borrow())),
-        img: ((*ad.borrow()) + (*bc.borrow())),
+        re: (ac - bd),
+        img: (ad + bc),
     };
 }
-pub fn Sum_1(z1: Complex, z2: Complex) -> Complex {
-    let z1: Value<Complex> = Rc::new(RefCell::new(z1));
-    let z2: Value<Complex> = Rc::new(RefCell::new(z2));
-    let ac: Value<f64> = Rc::new(RefCell::new(
-        ({ (*z1.borrow()).re } + { (*z2.borrow()).re }),
-    ));
-    let bd: Value<f64> = Rc::new(RefCell::new(
-        ({ (*z1.borrow()).img } + { (*z2.borrow()).img }),
-    ));
+pub fn Sum_1(mut z1: Complex, mut z2: Complex) -> Complex {
+    let mut ac: f64 = (z1.re + z2.re);
+    let mut bd: f64 = (z1.img + z2.img);
+    return Complex { re: ac, img: bd };
+}
+pub fn Neg_2(mut z1: Complex) -> Complex {
     return Complex {
-        re: (*ac.borrow()),
-        img: (*bd.borrow()),
+        re: -z1.re,
+        img: -z1.img,
     };
 }
-pub fn Neg_2(z1: Complex) -> Complex {
-    let z1: Value<Complex> = Rc::new(RefCell::new(z1));
-    return Complex {
-        re: -{ (*z1.borrow()).re },
-        img: -{ (*z1.borrow()).img },
-    };
-}
-pub fn fft_3(a: Ptr<Option<Value<Box<[Complex]>>>>, N: i32) -> Option<Value<Box<[Complex]>>> {
-    let N: Value<i32> = Rc::new(RefCell::new(N));
-    let y: Value<Option<Value<Box<[Complex]>>>> =
-        Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
-            (0..((*N.borrow()) as usize))
-                .map(|_| <Complex>::default())
-                .collect::<Box<[_]>>(),
-        )))));
-    if ((*N.borrow()) == 1) {
+pub fn fft_3(a: Ptr<Option<Value<Box<[Complex]>>>>, mut N: i32) -> Option<Value<Box<[Complex]>>> {
+    let mut y: Option<Value<Box<[Complex]>>> = Some(Rc::new(RefCell::new(
+        (0..(N as usize))
+            .map(|_| <Complex>::default())
+            .collect::<Box<[_]>>(),
+    )));
+    if (N == 1) {
         let __rhs = Complex {
             re: { (*a.upgrade().deref()).as_ref().unwrap().borrow()[(0_usize) as usize].re },
             img: { (*a.upgrade().deref()).as_ref().unwrap().borrow()[(0_usize) as usize].img },
         };
-        (*y.borrow()).as_ref().unwrap().borrow_mut()[(0_usize) as usize] = __rhs;
-        return (*y.borrow_mut()).take();
+        y.as_ref().unwrap().borrow_mut()[(0_usize) as usize] = __rhs;
+        return y.take();
     }
-    let w: Value<Option<Value<Box<[Complex]>>>> =
-        Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
-            (0..((*N.borrow()) as usize))
-                .map(|_| <Complex>::default())
-                .collect::<Box<[_]>>(),
-        )))));
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < (*N.borrow())) {
-        let alpha: Value<f64> = Rc::new(RefCell::new(
-            ((((-2_i32 as f64) * 3.141592654E+0) * ((*i.borrow()) as f64))
-                / ((*N.borrow()) as f64)),
-        ));
+    let mut w: Option<Value<Box<[Complex]>>> = Some(Rc::new(RefCell::new(
+        (0..(N as usize))
+            .map(|_| <Complex>::default())
+            .collect::<Box<[_]>>(),
+    )));
+    let mut i: i32 = 0;
+    'loop_: while (i < N) {
+        let mut alpha: f64 =
+            ((((-2_i32 as f64) * 3.141592653589793_f64) * (i as f64)) / (N as f64));
         let __rhs = Complex {
-            re: (*alpha.borrow()).cos(),
-            img: (*alpha.borrow()).sin(),
+            re: alpha.cos(),
+            img: alpha.sin(),
         };
-        (*w.borrow()).as_ref().unwrap().borrow_mut()[((*i.borrow()) as usize) as usize] = __rhs;
-        (*i.borrow_mut()).postfix_inc();
+        w.as_ref().unwrap().borrow_mut()[(i as usize) as usize] = __rhs;
+        i.postfix_inc();
     }
     let A0: Value<Option<Value<Box<[Complex]>>>> =
         Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
-            (0..(((*N.borrow()) / 2) as usize))
+            (0..((N / 2) as usize))
                 .map(|_| <Complex>::default())
                 .collect::<Box<[_]>>(),
         )))));
     let A1: Value<Option<Value<Box<[Complex]>>>> =
         Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
-            (0..(((*N.borrow()) / 2) as usize))
+            (0..((N / 2) as usize))
                 .map(|_| <Complex>::default())
                 .collect::<Box<[_]>>(),
         )))));
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < ((*N.borrow()) / 2)) {
+    let mut i: i32 = 0;
+    'loop_: while (i < (N / 2)) {
         let __rhs = Complex {
             re: {
-                (*a.upgrade().deref()).as_ref().unwrap().borrow()
-                    [(((*i.borrow()) * 2) as usize) as usize]
+                (*a.upgrade().deref()).as_ref().unwrap().borrow()[((i * 2) as usize) as usize].re
+            },
+            img: {
+                (*a.upgrade().deref()).as_ref().unwrap().borrow()[((i * 2) as usize) as usize].img
+            },
+        };
+        (*A0.borrow()).as_ref().unwrap().borrow_mut()[(i as usize) as usize] = __rhs;
+        let __rhs = Complex {
+            re: {
+                (*a.upgrade().deref()).as_ref().unwrap().borrow()[(((i * 2) + 1) as usize) as usize]
                     .re
             },
             img: {
-                (*a.upgrade().deref()).as_ref().unwrap().borrow()
-                    [(((*i.borrow()) * 2) as usize) as usize]
+                (*a.upgrade().deref()).as_ref().unwrap().borrow()[(((i * 2) + 1) as usize) as usize]
                     .img
             },
         };
-        (*A0.borrow()).as_ref().unwrap().borrow_mut()[((*i.borrow()) as usize) as usize] = __rhs;
-        let __rhs = Complex {
-            re: {
-                (*a.upgrade().deref()).as_ref().unwrap().borrow()
-                    [((((*i.borrow()) * 2) + 1) as usize) as usize]
-                    .re
-            },
-            img: {
-                (*a.upgrade().deref()).as_ref().unwrap().borrow()
-                    [((((*i.borrow()) * 2) + 1) as usize) as usize]
-                    .img
-            },
-        };
-        (*A1.borrow()).as_ref().unwrap().borrow_mut()[((*i.borrow()) as usize) as usize] = __rhs;
-        (*i.borrow_mut()).postfix_inc();
+        (*A1.borrow()).as_ref().unwrap().borrow_mut()[(i as usize) as usize] = __rhs;
+        i.postfix_inc();
     }
-    let y0: Value<Option<Value<Box<[Complex]>>>> = Rc::new(RefCell::new(
-        ({ fft_3(A0.as_pointer(), ((*N.borrow()) / 2)) }),
-    ));
-    let y1: Value<Option<Value<Box<[Complex]>>>> = Rc::new(RefCell::new(
-        ({ fft_3(A1.as_pointer(), ((*N.borrow()) / 2)) }),
-    ));
-    let k: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*k.borrow()) < ((*N.borrow()) / 2)) {
-        let yk: Value<Complex> = Rc::new(RefCell::new(
-            ({
-                let _z1: Complex = ((*y0.borrow()).as_ref().unwrap().borrow()
-                    [((*k.borrow()) as usize) as usize])
-                    .clone();
-                let _z2: Complex = ({
-                    let _z1: Complex = ((*w.borrow()).as_ref().unwrap().borrow()
-                        [((*k.borrow()) as usize) as usize])
-                        .clone();
-                    let _z2: Complex = ((*y1.borrow()).as_ref().unwrap().borrow()
-                        [((*k.borrow()) as usize) as usize])
-                        .clone();
-                    Product_0(_z1, _z2)
-                });
-                Sum_1(_z1, _z2)
-            }),
-        ));
-        (*y.borrow()).as_ref().unwrap().borrow_mut()[((*k.borrow()) as usize) as usize] = Complex {
-            re: { (*yk.borrow()).re },
-            img: { (*yk.borrow()).img },
+    let mut y0: Option<Value<Box<[Complex]>>> = ({ fft_3(A0.as_pointer(), (N / 2)) });
+    let mut y1: Option<Value<Box<[Complex]>>> = ({ fft_3(A1.as_pointer(), (N / 2)) });
+    let mut k: i32 = 0;
+    'loop_: while (k < (N / 2)) {
+        let mut yk: Complex = ({
+            let _z1: Complex = (y0.as_ref().unwrap().borrow()[(k as usize) as usize]).clone();
+            let _z2: Complex = ({
+                let _z1: Complex = (w.as_ref().unwrap().borrow()[(k as usize) as usize]).clone();
+                let _z2: Complex = (y1.as_ref().unwrap().borrow()[(k as usize) as usize]).clone();
+                Product_0(_z1, _z2)
+            });
+            Sum_1(_z1, _z2)
+        });
+        y.as_ref().unwrap().borrow_mut()[(k as usize) as usize] = Complex {
+            re: yk.re,
+            img: yk.img,
         };
-        let yk_n2: Value<Complex> = Rc::new(RefCell::new(
-            ({
-                let _z1: Complex = ((*y0.borrow()).as_ref().unwrap().borrow()
-                    [((*k.borrow()) as usize) as usize])
-                    .clone();
-                let _z2: Complex = ({
-                    Neg_2(
-                        ({
-                            let _z1: Complex = ((*w.borrow()).as_ref().unwrap().borrow()
-                                [((*k.borrow()) as usize) as usize])
-                                .clone();
-                            let _z2: Complex = ((*y1.borrow()).as_ref().unwrap().borrow()
-                                [((*k.borrow()) as usize) as usize])
-                                .clone();
-                            Product_0(_z1, _z2)
-                        }),
-                    )
-                });
-                Sum_1(_z1, _z2)
-            }),
-        ));
-        (*y.borrow()).as_ref().unwrap().borrow_mut()
-            [(((*k.borrow()) + ((*N.borrow()) / 2)) as usize) as usize] = Complex {
-            re: { (*yk_n2.borrow()).re },
-            img: { (*yk_n2.borrow()).img },
+        let mut yk_n2: Complex = ({
+            let _z1: Complex = (y0.as_ref().unwrap().borrow()[(k as usize) as usize]).clone();
+            let _z2: Complex = ({
+                Neg_2(
+                    ({
+                        let _z1: Complex =
+                            (w.as_ref().unwrap().borrow()[(k as usize) as usize]).clone();
+                        let _z2: Complex =
+                            (y1.as_ref().unwrap().borrow()[(k as usize) as usize]).clone();
+                        Product_0(_z1, _z2)
+                    }),
+                )
+            });
+            Sum_1(_z1, _z2)
+        });
+        y.as_ref().unwrap().borrow_mut()[((k + (N / 2)) as usize) as usize] = Complex {
+            re: yk_n2.re,
+            img: yk_n2.img,
         };
-        (*k.borrow_mut()).postfix_inc();
+        k.postfix_inc();
     }
-    return (*y.borrow_mut()).take();
+    return y.take();
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let N: Value<i32> = Rc::new(RefCell::new(4));
+    let mut N: i32 = 4;
     let a: Value<Option<Value<Box<[Complex]>>>> =
         Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
-            (0..((*N.borrow()) as usize))
+            (0..(N as usize))
                 .map(|_| <Complex>::default())
                 .collect::<Box<[_]>>(),
         )))));
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < (*N.borrow())) {
+    let mut i: i32 = 0;
+    'loop_: while (i < N) {
         let __rhs = Complex {
-            re: (((*i.borrow()) as f64) + 1_f64),
+            re: ((i as f64) + 1_f64),
             img: 0_f64,
         };
-        (*a.borrow()).as_ref().unwrap().borrow_mut()[((*i.borrow()) as usize) as usize] = __rhs;
-        (*i.borrow_mut()).postfix_inc();
+        (*a.borrow()).as_ref().unwrap().borrow_mut()[(i as usize) as usize] = __rhs;
+        i.postfix_inc();
     }
-    let b: Value<Option<Value<Box<[Complex]>>>> =
-        Rc::new(RefCell::new(({ fft_3(a.as_pointer(), (*N.borrow())) })));
-    let reals: Value<Option<Value<Box<[i32]>>>> =
-        Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
-            (0..((*N.borrow()) as usize))
-                .map(|_| <i32>::default())
-                .collect::<Box<[_]>>(),
-        )))));
-    let imgs: Value<Option<Value<Box<[i32]>>>> =
-        Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
-            (0..((*N.borrow()) as usize))
-                .map(|_| <i32>::default())
-                .collect::<Box<[_]>>(),
-        )))));
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < (*N.borrow())) {
-        let __rhs =
-            ({ (*b.borrow()).as_ref().unwrap().borrow()[((*i.borrow()) as usize) as usize].re }
-                .round() as i32);
-        (*reals.borrow()).as_ref().unwrap().borrow_mut()[((*i.borrow()) as usize) as usize] = __rhs;
-        let __rhs =
-            ({ (*b.borrow()).as_ref().unwrap().borrow()[((*i.borrow()) as usize) as usize].img }
-                .round() as i32);
-        (*imgs.borrow()).as_ref().unwrap().borrow_mut()[((*i.borrow()) as usize) as usize] = __rhs;
-        (*i.borrow_mut()).prefix_inc();
+    let mut b: Option<Value<Box<[Complex]>>> = ({ fft_3(a.as_pointer(), N) });
+    let mut reals: Option<Value<Box<[i32]>>> = Some(Rc::new(RefCell::new(
+        (0..(N as usize))
+            .map(|_| <i32>::default())
+            .collect::<Box<[_]>>(),
+    )));
+    let mut imgs: Option<Value<Box<[i32]>>> = Some(Rc::new(RefCell::new(
+        (0..(N as usize))
+            .map(|_| <i32>::default())
+            .collect::<Box<[_]>>(),
+    )));
+    let mut i: i32 = 0;
+    'loop_: while (i < N) {
+        let __rhs = ({ b.as_ref().unwrap().borrow()[(i as usize) as usize].re }.round() as i32);
+        reals.as_ref().unwrap().borrow_mut()[(i as usize) as usize] = __rhs;
+        let __rhs = ({ b.as_ref().unwrap().borrow()[(i as usize) as usize].img }.round() as i32);
+        imgs.as_ref().unwrap().borrow_mut()[(i as usize) as usize] = __rhs;
+        i.prefix_inc();
     }
     assert!(
-        ((((((((*reals.borrow()).as_ref().unwrap().borrow()[(0_usize) as usize] == 10)
-            && ((*imgs.borrow()).as_ref().unwrap().borrow()[(0_usize) as usize] == 0))
-            && ((*reals.borrow()).as_ref().unwrap().borrow()[(1_usize) as usize] == -2_i32))
-            && ((*imgs.borrow()).as_ref().unwrap().borrow()[(1_usize) as usize] == 2))
-            && ((*reals.borrow()).as_ref().unwrap().borrow()[(2_usize) as usize] == -2_i32))
-            && ((*imgs.borrow()).as_ref().unwrap().borrow()[(2_usize) as usize] == 0))
-            && ((*reals.borrow()).as_ref().unwrap().borrow()[(3_usize) as usize] == -2_i32))
-            && ((*imgs.borrow()).as_ref().unwrap().borrow()[(3_usize) as usize] == -2_i32)
+        (((((((reals.as_ref().unwrap().borrow()[(0_usize) as usize] == 10)
+            && (imgs.as_ref().unwrap().borrow()[(0_usize) as usize] == 0))
+            && (reals.as_ref().unwrap().borrow()[(1_usize) as usize] == -2_i32))
+            && (imgs.as_ref().unwrap().borrow()[(1_usize) as usize] == 2))
+            && (reals.as_ref().unwrap().borrow()[(2_usize) as usize] == -2_i32))
+            && (imgs.as_ref().unwrap().borrow()[(2_usize) as usize] == 0))
+            && (reals.as_ref().unwrap().borrow()[(3_usize) as usize] == -2_i32))
+            && (imgs.as_ref().unwrap().borrow()[(3_usize) as usize] == -2_i32)
     );
     return 0;
 }

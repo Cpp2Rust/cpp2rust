@@ -11,20 +11,18 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let a: Value<Ptr<i32>> = Rc::new(RefCell::new(
-        libcc2rs::malloc_refcount(::std::mem::size_of::<i32>()).reinterpret_cast::<i32>(),
-    ));
-    (*a.borrow()).write(42);
-    assert!((((*a.borrow()).read()) == 42));
-    libcc2rs::free_refcount((*a.borrow()).to_any());
-    let arr: Value<Ptr<i32>> = Rc::new(RefCell::new(
+    let mut a: Ptr<i32> =
+        libcc2rs::malloc_refcount(::std::mem::size_of::<i32>()).reinterpret_cast::<i32>();
+    a.write(42);
+    assert!(((a.read()) == 42));
+    libcc2rs::free_refcount((a).to_any());
+    let mut arr: Ptr<i32> =
         libcc2rs::malloc_refcount((::std::mem::size_of::<i32>() as usize).wrapping_mul(2_usize))
-            .reinterpret_cast::<i32>(),
-    ));
-    elem!((*arr.borrow()), 0).write(0);
-    elem!((*arr.borrow()), 1).write(1);
-    assert!((((elem!((*arr.borrow()), 0).read()) + (elem!((*arr.borrow()), 1).read())) == 1));
-    libcc2rs::free_refcount((*arr.borrow()).to_any());
+            .reinterpret_cast::<i32>();
+    elem!(arr, 0).write(0);
+    elem!(arr, 1).write(1);
+    assert!((((elem!(arr, 0).read()) + (elem!(arr, 1).read())) == 1));
+    libcc2rs::free_refcount((arr).to_any());
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

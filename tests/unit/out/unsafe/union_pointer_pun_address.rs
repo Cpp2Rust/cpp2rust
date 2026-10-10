@@ -7,12 +7,12 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct node_a {
     pub n: i32,
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct node_b {
     pub data: *mut ::libc::c_void,
     pub next: *mut node_b,
@@ -36,7 +36,7 @@ unsafe fn main_0() -> i32 {
     return 0;
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, FnPtrArg, VaArg)]
 pub union anon_0 {
     pub to_a: *mut node_a,
     pub to_b: *mut node_b,

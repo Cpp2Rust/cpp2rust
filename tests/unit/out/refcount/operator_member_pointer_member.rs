@@ -16,9 +16,8 @@ pub struct Inner {
 #[byte_size(1)]
 pub struct Table {}
 impl Table {
-    pub fn operator_index(i: i32) -> Ptr<i32> {
-        let i: Value<i32> = Rc::new(RefCell::new(i));
-        return (table_0.with(|v| v.as_pointer()) as Ptr<i32>).offset((*i.borrow()));
+    pub fn operator_index(mut i: i32) -> Ptr<i32> {
+        return (table_0.with(|v| v.as_pointer()) as Ptr<i32>).offset(i);
     }
 }
 thread_local!(
@@ -36,9 +35,11 @@ pub struct S {
 }
 impl Default for S {
     fn default() -> Self {
-        S {
-            data: Rc::new(RefCell::new((0..3).map(|_| 0_i32).collect::<Box<[i32]>>())),
-            inner: <Inner>::default(),
+        {
+            S {
+                data: Rc::new(RefCell::new((0..3).map(|_| 0_i32).collect::<Box<[i32]>>())),
+                inner: <Inner>::default(),
+            }
         }
     }
 }
@@ -61,9 +62,9 @@ fn main_0() -> i32 {
     assert!((({ SImpl::operator_arrow(&s.as_pointer(),) }).with(|__s| __s.x) == 10));
     field!(({ SImpl::operator_arrow(&s.as_pointer(),) }), x).write(11);
     assert!(({ (*s.borrow()).inner.x } == 11));
-    let p: Value<Ptr<i32>> = Rc::new(RefCell::new(({ SImpl::operator_addr(&s.as_pointer()) })));
-    assert!((((*p.borrow()).read()) == 1));
-    (*p.borrow()).write(5);
+    let mut p: Ptr<i32> = ({ SImpl::operator_addr(&s.as_pointer()) });
+    assert!(((p.read()) == 1));
+    p.write(5);
     assert!(((elem!((array_field_ptr!(s.as_pointer(), data) as Ptr::<i32>), 0).read()) == 5));
     let t: Value<Table> = Rc::new(RefCell::new(<Table>::default()));
     assert!(((({ Table::operator_index(1,) }).read()) == 8));
@@ -84,13 +85,11 @@ pub trait SImpl {
     fn operator_addr(&self) -> Ptr<i32>;
 }
 impl SImpl for Ptr<S> {
-    fn operator_index_1(&self, i: i32) -> Ptr<i32> {
-        let i: Value<i32> = Rc::new(RefCell::new(i));
-        return (array_field_ptr!((*self), data) as Ptr<i32>).offset((*i.borrow()) as isize);
+    fn operator_index_1(&self, mut i: i32) -> Ptr<i32> {
+        return (array_field_ptr!((*self), data) as Ptr<i32>).offset((i) as isize);
     }
-    fn operator_index_2(&self, i: i32) -> Ptr<i32> {
-        let i: Value<i32> = Rc::new(RefCell::new(i));
-        return (array_field_ptr!((*self), data) as Ptr<i32>).offset((*i.borrow()) as isize);
+    fn operator_index_2(&self, mut i: i32) -> Ptr<i32> {
+        return (array_field_ptr!((*self), data) as Ptr<i32>).offset((i) as isize);
     }
     fn operator_deref(&self) -> Ptr<Inner> {
         return field_ptr!((*self), inner);

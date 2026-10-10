@@ -113,7 +113,7 @@ std::string ToRustName(std::string name) {
 
   std::string_view stem(name);
   stem = stem.substr(0, stem.find_last_not_of('_') + 1);
-  if (stem == "Ptr" || stem == "Value") {
+  if (stem == "Ptr" || stem == "Value" || stem == "Box") {
     name += '_';
   }
   return name;
@@ -134,7 +134,20 @@ std::string ToString(clang::ASTContext &ctx, clang::QualType qual_type,
     }
     if (const auto *typedef_type = t->getAs<clang::TypedefType>()) {
       if (t.getCanonicalType()->isBuiltinType()) {
-        return typedef_type->getDecl()->getNameAsString();
+        auto decl = typedef_type->getDecl();
+        if (auto record =
+                clang::dyn_cast<clang::RecordDecl>(decl->getDeclContext());
+            record && !record->isDependentContext()) {
+          return ToString(ctx, ctx.getCanonicalTagType(record)) +
+                 "::" + decl->getNameAsString();
+        }
+        if (decl->getDeclContext()->getRedeclContext()->isNamespace()) {
+          std::string name;
+          llvm::raw_string_ostream os(name);
+          decl->printQualifiedName(os, getPrintPolicy(ctx));
+          return name;
+        }
+        return decl->getNameAsString();
       }
     } else if (const auto *predef = t->getAs<clang::PredefinedSugarType>()) {
       return predef->getIdentifier()->getName().str();

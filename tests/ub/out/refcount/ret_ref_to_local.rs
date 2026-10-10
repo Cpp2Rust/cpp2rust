@@ -15,7 +15,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let bar: Value<i32> = Rc::new(RefCell::new((({ foo_0() }).read())));
+    let mut bar: i32 = (({ foo_0() }).read());
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

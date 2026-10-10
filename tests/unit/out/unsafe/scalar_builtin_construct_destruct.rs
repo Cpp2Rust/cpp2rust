@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Pod {
     pub v: i32,
 }
@@ -30,7 +30,7 @@ unsafe fn main_0() -> i32 {
     let mut d: f64 = 0_f64;
     let mut p: *mut i32 = (unsafe { zero_0() });
     assert!(((i) == (0)));
-    assert!(((d) == (0.0E+0)));
+    assert!(((d) == (0_f64)));
     assert!((p).is_null());
     assert!(((unsafe { zero_1() }) == (0_i64)));
     let mut x: i32 = 5;

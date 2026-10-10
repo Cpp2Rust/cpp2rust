@@ -19,7 +19,7 @@ pub unsafe fn scaled_3(v: *const V, mut k: f64) -> f64 {
     return (((*v).x as f64) * (k));
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct V {
     pub x: i32,
 }
@@ -33,7 +33,7 @@ pub unsafe fn get_4(w: *const W_int_) -> i32 {
     return (*w).x;
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct W_int_ {
     pub x: i32,
 }
@@ -41,12 +41,12 @@ pub unsafe fn get_5(w: *const W_long_) -> i64 {
     return (*w).x;
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct W_long_ {
     pub x: i64,
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct D {
     pub x: i32,
 }
@@ -77,7 +77,7 @@ unsafe fn main_0() -> i32 {
         })
     );
     assert!(((unsafe { scaled_2(&c, 2,) }) == (8)));
-    assert!(((unsafe { scaled_3(&c, 1.5E+0,) }) == (6.0E+0)));
+    assert!(((unsafe { scaled_3(&c, 1.5_f64,) }) == (6_f64)));
     let mut wi: W_int_ = W_int_ { x: 5 };
     let mut wl: W_long_ = W_long_ { x: 6_i64 };
     assert!(((unsafe { get_4(&wi,) }) == (5)));

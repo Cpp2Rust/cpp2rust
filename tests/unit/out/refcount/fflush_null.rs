@@ -11,7 +11,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let file_ptr: Value<Ptr<CFile>> = Rc::new(RefCell::new(Ptr::null()));
+    let mut file_ptr: Ptr<CFile> = Ptr::null();
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

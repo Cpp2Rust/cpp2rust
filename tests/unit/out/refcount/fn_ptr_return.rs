@@ -6,17 +6,14 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn inc_0(x: i32) -> i32 {
-    let x: Value<i32> = Rc::new(RefCell::new(x));
-    return ((*x.borrow()) + 1);
+pub fn inc_0(mut x: i32) -> i32 {
+    return (x + 1);
 }
-pub fn dec_1(x: i32) -> i32 {
-    let x: Value<i32> = Rc::new(RefCell::new(x));
-    return ((*x.borrow()) - 1);
+pub fn dec_1(mut x: i32) -> i32 {
+    return (x - 1);
 }
-pub fn pick_2(choose_inc: i32) -> FnPtr<fn(i32) -> i32> {
-    let choose_inc: Value<i32> = Rc::new(RefCell::new(choose_inc));
-    if ((*choose_inc.borrow()) != 0) {
+pub fn pick_2(mut choose_inc: i32) -> FnPtr<fn(i32) -> i32> {
+    if (choose_inc != 0) {
         return FnPtr::<fn(i32) -> i32>::new(inc_0);
     }
     return FnPtr::<fn(i32) -> i32>::new(dec_1);
@@ -26,14 +23,14 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let f: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(({ pick_2(1) })));
-    assert!(!((*f.borrow()).is_null()));
-    assert!(({ (*f.borrow()).clone() } == { FnPtr::<fn(i32) -> i32>::new(inc_0) }));
-    assert!((({ (*f.borrow()).call(10,) }) == 11));
-    let g: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(({ pick_2(0) })));
-    assert!(({ (*g.borrow()).clone() } == { FnPtr::<fn(i32) -> i32>::new(dec_1) }));
-    assert!((({ (*g.borrow()).call(10,) }) == 9));
-    assert!(({ (*f.borrow()).clone() } != { (*g.borrow()).clone() }));
+    let mut f: FnPtr<fn(i32) -> i32> = ({ pick_2(1) });
+    assert!(!((f).is_null()));
+    assert!(({ (f).clone() } == { FnPtr::<fn(i32) -> i32>::new(inc_0) }));
+    assert!((({ f.call(10,) }) == 11));
+    let mut g: FnPtr<fn(i32) -> i32> = ({ pick_2(0) });
+    assert!(({ (g).clone() } == { FnPtr::<fn(i32) -> i32>::new(dec_1) }));
+    assert!((({ g.call(10,) }) == 9));
+    assert!(({ (f).clone() } != { (g).clone() }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

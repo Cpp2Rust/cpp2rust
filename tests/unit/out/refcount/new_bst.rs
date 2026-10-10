@@ -18,99 +18,72 @@ pub struct node_t {
     #[offset(16)]
     pub value: i32,
 }
-pub fn find_0(node: Ptr<node_t>, value: i32) -> Ptr<node_t> {
-    let node: Value<Ptr<node_t>> = Rc::new(RefCell::new(node));
-    let value: Value<i32> = Rc::new(RefCell::new(value));
-    if ({ (*value.borrow()) } < { (*node.borrow()).with(|__s| __s.value) })
-        && (!(((*node.borrow()).with(|__s| __s.left.clone())).is_null()))
+pub fn find_0(mut node: Ptr<node_t>, mut value: i32) -> Ptr<node_t> {
+    if ({ value } < { node.with(|__s| __s.value) })
+        && (!((node.with(|__s| __s.left.clone())).is_null()))
     {
-        return ({
-            find_0(
-                (*node.borrow()).with(|__s| __s.left.clone()),
-                (*value.borrow()),
-            )
-        });
-    } else if ({ (*value.borrow()) } > { (*node.borrow()).with(|__s| __s.value) })
-        && (!(((*node.borrow()).with(|__s| __s.right.clone())).is_null()))
+        return ({ find_0(node.with(|__s| __s.left.clone()), value) });
+    } else if ({ value } > { node.with(|__s| __s.value) })
+        && (!((node.with(|__s| __s.right.clone())).is_null()))
     {
-        return ({
-            find_0(
-                (*node.borrow()).with(|__s| __s.right.clone()),
-                (*value.borrow()),
-            )
-        });
-    } else if ({ (*value.borrow()) } == { (*node.borrow()).with(|__s| __s.value) }) {
-        return (*node.borrow()).clone();
+        return ({ find_0(node.with(|__s| __s.right.clone()), value) });
+    } else if ({ value } == { node.with(|__s| __s.value) }) {
+        return node;
     }
     return Ptr::<node_t>::null();
 }
-pub fn insert_1(node: Ptr<node_t>, value: i32) -> Ptr<node_t> {
-    let node: Value<Ptr<node_t>> = Rc::new(RefCell::new(node));
-    let value: Value<i32> = Rc::new(RefCell::new(value));
-    if (*node.borrow()).is_null() {
+pub fn insert_1(mut node: Ptr<node_t>, mut value: i32) -> Ptr<node_t> {
+    if (node).is_null() {
         return Ptr::alloc(node_t {
             left: Ptr::<node_t>::null(),
             right: Ptr::<node_t>::null(),
-            value: (*value.borrow()),
+            value: value,
         });
     }
-    if ({ (*value.borrow()) } < { (*node.borrow()).with(|__s| __s.value) }) {
-        let __rhs = ({
-            insert_1(
-                (*node.borrow()).with(|__s| __s.left.clone()),
-                (*value.borrow()),
-            )
-        });
-        field!((*node.borrow()), left).write(__rhs);
-    } else if ({ (*value.borrow()) } > { (*node.borrow()).with(|__s| __s.value) }) {
-        let __rhs = ({
-            insert_1(
-                (*node.borrow()).with(|__s| __s.right.clone()),
-                (*value.borrow()),
-            )
-        });
-        field!((*node.borrow()), right).write(__rhs);
+    if ({ value } < { node.with(|__s| __s.value) }) {
+        let __rhs = ({ insert_1(node.with(|__s| __s.left.clone()), value) });
+        field!(node, left).write(__rhs);
+    } else if ({ value } > { node.with(|__s| __s.value) }) {
+        let __rhs = ({ insert_1(node.with(|__s| __s.right.clone()), value) });
+        field!(node, right).write(__rhs);
     }
-    return (*node.borrow()).clone();
+    return node;
 }
-pub fn del_2(node: Ptr<node_t>) {
-    let node: Value<Ptr<node_t>> = Rc::new(RefCell::new(node));
-    if !(((*node.borrow()).with(|__s| __s.left.clone())).is_null()) {
-        ({ del_2((*node.borrow()).with(|__s| __s.left.clone())) });
+pub fn del_2(mut node: Ptr<node_t>) {
+    if !((node.with(|__s| __s.left.clone())).is_null()) {
+        ({ del_2(node.with(|__s| __s.left.clone())) });
     }
-    if !(((*node.borrow()).with(|__s| __s.right.clone())).is_null()) {
-        ({ del_2((*node.borrow()).with(|__s| __s.right.clone())) });
+    if !((node.with(|__s| __s.right.clone())).is_null()) {
+        ({ del_2(node.with(|__s| __s.right.clone())) });
     }
-    (*node.borrow()).delete();
+    node.delete();
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let root: Value<Ptr<node_t>> = Rc::new(RefCell::new(Ptr::alloc(node_t {
+    let mut root: Ptr<node_t> = Ptr::alloc(node_t {
         left: Ptr::<node_t>::null(),
         right: Ptr::<node_t>::null(),
         value: 0,
-    })));
-    let __rhs = ({ insert_1((*root.borrow()).clone(), 1) });
-    (*root.borrow_mut()) = __rhs;
-    let __rhs = ({ insert_1((*root.borrow()).clone(), 2) });
-    (*root.borrow_mut()) = __rhs;
-    let __rhs = ({ insert_1((*root.borrow()).clone(), 3) });
-    (*root.borrow_mut()) = __rhs;
-    let __rhs = ({ insert_1((*root.borrow()).clone(), 4) });
-    (*root.borrow_mut()) = __rhs;
-    let out: Value<bool> = Rc::new(RefCell::new(
-        (((((({ find_0((*root.borrow()).clone(), 0) }).with(|__s| __s.value) == 0)
-            && (({ find_0((*root.borrow()).clone(), 1) }).with(|__s| __s.value) == 1))
-            && (({ find_0((*root.borrow()).clone(), 2) }).with(|__s| __s.value) == 2))
-            && (({ find_0((*root.borrow()).clone(), 3) }).with(|__s| __s.value) == 3))
-            && (({ find_0((*root.borrow()).clone(), 4) }).with(|__s| __s.value) == 4))
-            && (({ find_0((*root.borrow()).clone(), 5) }).is_null()),
-    ));
-    ({ del_2((*root.borrow()).clone()) });
-    assert!((*out.borrow()));
+    });
+    let __rhs = ({ insert_1((root).clone(), 1) });
+    root = __rhs;
+    let __rhs = ({ insert_1((root).clone(), 2) });
+    root = __rhs;
+    let __rhs = ({ insert_1((root).clone(), 3) });
+    root = __rhs;
+    let __rhs = ({ insert_1((root).clone(), 4) });
+    root = __rhs;
+    let mut out: bool = (((((({ find_0((root).clone(), 0) }).with(|__s| __s.value) == 0)
+        && (({ find_0((root).clone(), 1) }).with(|__s| __s.value) == 1))
+        && (({ find_0((root).clone(), 2) }).with(|__s| __s.value) == 2))
+        && (({ find_0((root).clone(), 3) }).with(|__s| __s.value) == 3))
+        && (({ find_0((root).clone(), 4) }).with(|__s| __s.value) == 4))
+        && (({ find_0((root).clone(), 5) }).is_null());
+    ({ del_2((root).clone()) });
+    assert!(out);
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

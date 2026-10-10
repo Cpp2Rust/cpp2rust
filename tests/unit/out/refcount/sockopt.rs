@@ -11,7 +11,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let s: Value<i32> = Rc::new(RefCell::new({
+    let mut s: i32 = {
         let __family = match libc::AF_INET {
             ::libc::AF_INET => nix::sys::socket::AddressFamily::Inet,
             ::libc::AF_INET6 => nix::sys::socket::AddressFamily::Inet6,
@@ -37,12 +37,12 @@ fn main_0() -> i32 {
                 -1
             }
         }
-    }));
-    assert!(((((*s.borrow()) >= 0) as i32) != 0));
+    };
+    assert!((((s >= 0) as i32) != 0));
     let on: Value<i32> = Rc::new(RefCell::new(1));
     assert!(
         ((({
-            let __a0 = (*s.borrow());
+            let __a0 = s;
             let __a1 = libc::SOL_SOCKET;
             let __a2 = libc::SO_KEEPALIVE;
             let __a3 = ((on.as_pointer()) as Ptr<i32>).to_any();
@@ -52,7 +52,7 @@ fn main_0() -> i32 {
     );
     assert!(
         ((({
-            let __a0 = (*s.borrow());
+            let __a0 = s;
             let __a1 = libc::IPPROTO_TCP;
             let __a2 = libc::TCP_NODELAY;
             let __a3 = ((on.as_pointer()) as Ptr<i32>).to_any();
@@ -65,7 +65,7 @@ fn main_0() -> i32 {
     assert!(
         (((match (libc::SOL_SOCKET, libc::SO_ERROR) {
             (::libc::SOL_SOCKET, ::libc::SO_ERROR) => {
-                match FdRegistry::with_fd((*s.borrow()), |__fd| {
+                match FdRegistry::with_fd(s, |__fd| {
                     nix::sys::socket::getsockopt(&__fd, nix::sys::socket::sockopt::SocketError)
                 }) {
                     Ok(__err) => {
@@ -90,7 +90,7 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(((((*err.borrow()) == 0) as i32) != 0));
-    assert!((((FdRegistry::close((*s.borrow())) == 0) as i32) != 0));
+    assert!((((FdRegistry::close(s) == 0) as i32) != 0));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

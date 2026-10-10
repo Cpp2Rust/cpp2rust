@@ -6,22 +6,17 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn foo_0(a: Ptr<i32>) -> Ptr<i32> {
-    let a: Value<Ptr<i32>> = Rc::new(RefCell::new(a));
-    return ((*a.borrow()).offset((5) as isize));
+pub fn foo_0(mut a: Ptr<i32>) -> Ptr<i32> {
+    return (a.offset((5) as isize));
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let p1: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::alloc_array(
-        (0..10_usize).map(|_| 0_i32).collect::<Box<[i32]>>(),
-    )));
-    let out: Value<i32> = Rc::new(RefCell::new(
-        (elem!(({ foo_0(((*p1.borrow()).offset((1) as isize)),) }), 4).read()),
-    ));
-    (*p1.borrow()).delete();
+    let mut p1: Ptr<i32> = Ptr::alloc_array((0..10_usize).map(|_| 0_i32).collect::<Box<[i32]>>());
+    let mut out: i32 = (elem!(({ foo_0((p1.offset((1) as isize)),) }), 4).read());
+    p1.delete();
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

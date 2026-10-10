@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct packed {
     pub a: i32,
     pub b: libc::c_char,
@@ -15,26 +15,26 @@ pub struct packed {
     pub d: i16,
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct reordered {
     pub a: libc::c_char,
     pub b: i32,
     pub c: libc::c_char,
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct tail {
     pub a: libc::c_char,
     pub b: f64,
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct nested {
     pub t: tail,
     pub c: libc::c_char,
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct array {
     pub name: [libc::c_char; 3],
     pub x: i32,
@@ -145,14 +145,14 @@ unsafe fn main_0() -> i32 {
         nested {
             t: tail {
                 a: (1 as libc::c_char),
-                b: 2.5E+0,
+                b: 2.5_f64,
             },
             c: (3 as libc::c_char),
         },
         nested {
             t: tail {
                 a: (4 as libc::c_char),
-                b: 5.5E+0,
+                b: 5.5_f64,
             },
             c: (6 as libc::c_char),
         },
@@ -185,7 +185,7 @@ unsafe fn main_0() -> i32 {
     };
     assert!(
         ((((((((((n2[(1) as usize].t.a as i32) == (4)) as i32) != 0)
-            && ((((n2[(1) as usize].t.b) == (5.5E+0)) as i32) != 0)) as i32)
+            && ((((n2[(1) as usize].t.b) == (5.5_f64)) as i32) != 0)) as i32)
             != 0)
             && ((((n2[(1) as usize].c as i32) == (6)) as i32) != 0)) as i32)
             != 0)

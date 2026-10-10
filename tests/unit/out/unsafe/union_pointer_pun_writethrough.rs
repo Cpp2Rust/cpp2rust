@@ -21,7 +21,7 @@ unsafe fn main_0() -> i32 {
     return 0;
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, FnPtrArg, VaArg)]
 pub union anon_0 {
     pub as_unsigned: *mut u64,
     pub as_signed: *mut i64,

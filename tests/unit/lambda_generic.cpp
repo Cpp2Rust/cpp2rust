@@ -1,4 +1,4 @@
-// translation-fail
+// ADDITIONAL_COMPILE_FLAGS: -std=c++23
 #include <assert.h>
 
 int main() {
@@ -26,6 +26,15 @@ int main() {
   };
   assert(mixed(2, 3) == 16);
   assert(mixed(2, 0.5) == 11.0);
+
+  auto unused = [](auto x) { return x; };
+  (void)unused;
+
+  auto outer = [base](int y) {
+    auto inner = [](auto z) { return z + 1; };
+    return inner(y) + base;
+  };
+  assert(outer(5) == 16);
 
   return 0;
 }

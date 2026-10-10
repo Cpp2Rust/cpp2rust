@@ -48,17 +48,12 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let x1: Value<Level0_Level1_1> = Rc::new(RefCell::new(Level0_Level1_1 { x1: 0 }));
-    let x2: Value<Level0_Level1_2> = Rc::new(RefCell::new(Level0_Level1_2 { x1: 1, x2: 2 }));
-    let x3: Value<Level0_Level1_1_Level2_1> =
-        Rc::new(RefCell::new(Level0_Level1_1_Level2_1 { x1: 3 }));
-    let x4: Value<Level0_Level1_1_Level2_1_Level3_1> =
-        Rc::new(RefCell::new(Level0_Level1_1_Level2_1_Level3_1 { x1: 4 }));
-    let x5: Value<Level0_Level1_1_Level2_1_Level3_2> =
-        Rc::new(RefCell::new(Level0_Level1_1_Level2_1_Level3_2 {
-            x1: 5,
-            x2: 6,
-        }));
+    let mut x1: Level0_Level1_1 = Level0_Level1_1 { x1: 0 };
+    let mut x2: Level0_Level1_2 = Level0_Level1_2 { x1: 1, x2: 2 };
+    let mut x3: Level0_Level1_1_Level2_1 = Level0_Level1_1_Level2_1 { x1: 3 };
+    let mut x4: Level0_Level1_1_Level2_1_Level3_1 = Level0_Level1_1_Level2_1_Level3_1 { x1: 4 };
+    let mut x5: Level0_Level1_1_Level2_1_Level3_2 =
+        Level0_Level1_1_Level2_1_Level3_2 { x1: 5, x2: 6 };
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

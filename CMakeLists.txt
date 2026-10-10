@@ -94,22 +94,26 @@ file(GLOB_RECURSE ALL_CXX_SOURCES
 
 set(PYTHON_SOURCES ${PROJECT_SOURCE_DIR}/tests/lit/lit/formats/Cpp2RustTest.py)
 
+# `clippy --fix` downgrades -Dwarnings errors back to warnings, and manifest
+# lints (e.g., unused dependencies) ignore it. Make cargo deny all warnings.
+set(CLIPPY_ENV CARGO_BUILD_WARNINGS=deny)
+
 add_custom_target("format"
                   COMMAND ${CLANG_FORMAT} -i ${ALL_CXX_SOURCES}
                   COMMAND cargo +${RUST_STABLE_VERSION} fmt --manifest-path ${PROJECT_SOURCE_DIR}/rules/Cargo.toml
                   COMMAND cargo +${RUST_NIGHTLY_VERSION} fmt --manifest-path ${PROJECT_SOURCE_DIR}/rule-preprocessor/Cargo.toml
                   COMMAND cargo +${RUST_STABLE_VERSION} fmt --manifest-path ${PROJECT_SOURCE_DIR}/libcc2rs/Cargo.toml
                   COMMAND cargo +${RUST_STABLE_VERSION} fmt --manifest-path ${PROJECT_SOURCE_DIR}/libcc2rs-macros/Cargo.toml
-                  COMMAND ${CARGO_ENV_RULES}
+                  COMMAND ${CARGO_ENV_RULES} ${CLIPPY_ENV}
                           cargo +${RUST_STABLE_VERSION} clippy --release --fix --allow-dirty --allow-no-vcs --allow-staged --all-targets --all-features
                                 --manifest-path ${PROJECT_SOURCE_DIR}/rules/Cargo.toml -- -Dwarnings
-                  COMMAND ${CARGO_ENV_RULE_PREPROCESSOR}
+                  COMMAND ${CARGO_ENV_RULE_PREPROCESSOR} ${CLIPPY_ENV}
                           cargo +${RUST_NIGHTLY_VERSION} clippy --release --fix --allow-dirty --allow-no-vcs --allow-staged --all-targets --all-features
                                 --manifest-path ${PROJECT_SOURCE_DIR}/rule-preprocessor/Cargo.toml -- -Dwarnings
-                  COMMAND ${CARGO_ENV_LIBCC2RS}
+                  COMMAND ${CARGO_ENV_LIBCC2RS} ${CLIPPY_ENV}
                           cargo +${RUST_STABLE_VERSION} clippy --release --fix --allow-dirty --allow-no-vcs --allow-staged --all-targets --all-features
                                 --manifest-path ${PROJECT_SOURCE_DIR}/libcc2rs/Cargo.toml -- -Dwarnings
-                  COMMAND ${CARGO_ENV_LIBCC2RS_MACROS}
+                  COMMAND ${CARGO_ENV_LIBCC2RS_MACROS} ${CLIPPY_ENV}
                           cargo +${RUST_STABLE_VERSION} clippy --release --fix --allow-dirty --allow-no-vcs --allow-staged --all-targets --all-features
                                 --manifest-path ${PROJECT_SOURCE_DIR}/libcc2rs-macros/Cargo.toml -- -Dwarnings
                   COMMAND ${RUFF} --silent check --fix ${PYTHON_SOURCES}
@@ -215,7 +219,17 @@ add_custom_command(
 )
 
 file(GLOB rule_subdirs CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/rules/*)
+file(GLOB rule_common_headers CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/rules/common/*.h)
+file(GLOB rule_indexer_sources CONFIGURE_DEPENDS
+     ${PROJECT_SOURCE_DIR}/cpp2rust/rule_preprocessing/*
+     ${PROJECT_SOURCE_DIR}/cpp2rust/converter/rules/rules_loader.*)
+set(_common_headers)
+foreach(_header IN LISTS rule_common_headers)
+  list(APPEND _common_headers --common-header=${_header})
+endforeach()
 set(cpp_rules_ir_outputs)
+set(cpp_rules_index_inputs)
+set(cpp_rules_index_outputs ${CMAKE_BINARY_DIR}/rules_index/c.json ${CMAKE_BINARY_DIR}/rules_index/cpp.json)
 set(rust_rules_ir_outputs)
 foreach(_rule_dir IN LISTS rule_subdirs)
   file(GLOB _cpp_srcs ${_rule_dir}/src.c ${_rule_dir}/src.cpp)
@@ -225,7 +239,7 @@ foreach(_rule_dir IN LISTS rule_subdirs)
   get_filename_component(_rule_name ${_rule_dir} NAME)
   set(_out_dir ${RULES_IR_DIR}/${_rule_name})
   set(_cpp_out ${_out_dir}/ir_src.json)
-  set(_cxxflags --cxxflags=-isystem${_rule_dir})
+  set(_cxxflags)
   set(_cxxflags_file)
   if(EXISTS ${_rule_dir}/cxxflags)
     set(_cxxflags_file ${_rule_dir}/cxxflags)
@@ -238,10 +252,14 @@ foreach(_rule_dir IN LISTS rule_subdirs)
     OUTPUT ${_cpp_out}
     COMMAND ${CMAKE_COMMAND} -E make_directory ${_out_dir}
     COMMAND $<TARGET_FILE:cpp-rule-preprocessor> --dir ${_rule_dir} --out ${_cpp_out} ${_cxxflags}
-    DEPENDS ${_cpp_srcs} ${_cxxflags_file} ${PROJECT_SOURCE_DIR}/cpp2rust/cpp_rule_preprocessor.cpp ${RUSTLS_HEADER} ${BROTLI_HEADERS}
+    DEPENDS ${_cpp_srcs} ${_cxxflags_file} ${rule_common_headers} ${PROJECT_SOURCE_DIR}/cpp2rust/rule_preprocessing/cpp_rule_preprocessor.cpp ${RUSTLS_HEADER} ${BROTLI_HEADERS}
     VERBATIM
   )
   list(APPEND cpp_rules_ir_outputs ${_cpp_out})
+
+  if(NOT _rule_name STREQUAL "builtin_types")
+    list(APPEND cpp_rules_index_inputs ${_cpp_srcs} ${_cxxflags_file})
+  endif()
 
   set(_rust_srcs)
   set(_rust_out)
@@ -272,6 +290,15 @@ foreach(_rule_dir IN LISTS rule_subdirs)
 endforeach()
 
 add_custom_target("preprocess-cpp-rules" ALL DEPENDS ${cpp_rules_ir_outputs})
+
+add_custom_command(
+  OUTPUT ${cpp_rules_index_outputs}
+  COMMAND $<TARGET_FILE:cpp-rule-indexer> --exclude builtin_types ${_common_headers}
+  DEPENDS ${cpp_rules_index_inputs} ${rule_common_headers} ${rule_indexer_sources} ${RUSTLS_HEADER} ${BROTLI_HEADERS}
+  VERBATIM
+)
+
+add_custom_target("index-cpp-rules" ALL DEPENDS ${cpp_rules_index_outputs})
 
 add_custom_target("preprocess-rust-rules" ALL
                   DEPENDS ${rust_rules_ir_outputs})

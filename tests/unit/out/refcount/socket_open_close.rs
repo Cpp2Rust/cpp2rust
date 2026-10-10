@@ -11,7 +11,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let s: Value<i32> = Rc::new(RefCell::new({
+    let mut s: i32 = {
         let __family = match libc::AF_INET {
             ::libc::AF_INET => nix::sys::socket::AddressFamily::Inet,
             ::libc::AF_INET6 => nix::sys::socket::AddressFamily::Inet6,
@@ -37,9 +37,9 @@ fn main_0() -> i32 {
                 -1
             }
         }
-    }));
-    assert!(((((*s.borrow()) >= 0) as i32) != 0));
-    assert!((((FdRegistry::close((*s.borrow())) == 0) as i32) != 0));
+    };
+    assert!((((s >= 0) as i32) != 0));
+    assert!((((FdRegistry::close(s) == 0) as i32) != 0));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}
