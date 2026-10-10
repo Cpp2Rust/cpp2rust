@@ -1309,8 +1309,7 @@ bool ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
     return false;
   }
 
-  if (IsImplicitAssignmentCall(expr) &&
-      !Mapper::Contains(ctx_, expr->getCallee())) {
+  if (IsImplicitAssignmentCall(expr) && !Mapper::Contains(ctx_, expr)) {
     auto *call = clang::cast<clang::CXXMemberCallExpr>(expr);
     ConvertAssignment(call->getImplicitObjectArgument(), call->getArg(0), "=");
     return false;
@@ -1330,8 +1329,7 @@ bool ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
   }
 
   if (auto *opcall = clang::dyn_cast<clang::CXXOperatorCallExpr>(expr);
-      opcall && !IsUserOperatorCall(opcall) &&
-      !Mapper::Contains(ctx_, expr->getCallee())) {
+      opcall && !IsUserOperatorCall(opcall) && !Mapper::Contains(ctx_, expr)) {
     PushConversionKind push(*this, ConversionKind::Unboxed,
                             opcall->getOperator() == clang::OO_Call);
     return ConvertCXXOperatorCallExpr(opcall);
@@ -2269,9 +2267,9 @@ bool ConverterRefCount::VisitCXXForRangeStmtMap(clang::CXXForRangeStmt *stmt) {
          ConvertObject(stmt->getRangeInit()), ')');
   PushBrace brace(*this);
 
-  EmitByValueShadow(loop_var, std::string(loop_var_name),
-                    "Value<" +
-                        Mapper::Map(ctx_, GetForRangeIteratorType(stmt)) + '>');
+  EmitByValueShadow(
+      loop_var, std::string(loop_var_name),
+      "Value<" + Mapper::Map(*this, GetForRangeIteratorType(stmt)) + '>');
 
   ConvertForRangeBody(stmt, loop_var);
 
@@ -2537,7 +2535,7 @@ std::string ConverterRefCount::GetDefaultAsString(clang::QualType qual_type) {
     return BoxValue(std::move(arr));
   }
 
-  if (auto init = Mapper::MapInitializer(ctx_, qual_type); !init.empty()) {
+  if (auto init = Mapper::MapInitializer(*this, qual_type); !init.empty()) {
     computed_expr_type_ = ComputedExprType::FreshValue;
     return BoxValue(std::move(init));
   }
@@ -3321,7 +3319,7 @@ std::string ConverterRefCount::ConvertMappedMethodCall(
     arg = call->getArg(0);
   }
 
-  auto param_type = Mapper::GetParamType(ctx_, GetCalleeOrExpr(expr), arg_idx);
+  auto param_type = Mapper::GetParamType(*this, expr, arg_idx);
 
   if (arg->getType()->isPointerType()) {
     return std::format("{}.with_mut(|__v: {}| __v{})", ConvertPointer(arg),

@@ -1,5 +1,10 @@
+// translation-fail
 #include <assert.h>
 #include <vector>
+
+struct S {
+  int x;
+};
 
 void copy(std::vector<int> copy_vector) {}
 
@@ -107,5 +112,17 @@ int main() {
   x1 -= 1.5;
   assert(v6.at(s2 - 1) == 6.5);
   assert(s1 + s2 + v2.at(0) == 103);
+
+  S a{1};
+  S *pa = &a;
+  std::vector<S *const *> v8;
+  v8.push_back(&pa);
+  assert((*v8[0])->x == 1);
+
+  S **ppa = &pa;
+  std::vector<S ***> v9;
+  v9.push_back(&ppa);
+  (**v9[0])->x = 2;
+  assert(a.x == 2);
   return 0;
 }
