@@ -1332,6 +1332,8 @@ bool ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
   if (auto *opcall = clang::dyn_cast<clang::CXXOperatorCallExpr>(expr);
       opcall && !IsUserOperatorCall(opcall) &&
       !Mapper::Contains(ctx_, expr->getCallee())) {
+    PushConversionKind push(*this, ConversionKind::Unboxed,
+                            opcall->getOperator() == clang::OO_Call);
     return ConvertCXXOperatorCallExpr(opcall);
   }
 

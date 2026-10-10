@@ -1257,8 +1257,7 @@ const clang::LambdaCapture *AsLambdaCapture(const clang::FieldDecl *field) {
 
 bool IsLambdaCopyOrMoveConstructor(const clang::CXXConstructorDecl *ctor) {
   auto decl = ctor->getParent();
-  return ctor->isCopyOrMoveConstructor() && decl->isLambda() &&
-         !decl->captures().empty();
+  return ctor->isCopyOrMoveConstructor() && decl->isLambda();
 }
 
 bool LambdaNeedsDestruction(const clang::CXXRecordDecl *decl) {
@@ -1340,7 +1339,7 @@ bool HasStaticLocal(const clang::Stmt *stmt) {
 
 bool IsUserOperatorCall(const clang::CXXOperatorCallExpr *expr) {
   const auto *callee = expr->getDirectCallee();
-  if (!callee) {
+  if (!callee || AsLambdaOperatorCall(callee)) {
     return false;
   }
   if (callee->isDefaulted() && IsComparisonOperator(callee)) {

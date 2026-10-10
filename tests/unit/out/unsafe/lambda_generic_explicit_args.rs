@@ -82,10 +82,10 @@ unsafe fn main_0() -> i32 {
     let mut cast_to: FnPtr<Generic> = lambda_unsafe!(
         Generic,
         {},
-        |x: i32| -> i32 {
+        |mut x: i32| -> i32 {
             return ((x as i32) / (2));
         },
-        |x: i32| -> f64 {
+        |mut x: i32| -> f64 {
             return ((x as f64) / (2_f64));
         }
     );
