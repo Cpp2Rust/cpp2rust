@@ -3784,8 +3784,9 @@ void Converter::EmitDeallocation(clang::CXXDeleteExpr *expr,
           argument_as_string, argument_as_string, destroyed_type_as_string));
     }
   } else {
-    StrCat(
-        std::format("::std::mem::drop(Box::from_raw({}))", argument_as_string));
+    bool cast_mut = !IsMut(expr->getDestroyedType());
+    StrCat(std::format("::std::mem::drop(Box::from_raw({}{}))",
+                       argument_as_string, cast_mut ? ".cast_mut()" : ""));
   }
 }
 
