@@ -24,7 +24,7 @@ std::string &f4(std::string &s, const char *p, std::size_t n) {
 const char *f5(const std::string &s) { return s.c_str(); }
 
 #if __cplusplus >= 201703L
-char *f6(std::string &s) { return s.data(); }
+auto f6(std::string &s) -> decltype(s.data()) { return s.data(); }
 #endif
 
 std::string f7(const char *s, std::size_t n) { return std::string(s, n); }

@@ -3,6 +3,7 @@
 
 #include "converter/converter_lib.h"
 
+#include <clang/AST/DeclFriend.h>
 #include <clang/AST/DeclTemplate.h>
 #include <clang/AST/ExprCXX.h>
 #include <clang/AST/ExprConcepts.h>
@@ -1458,6 +1459,52 @@ bool IsComparisonOperator(const clang::FunctionDecl *fn) {
   default:
     return false;
   }
+}
+
+void DefineImplicitMembers(clang::Sema &sema, clang::CXXRecordDecl *decl) {
+  clang::Scope tu_scope(nullptr, clang::Scope::DeclScope,
+                        sema.getDiagnostics());
+  tu_scope.setEntity(sema.Context.getTranslationUnitDecl());
+  auto *saved_tu_scope = std::exchange(sema.TUScope, &tu_scope);
+  sema.ForceDeclarationOfImplicitMembers(decl);
+  for (auto ctor : decl->ctors()) {
+    if (ctor->isCopyConstructor() && ctor->isImplicit() &&
+        !ctor->doesThisDeclarationHaveABody() && !ctor->isDeleted()) {
+      sema.DefineImplicitCopyConstructor(decl->getLocation(), ctor);
+    }
+    if (ctor->isMoveConstructor() && !ctor->isUserProvided() &&
+        !ctor->doesThisDeclarationHaveABody() && !ctor->isDeleted() &&
+        !HasDefaultedCopyConstructor(decl)) {
+      sema.DefineImplicitMoveConstructor(decl->getLocation(), ctor);
+    }
+  }
+  for (auto *method : decl->methods()) {
+    if (method->isMoveAssignmentOperator() && !method->isUserProvided() &&
+        !method->doesThisDeclarationHaveABody() && !method->isDeleted() &&
+        !HasDefaultedCopyAssignment(decl)) {
+      sema.DefineImplicitMoveAssignment(decl->getLocation(), method);
+    }
+  }
+  auto define_defaulted_comparison = [&](clang::FunctionDecl *fn) {
+    if (!fn || !IsComparisonOperator(fn) || !fn->isDefaulted() ||
+        fn->doesThisDeclarationHaveABody()) {
+      return;
+    }
+#if CLANG_VERSION_MAJOR >= 24
+    auto kind = fn->getDefaultedComparisonKind();
+#else
+    auto kind = sema.getDefaultedComparisonKind(fn);
+#endif
+    sema.DefineDefaultedComparison(decl->getLocation(), fn, kind);
+  };
+  for (auto *method : decl->methods()) {
+    define_defaulted_comparison(method);
+  }
+  for (auto *friend_decl : decl->friends()) {
+    define_defaulted_comparison(clang::dyn_cast_or_null<clang::FunctionDecl>(
+        friend_decl->getFriendDecl()));
+  }
+  sema.TUScope = saved_tu_scope;
 }
 
 bool IsEmittableMethod(clang::CXXMethodDecl *method) {

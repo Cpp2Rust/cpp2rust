@@ -1,9 +1,9 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-#include <cstdlib>
+#include <stdlib.h>
 
-void f1() { return std::abort(); }
+void f1() { return abort(); }
 
 void f2(void *a0) { return free(a0); }
 
