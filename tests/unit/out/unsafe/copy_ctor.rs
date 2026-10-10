@@ -244,7 +244,7 @@ unsafe fn main_0() -> i32 {
     let ct: Tracked = <Tracked>::default();
     let mut t3: Tracked = Tracked::copy_from({ &ct });
     (unsafe { touch_1((&ct as *const Tracked)) });
-    assert!(((*(&raw const ct.copied_from).cast_mut()) == (2)));
+    assert!(((ct.copied_from) == (2)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {

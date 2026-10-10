@@ -3019,28 +3019,28 @@ bool Converter::ConvertIncAndDec(clang::UnaryOperator *expr) {
   auto *sub_expr = expr->getSubExpr();
   switch (opcode) {
   case clang::UO_PostInc: {
-    PushExprKind push(*this, ExprKind::RValue);
+    PushExprKind push(*this, ExprKind::LValue);
     Convert(sub_expr);
     StrCat(".postfix_inc()");
     SetFresh();
     return true;
   }
   case clang::UO_PostDec: {
-    PushExprKind push(*this, ExprKind::RValue);
+    PushExprKind push(*this, ExprKind::LValue);
     Convert(sub_expr);
     StrCat(".postfix_dec()");
     SetFresh();
     return true;
   }
   case clang::UO_PreInc: {
-    PushExprKind push(*this, ExprKind::RValue);
+    PushExprKind push(*this, ExprKind::LValue);
     Convert(sub_expr);
     StrCat(".prefix_inc()");
     SetFresh();
     return true;
   }
   case clang::UO_PreDec: {
-    PushExprKind push(*this, ExprKind::RValue);
+    PushExprKind push(*this, ExprKind::LValue);
     Convert(sub_expr);
     StrCat(".prefix_dec()");
     SetFresh();
@@ -3383,7 +3383,8 @@ bool Converter::VisitMemberExpr(clang::MemberExpr *expr) {
     auto *base = expr->getBase();
     auto object_type = expr->isArrow() ? base->getType()->getPointeeType()
                                        : base->getType().getNonReferenceType();
-    if (!clang::isa<clang::CXXThisExpr>(base->IgnoreParenImpCasts()) &&
+    if (!isRValue() &&
+        !clang::isa<clang::CXXThisExpr>(base->IgnoreParenImpCasts()) &&
         object_type.isConstQualified()) {
       if (isAddrOf()) {
         StrCat(std::format("(&raw const {}).cast_mut()", str));

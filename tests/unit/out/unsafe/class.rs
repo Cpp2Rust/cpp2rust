@@ -134,7 +134,7 @@ unsafe fn main_0() -> i32 {
     assert!((unsafe { Counter::operator_eq(&mut *(&raw const c1).cast_mut(), &c2,) }));
     assert!((unsafe { Counter::operator_eq(&mut *(&raw const c2).cast_mut(), &c1,) }));
     assert!(((c1.calls) == (3)));
-    assert!(((*(&raw const c2.calls).cast_mut()) == (2)));
+    assert!(((c2.calls) == (2)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}
