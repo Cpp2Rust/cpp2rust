@@ -146,5 +146,5 @@ unsafe fn f27<T1: Ord + Clone, T2>(a0: UnsafeMapIterator<T1, T2>) -> *mut (T1, T
 }
 
 unsafe fn f28<T1: Ord + Clone, T2>(a0: UnsafeMapIterator<T1, T2>) -> *const (T1, T2) {
-    a0.deref() as *const (T1, T2)
+    a0.deref().cast_const()
 }
