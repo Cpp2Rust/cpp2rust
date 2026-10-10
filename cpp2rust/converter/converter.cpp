@@ -3643,7 +3643,8 @@ bool Converter::VisitInitListExpr(clang::InitListExpr *expr) {
 bool Converter::VisitCompoundLiteralExpr(clang::CompoundLiteralExpr *expr) {
   auto record = expr->getType()->getAsRecordDecl();
   if (!record || !record->hasAttr<clang::TransparentUnionAttr>()) {
-    return true;
+    Convert(expr->getInitializer());
+    return false;
   }
   auto init = clang::cast<clang::InitListExpr>(expr->getInitializer());
   assert(init->getNumInits() == 1);
@@ -3998,7 +3999,9 @@ bool Converter::VisitCXXDefaultArgExpr(clang::CXXDefaultArgExpr *expr) {
   if (expr->getType()->isPointerType()) {
     StrCat(token::kDefault);
     computed_expr_type_ = ComputedExprType::FreshPointer;
+    return false;
   }
+  Convert(expr->getExpr());
   return false;
 }
 
