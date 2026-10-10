@@ -32,12 +32,14 @@ pub struct Foo {
 }
 impl Default for Foo {
     fn default() -> Self {
-        Foo {
-            x: 0_i32,
-            y: <Ptr<i32>>::default(),
-            z: Ptr::<i32>::null(),
-            a: Rc::new(RefCell::new((0..3).map(|_| 0_i32).collect::<Box<[i32]>>())),
-            bar: <Bar>::default(),
+        {
+            Foo {
+                x: 0_i32,
+                y: <Ptr<i32>>::default(),
+                z: Ptr::<i32>::null(),
+                a: Rc::new(RefCell::new((0..3).map(|_| 0_i32).collect::<Box<[i32]>>())),
+                bar: <Bar>::default(),
+            }
         }
     }
 }

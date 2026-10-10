@@ -20,10 +20,12 @@ pub struct S {
 }
 impl Default for S {
     fn default() -> Self {
-        S {
-            head: 0_i32,
-            tail: Rc::new(RefCell::new((0..3).map(|_| 0_i32).collect::<Box<[i32]>>())),
-            buf: Rc::new(RefCell::new((0..4).map(|_| 0_i8).collect::<Box<[i8]>>())),
+        {
+            S {
+                head: 0_i32,
+                tail: Rc::new(RefCell::new((0..3).map(|_| 0_i32).collect::<Box<[i32]>>())),
+                buf: Rc::new(RefCell::new((0..4).map(|_| 0_i8).collect::<Box<[i8]>>())),
+            }
         }
     }
 }

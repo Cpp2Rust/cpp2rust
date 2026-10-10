@@ -30,11 +30,13 @@ pub struct S {
 }
 impl Default for S {
     fn default() -> Self {
-        S {
-            in_: <In>::default(),
-            total: 0_i32,
-            n: 0_i32,
-            arr: Rc::new(RefCell::new((0..4).map(|_| 0_i32).collect::<Box<[i32]>>())),
+        {
+            S {
+                in_: <In>::default(),
+                total: 0_i32,
+                n: 0_i32,
+                arr: Rc::new(RefCell::new((0..4).map(|_| 0_i32).collect::<Box<[i32]>>())),
+            }
         }
     }
 }

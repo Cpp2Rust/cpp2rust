@@ -1,6 +1,7 @@
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // no-compile
 #include <assert.h>
+#include <utility>
 
 template <typename F> struct Guard {
   F f;
@@ -14,6 +15,13 @@ template <typename F> struct Holder {
     calls++;
     return f(x);
   }
+};
+
+template <typename F> struct Moving {
+  F f;
+  int moves = 0;
+  Moving(F f) : f(f) {}
+  Moving(Moving &&o) : f(std::move(o.f)), moves(o.moves + 1) {}
 };
 
 template <typename T> auto wrap(T fn) {
@@ -53,6 +61,11 @@ int main() {
 
   auto ww = wrap(w);
   assert(ww(2) == 202);
+
+  Moving m{[](int x) { return x * 2; }};
+  Moving m2(std::move(m));
+  assert(m2.f(3) == 6);
+  assert(m2.moves == 1);
 
   return 0;
 }

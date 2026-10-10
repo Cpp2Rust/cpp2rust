@@ -148,7 +148,7 @@ impl<T: ?Sized + 'static> FnPtrArg for *const T {
 
 macro_rules! impl_fn_ptr_arg_unsafe_fn {
     () => {
-        impl_fn_ptr_arg_unsafe_fn!(@gen A B C D E F G H I J K L M N O P);
+        impl_fn_ptr_arg_unsafe_fn!(@gen A B C D E F G H I J K L M N O P Q S T U V W X Y);
     };
     (@gen $($a:ident)*) => {
         impl<R: 'static $(, $a: 'static)*> FnPtrArg for Option<unsafe fn($($a,)*) -> R> {
@@ -224,7 +224,7 @@ pub(crate) trait FnPtrArgs: Sized + 'static {
 
 macro_rules! impl_fn_ptr_args {
     () => {
-        impl_fn_ptr_args!(@gen A B C D E F G H I J K L M N O P);
+        impl_fn_ptr_args!(@gen A B C D E F G H I J K L M N O P Q S T U V W X Y);
     };
     (@gen $($a:ident)*) => {
         impl_fn_ptr_args!(@arity $($a)*);

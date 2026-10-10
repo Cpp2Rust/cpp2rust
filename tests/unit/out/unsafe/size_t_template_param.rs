@@ -36,6 +36,15 @@ impl RefCtor_unsigned_long_ {
         this
     }
 }
+pub unsafe fn neg_ll_1() -> i64 {
+    return -9000000_i64;
+}
+pub unsafe fn neg_char_2() -> libc::c_char {
+    return (b'\x80' as libc::c_char);
+}
+pub unsafe fn neg_int_3() -> i32 {
+    return -1;
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -55,6 +64,9 @@ unsafe fn main_0() -> i32 {
     let mut rc: RefCtor_unsigned_long_ =
         RefCtor_unsigned_long_::new({ &*(&raw const v1).cast::<u64>() });
     assert!(((rc.v) == (7_u64)));
+    assert!(((unsafe { neg_ll_1() }) == (-9000000_i32 as i64)));
+    assert!((((unsafe { neg_char_2() }) as i32) == ((b'\x80' as libc::c_char) as i32)));
+    assert!(((unsafe { neg_int_3() }) == (-1_i32)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

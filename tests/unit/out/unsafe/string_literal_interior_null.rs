@@ -50,6 +50,19 @@ unsafe fn main_0() -> i32 {
     });
     assert!(((a) == (b)));
     assert!(((a) == (1)));
+    let mut high: i32 = (unsafe {
+        sum_bytes_0(
+            (&[
+                (-62 as libc::c_char),
+                (0 as libc::c_char),
+                (65 as libc::c_char),
+                (0 as libc::c_char),
+            ])
+                .as_ptr(),
+            3_u32,
+        )
+    });
+    assert!(((high) == ((194) + (65))));
     let mut c: i32 = (((*c"\r\n.\r\n".as_ptr().offset((0) as isize)) as i32)
         + ((*c"\r\n.\r\n".as_ptr().offset((3) as isize)) as i32));
     assert!(((c) == ((('\r' as libc::c_char) as i32) + (('\r' as libc::c_char) as i32))));

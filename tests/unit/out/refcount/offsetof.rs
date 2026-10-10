@@ -27,9 +27,11 @@ pub struct Frame {
 }
 impl Default for Frame {
     fn default() -> Self {
-        Frame {
-            tag: 0_u16,
-            body: Rc::new(RefCell::new((0..64).map(|_| 0_i8).collect::<Box<[i8]>>())),
+        {
+            Frame {
+                tag: 0_u16,
+                body: Rc::new(RefCell::new((0..64).map(|_| 0_i8).collect::<Box<[i8]>>())),
+            }
         }
     }
 }

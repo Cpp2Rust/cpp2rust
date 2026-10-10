@@ -24,6 +24,22 @@ pub const Sized_SIZED_B: Sized = 65535;
 pub type Scoped = i8;
 pub const Scoped_NEG: Scoped = -2;
 pub const Scoped_POS: Scoped = 2;
+pub type Empty = bool;
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(1)]
+pub struct HoldsEmpty {
+    #[offset(0)]
+    pub e: Empty,
+}
+impl Default for HoldsEmpty {
+    fn default() -> Self {
+        {
+            HoldsEmpty {
+                e: <Empty>::default(),
+            }
+        }
+    }
+}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
@@ -55,6 +71,10 @@ fn main_0() -> i32 {
     let mut sc: Scoped = Scoped_NEG;
     assert!(((sc as i32) == -2_i32));
     assert!((((Scoped_POS as i8) as i32) == 2));
+    let mut he: HoldsEmpty = <HoldsEmpty>::default();
+    assert!(!(he.e));
+    let mut ev: Empty = <Empty>::default();
+    assert!(((ev as i32) == (he.e as i32)));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

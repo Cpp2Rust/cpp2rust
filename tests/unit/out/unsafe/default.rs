@@ -30,7 +30,7 @@ pub struct BigArray {
 }
 impl Default for BigArray {
     fn default() -> Self {
-        BigArray { a: [0_i32; 33] }
+        unsafe { BigArray { a: [0_i32; 33] } }
     }
 }
 pub fn main() {

@@ -17,9 +17,11 @@ pub struct record {
 }
 impl Default for record {
     fn default() -> Self {
-        record {
-            code: 0_u16,
-            pad: Rc::new(RefCell::new((0..14).map(|_| 0_i8).collect::<Box<[i8]>>())),
+        {
+            record {
+                code: 0_u16,
+                pad: Rc::new(RefCell::new((0..14).map(|_| 0_i8).collect::<Box<[i8]>>())),
+            }
         }
     }
 }

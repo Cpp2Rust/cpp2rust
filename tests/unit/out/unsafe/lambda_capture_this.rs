@@ -24,7 +24,7 @@ impl S {
             {
                 let this_: *mut S = (self as *mut S);
             },
-            |k: i32| {
+            |mut k: i32| {
                 (*this_).n += k;
             }
         );
@@ -36,7 +36,7 @@ impl S {
             {
                 let this_: *mut S = (self as *mut S);
             },
-            |k: i32| {
+            |mut k: i32| {
                 (unsafe { S::add(&mut (*this_), k) });
             }
         );

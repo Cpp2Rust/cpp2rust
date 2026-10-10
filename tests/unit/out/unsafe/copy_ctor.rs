@@ -89,7 +89,7 @@ pub struct Holder {
     pub arr: [Counted; 2],
 }
 #[repr(C)]
-#[derive(FnPtrArg, MoveCtorUnsafe, Default)]
+#[derive(VaArg, FnPtrArg, MoveCtorUnsafe, Default)]
 pub struct Box_int_ {
     pub val: i32,
 }
@@ -98,23 +98,24 @@ impl Box_int_ {
         let mut this = Self { val: v };
         this
     }
+    pub unsafe fn copy_from(o: *const Box_int_) -> Self {
+        let mut this = Self { val: (*o).val };
+        this
+    }
     pub unsafe fn move_from(_a0: *mut Box_int_) -> Self {
         let mut this = Self { val: (*_a0).val };
         this
     }
 }
+impl Clone for Box_int_ {
+    fn clone(&self) -> Self {
+        unsafe { Box_int_::copy_from(self as *const Box_int_) }
+    }
+}
 #[repr(C)]
-#[derive(FnPtrArg, MoveCtorUnsafe, Default)]
+#[derive(Clone, VaArg, FnPtrArg, Default)]
 pub struct Owner {
     pub box_: Box_int_,
-}
-impl Owner {
-    pub unsafe fn move_from(_a0: *mut Owner) -> Self {
-        let mut this = Self {
-            box_: Box_int_::move_from({ &mut (*_a0).box_ }),
-        };
-        this
-    }
 }
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, Default)]
@@ -140,39 +141,10 @@ impl Clone for OutOfLine {
     }
 }
 impl OutOfLine {}
-#[repr(C)]
-#[derive(VaArg, FnPtrArg)]
-pub struct Tracked {
-    pub copied_from: i32,
-}
-impl Tracked {
-    pub unsafe fn copy_from(o: *const Tracked) -> Self {
-        let mut this = Self { copied_from: 0 };
-        (*(&raw const (*o).copied_from).cast_mut()).prefix_inc();
-        this
-    }
-    pub unsafe fn copy_assign(&mut self, o: *const Tracked) -> *mut Tracked {
-        (*(&raw const (*o).copied_from).cast_mut()).prefix_inc();
-        return &mut (*(self as *mut Tracked));
-    }
-}
-impl Clone for Tracked {
-    fn clone(&self) -> Self {
-        unsafe { Tracked::copy_from(self as *const Tracked) }
-    }
-}
-impl Default for Tracked {
-    fn default() -> Self {
-        Tracked { copied_from: 0 }
-    }
-}
-pub unsafe fn touch_1(mut t: *const Tracked) {
-    (*(&raw const (*t).copied_from).cast_mut()).prefix_inc();
-}
-pub unsafe fn by_value_2(mut c: Counted) -> i32 {
+pub unsafe fn by_value_1(mut c: Counted) -> i32 {
     return c.v;
 }
-pub unsafe fn make_3(mut v: i32) -> Counted {
+pub unsafe fn make_2(mut v: i32) -> Counted {
     let mut c: Counted = Counted::new({ v });
     return Counted::copy_from({ &c });
 }
@@ -189,9 +161,9 @@ unsafe fn main_0() -> i32 {
     let mut d: Counted = Counted::copy_from({ &a });
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (3)));
     assert!((((b.v) == (1)) && ((c.v) == (1))) && ((d.v) == (1)));
-    assert!(((unsafe { by_value_2(Counted::copy_from({ &a },),) }) == (1)));
+    assert!(((unsafe { by_value_1(Counted::copy_from({ &a },),) }) == (1)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (4)));
-    let mut e: Counted = (unsafe { make_3(5) });
+    let mut e: Counted = (unsafe { make_2(5) });
     assert!(((e.v) == (5)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (5)));
     let mut f: Counted = Counted::new({ 6 });
@@ -225,7 +197,7 @@ unsafe fn main_0() -> i32 {
     let mut o: Owner = Owner {
         box_: Box_int_::new({ 3 }),
     };
-    let mut o2: Owner = Owner::move_from({ &mut o });
+    let mut o2: Owner = o.clone();
     assert!(((o2.box_.val) == (3)));
     let mut ol1: OutOfLine = OutOfLine::new({ 5 });
     let mut ol2: OutOfLine = OutOfLine::copy_from({ &ol1 });
@@ -237,14 +209,6 @@ unsafe fn main_0() -> i32 {
     let mut n2: NonConst = NonConst::new_2({ &cn });
     assert!(((n1.mark) == (1)));
     assert!(((n2.mark) == (10)));
-    let mut t1: Tracked = <Tracked>::default();
-    let mut t2: Tracked = Tracked::copy_from({ &t1 });
-    (unsafe { Tracked::copy_assign(&mut t2, &t1) });
-    assert!(((t1.copied_from) == (2)));
-    let ct: Tracked = <Tracked>::default();
-    let mut t3: Tracked = Tracked::copy_from({ &ct });
-    (unsafe { touch_1((&ct as *const Tracked)) });
-    assert!(((ct.copied_from) == (2)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {

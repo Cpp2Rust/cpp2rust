@@ -27,7 +27,7 @@ unsafe fn main_0() -> i32 {
         {
             let factor: i32 = factor;
         },
-        |x: i32| -> i32 {
+        |mut x: i32| -> i32 {
             return ((x) * (factor));
         }
     );
@@ -62,7 +62,7 @@ unsafe fn main_0() -> i32 {
         {
             let y: i32 = ((base) + (1));
         },
-        |x: i32| -> i32 {
+        |mut x: i32| -> i32 {
             return ((x) + (y));
         }
     );
@@ -72,7 +72,7 @@ unsafe fn main_0() -> i32 {
         {
             let k: i32 = k;
         },
-        |x: i32| -> i32 {
+        |mut x: i32| -> i32 {
             return ((x) + (3));
         }
     );
@@ -81,7 +81,7 @@ unsafe fn main_0() -> i32 {
         {
             let k: i32 = k;
         },
-        |x: i32| -> i32 {
+        |mut x: i32| -> i32 {
             return ((x) + (unsafe { read_0(&k) }));
         }
     );
@@ -90,7 +90,7 @@ unsafe fn main_0() -> i32 {
         {
             let k: i32 = k;
         },
-        |x: i32| -> i32 {
+        |mut x: i32| -> i32 {
             return ((x) + (unsafe { read_0(&k) }));
         }
     );
@@ -99,7 +99,7 @@ unsafe fn main_0() -> i32 {
         {
             let k: *const i32 = &k;
         },
-        |x: i32| -> i32 {
+        |mut x: i32| -> i32 {
             return ((x) + (3));
         }
     );

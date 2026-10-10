@@ -18,9 +18,11 @@ pub struct pair {
 }
 impl Default for pair {
     fn default() -> Self {
-        pair {
-            a: Rc::new(RefCell::new((0..4).map(|_| 0_i32).collect::<Box<[i32]>>())),
-            b: Rc::new(RefCell::new((0..4).map(|_| 0_i32).collect::<Box<[i32]>>())),
+        {
+            pair {
+                a: Rc::new(RefCell::new((0..4).map(|_| 0_i32).collect::<Box<[i32]>>())),
+                b: Rc::new(RefCell::new((0..4).map(|_| 0_i32).collect::<Box<[i32]>>())),
+            }
         }
     }
 }

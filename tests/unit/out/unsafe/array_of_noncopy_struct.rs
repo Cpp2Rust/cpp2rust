@@ -14,9 +14,11 @@ pub struct NonCopy {
 }
 impl Default for NonCopy {
     fn default() -> Self {
-        NonCopy {
-            data: Default::default(),
-            tag: 0,
+        unsafe {
+            NonCopy {
+                data: Default::default(),
+                tag: 0,
+            }
         }
     }
 }
