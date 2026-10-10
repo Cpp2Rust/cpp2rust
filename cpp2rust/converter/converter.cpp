@@ -3383,9 +3383,7 @@ bool Converter::VisitMemberExpr(clang::MemberExpr *expr) {
     auto *base = expr->getBase();
     auto object_type = expr->isArrow() ? base->getType()->getPointeeType()
                                        : base->getType().getNonReferenceType();
-    if (!isRValue() &&
-        !clang::isa<clang::CXXThisExpr>(base->IgnoreParenImpCasts()) &&
-        object_type.isConstQualified()) {
+    if (!isRValue() && object_type.isConstQualified()) {
       if (isAddrOf()) {
         StrCat(std::format("(&raw const {}).cast_mut()", str));
         computed_expr_type_ = ComputedExprType::FreshPointer;
@@ -3443,21 +3441,11 @@ void Converter::SetUFCSReceiver(clang::Expr *base, bool is_arrow,
   }
   Buffer buf(*this);
   PushExprKind push(*this, ExprKind::LValue);
-  auto object_type = is_arrow ? base->getType()->getPointeeType()
-                              : base->getType().getNonReferenceType();
-  bool cast_mut =
-      MethodNeedsMutableReceiver(method) && object_type.isConstQualified();
   StrCat(MethodNeedsMutableReceiver(method) ? "&mut" : "&");
-  if (cast_mut) {
-    StrCat("*(&raw const");
-  }
   if (is_arrow) {
     ConvertArrow(base);
   } else {
     Convert(base);
-  }
-  if (cast_mut) {
-    StrCat(").cast_mut()");
   }
   ufcs_receiver_ = std::move(buf).str();
 }
