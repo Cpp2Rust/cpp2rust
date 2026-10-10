@@ -1,4 +1,5 @@
 #include <cassert>
+#include <cstdint>
 #include <cstdio>
 #include <string>
 
@@ -18,5 +19,6 @@ int main() {
   printf("%s\n", s.data());
   printf("%s\n", fn("foo").c_str());
   printf("%s\n", fn2(s).c_str());
+  printf("{} %ju %jd\n", (uintmax_t)5, (intmax_t)-6);
   return 0;
 }
