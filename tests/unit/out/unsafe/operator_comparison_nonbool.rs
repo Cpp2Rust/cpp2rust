@@ -172,6 +172,43 @@ pub unsafe fn operator_eq_7(mut a: Boolish, mut b: Boolish) -> MyBool {
 pub unsafe fn operator_lt_6(mut a: Boolish, mut b: Boolish) -> MyBool {
     return MyBool::new({ ((a.v) < (b.v)) });
 }
+#[repr(C)]
+#[derive(FnPtrArg, Default)]
+pub struct RefBool {
+    pub value: bool,
+}
+impl RefBool {
+    pub unsafe fn new(mut v: bool) -> Self {
+        let mut this = Self { value: v };
+        this
+    }
+    pub unsafe fn to_bool(&self) -> bool {
+        return self.value;
+    }
+}
+pub static mut ref_true_8: std::cell::LazyCell<RefBool> =
+    std::cell::LazyCell::new(|| unsafe { RefBool::new({ true }) });
+#[repr(C)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+pub struct RefInt {
+    pub v: i32,
+}
+impl RefInt {
+    pub unsafe fn operator_eq(&self, _a0: *const RefInt) -> *mut RefBool {
+        return &mut (*std::cell::LazyCell::force_mut(&mut *&raw mut ref_true_8));
+    }
+}
+impl std::cmp::PartialEq for RefInt {
+    fn eq(&self, other: &Self) -> bool {
+        unsafe {
+            {
+                let __cmp = RefInt::operator_eq(self, other as *const RefInt);
+                RefBool::to_bool(&*__cmp)
+            }
+        }
+    }
+}
+impl std::cmp::Eq for RefInt {}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -301,6 +338,21 @@ unsafe fn main_0() -> i32 {
         (((bs[(0) as usize].v) == (1)) && ((bs[(1) as usize].v) == (2)))
             && ((bs[(2) as usize].v) == (3))
     );
+    let mut ri1: RefInt = RefInt { v: 1 };
+    let mut ri2: RefInt = RefInt { v: 2 };
+    assert!((unsafe { RefBool::to_bool(&(*(unsafe { RefInt::operator_eq(&ri1, &ri2,) })),) }));
+    let mut ris: [RefInt; 2] = [RefInt { v: 1 }, RefInt { v: 2 }];
+    assert!(
+        (({
+            let mut it = ris.as_mut_ptr();
+            while it != ris.as_mut_ptr().offset((2) as isize) && *it != ri2 {
+                it = it.add(1);
+            }
+            it
+        }) == (ris.as_mut_ptr()))
+    );
     return 0;
 }
-pub unsafe fn __cpp2rust_init_globals() {}
+pub unsafe fn __cpp2rust_init_globals() {
+    std::cell::LazyCell::force(&*&raw const ref_true_8);
+}
