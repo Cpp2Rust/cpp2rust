@@ -26,7 +26,7 @@ unsafe fn f1<T1: Ord + Clone, T2: Default>(
 ) -> &mut T2 {
     &mut a0
         .entry(a1.clone())
-        .or_insert_with(|| Box::new((a1, T2::default())))
+        .or_insert_with(|| Box::new((a1, <T2>::default())))
         .1
 }
 unsafe fn f2<T1, T2>(a0: BTreeMap<T1, Box<(T1, T2)>>) -> usize {
@@ -56,7 +56,7 @@ unsafe fn f8<T1: Ord + Clone, T2: Default>(
 ) -> &mut T2 {
     &mut a0
         .entry(a1.clone())
-        .or_insert_with(|| Box::new((a1, T2::default())))
+        .or_insert_with(|| Box::new((a1, <T2>::default())))
         .1
 }
 unsafe fn f9<T1: Ord + Clone, T2>(a0: BTreeMap<T1, Box<(T1, T2)>>) -> UnsafeMapIterator<T1, T2> {
