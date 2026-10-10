@@ -28,6 +28,8 @@ fn main_0() -> i32 {
     let mut b: i32 = ({ sum_bytes_0((*g_packet_1.with(Value::clone).borrow()).clone(), 2_u32) });
     assert!((a == b));
     assert!((a == 1));
+    let mut high: i32 = ({ sum_bytes_0(Ptr::<i8>::from_string_literal(b"\xc2\0A"), 3_u32) });
+    assert!((high == (194 + 65)));
     let mut c: i32 = ((b"\r\n.\r\n"[(0) as usize] as i32) + (b"\r\n.\r\n"[(3) as usize] as i32));
     assert!((c == ((('\r' as i8) as i32) + (('\r' as i8) as i32))));
     let mut idx: i32 = 1;

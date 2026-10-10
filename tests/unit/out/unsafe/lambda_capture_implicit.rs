@@ -22,7 +22,7 @@ unsafe fn main_0() -> i32 {
             let b: i32 = b;
             let c: i32 = c;
         },
-        |x: i32| -> i32 {
+        |mut x: i32| -> i32 {
             return ((((a) + (b)) + (c)) + (x));
         }
     );
@@ -35,7 +35,7 @@ unsafe fn main_0() -> i32 {
             let b: *mut i32 = &mut b;
             let c: *mut i32 = &mut c;
         },
-        |x: i32| -> i32 {
+        |mut x: i32| -> i32 {
             return ((((*a) + (*b)) + (*c)) + (x));
         }
     );
@@ -48,7 +48,7 @@ unsafe fn main_0() -> i32 {
             let a: i32 = a;
             let b: i32 = b;
         },
-        |x: i32| -> i32 {
+        |mut x: i32| -> i32 {
             (*c) += x;
             return (((a) + (b)) + (*c));
         }

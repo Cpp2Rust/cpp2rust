@@ -35,10 +35,12 @@ impl Explicit {
 }
 impl Default for Explicit {
     fn default() -> Self {
-        Explicit {
-            v: 0_i32,
-            inner: <Inner>::default(),
-            arr: Rc::new(RefCell::new((0..2).map(|_| 0_i32).collect::<Box<[i32]>>())),
+        {
+            Explicit {
+                v: 0_i32,
+                inner: <Inner>::default(),
+                arr: Rc::new(RefCell::new((0..2).map(|_| 0_i32).collect::<Box<[i32]>>())),
+            }
         }
     }
 }
@@ -56,10 +58,12 @@ pub struct Implicit {
 }
 impl Default for Implicit {
     fn default() -> Self {
-        Implicit {
-            v: 0_i32,
-            inner: <Inner>::default(),
-            arr: Rc::new(RefCell::new((0..2).map(|_| 0_i32).collect::<Box<[i32]>>())),
+        {
+            Implicit {
+                v: 0_i32,
+                inner: <Inner>::default(),
+                arr: Rc::new(RefCell::new((0..2).map(|_| 0_i32).collect::<Box<[i32]>>())),
+            }
         }
     }
 }
@@ -159,11 +163,13 @@ impl Buffer {
 }
 impl Default for Buffer {
     fn default() -> Self {
-        Buffer {
-            data: Rc::new(RefCell::new(Default::default())),
-            rows: Rc::new(RefCell::new(Vec::new())),
-            n: 0_i32,
-            arr: Rc::new(RefCell::new((0..2).map(|_| 0_i32).collect::<Box<[i32]>>())),
+        {
+            Buffer {
+                data: Rc::new(RefCell::new(Default::default())),
+                rows: Rc::new(RefCell::new(Vec::new())),
+                n: 0_i32,
+                arr: Rc::new(RefCell::new((0..2).map(|_| 0_i32).collect::<Box<[i32]>>())),
+            }
         }
     }
 }
@@ -198,11 +204,13 @@ impl Owner {
 }
 impl Default for Owner {
     fn default() -> Self {
-        Owner {
-            data: Rc::new(RefCell::new(Default::default())),
-            n: 0_i32,
-            arr: Rc::new(RefCell::new((0..2).map(|_| 0_i32).collect::<Box<[i32]>>())),
-            p: None,
+        {
+            Owner {
+                data: Rc::new(RefCell::new(Default::default())),
+                n: 0_i32,
+                arr: Rc::new(RefCell::new((0..2).map(|_| 0_i32).collect::<Box<[i32]>>())),
+                p: None,
+            }
         }
     }
 }

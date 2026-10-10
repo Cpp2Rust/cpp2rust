@@ -133,6 +133,9 @@ bool IsConvertibleCXXRecordDecl(const clang::CXXRecordDecl *decl);
 bool IsConvertibleCXXMethodDecl(const clang::CXXMethodDecl *decl);
 
 bool IsComparisonOperator(const clang::FunctionDecl *fn);
+
+void DefineImplicitMembers(clang::Sema &sema, clang::CXXRecordDecl *decl);
+
 bool IsEmittableMethod(clang::CXXMethodDecl *method);
 
 bool IsMethodOnPtr(const clang::CXXMethodDecl *method);

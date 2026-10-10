@@ -21,6 +21,10 @@ Bar global_bar(9);
 
 int by_global_ref(const Bar &b = global_bar) { return b.v; }
 
+template <typename T> int shifted(T x, int y = -1) { return x + y; }
+
+template <typename R> int first(R &&r) { return r[0]; }
+
 template <typename T> struct Holder {
   T v;
   explicit Holder(T v = 0) : v(v) {}
@@ -54,6 +58,10 @@ int main() {
 
   Holder<int> h(4);
   assert(h.v == 4);
+
+  assert(shifted(3) == 2);
+  assert(shifted(3, 4) == 7);
+  assert(first((int[]){4, 5, 6}) == 4);
 
   return 0;
 }

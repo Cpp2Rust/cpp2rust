@@ -12,8 +12,9 @@ names. The two are joined by rule name when `cpp2rust` loads them.
 
 ## cpp-rule-preprocessor
 
-A clang LibTooling executable (`cpp2rust/cpp_rule_preprocessor.cpp`) that runs
-once per rule directory:
+A clang LibTooling executable
+(`cpp2rust/rule_preprocessing/cpp_rule_preprocessor.cpp`) that runs once per
+rule directory:
 
 ```bash
 cpp-rule-preprocessor --dir rules/string --out <build>/rules/string/ir_src.json

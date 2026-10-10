@@ -43,8 +43,10 @@ impl Partial {
 }
 impl Default for Partial {
     fn default() -> Self {
-        Partial {
-            p: std::ptr::null_mut(),
+        unsafe {
+            Partial {
+                p: std::ptr::null_mut(),
+            }
         }
     }
 }

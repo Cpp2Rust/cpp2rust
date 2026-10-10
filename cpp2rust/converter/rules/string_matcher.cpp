@@ -372,6 +372,12 @@ Match<TranslationRule::TypeRule> Find(clang::ASTContext &ctx,
           << ", result: " << res.first->type_info.type << '\n';
     return res;
   }
+  if (auto alias = type->getAs<clang::TypedefType>();
+      alias && type.getCanonicalType()->isBuiltinType() &&
+      clang::isa<clang::RecordDecl>(alias->getDecl()->getDeclContext())) {
+    log() << "search type " << sugared << ", result: None\n";
+    return Find(ctx, alias->getDecl()->getUnderlyingType());
+  }
   auto desugared = Printer::ToString(ctx, type);
   if (desugared == sugared) {
     log() << "search type " << desugared << ", result: None\n";

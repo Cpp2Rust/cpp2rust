@@ -23,12 +23,14 @@ pub struct S {
 }
 impl Default for S {
     fn default() -> Self {
-        S {
-            keep: 0_i32,
-            a: 0_i32,
-            b: 0_i64,
-            c: Rc::new(RefCell::new((0..5).map(|_| 0_i8).collect::<Box<[i8]>>())),
-            last: 0_i32,
+        {
+            S {
+                keep: 0_i32,
+                a: 0_i32,
+                b: 0_i64,
+                c: Rc::new(RefCell::new((0..5).map(|_| 0_i8).collect::<Box<[i8]>>())),
+                last: 0_i32,
+            }
         }
     }
 }

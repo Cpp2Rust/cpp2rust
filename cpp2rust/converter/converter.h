@@ -150,6 +150,8 @@ public:
 
   virtual std::string DestroyMembers(const clang::CXXRecordDecl *decl);
 
+  bool NeedsScopedDestructor(const clang::VarDecl *decl) const;
+
   virtual void EmitScopedDestructor(const clang::VarDecl *decl);
 
   void EmitDeallocation(clang::CXXDeleteExpr *expr,
@@ -854,18 +856,11 @@ protected:
   struct PushConstInitializer {
     Converter &c;
     bool prev;
-    bool enabled;
     PushConstInitializer(Converter &c, bool enabled)
-        : c(c), prev(c.in_const_initializer_), enabled(enabled) {
-      if (enabled) {
-        c.in_const_initializer_ = true;
-      }
+        : c(c), prev(c.in_const_initializer_) {
+      c.in_const_initializer_ = enabled;
     }
-    ~PushConstInitializer() {
-      if (enabled) {
-        c.in_const_initializer_ = prev;
-      }
-    }
+    ~PushConstInitializer() { c.in_const_initializer_ = prev; }
   };
   std::vector<clang::Expr *> curr_for_inc_;
   std::vector<clang::QualType> curr_init_type_;

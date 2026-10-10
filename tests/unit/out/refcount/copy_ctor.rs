@@ -101,17 +101,19 @@ pub struct Holder {
 }
 impl Default for Holder {
     fn default() -> Self {
-        Holder {
-            c: <Counted>::default(),
-            arr: Rc::new(RefCell::new(
-                (0..2)
-                    .map(|_| <Counted>::default())
-                    .collect::<Box<[Counted]>>(),
-            )),
+        {
+            Holder {
+                c: <Counted>::default(),
+                arr: Rc::new(RefCell::new(
+                    (0..2)
+                        .map(|_| <Counted>::default())
+                        .collect::<Box<[Counted]>>(),
+                )),
+            }
         }
     }
 }
-#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, Default)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, Default)]
 #[byte_size(4)]
 pub struct Box_int_ {
     #[offset(0)]
@@ -122,25 +124,31 @@ impl Box_int_ {
         let v: Value<i32> = Rc::new(RefCell::new(v));
         Self { val: (*v.borrow()) }
     }
+    pub fn copy_from(o: Ptr<Box_int_>) -> Self {
+        Self {
+            val: o.with(|__s| __s.val),
+        }
+    }
     pub fn move_from(_a0: Ptr<Box_int_>) -> Self {
         Self {
             val: { (*_a0.upgrade().deref()).val },
         }
     }
 }
-#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, Default)]
+impl Clone for Box_int_ {
+    fn clone(&self) -> Self {
+        let __src: Value<Box_int_> = Rc::new(RefCell::new(Box_int_ {
+            val: self.val.clone(),
+        }));
+        Box_int_::copy_from(__src.as_pointer())
+    }
+}
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Owner {
     #[offset(0)]
     #[byte_size(4)]
     pub box_: Box_int_,
-}
-impl Owner {
-    pub fn move_from(_a0: Ptr<Owner>) -> Self {
-        Self {
-            box_: Box_int_::move_from({ field_ptr!(_a0, box_) }),
-        }
-    }
 }
 #[derive(Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
@@ -235,7 +243,7 @@ fn main_0() -> i32 {
     let o: Value<Owner> = Rc::new(RefCell::new(Owner {
         box_: Box_int_::new({ 3 }),
     }));
-    let mut o2: Owner = Owner::move_from({ o.as_pointer() });
+    let mut o2: Owner = (*o.borrow()).clone();
     assert!((o2.box_.val == 3));
     let ol1: Value<OutOfLine> = Rc::new(RefCell::new(OutOfLine::new({ 5 })));
     let mut ol2: OutOfLine = OutOfLine::copy_from({ ol1.as_pointer() });

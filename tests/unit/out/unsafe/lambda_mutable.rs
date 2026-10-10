@@ -31,7 +31,7 @@ unsafe fn main_0() -> i32 {
         {
             let total: i32 = total;
         },
-        |x: i32| -> i32 {
+        |mut x: i32| -> i32 {
             total += x;
             return total;
         }

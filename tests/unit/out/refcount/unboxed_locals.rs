@@ -57,7 +57,7 @@ pub struct Square {
 }
 impl Default for Square {
     fn default() -> Self {
-        Square { side: 2 }
+        { Square { side: 2 } }
     }
 }
 pub fn main() {

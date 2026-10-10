@@ -18,3 +18,11 @@ fn t7() -> Ptr::<isize> {
 fn t8() -> Ptr::<isize> {
     Ptr::<isize>::null()
 }
+
+fn t10() -> Ptr::<usize> {
+    Ptr::<usize>::null()
+}
+
+fn t11() -> Ptr::<usize> {
+    Ptr::<usize>::null()
+}

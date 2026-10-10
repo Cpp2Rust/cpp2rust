@@ -1,7 +1,8 @@
 file(GLOB_RECURSE CORE_SOURCES "*.cpp")
+file(GLOB RULE_PREPROCESSING_SOURCES "rule_preprocessing/*.cpp")
 list(REMOVE_ITEM CORE_SOURCES
     "${CMAKE_CURRENT_SOURCE_DIR}/cpp2rust.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/cpp_rule_preprocessor.cpp"
+    ${RULE_PREPROCESSING_SOURCES}
 )
 
 add_library(cpp2rust_core STATIC ${CORE_SOURCES})
@@ -17,6 +18,8 @@ target_compile_definitions(cpp2rust_core PUBLIC "-DCLANG_C_COMPILER=\"${CMAKE_C_
 target_compile_definitions(cpp2rust_core PUBLIC "-DCLANG_CXX_COMPILER=\"${CMAKE_CXX_COMPILER}\"")
 target_compile_definitions(cpp2rust_core PUBLIC "-DCLANG_RESOURCE_DIR=\"${LLVM_LIBRARY_DIR}/clang/${LLVM_VERSION_MAJOR}\"")
 target_compile_definitions(cpp2rust_core PUBLIC "-DCOMPAT_INCLUDE_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}/compat\"")
+target_compile_definitions(cpp2rust_core PUBLIC "-DRULES_SRC_DIR=\"${PROJECT_SOURCE_DIR}/rules\"")
+target_compile_definitions(cpp2rust_core PUBLIC "-DRULES_INDEX_DIR=\"${CMAKE_BINARY_DIR}/rules_index\"")
 target_compile_definitions(cpp2rust_core PUBLIC "-DRUST_STABLE_VERSION=\"${RUST_STABLE_VERSION}\"")
 
 if (APPLE)
@@ -34,5 +37,10 @@ target_link_libraries(cpp2rust_core PUBLIC ${llvm_libs})
 add_clang_executable(cpp2rust PARTIAL_SOURCES_INTENDED cpp2rust.cpp)
 target_link_libraries(cpp2rust PRIVATE cpp2rust_core)
 
-add_clang_executable(cpp-rule-preprocessor PARTIAL_SOURCES_INTENDED cpp_rule_preprocessor.cpp)
+add_clang_executable(cpp-rule-preprocessor PARTIAL_SOURCES_INTENDED
+    rule_preprocessing/cpp_rule_preprocessor.cpp)
 target_link_libraries(cpp-rule-preprocessor PRIVATE cpp2rust_core)
+
+add_clang_executable(cpp-rule-indexer PARTIAL_SOURCES_INTENDED
+    rule_preprocessing/cpp_rule_indexer.cpp)
+target_link_libraries(cpp-rule-indexer PRIVATE cpp2rust_core)

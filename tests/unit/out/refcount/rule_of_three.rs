@@ -65,9 +65,11 @@ impl Clone for Buffer {
 }
 impl Default for Buffer {
     fn default() -> Self {
-        Buffer {
-            data: Rc::new(RefCell::new((0..4).map(|_| 0_i32).collect::<Box<[i32]>>())),
-            size: 0_i32,
+        {
+            Buffer {
+                data: Rc::new(RefCell::new((0..4).map(|_| 0_i32).collect::<Box<[i32]>>())),
+                size: 0_i32,
+            }
         }
     }
 }

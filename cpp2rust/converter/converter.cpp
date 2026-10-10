@@ -239,7 +239,11 @@ std::pair<std::string, std::string>
 Converter::MaterializeTemp(const std::string &binding_name,
                            clang::QualType param_type, clang::Expr *expr) {
   auto pointee = param_type.getNonReferenceType();
-  auto value = ConvertRValue(expr, pointee);
+  std::string value;
+  {
+    PushInitType init_type(*this, pointee);
+    value = ConvertRValue(expr, pointee);
+  }
   auto type_str = ToStringBase(pointee);
   const auto *decl = in_const_initializer_ ? keyword::kStatic : keyword::kLet;
 
@@ -453,6 +457,10 @@ void Converter::ConvertFunctionBody(clang::FunctionDecl *decl) {
 
 bool Converter::VisitFunctionTemplateDecl(clang::FunctionTemplateDecl *decl) {
   for (auto *function_decl : decl->specializations()) {
+    if (function_decl->getTemplateSpecializationKind() ==
+        clang::TSK_ExplicitSpecialization) {
+      continue;
+    }
     VisitFunctionDecl(function_decl);
   }
   return false;
@@ -481,7 +489,7 @@ bool Converter::NeedsMut(const clang::VarDecl *decl, clang::QualType type,
   auto *method_or_null =
       curr_function_ ? clang::dyn_cast<clang::CXXMethodDecl>(curr_function_)
                      : nullptr;
-  return ((hoisted_decls_.contains(decl) ||
+  return ((hoisted_decls_.contains(decl) || NeedsScopedDestructor(decl) ||
            (!type.isConstQualified() && !type->isReferenceType())) &&
           ((method_or_null == nullptr) || !method_or_null->isVirtual()) &&
           !IsGlobalVar(decl) && name != "_");
@@ -628,8 +636,21 @@ bool Converter::VisitVarDecl(clang::VarDecl *decl) {
   return false;
 }
 
-void Converter::EmitScopedDestructor(const clang::VarDecl *decl) {
+bool Converter::NeedsScopedDestructor(const clang::VarDecl *decl) const {
   if (in_function_formals_ || !decl->isLocalVarDecl() || IsGlobalVar(decl)) {
+    return false;
+  }
+  auto type = decl->getType();
+  if (auto lambda = AsLambdaClass(type);
+      lambda && LambdaNeedsDestruction(lambda)) {
+    return true;
+  }
+  return !type->isReferenceType() && !type->isArrayType() &&
+         TypeNeedsDestruction(type);
+}
+
+void Converter::EmitScopedDestructor(const clang::VarDecl *decl) {
+  if (!NeedsScopedDestructor(decl)) {
     return;
   }
   auto type = decl->getType();
@@ -639,10 +660,6 @@ void Converter::EmitScopedDestructor(const clang::VarDecl *decl) {
            std::format("let _dtor_{0} = ScopedDestructorUnsafe::new(&raw mut "
                        "{0}, |__f| __f.destroy())",
                        GetNamedDeclAsString(decl)));
-    return;
-  }
-  if (type->isReferenceType() || type->isArrayType() ||
-      !TypeNeedsDestruction(type)) {
     return;
   }
   auto name = GetNamedDeclAsString(decl);
@@ -1014,49 +1031,7 @@ bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
 }
 
 void Converter::DefineImplicitMembers(clang::CXXRecordDecl *decl) {
-  clang::Scope tu_scope(nullptr, clang::Scope::DeclScope,
-                        sema_->getDiagnostics());
-  tu_scope.setEntity(ctx_.getTranslationUnitDecl());
-  auto *saved_tu_scope = std::exchange(sema_->TUScope, &tu_scope);
-  sema_->ForceDeclarationOfImplicitMembers(decl);
-  for (auto ctor : decl->ctors()) {
-    if (ctor->isCopyConstructor() && ctor->isImplicit() &&
-        !ctor->doesThisDeclarationHaveABody() && !ctor->isDeleted()) {
-      sema_->DefineImplicitCopyConstructor(decl->getLocation(), ctor);
-    }
-    if (ctor->isMoveConstructor() && !ctor->isUserProvided() &&
-        !ctor->doesThisDeclarationHaveABody() && !ctor->isDeleted() &&
-        !HasDefaultedCopyConstructor(decl)) {
-      sema_->DefineImplicitMoveConstructor(decl->getLocation(), ctor);
-    }
-  }
-  for (auto *method : decl->methods()) {
-    if (method->isMoveAssignmentOperator() && !method->isUserProvided() &&
-        !method->doesThisDeclarationHaveABody() && !method->isDeleted() &&
-        !HasDefaultedCopyAssignment(decl)) {
-      sema_->DefineImplicitMoveAssignment(decl->getLocation(), method);
-    }
-  }
-  auto define_defaulted_comparison = [&](clang::FunctionDecl *fn) {
-    if (!fn || !IsComparisonOperator(fn) || !fn->isDefaulted() ||
-        fn->doesThisDeclarationHaveABody()) {
-      return;
-    }
-#if CLANG_VERSION_MAJOR >= 24
-    auto kind = fn->getDefaultedComparisonKind();
-#else
-    auto kind = sema_->getDefaultedComparisonKind(fn);
-#endif
-    sema_->DefineDefaultedComparison(decl->getLocation(), fn, kind);
-  };
-  for (auto *method : decl->methods()) {
-    define_defaulted_comparison(method);
-  }
-  for (auto *friend_decl : decl->friends()) {
-    define_defaulted_comparison(clang::dyn_cast_or_null<clang::FunctionDecl>(
-        friend_decl->getFriendDecl()));
-  }
-  sema_->TUScope = saved_tu_scope;
+  cpp2rust::DefineImplicitMembers(*sema_, decl);
 }
 
 bool Converter::VisitCXXMethodDecl(clang::CXXMethodDecl *decl) {
@@ -2533,8 +2508,11 @@ bool Converter::VisitStringLiteral(clang::StringLiteral *expr) {
   }
   if (expr->getString().contains('\0')) {
     std::string out = "(&[";
-    for (unsigned char c : expr->getString()) {
-      out += getTypedLiteral(std::to_string(c).c_str(), CharRustType()) + ", ";
+    for (char c : expr->getString()) {
+      auto value = CharRustTypeIsSigned()
+                       ? std::to_string(static_cast<signed char>(c))
+                       : std::to_string(static_cast<unsigned char>(c));
+      out += getTypedLiteral(value.c_str(), CharRustType()) + ", ";
     }
     out += getTypedLiteral("0", CharRustType()) + "])";
     StrCat(out);
@@ -2604,7 +2582,7 @@ void Converter::ConvertIntegralToBooleanCast(clang::ImplicitCastExpr *expr) {
   PushParen paren(*this);
   Convert(sub_expr);
   StrCat(token::kDiff);
-  StrCat(token::kZero);
+  StrCat(sub_expr->getType()->isFloatingType() ? "0.0" : "0");
   computed_expr_type_ = ComputedExprType::FreshValue;
 }
 
@@ -2710,6 +2688,7 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     Convert(sub_expr);
     break;
   case clang::CastKind::CK_IntegralToBoolean:
+  case clang::CastKind::CK_FloatingToBoolean:
     ConvertIntegralToBooleanCast(expr);
     break;
   case clang::CastKind::CK_PointerToBoolean:
@@ -2767,7 +2746,28 @@ bool Converter::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
   }
   // A cast to a reference type only rebinds the operand, it converts nothing
   if (type->isReferenceType()) {
-    Convert(sub_expr);
+    const char *suffix = nullptr;
+    if (isAddrOf()) {
+      switch (
+          GetConstCastType(type.getNonReferenceType(), sub_expr->getType())) {
+      case ConstCastType::MutableToConst:
+        suffix = ".cast_const()";
+        break;
+      case ConstCastType::ConstToMutable:
+        suffix = ".cast_mut()";
+        break;
+      default:
+        break;
+      }
+    }
+    {
+      PushParen paren(*this, suffix);
+      Convert(sub_expr);
+    }
+    if (suffix) {
+      StrCat(suffix);
+      computed_expr_type_ = ComputedExprType::FreshPointer;
+    }
     return false;
   }
   switch (expr->getStmtClass()) {
@@ -3138,6 +3138,7 @@ bool Converter::VisitStmtExpr(clang::StmtExpr *expr) {
       Convert(s);
     }
   }
+  SetFreshType(expr->getType());
   return false;
 }
 
@@ -3604,7 +3605,8 @@ bool Converter::VisitInitListExpr(clang::InitListExpr *expr) {
 bool Converter::VisitCompoundLiteralExpr(clang::CompoundLiteralExpr *expr) {
   auto record = expr->getType()->getAsRecordDecl();
   if (!record || !record->hasAttr<clang::TransparentUnionAttr>()) {
-    return true;
+    Convert(expr->getInitializer());
+    return false;
   }
   auto init = clang::cast<clang::InitListExpr>(expr->getInitializer());
   assert(init->getNumInits() == 1);
@@ -3748,8 +3750,9 @@ void Converter::EmitDeallocation(clang::CXXDeleteExpr *expr,
           argument_as_string, argument_as_string, destroyed_type_as_string));
     }
   } else {
-    StrCat(
-        std::format("::std::mem::drop(Box::from_raw({}))", argument_as_string));
+    bool cast_mut = !IsMut(expr->getDestroyedType());
+    StrCat(std::format("::std::mem::drop(Box::from_raw({}{}))",
+                       argument_as_string, cast_mut ? ".cast_mut()" : ""));
   }
 }
 
@@ -3958,7 +3961,9 @@ bool Converter::VisitCXXDefaultArgExpr(clang::CXXDefaultArgExpr *expr) {
   if (expr->getType()->isPointerType()) {
     StrCat(token::kDefault);
     computed_expr_type_ = ComputedExprType::FreshPointer;
+    return false;
   }
+  Convert(expr->getExpr());
   return false;
 }
 
@@ -4016,10 +4021,12 @@ void Converter::ConvertLambdaCapture(const clang::FieldDecl *field,
 void Converter::ConvertLambdaClosure(const clang::CXXRecordDecl *decl,
                                      clang::CXXMethodDecl *call_operator) {
   StrCat('|');
+  in_function_formals_ = true;
   for (auto p : call_operator->parameters()) {
-    StrCat(GetNamedDeclAsString(p), token::kColon, ToString(p->getType()),
-           token::kComma);
+    ConvertVarDeclSkipInit(p);
+    StrCat(token::kComma);
   }
+  in_function_formals_ = false;
   StrCat('|');
   ConvertFunctionReturnType(call_operator);
   PushBrace body(*this);
@@ -4030,6 +4037,7 @@ void Converter::ConvertLambdaClosure(const clang::CXXRecordDecl *decl,
   }
   EmitFunctionPreamble(call_operator);
   PushCurrFunction push_fn(*this, call_operator);
+  PushConstInitializer function_body(*this, false);
   ConvertFunctionBody(curr_function_);
 }
 
@@ -4285,7 +4293,7 @@ std::string Converter::GetDefaultAsStringFallback(clang::QualType qual_type) {
   if (qual_type->isEnumeralType()) {
     auto enum_decl = qual_type->castAs<clang::EnumType>()->getDecl();
     if (enum_decl->enumerators().empty()) {
-      return std::string(1, token::kZero);
+      return GetDefaultAsString(enum_decl->getIntegerType());
     }
     return EnumeratorName(*enum_decl->enumerator_begin());
   }
@@ -4917,11 +4925,11 @@ void Converter::AddDefaultTrait(const clang::RecordDecl *decl) {
   PushBrace impl_brace(*this);
   StrCat("fn default() -> Self");
   PushBrace fn_brace(*this);
+  StrCat(keyword_unsafe_);
+  PushBrace unsafe_brace(*this);
 
   if (auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl)) {
     if (auto *default_ctor = GetUserDefinedDefaultConstructor(cxx)) {
-      StrCat(keyword_unsafe_);
-      PushBrace unsafe_brace(*this);
       Convert(MakeConstructExpr(ctx_, ctx_.getCanonicalTagType(decl),
                                 default_ctor, {}));
       return;

@@ -56,6 +56,11 @@ unsafe fn main_0() -> i32 {
         c"%s\n".as_ptr() as *const i8,
         (*(unsafe { fn2_1(&s) })).as_ptr(),
     );
+    printf(
+        c"{} %ju %jd\n".as_ptr() as *const i8,
+        5_u64,
+        (-6_i32 as i64),
+    );
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

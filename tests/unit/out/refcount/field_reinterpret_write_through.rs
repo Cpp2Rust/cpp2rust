@@ -33,12 +33,14 @@ pub struct S {
 }
 impl Default for S {
     fn default() -> Self {
-        S {
-            x: 0_i32,
-            in_: <In>::default(),
-            bytes: Rc::new(RefCell::new((0..4).map(|_| 0_u8).collect::<Box<[u8]>>())),
-            arr: Rc::new(RefCell::new((0..3).map(|_| 0_i32).collect::<Box<[i32]>>())),
-            tail: 0_i64,
+        {
+            S {
+                x: 0_i32,
+                in_: <In>::default(),
+                bytes: Rc::new(RefCell::new((0..4).map(|_| 0_u8).collect::<Box<[u8]>>())),
+                arr: Rc::new(RefCell::new((0..3).map(|_| 0_i32).collect::<Box<[i32]>>())),
+                tail: 0_i64,
+            }
         }
     }
 }

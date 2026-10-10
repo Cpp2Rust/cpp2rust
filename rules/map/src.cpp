@@ -12,6 +12,9 @@ using t2 = typename std::map<T1, T2>::const_iterator;
 template <typename T1, typename T2>
 using t3 = typename std::map<T1, T2>::iterator;
 
+template <typename T1, typename T2>
+using t4 = typename std::map<T1, T2>::size_type;
+
 template <typename T1, typename T2> T2 &f1(std::map<T1, T2> &o, const T1 &key) {
   return o.operator[](key);
 }
