@@ -56,20 +56,20 @@ impl<T: crate::reinterpret::ByteRepr + 'static> From<crate::rc::Ptr<T>> for VaAr
 
 impl crate::reinterpret::ByteRepr for VaArg {}
 
-impl Ptr<VaArg> {
-    pub fn arg<T: VaArgGet>(&mut self) -> T {
+pub trait VaArgs {
+    fn arg<T: VaArgGet>(&mut self) -> T;
+}
+
+impl VaArgs for Ptr<VaArg> {
+    fn arg<T: VaArgGet>(&mut self) -> T {
         let val = self.with(T::get);
         self.prefix_inc();
         val
     }
 }
 
-pub trait VaArgs {
-    unsafe fn arg<T: VaArgGet>(&mut self) -> T;
-}
-
 impl VaArgs for *const VaArg {
-    unsafe fn arg<T: VaArgGet>(&mut self) -> T {
+    fn arg<T: VaArgGet>(&mut self) -> T {
         unsafe {
             let val = T::get(&**self);
             *self = self.add(1);
