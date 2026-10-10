@@ -196,7 +196,7 @@ private:
   // The arguments of a call translated by a rule are passed by value or
   // borrowed, unless the rule takes a pointer to them.
   void AddRuleArgs(clang::Expr *expr, clang::Expr **args, unsigned num_args) {
-    auto *rule = RuleRegistry::GetExprRule(ctx_, GetCalleeOrExpr(expr));
+    auto *rule = RuleRegistry::GetExprRule(ctx_, expr);
     if (!rule) {
       return;
     }

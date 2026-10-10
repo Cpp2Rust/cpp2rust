@@ -1884,8 +1884,7 @@ bool Converter::VisitCallExpr(clang::CallExpr *expr) {
     return false;
   }
 
-  if (IsImplicitAssignmentCall(expr) &&
-      !Mapper::Contains(ctx_, expr)) {
+  if (IsImplicitAssignmentCall(expr) && !Mapper::Contains(ctx_, expr)) {
     auto *call = clang::cast<clang::CXXMemberCallExpr>(expr);
     ConvertAssignment(call->getImplicitObjectArgument(), call->getArg(0), "=");
     return false;
@@ -2057,8 +2056,7 @@ Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
       function ? function->getNumParams() : proto->getNumParams();
   info.is_variadic = function ? function->isVariadic() : proto->isVariadic();
   info.is_fn_ptr_call = !function || AsLambdaClass(callee->getType());
-  info.is_libc_passthrough =
-      RuleRegistry::IsLibcPassthrough(ctx_, expr);
+  info.is_libc_passthrough = RuleRegistry::IsLibcPassthrough(ctx_, expr);
 
   for (unsigned i = 0; i < num_named_params && i < num_args; ++i) {
     auto *arg = expr->getArg(i + arg_begin);

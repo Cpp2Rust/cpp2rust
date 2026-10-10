@@ -1329,8 +1329,7 @@ bool ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
   }
 
   if (auto *opcall = clang::dyn_cast<clang::CXXOperatorCallExpr>(expr);
-      opcall && !IsUserOperatorCall(opcall) &&
-      !Mapper::Contains(ctx_, expr)) {
+      opcall && !IsUserOperatorCall(opcall) && !Mapper::Contains(ctx_, expr)) {
     PushConversionKind push(*this, ConversionKind::Unboxed,
                             opcall->getOperator() == clang::OO_Call);
     return ConvertCXXOperatorCallExpr(opcall);
@@ -2268,9 +2267,9 @@ bool ConverterRefCount::VisitCXXForRangeStmtMap(clang::CXXForRangeStmt *stmt) {
          ConvertObject(stmt->getRangeInit()), ')');
   PushBrace brace(*this);
 
-  EmitByValueShadow(loop_var, std::string(loop_var_name),
-                    "Value<" +
-                        Mapper::Map(*this, GetForRangeIteratorType(stmt)) + '>');
+  EmitByValueShadow(
+      loop_var, std::string(loop_var_name),
+      "Value<" + Mapper::Map(*this, GetForRangeIteratorType(stmt)) + '>');
 
   ConvertForRangeBody(stmt, loop_var);
 
