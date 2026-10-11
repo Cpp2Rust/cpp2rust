@@ -327,8 +327,11 @@ Match<TranslationRule::TypeRule> searchType(const std::string &txt) {
       RuleRegistry::TypeCandidates(typeKey(txt)), txt);
 }
 
-std::string mapTypeString(const std::string &cpp_type) {
-  auto [rule, subs] = searchType(cpp_type);
+std::string mapTypeString(std::string_view cpp_type) {
+  auto [rule, subs] = searchType(std::string(cpp_type));
+  if (!rule && cpp_type.starts_with("const ")) {
+    return mapTypeString(cpp_type.substr(std::string_view("const ").size()));
+  }
   if (!rule) {
     llvm::errs() << "cpp_type: " << cpp_type << '\n';
     assert(0 && "Type is not present in the registry");
