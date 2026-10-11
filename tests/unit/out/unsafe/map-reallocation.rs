@@ -18,7 +18,7 @@ unsafe fn main_0() -> i32 {
     let mut m: BTreeMap<i32, Box<(i32, i32)>> = BTreeMap::new();
     (*&mut m
         .entry(sentinel.clone())
-        .or_insert_with(|| Box::new((sentinel, i32::default())))
+        .or_insert_with(|| Box::new((sentinel, <i32>::default())))
         .1) = sentinel;
     let mut it: UnsafeMapIterator<i32, i32> =
         UnsafeMapIterator::find_key(&m as *const BTreeMap<i32, Box<(i32, i32)>>, &sentinel);
@@ -35,7 +35,7 @@ unsafe fn main_0() -> i32 {
     'loop_: while ((i) < (sentinel)) {
         (*&mut m
             .entry(i.clone())
-            .or_insert_with(|| Box::new((i, i32::default())))
+            .or_insert_with(|| Box::new((i, <i32>::default())))
             .1) = i;
         i.prefix_inc();
     }
@@ -43,7 +43,7 @@ unsafe fn main_0() -> i32 {
     'loop_: while ((i) <= (N)) {
         (*&mut m
             .entry(i.clone())
-            .or_insert_with(|| Box::new((i, i32::default())))
+            .or_insert_with(|| Box::new((i, <i32>::default())))
             .1) = i;
         i.prefix_inc();
     }
@@ -64,7 +64,7 @@ unsafe fn main_0() -> i32 {
     assert!(
         ((*&mut m
             .entry(sentinel.clone())
-            .or_insert_with(|| Box::new((sentinel, i32::default())))
+            .or_insert_with(|| Box::new((sentinel, <i32>::default())))
             .1)
             == (57005))
     );

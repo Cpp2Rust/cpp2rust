@@ -19,7 +19,7 @@ unsafe fn main_0() -> i32 {
     'loop_: while ((i) < (100)) {
         (*&mut m
             .entry(i.clone())
-            .or_insert_with(|| Box::new((i, f64::default())))
+            .or_insert_with(|| Box::new((i, <f64>::default())))
             .1) = ((k as f64) / (2_f64));
         {
             i.prefix_inc();
@@ -36,6 +36,15 @@ unsafe fn main_0() -> i32 {
         sum += (i.0 as f64);
     }
     assert!(((sum) == (7475_f64)));
+    'loop_: for __begin1 in UnsafeMapIterator::begin(&m as *const BTreeMap<i32, Box<(i32, f64)>>) {
+        let mut i: (i32, f64) = (*__begin1.deref()).clone();
+        i.1 = (-1_i32 as f64);
+        assert!(((i.1) == (-1_i32 as f64)));
+    }
+    'loop_: for __begin1 in UnsafeMapIterator::begin(&m as *const BTreeMap<i32, Box<(i32, f64)>>) {
+        let i: *const (i32, f64) = &(*__begin1.deref());
+        assert!((((*i).1) != (-1_i32 as f64)));
+    }
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

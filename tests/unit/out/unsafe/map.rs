@@ -22,62 +22,62 @@ unsafe fn main_0() -> i32 {
     let mut m: BTreeMap<i16, Box<(i16, u32)>> = BTreeMap::new();
     (*&mut m
         .entry(0_i16.clone())
-        .or_insert_with(|| Box::new((0_i16, u32::default())))
+        .or_insert_with(|| Box::new((0_i16, <u32>::default())))
         .1) = 1_u32;
     (*&mut m
         .entry(1_i16.clone())
-        .or_insert_with(|| Box::new((1_i16, u32::default())))
+        .or_insert_with(|| Box::new((1_i16, <u32>::default())))
         .1) = 2_u32;
     (*&mut m
         .entry(2_i16.clone())
-        .or_insert_with(|| Box::new((2_i16, u32::default())))
+        .or_insert_with(|| Box::new((2_i16, <u32>::default())))
         .1) = 3_u32;
     assert!(((m.len()) == (3_usize)));
     assert!(
         ((*&mut m
             .entry(0_i16.clone())
-            .or_insert_with(|| Box::new((0_i16, u32::default())))
+            .or_insert_with(|| Box::new((0_i16, <u32>::default())))
             .1)
             == (1_u32))
     );
     assert!(
         ((*&mut m
             .entry(1_i16.clone())
-            .or_insert_with(|| Box::new((1_i16, u32::default())))
+            .or_insert_with(|| Box::new((1_i16, <u32>::default())))
             .1)
             == (2_u32))
     );
     assert!(
         ((*&mut m
             .entry(2_i16.clone())
-            .or_insert_with(|| Box::new((2_i16, u32::default())))
+            .or_insert_with(|| Box::new((2_i16, <u32>::default())))
             .1)
             == (3_u32))
     );
     let mut x: i32 = 4;
     (*&mut m
         .entry(1_i16.clone())
-        .or_insert_with(|| Box::new((1_i16, u32::default())))
+        .or_insert_with(|| Box::new((1_i16, <u32>::default())))
         .1) = (x as u32);
     assert!(((m.len()) == (3_usize)));
     assert!(
         ((*&mut m
             .entry(0_i16.clone())
-            .or_insert_with(|| Box::new((0_i16, u32::default())))
+            .or_insert_with(|| Box::new((0_i16, <u32>::default())))
             .1)
             == (1_u32))
     );
     assert!(
         ((*&mut m
             .entry(1_i16.clone())
-            .or_insert_with(|| Box::new((1_i16, u32::default())))
+            .or_insert_with(|| Box::new((1_i16, <u32>::default())))
             .1)
             == (4_u32))
     );
     assert!(
         ((*&mut m
             .entry(2_i16.clone())
-            .or_insert_with(|| Box::new((2_i16, u32::default())))
+            .or_insert_with(|| Box::new((2_i16, <u32>::default())))
             .1)
             == (3_u32))
     );
@@ -85,14 +85,14 @@ unsafe fn main_0() -> i32 {
         foo_0(
             (*&mut m
                 .entry(0_i16.clone())
-                .or_insert_with(|| Box::new((0_i16, u32::default())))
+                .or_insert_with(|| Box::new((0_i16, <u32>::default())))
                 .1),
         )
     });
     assert!(
         ((*&mut m
             .entry(0_i16.clone())
-            .or_insert_with(|| Box::new((0_i16, u32::default())))
+            .or_insert_with(|| Box::new((0_i16, <u32>::default())))
             .1)
             == (1_u32))
     );
@@ -100,34 +100,34 @@ unsafe fn main_0() -> i32 {
         bar_1(
             &mut (*&mut m
                 .entry(2_i16.clone())
-                .or_insert_with(|| Box::new((2_i16, u32::default())))
+                .or_insert_with(|| Box::new((2_i16, <u32>::default())))
                 .1),
         )
     });
     assert!(
         ((*&mut m
             .entry(2_i16.clone())
-            .or_insert_with(|| Box::new((2_i16, u32::default())))
+            .or_insert_with(|| Box::new((2_i16, <u32>::default())))
             .1)
             == (4_u32))
     );
     (*&mut m
         .entry(0_i16.clone())
-        .or_insert_with(|| Box::new((0_i16, u32::default())))
+        .or_insert_with(|| Box::new((0_i16, <u32>::default())))
         .1) = (*&mut m
         .entry(0_i16.clone())
-        .or_insert_with(|| Box::new((0_i16, u32::default())))
+        .or_insert_with(|| Box::new((0_i16, <u32>::default())))
         .1)
         .wrapping_add(
             (*&mut m
                 .entry(2_i16.clone())
-                .or_insert_with(|| Box::new((2_i16, u32::default())))
+                .or_insert_with(|| Box::new((2_i16, <u32>::default())))
                 .1),
         );
     assert!(
         ((*&mut m
             .entry(0_i16.clone())
-            .or_insert_with(|| Box::new((0_i16, u32::default())))
+            .or_insert_with(|| Box::new((0_i16, <u32>::default())))
             .1)
             == (5_u32))
     );
@@ -165,7 +165,7 @@ unsafe fn main_0() -> i32 {
     assert!(((x4) == (0_u32)));
     (*&mut m
         .entry(4_i16.clone())
-        .or_insert_with(|| Box::new((4_i16, u32::default())))
+        .or_insert_with(|| Box::new((4_i16, <u32>::default())))
         .1) = 5_u32;
     let mut it4: UnsafeMapIterator<i16, u32> =
         UnsafeMapIterator::find_key(&m as *const BTreeMap<i16, Box<(i16, u32)>>, &4_i16);
@@ -174,7 +174,7 @@ unsafe fn main_0() -> i32 {
     assert!(
         ((*&mut m
             .entry(4_i16.clone())
-            .or_insert_with(|| Box::new((4_i16, u32::default())))
+            .or_insert_with(|| Box::new((4_i16, <u32>::default())))
             .1)
             == (5_u32))
     );
@@ -185,7 +185,7 @@ unsafe fn main_0() -> i32 {
     assert!(
         ((*&mut m
             .entry(4_i16.clone())
-            .or_insert_with(|| Box::new((4_i16, u32::default())))
+            .or_insert_with(|| Box::new((4_i16, <u32>::default())))
             .1)
             == (6_u32))
     );
@@ -210,17 +210,17 @@ unsafe fn main_0() -> i32 {
     let mut value: f64 = 2_f64;
     (*&mut other_map
         .entry(key0.clone())
-        .or_insert_with(|| Box::new((key0, f64::default())))
+        .or_insert_with(|| Box::new((key0, <f64>::default())))
         .1) = value;
     value = (*&mut other_map
         .entry(key0.clone())
-        .or_insert_with(|| Box::new((key0, f64::default())))
+        .or_insert_with(|| Box::new((key0, <f64>::default())))
         .1);
     assert!(((other_map.len()) == (1_usize)));
     assert!(
         ((*&mut other_map
             .entry(key0.clone())
-            .or_insert_with(|| Box::new((key0, f64::default())))
+            .or_insert_with(|| Box::new((key0, <f64>::default())))
             .1)
             == (value))
     );
@@ -236,24 +236,33 @@ unsafe fn main_0() -> i32 {
     let mut indexes: Vec<i32> = Vec::new();
     let mut i: u32 = 60_u32;
     'loop_: while ((i) > (30_u32)) {
-        indexes.push((i as i32));
+        {
+            let __a1 = (i as i32);
+            indexes.push(__a1)
+        };
         i.prefix_dec();
     }
     let mut i: u32 = 100_u32;
     'loop_: while ((i) > (60_u32)) {
-        indexes.push((i as i32));
+        {
+            let __a1 = (i as i32);
+            indexes.push(__a1)
+        };
         i.prefix_dec();
     }
     let mut i: u32 = 30_u32;
     'loop_: while ((i) > (0_u32)) {
-        indexes.push((i as i32));
+        {
+            let __a1 = (i as i32);
+            indexes.push(__a1)
+        };
         i.prefix_dec();
     }
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < (indexes.len())) {
         (*&mut m2
             .entry(indexes[(i as usize)].clone())
-            .or_insert_with(|| Box::new((indexes[(i as usize)], bool::default())))
+            .or_insert_with(|| Box::new((indexes[(i as usize)], <bool>::default())))
             .1) = ((i).wrapping_rem(2_u32) != 0);
         i.prefix_inc();
     }
