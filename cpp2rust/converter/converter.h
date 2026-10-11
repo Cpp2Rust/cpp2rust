@@ -48,6 +48,8 @@ public:
     return *sema_;
   }
 
+  clang::ASTContext &GetASTContext() { return ctx_; }
+
   bool VisitRecoveryExpr(clang::RecoveryExpr *expr);
 
   virtual void EmitFilePreamble();
