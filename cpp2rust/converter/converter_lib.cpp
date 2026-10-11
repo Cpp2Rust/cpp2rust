@@ -609,12 +609,7 @@ bool IsRValueConvertingConstructor(const clang::CXXConstructorDecl *ctor) {
 }
 
 bool MethodNeedsMutableReceiver(const clang::CXXMethodDecl *method) {
-  if (!method->isConst()) {
-    return true;
-  }
-  return std::any_of(method->getParent()->field_begin(),
-                     method->getParent()->field_end(),
-                     [](const clang::FieldDecl *f) { return f->isMutable(); });
+  return !method->isConst();
 }
 
 bool IsPassThroughConstructor(const clang::CXXConstructorDecl *ctor) {

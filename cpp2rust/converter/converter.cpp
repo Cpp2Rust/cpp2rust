@@ -3019,28 +3019,28 @@ bool Converter::ConvertIncAndDec(clang::UnaryOperator *expr) {
   auto *sub_expr = expr->getSubExpr();
   switch (opcode) {
   case clang::UO_PostInc: {
-    PushExprKind push(*this, ExprKind::RValue);
+    PushExprKind push(*this, ExprKind::LValue);
     Convert(sub_expr);
     StrCat(".postfix_inc()");
     SetFresh();
     return true;
   }
   case clang::UO_PostDec: {
-    PushExprKind push(*this, ExprKind::RValue);
+    PushExprKind push(*this, ExprKind::LValue);
     Convert(sub_expr);
     StrCat(".postfix_dec()");
     SetFresh();
     return true;
   }
   case clang::UO_PreInc: {
-    PushExprKind push(*this, ExprKind::RValue);
+    PushExprKind push(*this, ExprKind::LValue);
     Convert(sub_expr);
     StrCat(".prefix_inc()");
     SetFresh();
     return true;
   }
   case clang::UO_PreDec: {
-    PushExprKind push(*this, ExprKind::RValue);
+    PushExprKind push(*this, ExprKind::LValue);
     Convert(sub_expr);
     StrCat(".prefix_dec()");
     SetFresh();
@@ -3379,6 +3379,21 @@ bool Converter::VisitMemberExpr(clang::MemberExpr *expr) {
     str = std::move(buf).str();
   }
 
+  if (auto *field = clang::dyn_cast<clang::FieldDecl>(member);
+      field && field->isMutable()) {
+    auto *base = expr->getBase();
+    auto object_type = expr->isArrow() ? base->getType()->getPointeeType()
+                                       : base->getType().getNonReferenceType();
+    if (!isRValue() && object_type.isConstQualified()) {
+      if (isAddrOf()) {
+        StrCat(std::format("(&raw const {}).cast_mut()", str));
+        computed_expr_type_ = ComputedExprType::FreshPointer;
+        return false;
+      }
+      str = std::format("(*(&raw const {}).cast_mut())", str);
+    }
+  }
+
   if (isAddrOf()) {
     bool is_reference_type = member->getType()->isReferenceType();
     if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(member)) {
@@ -3427,21 +3442,11 @@ void Converter::SetUFCSReceiver(clang::Expr *base, bool is_arrow,
   }
   Buffer buf(*this);
   PushExprKind push(*this, ExprKind::LValue);
-  auto object_type = is_arrow ? base->getType()->getPointeeType()
-                              : base->getType().getNonReferenceType();
-  bool cast_mut =
-      MethodNeedsMutableReceiver(method) && object_type.isConstQualified();
   StrCat(MethodNeedsMutableReceiver(method) ? "&mut" : "&");
-  if (cast_mut) {
-    StrCat("*(&raw const");
-  }
   if (is_arrow) {
     ConvertArrow(base);
   } else {
     Convert(base);
-  }
-  if (cast_mut) {
-    StrCat(").cast_mut()");
   }
   ufcs_receiver_ = std::move(buf).str();
 }
