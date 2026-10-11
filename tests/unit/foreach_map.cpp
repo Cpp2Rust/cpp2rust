@@ -14,5 +14,12 @@ int main() {
     sum += i.first;
   }
   assert(sum == 7475);
+  for (auto i : m) {
+    i.second = -1;
+    assert(i.second == -1);
+  }
+  for (const auto &i : m) {
+    assert(i.second != -1);
+  }
   return 0;
 }

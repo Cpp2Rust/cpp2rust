@@ -215,8 +215,7 @@ public:
   bool VisitCXXForRangeStmtIndexBased(clang::CXXForRangeStmt *stmt,
                                       const char *len_suffix);
 
-  void ConvertForRangeBody(clang::CXXForRangeStmt *stmt,
-                           const clang::VarDecl *map_iter_decl = nullptr);
+  void ConvertForRangeBody(clang::CXXForRangeStmt *stmt);
 
   virtual bool VisitBreakStmt(clang::BreakStmt *stmt);
 
@@ -902,8 +901,6 @@ protected:
     Converter &c_;
   };
 
-  std::unordered_set<const clang::VarDecl *> map_iter_decls_;
-
   // Local variables hoisted outside a goto_block so that all labels can see and
   // use the variables.
   std::unordered_set<const clang::VarDecl *> hoisted_decls_;
@@ -954,15 +951,6 @@ protected:
     operator=(const HoistMaterializedTempBindings &) = delete;
   };
 
-  struct ScopedMapIterDecl {
-    Converter &c;
-    const clang::VarDecl *decl;
-    ScopedMapIterDecl(Converter &c, const clang::VarDecl *decl)
-        : c(c), decl(decl) {
-      c.map_iter_decls_.insert(decl);
-    }
-    ~ScopedMapIterDecl() { c.map_iter_decls_.erase(decl); }
-  };
   static std::unordered_set<std::string> decl_ids_;
   static std::unordered_set<std::string> abstract_structs_;
 

@@ -134,3 +134,14 @@ template <typename T1, typename T2>
 std::map<T1, T2> &f26(std::map<T1, T2> &dst, const std::map<T1, T2> &src) {
   return dst.operator=(src);
 }
+
+template <typename T1, typename T2>
+std::pair<const T1, T2> &f27(typename std::map<T1, T2>::iterator it) {
+  return it.operator*();
+}
+
+template <typename T1, typename T2>
+const std::pair<const T1, T2> &
+f28(typename std::map<T1, T2>::const_iterator it) {
+  return it.operator*();
+}

@@ -1498,12 +1498,8 @@ void Converter::ConvertLoopVariable(clang::VarDecl *decl,
   }
 }
 
-void Converter::ConvertForRangeBody(clang::CXXForRangeStmt *stmt,
-                                    const clang::VarDecl *map_iter_decl) {
+void Converter::ConvertForRangeBody(clang::CXXForRangeStmt *stmt) {
   PushBreakTarget push(break_target_, BreakTarget::Loop);
-  std::optional<ScopedMapIterDecl> skip;
-  if (map_iter_decl)
-    skip.emplace(*this, map_iter_decl);
   curr_for_inc_.emplace_back(nullptr);
   ConvertBodyStmts(stmt->getBody());
   curr_for_inc_.pop_back();
@@ -1529,18 +1525,19 @@ bool Converter::VisitCXXForRangeStmt(clang::CXXForRangeStmt *stmt) {
 }
 
 bool Converter::VisitCXXForRangeStmtMap(clang::CXXForRangeStmt *stmt) {
-  auto *loop_var = stmt->getLoopVariable();
-  auto loop_var_name = GetNamedDeclAsString(loop_var);
+  auto begin =
+      llvm::cast<clang::VarDecl>(stmt->getBeginStmt()->getSingleDecl());
 
   StrCat("'loop_:");
   auto map_type = Mapper::Map(*this, stmt->getRangeInit()->getType());
-  StrCat(keyword::kFor, loop_var_name, keyword::kIn,
+  StrCat(keyword::kFor, GetNamedDeclAsString(begin), keyword::kIn,
          "UnsafeMapIterator::begin(&");
   Convert(stmt->getRangeInit());
   StrCat(std::format(" as *const {})", map_type));
   {
     PushBrace brace(*this);
-    ConvertForRangeBody(stmt, loop_var);
+    Convert(stmt->getLoopVarStmt());
+    ConvertForRangeBody(stmt);
   }
 
   return false;
@@ -3239,8 +3236,7 @@ void Converter::ConvertDeclRefValue(clang::Expr *expr, clang::ValueDecl *decl) {
   auto str = ConvertDeclRef(expr, decl);
   auto type = GetDeclRefType(curr_function_, expr, decl);
 
-  if (type->getAs<clang::ReferenceType>() && !isAddrOf() &&
-      !map_iter_decls_.contains(clang::dyn_cast<clang::VarDecl>(decl))) {
+  if (type->getAs<clang::ReferenceType>() && !isAddrOf()) {
     EmitDeref(std::move(str), type.getNonReferenceType());
     SetValueFreshness(expr->getType());
     return;

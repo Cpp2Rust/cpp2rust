@@ -12,6 +12,13 @@ fn t1<T1: Default, T2: Default>() -> (Value<T1>, Value<T2>) {
     )
 }
 
+fn t2<T1: Default, T2: Default>() -> (Value<T1>, Value<T2>) {
+    (
+        Rc::new(RefCell::new(T1::default())),
+        Rc::new(RefCell::new(T2::default())),
+    )
+}
+
 fn f1<T1, T2>(a0: (Value<T1>, Value<T2>)) -> Value<T2> {
     a0.1
 }
@@ -88,4 +95,19 @@ fn f14<T1: Default + ByteRepr, T2: Default + ByteRepr>(
     a1: &mut (Value<T1>, Value<T2>),
 ) {
     a0.write(std::mem::take(&mut *a1))
+}
+
+fn f15<T1, T2>(a0: (Value<T1>, Value<T2>)) -> Value<T1> {
+    a0.0
+}
+
+fn f16<T1, T2>(a0: (Value<T1>, Value<T2>)) -> Value<T2> {
+    a0.1
+}
+
+fn f17<T1: Clone, T2: Clone>(a0: (Value<T1>, Value<T2>)) -> (Value<T1>, Value<T2>) {
+    (
+        Rc::new(RefCell::new(a0.0.borrow().clone())),
+        Rc::new(RefCell::new(a0.1.borrow().clone())),
+    )
 }

@@ -371,14 +371,6 @@ std::string ToString(clang::ASTContext &ctx, const clang::Expr *expr) {
                    ToString(ctx, member_decl);
           }
         }
-      } else if (auto for_range = GetParentForRange(ctx, ME)) {
-        if (ToString(ctx, for_range->getRangeInit()->getType())
-                .starts_with("std::map<")) {
-          auto iter_type = GetForRangeIteratorType(for_range);
-          if (!iter_type.isNull()) {
-            return ToString(ctx, iter_type) + "->" + ToString(ctx, member_decl);
-          }
-        }
       }
       return ToString(ctx, member_decl);
     }

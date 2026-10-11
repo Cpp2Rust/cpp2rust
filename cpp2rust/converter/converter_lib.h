@@ -323,12 +323,6 @@ clang::Expr *BuildInitExpr(clang::Sema &sema, clang::QualType type,
                            llvm::ArrayRef<clang::Expr *> args,
                            clang::SourceLocation loc);
 
-const clang::CXXForRangeStmt *
-GetParentForRange(clang::ASTContext &ctx, const clang::MemberExpr *member);
-
-clang::QualType
-GetForRangeIteratorType(const clang::CXXForRangeStmt *for_range);
-
 std::string GetClassName(clang::QualType type);
 
 bool IsVaListType(clang::QualType type);
