@@ -192,6 +192,9 @@ unsafe fn main_0() -> i32 {
     assert!(((*&raw mut (*it4.deref()).1) == (6_u32)));
     assert!(((*p) == (6_u32)));
     assert!(((x5) == (5_u32)));
+    let mut const_it4: UnsafeMapIterator<i16, u32> =
+        UnsafeMapIterator::find_key(&m as *const BTreeMap<i16, Box<(i16, u32)>>, &4_i16).clone();
+    assert!((((*const_it4.deref().cast_const()).1) == (6_u32)));
     let r: *mut BTreeMap<i16, Box<(i16, u32)>> = &mut m;
     assert!((((*r).len()) == (4_usize)));
     assert!(

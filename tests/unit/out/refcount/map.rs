@@ -423,6 +423,17 @@ fn main_0() -> i32 {
     assert!(((*(*it4.borrow()).deref().with(|__p| __p.1.clone()).borrow()) == 6_u32));
     assert!(((p.read()) == 6_u32));
     assert!((x5 == 5_u32));
+    let const_it4: Value<RefcountMapIter<i16, u32>> =
+        Rc::new(RefCell::new(RefcountMapIter::find_key(
+            (m.as_pointer() as Ptr<BTreeMap<i16, Value<(Value<i16>, Value<u32>)>>>),
+            &4_i16,
+        )));
+    assert!(
+        ((*(*(*const_it4.borrow()).deref().upgrade().deref())
+            .1
+            .borrow())
+            == 6_u32)
+    );
     let r: Ptr<BTreeMap<i16, Value<(Value<i16>, Value<u32>)>>> = m.as_pointer();
     assert!(((*r.upgrade().deref()).len() == 4_usize));
     assert!(
