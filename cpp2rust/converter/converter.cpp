@@ -3804,6 +3804,11 @@ void Converter::ConvertCXXConstructExprArgs(clang::CXXConstructExpr *expr) {
 bool Converter::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
   PushSuppressIteratorClone push(*this, expr);
 
+  if (expr->isElidable()) {
+    Convert(expr->getArg(0));
+    return false;
+  }
+
   if (auto str = GetMappedAsString(expr, expr->getArgs(), expr->getNumArgs());
       !str.empty()) {
     StrCat(str);
