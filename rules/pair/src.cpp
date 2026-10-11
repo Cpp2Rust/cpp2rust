@@ -5,6 +5,8 @@
 
 template <typename T1, typename T2> using t1 = std::pair<T1, T2>;
 
+template <typename T1, typename T2> using t2 = std::pair<const T1, T2>;
+
 template <typename T1, typename T2> T2 &f1(std::pair<T1, T2> &o) {
   return o.second;
 }
@@ -62,4 +64,18 @@ std::pair<T1, T2> &f13(std::pair<T1, T2> &dst, const std::pair<T1, T2> &src) {
 template <typename T1, typename T2>
 std::pair<T1, T2> &f14(std::pair<T1, T2> &dst, std::pair<T1, T2> &&src) {
   return dst.operator=(std::move(src));
+}
+
+template <typename T1, typename T2>
+const T1 &f15(std::pair<const T1, T2> &a0) {
+  return a0.first;
+}
+
+template <typename T1, typename T2> T2 &f16(std::pair<const T1, T2> &o) {
+  return o.second;
+}
+
+template <typename T1, typename T2>
+std::pair<const T1, T2> f17(const std::pair<const T1, T2> &a0) {
+  return std::pair<const T1, T2>(a0);
 }
