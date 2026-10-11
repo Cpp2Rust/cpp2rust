@@ -213,11 +213,11 @@ unsafe fn main_0() -> i32 {
     let mut m: BTreeMap<Lt, Box<(Lt, i32)>> = BTreeMap::new();
     (*&mut m
         .entry(Lt { v: 2 }.clone())
-        .or_insert_with(|| Box::new((Lt { v: 2 }, i32::default())))
+        .or_insert_with(|| Box::new((Lt { v: 2 }, <i32>::default())))
         .1) = 20;
     (*&mut m
         .entry(Lt { v: 1 }.clone())
-        .or_insert_with(|| Box::new((Lt { v: 1 }, i32::default())))
+        .or_insert_with(|| Box::new((Lt { v: 1 }, <i32>::default())))
         .1) = 10;
     assert!(
         ((*&raw mut (*UnsafeMapIterator::begin(&m as *const BTreeMap<Lt, Box<(Lt, i32)>>)
@@ -227,7 +227,7 @@ unsafe fn main_0() -> i32 {
     assert!(
         ((*&mut m
             .entry(Lt { v: 2 }.clone())
-            .or_insert_with(|| Box::new((Lt { v: 2 }, i32::default())))
+            .or_insert_with(|| Box::new((Lt { v: 2 }, <i32>::default())))
             .1)
             == (20))
     );

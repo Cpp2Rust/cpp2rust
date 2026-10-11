@@ -107,15 +107,15 @@ fn main_0() -> i32 {
     assert!(((f1.y.read()) == 4));
     assert!(({ (f1.z).clone() } == { (x1.as_pointer()) }));
     assert!(((f1.z.read()) == 4));
-    elem!((f2.a.as_pointer() as Ptr<i32>), 0).with_mut(|__v| __v.prefix_inc());
-    elem!((f2.a.as_pointer() as Ptr<i32>), 1).with_mut(|__v| __v.prefix_inc());
-    elem!((f2.a.as_pointer() as Ptr<i32>), 2).with_mut(|__v| __v.prefix_inc());
-    assert!(((elem!((f2.a.as_pointer() as Ptr<i32>), 0).read()) == 1));
-    assert!(((elem!((f2.a.as_pointer() as Ptr<i32>), 1).read()) == 2));
-    assert!(((elem!((f2.a.as_pointer() as Ptr<i32>), 2).read()) == 3));
-    assert!(((elem!((f1.a.as_pointer() as Ptr<i32>), 0).read()) == 0));
-    assert!(((elem!((f1.a.as_pointer() as Ptr<i32>), 1).read()) == 1));
-    assert!(((elem!((f1.a.as_pointer() as Ptr<i32>), 2).read()) == 2));
+    elem!((f2.a.as_pointer() as Ptr::<i32>), 0).with_mut(|__v| __v.prefix_inc());
+    elem!((f2.a.as_pointer() as Ptr::<i32>), 1).with_mut(|__v| __v.prefix_inc());
+    elem!((f2.a.as_pointer() as Ptr::<i32>), 2).with_mut(|__v| __v.prefix_inc());
+    assert!(((elem!((f2.a.as_pointer() as Ptr::<i32>), 0).read()) == 1));
+    assert!(((elem!((f2.a.as_pointer() as Ptr::<i32>), 1).read()) == 2));
+    assert!(((elem!((f2.a.as_pointer() as Ptr::<i32>), 2).read()) == 3));
+    assert!(((elem!((f1.a.as_pointer() as Ptr::<i32>), 0).read()) == 0));
+    assert!(((elem!((f1.a.as_pointer() as Ptr::<i32>), 1).read()) == 1));
+    assert!(((elem!((f1.a.as_pointer() as Ptr::<i32>), 2).read()) == 2));
     f2.bar.w = 20;
     assert!((f2.bar.w == 20));
     assert!((f1.bar.w == 10));
@@ -428,7 +428,10 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new((*pair3.borrow()).0.borrow().clone())),
         Rc::new(RefCell::new((*pair3.borrow()).1.borrow().clone())),
     )));
-    (*(*pair4.borrow()).0.borrow_mut()).push(1);
+    {
+        let __a1 = 1;
+        (*(*pair4.borrow()).0.borrow_mut()).push(__a1)
+    };
     (*(*pair4.borrow()).1.borrow_mut()) = 1;
     assert!(((*(*pair4.borrow()).0.borrow()).len() == 1_usize));
     assert!(((*(*pair4.borrow()).1.borrow()) == 1));

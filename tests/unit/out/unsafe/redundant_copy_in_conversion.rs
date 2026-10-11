@@ -24,7 +24,7 @@ unsafe fn main_0() -> i32 {
     let mut m: BTreeMap<i32, Box<(i32, i32)>> = BTreeMap::new();
     (*&mut m
         .entry(0.clone())
-        .or_insert_with(|| Box::new((0, i32::default())))
+        .or_insert_with(|| Box::new((0, <i32>::default())))
         .1) = 1;
     let mut end: UnsafeMapIterator<i32, i32> =
         UnsafeMapIterator::end(&m as *const BTreeMap<i32, Box<(i32, i32)>>);

@@ -170,7 +170,7 @@ unsafe fn main_0() -> i32 {
     'loop_: while ((i) < (N)) {
         (*&mut map1
             .entry(i.clone())
-            .or_insert_with(|| Box::new((i, i32::default())))
+            .or_insert_with(|| Box::new((i, <i32>::default())))
             .1) = i;
         i.prefix_inc();
     }
@@ -180,13 +180,13 @@ unsafe fn main_0() -> i32 {
         assert!(
             ((*&mut map2
                 .entry(i.clone())
-                .or_insert_with(|| Box::new((i, i32::default())))
+                .or_insert_with(|| Box::new((i, <i32>::default())))
                 .1)
                 == (i))
         );
         (*&mut map2
             .entry(i.clone())
-            .or_insert_with(|| Box::new((i, i32::default())))
+            .or_insert_with(|| Box::new((i, <i32>::default())))
             .1)
             .prefix_inc();
         i.prefix_inc();
@@ -196,14 +196,14 @@ unsafe fn main_0() -> i32 {
         assert!(
             ((*&mut map1
                 .entry(i.clone())
-                .or_insert_with(|| Box::new((i, i32::default())))
+                .or_insert_with(|| Box::new((i, <i32>::default())))
                 .1)
                 == (i))
         );
         assert!(
             ((*&mut map2
                 .entry(i.clone())
-                .or_insert_with(|| Box::new((i, i32::default())))
+                .or_insert_with(|| Box::new((i, <i32>::default())))
                 .1)
                 == ((i) + (1)))
         );
@@ -225,7 +225,10 @@ unsafe fn main_0() -> i32 {
         0.into(),
     );
     let mut pair4: (Vec<i32>, i32) = pair3.clone();
-    pair4.0.push(1);
+    {
+        let __a1 = 1;
+        pair4.0.push(__a1)
+    };
     pair4.1 = 1;
     assert!(((pair4.0.len()) == (1_usize)));
     assert!(((pair4.1) == (1)));
