@@ -7,10 +7,10 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn sum_then_product_0(mut first: i32, __args: &[VaArg]) -> i32 {
-    let mut ap: VaList = VaList::default();
+    let mut ap: *const VaArg = ::std::ptr::null();
     let mut sum: i32 = first;
     let mut product: i32 = first;
-    ap = VaList::new(__args);
+    ap = __args.as_ptr();
     let mut val: i32 = 0_i32;
     'loop_: while (((({
         val = ap.arg::<i32>();
@@ -20,7 +20,7 @@ pub unsafe fn sum_then_product_0(mut first: i32, __args: &[VaArg]) -> i32 {
     {
         sum += val;
     }
-    ap = VaList::new(__args);
+    ap = __args.as_ptr();
     'loop_: while (((({
         val = ap.arg::<i32>();
         val

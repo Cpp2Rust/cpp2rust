@@ -19,10 +19,11 @@ pub type field = u32;
 pub const field_FIELD_SLOT: field = 0;
 pub const field_FIELD_LEVEL: field = 1;
 pub fn registry_update_0(mut r: Ptr<registry>, field: field, __args: &[VaArg]) -> i32 {
+    let __args: Value<Box<[VaArg]>> = Rc::new(RefCell::new(__args.into()));
     let field: Value<field> = Rc::new(RefCell::new(field));
     let mut result: i32 = 0;
-    let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
-    (*ap.borrow_mut()) = VaList::new(__args);
+    let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
+    (*ap.borrow_mut()) = __args.as_pointer();
     'switch: {
         match { ((*field.borrow()) as u32) } {
             __v if __v == ((field_FIELD_SLOT as i32) as u32) => {
