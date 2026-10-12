@@ -24,7 +24,9 @@ unsigned long long f6(unsigned long long x) { return __builtin_bswap64(x); }
 int f7(unsigned long x) { return __builtin_ctzl(x); }
 int f8(unsigned long x) { return __builtin_popcountl(x); }
 int f12(long a, long b, long *r) { return __builtin_mul_overflow(a, b, r); }
-int f13(long long a, long long b, long long *r) { return __builtin_mul_overflow(a, b, r); }
+int f13(long long a, long long b, long long *r) {
+  return __builtin_mul_overflow(a, b, r);
+}
 #if defined(__x86_64__) || defined(__i386__)
 void f11(void) { return __builtin_ia32_pause(); }
 #endif

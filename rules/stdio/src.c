@@ -61,9 +61,7 @@ FILE *f20(int fd, const char *mode) { return fdopen(fd, mode); }
 
 int (*f21)(char *, size_t, const char *, ...) = snprintf;
 
-int f22(const char *a0, const char *a1) {
-  return rename(a0, a1);
-}
+int f22(const char *a0, const char *a1) { return rename(a0, a1); }
 
 int f23(FILE *stream) { return getc(stream); }
 
