@@ -29,6 +29,26 @@ fn main_0() -> i32 {
     )));
     assert!(((*(*p3.borrow()).0.borrow()) == 5_f64));
     assert!(((*(*p3.borrow()).1.borrow()) == 6));
+    let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2])));
+    let mut n: u32 = 2_u32;
+    let const_ptr_pairs: Value<Vec<(Value<Ptr<i32>>, Value<u64>)>> = Rc::new(RefCell::new(
+        (0..(1_usize) as usize)
+            .map(|_| <(Value<Ptr<i32>>, Value<u64>)>::default())
+            .collect::<Vec<_>>(),
+    ));
+    (*const_ptr_pairs.borrow_mut())[0_usize] = (
+        Rc::new(RefCell::new(
+            (arr.as_pointer() as Ptr<i32>)
+                .offset((1) as isize)
+                .try_into()
+                .expect("failed conversion"),
+        )),
+        Rc::new(RefCell::new(n.try_into().expect("failed conversion"))),
+    );
+    assert!(
+        (((*(*const_ptr_pairs.borrow())[0_usize].0.borrow()).read()) == 2)
+            && ((*(*const_ptr_pairs.borrow())[0_usize].1.borrow()) == 2_u64)
+    );
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

@@ -33,6 +33,18 @@ fn t8() -> *const isize {
     std::ptr::null()
 }
 
+fn t9() -> usize {
+    0_usize
+}
+
+fn t10() -> *mut usize {
+    std::ptr::null_mut()
+}
+
+fn t11() -> *const usize {
+    std::ptr::null()
+}
+
 fn f1(a0: &mut u8, a1: u32) -> u8 {
     *a0 << a1
 }

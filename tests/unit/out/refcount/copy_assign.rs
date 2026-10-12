@@ -81,13 +81,15 @@ pub struct Holder {
 }
 impl Default for Holder {
     fn default() -> Self {
-        Holder {
-            p: <Partial>::default(),
-            arr: Rc::new(RefCell::new(
-                (0..2)
-                    .map(|_| <Partial>::default())
-                    .collect::<Box<[Partial]>>(),
-            )),
+        {
+            Holder {
+                p: <Partial>::default(),
+                arr: Rc::new(RefCell::new(
+                    (0..2)
+                        .map(|_| <Partial>::default())
+                        .collect::<Box<[Partial]>>(),
+                )),
+            }
         }
     }
 }

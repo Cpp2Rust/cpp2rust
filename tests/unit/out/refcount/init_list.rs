@@ -26,8 +26,10 @@ pub struct Holder {
 }
 impl Default for Holder {
     fn default() -> Self {
-        Holder {
-            p: Pair { a: 0, b: 0 },
+        {
+            Holder {
+                p: Pair { a: 0, b: 0 },
+            }
         }
     }
 }

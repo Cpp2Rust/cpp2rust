@@ -1,4 +1,5 @@
 #include <cassert>
+#include <cstdint>
 #include <cstdio>
 #include <string>
 
@@ -27,5 +28,6 @@ int main() {
   log_to(stdout, "%s %d\n", "runtime", 4);
   log_to(stderr, "%d\n", 5);
   log_fmt("%d\n", 6);
+  printf("{} %ju %jd\n", (uintmax_t)5, (intmax_t)-6);
   return 0;
 }

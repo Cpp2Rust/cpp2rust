@@ -31,18 +31,20 @@ pub struct Pair {
 }
 impl Default for Pair {
     fn default() -> Self {
-        Pair {
-            x: 0_i32,
-            y: 0_i32,
-            a: Rc::new(RefCell::new((0..5).map(|_| 0_i32).collect::<Box<[i32]>>())),
-            r: <Ptr<i32>>::default(),
-            p: Ptr::<i32>::null(),
-            pair: Ptr::<Pair>::null(),
-            ap: Rc::new(RefCell::new(
-                (0..2)
-                    .map(|_| Ptr::<i32>::null())
-                    .collect::<Box<[Ptr<i32>]>>(),
-            )),
+        {
+            Pair {
+                x: 0_i32,
+                y: 0_i32,
+                a: Rc::new(RefCell::new((0..5).map(|_| 0_i32).collect::<Box<[i32]>>())),
+                r: <Ptr<i32>>::default(),
+                p: Ptr::<i32>::null(),
+                pair: Ptr::<Pair>::null(),
+                ap: Rc::new(RefCell::new(
+                    (0..2)
+                        .map(|_| Ptr::<i32>::null())
+                        .collect::<Box<[Ptr<i32>]>>(),
+                )),
+            }
         }
     }
 }

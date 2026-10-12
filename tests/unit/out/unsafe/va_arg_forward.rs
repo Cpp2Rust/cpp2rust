@@ -6,7 +6,7 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn inner_0(mut count: i32, mut ap: VaList) -> i32 {
+pub unsafe fn inner_0(mut count: i32, mut ap: *const VaArg) -> i32 {
     let mut total: i32 = 0;
     let mut i: i32 = 0;
     'loop_: while ((((i) < (count)) as i32) != 0) {
@@ -16,8 +16,8 @@ pub unsafe fn inner_0(mut count: i32, mut ap: VaList) -> i32 {
     return total;
 }
 pub unsafe fn outer_1(mut count: i32, __args: &[VaArg]) -> i32 {
-    let mut ap: VaList = VaList::default();
-    ap = VaList::new(__args);
+    let mut ap: *const VaArg = ::std::ptr::null();
+    ap = __args.as_ptr();
     let mut result: i32 = (unsafe { inner_0(count, ap) });
     return result;
 }

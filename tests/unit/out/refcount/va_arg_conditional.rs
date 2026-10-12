@@ -7,10 +7,11 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn conditional_log_0(mut verbose: i32, fmt: Ptr<i8>, __args: &[VaArg]) -> i32 {
+    let __args: Value<Box<[VaArg]>> = Rc::new(RefCell::new(__args.into()));
     let fmt: Value<Ptr<i8>> = Rc::new(RefCell::new(fmt));
     if (verbose != 0) {
-        let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
-        (*ap.borrow_mut()) = VaList::new(__args);
+        let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
+        (*ap.borrow_mut()) = __args.as_pointer();
         let mut result: i32 = (*ap.borrow_mut()).arg::<i32>();
         return result;
     }

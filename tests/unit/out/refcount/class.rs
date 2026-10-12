@@ -50,6 +50,12 @@ impl std::cmp::PartialEq for Counter {
     }
 }
 impl std::cmp::Eq for Counter {}
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
+pub struct Tally {
+    #[offset(0)]
+    pub calls: i32,
+}
 pub fn RandomRoute_0(route: Ptr<Route>) -> i32 {
     if ((route.with(|__s| __s.path.first) % 2) != 0) {
         return ({
@@ -105,6 +111,14 @@ fn main_0() -> i32 {
     assert!(({ CounterImpl::operator_eq(&c2.as_pointer(), c1.as_pointer(),) }));
     assert!(({ (*c1.borrow()).calls } == 3));
     assert!(({ (*c2.borrow()).calls } == 2));
+    let t: Value<Tally> = Rc::new(RefCell::new(Tally { calls: 0 }));
+    let ct: Value<Tally> = Rc::new(RefCell::new(Tally { calls: 0 }));
+    let rt: Ptr<Tally> = t.as_pointer();
+    assert!((({ TallyImpl::SameNameBetweenConstAndNonConst_1(&t.as_pointer(),) }) == 1));
+    assert!((({ TallyImpl::SameNameBetweenConstAndNonConst_2(&ct.as_pointer(),) }) == 2));
+    assert!((({ TallyImpl::SameNameBetweenConstAndNonConst_2(&rt,) }) == 2));
+    assert!(({ (*t.borrow()).calls } == 11));
+    assert!(({ (*ct.borrow()).calls } == 10));
     return 0;
 }
 pub trait CounterImpl {
@@ -166,6 +180,24 @@ impl RouteImpl for Ptr<Route> {
         let mut old_cost: f64 = (*self).with(|__s| __s.cost);
         field!((*self), cost).write(new_cost);
         return old_cost;
+    }
+}
+pub trait TallyImpl {
+    fn SameNameBetweenConstAndNonConst_1(&self) -> i32;
+    fn SameNameBetweenConstAndNonConst_2(&self) -> i32;
+}
+impl TallyImpl for Ptr<Tally> {
+    fn SameNameBetweenConstAndNonConst_1(&self) -> i32 {
+        {
+            field!((*self), calls).with_mut(|__v| *__v = *__v + 1)
+        };
+        return 1;
+    }
+    fn SameNameBetweenConstAndNonConst_2(&self) -> i32 {
+        {
+            field!((*self), calls).with_mut(|__v| *__v = *__v + 10)
+        };
+        return 2;
     }
 }
 pub fn __cpp2rust_init_globals() {}

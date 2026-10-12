@@ -14,10 +14,10 @@ fn main_0() -> i32 {
     let twice: Value<FnPtr<Generic>> = Rc::new(RefCell::new(lambda!(
         Generic,
         {},
-        |x: i32| -> i32 {
+        |mut x: i32| -> i32 {
             return (x + x);
         },
-        |x: f64| -> f64 {
+        |mut x: f64| -> f64 {
             return (x + x);
         }
     )));
@@ -29,10 +29,10 @@ fn main_0() -> i32 {
         {
             let base: Value<i32> = Rc::new(RefCell::new((*base.borrow())));
         },
-        |x: i32| -> i32 {
+        |mut x: i32| -> i32 {
             return (x + (*base.borrow()));
         },
-        |x: f64| -> f64 {
+        |mut x: f64| -> f64 {
             return (x + ((*base.borrow()) as f64));
         }
     )));
@@ -48,13 +48,13 @@ fn main_0() -> i32 {
         {
             let total: Ptr<i32> = total.as_pointer();
         },
-        |x: i32, y: i32| {
+        |mut x: i32, mut y: i32| {
             {
                 let __rhs = (x * y);
                 total.with_mut(|__v| *__v = *__v + __rhs)
             };
         },
-        |x: u32, y: u32| {
+        |mut x: u32, mut y: u32| {
             total.write({ (((total.read()) as u32).wrapping_add((x).wrapping_mul(y))) as i32 });
         }
     )));
@@ -68,10 +68,10 @@ fn main_0() -> i32 {
     let sub: Value<FnPtr<Generic>> = Rc::new(RefCell::new(lambda!(
         Generic,
         {},
-        |x: i32, y: i32| -> i32 {
+        |mut x: i32, mut y: i32| -> i32 {
             return (x - y);
         },
-        |x: f64, y: f64| -> f64 {
+        |mut x: f64, mut y: f64| -> f64 {
             return (x - y);
         }
     )));
@@ -88,10 +88,10 @@ fn main_0() -> i32 {
         {
             let base: Value<i32> = Rc::new(RefCell::new((*base.borrow())));
         },
-        |x: i32, y: i32| -> i32 {
+        |mut x: i32, mut y: i32| -> i32 {
             return ((x * y) + (*base.borrow()));
         },
-        |x: i32, y: f64| -> f64 {
+        |mut x: i32, mut y: f64| -> f64 {
             return (((x as f64) * y) + ((*base.borrow()) as f64));
         }
     )));
@@ -103,6 +103,21 @@ fn main_0() -> i32 {
                 .call(2, 0.5_f64)
         }) == 11_f64)
     );
+    let unused: Value<FnPtr<Generic>> = Rc::new(RefCell::new(lambda!(Generic, {})));
+    &(*unused.borrow_mut());
+    let outer: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(lambda!(
+        {
+            let base: Value<i32> = Rc::new(RefCell::new((*base.borrow())));
+        },
+        |mut y: i32| -> i32 {
+            let inner: Value<FnPtr<Generic>> =
+                Rc::new(RefCell::new(lambda!(Generic, {}, |mut z: i32| -> i32 {
+                    return (z + 1);
+                })));
+            return (({ (*inner.borrow()).spec::<fn(i32) -> i32>(0).call(y) }) + (*base.borrow()));
+        }
+    )));
+    assert!((({ (*outer.borrow()).call(5,) }) == 16));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

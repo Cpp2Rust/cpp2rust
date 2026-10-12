@@ -3,4 +3,4 @@
 
 #include <iomanip>
 
-auto f1(int n) { return std::setw(n); }
+auto f1(int n) -> decltype(std::setw(n)) { return std::setw(n); }

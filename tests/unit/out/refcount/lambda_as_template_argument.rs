@@ -38,6 +38,18 @@ pub fn apply_twice_6(fn_: FnPtr<fn(i32) -> i32>, mut x: i32) -> i32 {
     })
     .clone();
 }
+pub fn none_match_7(pred: FnPtr<fn(i32) -> bool>, mut a: i32, mut b: i32) -> bool {
+    let pred: Value<FnPtr<fn(i32) -> bool>> = Rc::new(RefCell::new(pred));
+    let neg_pred: Value<FnPtr<fn(i32) -> bool>> = Rc::new(RefCell::new(lambda!(
+        {
+            let pred: Ptr<FnPtr<fn(i32) -> bool>> = pred.as_pointer();
+        },
+        |mut x: i32| -> bool {
+            return !({ (*pred.upgrade().deref()).call(x) });
+        }
+    )));
+    return ({ (*neg_pred.borrow()).call(a) }) && ({ (*neg_pred.borrow()).call(b) });
+}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
@@ -48,7 +60,7 @@ fn main_0() -> i32 {
         {
             let factor: Value<i32> = Rc::new(RefCell::new((*factor.borrow())));
         },
-        |x: i32| -> i32 {
+        |mut x: i32| -> i32 {
             return (x * (*factor.borrow()));
         }
     )));
@@ -56,7 +68,7 @@ fn main_0() -> i32 {
     assert!(
         (({
             apply_int_0(
-                FnPtr::<fn(i32) -> i32>::new(|x: i32| -> i32 {
+                FnPtr::<fn(i32) -> i32>::new(|mut x: i32| -> i32 {
                     {
                         return -x;
                     }
@@ -70,10 +82,10 @@ fn main_0() -> i32 {
         {
             let factor: Value<i32> = Rc::new(RefCell::new((*factor.borrow())));
         },
-        |x: i32| -> i32 {
+        |mut x: i32| -> i32 {
             return (x * (*factor.borrow()));
         },
-        |x: f64| -> f64 {
+        |mut x: f64| -> f64 {
             return (x * ((*factor.borrow()) as f64));
         }
     )));
@@ -82,7 +94,7 @@ fn main_0() -> i32 {
     assert!(
         (({
             apply_int_2(
-                lambda!(Generic, {}, |x: i32| -> i32 {
+                lambda!(Generic, {}, |mut x: i32| -> i32 {
                     return -x;
                 }),
                 9,
@@ -94,15 +106,24 @@ fn main_0() -> i32 {
         {
             let factor: Value<i32> = Rc::new(RefCell::new((*factor.borrow())));
         },
-        |x: i32| -> i32 {
+        |mut x: i32| -> i32 {
             return (x + (*factor.borrow()));
         },
-        |x: f64| -> f64 {
+        |mut x: f64| -> f64 {
             return (x + ((*factor.borrow()) as f64));
         }
     )));
     assert!((({ apply_int_3((*offset.borrow()).copy_from(), 4,) }) == 7));
     assert!((({ apply_double_5((*offset.borrow()).copy_from(), 1.5_f64,) }) == 4.5_f64));
+    let is_even: Value<FnPtr<fn(i32) -> bool>> = Rc::new(RefCell::new(
+        FnPtr::<fn(i32) -> bool>::new(|mut x: i32| -> bool {
+            {
+                return ((x % 2) == 0);
+            }
+        }),
+    ));
+    assert!(({ none_match_7((*is_even.borrow()).copy_from(), 1, 3,) }));
+    assert!(!({ none_match_7((*is_even.borrow()).copy_from(), 1, 4,) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

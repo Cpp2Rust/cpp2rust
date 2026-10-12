@@ -24,6 +24,17 @@ pub const Sized_SIZED_B: Sized = 65535;
 pub type Scoped = i8;
 pub const Scoped_NEG: Scoped = -2;
 pub const Scoped_POS: Scoped = 2;
+pub type Empty = bool;
+#[repr(C)]
+#[derive(Copy, Clone, VaArg, FnPtrArg)]
+pub struct HoldsEmpty {
+    pub e: Empty,
+}
+impl Default for HoldsEmpty {
+    fn default() -> Self {
+        unsafe { HoldsEmpty { e: false } }
+    }
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -57,6 +68,10 @@ unsafe fn main_0() -> i32 {
     let mut sc: Scoped = Scoped_NEG;
     assert!(((sc as i32) == (-2_i32)));
     assert!((((Scoped_POS as i8) as i32) == (2)));
+    let mut he: HoldsEmpty = <HoldsEmpty>::default();
+    assert!(!(he.e));
+    let mut ev: Empty = false;
+    assert!(((ev as i32) == (he.e as i32)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

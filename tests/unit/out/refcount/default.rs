@@ -26,20 +26,22 @@ pub struct Pointers {
 }
 impl Default for Pointers {
     fn default() -> Self {
-        Pointers {
-            x1: Ptr::<i32>::null(),
-            x2: Ptr::<i32>::null(),
-            x3: Rc::new(RefCell::new(
-                (0..5)
-                    .map(|_| Ptr::<i32>::null())
-                    .collect::<Box<[Ptr<i32>]>>(),
-            )),
-            x4: Rc::new(RefCell::new(
-                (0..10)
-                    .map(|_| Ptr::<i32>::null())
-                    .collect::<Box<[Ptr<i32>]>>(),
-            )),
-            x5: 0_i32,
+        {
+            Pointers {
+                x1: Ptr::<i32>::null(),
+                x2: Ptr::<i32>::null(),
+                x3: Rc::new(RefCell::new(
+                    (0..5)
+                        .map(|_| Ptr::<i32>::null())
+                        .collect::<Box<[Ptr<i32>]>>(),
+                )),
+                x4: Rc::new(RefCell::new(
+                    (0..10)
+                        .map(|_| Ptr::<i32>::null())
+                        .collect::<Box<[Ptr<i32>]>>(),
+                )),
+                x5: 0_i32,
+            }
         }
     }
 }
@@ -61,19 +63,21 @@ pub struct SmallArrays {
 }
 impl Default for SmallArrays {
     fn default() -> Self {
-        SmallArrays {
-            a: Rc::new(RefCell::new((0..32).map(|_| 0_i32).collect::<Box<[i32]>>())),
-            f: FnPtr::<fn(i32) -> i32>::null(),
-            fs: Rc::new(RefCell::new(
-                (0..2)
-                    .map(|_| FnPtr::<fn(i32) -> i32>::null())
-                    .collect::<Box<[FnPtr<fn(i32) -> i32>]>>(),
-            )),
-            p: Rc::new(RefCell::new(
-                (0..2)
-                    .map(|_| <Pointers>::default())
-                    .collect::<Box<[Pointers]>>(),
-            )),
+        {
+            SmallArrays {
+                a: Rc::new(RefCell::new((0..32).map(|_| 0_i32).collect::<Box<[i32]>>())),
+                f: FnPtr::<fn(i32) -> i32>::null(),
+                fs: Rc::new(RefCell::new(
+                    (0..2)
+                        .map(|_| FnPtr::<fn(i32) -> i32>::null())
+                        .collect::<Box<[FnPtr<fn(i32) -> i32>]>>(),
+                )),
+                p: Rc::new(RefCell::new(
+                    (0..2)
+                        .map(|_| <Pointers>::default())
+                        .collect::<Box<[Pointers]>>(),
+                )),
+            }
         }
     }
 }
@@ -86,8 +90,10 @@ pub struct BigArray {
 }
 impl Default for BigArray {
     fn default() -> Self {
-        BigArray {
-            a: Rc::new(RefCell::new((0..33).map(|_| 0_i32).collect::<Box<[i32]>>())),
+        {
+            BigArray {
+                a: Rc::new(RefCell::new((0..33).map(|_| 0_i32).collect::<Box<[i32]>>())),
+            }
         }
     }
 }

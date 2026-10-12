@@ -7,11 +7,12 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn sum_then_product_0(first: i32, __args: &[VaArg]) -> i32 {
+    let __args: Value<Box<[VaArg]>> = Rc::new(RefCell::new(__args.into()));
     let first: Value<i32> = Rc::new(RefCell::new(first));
-    let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
+    let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
     let mut sum: i32 = (*first.borrow());
     let mut product: i32 = (*first.borrow());
-    (*ap.borrow_mut()) = VaList::new(__args);
+    (*ap.borrow_mut()) = __args.as_pointer();
     let mut val: i32 = 0_i32;
     'loop_: while (((({
         val = (*ap.borrow_mut()).arg::<i32>();
@@ -21,7 +22,7 @@ pub fn sum_then_product_0(first: i32, __args: &[VaArg]) -> i32 {
     {
         sum += val;
     }
-    (*ap.borrow_mut()) = VaList::new(__args);
+    (*ap.borrow_mut()) = __args.as_pointer();
     'loop_: while (((({
         val = (*ap.borrow_mut()).arg::<i32>();
         val

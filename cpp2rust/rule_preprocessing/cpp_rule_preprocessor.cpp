@@ -1068,8 +1068,12 @@ private:
 
 void Extract(const std::filesystem::path &src_path, llvm::json::Object &out,
              llvm::ArrayRef<llvm::StringRef> cxx_flags) {
+  bool is_c = src_path.extension() == ".c";
   auto flags = getPlatformClangBeginFlags();
-  flags.insert(flags.end(), cxx_flags.begin(), cxx_flags.end());
+  flags.push_back("-isystem" + src_path.parent_path().string());
+  if (!is_c) {
+    flags.insert(flags.end(), cxx_flags.begin(), cxx_flags.end());
+  }
   auto end_flags = getPlatformClangEndFlags();
   flags.insert(flags.end(), end_flags.begin(), end_flags.end());
   auto code = llvm::MemoryBuffer::getFile(src_path.string());
@@ -1080,7 +1084,7 @@ void Extract(const std::filesystem::path &src_path, llvm::json::Object &out,
   ActionFactory factory(out);
   clang::tooling::runToolOnCodeWithArgs(
       factory.create(), (*code)->getBuffer(), flags, src_path.string(),
-      src_path.extension() == ".c" ? CLANG_C_COMPILER : CLANG_CXX_COMPILER);
+      is_c ? CLANG_C_COMPILER : CLANG_CXX_COMPILER);
 }
 
 } // namespace cpp2rust
