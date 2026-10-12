@@ -66,6 +66,8 @@ bool IsCodeUnitStringLiteral(const clang::StringLiteral *expr);
 
 bool IsUserDefinedDecl(const clang::Decl *decl);
 
+bool IsAbstractUserClass(const clang::RecordDecl *decl);
+
 bool RefersToUserDefinedDecl(const clang::Expr *expr);
 
 bool IsUnsignedArithOp(const clang::BinaryOperator *expr);

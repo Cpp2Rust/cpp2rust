@@ -341,7 +341,7 @@ bool ConverterRefCount::VisitPointerType(clang::PointerType *type) {
   PushConversionKind push2(*this, ConversionKind::FullRefCount,
                            pointee_is_array);
   if (pointee_type->isRecordType() &&
-      abstract_structs_.contains(GetID(pointee_type->getAsRecordDecl()))) {
+      IsAbstractUserClass(pointee_type->getAsRecordDecl())) {
     StrCat("PtrDyn<dyn");
   } else {
     StrCat("Ptr<");
@@ -1499,7 +1499,7 @@ bool ConverterRefCount::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
       auto ptype = clang::dyn_cast<clang::PointerType>(expr->getType());
       auto pointee_type = ptype->getPointeeType()->getAsCXXRecordDecl();
 
-      if (pointee_type && abstract_structs_.contains(GetID(pointee_type))) {
+      if (pointee_type && IsAbstractUserClass(pointee_type)) {
         PushConversionKind push(*this, ConversionKind::Unboxed);
         StrCat(std::format("{}.to_dyn::<{}>(|w| w)",
                            ToString(sub_expr->IgnoreCasts()),
@@ -3214,7 +3214,7 @@ void ConverterRefCount::ConvertArrow(clang::Expr *expr) {
     auto pointee_type = expr->getType()->getPointeeType();
     // Virtual methods, which take &mut self, are called through PtrDyn.
     if (auto *record = pointee_type->getAsRecordDecl();
-        isLValue() && record && abstract_structs_.contains(GetID(record))) {
+        isLValue() && record && IsAbstractUserClass(record)) {
       StrCat(std::format("(*{}.upgrade().deref_mut())", ToString(expr)));
       SetValueFreshness(pointee_type);
       return;

@@ -302,6 +302,13 @@ bool IsUserDefinedDecl(const clang::Decl *decl) {
          !src_mgr.isInSystemMacro(src_loc);
 }
 
+bool IsAbstractUserClass(const clang::RecordDecl *decl) {
+  auto cxx = llvm::dyn_cast<clang::CXXRecordDecl>(decl);
+  auto definition = cxx ? cxx->getDefinition() : nullptr;
+  return definition && IsUserDefinedDecl(definition) &&
+         definition->isAbstract();
+}
+
 bool RefersToUserDefinedDecl(const clang::Expr *expr) {
   expr = expr->IgnoreParenImpCasts();
   const clang::Decl *decl = nullptr;
