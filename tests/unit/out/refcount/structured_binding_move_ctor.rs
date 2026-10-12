@@ -68,22 +68,37 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let m: Value<Movable> = Rc::new(RefCell::new(Movable::new({ 3 }, { 4 })));
-    let mut __decomp_2: Movable = Movable::move_from({ m.as_pointer() });
+    let __decomp_2: Value<Movable> = Rc::new(RefCell::new(Movable::move_from({ m.as_pointer() })));
     assert!((moves_1.with(|rc| *rc.borrow()) == 1));
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
-    assert!((__decomp_2.x == 3));
-    assert!((__decomp_2.y == 4));
+    assert!(({ (*__decomp_2.borrow()).x } == 3));
+    assert!(({ (*__decomp_2.borrow()).y } == 4));
     assert!(({ (*m.borrow()).x } == 0));
     assert!(({ (*m.borrow()).y } == 0));
     let h: Value<Holder> = Rc::new(RefCell::new(Holder {
         xs: Rc::new(RefCell::new(vec![1, 2, 3])),
         ys: Rc::new(RefCell::new(vec![4, 5])),
     }));
-    let mut __decomp_3: Holder = ({ HolderImpl::extract(&h.as_pointer()) });
-    assert!(((*__decomp_3.xs.borrow()).len() == 3_usize));
-    assert!(((*__decomp_3.ys.borrow()).len() == 2_usize));
-    assert!(((elem!((__decomp_3.xs.as_pointer() as Ptr<i32>), 2_usize).read()) == 3));
-    assert!(((elem!((__decomp_3.ys.as_pointer() as Ptr<i32>), 0_usize).read()) == 4));
+    let __decomp_3: Value<Holder> =
+        Rc::new(RefCell::new(({ HolderImpl::extract(&h.as_pointer()) })));
+    assert!(((*{ (*__decomp_3.borrow()).xs.clone() }.borrow()).len() == 3_usize));
+    assert!(((*{ (*__decomp_3.borrow()).ys.clone() }.borrow()).len() == 2_usize));
+    assert!(
+        ((elem!(
+            ({ (*__decomp_3.borrow()).xs.as_pointer() } as Ptr<i32>),
+            2_usize
+        )
+        .read())
+            == 3)
+    );
+    assert!(
+        ((elem!(
+            ({ (*__decomp_3.borrow()).ys.as_pointer() } as Ptr<i32>),
+            0_usize
+        )
+        .read())
+            == 4)
+    );
     assert!((*{ (*h.borrow()).xs.clone() }.borrow()).is_empty());
     assert!((*{ (*h.borrow()).ys.clone() }.borrow()).is_empty());
     return 0;

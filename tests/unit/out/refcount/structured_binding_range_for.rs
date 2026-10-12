@@ -42,9 +42,9 @@ fn main_0() -> i32 {
     assert!(({ (*arr.borrow())[(0) as usize].first } == 3));
     assert!(({ (*arr.borrow())[(2) as usize].first } == 11));
     'loop_: for mut __decomp_1 in arr.as_pointer() as Ptr<Pair> {
-        let mut __decomp_1: Pair = __decomp_1.upgrade().deref().clone();
-        __decomp_1.first = 0;
-        __decomp_1.second = 0;
+        let __decomp_1: Value<Pair> = Rc::new(RefCell::new(__decomp_1.upgrade().deref().clone()));
+        (*__decomp_1.borrow_mut()).first = 0;
+        (*__decomp_1.borrow_mut()).second = 0;
     }
     assert!(({ (*arr.borrow())[(1) as usize].first } == 7));
     assert!(({ (*arr.borrow())[(1) as usize].second } == 4));

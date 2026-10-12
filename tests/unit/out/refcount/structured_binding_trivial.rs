@@ -19,21 +19,21 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let mut __decomp_0: Pair = Pair {
+    let __decomp_0: Value<Pair> = Rc::new(RefCell::new(Pair {
         first: 1,
         second: 2,
-    };
-    assert!((__decomp_0.first == 1));
-    assert!((__decomp_0.second == 2));
+    }));
+    assert!(({ (*__decomp_0.borrow()).first } == 1));
+    assert!(({ (*__decomp_0.borrow()).second } == 2));
     let mut p: Pair = Pair {
         first: 10,
         second: 20,
     };
-    let mut __decomp_1: Pair = (p).clone();
-    __decomp_1.first = 11;
-    __decomp_1.second += 1;
-    assert!((__decomp_1.first == 11));
-    assert!((__decomp_1.second == 21));
+    let __decomp_1: Value<Pair> = Rc::new(RefCell::new((p).clone()));
+    (*__decomp_1.borrow_mut()).first = 11;
+    (*__decomp_1.borrow_mut()).second += 1;
+    assert!(({ (*__decomp_1.borrow()).first } == 11));
+    assert!(({ (*__decomp_1.borrow()).second } == 21));
     assert!((p.first == 10));
     assert!((p.second == 20));
     return 0;
