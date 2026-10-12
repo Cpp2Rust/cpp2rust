@@ -952,7 +952,6 @@ protected:
   };
 
   static std::unordered_set<std::string> decl_ids_;
-  static std::unordered_set<std::string> abstract_structs_;
 
   class RecordIndex {
   public:

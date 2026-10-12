@@ -30,7 +30,6 @@ std::unordered_map<std::string, std::string> Converter::inner_structs_;
 std::unordered_set<std::string> Converter::decl_ids_;
 std::unordered_set<std::string> Converter::globals_;
 std::vector<std::string> Converter::global_inits_;
-std::unordered_set<std::string> Converter::abstract_structs_;
 Converter::RecordIndex Converter::record_decls_;
 std::map<std::string, Converter::DeferredBlock> Converter::virtual_methods_;
 
@@ -318,7 +317,7 @@ bool Converter::VisitPointerType(clang::PointerType *type) {
   auto pointee_type = type->getPointeeType();
   StrCat(pointee_type.isConstQualified() ? "*const" : "*mut");
   if (pointee_type->isRecordType() &&
-      abstract_structs_.contains(GetID(pointee_type->getAsRecordDecl()))) {
+      IsAbstractUserClass(pointee_type->getAsRecordDecl())) {
     StrCat(keyword::kDyn);
   }
   return Convert(pointee_type);
@@ -4629,7 +4628,6 @@ pub fn main() {{
 }
 
 void Converter::ConvertAbstractClass(clang::CXXRecordDecl *decl) {
-  ENSURE(abstract_structs_.insert(GetID(decl)).second);
   auto trait_name = GetRecordName(decl);
   auto access_specifier_as_string = AccessSpecifierAsString(decl->getAccess());
   auto signature = std::format("{} {} trait {}", access_specifier_as_string,
