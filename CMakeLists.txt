@@ -90,7 +90,7 @@ find_program(CLANG_FORMAT NAMES clang-format-22 clang-format)
 find_program(RUFF NAMES ruff)
 
 file(GLOB_RECURSE ALL_CXX_SOURCES
-     cpp2rust/*.cpp cpp2rust/*.h tests/*.cpp tests/*.c)
+     cpp2rust/*.cpp cpp2rust/*.h rules/*.cpp rules/*.c rules/*.h tests/*.cpp tests/*.c)
 
 set(PYTHON_SOURCES ${PROJECT_SOURCE_DIR}/tests/lit/lit/formats/Cpp2RustTest.py)
 

@@ -64,8 +64,7 @@ std::pair<T1, T2> &f14(std::pair<T1, T2> &dst, std::pair<T1, T2> &&src) {
   return dst.operator=(std::move(src));
 }
 
-template <typename T1, typename T2>
-const T1 &f15(std::pair<const T1, T2> &a0) {
+template <typename T1, typename T2> const T1 &f15(std::pair<const T1, T2> &a0) {
   return a0.first;
 }
 
