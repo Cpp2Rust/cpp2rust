@@ -35,8 +35,7 @@ fn main_0() -> i32 {
     field!(__decomp_2, a).write(11);
     field!(__decomp_2, b).write(true);
     {
-        let _ptr = field!(__decomp_2, c);
-        _ptr.write(_ptr.read() + 1)
+        field!(__decomp_2, c).with_mut(|__v| *__v = *__v + 1)
     };
     assert!(({ (*t.borrow()).a } == 11));
     assert!({ (*t.borrow()).b });
