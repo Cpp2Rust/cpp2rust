@@ -46,6 +46,14 @@ struct S {
 };
 #undef F
 
+// Record names
+struct type {
+  int v;
+};
+struct loop {
+  type t;
+};
+
 // Function arguments
 #define F(n) int n,
 int foo(KW(F) int dummy) { return 0; }
@@ -62,8 +70,11 @@ int main() {
   KW(F)
 #undef F
 
+  struct loop l = {{3}};
+  struct type t = l.t;
+
 // Function call
 #define F(n) 0,
-  return foo(KW(F) 0);
+  return foo(KW(F) t.v - 3);
 #undef F
 }
