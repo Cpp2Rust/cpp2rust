@@ -1,3 +1,4 @@
+#undef _GNU_SOURCE
 #define _GNU_SOURCE
 
 #ifdef __linux__

@@ -18,7 +18,7 @@ impl S_int_ {
 }
 impl Default for S_int_ {
     fn default() -> Self {
-        S_int_ { x: 0 }
+        unsafe { S_int_ { x: 0 } }
     }
 }
 pub fn main() {

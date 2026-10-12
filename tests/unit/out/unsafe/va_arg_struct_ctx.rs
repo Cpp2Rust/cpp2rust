@@ -14,8 +14,8 @@ pub struct context {
 }
 pub unsafe fn set_error_0(mut ctx: *mut context, mut fmt: *const libc::c_char, __args: &[VaArg]) {
     if ((*ctx).verbose != 0) {
-        let mut ap: VaList = VaList::default();
-        ap = VaList::new(__args);
+        let mut ap: *const VaArg = ::std::ptr::null();
+        ap = __args.as_ptr();
         (*ctx).last_error = ap.arg::<i32>();
     }
 }
@@ -31,8 +31,8 @@ impl Default for value {
     }
 }
 pub unsafe fn pick_1(mut use_long: i32, __args: &[VaArg]) -> i64 {
-    let mut ap: VaList = VaList::default();
-    ap = VaList::new(__args);
+    let mut ap: *const VaArg = ::std::ptr::null();
+    ap = __args.as_ptr();
     let mut v: value = ap.arg::<value>();
     if (use_long != 0) {
         return v.l;

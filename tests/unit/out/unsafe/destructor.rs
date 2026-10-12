@@ -198,6 +198,13 @@ unsafe fn main_0() -> i32 {
     assert!((((*std::cell::LazyCell::force_mut(&mut *&raw mut order_1))[(0) as usize]) == (3)));
     assert!((((*std::cell::LazyCell::force_mut(&mut *&raw mut order_1))[(1) as usize]) == (2)));
     assert!((((*std::cell::LazyCell::force_mut(&mut *&raw mut order_1))[(2) as usize]) == (1)));
+    let mut before: i32 = (*std::cell::LazyCell::force_mut(&mut *&raw mut global_0));
+    {
+        let mut cs: S = <S>::default();
+        let _dtor_cs = ScopedDestructorUnsafe::new(&raw mut cs, S::destructor);
+        &(cs);
+    }
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut global_0)) == ((before) + (1))));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {

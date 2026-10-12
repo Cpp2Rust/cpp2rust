@@ -14,7 +14,7 @@ fn main_0() -> i32 {
     let arr1: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([5, 2, 8, 1, 3])));
     {
         let fun = |x: Ptr<i32>, y: Ptr<i32>| {
-            FnPtr::<fn(i32, i32) -> bool>::new(|x: i32, y: i32| -> bool {
+            FnPtr::<fn(i32, i32) -> bool>::new(|mut x: i32, mut y: i32| -> bool {
                 {
                     return (x < y);
                 }

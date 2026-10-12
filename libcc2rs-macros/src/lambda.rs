@@ -25,6 +25,13 @@ impl Parse for Lambda {
             input.parse::<Token![,]>()?;
         }
         let captures = input.parse()?;
+        if is_generic && input.is_empty() {
+            return Ok(Lambda {
+                is_generic,
+                captures,
+                closures: Vec::new(),
+            });
+        }
         input.parse::<Token![,]>()?;
         let mut closures = vec![input.parse()?];
         while input.parse::<Option<Token![,]>>()?.is_some() && !input.is_empty() {
@@ -60,8 +67,11 @@ fn rewrite_nested_lambda(
     tokens: proc_macro2::TokenStream,
     names: &HashSet<String>,
 ) -> Result<proc_macro2::TokenStream> {
-    let mut tokens = tokens.into_iter();
+    let mut tokens = tokens.into_iter().peekable();
     let mut out = Vec::new();
+    if is_ident(tokens.peek(), "Generic") {
+        out.extend(tokens.by_ref().take(2));
+    }
     if let Some(TokenTree::Group(captures)) = tokens.next() {
         let mut group = Group::new(
             captures.delimiter(),

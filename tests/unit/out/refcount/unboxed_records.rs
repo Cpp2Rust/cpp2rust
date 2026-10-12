@@ -34,12 +34,14 @@ pub struct Cookie {
 }
 impl Default for Cookie {
     fn default() -> Self {
-        Cookie {
-            x: 0_i32,
-            data: Ptr::<i32>::null(),
-            in_: Ptr::<i32>::null(),
-            inner: <Inner>::default(),
-            arr: Rc::new(RefCell::new((0..4).map(|_| 0_i32).collect::<Box<[i32]>>())),
+        {
+            Cookie {
+                x: 0_i32,
+                data: Ptr::<i32>::null(),
+                in_: Ptr::<i32>::null(),
+                inner: <Inner>::default(),
+                arr: Rc::new(RefCell::new((0..4).map(|_| 0_i32).collect::<Box<[i32]>>())),
+            }
         }
     }
 }
@@ -51,7 +53,7 @@ pub struct Counter {
 }
 impl Default for Counter {
     fn default() -> Self {
-        Counter { n: 0 }
+        { Counter { n: 0 } }
     }
 }
 pub fn set_0(mut p: Ptr<i32>, mut v: i32) {

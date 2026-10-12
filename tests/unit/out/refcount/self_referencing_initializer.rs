@@ -33,9 +33,11 @@ pub struct node_with_defaults {
 }
 impl Default for node_with_defaults {
     fn default() -> Self {
-        node_with_defaults {
-            next: Ptr::<node_with_defaults>::null(),
-            value: 3,
+        {
+            node_with_defaults {
+                next: Ptr::<node_with_defaults>::null(),
+                value: 3,
+            }
         }
     }
 }

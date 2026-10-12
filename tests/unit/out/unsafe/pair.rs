@@ -22,6 +22,15 @@ unsafe fn main_0() -> i32 {
     let mut p3: (f64, i32) = (5.into(), 6.into());
     assert!(((p3.0) == (5_f64)));
     assert!(((p3.1) == (6)));
+    let arr: [i32; 2] = [1, 2];
+    let mut n: u32 = 2_u32;
+    let mut const_ptr_pairs: Vec<(*const i32, u64)> = (0..(1_usize) as usize)
+        .map(|_| <(*const i32, u64)>::default())
+        .collect::<Vec<_>>();
+    const_ptr_pairs[(0_usize)] = (arr.as_ptr().offset((1) as isize).into(), n.into());
+    assert!(
+        ((*const_ptr_pairs[(0_usize)].0) == (2)) && ((const_ptr_pairs[(0_usize)].1) == (2_u64))
+    );
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

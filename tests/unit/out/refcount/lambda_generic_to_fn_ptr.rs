@@ -14,10 +14,10 @@ fn main_0() -> i32 {
     let negate: Value<FnPtr<Generic>> = Rc::new(RefCell::new(lambda!(
         Generic,
         {},
-        |x: i32| -> i32 {
+        |mut x: i32| -> i32 {
             return -x;
         },
-        |x: f64| -> f64 {
+        |mut x: f64| -> f64 {
             return -x;
         }
     )));
@@ -28,10 +28,10 @@ fn main_0() -> i32 {
     let square: Value<FnPtr<Generic>> = Rc::new(RefCell::new(lambda!(
         Generic,
         {},
-        |x: i32| -> i32 {
+        |mut x: i32| -> i32 {
             return (x * x);
         },
-        |x: f64| -> f64 {
+        |mut x: f64| -> f64 {
             return (x * x);
         }
     )));

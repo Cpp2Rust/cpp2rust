@@ -134,7 +134,20 @@ std::string ToString(clang::ASTContext &ctx, clang::QualType qual_type,
     }
     if (const auto *typedef_type = t->getAs<clang::TypedefType>()) {
       if (t.getCanonicalType()->isBuiltinType()) {
-        return typedef_type->getDecl()->getNameAsString();
+        auto decl = typedef_type->getDecl();
+        if (auto record =
+                clang::dyn_cast<clang::RecordDecl>(decl->getDeclContext());
+            record && !record->isDependentContext()) {
+          return ToString(ctx, ctx.getCanonicalTagType(record)) +
+                 "::" + decl->getNameAsString();
+        }
+        if (decl->getDeclContext()->getRedeclContext()->isNamespace()) {
+          std::string name;
+          llvm::raw_string_ostream os(name);
+          decl->printQualifiedName(os, getPrintPolicy(ctx));
+          return name;
+        }
+        return decl->getNameAsString();
       }
     } else if (const auto *predef = t->getAs<clang::PredefinedSugarType>()) {
       return predef->getIdentifier()->getName().str();
@@ -356,14 +369,6 @@ std::string ToString(clang::ASTContext &ctx, const clang::Expr *expr) {
           if (op->getOperator() == clang::OO_Arrow) {
             return ToString(ctx, op->getArg(0)->getType()) + "->" +
                    ToString(ctx, member_decl);
-          }
-        }
-      } else if (auto for_range = GetParentForRange(ctx, ME)) {
-        if (ToString(ctx, for_range->getRangeInit()->getType())
-                .starts_with("std::map<")) {
-          auto iter_type = GetForRangeIteratorType(for_range);
-          if (!iter_type.isNull()) {
-            return ToString(ctx, iter_type) + "->" + ToString(ctx, member_decl);
           }
         }
       }

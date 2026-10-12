@@ -8,6 +8,11 @@ union basic {
 
 union empty {};
 
+union underscores {
+  int _;
+  double __;
+};
+
 int main(void) {
   union basic u;
   union empty e;
@@ -37,6 +42,16 @@ int main(void) {
   assert(braced.i == 5);
   union basic copied = {7};
   assert(copied.i == 7);
+
+  union underscores us;
+  us._ = 5;
+  assert(us._ == 5);
+  us.__ = 2.5;
+  assert(us.__ == 2.5);
+
+  int _ = 1;
+  int __ = 2;
+  assert(_ + __ == 3);
 
   return 0;
 }

@@ -22,5 +22,24 @@ int main() {
   auto implicit = [=](int x) { return x + k; };
   assert(implicit(1) == 4);
 
+  auto bump = [](int x) {
+    x += 1;
+    return x;
+  };
+  assert(bump(1) == 2);
+
+  auto through_ptr = [](int x) {
+    int *p = &x;
+    *p = *p * 2;
+    return x;
+  };
+  assert(through_ptr(4) == 8);
+
+  int seed = 5;
+  int boxed = through_ptr(seed);
+  int *boxed_ptr = &boxed;
+  assert(*boxed_ptr == 10);
+  assert(seed == 5);
+
   return 0;
 }

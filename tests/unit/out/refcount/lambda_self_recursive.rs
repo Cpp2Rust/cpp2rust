@@ -15,7 +15,7 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new(lambda!(Generic, {}, |self_: FnPtr<
             Generic,
         >,
-                                                   n: i32|
+                                                   mut n: i32|
          -> i32 {
             let self_: Value<FnPtr<Generic>> = Rc::new(RefCell::new(self_));
             if (n <= 1) {
@@ -23,7 +23,7 @@ fn main_0() -> i32 {
             }
             return (n
                 * ({
-                    let _self_: FnPtr<Generic> = (*self_.borrow()).clone();
+                    let _self_: FnPtr<Generic> = (*self_.borrow()).copy_from();
                     (*self_.borrow())
                         .spec::<fn(FnPtr<Generic>, i32) -> i32>(0)
                         .call(_self_, (n - 1))
@@ -31,7 +31,7 @@ fn main_0() -> i32 {
         })));
     assert!(
         (({
-            let _self_: FnPtr<Generic> = (*fact.borrow()).clone();
+            let _self_: FnPtr<Generic> = (*fact.borrow()).copy_from();
             (*fact.borrow())
                 .spec::<fn(FnPtr<Generic>, i32) -> i32>(0)
                 .call(_self_, 5)
@@ -43,7 +43,7 @@ fn main_0() -> i32 {
         {
             let calls: Ptr<i32> = calls.as_pointer();
         },
-        |self_: Ptr<FnPtr<Generic>>, n: i32| -> i32 {
+        |self_: Ptr<FnPtr<Generic>>, mut n: i32| -> i32 {
             calls.with_mut(|__v| __v.postfix_inc());
             if (n <= 2) {
                 return 1;
@@ -78,7 +78,7 @@ fn main_0() -> i32 {
         {
             let depth: Ptr<i32> = depth.as_pointer();
         },
-        |self_: Ptr<FnPtr<Generic>>, n: i32| {
+        |self_: Ptr<FnPtr<Generic>>, mut n: i32| {
             if (n == 0) {
                 return;
             }

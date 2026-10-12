@@ -15,12 +15,14 @@ pub struct StackArray {
 }
 impl Default for StackArray {
     fn default() -> Self {
-        StackArray {
-            arr: Rc::new(RefCell::new(
-                (0..3)
-                    .map(|_| Ptr::<i32>::null())
-                    .collect::<Box<[Ptr<i32>]>>(),
-            )),
+        {
+            StackArray {
+                arr: Rc::new(RefCell::new(
+                    (0..3)
+                        .map(|_| Ptr::<i32>::null())
+                        .collect::<Box<[Ptr<i32>]>>(),
+                )),
+            }
         }
     }
 }

@@ -17,9 +17,11 @@ pub struct NonCopy {
 }
 impl Default for NonCopy {
     fn default() -> Self {
-        NonCopy {
-            data: Rc::new(RefCell::new(Default::default())),
-            tag: 0,
+        {
+            NonCopy {
+                data: Rc::new(RefCell::new(Default::default())),
+                tag: 0,
+            }
         }
     }
 }

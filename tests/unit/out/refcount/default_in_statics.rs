@@ -44,19 +44,21 @@ pub struct Outer {
 }
 impl Default for Outer {
     fn default() -> Self {
-        Outer {
-            p1: Ptr::<i32>::null(),
-            p2: Ptr::<i32>::null(),
-            arr: Rc::new(RefCell::new(
-                (0..3)
-                    .map(|_| Ptr::<i32>::null())
-                    .collect::<Box<[Ptr<i32>]>>(),
-            )),
-            cp: Ptr::<i8>::null(),
-            pp: Ptr::<Ptr<i32>>::null(),
-            inner: <Inner>::default(),
-            x: 0_i32,
-            fn_: FnPtr::<fn(i32) -> i32>::null(),
+        {
+            Outer {
+                p1: Ptr::<i32>::null(),
+                p2: Ptr::<i32>::null(),
+                arr: Rc::new(RefCell::new(
+                    (0..3)
+                        .map(|_| Ptr::<i32>::null())
+                        .collect::<Box<[Ptr<i32>]>>(),
+                )),
+                cp: Ptr::<i8>::null(),
+                pp: Ptr::<Ptr<i32>>::null(),
+                inner: <Inner>::default(),
+                x: 0_i32,
+                fn_: FnPtr::<fn(i32) -> i32>::null(),
+            }
         }
     }
 }

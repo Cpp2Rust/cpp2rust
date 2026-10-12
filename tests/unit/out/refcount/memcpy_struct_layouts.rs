@@ -56,9 +56,11 @@ pub struct array {
 }
 impl Default for array {
     fn default() -> Self {
-        array {
-            name: Rc::new(RefCell::new((0..3).map(|_| 0_i8).collect::<Box<[i8]>>())),
-            x: 0_i32,
+        {
+            array {
+                name: Rc::new(RefCell::new((0..3).map(|_| 0_i8).collect::<Box<[i8]>>())),
+                x: 0_i32,
+            }
         }
     }
 }

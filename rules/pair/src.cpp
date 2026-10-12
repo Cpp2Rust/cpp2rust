@@ -34,11 +34,14 @@ std::pair<T1, T2> f7(T3 &&a0, T4 &&a1) {
   return std::pair<T1, T2>(std::move(a0), std::move(a1));
 }
 
-template <class T1, class T2> auto f9(T1 &&a0, T2 &a1) {
+template <class T1, class T2>
+auto f9(T1 &&a0, T2 &a1) -> decltype(std::make_pair(std::move(a0), a1)) {
   return std::make_pair(std::move(a0), a1);
 }
 
-template <class T1, class T2> auto f10(T1 &&a0, T2 &&a1) {
+template <class T1, class T2>
+auto f10(T1 &&a0, T2 &&a1)
+    -> decltype(std::make_pair(std::move(a0), std::move(a1))) {
   return std::make_pair(std::move(a0), std::move(a1));
 }
 
@@ -59,4 +62,18 @@ std::pair<T1, T2> &f13(std::pair<T1, T2> &dst, const std::pair<T1, T2> &src) {
 template <typename T1, typename T2>
 std::pair<T1, T2> &f14(std::pair<T1, T2> &dst, std::pair<T1, T2> &&src) {
   return dst.operator=(std::move(src));
+}
+
+template <typename T1, typename T2>
+const T1 &f15(std::pair<const T1, T2> &a0) {
+  return a0.first;
+}
+
+template <typename T1, typename T2> T2 &f16(std::pair<const T1, T2> &o) {
+  return o.second;
+}
+
+template <typename T1, typename T2>
+std::pair<const T1, T2> f17(const std::pair<const T1, T2> &a0) {
+  return std::pair<const T1, T2>(a0);
 }
