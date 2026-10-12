@@ -6,13 +6,17 @@
 #include <clang/AST/ASTConsumer.h>
 #include <clang/Frontend/CompilerInstance.h>
 #include <clang/Frontend/FrontendAction.h>
+#include <clang/Lex/Preprocessor.h>
+#include <clang/Lex/PreprocessorOptions.h>
 #include <clang/Tooling/Tooling.h>
+#include <llvm/Support/MemoryBuffer.h>
 
 #include <memory>
 #include <string>
 
 #include "ast_consumer.h"
 #include "converter/factory.h"
+#include "converter/rules/rules_loader.h"
 
 namespace cpp2rust {
 class FrontendAction : public clang::ASTFrontendAction {
@@ -27,6 +31,26 @@ public:
                     llvm::StringRef InFile) override {
     return std::make_unique<ASTConsumer>(rs_code_, model_, first_, CI,
                                          rules_dir_);
+  }
+
+  bool BeginInvocation(clang::CompilerInstance &CI) override {
+    for (const auto &input : CI.getFrontendOpts().Inputs) {
+      auto path = input.getFile();
+      auto buffer = CI.getFileManager().getBufferForFile(path);
+      if (!buffer) {
+        continue;
+      }
+      auto code = (*buffer)->getBuffer().str() + "\n;\n#pragma " +
+                  RulesLoader::kPragmaName + "\n";
+      CI.getPreprocessorOpts().addRemappedFile(
+          path, llvm::MemoryBuffer::getMemBufferCopy(code, path).release());
+    }
+    return true;
+  }
+
+  bool BeginSourceFileAction(clang::CompilerInstance &CI) override {
+    CI.getPreprocessor().AddPragmaHandler(new RulesLoader::PragmaHandler(CI));
+    return true;
   }
 
 private:

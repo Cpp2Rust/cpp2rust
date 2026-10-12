@@ -18,6 +18,9 @@ int main() {
   assert(a == b);
   assert(a == 1);
 
+  int high = sum_bytes("\xc2\x00\x41", 3);
+  assert(high == 0xc2 + 0x41);
+
   int c = "\r\n.\r\n"[0] + "\r\n.\r\n"[3];
   assert(c == '\r' + '\r');
 

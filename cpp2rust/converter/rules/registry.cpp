@@ -138,6 +138,9 @@ bool IsLibcPassthrough(clang::ASTContext &ctx, const clang::Expr *expr) {
   if (tgt_ir == nullptr || !tgt_ir->body.empty() || !tgt_ir->is_extern) {
     return false;
   }
+  if (const auto *call = clang::dyn_cast<clang::CallExpr>(expr)) {
+    expr = call->getCallee();
+  }
   const auto *ref =
       clang::dyn_cast<clang::DeclRefExpr>(expr->IgnoreParenImpCasts());
   const auto *decl = ref != nullptr ? ref->getDecl() : nullptr;

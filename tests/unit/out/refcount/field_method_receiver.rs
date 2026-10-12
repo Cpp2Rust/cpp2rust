@@ -29,15 +29,17 @@ pub struct S {
 }
 impl Default for S {
     fn default() -> Self {
-        S {
-            tag: 0_i32,
-            c: <Counter>::default(),
-            arr: Rc::new(RefCell::new(
-                (0..2)
-                    .map(|_| <Counter>::default())
-                    .collect::<Box<[Counter]>>(),
-            )),
-            v: Rc::new(RefCell::new(Default::default())),
+        {
+            S {
+                tag: 0_i32,
+                c: <Counter>::default(),
+                arr: Rc::new(RefCell::new(
+                    (0..2)
+                        .map(|_| <Counter>::default())
+                        .collect::<Box<[Counter]>>(),
+                )),
+                v: Rc::new(RefCell::new(Default::default())),
+            }
         }
     }
 }

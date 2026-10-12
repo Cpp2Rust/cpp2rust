@@ -29,7 +29,7 @@ fn main_0() -> i32 {
         {
             let total: Value<i32> = Rc::new(RefCell::new((*total.borrow())));
         },
-        |x: i32| -> i32 {
+        |mut x: i32| -> i32 {
             (*total.borrow_mut()) += x;
             return (*total.borrow());
         }

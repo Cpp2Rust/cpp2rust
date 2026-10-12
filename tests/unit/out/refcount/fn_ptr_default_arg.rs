@@ -24,7 +24,7 @@ fn main_0() -> i32 {
     assert!((({ apply_1(5, None,) }) == 5));
     assert!((({ apply_1(5, Some(FnPtr::<fn(i32) -> i32>::null()),) }) == 5));
     assert!((({ apply_1(5, Some(FnPtr::<fn(i32) -> i32>::new(identity_0)),) }) == 5));
-    let mut negate: FnPtr<fn(i32) -> i32> = FnPtr::<fn(i32) -> i32>::new(|x: i32| -> i32 {
+    let mut negate: FnPtr<fn(i32) -> i32> = FnPtr::<fn(i32) -> i32>::new(|mut x: i32| -> i32 {
         {
             return -x;
         }

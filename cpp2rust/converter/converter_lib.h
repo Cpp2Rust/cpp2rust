@@ -133,6 +133,9 @@ bool IsConvertibleCXXRecordDecl(const clang::CXXRecordDecl *decl);
 bool IsConvertibleCXXMethodDecl(const clang::CXXMethodDecl *decl);
 
 bool IsComparisonOperator(const clang::FunctionDecl *fn);
+
+void DefineImplicitMembers(clang::Sema &sema, clang::CXXRecordDecl *decl);
+
 bool IsEmittableMethod(clang::CXXMethodDecl *method);
 
 bool IsMethodOnPtr(const clang::CXXMethodDecl *method);
@@ -307,8 +310,6 @@ bool MayCauseBorrowMutError(const clang::Expr *lhs, const clang::Expr *rhs);
 
 bool ArgsMayAlias(const clang::Expr *a, const clang::Expr *b);
 
-clang::Expr *GetCalleeOrExpr(clang::Expr *expr);
-
 bool HasReceiver(clang::Expr *expr);
 
 std::optional<clang::QualType> GetParamImplicitConvertTarget(clang::Expr *expr,
@@ -323,12 +324,6 @@ BuildUnifiedArgs(clang::Expr *expr, clang::Expr **args, unsigned num_args);
 clang::Expr *BuildInitExpr(clang::Sema &sema, clang::QualType type,
                            llvm::ArrayRef<clang::Expr *> args,
                            clang::SourceLocation loc);
-
-const clang::CXXForRangeStmt *
-GetParentForRange(clang::ASTContext &ctx, const clang::MemberExpr *member);
-
-clang::QualType
-GetForRangeIteratorType(const clang::CXXForRangeStmt *for_range);
 
 std::string GetClassName(clang::QualType type);
 

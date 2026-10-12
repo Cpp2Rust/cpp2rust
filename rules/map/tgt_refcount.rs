@@ -6,7 +6,7 @@ use std::cell::RefCell;
 use std::collections::BTreeMap;
 use std::rc::Rc;
 
-fn t1<T1, T2>() -> BTreeMap<T1, Value<T2>> {
+fn t1<T1, T2>() -> BTreeMap<T1, Value<(Value<T1>, Value<T2>)>> {
     BTreeMap::new()
 }
 
@@ -19,60 +19,88 @@ fn t3<T1: Clone + Ord + 'static, T2: 'static>() -> RefcountMapIter<T1, T2> {
 }
 
 fn f1<T1: Ord + Clone + ByteRepr + 'static, T2: Default + ByteRepr + 'static>(
-    a0: Ptr<BTreeMap<T1, Value<T2>>>,
+    a0: Ptr<BTreeMap<T1, Value<(Value<T1>, Value<T2>)>>>,
     a1: T1,
 ) -> Ptr<T2> {
-    a0.with_mut(|__v: &mut BTreeMap<T1, Value<T2>>| {
-        __v.entry(a1)
-            .or_insert_with(|| Rc::new(RefCell::new(<T2>::default())))
+    a0.with_mut(|__v: &mut BTreeMap<T1, Value<(Value<T1>, Value<T2>)>>| {
+        __v.entry(a1.clone())
+            .or_insert_with(|| {
+                Rc::new(RefCell::new((
+                    Rc::new(RefCell::new(a1)),
+                    Rc::new(RefCell::new(<T2>::default())),
+                )))
+            })
+            .borrow()
+            .1
             .as_pointer()
     })
 }
 
-fn f2<T1, T2>(a0: BTreeMap<T1, Value<T2>>) -> usize {
+fn f2<T1, T2>(a0: BTreeMap<T1, Value<(Value<T1>, Value<T2>)>>) -> usize {
     a0.len()
 }
 
 fn f3<T1: Ord + Clone + 'static, T2: 'static>(
-    a0: Ptr<BTreeMap<T1, Value<T2>>>,
+    a0: Ptr<BTreeMap<T1, Value<(Value<T1>, Value<T2>)>>>,
     a1: RefcountMapIter<T1, T2>,
 ) -> RefcountMapIter<T1, T2> {
     RefcountMapIter::erase(a0, &a1)
 }
 
-fn f5<T1, T2>() -> BTreeMap<T1, Value<T2>> {
+fn f5<T1, T2>() -> BTreeMap<T1, Value<(Value<T1>, Value<T2>)>> {
     BTreeMap::new()
 }
 
-fn f6<T1: Ord + Clone, T2: Clone>(a0: BTreeMap<T1, Value<T2>>) -> BTreeMap<T1, Value<T2>> {
+fn f6<T1: Ord + Clone, T2: Clone>(
+    a0: BTreeMap<T1, Value<(Value<T1>, Value<T2>)>>,
+) -> BTreeMap<T1, Value<(Value<T1>, Value<T2>)>> {
     a0.iter()
-        .map(|(k, v)| (k.clone(), Rc::new(RefCell::new(v.borrow().clone()))))
+        .map(|(k, v)| {
+            let __v = v.borrow();
+            (
+                k.clone(),
+                Rc::new(RefCell::new((
+                    Rc::new(RefCell::new(__v.0.borrow().clone())),
+                    Rc::new(RefCell::new(__v.1.borrow().clone())),
+                ))),
+            )
+        })
         .collect()
 }
 
-fn f7<T1: Ord, T2: Default>(a0: &mut BTreeMap<T1, Value<T2>>, a1: T1) -> Ptr<T2> {
-    a0.get(&a1).expect("out of range!").as_pointer()
+fn f7<T1: Ord, T2: Default>(
+    a0: &mut BTreeMap<T1, Value<(Value<T1>, Value<T2>)>>,
+    a1: T1,
+) -> Ptr<T2> {
+    a0.get(&a1).expect("out of range!").borrow().1.as_pointer()
 }
 
 fn f8<T1: Ord + Clone + ByteRepr + 'static, T2: Default + ByteRepr + 'static>(
-    a0: Ptr<BTreeMap<T1, Value<T2>>>,
+    a0: Ptr<BTreeMap<T1, Value<(Value<T1>, Value<T2>)>>>,
     a1: T1,
 ) -> Ptr<T2> {
-    a0.with_mut(|__v: &mut BTreeMap<T1, Value<T2>>| {
-        __v.entry(a1)
-            .or_insert_with(|| Rc::new(RefCell::new(<T2>::default())))
+    a0.with_mut(|__v: &mut BTreeMap<T1, Value<(Value<T1>, Value<T2>)>>| {
+        __v.entry(a1.clone())
+            .or_insert_with(|| {
+                Rc::new(RefCell::new((
+                    Rc::new(RefCell::new(a1)),
+                    Rc::new(RefCell::new(<T2>::default())),
+                )))
+            })
+            .borrow()
+            .1
             .as_pointer()
     })
 }
 
 fn f9<T1: Ord + Clone + 'static, T2: 'static>(
-    a0: Ptr<BTreeMap<T1, Value<T2>>>,
+    a0: Ptr<BTreeMap<T1, Value<(Value<T1>, Value<T2>)>>>,
 ) -> RefcountMapIter<T1, T2> {
     RefcountMapIter::end(a0)
 }
 
 fn f10<T1: Ord + Clone + 'static, T2: 'static>(
-    a0: Ptr<BTreeMap<T1, Value<T2>>>,
+    a0: Ptr<BTreeMap<T1, Value<(Value<T1>, Value<T2>)>>>,
     a1: T1,
 ) -> RefcountMapIter<T1, T2> {
     RefcountMapIter::find_key(a0, &a1)
@@ -86,7 +114,7 @@ fn f11<T1: PartialEq, T2: PartialEq>(
 }
 
 fn f12<T1: Ord + Clone + 'static, T2: 'static>(
-    a0: Ptr<BTreeMap<T1, Value<T2>>>,
+    a0: Ptr<BTreeMap<T1, Value<(Value<T1>, Value<T2>)>>>,
 ) -> RefcountMapIter<T1, T2> {
     RefcountMapIter::begin(a0)
 }
@@ -99,13 +127,16 @@ fn f13<T1: PartialEq, T2: PartialEq>(
 }
 
 fn f14<T1: Ord + Clone + 'static, T2: 'static>(
-    a0: Ptr<BTreeMap<T1, Value<T2>>>,
+    a0: Ptr<BTreeMap<T1, Value<(Value<T1>, Value<T2>)>>>,
 ) -> RefcountMapIter<T1, T2> {
     RefcountMapIter::end(a0)
 }
 
-fn f15<T1: Ord, T2: Default>(a0: &mut BTreeMap<T1, Value<T2>>, a1: T1) -> Ptr<T2> {
-    a0.get(&a1).expect("out of range!").as_pointer()
+fn f15<T1: Ord, T2: Default>(
+    a0: &mut BTreeMap<T1, Value<(Value<T1>, Value<T2>)>>,
+    a1: T1,
+) -> Ptr<T2> {
+    a0.get(&a1).expect("out of range!").borrow().1.as_pointer()
 }
 
 fn f16<T1: PartialEq, T2: PartialEq>(
@@ -116,7 +147,7 @@ fn f16<T1: PartialEq, T2: PartialEq>(
 }
 
 fn f17<T1: Ord + Clone + 'static, T2: 'static>(
-    a0: Ptr<BTreeMap<T1, Value<T2>>>,
+    a0: Ptr<BTreeMap<T1, Value<(Value<T1>, Value<T2>)>>>,
     a1: T1,
 ) -> RefcountMapIter<T1, T2> {
     RefcountMapIter::find_key(a0, &a1)
@@ -126,39 +157,71 @@ fn f19<T1: Clone, T2>(a0: RefcountMapIter<T1, T2>) -> RefcountMapIter<T1, T2> {
     a0
 }
 
-fn f20<T1: Ord + Clone + 'static, T2: 'static>(a0: RefcountMapIter<T1, T2>) -> Value<T1> {
-    a0.first()
+fn f20<T1: Ord + Clone + ByteRepr + 'static, T2: ByteRepr + 'static>(
+    a0: RefcountMapIter<T1, T2>,
+) -> Value<T1> {
+    a0.deref().with(|__p| __p.0.clone())
 }
-fn f21<T1: Ord + Clone + 'static, T2: 'static>(a0: RefcountMapIter<T1, T2>) -> Value<T2> {
-    a0.second()
-}
-
-fn f22<T1: Ord + Clone + 'static, T2: 'static>(a0: RefcountMapIter<T1, T2>) -> Value<T1> {
-    a0.first()
-}
-fn f23<T1: Ord + Clone + 'static, T2: 'static>(a0: RefcountMapIter<T1, T2>) -> Value<T2> {
-    a0.second()
+fn f21<T1: Ord + Clone + ByteRepr + 'static, T2: ByteRepr + 'static>(
+    a0: RefcountMapIter<T1, T2>,
+) -> Value<T2> {
+    a0.deref().with(|__p| __p.1.clone())
 }
 
-fn f24<T1: 'static, T2: 'static>(a0: Ptr<BTreeMap<T1, Value<T2>>>) -> BTreeMap<T1, Value<T2>> {
-    a0.with_mut(|__v: &mut BTreeMap<T1, Value<T2>>| std::mem::take(__v))
+fn f22<T1: Ord + Clone + ByteRepr + 'static, T2: ByteRepr + 'static>(
+    a0: RefcountMapIter<T1, T2>,
+) -> Value<T1> {
+    a0.deref().with(|__p| __p.0.clone())
+}
+fn f23<T1: Ord + Clone + ByteRepr + 'static, T2: ByteRepr + 'static>(
+    a0: RefcountMapIter<T1, T2>,
+) -> Value<T2> {
+    a0.deref().with(|__p| __p.1.clone())
+}
+
+fn f24<T1: 'static, T2: 'static>(
+    a0: Ptr<BTreeMap<T1, Value<(Value<T1>, Value<T2>)>>>,
+) -> BTreeMap<T1, Value<(Value<T1>, Value<T2>)>> {
+    a0.with_mut(|__v: &mut BTreeMap<T1, Value<(Value<T1>, Value<T2>)>>| std::mem::take(__v))
 }
 
 fn f25<T1: 'static, T2: 'static>(
-    a0: Ptr<BTreeMap<T1, Value<T2>>>,
-    a1: Ptr<BTreeMap<T1, Value<T2>>>,
+    a0: Ptr<BTreeMap<T1, Value<(Value<T1>, Value<T2>)>>>,
+    a1: Ptr<BTreeMap<T1, Value<(Value<T1>, Value<T2>)>>>,
 ) {
-    let __src = a1.with_mut(|__v: &mut BTreeMap<T1, Value<T2>>| std::mem::take(__v));
+    let __src =
+        a1.with_mut(|__v: &mut BTreeMap<T1, Value<(Value<T1>, Value<T2>)>>| std::mem::take(__v));
     a0.write(__src)
 }
 
 fn f26<T1: Ord + Clone + 'static, T2: Clone + 'static>(
-    a0: Ptr<BTreeMap<T1, Value<T2>>>,
-    a1: BTreeMap<T1, Value<T2>>,
+    a0: Ptr<BTreeMap<T1, Value<(Value<T1>, Value<T2>)>>>,
+    a1: BTreeMap<T1, Value<(Value<T1>, Value<T2>)>>,
 ) {
     a0.write(
         a1.iter()
-            .map(|(k, v)| (k.clone(), Rc::new(RefCell::new(v.borrow().clone()))))
+            .map(|(k, v)| {
+                let __v = v.borrow();
+                (
+                    k.clone(),
+                    Rc::new(RefCell::new((
+                        Rc::new(RefCell::new(__v.0.borrow().clone())),
+                        Rc::new(RefCell::new(__v.1.borrow().clone())),
+                    ))),
+                )
+            })
             .collect(),
     )
+}
+
+fn f27<T1: Ord + Clone + 'static, T2: 'static>(
+    a0: RefcountMapIter<T1, T2>,
+) -> Ptr<(Value<T1>, Value<T2>)> {
+    a0.deref()
+}
+
+fn f28<T1: Ord + Clone + 'static, T2: 'static>(
+    a0: RefcountMapIter<T1, T2>,
+) -> Ptr<(Value<T1>, Value<T2>)> {
+    a0.deref()
 }

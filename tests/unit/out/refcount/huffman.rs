@@ -74,23 +74,20 @@ impl MinHeap {
     }
 }
 pub fn AllocMinHeap_1(mut capacity: i32) -> Option<Value<MinHeap>> {
-    let mut minHeap: Option<Value<MinHeap>> = Some(Rc::new(RefCell::new({
-        let __tmp_0: Value<MinHeap> = Rc::new(RefCell::new(MinHeap {
-            size: 0,
-            capacity: capacity,
-            arr: Some(Rc::new(RefCell::new(
-                (0..(capacity as usize))
-                    .map(|_| <Ptr<MinHeapNode>>::default())
-                    .collect::<Box<[_]>>(),
-            ))),
-            next: 0,
-            alloc: Some(Rc::new(RefCell::new(
-                (0..10000_usize)
-                    .map(|_| <MinHeapNode>::default())
-                    .collect::<Box<[_]>>(),
-            ))),
-        }));
-        MinHeap::move_from({ __tmp_0.as_pointer() })
+    let mut minHeap: Option<Value<MinHeap>> = Some(Rc::new(RefCell::new(MinHeap {
+        size: 0,
+        capacity: capacity,
+        arr: Some(Rc::new(RefCell::new(
+            (0..(capacity as usize))
+                .map(|_| <Ptr<MinHeapNode>>::default())
+                .collect::<Box<[_]>>(),
+        ))),
+        next: 0,
+        alloc: Some(Rc::new(RefCell::new(
+            (0..10000_usize)
+                .map(|_| <MinHeapNode>::default())
+                .collect::<Box<[_]>>(),
+        ))),
     })));
     return minHeap.take();
 }

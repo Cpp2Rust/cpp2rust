@@ -24,7 +24,7 @@ unsafe fn main_0() -> i32 {
         {
             let base: *mut i32 = &mut base;
         },
-        |x: i32| -> i32 {
+        |mut x: i32| -> i32 {
             return ((x) + (*base));
         }
     );
@@ -60,7 +60,7 @@ unsafe fn main_0() -> i32 {
         {
             let arr: *mut [u16; 4] = &mut arr;
         },
-        |i: usize, j: usize| {
+        |mut i: usize, mut j: usize| {
             let mut t: u16 = (*arr)[(j)];
             (*arr)[(j)] = (*arr)[(i)];
             (*arr)[(i)] = t;
@@ -74,7 +74,7 @@ unsafe fn main_0() -> i32 {
         {
             let t: *mut i32 = &mut total;
         },
-        |x: i32| {
+        |mut x: i32| {
             (*t) += x;
         }
     );
@@ -85,7 +85,7 @@ unsafe fn main_0() -> i32 {
         {
             let y: *mut i32 = &mut s.y;
         },
-        |v: i32| {
+        |mut v: i32| {
             (*y) = v;
         }
     );

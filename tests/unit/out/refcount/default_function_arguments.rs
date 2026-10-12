@@ -57,6 +57,13 @@ pub fn by_global_ref_7(b: Option<Ptr<Bar>>) -> i32 {
     let b: Ptr<Bar> = b.unwrap_or_else(|| global_bar_6.with(|v| v.as_pointer()));
     return b.with(|__s| __s.v);
 }
+pub fn shifted_8(mut x: i32, y: Option<i32>) -> i32 {
+    let mut y: i32 = y.unwrap_or_else(|| -1_i32);
+    return (x + y);
+}
+pub fn first_9(r: Ptr<i32>) -> i32 {
+    return (elem!((r), 0).read());
+}
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Holder_int_ {
@@ -111,6 +118,14 @@ fn main_0() -> i32 {
     );
     let mut h: Holder_int_ = Holder_int_::new({ 4 });
     assert!((h.v == 4));
+    assert!((({ shifted_8(3, None,) }) == 2));
+    assert!((({ shifted_8(3, Some(4),) }) == 7));
+    assert!(
+        (({
+            let _r: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([4, 5, 6])));
+            first_9(_r.as_pointer())
+        }) == 4)
+    );
     return 0;
 }
 pub fn __cpp2rust_init_globals() {

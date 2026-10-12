@@ -17,9 +17,11 @@ pub struct F {
 }
 impl Default for F {
     fn default() -> Self {
-        F {
-            n: 0_i32,
-            tail: Rc::new(RefCell::new(Box::<[i8]>::default())),
+        {
+            F {
+                n: 0_i32,
+                tail: Rc::new(RefCell::new(Box::<[i8]>::default())),
+            }
         }
     }
 }

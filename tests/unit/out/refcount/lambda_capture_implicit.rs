@@ -20,7 +20,7 @@ fn main_0() -> i32 {
             let b: Value<i32> = Rc::new(RefCell::new((*b.borrow())));
             let c: Value<i32> = Rc::new(RefCell::new((*c.borrow())));
         },
-        |x: i32| -> i32 {
+        |mut x: i32| -> i32 {
             return ((((*a.borrow()) + (*b.borrow())) + (*c.borrow())) + x);
         }
     )));
@@ -33,7 +33,7 @@ fn main_0() -> i32 {
             let b: Ptr<i32> = b.as_pointer();
             let c: Ptr<i32> = c.as_pointer();
         },
-        |x: i32| -> i32 {
+        |mut x: i32| -> i32 {
             return ((((a.read()) + (b.read())) + (c.read())) + x);
         }
     )));
@@ -46,7 +46,7 @@ fn main_0() -> i32 {
             let a: Value<i32> = Rc::new(RefCell::new((*a.borrow())));
             let b: Value<i32> = Rc::new(RefCell::new((*b.borrow())));
         },
-        |x: i32| -> i32 {
+        |mut x: i32| -> i32 {
             {
                 let __rhs = x;
                 c.with_mut(|__v| *__v = *__v + __rhs)

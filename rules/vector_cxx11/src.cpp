@@ -3,7 +3,7 @@
 
 #include <vector>
 
-template <typename T, typename A> using Init = A;
+#include "../common/init.h"
 
 template <typename T1, typename... Args>
 void f1(std::vector<T1> &o, Init<T1, Args> &&...args) {

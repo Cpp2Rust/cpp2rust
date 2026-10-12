@@ -7,8 +7,8 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn test_promotions_0(mut count: i32, __args: &[VaArg]) -> i32 {
-    let mut ap: VaList = VaList::default();
-    ap = VaList::new(__args);
+    let mut ap: *const VaArg = ::std::ptr::null();
+    ap = __args.as_ptr();
     let mut a: i32 = ap.arg::<i32>();
     let mut b: i32 = ap.arg::<i32>();
     let mut c: f64 = ap.arg::<f64>();
