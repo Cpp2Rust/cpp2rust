@@ -53,6 +53,7 @@ bool CanUnbox(const clang::VarDecl *decl) {
   }
   return (decl->isLocalVarDecl() || clang::isa<clang::ParmVarDecl>(decl)) &&
          !IsGlobalVar(decl) && !decl->isInitCapture() &&
+         !clang::isa<clang::DecompositionDecl>(decl) &&
          !IsVaListType(decl->getType());
 }
 
