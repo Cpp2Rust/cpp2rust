@@ -38,6 +38,17 @@ int main(void) {
   assert(*pf == 1.0f);
   assert(buf[3] == 0x3F);
 
+  {
+    union {
+      int ai;
+      float af;
+    };
+    ai = 11;
+    assert(ai == 11);
+    ai = 0x3F800000;
+    assert(af == 1.0f);
+  }
+
   union underscores us;
   us._ = 5;
   assert(us._ == 5);
