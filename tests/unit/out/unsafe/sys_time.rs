@@ -24,23 +24,25 @@ pub unsafe fn print_tm_1(mut t: i64) {
         .is_null())) as i32)
             != 0)
     );
-    printf(
-        (c"%d-%d-%d %d:%d:%d wday=%d yday=%d %s gmtoff=%ld isdst=%d\n"
-            .as_ptr()
-            .cast_mut())
-        .cast_const() as *const i8,
-        tm.tm_year,
-        tm.tm_mon,
-        tm.tm_mday,
-        tm.tm_hour,
-        tm.tm_min,
-        tm.tm_sec,
-        tm.tm_wday,
-        tm.tm_yday,
-        tm.tm_zone,
-        tm.tm_gmtoff,
-        tm.tm_isdst,
-    );
+    (unsafe {
+        libc::printf(
+            (c"%d-%d-%d %d:%d:%d wday=%d yday=%d %s gmtoff=%ld isdst=%d\n"
+                .as_ptr()
+                .cast_mut())
+            .cast_const() as *const libc::c_char,
+            (tm.tm_year),
+            (tm.tm_mon),
+            (tm.tm_mday),
+            (tm.tm_hour),
+            (tm.tm_min),
+            (tm.tm_sec),
+            (tm.tm_wday),
+            (tm.tm_yday),
+            (tm.tm_zone),
+            (tm.tm_gmtoff),
+            (tm.tm_isdst),
+        )
+    });
 }
 pub unsafe fn test_gmtime_r_2() {
     (unsafe { print_tm_1(0_i64) });
@@ -64,23 +66,25 @@ pub unsafe fn print_local_tm_3(mut t: i64) {
         .is_null())) as i32)
             != 0)
     );
-    printf(
-        (c"%d-%d-%d %d:%d:%d wday=%d yday=%d %s gmtoff=%ld isdst=%d\n"
-            .as_ptr()
-            .cast_mut())
-        .cast_const() as *const i8,
-        tm.tm_year,
-        tm.tm_mon,
-        tm.tm_mday,
-        tm.tm_hour,
-        tm.tm_min,
-        tm.tm_sec,
-        tm.tm_wday,
-        tm.tm_yday,
-        tm.tm_zone,
-        tm.tm_gmtoff,
-        tm.tm_isdst,
-    );
+    (unsafe {
+        libc::printf(
+            (c"%d-%d-%d %d:%d:%d wday=%d yday=%d %s gmtoff=%ld isdst=%d\n"
+                .as_ptr()
+                .cast_mut())
+            .cast_const() as *const libc::c_char,
+            (tm.tm_year),
+            (tm.tm_mon),
+            (tm.tm_mday),
+            (tm.tm_hour),
+            (tm.tm_min),
+            (tm.tm_sec),
+            (tm.tm_wday),
+            (tm.tm_yday),
+            (tm.tm_zone),
+            (tm.tm_gmtoff),
+            (tm.tm_isdst),
+        )
+    });
 }
 pub unsafe fn test_localtime_r_4() {
     (unsafe { print_local_tm_3(0_i64) });
@@ -110,10 +114,12 @@ pub unsafe fn test_strftime_5() {
         )) > (0_usize)) as i32)
             != 0)
     );
-    printf(
-        (c"%s\n".as_ptr().cast_mut()).cast_const() as *const i8,
-        buf.as_mut_ptr(),
-    );
+    (unsafe {
+        libc::printf(
+            (c"%s\n".as_ptr().cast_mut()).cast_const() as *const libc::c_char,
+            (buf.as_mut_ptr()),
+        )
+    });
     assert!(
         ((((libc::strftime(
             buf.as_mut_ptr(),
@@ -123,10 +129,12 @@ pub unsafe fn test_strftime_5() {
         )) > (0_usize)) as i32)
             != 0)
     );
-    printf(
-        (c"%s\n".as_ptr().cast_mut()).cast_const() as *const i8,
-        buf.as_mut_ptr(),
-    );
+    (unsafe {
+        libc::printf(
+            (c"%s\n".as_ptr().cast_mut()).cast_const() as *const libc::c_char,
+            (buf.as_mut_ptr()),
+        )
+    });
     assert!(
         ((((libc::strftime(
             buf.as_mut_ptr(),
@@ -136,10 +144,12 @@ pub unsafe fn test_strftime_5() {
         )) > (0_usize)) as i32)
             != 0)
     );
-    printf(
-        (c"%s\n".as_ptr().cast_mut()).cast_const() as *const i8,
-        buf.as_mut_ptr(),
-    );
+    (unsafe {
+        libc::printf(
+            (c"%s\n".as_ptr().cast_mut()).cast_const() as *const libc::c_char,
+            (buf.as_mut_ptr()),
+        )
+    });
     assert!(
         ((((libc::strftime(
             buf.as_mut_ptr(),
@@ -149,10 +159,12 @@ pub unsafe fn test_strftime_5() {
         )) > (0_usize)) as i32)
             != 0)
     );
-    printf(
-        (c"%s\n".as_ptr().cast_mut()).cast_const() as *const i8,
-        buf.as_mut_ptr(),
-    );
+    (unsafe {
+        libc::printf(
+            (c"%s\n".as_ptr().cast_mut()).cast_const() as *const libc::c_char,
+            (buf.as_mut_ptr()),
+        )
+    });
     let mut small: [libc::c_char; 4] = [(0 as libc::c_char); 4];
     assert!(
         ((((libc::strftime(
