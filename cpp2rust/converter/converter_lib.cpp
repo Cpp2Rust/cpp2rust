@@ -75,6 +75,7 @@ static const char rust_keywords[][12] = {
     "safe",
     // Standard library keywords
     "vec",
+    "Err",
 };
 
 namespace cpp2rust {
@@ -299,6 +300,13 @@ bool IsUserDefinedDecl(const clang::Decl *decl) {
   return !decl->getBeginLoc().isInvalid() && !decl->isImplicit() &&
          !src_mgr.isInSystemHeader(src_loc) &&
          !src_mgr.isInSystemMacro(src_loc);
+}
+
+bool IsAbstractUserClass(const clang::RecordDecl *decl) {
+  auto cxx = llvm::dyn_cast<clang::CXXRecordDecl>(decl);
+  auto definition = cxx ? cxx->getDefinition() : nullptr;
+  return definition && IsUserDefinedDecl(definition) &&
+         definition->isAbstract();
 }
 
 bool RefersToUserDefinedDecl(const clang::Expr *expr) {
@@ -912,6 +920,23 @@ static size_t GetDeclId(const clang::NamedDecl *decl, bool internal) {
   return type_mapping.try_emplace(key, type_mapping.size()).first->second;
 }
 
+void EscapeRustKeyword(std::string &name) {
+  if (!name.empty() &&
+      std::ranges::all_of(name, [](char c) { return c == '_'; })) {
+    name += '_';
+  }
+  for (auto &keyword : rust_keywords) {
+    if (!name.starts_with(keyword))
+      continue;
+
+    auto suffix = std::string_view(name).substr(strlen(keyword));
+    if (std::ranges::all_of(suffix, [](char c) { return c == '_'; })) {
+      name += '_';
+      break;
+    }
+  }
+}
+
 std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
   auto name = decl->getDeclName().isIdentifier() ? decl->getName().str()
                                                  : decl->getNameAsString();
@@ -927,13 +952,24 @@ std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
     }
   }
 
+  auto *anonymous_record_var = clang::dyn_cast<clang::VarDecl>(decl);
+  if (anonymous_record_var) {
+    auto *record = anonymous_record_var->getType()->getAsRecordDecl();
+    if (clang::isa<clang::ParmVarDecl>(decl) || !record ||
+        record->getIdentifier()) {
+      anonymous_record_var = nullptr;
+    }
+  }
+
   // Anonymous record or enum
-  if (name.empty() && (clang::isa<clang::RecordDecl>(decl) ||
-                       clang::isa<clang::FieldDecl>(decl) ||
-                       clang::isa<clang::EnumDecl>(decl))) {
+  if (name.empty() &&
+      (clang::isa<clang::RecordDecl>(decl) ||
+       clang::isa<clang::FieldDecl>(decl) || anonymous_record_var ||
+       clang::isa<clang::EnumDecl>(decl))) {
     const clang::NamedDecl *target = decl;
-    if (auto *field = clang::dyn_cast<clang::FieldDecl>(decl)) {
-      if (auto *record = field->getType()->getAsRecordDecl();
+    if (clang::isa<clang::FieldDecl, clang::VarDecl>(decl)) {
+      auto type = clang::cast<clang::ValueDecl>(decl)->getType();
+      if (auto *record = type->getAsRecordDecl();
           record && !record->getIdentifier()) {
         target = record;
       }
@@ -962,24 +998,7 @@ std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
     name += std::to_string(*id);
   }
 
-  // transform decl names that are rust keywords:
-  // keyword -> keyword_
-  // keyword_ -> keyword__
-  // etc
-  if (!name.empty() &&
-      std::ranges::all_of(name, [](char c) { return c == '_'; })) {
-    name += '_';
-  }
-  for (auto &keyword : rust_keywords) {
-    if (!name.starts_with(keyword))
-      continue;
-
-    auto suffix = std::string_view(name).substr(strlen(keyword));
-    if (std::ranges::all_of(suffix, [](char c) { return c == '_'; })) {
-      name += '_';
-      break;
-    }
-  }
+  EscapeRustKeyword(name);
 
   if (name.empty()) {
     auto *pdecl = llvm::dyn_cast<clang::ParmVarDecl>(decl);

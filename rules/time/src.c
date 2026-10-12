@@ -31,20 +31,14 @@ int f7(const char *file, const struct timeval tvp[2]) {
 }
 
 #if defined(__linux__)
-int f8(struct timeval *tv, struct timezone *tz) {
-  return gettimeofday(tv, tz);
-}
+int f8(struct timeval *tv, struct timezone *tz) { return gettimeofday(tv, tz); }
 #elif defined(__APPLE__)
-int f8(struct timeval *tv, void *tz) {
-  return gettimeofday(tv, tz);
-}
+int f8(struct timeval *tv, void *tz) { return gettimeofday(tv, tz); }
 #else
 #error "Unsupported platform for gettimeofday"
 #endif
 
-clockid_t f9() {
-  return CLOCK_REALTIME;
-}
+clockid_t f9() { return CLOCK_REALTIME; }
 
 clockid_t f10() { return CLOCK_MONOTONIC; }
 

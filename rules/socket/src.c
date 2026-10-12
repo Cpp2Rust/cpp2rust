@@ -1,40 +1,31 @@
 #undef _GNU_SOURCE
 #define _GNU_SOURCE
-#include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/types.h>
 #include <sys/un.h>
 
 typedef struct sockaddr t1;
 typedef struct sockaddr_storage t2;
 typedef struct sockaddr_un t3;
 
-int f1() {
-  return MSG_NOSIGNAL;
-}
+int f1() { return MSG_NOSIGNAL; }
 
-int f2() {
-  return SOCK_STREAM;
-}
+int f2() { return SOCK_STREAM; }
 
-int f3() {
-  return SOCK_DGRAM;
-}
+int f3() { return SOCK_DGRAM; }
 
 #ifdef __linux__
-int f4() {
-  return SOCK_CLOEXEC;
-}
+int f4() { return SOCK_CLOEXEC; }
 
-int f5() {
-  return SOCK_NONBLOCK;
-}
+int f5() { return SOCK_NONBLOCK; }
 #endif
 
 int f6(int domain, int type, int protocol) {
   return socket(domain, type, protocol);
 }
 
-int f7(int sockfd, int level, int optname, const void *optval, socklen_t optlen) {
+int f7(int sockfd, int level, int optname, const void *optval,
+       socklen_t optlen) {
   return setsockopt(sockfd, level, optname, optval, optlen);
 }
 
@@ -76,9 +67,7 @@ int f16(int sockfd, const struct sockaddr *addr, socklen_t addrlen) {
   return bind(sockfd, addr, addrlen);
 }
 
-int f17(int sockfd, int backlog) {
-  return listen(sockfd, backlog);
-}
+int f17(int sockfd, int backlog) { return listen(sockfd, backlog); }
 
 ssize_t f18(int sockfd, void *buf, size_t len, int flags,
             struct sockaddr *src_addr, socklen_t *addrlen) {
@@ -90,22 +79,12 @@ ssize_t f19(int sockfd, const void *buf, size_t len, int flags,
   return sendto(sockfd, buf, len, flags, dest_addr, addrlen);
 }
 
-int f20() {
-  return AF_INET;
-}
+int f20() { return AF_INET; }
 
-int f21() {
-  return AF_INET6;
-}
+int f21() { return AF_INET6; }
 
-int f22() {
-  return SOL_SOCKET;
-}
+int f22() { return SOL_SOCKET; }
 
-int f23() {
-  return SO_KEEPALIVE;
-}
+int f23() { return SO_KEEPALIVE; }
 
-int f24() {
-  return SO_ERROR;
-}
+int f24() { return SO_ERROR; }

@@ -15,25 +15,33 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut c: libc::c_char = (('a' as i32) as libc::c_char);
     let mut n: i32 = 3;
-    printf(
-        (c"%c\n".as_ptr().cast_mut()).cast_const() as *const i8,
-        (c as i32),
-    );
-    printf(
-        (c"%d %c\n".as_ptr().cast_mut()).cast_const() as *const i8,
-        n,
-        (c as i32),
-    );
-    printf(
-        (c"100%% %c\n".as_ptr().cast_mut()).cast_const() as *const i8,
-        (c as i32),
-    );
-    printf(
-        (c"%c%c%d\n".as_ptr().cast_mut()).cast_const() as *const i8,
-        (c as i32),
-        ((c as i32) + (1)),
-        n,
-    );
+    (unsafe {
+        libc::printf(
+            (c"%c\n".as_ptr().cast_mut()).cast_const() as *const libc::c_char,
+            (c as i32),
+        )
+    });
+    (unsafe {
+        libc::printf(
+            (c"%d %c\n".as_ptr().cast_mut()).cast_const() as *const libc::c_char,
+            (n),
+            (c as i32),
+        )
+    });
+    (unsafe {
+        libc::printf(
+            (c"100%% %c\n".as_ptr().cast_mut()).cast_const() as *const libc::c_char,
+            (c as i32),
+        )
+    });
+    (unsafe {
+        libc::printf(
+            (c"%c%c%d\n".as_ptr().cast_mut()).cast_const() as *const libc::c_char,
+            (c as i32),
+            ((c as i32) + (1)),
+            (n),
+        )
+    });
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

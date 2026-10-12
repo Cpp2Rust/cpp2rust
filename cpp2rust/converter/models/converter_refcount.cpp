@@ -341,7 +341,7 @@ bool ConverterRefCount::VisitPointerType(clang::PointerType *type) {
   PushConversionKind push2(*this, ConversionKind::FullRefCount,
                            pointee_is_array);
   if (pointee_type->isRecordType() &&
-      abstract_structs_.contains(GetID(pointee_type->getAsRecordDecl()))) {
+      IsAbstractUserClass(pointee_type->getAsRecordDecl())) {
     StrCat("PtrDyn<dyn");
   } else {
     StrCat("Ptr<");
@@ -1252,16 +1252,8 @@ static std::vector<const char *> printf2fmt(std::string &format) {
 void ConverterRefCount::ConvertPrintf(clang::CallExpr *expr) {
   bool is_fprintf =
       Printer::ToString(ctx_, expr->getCallee()).starts_with("int fprintf");
-  std::string format;
-  if (auto *str = clang::dyn_cast<clang::StringLiteral>(
-          expr->getArg(is_fprintf)->IgnoreImplicit())) {
-    format = GetEscapedStringLiteral(str);
-  } else {
-    llvm::errs() << "Unknown fprintf format: ";
-    expr->getArg(1)->dump();
-    llvm::errs() << '\n';
-    exit(1);
-  }
+  auto format = GetEscapedStringLiteral(clang::cast<clang::StringLiteral>(
+      expr->getArg(is_fprintf)->IgnoreImplicit()));
   bool ends_newline = format.ends_with("\\n\"");
 
   auto fd = is_fprintf ? Printer::ToString(ctx_, expr->getArg(0)) : "stdout";
@@ -1507,7 +1499,7 @@ bool ConverterRefCount::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
       auto ptype = clang::dyn_cast<clang::PointerType>(expr->getType());
       auto pointee_type = ptype->getPointeeType()->getAsCXXRecordDecl();
 
-      if (pointee_type && abstract_structs_.contains(GetID(pointee_type))) {
+      if (pointee_type && IsAbstractUserClass(pointee_type)) {
         PushConversionKind push(*this, ConversionKind::Unboxed);
         StrCat(std::format("{}.to_dyn::<{}>(|w| w)",
                            ToString(sub_expr->IgnoreCasts()),
@@ -3237,7 +3229,7 @@ void ConverterRefCount::ConvertArrow(clang::Expr *expr) {
     auto pointee_type = expr->getType()->getPointeeType();
     // Virtual methods, which take &mut self, are called through PtrDyn.
     if (auto *record = pointee_type->getAsRecordDecl();
-        isLValue() && record && abstract_structs_.contains(GetID(record))) {
+        isLValue() && record && IsAbstractUserClass(record)) {
       StrCat(std::format("(*{}.upgrade().deref_mut())", ToString(expr)));
       SetValueFreshness(pointee_type);
       return;

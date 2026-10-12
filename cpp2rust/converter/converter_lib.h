@@ -66,6 +66,8 @@ bool IsCodeUnitStringLiteral(const clang::StringLiteral *expr);
 
 bool IsUserDefinedDecl(const clang::Decl *decl);
 
+bool IsAbstractUserClass(const clang::RecordDecl *decl);
+
 bool RefersToUserDefinedDecl(const clang::Expr *expr);
 
 bool IsUnsignedArithOp(const clang::BinaryOperator *expr);
@@ -179,6 +181,8 @@ unsigned GetArraySize(clang::QualType array_type);
 
 std::string GetID(const clang::Decl *decl);
 std::string GetMethodID(const clang::CXXMethodDecl *decl);
+
+void EscapeRustKeyword(std::string &name);
 
 std::string GetNamedDeclAsString(const clang::NamedDecl *decl);
 

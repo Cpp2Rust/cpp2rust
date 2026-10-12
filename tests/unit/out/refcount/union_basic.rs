@@ -93,18 +93,13 @@ fn main_0() -> i32 {
     assert!(((basic::i(ru.clone()).read()) == 1065353216));
     assert!(((pf.read()) == 1_f32));
     assert!((((*buf.borrow())[(3) as usize] as i32) == 63));
-    let braced: Value<basic> = Rc::new(RefCell::new({
-        let __u: Value<basic> = Rc::new(RefCell::new(<basic>::default()));
-        basic::i(__u.as_pointer()).write(5);
-        Rc::try_unwrap(__u).ok().unwrap().into_inner()
-    }));
-    assert!(((basic::i(braced.as_pointer()).read()) == 5));
-    let copied: Value<basic> = Rc::new(RefCell::new({
-        let __u: Value<basic> = Rc::new(RefCell::new(<basic>::default()));
-        basic::i(__u.as_pointer()).write(7);
-        Rc::try_unwrap(__u).ok().unwrap().into_inner()
-    }));
-    assert!(((basic::i(copied.as_pointer()).read()) == 7));
+    {
+        let anon_0: Value<anon_0> = Rc::new(RefCell::new(<anon_0>::default()));
+        anon_0::ai(anon_0.as_pointer()).write(11);
+        assert!(((anon_0::ai(anon_0.as_pointer()).read()) == 11));
+        anon_0::ai(anon_0.as_pointer()).write(1065353216);
+        assert!(((anon_0::af(anon_0.as_pointer()).read()) == 1_f32));
+    }
     let us: Value<underscores> = Rc::new(RefCell::new(<underscores>::default()));
     underscores::__(us.as_pointer()).write(5);
     assert!(((underscores::__(us.as_pointer()).read()) == 5));
@@ -114,5 +109,27 @@ fn main_0() -> i32 {
     let mut ___: i32 = 2;
     assert!(((__ + ___) == 3));
     return 0;
+}
+#[derive(VaArg, FnPtrArg, ByteRepr, DeepClone)]
+#[byte_size(4)]
+pub struct anon_0 {
+    #[offset(0)]
+    #[byte_size(4)]
+    __bytes: Value<Box<[u8]>>,
+}
+impl anon_0 {
+    pub fn ai(this: Ptr<Self>) -> Ptr<i32> {
+        this.reinterpret_cast()
+    }
+    pub fn af(this: Ptr<Self>) -> Ptr<f32> {
+        this.reinterpret_cast()
+    }
+}
+impl Default for anon_0 {
+    fn default() -> Self {
+        anon_0 {
+            __bytes: Rc::new(RefCell::new(Box::from([0u8; 4]))),
+        }
+    }
 }
 pub fn __cpp2rust_init_globals() {}

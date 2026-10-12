@@ -176,8 +176,8 @@ rustls_result f41(rustls_crypto_provider_builder **builder_out) {
 rustls_result f42(rustls_crypto_provider_builder *builder,
                   const rustls_supported_ciphersuite *const *cipher_suites,
                   size_t cipher_suites_len) {
-  return rustls_crypto_provider_builder_set_cipher_suites(builder, cipher_suites,
-                                                          cipher_suites_len);
+  return rustls_crypto_provider_builder_set_cipher_suites(
+      builder, cipher_suites, cipher_suites_len);
 }
 void f43(const rustls_crypto_provider *provider) {
   return rustls_crypto_provider_free(provider);

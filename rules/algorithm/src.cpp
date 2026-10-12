@@ -19,8 +19,7 @@ template <class T1, class T2> T1 f3(T1 first, T1 last, const T2 &value) {
   return std::find(first, last, value);
 }
 
-template <typename T1, typename T2>
-void f6(T1 first, T1 last, T2 comp) {
+template <typename T1, typename T2> void f6(T1 first, T1 last, T2 comp) {
   return std::stable_sort(first, last, comp);
 }
 
@@ -48,8 +47,7 @@ std::ostream_iterator<char> f13(std::string::iterator a0,
   return std::copy(a0, a1, a2);
 }
 
-template <typename T1, typename T2>
-void f14(T1 *first, T1 *last, T2 comp) {
+template <typename T1, typename T2> void f14(T1 *first, T1 *last, T2 comp) {
   return std::stable_sort(first, last, comp);
 }
 

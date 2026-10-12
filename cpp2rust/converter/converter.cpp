@@ -30,7 +30,6 @@ std::unordered_map<std::string, std::string> Converter::inner_structs_;
 std::unordered_set<std::string> Converter::decl_ids_;
 std::unordered_set<std::string> Converter::globals_;
 std::vector<std::string> Converter::global_inits_;
-std::unordered_set<std::string> Converter::abstract_structs_;
 Converter::RecordIndex Converter::record_decls_;
 std::map<std::string, Converter::DeferredBlock> Converter::virtual_methods_;
 
@@ -318,7 +317,7 @@ bool Converter::VisitPointerType(clang::PointerType *type) {
   auto pointee_type = type->getPointeeType();
   StrCat(pointee_type.isConstQualified() ? "*const" : "*mut");
   if (pointee_type->isRecordType() &&
-      abstract_structs_.contains(GetID(pointee_type->getAsRecordDecl()))) {
+      IsAbstractUserClass(pointee_type->getAsRecordDecl())) {
     StrCat(keyword::kDyn);
   }
   return Convert(pointee_type);
@@ -1364,7 +1363,11 @@ bool Converter::VisitDeclStmt(clang::DeclStmt *stmt) {
       hoisted_records_ += std::move(buf).str();
       continue;
     }
-    Convert(decl);
+    if (var && var->isImplicit()) {
+      VisitVarDecl(var);
+    } else {
+      Convert(decl);
+    }
     StrCat(token::kSemiColon);
   }
   return false;
@@ -2279,8 +2282,13 @@ std::optional<Converter::TempMaterializationCtx>
 Converter::ConvertCallExpr(clang::CallExpr *expr) {
   auto *callee = expr->getCallee();
 
-  if (auto fn = Printer::ToString(ctx_, callee);
-      fn.starts_with("int printf") || fn.starts_with("int fprintf")) {
+  auto fn = Printer::ToString(ctx_, callee);
+  bool is_printf = fn.starts_with("int printf");
+  bool is_fprintf = fn.starts_with("int fprintf");
+  unsigned format_arg = is_fprintf ? 1 : 0;
+  if ((is_printf || is_fprintf) &&
+      clang::isa<clang::StringLiteral>(
+          expr->getArg(format_arg)->IgnoreImplicit())) {
     ConvertPrintf(expr);
   } else if (IsTransparentStdCall(expr)) {
     Convert(expr->getArg(0));
@@ -4637,7 +4645,6 @@ pub fn main() {{
 }
 
 void Converter::ConvertAbstractClass(clang::CXXRecordDecl *decl) {
-  ENSURE(abstract_structs_.insert(GetID(decl)).second);
   auto trait_name = GetRecordName(decl);
   auto access_specifier_as_string = AccessSpecifierAsString(decl->getAccess());
   auto signature = std::format("{} {} trait {}", access_specifier_as_string,

@@ -28,20 +28,22 @@ unsafe fn main_0() -> i32 {
         let s = (buf.as_mut_ptr()).cast_const();
         std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1).to_vec()
     };
-    printf(c"%zu\n".as_ptr() as *const i8, (s.len() - 1));
-    printf(
-        c"%zu %zu\n".as_ptr() as *const i8,
-        libc::strlen((buf.as_mut_ptr()).cast_const()),
-        match s.iter().rposition(|&c| {
-            ::std::ffi::CStr::from_ptr((buf.as_mut_ptr()).cast_const())
-                .to_str()
-                .unwrap()
-                .contains(c as u8 as char)
-        }) {
-            Some(idx) => idx,
-            None => usize::MAX,
-        },
-    );
+    (unsafe { libc::printf(c"%zu\n".as_ptr() as *const libc::c_char, (s.len() - 1)) });
+    (unsafe {
+        libc::printf(
+            c"%zu %zu\n".as_ptr() as *const libc::c_char,
+            (libc::strlen((buf.as_mut_ptr()).cast_const())),
+            (match s.iter().rposition(|&c| {
+                ::std::ffi::CStr::from_ptr((buf.as_mut_ptr()).cast_const())
+                    .to_str()
+                    .unwrap()
+                    .contains(c as u8 as char)
+            }) {
+                Some(idx) => idx,
+                None => usize::MAX,
+            }),
+        )
+    });
     let mut lit: *const libc::c_char = (&[
         (120 as libc::c_char),
         (121 as libc::c_char),
@@ -55,7 +57,7 @@ unsafe fn main_0() -> i32 {
         let s = lit;
         std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1).to_vec()
     };
-    printf(c"%zu\n".as_ptr() as *const i8, (t.len() - 1));
+    (unsafe { libc::printf(c"%zu\n".as_ptr() as *const libc::c_char, (t.len() - 1)) });
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

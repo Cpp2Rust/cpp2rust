@@ -48,6 +48,16 @@ pub struct S {
     pub safe_: i32,
     pub vec_: i32,
 }
+#[repr(C)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+pub struct type_ {
+    pub v: i32,
+}
+#[repr(C)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+pub struct loop_ {
+    pub t: type_,
+}
 pub unsafe fn foo_0(
     mut as_: i32,
     mut async_: i32,
@@ -176,10 +186,49 @@ unsafe fn main_0() -> i32 {
     let mut raw_: i32 = 0;
     let mut safe_: i32 = 0;
     let mut vec_: i32 = 0;
+    let mut l: loop_ = loop_ { t: type_ { v: 3 } };
+    let mut t: type_ = l.t;
     return (unsafe {
         foo_0(
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            ((t.v) - (3)),
         )
     });
 }

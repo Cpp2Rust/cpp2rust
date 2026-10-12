@@ -3,6 +3,4 @@
 
 #include <assert.h>
 
-bool f1(bool condition) {
-  return cpp2rust_assert_fail(condition);
-}
+bool f1(bool condition) { return cpp2rust_assert_fail(condition); }
