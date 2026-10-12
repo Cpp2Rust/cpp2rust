@@ -3,12 +3,14 @@
 
 #include "converter/converter_lib.h"
 
+#include <clang/AST/DeclFriend.h>
 #include <clang/AST/DeclTemplate.h>
 #include <clang/AST/ExprCXX.h>
 #include <clang/AST/ExprConcepts.h>
 #include <clang/AST/Mangle.h>
 #include <clang/AST/ParentMapContext.h>
 #include <clang/Basic/SourceManager.h>
+#include <clang/Basic/Version.h>
 #include <clang/Lex/Lexer.h>
 #include <clang/Sema/Initialization.h>
 #include <clang/Sema/Sema.h>
@@ -319,15 +321,16 @@ llvm::APSInt GetIntegerLiteralValue(const clang::ASTContext &ctx,
                                     const clang::QualType *type,
                                     bool char_is_signed) {
   auto value = expr->getValue();
+  auto target = type ? *type : expr->getType();
   bool is_signed = false;
-  if (type && (*type)->isBuiltinType() && (*type)->isIntegerType() &&
-      !(*type)->isBooleanType()) {
-    value = value.zextOrTrunc(ctx.getIntWidth(*type));
+  if (target->isBuiltinType() && target->isIntegerType() &&
+      !target->isBooleanType()) {
+    value = value.zextOrTrunc(ctx.getIntWidth(target));
     is_signed =
-        (*type)->isSpecificBuiltinType(clang::BuiltinType::Char_S) ||
-                (*type)->isSpecificBuiltinType(clang::BuiltinType::Char_U)
+        target->isSpecificBuiltinType(clang::BuiltinType::Char_S) ||
+                target->isSpecificBuiltinType(clang::BuiltinType::Char_U)
             ? char_is_signed
-            : (*type)->isSignedIntegerType();
+            : target->isSignedIntegerType();
   }
   return llvm::APSInt(value, !is_signed);
 }
@@ -606,12 +609,7 @@ bool IsRValueConvertingConstructor(const clang::CXXConstructorDecl *ctor) {
 }
 
 bool MethodNeedsMutableReceiver(const clang::CXXMethodDecl *method) {
-  if (!method->isConst()) {
-    return true;
-  }
-  return std::any_of(method->getParent()->field_begin(),
-                     method->getParent()->field_end(),
-                     [](const clang::FieldDecl *f) { return f->isMutable(); });
+  return !method->isConst();
 }
 
 bool IsPassThroughConstructor(const clang::CXXConstructorDecl *ctor) {
@@ -979,6 +977,10 @@ std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
   // keyword -> keyword_
   // keyword_ -> keyword__
   // etc
+  if (!name.empty() &&
+      std::ranges::all_of(name, [](char c) { return c == '_'; })) {
+    name += '_';
+  }
   for (auto &keyword : rust_keywords) {
     if (!name.starts_with(keyword))
       continue;
@@ -1263,8 +1265,7 @@ const clang::LambdaCapture *AsLambdaCapture(const clang::FieldDecl *field) {
 
 bool IsLambdaCopyOrMoveConstructor(const clang::CXXConstructorDecl *ctor) {
   auto decl = ctor->getParent();
-  return ctor->isCopyOrMoveConstructor() && decl->isLambda() &&
-         !decl->captures().empty();
+  return ctor->isCopyOrMoveConstructor() && decl->isLambda();
 }
 
 bool LambdaNeedsDestruction(const clang::CXXRecordDecl *decl) {
@@ -1346,7 +1347,7 @@ bool HasStaticLocal(const clang::Stmt *stmt) {
 
 bool IsUserOperatorCall(const clang::CXXOperatorCallExpr *expr) {
   const auto *callee = expr->getDirectCallee();
-  if (!callee) {
+  if (!callee || AsLambdaOperatorCall(callee)) {
     return false;
   }
   if (callee->isDefaulted() && IsComparisonOperator(callee)) {
@@ -1465,6 +1466,52 @@ bool IsComparisonOperator(const clang::FunctionDecl *fn) {
   default:
     return false;
   }
+}
+
+void DefineImplicitMembers(clang::Sema &sema, clang::CXXRecordDecl *decl) {
+  clang::Scope tu_scope(nullptr, clang::Scope::DeclScope,
+                        sema.getDiagnostics());
+  tu_scope.setEntity(sema.Context.getTranslationUnitDecl());
+  auto *saved_tu_scope = std::exchange(sema.TUScope, &tu_scope);
+  sema.ForceDeclarationOfImplicitMembers(decl);
+  for (auto ctor : decl->ctors()) {
+    if (ctor->isCopyConstructor() && ctor->isImplicit() &&
+        !ctor->doesThisDeclarationHaveABody() && !ctor->isDeleted()) {
+      sema.DefineImplicitCopyConstructor(decl->getLocation(), ctor);
+    }
+    if (ctor->isMoveConstructor() && !ctor->isUserProvided() &&
+        !ctor->doesThisDeclarationHaveABody() && !ctor->isDeleted() &&
+        !HasDefaultedCopyConstructor(decl)) {
+      sema.DefineImplicitMoveConstructor(decl->getLocation(), ctor);
+    }
+  }
+  for (auto *method : decl->methods()) {
+    if (method->isMoveAssignmentOperator() && !method->isUserProvided() &&
+        !method->doesThisDeclarationHaveABody() && !method->isDeleted() &&
+        !HasDefaultedCopyAssignment(decl)) {
+      sema.DefineImplicitMoveAssignment(decl->getLocation(), method);
+    }
+  }
+  auto define_defaulted_comparison = [&](clang::FunctionDecl *fn) {
+    if (!fn || !IsComparisonOperator(fn) || !fn->isDefaulted() ||
+        fn->doesThisDeclarationHaveABody()) {
+      return;
+    }
+#if CLANG_VERSION_MAJOR >= 24
+    auto kind = fn->getDefaultedComparisonKind();
+#else
+    auto kind = sema.getDefaultedComparisonKind(fn);
+#endif
+    sema.DefineDefaultedComparison(decl->getLocation(), fn, kind);
+  };
+  for (auto *method : decl->methods()) {
+    define_defaulted_comparison(method);
+  }
+  for (auto *friend_decl : decl->friends()) {
+    define_defaulted_comparison(clang::dyn_cast_or_null<clang::FunctionDecl>(
+        friend_decl->getFriendDecl()));
+  }
+  sema.TUScope = saved_tu_scope;
 }
 
 bool IsEmittableMethod(clang::CXXMethodDecl *method) {
@@ -1817,13 +1864,6 @@ clang::Expr *GetCallee(clang::CallExpr *expr) {
   return expr->getCallee();
 }
 
-clang::Expr *GetCalleeOrExpr(clang::Expr *expr) {
-  if (auto *call = clang::dyn_cast<clang::CallExpr>(expr)) {
-    return call->getCallee();
-  }
-  return expr;
-}
-
 bool HasReceiver(clang::Expr *expr) {
   if (clang::isa<clang::CXXMemberCallExpr>(expr))
     return true;
@@ -1871,38 +1911,6 @@ GetStrongestIteratorCategory(clang::ASTContext &ctx, clang::QualType type) {
     return IteratorCategory::Bidirectional;
   }
   return std::nullopt;
-}
-
-const clang::CXXForRangeStmt *
-GetParentForRange(clang::ASTContext &ctx, const clang::MemberExpr *member) {
-  auto base = member->getBase()->IgnoreParenImpCasts();
-  if (auto decl_ref = llvm::dyn_cast<clang::DeclRefExpr>(base)) {
-    if (auto var = llvm::dyn_cast<clang::VarDecl>(decl_ref->getDecl())) {
-      for (const auto &parent : ctx.getParents(*var)) {
-        if (auto decl_stmt = parent.get<clang::DeclStmt>()) {
-          for (const auto &grandparent : ctx.getParents(*decl_stmt)) {
-            if (auto for_range = grandparent.get<clang::CXXForRangeStmt>()) {
-              return for_range;
-            }
-          }
-        }
-      }
-    }
-  }
-  return nullptr;
-}
-
-clang::QualType
-GetForRangeIteratorType(const clang::CXXForRangeStmt *for_range) {
-  if (auto begin_stmt = for_range->getBeginStmt()) {
-    if (auto begin_decl_stmt = llvm::dyn_cast<clang::DeclStmt>(begin_stmt)) {
-      if (auto begin_var = llvm::dyn_cast<clang::VarDecl>(
-              begin_decl_stmt->getSingleDecl())) {
-        return begin_var->getType();
-      }
-    }
-  }
-  return {};
 }
 
 std::string GetClassName(clang::QualType type) {
@@ -2142,6 +2150,8 @@ clang::Expr *NormalizeToBool(clang::Expr *expr, clang::ASTContext &ctx) {
   clang::CastKind cast_kind;
   if (expr->getType()->isPointerType()) {
     cast_kind = clang::CK_PointerToBoolean;
+  } else if (expr->getType()->isFloatingType()) {
+    cast_kind = clang::CK_FloatingToBoolean;
   } else /* expr->getType()->isIntegerType() */ {
     cast_kind = clang::CK_IntegralToBoolean;
   }

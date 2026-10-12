@@ -27,7 +27,7 @@ fn main_0() -> i32 {
         {
             let factor: Value<i32> = Rc::new(RefCell::new((*factor.borrow())));
         },
-        |x: i32| -> i32 {
+        |mut x: i32| -> i32 {
             return (x * (*factor.borrow()));
         }
     )));
@@ -62,7 +62,7 @@ fn main_0() -> i32 {
         {
             let y: Value<i32> = Rc::new(RefCell::new((base + 1)));
         },
-        |x: i32| -> i32 {
+        |mut x: i32| -> i32 {
             return (x + (*y.borrow()));
         }
     )));
@@ -72,7 +72,7 @@ fn main_0() -> i32 {
         {
             let k: Value<i32> = Rc::new(RefCell::new((*k.borrow())));
         },
-        |x: i32| -> i32 {
+        |mut x: i32| -> i32 {
             return (x + 3);
         }
     )));
@@ -81,7 +81,7 @@ fn main_0() -> i32 {
         {
             let k: Value<i32> = Rc::new(RefCell::new((*k.borrow())));
         },
-        |x: i32| -> i32 {
+        |mut x: i32| -> i32 {
             return (x + ({ read_0(k.as_pointer()) }));
         }
     )));
@@ -90,7 +90,7 @@ fn main_0() -> i32 {
         {
             let k: Value<i32> = Rc::new(RefCell::new((*k.borrow())));
         },
-        |x: i32| -> i32 {
+        |mut x: i32| -> i32 {
             return (x + ({ read_0(k.as_pointer()) }));
         }
     )));
@@ -99,7 +99,7 @@ fn main_0() -> i32 {
         {
             let k: Ptr<i32> = k.as_pointer();
         },
-        |x: i32| -> i32 {
+        |mut x: i32| -> i32 {
             return (x + 3);
         }
     )));

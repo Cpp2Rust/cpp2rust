@@ -327,8 +327,11 @@ Match<TranslationRule::TypeRule> searchType(const std::string &txt) {
       RuleRegistry::TypeCandidates(typeKey(txt)), txt);
 }
 
-std::string mapTypeString(const std::string &cpp_type) {
-  auto [rule, subs] = searchType(cpp_type);
+std::string mapTypeString(std::string_view cpp_type) {
+  auto [rule, subs] = searchType(std::string(cpp_type));
+  if (!rule && cpp_type.starts_with("const ")) {
+    return mapTypeString(cpp_type.substr(std::string_view("const ").size()));
+  }
   if (!rule) {
     llvm::errs() << "cpp_type: " << cpp_type << '\n';
     assert(0 && "Type is not present in the registry");
@@ -371,6 +374,12 @@ Match<TranslationRule::TypeRule> Find(clang::ASTContext &ctx,
     log() << "search type " << sugared
           << ", result: " << res.first->type_info.type << '\n';
     return res;
+  }
+  if (auto alias = type->getAs<clang::TypedefType>();
+      alias && type.getCanonicalType()->isBuiltinType() &&
+      clang::isa<clang::RecordDecl>(alias->getDecl()->getDeclContext())) {
+    log() << "search type " << sugared << ", result: None\n";
+    return Find(ctx, alias->getDecl()->getUnderlyingType());
   }
   auto desugared = Printer::ToString(ctx, type);
   if (desugared == sugared) {

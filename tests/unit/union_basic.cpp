@@ -8,6 +8,11 @@ union basic {
 
 union empty {};
 
+union underscores {
+  int _;
+  double __;
+};
+
 int main(void) {
   union basic u;
   union empty e;
@@ -43,6 +48,16 @@ int main(void) {
     ai = 0x3F800000;
     assert(af == 1.0f);
   }
+
+  union underscores us;
+  us._ = 5;
+  assert(us._ == 5);
+  us.__ = 2.5;
+  assert(us.__ == 2.5);
+
+  int _ = 1;
+  int __ = 2;
+  assert(_ + __ == 3);
 
   return 0;
 }

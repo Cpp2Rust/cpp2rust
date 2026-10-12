@@ -21,11 +21,13 @@ pub struct record {
 }
 impl Default for record {
     fn default() -> Self {
-        record {
-            code: 0_u16,
-            lo: 0_u16,
-            hi: 0_u32,
-            pad: Rc::new(RefCell::new((0..8).map(|_| 0_i8).collect::<Box<[i8]>>())),
+        {
+            record {
+                code: 0_u16,
+                lo: 0_u16,
+                hi: 0_u32,
+                pad: Rc::new(RefCell::new((0..8).map(|_| 0_i8).collect::<Box<[i8]>>())),
+            }
         }
     }
 }

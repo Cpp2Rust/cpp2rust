@@ -210,11 +210,27 @@ unsafe fn main_0() -> i32 {
         })
         .v) == (2))
     );
-    let mut m: BTreeMap<Lt, Box<i32>> = BTreeMap::new();
-    (*m.entry(Lt { v: 2 }).or_default().as_mut()) = 20;
-    (*m.entry(Lt { v: 1 }).or_default().as_mut()) = 10;
-    assert!(((*UnsafeMapIterator::begin(&m as *const BTreeMap<Lt, Box<i32>>).second()) == (10)));
-    assert!(((*m.entry(Lt { v: 2 }).or_default().as_mut()) == (20)));
+    let mut m: BTreeMap<Lt, Box<(Lt, i32)>> = BTreeMap::new();
+    (*&mut m
+        .entry(Lt { v: 2 }.clone())
+        .or_insert_with(|| Box::new((Lt { v: 2 }, <i32>::default())))
+        .1) = 20;
+    (*&mut m
+        .entry(Lt { v: 1 }.clone())
+        .or_insert_with(|| Box::new((Lt { v: 1 }, <i32>::default())))
+        .1) = 10;
+    assert!(
+        ((*&raw mut (*UnsafeMapIterator::begin(&m as *const BTreeMap<Lt, Box<(Lt, i32)>>)
+            .deref())
+        .1) == (10))
+    );
+    assert!(
+        ((*&mut m
+            .entry(Lt { v: 2 }.clone())
+            .or_insert_with(|| Box::new((Lt { v: 2 }, <i32>::default())))
+            .1)
+            == (20))
+    );
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

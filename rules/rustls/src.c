@@ -1,6 +1,7 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#ifndef __cplusplus
 #include "rustls.h"
 
 typedef rustls_connection *t1;
@@ -246,3 +247,4 @@ rustls_result f61(rustls_client_config_builder *config_builder,
   return rustls_client_config_builder_dangerous_set_certificate_verifier(
       config_builder, callback);
 }
+#endif

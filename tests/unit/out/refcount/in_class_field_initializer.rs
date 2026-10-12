@@ -16,7 +16,7 @@ pub struct Inner {
 }
 impl Default for Inner {
     fn default() -> Self {
-        Inner { x: 3, y: 4 }
+        { Inner { x: 3, y: 4 } }
     }
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
@@ -35,11 +35,13 @@ pub struct S {
 }
 impl Default for S {
     fn default() -> Self {
-        S {
-            a: 1,
-            b: 2_i8,
-            c: <Inner>::default(),
-            d: <Inner>::default(),
+        {
+            S {
+                a: 1,
+                b: 2_i8,
+                c: <Inner>::default(),
+                d: <Inner>::default(),
+            }
         }
     }
 }
@@ -58,9 +60,11 @@ impl Boxed_int_ {
 }
 impl Default for Boxed_int_ {
     fn default() -> Self {
-        Boxed_int_ {
-            v: 0_i32,
-            tag: 0_i32,
+        {
+            Boxed_int_ {
+                v: 0_i32,
+                tag: 0_i32,
+            }
         }
     }
 }

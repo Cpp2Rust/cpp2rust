@@ -4,9 +4,11 @@
 #include <deque>
 #include <vector>
 
-template <typename T, typename A> using Init = A;
+#include "../common/init.h"
 
 template <typename T1> using t1 = std::deque<T1>;
+
+template <typename T1> using t2 = typename std::deque<T1>::size_type;
 
 template <typename T1> T1 &f1(std::deque<T1> &o) { return o.back(); }
 

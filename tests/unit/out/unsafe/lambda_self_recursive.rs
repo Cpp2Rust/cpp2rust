@@ -13,22 +13,23 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut fact: FnPtr<Generic> =
-        lambda_unsafe!(Generic, {}, |self_: FnPtr<Generic>, n: i32| -> i32 {
-            if ((n) <= (1)) {
-                return 1;
-            }
-            return ((n)
-                * (unsafe {
-                    let _self_: FnPtr<Generic> = self_.clone();
-                    self_
-                        .spec::<fn(FnPtr<Generic>, i32) -> i32>(0)
-                        .call(_self_, ((n) - (1)))
-                }));
-        });
+    let mut fact: FnPtr<Generic> = lambda_unsafe!(Generic, {}, |mut self_: FnPtr<Generic>,
+                                                                mut n: i32|
+     -> i32 {
+        if ((n) <= (1)) {
+            return 1;
+        }
+        return ((n)
+            * (unsafe {
+                let _self_: FnPtr<Generic> = self_.copy_from();
+                self_
+                    .spec::<fn(FnPtr<Generic>, i32) -> i32>(0)
+                    .call(_self_, ((n) - (1)))
+            }));
+    });
     assert!(
         ((unsafe {
-            let _self_: FnPtr<Generic> = fact.clone();
+            let _self_: FnPtr<Generic> = fact.copy_from();
             fact.spec::<fn(FnPtr<Generic>, i32) -> i32>(0)
                 .call(_self_, 5)
         }) == (120))
@@ -39,7 +40,7 @@ unsafe fn main_0() -> i32 {
         {
             let calls: *mut i32 = &mut calls;
         },
-        |self_: *mut FnPtr<Generic>, n: i32| -> i32 {
+        |self_: *mut FnPtr<Generic>, mut n: i32| -> i32 {
             (*calls).postfix_inc();
             if ((n) <= (2)) {
                 return 1;
@@ -73,7 +74,7 @@ unsafe fn main_0() -> i32 {
         {
             let depth: *mut i32 = &mut depth;
         },
-        |self_: *const FnPtr<Generic>, n: i32| {
+        |self_: *const FnPtr<Generic>, mut n: i32| {
             if ((n) == (0)) {
                 return;
             }

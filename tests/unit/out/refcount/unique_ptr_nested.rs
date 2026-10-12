@@ -33,11 +33,8 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let mut o: Option<Value<Outer>> = Some(Rc::new(RefCell::new({
-        let __tmp_0: Value<Outer> = Rc::new(RefCell::new(Outer {
-            inner: Some(Rc::new(RefCell::new(Inner { x: 10, y: 20 }))),
-        }));
-        Outer::move_from({ __tmp_0.as_pointer() })
+    let mut o: Option<Value<Outer>> = Some(Rc::new(RefCell::new(Outer {
+        inner: Some(Rc::new(RefCell::new(Inner { x: 10, y: 20 }))),
     })));
     (*{ (*o.as_ref().unwrap().borrow()).inner.clone() }
         .as_ref()

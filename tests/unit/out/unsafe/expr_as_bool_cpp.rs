@@ -76,6 +76,24 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { cmp_or_ptr_1(std::ptr::null(), std::ptr::null(),) }) == (0)));
     assert!(((unsafe { both_null_2(std::ptr::null(), std::ptr::null(),) }) == (1)));
     assert!(((unsafe { both_null_2(p1, std::ptr::null(),) }) == (0)));
+    let mut d: f64 = 0.5_f64;
+    let mut taken: i32 = 0;
+    if (d != 0.0) {
+        taken = 1;
+    }
+    assert!(((taken) == (1)));
+    'loop_: while (d != 0.0) {
+        d = 0_f64;
+    }
+    assert!(((d) == (0_f64)));
+    let mut f: f32 = 2_f32;
+    let mut fb: bool = (f != 0.0);
+    let mut nf: bool = !(f != 0.0);
+    assert!(fb);
+    assert!(!(nf));
+    assert!(!(0_f64 != 0.0));
+    let mut fi: i32 = ((f != 0.0) as i32);
+    assert!(((fi) == (1)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

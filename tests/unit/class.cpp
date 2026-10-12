@@ -51,6 +51,20 @@ struct Counter {
   }
 };
 
+struct Tally {
+  mutable int calls;
+
+  int SameNameBetweenConstAndNonConst() {
+    calls += 1;
+    return 1;
+  }
+
+  int SameNameBetweenConstAndNonConst() const {
+    calls += 10;
+    return 2;
+  }
+};
+
 int RandomRoute(Route &route) {
   if (route.path.first % 2) {
     return route.path.SetFirst(route.path.SetSecond(10));
@@ -74,5 +88,13 @@ int main() {
   assert(c2 == c1);
   assert(c1.calls == 3);
   assert(c2.calls == 2);
+  Tally t{0};
+  const Tally ct{0};
+  const Tally &rt = t;
+  assert(t.SameNameBetweenConstAndNonConst() == 1);
+  assert(ct.SameNameBetweenConstAndNonConst() == 2);
+  assert(rt.SameNameBetweenConstAndNonConst() == 2);
+  assert(t.calls == 11);
+  assert(ct.calls == 10);
   return 0;
 }

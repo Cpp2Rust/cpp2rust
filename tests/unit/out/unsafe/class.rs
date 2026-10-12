@@ -61,23 +61,36 @@ pub struct Counter {
     pub calls: i32,
 }
 impl Counter {
-    pub unsafe fn Get(&mut self) -> i32 {
-        self.calls.prefix_inc();
+    pub unsafe fn Get(&self) -> i32 {
+        (*(&raw const self.calls).cast_mut()).prefix_inc();
         return self.v;
     }
-    pub unsafe fn operator_eq(&mut self, o: *const Counter) -> bool {
-        self.calls.prefix_inc();
+    pub unsafe fn operator_eq(&self, o: *const Counter) -> bool {
+        (*(&raw const self.calls).cast_mut()).prefix_inc();
         return ((self.v) == ((*o).v));
     }
 }
 impl std::cmp::PartialEq for Counter {
     fn eq(&self, other: &Self) -> bool {
-        unsafe {
-            Counter::operator_eq(&mut *(&raw const *self).cast_mut(), other as *const Counter)
-        }
+        unsafe { Counter::operator_eq(self, other as *const Counter) }
     }
 }
 impl std::cmp::Eq for Counter {}
+#[repr(C)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+pub struct Tally {
+    pub calls: i32,
+}
+impl Tally {
+    pub unsafe fn SameNameBetweenConstAndNonConst_1(&mut self) -> i32 {
+        self.calls += 1;
+        return 1;
+    }
+    pub unsafe fn SameNameBetweenConstAndNonConst_2(&self) -> i32 {
+        (*(&raw const self.calls).cast_mut()) += 10;
+        return 2;
+    }
+}
 pub unsafe fn RandomRoute_0(route: *mut Route) -> i32 {
     if ((((*route).path.first) % (2)) != 0) {
         return (unsafe {
@@ -128,13 +141,21 @@ unsafe fn main_0() -> i32 {
     let mut c1: Counter = Counter { v: 3, calls: 0 };
     let c2: Counter = Counter { v: 3, calls: 0 };
     let mut pc: *const Counter = (&mut c1 as *mut Counter).cast_const();
-    assert!(((unsafe { Counter::Get(&mut *(&raw const c1).cast_mut(),) }) == (3)));
-    assert!(((unsafe { Counter::Get(&mut *(&raw const c2).cast_mut(),) }) == (3)));
-    assert!(((unsafe { Counter::Get(&mut *(&raw const (*pc)).cast_mut(),) }) == (3)));
-    assert!((unsafe { Counter::operator_eq(&mut *(&raw const c1).cast_mut(), &c2,) }));
-    assert!((unsafe { Counter::operator_eq(&mut *(&raw const c2).cast_mut(), &c1,) }));
+    assert!(((unsafe { Counter::Get(&c1,) }) == (3)));
+    assert!(((unsafe { Counter::Get(&c2,) }) == (3)));
+    assert!(((unsafe { Counter::Get(&(*pc),) }) == (3)));
+    assert!((unsafe { Counter::operator_eq(&c1, &c2,) }));
+    assert!((unsafe { Counter::operator_eq(&c2, &c1,) }));
     assert!(((c1.calls) == (3)));
     assert!(((c2.calls) == (2)));
+    let mut t: Tally = Tally { calls: 0 };
+    let ct: Tally = Tally { calls: 0 };
+    let rt: *const Tally = &t;
+    assert!(((unsafe { Tally::SameNameBetweenConstAndNonConst_1(&mut t,) }) == (1)));
+    assert!(((unsafe { Tally::SameNameBetweenConstAndNonConst_2(&ct,) }) == (2)));
+    assert!(((unsafe { Tally::SameNameBetweenConstAndNonConst_2(&(*rt),) }) == (2)));
+    assert!(((t.calls) == (11)));
+    assert!(((ct.calls) == (10)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

@@ -53,6 +53,7 @@ fn main_0() -> i32 {
         "{}",
         (Ptr::<Vec<i8>>::decay(&({ fn2_1(s.as_pointer(),) })) as Ptr<i8>)
     );
+    println!("{{}} {} {}", 5_u64, (-6_i32 as i64));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

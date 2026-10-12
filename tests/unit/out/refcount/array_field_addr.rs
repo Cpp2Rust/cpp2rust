@@ -19,10 +19,12 @@ pub struct S {
 }
 impl Default for S {
     fn default() -> Self {
-        S {
-            before: 0_i32,
-            mask: Rc::new(RefCell::new((0..4).map(|_| 0_u8).collect::<Box<[u8]>>())),
-            after: 0_i32,
+        {
+            S {
+                before: 0_i32,
+                mask: Rc::new(RefCell::new((0..4).map(|_| 0_u8).collect::<Box<[u8]>>())),
+                after: 0_i32,
+            }
         }
     }
 }

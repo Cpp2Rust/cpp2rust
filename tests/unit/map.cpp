@@ -50,6 +50,8 @@ int main() {
   assert(it4->second == 6);
   assert(*p == 6);
   assert(x5 == 5);
+  std::map<short, unsigned>::const_iterator const_it4 = m.find(4);
+  assert((*const_it4).second == 6);
   auto &r = m;
   assert(r.size() == 4);
   assert(m.find(4) != m.end());

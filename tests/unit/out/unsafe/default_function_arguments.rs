@@ -53,6 +53,13 @@ pub unsafe fn by_global_ref_7(b: Option<*const Bar>) -> i32 {
     });
     return (*b).v;
 }
+pub unsafe fn shifted_8(mut x: i32, mut y: Option<i32>) -> i32 {
+    let mut y: i32 = y.unwrap_or_else(|| unsafe { -1_i32 });
+    return ((x) + (y));
+}
+pub unsafe fn first_9(r: *mut [i32; 3]) -> i32 {
+    return (*r)[(0) as usize];
+}
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Holder_int_ {
@@ -109,6 +116,14 @@ unsafe fn main_0() -> i32 {
     );
     let mut h: Holder_int_ = Holder_int_::new({ 4 });
     assert!(((h.v) == (4)));
+    assert!(((unsafe { shifted_8(3, None,) }) == (2)));
+    assert!(((unsafe { shifted_8(3, Some(4),) }) == (7)));
+    assert!(
+        ((unsafe {
+            let mut _r: [i32; 3] = [4, 5, 6];
+            first_9(&mut _r)
+        }) == (4))
+    );
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
