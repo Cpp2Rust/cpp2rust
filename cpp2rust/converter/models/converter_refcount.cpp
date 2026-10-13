@@ -2187,7 +2187,9 @@ bool ConverterRefCount::VisitCXXNewExpr(clang::CXXNewExpr *expr) {
     } else {
       auto array_size_as_string = ToString(*expr->getArraySize());
       auto alloc_type = expr->getAllocatedType();
-      PushConversionKind push(*this, ConversionKind::Unboxed);
+      PushConversionKind push(*this, alloc_type->isArrayType()
+                                         ? ConversionKind::Pointee
+                                         : ConversionKind::Unboxed);
       auto alloc_type_as_string = ToString(alloc_type);
       auto default_alloc_type_as_string = GetDefaultAsString(alloc_type);
 
