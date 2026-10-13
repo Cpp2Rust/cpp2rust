@@ -57,11 +57,20 @@ unsafe fn main_0() -> i32 {
     }
     let mut m: Vec<Vec<i32>> = Vec::new();
     let mut v1: Vec<i32> = Vec::new();
-    m.push(std::mem::take(&mut v1));
+    {
+        let __a1 = std::mem::take(&mut v1);
+        m.push(__a1)
+    };
     let mut v2: Vec<i32> = Vec::new();
-    m.push(std::mem::take(&mut v2));
+    {
+        let __a1 = std::mem::take(&mut v2);
+        m.push(__a1)
+    };
     let mut v3: Vec<i32> = Vec::new();
-    m.push(std::mem::take(&mut v3));
+    {
+        let __a1 = std::mem::take(&mut v3);
+        m.push(__a1)
+    };
     'loop_: for row in 0..(m.len()) {
         let mut row = m.as_mut_ptr().add(row);
         'loop_: for col in 0..((*row).len()) {

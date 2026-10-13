@@ -124,11 +124,12 @@ unsafe fn main_0() -> i32 {
     let mut m1: Vec<Vec<i32>> = Vec::new();
     let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {
-        m1.push(
-            (0..(10_usize) as usize)
+        {
+            let __a1 = (0..(10_usize) as usize)
                 .map(|_| <i32>::default())
-                .collect::<Vec<_>>(),
-        );
+                .collect::<Vec<_>>();
+            m1.push(__a1)
+        };
         i.prefix_inc();
     }
     let mut m2: Vec<Vec<i32>> = m1.clone();

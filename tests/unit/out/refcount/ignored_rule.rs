@@ -11,10 +11,8 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let a: Value<Box<[Value<Box<[i32]>>]>> = Rc::new(RefCell::new(Box::new([
-        Rc::new(RefCell::new(Box::new([1, 2]))),
-        Rc::new(RefCell::new(Box::new([3, 4]))),
-    ])));
+    let a: Value<Box<[Box<[i32]>]>> =
+        Rc::new(RefCell::new(Box::new([Box::new([1, 2]), Box::new([3, 4])])));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

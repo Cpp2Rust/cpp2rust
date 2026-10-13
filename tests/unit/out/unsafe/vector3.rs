@@ -14,7 +14,10 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut v: Vec<Vec<i32>> = Vec::new();
-    v.resize_with(2_usize as usize, || <Vec<i32>>::default());
+    {
+        let __a0 = 2_usize as usize;
+        v.resize_with(__a0, || <Vec<i32>>::default())
+    };
     {
         let __a0 = 2_usize as usize;
         v[(0_usize)].resize_with(__a0, || <i32>::default())

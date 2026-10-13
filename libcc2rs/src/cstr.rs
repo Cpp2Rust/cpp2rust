@@ -261,6 +261,10 @@ impl<T: CChar> Ptr<T> {
                 let b = rc.borrow();
                 f(until_nul(&b[self.offset..]))
             }
+            PtrKind::Nested(parent) => {
+                let root = parent.root();
+                f(until_nul(&parent.borrow_slice(&*root)[self.offset..]))
+            }
             PtrKind::Field(root) => {
                 let root = crate::field::upgrade(root);
                 let b = Ptr::<T>::borrow_field(&*root, self.offset);

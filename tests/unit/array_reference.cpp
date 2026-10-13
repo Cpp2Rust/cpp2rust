@@ -1,4 +1,5 @@
 #include <cassert>
+#include <cstring>
 
 int len(const char (&s)[5]) {
   int n = 0;
@@ -59,6 +60,8 @@ int total_len(const char *(&names)[2]) {
   return len5(names[0]) + len5(names[1]);
 }
 
+const int kTable[2][3] = {{1, 2, 3}, {4, 5, 6}};
+
 int main() {
   assert(len("beta") == 4);
   char buf[5] = "abcd";
@@ -101,5 +104,17 @@ int main() {
   int (*q)[3] = rows;
   assert(sum(q[1]) == 15);
   assert(q[1] == &rows[1][0]);
+  q[1][2] = 8;
+  assert(rows[1][2] == 8 && rows[0][2] == 3);
+  rows[0][1] = rows[0][2];
+  q[1][0] = q[0][1];
+  q[1][1] += q[0][2];
+  assert(rows[0][1] == 3 && rows[1][0] == 3 && rows[1][1] == 8);
+  assert(&rows[1][2] - &rows[1][0] == 2);
+
+  int key[4] = {0, 4, 5, 6};
+  assert(memcmp(&key[1], kTable[1], sizeof(kTable[1])) == 0);
+  assert(memcmp(&key[1], kTable[0], sizeof(kTable[0])) != 0);
+  assert(kTable[1][2] == 6 && kTable[0][1] == 2);
   return 0;
 }

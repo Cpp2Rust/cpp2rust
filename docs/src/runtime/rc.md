@@ -60,6 +60,11 @@ A `Ptr<T>` knows what it points into:
 - `StackArray` and `HeapArray`: a fixed-size array.
 - `StackVec` and `HeapVec`: a growable buffer; `std::vector` contents and string
   literals live in one.
+- `Nested`: an inner vector or array of a nested container, such as a row of
+  `std::vector<std::vector<int>>` or of `int[2][3]`. The inner container is
+  stored inline in the outer one, so the pointer holds the pointer to it, as an
+  `Rc<dyn SliceParent<T>>`, and reaches it through the outer container on every
+  access.
 - `Field`: a field of a struct (see [Pointers to fields](#pointers-to-fields)).
 - `Reinterpreted`: a byte-level view produced by a cast (see
   [Type Reinterpretation](./reinterpret.md)).
@@ -300,9 +305,11 @@ through every other pointer at once.
 
 Where the code generator needs a different view of the same allocation, it does
 not upgrade at all. `decay` turns a pointer to a whole `Vec<T>` or `Box<[T]>`
-into a pointer to its first element by re-tagging the existing weak reference,
-and `Ptr::to_dyn` (see [Virtual Classes](./ptr-dyn.md)) does the same for the
-upcast to a trait object.
+into a pointer to its first element by re-tagging the existing weak reference;
+when the `Vec<T>` or `Box<[T]>` is itself an element of another container, it
+instead allocates a `Nested` pointer that holds the pointer to it. `Ptr::to_dyn`
+(see [Virtual Classes](./ptr-dyn.md)) re-tags the weak reference in the same way
+for the upcast to a trait object.
 
 ## Arithmetic
 

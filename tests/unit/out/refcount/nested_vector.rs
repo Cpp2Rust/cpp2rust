@@ -11,13 +11,14 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let v1: Value<Vec<Value<Vec<i32>>>> = Rc::new(RefCell::new(Vec::new()));
+    let v1: Value<Vec<Vec<i32>>> = Rc::new(RefCell::new(Vec::new()));
     let mut v2: Vec<i32> = vec![1];
-    (v1.as_pointer() as Ptr<Vec<Value<Vec<i32>>>>)
-        .with_mut(|__v: &mut Vec<Value<Vec<i32>>>| __v.push(Rc::new(RefCell::new((v2).clone()))));
+    {
+        let a0_clone = v2.clone();
+        (*v1.borrow_mut()).push(a0_clone)
+    };
     assert!(
-        (((Ptr::<Vec<i32>>::decay(&((*v1.borrow())[(*v1.borrow()).len() - 1].as_pointer()))
-            as Ptr<i32>)
+        (((Ptr::<Vec<i32>>::decay(&((v1.as_pointer() as Ptr<Vec<i32>>).to_last())) as Ptr<i32>)
             .offset(0_usize as isize)
             .read())
             == 1)

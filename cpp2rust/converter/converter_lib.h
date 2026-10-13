@@ -57,6 +57,8 @@ bool IsInMainFile(const clang::Decl *decl);
 
 bool IsUnionArrayMember(const clang::Expr *base);
 
+clang::Expr *SubscriptedArray(clang::Expr *base);
+
 std::tuple<clang::MemberExpr *, clang::RecordDecl *, std::string>
 ReplaceNonUniformLibcField(clang::MemberExpr *expr);
 

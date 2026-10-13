@@ -74,14 +74,13 @@ fn main_0() -> i32 {
     assert!(((q5.read()) == 13));
     let mut q6: Ptr<i32> = ((arr.as_pointer() as Ptr<i32>).offset(n));
     assert!(({ (q6).clone() } == { (q5).clone() }));
-    let matrix: Value<Box<[Value<Box<[i32]>>]>> = Rc::new(RefCell::new(Box::new([
-        Rc::new(RefCell::new(Box::new([0, 1, 2, 3]))),
-        Rc::new(RefCell::new(Box::new([4, 5, 6, 7]))),
-        Rc::new(RefCell::new(Box::new([8, 9, 10, 11]))),
+    let matrix: Value<Box<[Box<[i32]>]>> = Rc::new(RefCell::new(Box::new([
+        Box::new([0, 1, 2, 3]),
+        Box::new([4, 5, 6, 7]),
+        Box::new([8, 9, 10, 11]),
     ])));
-    let mut row1: Ptr<i32> = ((((matrix.as_pointer() as Ptr<Value<Box<[i32]>>>)
+    let mut row1: Ptr<i32> = ((((matrix.as_pointer() as Ptr<Box<[i32]>>)
         .offset(1)
-        .read()
         .as_pointer()) as Ptr<i32>)
         .offset(0));
     assert!(((elem!(row1, 2).read()) == 6));

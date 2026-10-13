@@ -76,6 +76,9 @@ int main() {
   grid.push_back(std::vector<int>(3, 0));
   grid[1][2] = 8;
   assert(grid[1][2] == 8 && grid[0][2] == 0);
+  grid[0][1] = grid[1][2];
+  grid[1][0] += grid[0][1];
+  assert(grid[0][1] == 8 && grid[1][0] == 8);
 
   std::array<int, 3> a = {4, 5, 6};
   a[1] = a[0] + a[2];

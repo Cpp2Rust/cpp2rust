@@ -25,11 +25,10 @@ The refcount model skips `Clone` altogether when the copy constructor is
 deleted, and never derives `Copy`. It derives `Clone` for C structs and for
 classes with an implicit or defaulted copy constructor, which copy each field
 with its own `clone`, i.e., its C++ copy constructor. The exceptions are fields
-that are or nest a `Value`, such as `std::vector<int>` (`Value<Vec<i32>>`, see
-[Boxing](boxing.md)) or `std::vector<std::vector<int>>`
-(`Value<Vec<Value<Vec<i32>>>>`), whose derived `clone` would share the `Value`s
-instead of copying them; the generated `Clone` then translates the implicit copy
-constructor, which copies them deeply.
+that are a `Value`, such as `std::vector<int>` (`Value<Vec<i32>>`, see
+[Boxing](boxing.md)), whose derived `clone` would share the `Value` instead of
+copying it; the generated `Clone` then translates the implicit copy constructor,
+which copies them deeply.
 
 A user-defined copy constructor takes a `Ptr` to the source, while `clone` only
 has `&self`. `clone` passes it a pointer to a shallow copy of `self`, built

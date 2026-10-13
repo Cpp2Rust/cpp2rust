@@ -11,14 +11,13 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let v: Value<Vec<Value<Vec<i32>>>> = Rc::new(RefCell::new(Vec::new()));
-    (v.as_pointer() as Ptr<Vec<Value<Vec<i32>>>>).with_mut(|__v: &mut Vec<Value<Vec<i32>>>| {
-        __v.push(Rc::new(RefCell::new(
-            (0..(10_usize) as usize)
-                .map(|_| <i32>::default())
-                .collect::<Vec<_>>(),
-        )))
-    });
+    let v: Value<Vec<Vec<i32>>> = Rc::new(RefCell::new(Vec::new()));
+    {
+        let __a1 = (0..(10_usize) as usize)
+            .map(|_| <i32>::default())
+            .collect::<Vec<_>>();
+        (*v.borrow_mut()).push(__a1)
+    };
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

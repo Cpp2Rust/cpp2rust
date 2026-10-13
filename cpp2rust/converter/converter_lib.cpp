@@ -214,6 +214,14 @@ bool IsUnionArrayMember(const clang::Expr *base) {
   return false;
 }
 
+clang::Expr *SubscriptedArray(clang::Expr *base) {
+  while (auto *sub = clang::dyn_cast<clang::ArraySubscriptExpr>(
+             base->IgnoreImplicit())) {
+    base = sub->getBase();
+  }
+  return base;
+}
+
 // TODO: this will be gone when the AST matcher lands
 std::tuple<clang::MemberExpr *, clang::RecordDecl *, std::string>
 ReplaceNonUniformLibcField(clang::MemberExpr *expr) {

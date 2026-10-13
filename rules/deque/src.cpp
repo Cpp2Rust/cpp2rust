@@ -22,8 +22,7 @@ template <typename T1> void f4(std::deque<T1> &o, T1 &&value) {
 
 template <typename T1> void f5(std::deque<T1> &o) { return o.pop_front(); }
 
-template <typename T1>
-void f7(std::deque<std::vector<T1>> &o, const std::vector<T1> &value) {
+template <typename T1> void f7(std::deque<T1> &o, const T1 &value) {
   return o.push_back(value);
 }
 
@@ -47,12 +46,6 @@ std::deque<T1> &f11(std::deque<T1> &dst, std::deque<T1> &&src) {
 
 template <typename T1, typename... Args>
 T1 &f12(std::deque<T1> &o, Init<T1, Args> &&...args) {
-  return o.emplace_back(std::forward<Args>(args)...);
-}
-
-template <typename T1, typename... Args>
-std::vector<T1> &f13(std::deque<std::vector<T1>> &o,
-                     Init<std::vector<T1>, Args> &&...args) {
   return o.emplace_back(std::forward<Args>(args)...);
 }
 

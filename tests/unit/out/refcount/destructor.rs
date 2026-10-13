@@ -169,20 +169,20 @@ fn main_0() -> i32 {
     assert!((order_count_2.with(|rc| *rc.borrow()) == 3));
     assert!(
         (({
-            let __idx = (0) as usize;
-            order_1.with(|rc| rc.borrow()[__idx])
+            let __idx0 = (0) as usize;
+            order_1.with(|rc| rc.borrow()[__idx0])
         }) == 3)
     );
     assert!(
         (({
-            let __idx = (1) as usize;
-            order_1.with(|rc| rc.borrow()[__idx])
+            let __idx0 = (1) as usize;
+            order_1.with(|rc| rc.borrow()[__idx0])
         }) == 2)
     );
     assert!(
         (({
-            let __idx = (2) as usize;
-            order_1.with(|rc| rc.borrow()[__idx])
+            let __idx0 = (2) as usize;
+            order_1.with(|rc| rc.borrow()[__idx0])
         }) == 1)
     );
     let mut before: i32 = global_0.with(|rc| *rc.borrow());

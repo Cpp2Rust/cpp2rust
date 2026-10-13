@@ -146,33 +146,23 @@ fn main_0() -> i32 {
         assert!((v1[(i as usize)] == i));
         i.prefix_inc();
     }
-    let m1: Value<Vec<Value<Vec<i32>>>> = Rc::new(RefCell::new(Vec::new()));
+    let m1: Value<Vec<Vec<i32>>> = Rc::new(RefCell::new(Vec::new()));
     let mut i: i32 = 0;
     'loop_: while (i < N) {
-        (m1.as_pointer() as Ptr<Vec<Value<Vec<i32>>>>).with_mut(
-            |__v: &mut Vec<Value<Vec<i32>>>| {
-                __v.push(Rc::new(RefCell::new(
-                    (0..(10_usize) as usize)
-                        .map(|_| <i32>::default())
-                        .collect::<Vec<_>>(),
-                )))
-            },
-        );
+        {
+            let __a1 = (0..(10_usize) as usize)
+                .map(|_| <i32>::default())
+                .collect::<Vec<_>>();
+            (*m1.borrow_mut()).push(__a1)
+        };
         i.prefix_inc();
     }
-    let m2: Value<Vec<Value<Vec<i32>>>> = Rc::new(RefCell::new(
-        (*m1.borrow())
-            .iter()
-            .map(|inner_vec| Rc::new(RefCell::new(inner_vec.borrow().clone())))
-            .collect(),
-    ));
+    let m2: Value<Vec<Vec<i32>>> = Rc::new(RefCell::new((*m1.borrow()).clone()));
     let mut i: i32 = 0;
     'loop_: while (i < N) {
         assert!(
-            ((*((m1.as_pointer() as Ptr<Value<Vec<i32>>>)
+            ((*((m1.as_pointer() as Ptr<Vec<i32>>)
                 .offset((i as usize))
-                .upgrade()
-                .deref()
                 .as_pointer() as Ptr<Vec<i32>>)
                 .upgrade()
                 .deref())
@@ -180,10 +170,8 @@ fn main_0() -> i32 {
                 == 10_usize)
         );
         assert!(
-            ((*((m2.as_pointer() as Ptr<Value<Vec<i32>>>)
+            ((*((m2.as_pointer() as Ptr<Vec<i32>>)
                 .offset((i as usize))
-                .upgrade()
-                .deref()
                 .as_pointer() as Ptr<Vec<i32>>)
                 .upgrade()
                 .deref())
@@ -194,10 +182,8 @@ fn main_0() -> i32 {
         'loop_: while (j < 10) {
             assert!(
                 ((elem!(
-                    ((m1.as_pointer() as Ptr<Value<Vec<i32>>>)
+                    ((m1.as_pointer() as Ptr<Vec<i32>>)
                         .offset((i as usize))
-                        .upgrade()
-                        .deref()
                         .as_pointer() as Ptr<i32>),
                     (j as usize)
                 )
@@ -206,10 +192,8 @@ fn main_0() -> i32 {
             );
             assert!(
                 ((elem!(
-                    ((m2.as_pointer() as Ptr<Value<Vec<i32>>>)
+                    ((m2.as_pointer() as Ptr<Vec<i32>>)
                         .offset((i as usize))
-                        .upgrade()
-                        .deref()
                         .as_pointer() as Ptr<i32>),
                     (j as usize)
                 )
@@ -225,10 +209,8 @@ fn main_0() -> i32 {
         let mut j: i32 = 0;
         'loop_: while (j < 10) {
             elem!(
-                ((m2.as_pointer() as Ptr<Value<Vec<i32>>>)
+                ((m2.as_pointer() as Ptr<Vec<i32>>)
                     .offset((i as usize))
-                    .upgrade()
-                    .deref()
                     .as_pointer() as Ptr<i32>),
                 (j as usize)
             )
@@ -240,10 +222,8 @@ fn main_0() -> i32 {
     let mut i: i32 = 0;
     'loop_: while (i < N) {
         assert!(
-            ((*((m1.as_pointer() as Ptr<Value<Vec<i32>>>)
+            ((*((m1.as_pointer() as Ptr<Vec<i32>>)
                 .offset((i as usize))
-                .upgrade()
-                .deref()
                 .as_pointer() as Ptr<Vec<i32>>)
                 .upgrade()
                 .deref())
@@ -251,10 +231,8 @@ fn main_0() -> i32 {
                 == 10_usize)
         );
         assert!(
-            ((*((m2.as_pointer() as Ptr<Value<Vec<i32>>>)
+            ((*((m2.as_pointer() as Ptr<Vec<i32>>)
                 .offset((i as usize))
-                .upgrade()
-                .deref()
                 .as_pointer() as Ptr<Vec<i32>>)
                 .upgrade()
                 .deref())
@@ -265,10 +243,8 @@ fn main_0() -> i32 {
         'loop_: while (j < 10) {
             assert!(
                 ((elem!(
-                    ((m1.as_pointer() as Ptr<Value<Vec<i32>>>)
+                    ((m1.as_pointer() as Ptr<Vec<i32>>)
                         .offset((i as usize))
-                        .upgrade()
-                        .deref()
                         .as_pointer() as Ptr<i32>),
                     (j as usize)
                 )
@@ -277,10 +253,8 @@ fn main_0() -> i32 {
             );
             assert!(
                 ((elem!(
-                    ((m2.as_pointer() as Ptr<Value<Vec<i32>>>)
+                    ((m2.as_pointer() as Ptr<Vec<i32>>)
                         .offset((i as usize))
-                        .upgrade()
-                        .deref()
                         .as_pointer() as Ptr<i32>),
                     (j as usize)
                 )

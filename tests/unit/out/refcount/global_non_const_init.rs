@@ -111,15 +111,15 @@ pub fn main() {
 fn main_0() -> i32 {
     assert!(
         ((({
-            let __idx = (0) as usize;
-            signature_3.with(|rc| rc.borrow()[__idx])
+            let __idx0 = (0) as usize;
+            signature_3.with(|rc| rc.borrow()[__idx0])
         }) as i32)
             == 10)
     );
     assert!(
         ((({
-            let __idx = (1) as usize;
-            signature_3.with(|rc| rc.borrow()[__idx])
+            let __idx0 = (1) as usize;
+            signature_3.with(|rc| rc.borrow()[__idx0])
         }) as i32)
             == 4)
     );
