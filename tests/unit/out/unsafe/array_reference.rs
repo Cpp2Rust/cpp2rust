@@ -145,6 +145,12 @@ unsafe fn main_0() -> i32 {
             && ((rows[(1) as usize][(0) as usize]) == (3)))
             && ((rows[(1) as usize][(1) as usize]) == (8))
     );
+    assert!(
+        (((((&mut rows[(1) as usize][(2) as usize] as *mut i32) as usize
+            - (&mut rows[(1) as usize][(0) as usize] as *mut i32) as usize)
+            / ::std::mem::size_of::<i32>()) as i64)
+            == (2_i64))
+    );
     let mut key: [i32; 4] = [0, 4, 5, 6];
     assert!(
         (({

@@ -110,6 +110,7 @@ int main() {
   q[1][0] = q[0][1];
   q[1][1] += q[0][2];
   assert(rows[0][1] == 3 && rows[1][0] == 3 && rows[1][1] == 8);
+  assert(&rows[1][2] - &rows[1][0] == 2);
 
   int key[4] = {0, 4, 5, 6};
   assert(memcmp(&key[1], kTable[1], sizeof(kTable[1])) == 0);

@@ -189,6 +189,17 @@ fn main_0() -> i32 {
             && ((*rows.borrow())[(1) as usize][(0) as usize] == 3))
             && ((*rows.borrow())[(1) as usize][(1) as usize] == 8)
     );
+    assert!(
+        ((((((rows.as_pointer() as Ptr<Box<[i32]>>)
+            .offset(1)
+            .as_pointer()) as Ptr<i32>)
+            .offset(2))
+            - ((((rows.as_pointer() as Ptr<Box<[i32]>>)
+                .offset(1)
+                .as_pointer()) as Ptr<i32>)
+                .offset(0))) as i64
+            == 2_i64)
+    );
     let key: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([0, 4, 5, 6])));
     assert!(
         ((((key.as_pointer() as Ptr<i32>).offset(1)) as Ptr::<i32>)
