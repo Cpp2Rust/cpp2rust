@@ -113,7 +113,10 @@ impl Buffer {
             n: n,
             arr: [n, ((n) + (1))],
         };
-        this.rows.push(this.data.clone());
+        {
+            let a0_clone = this.data.clone();
+            this.rows.push(a0_clone)
+        };
         this
     }
     pub unsafe fn move_from(_a0: *mut Buffer) -> Self {

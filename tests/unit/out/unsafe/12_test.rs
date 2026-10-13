@@ -14,11 +14,12 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut v: Vec<Vec<i32>> = Vec::new();
-    v.push(
-        (0..(10_usize) as usize)
+    {
+        let __a1 = (0..(10_usize) as usize)
             .map(|_| <i32>::default())
-            .collect::<Vec<_>>(),
-    );
+            .collect::<Vec<_>>();
+        v.push(__a1)
+    };
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

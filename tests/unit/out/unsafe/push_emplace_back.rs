@@ -24,7 +24,10 @@ pub struct JPEGData {
     pub app_data: Vec<Vec<u8>>,
 }
 pub unsafe fn push_param_0(mut dest: *mut Vec<Vec<u8>>) {
-    (*dest).push(Vec::new());
+    {
+        let __a1 = Vec::new();
+        (*dest).push(__a1)
+    };
 }
 pub unsafe fn push_local_from_field_1(mut jpg: *mut JPEGData, mut cond: bool) {
     let mut head: [u8; 3] = [1_u8, 2_u8, 3_u8];
@@ -34,15 +37,16 @@ pub unsafe fn push_local_from_field_1(mut jpg: *mut JPEGData, mut cond: bool) {
     } else {
         dest = (&mut (*jpg).app_data as *mut Vec<Vec<u8>>);
     }
-    (*dest).push(
-        core::slice::from_raw_parts(
+    {
+        let __a1 = core::slice::from_raw_parts(
             head.as_mut_ptr(),
             (head.as_mut_ptr().offset((3) as isize)).offset_from(head.as_mut_ptr()) as usize,
         )
         .iter()
         .map(|x| u8::try_from(x.clone()).ok().unwrap())
-        .collect(),
-    );
+        .collect();
+        (*dest).push(__a1)
+    };
 }
 pub unsafe fn shrink_through_ptr_2(mut comps: *mut Vec<Chunk>) {
     (*comps).shrink_to_fit();

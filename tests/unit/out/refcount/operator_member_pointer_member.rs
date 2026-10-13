@@ -71,8 +71,8 @@ fn main_0() -> i32 {
     ({ Table::operator_index(1) }).write(80);
     assert!(
         (({
-            let __idx = (1) as usize;
-            table_0.with(|rc| rc.borrow()[__idx])
+            let __idx0 = (1) as usize;
+            table_0.with(|rc| rc.borrow()[__idx0])
         }) == 80)
     );
     return 0;

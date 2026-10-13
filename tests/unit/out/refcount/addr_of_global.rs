@@ -46,16 +46,16 @@ pub fn main() {
 fn main_0() -> i32 {
     assert!(
         (({
-            let __idx = (0) as usize;
-            items_3.with(|rc| rc.borrow()[__idx].clone())
+            let __idx0 = (0) as usize;
+            items_3.with(|rc| rc.borrow()[__idx0].clone())
         })
         .with(|__s| __s.value)
             == 1)
     );
     assert!(
         (({
-            let __idx = (1) as usize;
-            items_3.with(|rc| rc.borrow()[__idx].clone())
+            let __idx0 = (1) as usize;
+            items_3.with(|rc| rc.borrow()[__idx0].clone())
         })
         .with(|__s| __s.value)
             == 2)
@@ -63,16 +63,16 @@ fn main_0() -> i32 {
     assert!(({ (*obj_4.with(Value::clone).borrow()).p.clone() }.with(|__s| __s.value) == 42));
     assert!(
         (({
-            let __idx = (0) as usize;
-            cache_5.with(|rc| rc.borrow()[__idx].clone())
+            let __idx0 = (0) as usize;
+            cache_5.with(|rc| rc.borrow()[__idx0].clone())
         })
         .with(|__s| __s.value)
             == 1)
     );
     assert!(
         (({
-            let __idx = (1) as usize;
-            cache_5.with(|rc| rc.borrow()[__idx].clone())
+            let __idx0 = (1) as usize;
+            cache_5.with(|rc| rc.borrow()[__idx0].clone())
         })
         .with(|__s| __s.value)
             == 2)

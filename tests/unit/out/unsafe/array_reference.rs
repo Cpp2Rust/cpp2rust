@@ -74,6 +74,8 @@ pub unsafe fn total_len_13(names: *mut [*const libc::c_char; 2]) -> i32 {
     return ((unsafe { len5_1((*names)[(0) as usize]) })
         + (unsafe { len5_1((*names)[(1) as usize]) }));
 }
+pub static mut kTable_14: std::cell::LazyCell<[[i32; 3]; 2]> =
+    std::cell::LazyCell::new(|| unsafe { [[1, 2, 3], [4, 5, 6]] });
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -131,6 +133,70 @@ unsafe fn main_0() -> i32 {
         (((*q.offset((1) as isize)).as_mut_ptr())
             == (&mut rows[(1) as usize][(0) as usize] as *mut i32))
     );
+    (*q.offset((1) as isize))[(2) as usize] = 8;
+    assert!(
+        ((rows[(1) as usize][(2) as usize]) == (8)) && ((rows[(0) as usize][(2) as usize]) == (3))
+    );
+    rows[(0) as usize][(1) as usize] = rows[(0) as usize][(2) as usize];
+    (*q.offset((1) as isize))[(0) as usize] = (*q.offset((0) as isize))[(1) as usize];
+    (*q.offset((1) as isize))[(1) as usize] += (*q.offset((0) as isize))[(2) as usize];
+    assert!(
+        (((rows[(0) as usize][(1) as usize]) == (3))
+            && ((rows[(1) as usize][(0) as usize]) == (3)))
+            && ((rows[(1) as usize][(1) as usize]) == (8))
+    );
+    let mut key: [i32; 4] = [0, 4, 5, 6];
+    assert!(
+        (({
+            let sa = core::slice::from_raw_parts(
+                ((&mut key[(1) as usize] as *mut i32) as *const ::libc::c_void) as *const u8,
+                ::std::mem::size_of::<[i32; 3]>() as usize,
+            );
+            let sb = core::slice::from_raw_parts(
+                ((*std::cell::LazyCell::force_mut(&mut *&raw mut kTable_14))[(1) as usize].as_ptr()
+                    as *const ::libc::c_void) as *const u8,
+                ::std::mem::size_of::<[i32; 3]>() as usize,
+            );
+            let mut diff = 0_i32;
+            for (x, y) in sa.iter().zip(sb.iter()) {
+                if x != y {
+                    diff = (*x as i32) - (*y as i32);
+                    break;
+                }
+            }
+            diff
+        }) == (0))
+    );
+    assert!(
+        (({
+            let sa = core::slice::from_raw_parts(
+                ((&mut key[(1) as usize] as *mut i32) as *const ::libc::c_void) as *const u8,
+                ::std::mem::size_of::<[i32; 3]>() as usize,
+            );
+            let sb = core::slice::from_raw_parts(
+                ((*std::cell::LazyCell::force_mut(&mut *&raw mut kTable_14))[(0) as usize].as_ptr()
+                    as *const ::libc::c_void) as *const u8,
+                ::std::mem::size_of::<[i32; 3]>() as usize,
+            );
+            let mut diff = 0_i32;
+            for (x, y) in sa.iter().zip(sb.iter()) {
+                if x != y {
+                    diff = (*x as i32) - (*y as i32);
+                    break;
+                }
+            }
+            diff
+        }) != (0))
+    );
+    assert!(
+        (((*std::cell::LazyCell::force_mut(&mut *&raw mut kTable_14))[(1) as usize][(2) as usize])
+            == (6))
+            && (((*std::cell::LazyCell::force_mut(&mut *&raw mut kTable_14))[(0) as usize]
+                [(1) as usize])
+                == (2))
+    );
     return 0;
 }
-pub unsafe fn __cpp2rust_init_globals() {}
+pub unsafe fn __cpp2rust_init_globals() {
+    std::cell::LazyCell::force(&*&raw const kTable_14);
+}

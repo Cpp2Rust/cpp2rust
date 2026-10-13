@@ -22,8 +22,8 @@ fn main_0() -> i32 {
         assert!(
             ({ ((elem!(special, i).read()) as i32) } == {
                 (({
-                    let __idx = (i) as usize;
-                    expected_0.with(|rc| rc.borrow()[__idx])
+                    let __idx0 = (i) as usize;
+                    expected_0.with(|rc| rc.borrow()[__idx0])
                 }) as i32)
             })
         );

@@ -50,8 +50,8 @@ fn main_0() -> i32 {
     'loop_: while (i < 4) {
         assert!(
             ({
-                let __idx = (i) as usize;
-                arr_of_ptr_3.with(|rc| rc.borrow()[__idx].clone())
+                let __idx0 = (i) as usize;
+                arr_of_ptr_3.with(|rc| rc.borrow()[__idx0].clone())
             })
             .is_null()
         );
@@ -62,8 +62,8 @@ fn main_0() -> i32 {
     'loop_: while (i < 3) {
         assert!(
             ({
-                let __idx = (i) as usize;
-                const_arr_of_ptr_5.with(|rc| rc.borrow()[__idx].clone())
+                let __idx0 = (i) as usize;
+                const_arr_of_ptr_5.with(|rc| rc.borrow()[__idx0].clone())
             })
             .is_null()
         );

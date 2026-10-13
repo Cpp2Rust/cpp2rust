@@ -59,8 +59,8 @@ fn main_0() -> i32 {
         );
         assert!(
             ({
-                let __idx = (i) as usize;
-                arr_of_pointers_2.with(|rc| rc.borrow()[__idx].clone())
+                let __idx0 = (i) as usize;
+                arr_of_pointers_2.with(|rc| rc.borrow()[__idx0].clone())
             })
             .is_null()
         );
