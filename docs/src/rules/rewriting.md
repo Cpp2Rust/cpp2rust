@@ -61,20 +61,6 @@ reference usages (`r.push_back(20)` with `std::vector<int> &r = *p`); both are
 [translated as a `Ptr`](../codegen/pointers.md), and that `Ptr` is what
 `with_mut` is called on.
 
-When the pointee is itself a boxed value (`Value<T>`, i.e. `Rc<RefCell<T>>`),
-the closure takes `&mut Value<T>` and an extra borrow is inserted. This is the
-case for nested containers: the refcount model translates
-`std::vector<std::vector<int>>` as `Vec<Value<Vec<i32>>>` so that each element
-has interior mutability of its own, and a `Ptr` to an inner vector therefore
-points at a `Value<Vec<i32>>`, not a `Vec<i32>`:
-
-```rust
-ptr.with_mut(|__v: &mut Value<Vec<i32>>| (*__v.borrow_mut()).push(20))
-```
-
-The closure type is built from the C++ argument's type, not the rule's declared
-parameter type.
-
 ## The read-access counterpart
 
 For read access the converter does not emit a closure. A pointer receiver whose

@@ -9,7 +9,7 @@ use std::{
 };
 
 use crate::field::{Root, upgrade as upgrade_root};
-use crate::rc::Ptr;
+use crate::rc::{Ptr, SliceParent};
 
 pub trait ByteRepr: 'static {
     fn byte_size() -> usize
@@ -182,6 +182,7 @@ pub struct OriginalAlloc {
 enum Storage {
     Alloc(Weak<dyn Any>),
     Field(Weak<dyn Root>, usize),
+    Nested(Rc<dyn Any>, usize),
 }
 
 // The storage passed to the AllocOps of a field.
@@ -213,6 +214,13 @@ impl OriginalAlloc {
         }
     }
 
+    pub(crate) fn nested<T: ByteRepr>(parent: &Rc<dyn SliceParent<T>>) -> Self {
+        Self {
+            storage: Storage::Nested(Rc::new(Rc::clone(parent)), parent.address()),
+            ops: &NestedOps::<T>(PhantomData),
+        }
+    }
+
     #[inline]
     fn with_storage<R>(&self, f: impl FnOnce(&dyn Any) -> R) -> R {
         match &self.storage {
@@ -221,6 +229,7 @@ impl OriginalAlloc {
                 root: upgrade_root(root),
                 field: *field,
             }),
+            Storage::Nested(parent, _) => f(&**parent),
         }
     }
 
@@ -245,6 +254,7 @@ impl OriginalAlloc {
             Storage::Field(root, field) => {
                 (root.as_ptr() as *const () as usize).wrapping_add(*field)
             }
+            Storage::Nested(_, address) => *address,
         }
     }
 
@@ -458,5 +468,27 @@ impl<T: ByteRepr> AllocOps for FieldOps<T> {
 
     fn total_byte_len(&self, _storage: &dyn Any) -> usize {
         T::byte_size()
+    }
+}
+
+struct NestedOps<T>(PhantomData<fn() -> T>);
+
+impl<T: ByteRepr> AllocOps for NestedOps<T> {
+    fn read_bytes(&self, parent: &dyn Any, byte_offset: usize, buf: &mut [u8]) {
+        let parent = parent.downcast_ref::<Rc<dyn SliceParent<T>>>().unwrap();
+        let root = parent.root();
+        slice_read_bytes(&parent.borrow_slice(&*root), byte_offset, buf);
+    }
+
+    fn write_bytes(&self, parent: &dyn Any, byte_offset: usize, data: &[u8]) {
+        let parent = parent.downcast_ref::<Rc<dyn SliceParent<T>>>().unwrap();
+        let root = parent.root();
+        slice_write_bytes(&mut parent.borrow_slice_mut(&*root), byte_offset, data);
+    }
+
+    fn total_byte_len(&self, parent: &dyn Any) -> usize {
+        let parent = parent.downcast_ref::<Rc<dyn SliceParent<T>>>().unwrap();
+        let root = parent.root();
+        parent.borrow_slice(&*root).len() * T::byte_size()
     }
 }

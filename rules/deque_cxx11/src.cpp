@@ -10,8 +10,3 @@ template <typename T1, typename... Args>
 void f1(std::deque<T1> &o, Init<T1, Args> &&...args) {
   return o.emplace_back(std::forward<Args>(args)...);
 }
-
-template <typename T1, typename... Args>
-void f2(std::deque<std::vector<T1>> &o, Init<std::vector<T1>, Args> &&...args) {
-  return o.emplace_back(std::forward<Args>(args)...);
-}

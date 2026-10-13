@@ -9,7 +9,6 @@
 
 template <typename T1> using t1 = std::vector<T1>;
 template <typename T1> using t2 = typename std::vector<T1>::iterator;
-template <typename T1> using t3 = std::vector<std::vector<T1>>;
 template <typename T1> using t4 = typename std::vector<T1>::const_iterator;
 
 template <typename T1, typename T2 = std::allocator<T1>>
@@ -148,25 +147,6 @@ typename std::vector<T1>::iterator f28(typename std::vector<T1>::iterator a0,
 }
 
 template <typename T1>
-std::vector<std::vector<T1>> f29(const std::vector<std::vector<T1>> &&o) {
-  return std::vector<std::vector<T1>>(std::move(o));
-}
-
-template <typename T1> std::vector<std::vector<T1>> f30(std::size_t n) {
-  return std::vector<std::vector<T1>>(n);
-}
-
-template <typename T1>
-void f31(std::vector<std::vector<T1>> &o, std::vector<T1> &&value) {
-  return o.push_back(std::move(value));
-}
-
-template <typename T1>
-void f32(std::vector<std::vector<T1>> &o, std::size_t n) {
-  return o.resize(n);
-}
-
-template <typename T1>
 typename std::vector<T1>::iterator::difference_type
 f33(const typename std::vector<T1>::iterator &it1,
     const typename std::vector<T1>::iterator &it2) {
@@ -237,11 +217,6 @@ template <typename T1> const T1 &f51(const std::vector<T1> &o) {
 }
 
 template <typename T1>
-void f52(std::vector<std::vector<T1>> &o, const std::vector<T1> &value) {
-  return o.push_back(value);
-}
-
-template <typename T1>
 typename std::vector<T1>::iterator
 f53(std::vector<T1> &o, typename std::vector<T1>::const_iterator pos,
     const T1 *first, const T1 *last) {
@@ -257,10 +232,6 @@ void f54(std::vector<T1> &o, std::size_t n,
 template <typename T1>
 std::vector<T1> &f55(std::vector<T1> &dst, std::vector<T1> &&src) {
   return dst.operator=(std::move(src));
-}
-
-template <typename T1> std::vector<T1> &f56(std::vector<std::vector<T1>> &o) {
-  return o.back();
 }
 
 template <typename T1>
@@ -495,12 +466,6 @@ const T1 &f99(const std::vector<T1, T2> &o) {
 }
 
 template <typename T1, typename T2 = std::allocator<T1>>
-void f100(std::vector<std::vector<T1, T2>> &o,
-          const std::vector<T1, T2> &value) {
-  return o.push_back(value);
-}
-
-template <typename T1, typename T2 = std::allocator<T1>>
 typename std::vector<T1, T2>::iterator
 f101(std::vector<T1, T2> &o, typename std::vector<T1, T2>::const_iterator pos,
      const T1 *first, const T1 *last) {
@@ -553,20 +518,8 @@ std::vector<T1, T2> f110(const std::vector<T1, T2> &o) {
   return std::vector<T1, T2>(o);
 }
 
-template <typename T1>
-std::vector<std::vector<T1>> &f111(std::vector<std::vector<T1>> &dst,
-                                   std::vector<std::vector<T1>> &&src) {
-  return dst.operator=(std::move(src));
-}
-
 template <typename T1, typename... Args>
 T1 &f112(std::vector<T1> &o, Init<T1, Args> &&...args) {
-  return o.emplace_back(std::forward<Args>(args)...);
-}
-
-template <typename T1, typename... Args>
-std::vector<T1> &f113(std::vector<std::vector<T1>> &o,
-                      Init<std::vector<T1>, Args> &&...args) {
   return o.emplace_back(std::forward<Args>(args)...);
 }
 

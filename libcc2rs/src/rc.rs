@@ -5,7 +5,7 @@ use crate::{CChar, PostfixDec, PostfixInc, PrefixDec, PrefixInc};
 use std::any::{Any, TypeId};
 
 use std::{
-    cell::{Ref, RefCell},
+    cell::{Ref, RefCell, RefMut},
     fmt,
     ops::Sub,
     rc::{Rc, Weak},
@@ -29,6 +29,71 @@ impl<T: Clone> DeepClone for Value<T> {
     }
 }
 
+pub trait SliceParent<T> {
+    fn root(&self) -> Rc<dyn Any>;
+    fn borrow_slice<'a>(&self, root: &'a dyn Any) -> Ref<'a, [T]>;
+    fn borrow_slice_mut<'a>(&self, root: &'a dyn Any) -> RefMut<'a, [T]>;
+    fn address(&self) -> usize;
+}
+
+impl<T, C> SliceParent<T> for Ptr<C>
+where
+    C: AsRef<[T]> + AsMut<[T]> + 'static,
+{
+    fn root(&self) -> Rc<dyn Any> {
+        match &self.kind {
+            PtrKind::StackVec(weak) | PtrKind::HeapVec(weak) => {
+                weak.upgrade().unwrap_or_else(|| dangling())
+            }
+            PtrKind::StackArray(weak) | PtrKind::HeapArray(weak) => {
+                weak.upgrade().unwrap_or_else(|| dangling())
+            }
+            PtrKind::Nested(parent) => parent.root(),
+            _ => unreachable!(),
+        }
+    }
+
+    fn borrow_slice<'a>(&self, root: &'a dyn Any) -> Ref<'a, [T]> {
+        let offset = self.offset;
+        match &self.kind {
+            PtrKind::StackVec(_) | PtrKind::HeapVec(_) => Ref::map(
+                root.downcast_ref::<RefCell<Vec<C>>>().unwrap().borrow(),
+                |v| v[offset].as_ref(),
+            ),
+            PtrKind::StackArray(_) | PtrKind::HeapArray(_) => Ref::map(
+                root.downcast_ref::<RefCell<Box<[C]>>>().unwrap().borrow(),
+                |a| a[offset].as_ref(),
+            ),
+            PtrKind::Nested(parent) => Ref::map(parent.borrow_slice(root), |s| s[offset].as_ref()),
+            _ => unreachable!(),
+        }
+    }
+
+    fn borrow_slice_mut<'a>(&self, root: &'a dyn Any) -> RefMut<'a, [T]> {
+        let offset = self.offset;
+        match &self.kind {
+            PtrKind::StackVec(_) | PtrKind::HeapVec(_) => RefMut::map(
+                root.downcast_ref::<RefCell<Vec<C>>>().unwrap().borrow_mut(),
+                |v| v[offset].as_mut(),
+            ),
+            PtrKind::StackArray(_) | PtrKind::HeapArray(_) => RefMut::map(
+                root.downcast_ref::<RefCell<Box<[C]>>>()
+                    .unwrap()
+                    .borrow_mut(),
+                |a| a[offset].as_mut(),
+            ),
+            PtrKind::Nested(parent) => {
+                RefMut::map(parent.borrow_slice_mut(root), |s| s[offset].as_mut())
+            }
+            _ => unreachable!(),
+        }
+    }
+
+    fn address(&self) -> usize {
+        self.kind.address().wrapping_add(self.byte_offset())
+    }
+}
+
 pub(crate) struct ReinterpretedView {
     // Pointer to the source of reinterpret
     pub(crate) alloc: OriginalAlloc,
@@ -48,6 +113,7 @@ pub(crate) enum PtrKind<T> {
     HeapArray(Weak<RefCell<Box<[T]>>>),
     StackVec(Weak<RefCell<Vec<T>>>),
     HeapVec(Weak<RefCell<Vec<T>>>),
+    Nested(Rc<dyn SliceParent<T>>),
     Field(Weak<dyn Root>),
     Reinterpreted(Rc<ReinterpretedView>),
 }
@@ -60,6 +126,11 @@ pub enum StrongPtr<T> {
     },
     StackArray {
         rc: Rc<RefCell<Box<[T]>>>,
+        offset: usize,
+    },
+    Nested {
+        root: Rc<dyn Any>,
+        parent: Rc<dyn SliceParent<T>>,
         offset: usize,
     },
     Field {
@@ -84,6 +155,11 @@ impl<T: ByteRepr> StrongPtr<T> {
             StrongPtr::StackSingle(rc) => rc.borrow(),
             StrongPtr::Vec { rc, offset } => Ref::map(rc.borrow(), |v| &v[*offset]),
             StrongPtr::StackArray { rc, offset } => Ref::map(rc.borrow(), |a| &a[*offset]),
+            StrongPtr::Nested {
+                root,
+                parent,
+                offset,
+            } => Ref::map(parent.borrow_slice(&**root), |v| &v[*offset]),
             StrongPtr::Field { root, offset } => Ptr::borrow_field(&**root, *offset),
             StrongPtr::Reinterpreted {
                 alloc,
@@ -114,6 +190,7 @@ impl<T> fmt::Debug for PtrKind<T> {
             PtrKind::Null => write!(f, "Null"),
             PtrKind::StackVec(w) => write!(f, "StackVec({:?})", w.as_ptr()),
             PtrKind::HeapVec(w) => write!(f, "HeapVec({:?})", w.as_ptr()),
+            PtrKind::Nested(parent) => write!(f, "Nested(0x{:x})", parent.address()),
             PtrKind::StackSingle(w) => write!(f, "StackSingle({:?})", w.as_ptr()),
             PtrKind::HeapSingle(w) => write!(f, "HeapSingle({:?})", w.as_ptr()),
             PtrKind::StackArray(w) => write!(f, "StackArray({:?})", w.as_ptr()),
@@ -133,6 +210,7 @@ impl<T> Clone for PtrKind<T> {
             PtrKind::Null => PtrKind::Null,
             PtrKind::StackVec(weak) => PtrKind::StackVec(weak.clone()),
             PtrKind::HeapVec(weak) => PtrKind::HeapVec(weak.clone()),
+            PtrKind::Nested(parent) => PtrKind::Nested(Rc::clone(parent)),
             PtrKind::StackSingle(weak) => PtrKind::StackSingle(weak.clone()),
             PtrKind::HeapSingle(weak) => PtrKind::HeapSingle(weak.clone()),
             PtrKind::StackArray(weak) => PtrKind::StackArray(weak.clone()),
@@ -149,6 +227,7 @@ impl<T> PtrKind<T> {
             PtrKind::Null => 0,
             PtrKind::StackSingle(w) | PtrKind::HeapSingle(w) => w.as_ptr() as usize,
             PtrKind::StackVec(w) | PtrKind::HeapVec(w) => w.as_ptr() as usize,
+            PtrKind::Nested(parent) => parent.address(),
             PtrKind::StackArray(w) | PtrKind::HeapArray(w) => w.as_ptr() as usize,
             PtrKind::Field(root) => root.as_ptr() as *const () as usize,
             PtrKind::Reinterpreted(data) => data.alloc.address(),
@@ -321,6 +400,7 @@ impl<T> Ptr<T> {
             PtrKind::StackVec(weak) | PtrKind::HeapVec(weak) => {
                 weak.upgrade().expect("ub: dangling pointer").borrow().len()
             }
+            PtrKind::Nested(parent) => parent.borrow_slice(&*parent.root()).len(),
             PtrKind::StackArray(weak) | PtrKind::HeapArray(weak) => {
                 weak.upgrade().expect("ub: dangling pointer").borrow().len()
             }
@@ -338,6 +418,7 @@ impl<T> Ptr<T> {
                 .expect("ub: dangling pointer")
                 .borrow()
                 .is_empty(),
+            PtrKind::Nested(parent) => parent.borrow_slice(&*parent.root()).is_empty(),
             PtrKind::StackArray(weak) | PtrKind::HeapArray(weak) => weak
                 .upgrade()
                 .expect("ub: dangling pointer")
@@ -394,6 +475,11 @@ impl<T> Ptr<T> {
                 rc: weak.upgrade().unwrap_or_else(|| dangling()),
                 offset: self.offset,
             },
+            PtrKind::Nested(parent) => StrongPtr::Nested {
+                root: parent.root(),
+                parent: Rc::clone(parent),
+                offset: self.offset,
+            },
             PtrKind::StackArray(weak) | PtrKind::HeapArray(weak) => StrongPtr::StackArray {
                 rc: weak.upgrade().unwrap_or_else(|| dangling()),
                 offset: self.offset,
@@ -447,6 +533,10 @@ impl<T> Ptr<T> {
             ),
             PtrKind::StackVec(weak) | PtrKind::HeapVec(weak) => (
                 OriginalAlloc::slice(weak),
+                self.offset.wrapping_mul(T::byte_size()),
+            ),
+            PtrKind::Nested(parent) => (
+                OriginalAlloc::nested(parent),
                 self.offset.wrapping_mul(T::byte_size()),
             ),
             PtrKind::StackArray(weak) | PtrKind::HeapArray(weak) => (
@@ -532,6 +622,10 @@ impl<T> Ptr<T> {
                 let mut borrow = rc.borrow_mut();
                 f(&mut borrow[offset])
             }
+            PtrKind::Nested(parent) => {
+                let root = parent.root();
+                f(&mut parent.borrow_slice_mut(&*root)[offset])
+            }
             PtrKind::Field(root) => {
                 let root = upgrade_root(root);
                 f(&mut Self::borrow_field_mut(&*root, offset))
@@ -598,6 +692,10 @@ impl<T> Ptr<T> {
                 let borrow = rc.borrow();
                 f(&borrow[offset])
             }
+            PtrKind::Nested(parent) => {
+                let root = parent.root();
+                f(&parent.borrow_slice(&*root)[offset])
+            }
             PtrKind::Field(root) => {
                 let root = upgrade_root(root);
                 f(&Self::borrow_field(&*root, offset))
@@ -654,6 +752,10 @@ impl<T: CChar> Ptr<T> {
                 let mut b = rc.borrow_mut();
                 f(&mut b[off..off + len])
             }
+            PtrKind::Nested(parent) => {
+                let root = parent.root();
+                f(&mut parent.borrow_slice_mut(&*root)[off..off + len])
+            }
             PtrKind::Field(root) => {
                 assert!(len <= 1, "ub: with_slice_mut out of bounds");
                 let root = upgrade_root(root);
@@ -688,6 +790,10 @@ impl<T: CChar> Ptr<T> {
                 let rc = weak.upgrade().expect("ub: dangling pointer");
                 let b = rc.borrow();
                 f(&b[off..off + len])
+            }
+            PtrKind::Nested(parent) => {
+                let root = parent.root();
+                f(&parent.borrow_slice(&*root)[off..off + len])
             }
             PtrKind::Field(root) => {
                 assert!(len <= 1, "ub: with_slice out of bounds");
@@ -744,6 +850,10 @@ impl<T: std::cmp::Ord> Ptr<T> {
                 let strong = weak.upgrade().expect("ub: dangling pointer");
                 (*strong.borrow_mut())[self.get_offset()..last].sort();
             }
+            PtrKind::Nested(ref parent) => {
+                let root = parent.root();
+                parent.borrow_slice_mut(&*root)[self.get_offset()..last].sort();
+            }
             PtrKind::StackArray(ref weak) | PtrKind::HeapArray(ref weak) => {
                 let strong = weak.upgrade().expect("ub: dangling pointer");
                 (*strong.borrow_mut())[self.get_offset()..last].sort();
@@ -786,6 +896,11 @@ impl<T: Clone> Ptr<T> {
             PtrKind::StackVec(ref weak) | PtrKind::HeapVec(ref weak) => {
                 let strong = weak.upgrade().expect("ub: dangling pointer");
                 let mut borrow = strong.borrow_mut();
+                sort(&mut borrow, self.get_offset(), last, &mut cmp);
+            }
+            PtrKind::Nested(ref parent) => {
+                let root = parent.root();
+                let mut borrow = parent.borrow_slice_mut(&*root);
                 sort(&mut borrow, self.get_offset(), last, &mut cmp);
             }
             PtrKind::StackArray(ref weak) | PtrKind::HeapArray(ref weak) => {
@@ -1052,7 +1167,21 @@ impl<T> AsPointer<T> for Rc<RefCell<Vec<T>>> {
     }
 }
 
-impl<T> Ptr<Vec<T>> {
+impl<T> AsPointer<Vec<T>> for Ptr<Vec<T>> {
+    #[inline]
+    fn as_pointer(&self) -> Ptr<Vec<T>> {
+        self.clone()
+    }
+}
+
+impl<T: 'static> AsPointer<T> for Ptr<Vec<T>> {
+    #[inline]
+    fn as_pointer(&self) -> Ptr<T> {
+        self.decay()
+    }
+}
+
+impl<T: 'static> Ptr<Vec<T>> {
     #[inline]
     pub fn decay(&self) -> Ptr<T> {
         match &self.kind {
@@ -1065,12 +1194,34 @@ impl<T> Ptr<Vec<T>> {
                 offset: self.offset,
                 kind: PtrKind::HeapVec(weak.clone()),
             },
+            PtrKind::StackVec(_)
+            | PtrKind::HeapVec(_)
+            | PtrKind::StackArray(_)
+            | PtrKind::HeapArray(_)
+            | PtrKind::Nested(_) => Ptr {
+                offset: 0,
+                kind: PtrKind::Nested(Rc::new(self.clone())),
+            },
             _ => panic!("ub: invalid decay"),
         }
     }
 }
 
-impl<T> Ptr<Box<[T]>> {
+impl<T> AsPointer<Box<[T]>> for Ptr<Box<[T]>> {
+    #[inline]
+    fn as_pointer(&self) -> Ptr<Box<[T]>> {
+        self.clone()
+    }
+}
+
+impl<T: 'static> AsPointer<T> for Ptr<Box<[T]>> {
+    #[inline]
+    fn as_pointer(&self) -> Ptr<T> {
+        self.decay()
+    }
+}
+
+impl<T: 'static> Ptr<Box<[T]>> {
     #[inline]
     pub fn decay(&self) -> Ptr<T> {
         match &self.kind {
@@ -1082,6 +1233,14 @@ impl<T> Ptr<Box<[T]>> {
             PtrKind::HeapSingle(weak) => Ptr {
                 offset: self.offset,
                 kind: PtrKind::HeapArray(weak.clone()),
+            },
+            PtrKind::StackVec(_)
+            | PtrKind::HeapVec(_)
+            | PtrKind::StackArray(_)
+            | PtrKind::HeapArray(_)
+            | PtrKind::Nested(_) => Ptr {
+                offset: 0,
+                kind: PtrKind::Nested(Rc::new(self.clone())),
             },
             _ => panic!("ub: invalid decay"),
         }
@@ -1111,7 +1270,9 @@ impl<T> ToOwnedOption<T, T> for Ptr<T> {
             PtrKind::StackSingle(_) | PtrKind::StackArray(_) => {
                 panic!("Can't own a stack variable")
             }
-            PtrKind::StackVec(_) | PtrKind::HeapVec(_) => panic!("Can't own a vector"),
+            PtrKind::StackVec(_) | PtrKind::HeapVec(_) | PtrKind::Nested(_) => {
+                panic!("Can't own a vector")
+            }
             PtrKind::Field(..) => panic!("Can't own a field"),
             PtrKind::HeapArray(_) => panic!("Can't own an array variable as single"),
             PtrKind::Reinterpreted(_) => panic!("Can't own a reinterpreted pointer"),
@@ -1138,7 +1299,9 @@ impl<T> ToOwnedOption<T, Box<[T]>> for Ptr<T> {
             PtrKind::StackSingle(_) | PtrKind::StackArray(_) => {
                 panic!("Can't own a stack variable")
             }
-            PtrKind::StackVec(_) | PtrKind::HeapVec(_) => panic!("Can't own a vector"),
+            PtrKind::StackVec(_) | PtrKind::HeapVec(_) | PtrKind::Nested(_) => {
+                panic!("Can't own a vector")
+            }
             PtrKind::Field(..) => panic!("Can't own a field"),
             PtrKind::HeapSingle(_) => panic!("Can't own a single variable as an array"),
             PtrKind::Reinterpreted(_) => panic!("Can't own a reinterpreted pointer"),
@@ -1159,7 +1322,9 @@ impl<T> fmt::Debug for Ptr<T> {
             PtrKind::StackVec(w) | PtrKind::HeapVec(w) => {
                 (Weak::as_ptr(w) as usize).wrapping_add(self.byte_offset())
             }
-            PtrKind::Field(..) => self.kind.address().wrapping_add(self.byte_offset()),
+            PtrKind::Nested(..) | PtrKind::Field(..) => {
+                self.kind.address().wrapping_add(self.byte_offset())
+            }
             PtrKind::Reinterpreted(data) => data.alloc.address().wrapping_add(self.byte_offset()),
         };
         write!(f, "0x{:x}", addr)

@@ -152,6 +152,9 @@ impl<S: Record> FieldPtr<S> for Ptr<S> {
             PtrKind::StackArray(w) | PtrKind::HeapArray(w) => (w.clone(), start()),
             PtrKind::StackVec(w) | PtrKind::HeapVec(w) => (w.clone(), start()),
             PtrKind::Field(root) => (root.clone(), self.offset),
+            PtrKind::Nested(_) => {
+                panic!("pointers to fields of elements of nested containers are not supported")
+            }
             PtrKind::Reinterpreted(_) => {
                 let (alloc, byte_offset) = self.original_alloc().unwrap();
                 return Ptr::from_original_alloc(alloc, byte_offset.wrapping_add(offset));

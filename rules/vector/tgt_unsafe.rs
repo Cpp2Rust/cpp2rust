@@ -11,10 +11,6 @@ fn t2<T1>() -> *mut T1 {
     Default::default()
 }
 
-fn t3<T1>() -> Vec<Vec<T1>> {
-    Vec::new()
-}
-
 fn t4<T1>() -> *const T1 {
     Default::default()
 }
@@ -138,21 +134,6 @@ unsafe fn f27<T1>(a0: *const T1, a1: *const T1) -> bool {
 unsafe fn f28<T1>(a0: &mut *mut T1) -> *mut T1 {
     a0.postfix_inc()
 }
-unsafe fn f29<T1: Clone>(a0: Vec<Vec<T1>>) -> Vec<Vec<T1>> {
-    a0.clone()
-}
-
-unsafe fn f30<T1: Default + Clone>(a0: usize) -> Vec<Vec<T1>> {
-    (0..(a0) as usize)
-        .map(|_| <Vec<T1>>::default())
-        .collect::<Vec<_>>()
-}
-unsafe fn f31<T1>(a0: &mut Vec<Vec<T1>>, a1: &mut Vec<T1>) {
-    a0.push(std::mem::take(&mut *a1))
-}
-unsafe fn f32<T1: Default>(a0: &mut Vec<Vec<T1>>, a1: usize) {
-    a0.resize_with(a1 as usize, || <Vec<T1>>::default())
-}
 
 unsafe fn f33<T1>(a0: *const T1, a1: *const T1) -> isize {
     a0.offset_from(a1)
@@ -226,10 +207,6 @@ unsafe fn f51<T1>(a0: &Vec<T1>) -> &T1 {
     ((a0).last().unwrap())
 }
 
-unsafe fn f52<T1: Clone>(a0: &mut Vec<Vec<T1>>, a1: Vec<T1>) {
-    a0.push(a1.clone())
-}
-
 unsafe fn f53<T1: Clone>(a0: &mut Vec<T1>, a1: *const T1, a2: *const T1, a3: *const T1) -> *mut T1 {
     let __off = a1.offset_from(a0.as_ptr()) as usize;
     let count = a3.offset_from(a2) as usize;
@@ -247,10 +224,6 @@ unsafe fn f54<T1: Default + Clone>(a0: &mut Vec<T1>, a1: usize, a2: T1) {
 
 unsafe fn f55<T1: Clone>(a0: &mut Vec<T1>, a1: &mut Vec<T1>) {
     *a0 = std::mem::take(&mut *a1)
-}
-
-unsafe fn f56<T1>(a0: &mut Vec<Vec<T1>>) -> *mut Vec<T1> {
-    ((a0).last_mut().unwrap())
 }
 
 unsafe fn f57<T1>(a0: Vec<T1>) -> *const T1 {
@@ -447,10 +420,6 @@ unsafe fn f99<T1>(a0: &Vec<T1>) -> &T1 {
     ((a0).last().unwrap())
 }
 
-unsafe fn f100<T1: Clone>(a0: &mut Vec<Vec<T1>>, a1: Vec<T1>) {
-    a0.push(a1.clone())
-}
-
 unsafe fn f101<T1: Clone>(
     a0: &mut Vec<T1>,
     a1: *const T1,
@@ -503,16 +472,7 @@ unsafe fn f110<T1: Clone>(a0: Vec<T1>) -> Vec<T1> {
     a0.clone()
 }
 
-unsafe fn f111<T1: Clone>(a0: &mut Vec<Vec<T1>>, a1: &mut Vec<Vec<T1>>) {
-    *a0 = std::mem::take(&mut *a1)
-}
-
 unsafe fn f112<T1>(a0: &mut Vec<T1>, init: T1) {
-    let __init = init;
-    a0.push(__init)
-}
-
-unsafe fn f113<T1>(a0: &mut Vec<Vec<T1>>, init: Vec<T1>) {
     let __init = init;
     a0.push(__init)
 }

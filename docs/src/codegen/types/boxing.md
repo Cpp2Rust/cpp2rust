@@ -48,12 +48,13 @@ the copy on entry then lets the body treat parameters exactly like local
 variables. The preamble skips reference parameters, which are a `Ptr<T>` and
 never boxed.
 
-Nested containers, library ones and arrays alike, box each level except the
-innermost, so that every inner container can be borrowed and mutated on its own,
-and a pointer can be taken to it. The boxing is written into the type rules
-themselves: `std::vector<std::vector<int>>` maps to `Vec<Value<Vec<i32>>>`, and
-the `carray` rules map `int a[2][2]` to `Box<[Value<Box<[i32]>>]>`, both before
-the outer `Value<...>` of the declaration is added.
+Nested containers, library ones and arrays alike, store their inner levels
+inline: `std::vector<std::vector<int>>` maps to `Vec<Vec<i32>>`, and
+`int a[2][2]` to `Box<[Box<[i32]>]>`, both inside the outer `Value<...>` of the
+declaration. Copying a nested container with `clone` hence copies every level,
+as C++ does. A pointer into an inner container is a `Nested` pointer (see
+[Pointer kinds](../../runtime/rc.md#pointer-kinds)), which reaches the inner
+container through the outer one.
 
 Struct fields are stored inline, so that a whole struct is a single allocation,
 and a pointer to a field records the struct's allocation and the field's byte

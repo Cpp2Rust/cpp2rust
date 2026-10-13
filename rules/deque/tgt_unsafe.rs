@@ -33,7 +33,7 @@ unsafe fn f5<T1>(a0: &mut Vec<T1>) -> T1 {
     a0.remove(0)
 }
 
-unsafe fn f7<T1>(a0: &mut Vec<Vec<T1>>, a1: Vec<T1>) {
+unsafe fn f7<T1>(a0: &mut Vec<T1>, a1: T1) {
     a0.push(a1)
 }
 
@@ -54,11 +54,6 @@ unsafe fn f11<T1>(a0: &mut Vec<T1>, a1: &mut Vec<T1>) {
 }
 
 unsafe fn f12<T1>(a0: &mut Vec<T1>, init: T1) {
-    let __init = init;
-    a0.push(__init)
-}
-
-unsafe fn f13<T1>(a0: &mut Vec<Vec<T1>>, init: Vec<T1>) {
     let __init = init;
     a0.push(__init)
 }

@@ -2,15 +2,9 @@
 // Distributed under the MIT license that can be found in the LICENSE file.
 
 use libcc2rs::*;
-use std::cell::RefCell;
-use std::rc::Rc;
 
 fn t2<T1>() -> Ptr<T1> {
     Ptr::null()
-}
-
-fn t3<T1>() -> Vec<Value<Vec<T1>>> {
-    Vec::new()
 }
 
 fn t4<T1>() -> Ptr<T1> {
@@ -97,29 +91,6 @@ fn f28<T1>(a0: &mut Ptr<T1>) -> Ptr<T1> {
     a0.postfix_inc()
 }
 
-fn f29<T1: Clone>(a0: Vec<Value<Vec<T1>>>) -> Vec<Value<Vec<T1>>> {
-    a0.iter()
-        .map(|inner_vec| Rc::new(RefCell::new(inner_vec.borrow().clone())))
-        .collect()
-}
-
-fn f30<T1: Default + Clone>(a0: usize) -> Vec<Value<Vec<T1>>> {
-    (0..(a0) as usize)
-        .map(|_| <Value<Vec<T1>>>::default())
-        .collect::<Vec<_>>()
-}
-
-fn f31<T1: ByteRepr + Clone>(a0: Ptr<Vec<Value<Vec<T1>>>>, a1: &mut Vec<T1>) {
-    a0.with_mut(|__v: &mut Vec<Value<Vec<T1>>>| {
-        __v.push(Rc::new(RefCell::new(std::mem::take(&mut *a1))))
-    })
-}
-
-fn f32<T1: Default + ByteRepr>(a0: Ptr<Vec<Value<Vec<T1>>>>, a1: usize) {
-    let _a0 = a1 as usize;
-    a0.with_mut(|__v: &mut Vec<Value<Vec<T1>>>| __v.resize_with(_a0, <Value<Vec<T1>>>::default))
-}
-
 fn f33<T1>(a0: Ptr<T1>, a1: Ptr<T1>) -> isize {
     ((a0.get_offset() as isize) - (a1.get_offset() as isize))
 }
@@ -181,10 +152,6 @@ fn f51<T1>(a0: Ptr<T1>) -> Ptr<T1> {
     a0.to_last()
 }
 
-fn f52<T1: Clone + ByteRepr>(a0: Ptr<Vec<Value<Vec<T1>>>>, a1: Vec<T1>) {
-    a0.with_mut(|__v: &mut Vec<Value<Vec<T1>>>| __v.push(Rc::new(RefCell::new(a1))))
-}
-
 fn f53<T1: Clone + ByteRepr>(
     a0: Ptr<Vec<T1>>,
     a1: Ptr<T1>,
@@ -198,10 +165,6 @@ fn f53<T1: Clone + ByteRepr>(
         v.splice(start_idx..start_idx, temp_vec);
     });
     a0 + start_idx
-}
-
-fn f56<T1: ByteRepr>(a0: &Vec<Value<Vec<T1>>>) -> Ptr<Vec<T1>> {
-    a0[a0.len() - 1].as_pointer()
 }
 
 fn f55<T1: ByteRepr + Clone>(a0: Ptr<Vec<T1>>, a1: &mut Vec<T1>) {
@@ -364,13 +327,4 @@ fn f104<T1>(a0: Ptr<T1>) -> Ptr<T1> {
 
 fn f105<T1: Clone + ByteRepr>(a0: Ptr<Vec<T1>>, a1: Vec<T1>) {
     a0.write(a1)
-}
-
-fn f111<T1: ByteRepr + Clone>(a0: Ptr<Vec<Value<Vec<T1>>>>, a1: &mut Vec<Value<Vec<T1>>>) {
-    a0.write(std::mem::take(&mut *a1))
-}
-
-fn f113<T1: ByteRepr + Clone>(a0: Ptr<Vec<Value<Vec<T1>>>>, init: Vec<T1>) {
-    let __init = init;
-    a0.with_mut(|__v: &mut Vec<Value<Vec<T1>>>| __v.push(Rc::new(RefCell::new(__init))))
 }
