@@ -98,6 +98,38 @@ unsafe fn main_0() -> i32 {
         }) == (-3_i32)) as i32)
             != 0)
     );
+    let mut vu: Option<unsafe fn(i32) -> i32> = Some(apply_unary_3);
+    assert!(
+        ((((unsafe {
+            (vu).unwrap()(
+                6,
+                &[
+                    (Some(square_0).map_or(::std::ptr::null_mut(), |f| f as *mut ::libc::c_void))
+                        .into(),
+                ],
+            )
+        }) == (36)) as i32)
+            != 0)
+    );
+    let mut vb: Option<unsafe fn(i32, i32) -> i32> = std::mem::transmute::<
+        Option<unsafe fn(i32) -> i32>,
+        Option<unsafe fn(i32, i32) -> i32>,
+    >(Some(apply_unary_3));
+    vu = std::mem::transmute::<Option<unsafe fn(i32, i32) -> i32>, Option<unsafe fn(i32) -> i32>>(
+        vb,
+    );
+    assert!(
+        ((((unsafe {
+            (vu).unwrap()(
+                2,
+                &[
+                    (Some(negate_1).map_or(::std::ptr::null_mut(), |f| f as *mut ::libc::c_void))
+                        .into(),
+                ],
+            )
+        }) == (-2_i32)) as i32)
+            != 0)
+    );
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

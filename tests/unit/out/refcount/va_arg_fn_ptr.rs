@@ -69,6 +69,19 @@ fn main_0() -> i32 {
         }) == -3_i32) as i32)
             != 0)
     );
+    let mut vu: FnPtr<fn(i32) -> i32> = FnPtr::<fn(i32) -> i32>::new(apply_unary_3);
+    assert!(
+        (((({ vu.call(6, &[(FnPtr::<fn(i32) -> i32>::new(square_0)).into(),]) }) == 36) as i32)
+            != 0)
+    );
+    let mut vb: FnPtr<fn(i32, i32) -> i32> =
+        FnPtr::<fn(i32) -> i32>::new(apply_unary_3).cast::<fn(i32, i32) -> i32>();
+    vu = vb.cast::<fn(i32) -> i32>();
+    assert!(
+        (((({ vu.call(2, &[(FnPtr::<fn(i32) -> i32>::new(negate_1)).into(),]) }) == -2_i32)
+            as i32)
+            != 0)
+    );
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}
