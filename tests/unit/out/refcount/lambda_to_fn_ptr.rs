@@ -12,10 +12,10 @@ pub fn apply_0(mut x: i32, mut fn_: FnPtr<fn(i32) -> i32>) -> i32 {
 pub fn call_nttp_1(mut x: i32) -> i32 {
     return ({ (FnPtr::<fn(i32) -> i32>::new(int_operator___int__const::__invoke))(x) });
 }
-pub fn call_nttp_1(mut x: i32) -> i32 {
+pub fn call_nttp_2(mut x: i32) -> i32 {
     return ({ (FnPtr::<fn(i32) -> i32>::new(int_operator___int__const::__invoke))(x) });
 }
-pub fn call_nttp_2(mut x: i32) -> i32 {
+pub fn call_nttp_3(mut x: i32) -> i32 {
     return ({
         FnPtr::<fn(i32) -> i32>::new(|mut x: i32| -> i32 {
             {
@@ -55,8 +55,8 @@ fn main_0() -> i32 {
     });
     assert!((({ p.call(2,) }) == 6));
     assert!((({ call_nttp_1(5,) }) == 4));
-    assert!((({ call_nttp_1(5,) }) == 50));
-    assert!((({ call_nttp_2(5,) }) == 105));
+    assert!((({ call_nttp_2(5,) }) == 50));
+    assert!((({ call_nttp_3(5,) }) == 105));
     let sum: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::new(
         |n: i32| -> i32 {
             {

@@ -840,12 +840,25 @@ static std::string GetParamSignature(const clang::Decl *decl) {
   return args;
 }
 
+static clang::ASTNameGenerator *name_generator = nullptr;
+
+void SetNameGenerator(clang::ASTNameGenerator *generator) {
+  name_generator = generator;
+}
+
+clang::ASTNameGenerator *GetNameGenerator() { return name_generator; }
+
+static std::string GetMangledName(const clang::Decl *decl) {
+  assert(name_generator);
+  return name_generator->getName(decl);
+}
+
 static std::string GetLexicalSpecializationID(const clang::Decl *decl) {
   auto &ctx = decl->getASTContext();
   std::string id;
   if (const auto *var =
           clang::dyn_cast<clang::VarTemplateSpecializationDecl>(decl)) {
-    id += clang::ASTNameGenerator(var->getASTContext()).getName(var);
+    id += GetMangledName(var);
   }
   if (const auto *self =
           clang::dyn_cast<clang::ClassTemplateSpecializationDecl>(decl)) {
@@ -864,7 +877,7 @@ static std::string GetLexicalSpecializationID(const clang::Decl *decl) {
     }
     if (const auto *fn = clang::dyn_cast<clang::FunctionDecl>(dc);
         fn && fn->getTemplateSpecializationArgs()) {
-      id += clang::ASTNameGenerator(fn->getASTContext()).getName(fn);
+      id += GetMangledName(fn);
     }
   }
   return id;
@@ -937,9 +950,7 @@ std::string DisambiguateAnonymousTag(const clang::TagDecl *tag) {
 static std::unordered_map<std::string, size_t> type_mapping;
 
 static size_t GetDeclId(const clang::NamedDecl *decl, bool internal) {
-  std::string key =
-      clang::ASTNameGenerator(decl->getASTContext()).getName(decl) +
-      GetParamSignature(decl);
+  std::string key = GetMangledName(decl) + GetParamSignature(decl);
   if (internal) {
     key += GetLocationID(decl);
   }

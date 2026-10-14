@@ -12,10 +12,10 @@ pub unsafe fn apply_0(mut x: i32, mut fn_: Option<unsafe fn(i32) -> i32>) -> i32
 pub unsafe fn call_nttp_1(mut x: i32) -> i32 {
     return (unsafe { (Some(int_operator___int__const::__invoke))(x) });
 }
-pub unsafe fn call_nttp_1(mut x: i32) -> i32 {
+pub unsafe fn call_nttp_2(mut x: i32) -> i32 {
     return (unsafe { (Some(int_operator___int__const::__invoke))(x) });
 }
-pub unsafe fn call_nttp_2(mut x: i32) -> i32 {
+pub unsafe fn call_nttp_3(mut x: i32) -> i32 {
     return (unsafe {
         FnPtr::<fn(i32) -> i32>::new(|mut x: i32| -> i32 {
             unsafe {
@@ -70,8 +70,8 @@ unsafe fn main_0() -> i32 {
     });
     assert!(((unsafe { (p).unwrap()(2,) }) == (6)));
     assert!(((unsafe { call_nttp_1(5,) }) == (4)));
-    assert!(((unsafe { call_nttp_1(5,) }) == (50)));
-    assert!(((unsafe { call_nttp_2(5,) }) == (105)));
+    assert!(((unsafe { call_nttp_2(5,) }) == (50)));
+    assert!(((unsafe { call_nttp_3(5,) }) == (105)));
     let mut sum: FnPtr<fn(i32) -> i32> = FnPtr::<fn(i32) -> i32>::new(|mut n: i32| -> i32 {
         unsafe {
             let mut ap: *const VaArg = ::std::ptr::null();
