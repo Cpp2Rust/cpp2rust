@@ -324,6 +324,8 @@ clang::QualType GetInitType(const clang::Expr *expr) {
   assert(!pattern.isNull() && "rule has no Init<T, Args> pack");
   clang::MultiLevelTemplateArgumentList args(
       function->getDescribedFunctionTemplate(), match.args, /*Final=*/false);
+  clang::Sema::InstantiatingTemplate inst(
+      *sema_, expr->getBeginLoc(), const_cast<clang::FunctionDecl *>(function));
   return sema_->SubstType(pattern, args, expr->getBeginLoc(),
                           clang::DeclarationName());
 }
