@@ -252,8 +252,6 @@ clang::QualType GetDeclRefType(const clang::FunctionDecl *fn,
                                const clang::Expr *expr,
                                const clang::ValueDecl *decl);
 
-bool HasStaticLocal(const clang::Stmt *stmt);
-
 bool IsSameTypeComparison(const clang::FunctionDecl *fn,
                           const clang::CXXRecordDecl *record);
 

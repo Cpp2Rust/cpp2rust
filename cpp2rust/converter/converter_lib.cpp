@@ -1377,21 +1377,6 @@ clang::QualType GetDeclRefType(const clang::FunctionDecl *fn,
   return field ? field->getType() : decl->getType();
 }
 
-bool HasStaticLocal(const clang::Stmt *stmt) {
-  if (!stmt) {
-    return false;
-  }
-  if (auto decl_stmt = clang::dyn_cast<clang::DeclStmt>(stmt)) {
-    for (auto decl : decl_stmt->decls()) {
-      if (auto var = clang::dyn_cast<clang::VarDecl>(decl);
-          var && var->isStaticLocal()) {
-        return true;
-      }
-    }
-  }
-  return llvm::any_of(stmt->children(), HasStaticLocal);
-}
-
 bool IsUserOperatorCall(const clang::CXXOperatorCallExpr *expr) {
   const auto *callee = expr->getDirectCallee();
   if (!callee || AsLambdaOperatorCall(callee)) {

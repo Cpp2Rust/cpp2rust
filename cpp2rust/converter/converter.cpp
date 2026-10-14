@@ -515,6 +515,9 @@ bool Converter::ConvertVarDeclSkipInit(clang::VarDecl *decl) {
     ENSURE(decl_ids_.insert(GetID(decl)).second);
     global_inits_.push_back(ForceGlobalInit(decl));
   } else if (decl->isStaticLocal()) {
+    if (!globals_.insert(name).second) {
+      return false;
+    }
     StrCat(keyword::kStatic, keyword_mut_);
   } else if (decl->isLocalVarDecl()) {
     StrCat(keyword::kLet);
@@ -4281,10 +4284,6 @@ std::string Converter::GetArrayDefaultAsString(clang::QualType qual_type) {
 std::string Converter::GetDefaultAsString(clang::QualType qual_type) {
   if (auto lambda = AsLambdaClass(qual_type);
       lambda && lambda->captures().empty()) {
-    if (HasStaticLocal(lambda->getLambdaCallOperator()->getBody())) {
-      llvm::report_fatal_error("default-constructed lambda with a static local "
-                               "is not supported yet");
-    }
     Buffer buf(*this);
     ConvertCapturelessLambda(lambda);
     return std::move(buf).str();
