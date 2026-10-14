@@ -5,20 +5,8 @@ fn t1<T1: Default, T2: Default>() -> (T1, T2) {
     <(T1, T2)>::default()
 }
 
-unsafe fn f1<T1, T2>(a0: (T1, T2)) -> T2 {
-    a0.1
-}
 unsafe fn f2<T1: Clone, T2: Clone>(a0: (T1, T2)) -> (T1, T2) {
     a0.clone()
-}
-unsafe fn f4<T1, T2>(a0: T1, a1: T2) -> (T1, T2) {
-    (a0.into(), a1.into())
-}
-unsafe fn f5<T1, T2>(a0: T1, a1: T2) -> (T1, T2) {
-    (a0.into(), a1.into())
-}
-unsafe fn f6<T1, T2>(a0: T1, a1: T2) -> (T1, T2) {
-    (a0.into(), a1.into())
 }
 unsafe fn f7<T1, T2>(a0: T1, a1: T2) -> (T1, T2) {
     (a0.into(), a1.into())
@@ -28,10 +16,6 @@ unsafe fn f9<T1, T2>(a0: T1, a1: T2) -> (T1, T2) {
 }
 unsafe fn f10<T1, T2>(a0: T1, a1: T2) -> (T1, T2) {
     (a0.into(), a1.into())
-}
-
-unsafe fn f11<T1, T2>(a0: (T1, T2)) -> T1 {
-    a0.0
 }
 
 unsafe fn f12<T1: Default, T2: Default>(a0: &mut (T1, T2)) -> (T1, T2) {
@@ -46,14 +30,10 @@ unsafe fn f14<T1: Default, T2: Default>(a0: &mut (T1, T2), a1: &mut (T1, T2)) {
     *a0 = std::mem::take(&mut *a1)
 }
 
-unsafe fn f15<T1, T2>(a0: (T1, T2)) -> T1 {
-    a0.0
-}
-
-unsafe fn f16<T1, T2>(a0: (T1, T2)) -> T2 {
+unsafe fn f15<T1, T2>(a0: (T1, T2)) -> T2 {
     a0.1
 }
 
-unsafe fn f17<T1: Clone, T2: Clone>(a0: (T1, T2)) -> (T1, T2) {
-    a0.clone()
+unsafe fn f16<T1, T2>(a0: (T1, T2)) -> T1 {
+    a0.0
 }

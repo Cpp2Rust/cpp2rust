@@ -9,14 +9,6 @@ fn t2() -> usize {
     0_usize
 }
 
-fn t3() -> *mut usize {
-    std::ptr::null_mut()
-}
-
-fn t4() -> *const usize {
-    std::ptr::null()
-}
-
 fn t5() -> usize {
     0_usize
 }
@@ -25,24 +17,8 @@ fn t6() -> isize {
     0_isize
 }
 
-fn t7() -> *mut isize {
-    std::ptr::null_mut()
-}
-
-fn t8() -> *const isize {
-    std::ptr::null()
-}
-
 fn t9() -> usize {
     0_usize
-}
-
-fn t10() -> *mut usize {
-    std::ptr::null_mut()
-}
-
-fn t11() -> *const usize {
-    std::ptr::null()
 }
 
 fn f1(a0: &mut u8, a1: u32) -> u8 {

@@ -8,6 +8,7 @@ template <typename T1> using t1 = std::initializer_list<T1>;
 template <typename T1> using t2 = typename std::initializer_list<T1>::size_type;
 
 template <typename T1>
-typename std::initializer_list<T1>::size_type f1(std::initializer_list<T1> &o) {
+typename std::initializer_list<T1>::size_type
+f1(const std::initializer_list<T1> &o) {
   return o.size();
 }

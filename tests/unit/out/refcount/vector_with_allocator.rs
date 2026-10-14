@@ -15,13 +15,25 @@ pub struct TestAllocator_double_ {}
 pub fn copy_0(mut copy_vector: Vec<i32>) {}
 pub fn fn_1(v: Ptr<Vec<i32>>, v3: Vec<i32>) {
     let v3: Value<Vec<i32>> = Rc::new(RefCell::new(v3));
-    v.with_mut(|__v: &mut Vec<i32>| __v.push(20));
+    {
+        let __a1 = 20;
+        v.with_mut(|__v: &mut Vec<i32>| __v.push(__a1))
+    };
     let mut x: i32 = 0_i32;
     let mut v4: Ptr<Vec<i32>> = (v3.as_pointer());
     let mut v2: Vec<i32> = Vec::new();
-    v2.push(0);
-    v2.push(1);
-    v2.push(3);
+    {
+        let __a1 = 0;
+        v2.push(__a1)
+    };
+    {
+        let __a1 = 1;
+        v2.push(__a1)
+    };
+    {
+        let __a1 = 3;
+        v2.push(__a1)
+    };
     x = (elem!((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>), 2_usize).read());
     v2[0_usize] = 1;
     elem!(
@@ -41,7 +53,10 @@ pub fn fn_1(v: Ptr<Vec<i32>>, v3: Vec<i32>) {
     assert!((((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>).to_last().read()) == 20));
     assert!(({ (*v3.borrow())[0_usize] } == 7));
     assert!(({ (*v3.borrow())[1_usize] } == 13));
-    v.with_mut(|__v: &mut Vec<i32>| __v.push(20));
+    {
+        let __a1 = 20;
+        v.with_mut(|__v: &mut Vec<i32>| __v.push(__a1))
+    };
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -51,7 +66,10 @@ fn main_0() -> i32 {
     let mut v1: Vec<i32> = Vec::new();
     assert!((v1.len() == 0_usize));
     assert!(v1.is_empty());
-    v1.push(1);
+    {
+        let __a1 = 1;
+        v1.push(__a1)
+    };
     assert!(!(v1.is_empty()));
     v1.pop();
     assert!(v1.is_empty());
@@ -68,9 +86,18 @@ fn main_0() -> i32 {
     assert!((v1[99_usize] == 50));
     let v2: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
     assert!(((*v2.borrow()).len() == 0_usize));
-    (*v2.borrow_mut()).push(1);
-    (*v2.borrow_mut()).push(2);
-    (*v2.borrow_mut()).push(3);
+    {
+        let __a1 = 1;
+        (*v2.borrow_mut()).push(__a1)
+    };
+    {
+        let __a1 = 2;
+        (*v2.borrow_mut()).push(__a1)
+    };
+    {
+        let __a1 = 3;
+        (*v2.borrow_mut()).push(__a1)
+    };
     assert!(((*v2.borrow()).len() == 3_usize));
     {
         let idx = (v2.as_pointer() as Ptr<i32>).get_offset();
@@ -191,11 +218,26 @@ fn main_0() -> i32 {
     );
     let v7: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
     let mut v8: Vec<i32> = Vec::new();
-    (*v7.borrow_mut()).push(4);
-    (*v7.borrow_mut()).push(5);
-    (*v7.borrow_mut()).push(6);
-    v8.push(8);
-    v8.push(9);
+    {
+        let __a1 = 4;
+        (*v7.borrow_mut()).push(__a1)
+    };
+    {
+        let __a1 = 5;
+        (*v7.borrow_mut()).push(__a1)
+    };
+    {
+        let __a1 = 6;
+        (*v7.borrow_mut()).push(__a1)
+    };
+    {
+        let __a1 = 8;
+        v8.push(__a1)
+    };
+    {
+        let __a1 = 9;
+        v8.push(__a1)
+    };
     ({ fn_1(v7.as_pointer(), v8.clone()) });
     let src: Value<Box<[u32]>> = Rc::new(RefCell::new(Box::new([1_u32, 2_u32, 3_u32])));
     let mut v9: Vec<u32> = {

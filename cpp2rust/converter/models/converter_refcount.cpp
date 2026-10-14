@@ -218,6 +218,12 @@ std::string ConverterRefCount::BoxValue(std::string &&str) const {
   std::unreachable();
 }
 
+std::string
+ConverterRefCount::GetUnboxedTypeAsString(clang::QualType qual_type) {
+  PushConversionKind push(*this, ConversionKind::Unboxed);
+  return ToString(qual_type);
+}
+
 bool ConverterRefCount::Convert(clang::QualType qual_type) {
   // Catch va_list before desugaring
   if (IsVaListType(qual_type)) {
@@ -687,9 +693,6 @@ void ConverterRefCount::EmitRustUnion(clang::RecordDecl *decl) {
   auto name = GetRecordName(decl);
 
   auto attrs = GetStructAttributes(decl);
-  RuleRegistry::SetDerives(
-      ctx_, ctx_.getCanonicalTagType(decl),
-      std::vector<std::string>(attrs.begin(), attrs.end()));
   StrCat("#[derive(");
   for (auto *attr : attrs) {
     StrCat(attr, ',');
@@ -1315,7 +1318,7 @@ bool ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
   }
 
   auto ty = GetReturnTypeOfFunction(expr);
-  auto ref = clang::dyn_cast<clang::ReferenceType>(ty);
+  auto ref = ty->getAs<clang::ReferenceType>();
 
   if (ref && !isAddrOf() && !isVoid()) {
     if (isLValue()) {
@@ -1505,7 +1508,12 @@ bool ConverterRefCount::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
       PushParen paren(*this);
       StrCat(ConvertPointer(sub_expr));
       if (!IsReferenceType(sub_expr)) {
-        StrCat(keyword::kAs, ToString(expr->getType()));
+        StrCat(keyword::kAs);
+        if (expr->getType()->getPointeeType()->isBuiltinType()) {
+          StrCat(std::format("Ptr::<{}>", ConvertPointeeType(expr->getType())));
+        } else {
+          StrCat(ToString(expr->getType()));
+        }
       }
       return false;
     }

@@ -79,12 +79,9 @@ fn main_0() -> i32 {
             )
         }) == 102)
     );
+    assert!((({ SImpl::apply_10(&s.as_pointer(), FnPtr::<fn(Ptr<i32>)>::new(inc_0), 1,) }) == 102));
     assert!(
-        (({ SImpl::apply_10(&s.as_pointer(), FnPtr::<fn(Ptr::<i32>)>::new(inc_0), 1,) }) == 102)
-    );
-    assert!(
-        (({ SImpl::apply_11(&s.as_pointer(), FnPtr::<fn(Ptr::<i32>, i32)>::new(add_1), 1,) })
-            == 111)
+        (({ SImpl::apply_11(&s.as_pointer(), FnPtr::<fn(Ptr<i32>, i32)>::new(add_1), 1,) }) == 111)
     );
     assert!(
         (({ SImpl::apply_12(&s.as_pointer(), FnPtr::<fn(i32) -> i32>::new(twice_2), 3,) }) == 106)

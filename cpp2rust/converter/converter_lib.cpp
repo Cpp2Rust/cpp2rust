@@ -317,7 +317,7 @@ bool IsAbstractUserClass(const clang::RecordDecl *decl) {
          definition->isAbstract();
 }
 
-bool RefersToUserDefinedDecl(const clang::Expr *expr) {
+bool ExprHasUserDefinedDecl(const clang::Expr *expr) {
   expr = expr->IgnoreParenImpCasts();
   const clang::Decl *decl = nullptr;
   if (const auto *call = llvm::dyn_cast<clang::CallExpr>(expr)) {
@@ -1070,7 +1070,7 @@ const char *AccessSpecifierAsString(clang::AccessSpecifier spec) {
 clang::QualType GetReturnTypeOfFunction(const clang::CallExpr *expr) {
   if (auto *decl = expr->getCalleeDecl()) {
     if (auto *fn = decl->getAsFunction()) {
-      return fn->getReturnType().getCanonicalType();
+      return fn->getReturnType();
     }
   }
 
@@ -1078,7 +1078,7 @@ clang::QualType GetReturnTypeOfFunction(const clang::CallExpr *expr) {
   if (auto *ptr_ty = callee_ty->getAs<clang::PointerType>()) {
     if (auto *fn_ty =
             ptr_ty->getPointeeType()->getAs<clang::FunctionProtoType>()) {
-      return fn_ty->getReturnType().getCanonicalType();
+      return fn_ty->getReturnType();
     }
   }
 
@@ -1622,18 +1622,6 @@ clang::CXXConstructExpr *MakeConstructExpr(clang::ASTContext &ctx,
       /*StdInitListInitialization=*/false,
       /*ZeroInitialization=*/false, clang::CXXConstructionKind::Complete,
       clang::SourceRange());
-}
-
-std::vector<clang::CXXRecordDecl *>
-GetNestedStructs(const clang::CXXRecordDecl *decl) {
-  std::vector<clang::CXXRecordDecl *> nested_record_decls;
-  for (auto *d : decl->decls()) {
-    if (auto *rec = clang::dyn_cast<clang::CXXRecordDecl>(d);
-        rec && !rec->isImplicit()) {
-      nested_record_decls.push_back(rec);
-    }
-  }
-  return nested_record_decls;
 }
 
 std::optional<clang::ArrayRef<clang::TemplateArgument>>

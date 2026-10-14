@@ -122,8 +122,8 @@ pub fn test_ipv4_literal_0() {
         ((8080 % 256) as u8),
     ])));
     assert!(
-        (((((field_ptr!(sin, sin_port)) as Ptr::<u16>).to_any().memcmp(
-            &((port_be.as_pointer() as Ptr::<u8>) as Ptr::<u8>).to_any(),
+        (((((field_ptr!(sin, sin_port)) as Ptr<u16>).to_any().memcmp(
+            &((port_be.as_pointer() as Ptr::<u8>) as Ptr<u8>).to_any(),
             2_usize
         ) == 0) as i32)
             != 0)
@@ -133,7 +133,7 @@ pub fn test_ipv4_literal_0() {
         (((((field_ptr!(sin, sin_addr)) as Ptr<libcc2rs::InAddr>)
             .to_any()
             .memcmp(
-                &((addr_be.as_pointer() as Ptr::<u8>) as Ptr::<u8>).to_any(),
+                &((addr_be.as_pointer() as Ptr::<u8>) as Ptr<u8>).to_any(),
                 4_usize
             )
             == 0) as i32)
@@ -268,13 +268,10 @@ pub fn test_ipv6_literal_1() {
         ((443 % 256) as u8),
     ])));
     assert!(
-        (((((field_ptr!(sin6, sin6_port)) as Ptr::<u16>)
-            .to_any()
-            .memcmp(
-                &((port_be.as_pointer() as Ptr::<u8>) as Ptr::<u8>).to_any(),
-                2_usize
-            )
-            == 0) as i32)
+        (((((field_ptr!(sin6, sin6_port)) as Ptr<u16>).to_any().memcmp(
+            &((port_be.as_pointer() as Ptr::<u8>) as Ptr<u8>).to_any(),
+            2_usize
+        ) == 0) as i32)
             != 0)
     );
     let addr_be: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
@@ -285,7 +282,7 @@ pub fn test_ipv6_literal_1() {
         (((((field_ptr!(sin6, sin6_addr)) as Ptr<libcc2rs::In6Addr>)
             .to_any()
             .memcmp(
-                &((addr_be.as_pointer() as Ptr::<u8>) as Ptr::<u8>).to_any(),
+                &((addr_be.as_pointer() as Ptr::<u8>) as Ptr<u8>).to_any(),
                 16_usize
             )
             == 0) as i32)
@@ -408,7 +405,7 @@ pub fn test_null_hints_2() {
         (((((field_ptr!(sin, sin_addr)) as Ptr<libcc2rs::InAddr>)
             .to_any()
             .memcmp(
-                &((addr_be.as_pointer() as Ptr::<u8>) as Ptr::<u8>).to_any(),
+                &((addr_be.as_pointer() as Ptr::<u8>) as Ptr<u8>).to_any(),
                 4_usize
             )
             == 0) as i32)

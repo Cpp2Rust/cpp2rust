@@ -3,21 +3,9 @@
 
 #include <cstddef>
 
-#define BUILTIN_TYPE(N, T)                                                     \
-  typedef T t##N##0;                                                           \
-  typedef T *t##N##1;                                                          \
-  typedef const T *t##N##2;                                                    \
-  typedef volatile T *t##N##3;                                                 \
-  typedef const volatile T *t##N##4;
-
 typedef decltype(nullptr) t0;
 
-BUILTIN_TYPE(1, bool)
-#if __cplusplus >= 202002L
-BUILTIN_TYPE(5, char8_t)
-#endif
-BUILTIN_TYPE(8, char16_t)
-BUILTIN_TYPE(11, wchar_t)
-BUILTIN_TYPE(12, char32_t)
-
-#undef BUILTIN_TYPE
+typedef bool t10;
+typedef char16_t t80;
+typedef wchar_t t110;
+typedef char32_t t120;

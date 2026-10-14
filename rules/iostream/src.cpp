@@ -10,7 +10,3 @@ using t3 = std::ostream *;
 std::ostream &f1() { return std::cout; }
 
 std::ostream &f2() { return std::cerr; }
-
-std::ostream *f3() { return &std::cout; }
-
-std::ostream *f4() { return &std::cerr; }

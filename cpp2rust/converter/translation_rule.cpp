@@ -4,7 +4,6 @@
 #include "converter/translation_rule.h"
 
 #include <llvm/Support/JSON.h>
-#include <llvm/Support/MemoryBuffer.h>
 
 #include <algorithm>
 #include <string>
@@ -97,146 +96,6 @@ std::vector<BodyFragment> ParseBodyFragmentsJSON(const llvm::json::Array &arr) {
   return result;
 }
 
-ExprRule ParseExprRuleJSON(const llvm::json::Object &obj) {
-  ExprRule ir;
-
-  if (auto *params = obj.getObject("params")) {
-    for (auto &[key, val] : *params) {
-      if (auto *param_obj = val.getAsObject()) {
-        size_t id = atoi(llvm::StringRef(key).data() + 1);
-        ir.params.resize(std::max(ir.params.size(), id + 1));
-        ir.params[id] = ParseTypeInfoJSON(*param_obj);
-      }
-    }
-  }
-
-  if (auto *rt = obj.getObject("return_type")) {
-    ir.return_type = ParseTypeInfoJSON(*rt);
-  }
-
-  if (auto ms = obj.getBoolean("multi_statement")) {
-    ir.multi_statement = *ms;
-  }
-
-  if (auto v = obj.getBoolean("is_extern")) {
-    ir.is_extern = *v;
-  }
-
-  if (auto *generics = obj.getObject("generics")) {
-    for (auto &[key, val] : *generics) {
-      if (auto *arr = val.getAsArray()) {
-        std::vector<std::string> bounds;
-        for (auto &b : *arr) {
-          if (auto s = b.getAsString())
-            bounds.push_back(s->str());
-        }
-        size_t id = atoi(llvm::StringRef(key).data() + 1) - 1; // starts in T1
-        ir.generics.resize(std::max(ir.generics.size(), id + 1));
-        ir.generics[id] = std::move(bounds);
-      }
-    }
-  }
-
-  if (auto *body = obj.getArray("body")) {
-    ir.body = ParseBodyFragmentsJSON(*body);
-  }
-
-  return ir;
-}
-
-TypeRule ParseTypeRuleJSON(const llvm::json::Object &obj) {
-  TypeRule rule;
-  if (auto init = obj.getString("init"))
-    rule.initializer = init->str();
-  rule.type_info = ParseTypeInfoJSON(obj);
-  return rule;
-}
-
-void LoadTgtFromIR(ExprRules &exprs, TypeRules &types,
-                   const std::filesystem::path &json_path) {
-  auto buf = llvm::MemoryBuffer::getFile(json_path.string());
-  if (!buf)
-    return;
-
-  auto parsed = llvm::json::parse((*buf)->getBuffer());
-  if (!parsed) {
-    llvm::errs() << "Failed to parse IR JSON: " << json_path << ": "
-                 << llvm::toString(parsed.takeError()) << '\n';
-    assert(0);
-    return;
-  }
-
-  auto *root = parsed->getAsObject();
-  if (!root)
-    return;
-
-  for (auto &[entry_name, entry_val] : *root) {
-    auto *obj = entry_val.getAsObject();
-    if (!obj)
-      continue;
-
-    auto name = entry_name.str();
-    if (name[0] == 'f') {
-      exprs[std::move(name)] = ParseExprRuleJSON(*obj);
-    } else if (name[0] == 't') {
-      types[std::move(name)] = ParseTypeRuleJSON(*obj);
-    }
-  }
-}
-
-void LoadIrSrc(ExprRules &exprs, TypeRules &types,
-               const std::filesystem::path &json_path) {
-  auto buf = llvm::MemoryBuffer::getFile(json_path.string());
-  if (!buf) {
-    llvm::errs() << "Missing " << json_path << ", run cpp-rule-preprocessor\n";
-    assert(0);
-    return;
-  }
-
-  auto parsed = llvm::json::parse((*buf)->getBuffer());
-  if (!parsed) {
-    llvm::errs() << "Failed to parse IR src JSON: " << json_path << ": "
-                 << llvm::toString(parsed.takeError()) << '\n';
-    assert(0);
-    return;
-  }
-
-  auto *root = parsed->getAsObject();
-  if (!root) {
-    return;
-  }
-
-  for (auto &[entry_name, entry_val] : *root) {
-    auto name = entry_name.str();
-    auto val = entry_val.getAsString();
-    if (name[0] == 'f') {
-      auto it = exprs.find(name);
-      if (it == exprs.end()) {
-        llvm::errs() << name << '\n';
-        assert(0 && "ir_src.json expr entry has no matching IR target rule");
-      }
-      if (auto *obj = entry_val.getAsObject()) {
-        it->second.src = obj->getString("key")->str();
-        auto *init_type = obj->getObject("init_type");
-        assert(init_type && "ir_src.json expr entry object without init_type");
-        it->second.init_type = InitTypeLocation{
-            (unsigned)*init_type->getInteger("depth"),
-            (unsigned)*init_type->getInteger("index"),
-        };
-        continue;
-      }
-      it->second.src = val->str();
-    } else if (name[0] == 't') {
-      auto it = types.find(name);
-      if (it == types.end()) {
-        llvm::errs() << name << '\n';
-        assert(0 && "ir_src.json type entry has no matching IR target rule");
-      }
-      it->second.src = val->str();
-    }
-  }
-}
-
 void BodyFragmentDump(const BodyFragment &frag) {
   if (auto *t = std::get_if<TextFragment>(&frag)) {
     t->dump();
@@ -311,11 +170,6 @@ void MethodCallFragment::dump() const {
 }
 
 void ExprRule::dump() const {
-  log() << "Matching: " << src << '\n';
-  if (init_type.valid()) {
-    log() << "  init type: depth " << init_type.depth << ", index "
-          << init_type.index << '\n';
-  }
   unsigned i = 0;
   for (auto &info : params) {
     log() << "  param a" << i++ << ": ";
@@ -340,46 +194,7 @@ void ExprRule::dump() const {
   }
 }
 
-void ExprRule::validate(const std::string &name) const {
-  if (src.empty()) {
-    llvm::errs() << name << '\n';
-    dump();
-    llvm::report_fatal_error("Expr rule loaded from IR but has no src");
-  }
-
-  if (HasInitFragment(body) && !init_type.valid()) {
-    llvm::errs() << name << '\n';
-    dump();
-    llvm::report_fatal_error(
-        "Expr rule uses init but its src pack is not declared as Init<T, "
-        "Args>");
-  }
-
-  if (generics.empty())
-    return;
-
-  bool has_generic[kMaxGenerics] = {false};
-  for (size_t i = 0, e = src.size(); i < e; ++i) {
-    auto pos = src.find('T', i);
-    if (pos == std::string::npos)
-      break;
-    auto ch = pos + 1 < e ? src[pos + 1] : '\0';
-    if (ch >= '1' && ch <= '9') {
-      has_generic[ch - '1'] = true;
-      i = pos + 1;
-    }
-  }
-
-  for (size_t i = 0, e = generics.size(); i < e; ++i) {
-    if (!has_generic[i]) {
-      llvm::errs() << name << '\n';
-      dump();
-      llvm::errs() << "generic T" << (i + 1)
-                   << " declared but missing from src: " << src << '\n';
-      llvm::report_fatal_error("Absent generic from src");
-    }
-  }
-}
+bool ExprRule::usesInit() const { return HasInitFragment(body); }
 
 void GenericFragment::dump() const { log() << "  generic: " << n << '\n'; }
 
@@ -394,7 +209,7 @@ void TypeInfo::dump() const {
 }
 
 void TypeRule::dump() const {
-  log() << "name: " << src << "\n  Rust type: ";
+  log() << "Rust type: ";
   type_info.dump();
   log() << '\n';
   if (!initializer.empty()) {
@@ -402,32 +217,59 @@ void TypeRule::dump() const {
   }
 }
 
-std::pair<ExprRules, TypeRules> Load(const std::filesystem::path &dir,
-                                     Model model) {
-  ExprRules exprs;
-  TypeRules types;
-  LoadTgtFromIR(exprs, types, dir / "ir_unsafe.json");
+ExprRule ParseExprRuleJSON(const llvm::json::Object &obj) {
+  ExprRule ir;
 
-  if (model == Model::kRefCount) {
-    auto refcount_ir_path = dir / "ir_refcount.json";
-    if (std::filesystem::exists(refcount_ir_path)) {
-      LoadTgtFromIR(exprs, types, refcount_ir_path);
+  if (auto *params = obj.getObject("params")) {
+    for (auto &[key, val] : *params) {
+      if (auto *param_obj = val.getAsObject()) {
+        size_t id = atoi(llvm::StringRef(key).data() + 1);
+        ir.params.resize(std::max(ir.params.size(), id + 1));
+        ir.params[id] = ParseTypeInfoJSON(*param_obj);
+      }
     }
   }
 
-  LoadIrSrc(exprs, types, dir / "ir_src.json");
-
-  for (auto &[name, rule] : exprs) {
-    rule.validate(name);
+  if (auto *rt = obj.getObject("return_type")) {
+    ir.return_type = ParseTypeInfoJSON(*rt);
   }
-  for (auto &[name, rule] : types) {
-    if (rule.src.empty()) {
-      llvm::errs() << name << '\n';
-      rule.dump();
-      assert(0 && "Type rule loaded from IR but has no src");
+
+  if (auto ms = obj.getBoolean("multi_statement")) {
+    ir.multi_statement = *ms;
+  }
+
+  if (auto v = obj.getBoolean("is_extern")) {
+    ir.is_extern = *v;
+  }
+
+  if (auto *generics = obj.getObject("generics")) {
+    for (auto &[key, val] : *generics) {
+      if (auto *arr = val.getAsArray()) {
+        std::vector<std::string> bounds;
+        for (auto &b : *arr) {
+          if (auto s = b.getAsString())
+            bounds.push_back(s->str());
+        }
+        size_t id = atoi(llvm::StringRef(key).data() + 1) - 1; // starts in T1
+        ir.generics.resize(std::max(ir.generics.size(), id + 1));
+        ir.generics[id] = std::move(bounds);
+      }
     }
   }
-  return {std::move(exprs), std::move(types)};
+
+  if (auto *body = obj.getArray("body")) {
+    ir.body = ParseBodyFragmentsJSON(*body);
+  }
+
+  return ir;
+}
+
+TypeRule ParseTypeRuleJSON(const llvm::json::Object &obj) {
+  TypeRule rule;
+  if (auto init = obj.getString("init"))
+    rule.initializer = init->str();
+  rule.type_info = ParseTypeInfoJSON(obj);
+  return rule;
 }
 
 } // namespace cpp2rust::TranslationRule

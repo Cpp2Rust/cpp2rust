@@ -94,8 +94,8 @@ static bool HasIRFiles(const fs::path &dir) {
       continue;
     }
     const auto &p = it->path();
-    if (fs::exists(p / "ir_src.json") && (fs::exists(p / "ir_unsafe.json") ||
-                                          fs::exists(p / "ir_refcount.json"))) {
+    if (fs::exists(p / "ir_unsafe.json") ||
+        fs::exists(p / "ir_refcount.json")) {
       return true;
     }
   }
@@ -164,10 +164,8 @@ int main(int argc, char *argv[]) {
 
   std::vector<std::string_view> cxx_flags(CXXFlags.begin(), CXXFlags.end());
 
-  if (RulesDir.empty() && !ResolveRulesDir()) {
-    llvm::errs() << "ERROR: rules directory not found. "
-                    "Please specify one with --rules\n";
-    return EXIT_FAILURE;
+  if (RulesDir.empty()) {
+    ResolveRulesDir();
   }
 
   auto rs_code =

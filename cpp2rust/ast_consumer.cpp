@@ -6,6 +6,7 @@
 #include <llvm/Support/ErrorHandling.h>
 
 #include "converter/converter.h"
+#include "converter/rules/registry.h"
 
 namespace cpp2rust {
 void ASTConsumer::HandleTranslationUnit(clang::ASTContext &ctx) {
@@ -13,6 +14,7 @@ void ASTConsumer::HandleTranslationUnit(clang::ASTContext &ctx) {
     llvm::report_fatal_error(
         "the translation unit and its loaded rules do not compile");
   }
+  RuleRegistry::Load(CI_.getSema(), model_);
   auto converter = CreateConverter(rs_code_, ctx, model_, rules_dir_);
   converter->SetSema(CI_.getSema());
   if (first_) {

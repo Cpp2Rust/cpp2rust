@@ -5,6 +5,7 @@
 
 #include <clang/AST/ASTContext.h>
 #include <clang/AST/RecursiveASTVisitor.h>
+#include <clang/Basic/LangOptions.h>
 #include <clang/Lex/Lexer.h>
 #include <clang/Lex/Preprocessor.h>
 #include <clang/Sema/Sema.h>
@@ -252,26 +253,6 @@ private:
   llvm::DenseSet<const void *> seen_;
 };
 
-llvm::json::Object ReadIndex(const std::filesystem::path &path) {
-  auto buf = llvm::MemoryBuffer::getFile(path.string());
-  if (!buf) {
-    llvm::errs() << "Missing " << path.string() << ", run cpp-rule-indexer\n";
-    llvm::report_fatal_error("cannot read the rule index");
-  }
-  auto parsed = llvm::json::parse((*buf)->getBuffer());
-  if (!parsed) {
-    llvm::errs() << "Failed to parse rule index: " << path.string() << ": "
-                 << llvm::toString(parsed.takeError()) << '\n';
-    llvm::report_fatal_error("cannot parse the rule index");
-  }
-  auto index = parsed->getAsObject();
-  if (!index) {
-    llvm::errs() << "Rule index is not an object: " << path.string() << '\n';
-    llvm::report_fatal_error("cannot parse the rule index");
-  }
-  return std::move(*index);
-}
-
 const llvm::json::Object &CIndex() {
   static const llvm::json::Object index =
       ReadIndex(std::filesystem::path(RULES_INDEX_DIR) / "c.json");
@@ -296,9 +277,30 @@ std::string WrapRule(const llvm::json::Object &rule, bool is_cxx) {
       dir, text);
 }
 
+unsigned CxxStandard(const clang::LangOptions &opts) {
+  if (opts.CPlusPlus26) {
+    return 26;
+  }
+  if (opts.CPlusPlus23) {
+    return 23;
+  }
+  if (opts.CPlusPlus20) {
+    return 20;
+  }
+  if (opts.CPlusPlus17) {
+    return 17;
+  }
+  if (opts.CPlusPlus14) {
+    return 14;
+  }
+  return 11;
+}
+
 std::string BuildRulesEpilogue(const std::unordered_set<std::string> &keys,
-                               bool is_cxx) {
+                               const clang::LangOptions &opts) {
+  bool is_cxx = opts.CPlusPlus;
   const auto &index = is_cxx ? CxxIndex() : CIndex();
+  unsigned standard = is_cxx ? CxxStandard(opts) : 0;
   auto common = index.getString("common");
   std::string out;
   if (!common->empty()) {
@@ -312,6 +314,9 @@ std::string BuildRulesEpilogue(const std::unordered_set<std::string> &keys,
     }
     for (const auto &entry : *entries) {
       auto rule = entry.getAsObject();
+      if (auto since = rule->getInteger("since"); since && *since > standard) {
+        continue;
+      }
       if (auto required = rule->getArray("requires");
           required &&
           !llvm::all_of(*required, [&](const llvm::json::Value &key) {
@@ -460,10 +465,33 @@ std::string TypeKey(clang::QualType type) {
   if (auto sugar = type->getAs<clang::PredefinedSugarType>()) {
     return sugar->getIdentifier()->getName().str();
   }
+  if (auto builtin = type->getAs<clang::BuiltinType>()) {
+    return builtin->getName(clang::PrintingPolicy(clang::LangOptions())).str();
+  }
   if (auto tag = type->getAsTagDecl()) {
     return ClassKey(tag);
   }
   return {};
+}
+
+llvm::json::Object ReadIndex(const std::filesystem::path &path) {
+  auto buf = llvm::MemoryBuffer::getFile(path.string());
+  if (!buf) {
+    llvm::errs() << "Missing rule index " << path.string() << '\n';
+    llvm::report_fatal_error("cannot read the rule index");
+  }
+  auto parsed = llvm::json::parse((*buf)->getBuffer());
+  if (!parsed) {
+    llvm::errs() << "Failed to parse rule index: " << path.string() << ": "
+                 << llvm::toString(parsed.takeError()) << '\n';
+    llvm::report_fatal_error("cannot parse the rule index");
+  }
+  auto index = parsed->getAsObject();
+  if (!index) {
+    llvm::errs() << "Rule index is not an object: " << path.string() << '\n';
+    llvm::report_fatal_error("cannot parse the rule index");
+  }
+  return std::move(*index);
 }
 
 void PragmaHandler::HandlePragma(clang::Preprocessor &PP,
@@ -482,7 +510,7 @@ void PragmaHandler::HandlePragma(clang::Preprocessor &PP,
   RuleUsageCollector collector(CI_.getSema(), keys);
   collector.TraverseDecl(ctx.getTranslationUnitDecl());
 
-  auto text = BuildRulesEpilogue(keys, ctx.getLangOpts().CPlusPlus);
+  auto text = BuildRulesEpilogue(keys, ctx.getLangOpts());
   log() << "rules loaded for this translation unit:\n" << text;
   auto rules_file = src_mgr.createFileID(
       llvm::MemoryBuffer::getMemBufferCopy(text, "<cpp2rust-rules>"),

@@ -10,7 +10,3 @@ void f2(void *a0) { return ::operator delete(a0); }
 void *f3(std::size_t a0) { return ::operator new[](a0); }
 
 void f4(void *a0) { return ::operator delete[](a0); }
-
-#if __cplusplus >= 201703L
-template <typename T1> T1 *f5(T1 *a0) { return std::launder(a0); }
-#endif

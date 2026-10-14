@@ -6,6 +6,12 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
+pub struct S {
+    #[offset(0)]
+    pub x: i32,
+}
 pub fn copy_0(mut copy_vector: Vec<i32>) {}
 pub fn main() {
     __cpp2rust_init_globals();
@@ -159,8 +165,8 @@ fn main_0() -> i32 {
     assert!(((*v3.borrow()).len() == 100_usize));
     assert!((((v2.as_pointer() as Ptr<i32>).to_last().read()) == 3));
     assert!((((v3.as_pointer() as Ptr<i32>).to_last().read()) == 1));
-    assert!(((v4.as_pointer() as Ptr<Ptr::<i32>>).to_last().read()).is_null());
-    assert!(((v5.as_pointer() as Ptr<Ptr::<i32>>).to_last().read()).is_null());
+    assert!(((v4.as_pointer() as Ptr<Ptr<i32>>).to_last().read()).is_null());
+    assert!(((v5.as_pointer() as Ptr<Ptr<i32>>).to_last().read()).is_null());
     assert!((((v6.as_pointer() as Ptr<f64>).to_last().read()) == 2_f64));
     let ref0: Ptr<f64> = (v6.as_pointer() as Ptr<f64>).to_last();
     ref0.write(5_f64);
@@ -210,6 +216,22 @@ fn main_0() -> i32 {
                 .read()) as usize)
         ) == 103_usize)
     );
+    let a: Value<S> = Rc::new(RefCell::new(S { x: 1 }));
+    let pa: Value<Ptr<S>> = Rc::new(RefCell::new((a.as_pointer())));
+    let mut v8: Vec<Ptr<Ptr<S>>> = Vec::new();
+    {
+        let __a1 = (pa.as_pointer());
+        v8.push(__a1)
+    };
+    assert!(((v8[0_usize].read()).with(|__s| __s.x) == 1));
+    let ppa: Value<Ptr<Ptr<S>>> = Rc::new(RefCell::new((pa.as_pointer())));
+    let mut v9: Vec<Ptr<Ptr<Ptr<S>>>> = Vec::new();
+    {
+        let __a1 = (ppa.as_pointer());
+        v9.push(__a1)
+    };
+    field!(((v9[0_usize].read()).read()), x).write(2);
+    assert!(({ (*a.borrow()).x } == 2));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

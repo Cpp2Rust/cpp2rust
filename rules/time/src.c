@@ -38,10 +38,10 @@ int f8(struct timeval *tv, void *tz) { return gettimeofday(tv, tz); }
 #error "Unsupported platform for gettimeofday"
 #endif
 
-clockid_t f9() { return CLOCK_REALTIME; }
+clockid_t f9(void) { return CLOCK_REALTIME; }
 
-clockid_t f10() { return CLOCK_MONOTONIC; }
+clockid_t f10(void) { return CLOCK_MONOTONIC; }
 
 #ifdef __linux__
-clockid_t f11() { return CLOCK_MONOTONIC_RAW; }
+clockid_t f11(void) { return CLOCK_MONOTONIC_RAW; }
 #endif

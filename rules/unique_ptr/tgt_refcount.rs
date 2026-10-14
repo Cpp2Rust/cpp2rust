@@ -52,6 +52,10 @@ fn f9<T1: ByteRepr>(a0: Ptr<Option<Value<Box<[T1]>>>>) {
     a0.write(None)
 }
 
+fn f16<T1: ByteRepr>(a0: Ptr<Option<Value<T1>>>) {
+    a0.write(None)
+}
+
 fn f10<T1>() -> Option<Value<T1>> {
     None
 }

@@ -80,7 +80,7 @@ fn main_0() -> i32 {
                 (((((field_ptr!(mask, sin_addr)) as Ptr<libcc2rs::InAddr>)
                     .to_any()
                     .memcmp(
-                        &((mask_be.as_pointer() as Ptr::<u8>) as Ptr::<u8>).to_any(),
+                        &((mask_be.as_pointer() as Ptr::<u8>) as Ptr<u8>).to_any(),
                         4_usize
                     )
                     == 0) as i32)

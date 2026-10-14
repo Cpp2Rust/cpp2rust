@@ -162,8 +162,6 @@ add_custom_target("check"
                   DEPENDS check-libcc2rs check-libcc2rs-macros check-unit
                  )
 
-set(RULES_IR_DIR "${CMAKE_BINARY_DIR}/rules")
-
 set(RUSTLS_HEADER "${PROJECT_SOURCE_DIR}/rules/rustls/rustls.h")
 set(BROTLI_HEADERS
     "${PROJECT_SOURCE_DIR}/rules/brotli/brotli/decode.h"
@@ -222,45 +220,33 @@ file(GLOB rule_subdirs CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/rules/*)
 file(GLOB rule_common_headers CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/rules/common/*.h)
 file(GLOB rule_indexer_sources CONFIGURE_DEPENDS
      ${PROJECT_SOURCE_DIR}/cpp2rust/rule_preprocessing/*
-     ${PROJECT_SOURCE_DIR}/cpp2rust/converter/rules/rules_loader.*)
+     ${PROJECT_SOURCE_DIR}/cpp2rust/converter/rules/rules_loader.*
+     ${PROJECT_SOURCE_DIR}/cpp2rust/converter/rules/decls.*)
 set(_common_headers)
 foreach(_header IN LISTS rule_common_headers)
   list(APPEND _common_headers --common-header=${_header})
 endforeach()
-set(cpp_rules_ir_outputs)
-set(cpp_rules_index_inputs)
-set(cpp_rules_index_outputs ${CMAKE_BINARY_DIR}/rules_index/c.json ${CMAKE_BINARY_DIR}/rules_index/cpp.json)
+set(rules_index_parts)
+set(rules_index_parts_dir ${CMAKE_BINARY_DIR}/rules_index/parts)
+set(RULES_IR_DIR "${CMAKE_BINARY_DIR}/rules")
 set(rust_rules_ir_outputs)
 foreach(_rule_dir IN LISTS rule_subdirs)
-  file(GLOB _cpp_srcs ${_rule_dir}/src.c ${_rule_dir}/src.cpp)
+  file(GLOB _cpp_srcs ${_rule_dir}/src.c ${_rule_dir}/src.cpp ${_rule_dir}/src_cxx*.cpp)
   if(NOT _cpp_srcs)
     continue()
   endif()
   get_filename_component(_rule_name ${_rule_dir} NAME)
-  set(_out_dir ${RULES_IR_DIR}/${_rule_name})
-  set(_cpp_out ${_out_dir}/ir_src.json)
-  set(_cxxflags)
-  set(_cxxflags_file)
-  if(EXISTS ${_rule_dir}/cxxflags)
-    set(_cxxflags_file ${_rule_dir}/cxxflags)
-    file(STRINGS ${_cxxflags_file} _flags)
-    foreach(_flag IN LISTS _flags)
-      list(APPEND _cxxflags --cxxflags=${_flag})
-    endforeach()
-  endif()
+  set(_part ${rules_index_parts_dir}/${_rule_name}.json)
   add_custom_command(
-    OUTPUT ${_cpp_out}
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${_out_dir}
-    COMMAND $<TARGET_FILE:cpp-rule-preprocessor> --dir ${_rule_dir} --out ${_cpp_out} ${_cxxflags}
-    DEPENDS ${_cpp_srcs} ${_cxxflags_file} ${rule_common_headers} ${PROJECT_SOURCE_DIR}/cpp2rust/rule_preprocessing/cpp_rule_preprocessor.cpp ${RUSTLS_HEADER} ${BROTLI_HEADERS}
+    OUTPUT ${_part}
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${rules_index_parts_dir}
+    COMMAND $<TARGET_FILE:cpp-rule-indexer> --dir ${_rule_dir} -o ${_part}
+    DEPENDS ${_cpp_srcs} ${rule_common_headers} ${rule_indexer_sources} ${RUSTLS_HEADER} ${BROTLI_HEADERS}
     VERBATIM
   )
-  list(APPEND cpp_rules_ir_outputs ${_cpp_out})
+  list(APPEND rules_index_parts ${_part})
 
-  if(NOT _rule_name STREQUAL "builtin_types")
-    list(APPEND cpp_rules_index_inputs ${_cpp_srcs} ${_cxxflags_file})
-  endif()
-
+  set(_out_dir ${RULES_IR_DIR}/${_rule_name})
   set(_rust_srcs)
   set(_rust_out)
   if(EXISTS ${_rule_dir}/tgt_unsafe.rs)
@@ -289,12 +275,11 @@ foreach(_rule_dir IN LISTS rule_subdirs)
   list(APPEND rust_rules_ir_outputs ${_rust_out})
 endforeach()
 
-add_custom_target("preprocess-cpp-rules" ALL DEPENDS ${cpp_rules_ir_outputs})
-
+set(cpp_rules_index_outputs ${CMAKE_BINARY_DIR}/rules_index/c.json ${CMAKE_BINARY_DIR}/rules_index/cpp.json)
 add_custom_command(
   OUTPUT ${cpp_rules_index_outputs}
-  COMMAND $<TARGET_FILE:cpp-rule-indexer> --exclude builtin_types ${_common_headers}
-  DEPENDS ${cpp_rules_index_inputs} ${rule_common_headers} ${rule_indexer_sources} ${RUSTLS_HEADER} ${BROTLI_HEADERS}
+  COMMAND $<TARGET_FILE:cpp-rule-indexer> ${_common_headers} -o ${CMAKE_BINARY_DIR}/rules_index ${rules_index_parts}
+  DEPENDS ${rules_index_parts} ${rule_common_headers} ${rule_indexer_sources}
   VERBATIM
 )
 
