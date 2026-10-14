@@ -71,25 +71,26 @@ fn main_0() -> i32 {
     assert!((({ call_nttp_1(5,) }) == 4));
     assert!((({ call_nttp_2(5,) }) == 50));
     assert!((({ call_nttp_3(5,) }) == 105));
-    let sum: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::new(
-        |n: i32| -> i32 {
-            {
-                let __args: Value<Box<[VaArg]>> = Rc::new(RefCell::new(__args.into()));
-                let n: Value<i32> = Rc::new(RefCell::new(n));
-                let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
-                (*ap.borrow_mut()) = __args.as_pointer();
-                let s: Value<i32> = Rc::new(RefCell::new(0));
-                let mut i: i32 = 0;
-                'loop_: while (i < (*n.borrow())) {
-                    (*s.borrow_mut()) += (*ap.borrow_mut()).arg::<i32>();
-                    i.postfix_inc();
+    let sum: Value<FnPtr<fn(i32, Box<[VaArg]>) -> i32>> =
+        Rc::new(RefCell::new(FnPtr::<fn(i32, Box<[VaArg]>) -> i32>::new(
+            |n: i32, __args: Box<[VaArg]>| -> i32 {
+                {
+                    let __args: Value<Box<[VaArg]>> = Rc::new(RefCell::new(__args.into()));
+                    let n: Value<i32> = Rc::new(RefCell::new(n));
+                    let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
+                    (*ap.borrow_mut()) = __args.as_pointer();
+                    let s: Value<i32> = Rc::new(RefCell::new(0));
+                    let mut i: i32 = 0;
+                    'loop_: while (i < (*n.borrow())) {
+                        (*s.borrow_mut()) += (*ap.borrow_mut()).arg::<i32>();
+                        i.postfix_inc();
+                    }
+                    return (*s.borrow());
                 }
-                return (*s.borrow());
-            }
-        },
-    )));
-    assert!((({ (*sum.borrow()).call(2, &[(5).into(), (5).into(),]) }) == 10));
-    assert!((({ (*sum.borrow()).call(3, &[(1).into(), (2).into(), (3).into(),]) }) == 6));
+            },
+        )));
+    assert!((({ (*sum.borrow()).call(2, Box::new([(5).into(), (5).into(),])) }) == 10));
+    assert!((({ (*sum.borrow()).call(3, Box::new([(1).into(), (2).into(), (3).into(),])) }) == 6));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}
