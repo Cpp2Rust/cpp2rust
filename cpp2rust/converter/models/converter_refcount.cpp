@@ -1567,6 +1567,12 @@ void ConverterRefCount::ConvertLambdaToFunctionPointer(
 
 void ConverterRefCount::ConvertFunctionToFunctionPointer(
     const clang::FunctionDecl *fn_decl) {
+  if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(fn_decl);
+      method && method->isLambdaStaticInvoker()) {
+    ConvertCapturelessLambda(method->getParent());
+    computed_expr_type_ = ComputedExprType::FreshPointer;
+    return;
+  }
   StrCat(std::format("FnPtr::<{}>::new({})",
                      ConvertFunctionPointerType(
                          fn_decl->getType()->getAs<clang::FunctionProtoType>()),

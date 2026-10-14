@@ -4,11 +4,13 @@
 // Distributed under the MIT license that can be found in the LICENSE file.
 
 #include <clang/AST/ASTContext.h>
+#include <clang/AST/Mangle.h>
 #include <clang/AST/RecursiveASTVisitor.h>
 #include <clang/Sema/Sema.h>
 
 #include <functional>
 #include <map>
+#include <memory>
 #include <optional>
 #include <string>
 #include <type_traits>
@@ -32,9 +34,18 @@ public:
                      const char *keyword_unsafe = "unsafe",
                      const char *keyword_mut = keyword::kMut)
       : rs_code_(&rs_code), ctx_(ctx), keyword_unsafe_(keyword_unsafe),
-        keyword_mut_(keyword_mut) {}
+        keyword_mut_(keyword_mut) {
+    if (!GetNameGenerator()) {
+      name_generator_ = std::make_unique<clang::ASTNameGenerator>(ctx);
+      SetNameGenerator(name_generator_.get());
+    }
+  }
 
-  virtual ~Converter() = default;
+  virtual ~Converter() {
+    if (name_generator_) {
+      SetNameGenerator(nullptr);
+    }
+  }
 
   Converter(const Converter &) = delete;
   Converter &operator=(const Converter &) = delete;
@@ -784,6 +795,7 @@ protected:
 
   std::string *rs_code_;
   clang::ASTContext &ctx_;
+  std::unique_ptr<clang::ASTNameGenerator> name_generator_;
   clang::FunctionDecl *curr_function_ = nullptr;
   bool in_function_formals_ = false;
   enum class MethodTarget : uint8_t {

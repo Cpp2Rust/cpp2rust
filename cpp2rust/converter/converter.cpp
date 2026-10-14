@@ -4,6 +4,7 @@
 #include "converter/converter.h"
 
 #include <clang/AST/APValue.h>
+#include <clang/AST/IgnoreExpr.h>
 #include <clang/AST/ParentMapContext.h>
 #include <clang/Basic/LangOptions.h>
 #include <clang/Basic/SourceManager.h>
@@ -514,6 +515,9 @@ bool Converter::ConvertVarDeclSkipInit(clang::VarDecl *decl) {
     ENSURE(decl_ids_.insert(GetID(decl)).second);
     global_inits_.push_back(ForceGlobalInit(decl));
   } else if (decl->isStaticLocal()) {
+    if (!globals_.insert(name).second) {
+      return false;
+    }
     StrCat(keyword::kStatic, keyword_mut_);
   } else if (decl->isLocalVarDecl()) {
     StrCat(keyword::kLet);
@@ -2004,6 +2008,16 @@ std::string Converter::GetFunctionRefName(const clang::FunctionDecl *fn_decl) {
 
 void Converter::ConvertFunctionToFunctionPointer(
     const clang::FunctionDecl *fn_decl) {
+  if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(fn_decl);
+      method && method->isLambdaStaticInvoker()) {
+    assert(!method->getParent()->isGenericLambda());
+    StrCat("Some");
+    PushParen paren(*this);
+    ConvertLambdaClosure(method->getParent(),
+                         method->getParent()->getLambdaCallOperator());
+    computed_expr_type_ = ComputedExprType::FreshPointer;
+    return;
+  }
   StrCat(std::format("Some({})", GetFunctionRefName(fn_decl)));
   computed_expr_type_ = ComputedExprType::FreshPointer;
 }
@@ -2055,7 +2069,11 @@ Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
   unsigned num_named_params =
       function ? function->getNumParams() : proto->getNumParams();
   info.is_variadic = function ? function->isVariadic() : proto->isVariadic();
-  info.is_fn_ptr_call = !function || AsLambdaClass(callee->getType());
+  info.is_fn_ptr_call =
+      !function || AsLambdaClass(callee->getType()) ||
+      clang::isa<clang::SubstNonTypeTemplateParmExpr>(
+          clang::IgnoreExprNodes(callee, clang::IgnoreParensSingleStep,
+                                 clang::IgnoreImplicitCastsSingleStep));
   info.is_libc_passthrough = RuleRegistry::IsLibcPassthrough(ctx_, expr);
 
   for (unsigned i = 0; i < num_named_params && i < num_args; ++i) {
@@ -3232,6 +3250,13 @@ std::string Converter::ConvertDeclRef(clang::Expr *expr,
 }
 
 bool Converter::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
+  if (auto param =
+          clang::dyn_cast<clang::TemplateParamObjectDecl>(expr->getDecl());
+      param && AsLambdaClass(param->getType())) {
+    StrCat(GetDefaultAsString(param->getType()));
+    computed_expr_type_ = ComputedExprType::FreshValue;
+    return false;
+  }
   if (auto init = AsLambdaUncapturedConstant(curr_function_, expr)) {
     Convert(init);
     return false;
@@ -4259,10 +4284,6 @@ std::string Converter::GetArrayDefaultAsString(clang::QualType qual_type) {
 std::string Converter::GetDefaultAsString(clang::QualType qual_type) {
   if (auto lambda = AsLambdaClass(qual_type);
       lambda && lambda->captures().empty()) {
-    if (HasStaticLocal(lambda->getLambdaCallOperator()->getBody())) {
-      llvm::report_fatal_error("default-constructed lambda with a static local "
-                               "is not supported yet");
-    }
     Buffer buf(*this);
     ConvertCapturelessLambda(lambda);
     return std::move(buf).str();
