@@ -71,7 +71,7 @@ bool IsUserDefinedDecl(const clang::Decl *decl);
 
 bool IsAbstractUserClass(const clang::RecordDecl *decl);
 
-bool RefersToUserDefinedDecl(const clang::Expr *expr);
+bool ExprHasUserDefinedDecl(const clang::Expr *expr);
 
 bool IsUnsignedArithOp(const clang::BinaryOperator *expr);
 
@@ -273,9 +273,6 @@ clang::CXXConstructExpr *MakeConstructExpr(clang::ASTContext &ctx,
                                            clang::QualType type,
                                            clang::CXXConstructorDecl *ctor,
                                            llvm::ArrayRef<clang::Expr *> args);
-
-std::vector<clang::CXXRecordDecl *>
-GetNestedStructs(const clang::CXXRecordDecl *decl);
 
 std::optional<clang::ArrayRef<clang::TemplateArgument>>
 GetTemplateArgs(clang::QualType qual_type, clang::Expr *expr = nullptr);

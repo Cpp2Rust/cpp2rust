@@ -98,16 +98,8 @@ fn main_0() -> i32 {
         p: { (*y1.borrow()).p.clone() },
         pair: { (*y1.borrow()).pair.clone() },
         ap: Rc::new(RefCell::new(Box::new([
-            (elem!(
-                (array_field_ptr!(y1.as_pointer(), ap) as Ptr<Ptr::<i32>>),
-                0
-            )
-            .read()),
-            (elem!(
-                (array_field_ptr!(y1.as_pointer(), ap) as Ptr<Ptr::<i32>>),
-                1
-            )
-            .read()),
+            (elem!((array_field_ptr!(y1.as_pointer(), ap) as Ptr<Ptr<i32>>), 0).read()),
+            (elem!((array_field_ptr!(y1.as_pointer(), ap) as Ptr<Ptr<i32>>), 1).read()),
         ]))),
     };
     let ry1: Ptr<Pair> = y1.as_pointer();
@@ -126,8 +118,8 @@ fn main_0() -> i32 {
         p: ry1.with(|__s| __s.p.clone()),
         pair: ry1.with(|__s| __s.pair.clone()),
         ap: Rc::new(RefCell::new(Box::new([
-            (elem!((array_field_ptr!(ry1, ap) as Ptr<Ptr::<i32>>), 0).read()),
-            (elem!((array_field_ptr!(ry1, ap) as Ptr<Ptr::<i32>>), 1).read()),
+            (elem!((array_field_ptr!(ry1, ap) as Ptr<Ptr<i32>>), 0).read()),
+            (elem!((array_field_ptr!(ry1, ap) as Ptr<Ptr<i32>>), 1).read()),
         ]))),
     }));
     let ry2: Ptr<Pair> = (ry1).clone();
@@ -146,16 +138,8 @@ fn main_0() -> i32 {
         p: (*py1.borrow()).with(|__s| __s.p.clone()),
         pair: (*py1.borrow()).with(|__s| __s.pair.clone()),
         ap: Rc::new(RefCell::new(Box::new([
-            (elem!(
-                (array_field_ptr!((*py1.borrow()), ap) as Ptr<Ptr::<i32>>),
-                0
-            )
-            .read()),
-            (elem!(
-                (array_field_ptr!((*py1.borrow()), ap) as Ptr<Ptr::<i32>>),
-                1
-            )
-            .read()),
+            (elem!((array_field_ptr!((*py1.borrow()), ap) as Ptr<Ptr<i32>>), 0).read()),
+            (elem!((array_field_ptr!((*py1.borrow()), ap) as Ptr<Ptr<i32>>), 1).read()),
         ]))),
     }));
     let ry3: Ptr<Pair> = (*py1.borrow()).clone();
@@ -215,22 +199,9 @@ fn main_0() -> i32 {
         x
     )
     .write(100);
-    elem!(
-        (array_field_ptr!(y1.as_pointer(), ap) as Ptr<Ptr::<i32>>),
-        0
-    )
-    .write((x1.as_pointer()));
-    elem!(
-        (array_field_ptr!(y1.as_pointer(), ap) as Ptr<Ptr::<i32>>),
-        1
-    )
-    .write((x2.as_pointer()));
-    (elem!(
-        (array_field_ptr!(y1.as_pointer(), ap) as Ptr<Ptr::<i32>>),
-        0
-    )
-    .read())
-    .write(0);
+    elem!((array_field_ptr!(y1.as_pointer(), ap) as Ptr<Ptr<i32>>), 0).write((x1.as_pointer()));
+    elem!((array_field_ptr!(y1.as_pointer(), ap) as Ptr<Ptr<i32>>), 1).write((x2.as_pointer()));
+    (elem!((array_field_ptr!(y1.as_pointer(), ap) as Ptr<Ptr<i32>>), 0).read()).write(0);
     (*c1.borrow_mut()) = ((*x1.borrow()) + 1);
     let j: Value<i32> = Rc::new(RefCell::new(0));
     let mut new_y: Pair = Pair {
@@ -283,7 +254,7 @@ impl PairImpl for Ptr<Pair> {
         (*self).with(|__s| __s.r.clone()).write(1);
         field!((*self), p).write(Ptr::<i32>::null());
         field!((*self), pair).write(Ptr::<Pair>::null());
-        elem!((array_field_ptr!((*self), ap) as Ptr<Ptr::<i32>>), 0).write(Ptr::<i32>::null());
+        elem!((array_field_ptr!((*self), ap) as Ptr<Ptr<i32>>), 0).write(Ptr::<i32>::null());
     }
     fn as_val(&self) -> i32 {
         return (*self).with(|__s| __s.x);

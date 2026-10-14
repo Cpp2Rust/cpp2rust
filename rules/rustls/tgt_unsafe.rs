@@ -1,14 +1,11 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-fn t1() -> *mut ::rustls_ffi::connection::rustls_connection {
-    std::ptr::null_mut()
+fn t1() -> ::rustls_ffi::connection::rustls_connection {
+    unimplemented!()
 }
-fn t2() -> *const ::rustls_ffi::connection::rustls_connection {
-    std::ptr::null()
-}
-fn t3() -> *const ::rustls_ffi::certificate::rustls_certificate<'static> {
-    std::ptr::null()
+fn t3() -> ::rustls_ffi::certificate::rustls_certificate<'static> {
+    unimplemented!()
 }
 fn t4() -> ::rustls_ffi::rslice::rustls_str<'static> {
     unsafe { std::mem::zeroed() }
@@ -126,65 +123,35 @@ unsafe fn f20(a0: *mut ::rustls_ffi::connection::rustls_connection) {
     ::rustls_ffi::connection::rustls_connection::rustls_connection_free(a0)
 }
 
-fn t8() -> *mut ::rustls_ffi::client::rustls_client_config {
-    std::ptr::null_mut()
+fn t8() -> ::rustls_ffi::client::rustls_client_config {
+    unimplemented!()
 }
-fn t9() -> *const ::rustls_ffi::client::rustls_client_config {
-    std::ptr::null()
+fn t10() -> ::rustls_ffi::client::rustls_client_config_builder {
+    unimplemented!()
 }
-fn t10() -> *mut ::rustls_ffi::client::rustls_client_config_builder {
-    std::ptr::null_mut()
+fn t12() -> ::rustls_ffi::certificate::rustls_certified_key {
+    unimplemented!()
 }
-fn t11() -> *const ::rustls_ffi::client::rustls_client_config_builder {
-    std::ptr::null()
+fn t14() -> ::rustls_ffi::crypto_provider::rustls_crypto_provider {
+    unimplemented!()
 }
-fn t12() -> *mut ::rustls_ffi::certificate::rustls_certified_key {
-    std::ptr::null_mut()
+fn t16() -> ::rustls_ffi::crypto_provider::rustls_crypto_provider_builder {
+    unimplemented!()
 }
-fn t13() -> *const ::rustls_ffi::certificate::rustls_certified_key {
-    std::ptr::null()
+fn t18() -> ::rustls_ffi::certificate::rustls_root_cert_store {
+    unimplemented!()
 }
-fn t14() -> *mut ::rustls_ffi::crypto_provider::rustls_crypto_provider {
-    std::ptr::null_mut()
+fn t20() -> ::rustls_ffi::certificate::rustls_root_cert_store_builder {
+    unimplemented!()
 }
-fn t15() -> *const ::rustls_ffi::crypto_provider::rustls_crypto_provider {
-    std::ptr::null()
+fn t22() -> ::rustls_ffi::verifier::rustls_server_cert_verifier {
+    unimplemented!()
 }
-fn t16() -> *mut ::rustls_ffi::crypto_provider::rustls_crypto_provider_builder {
-    std::ptr::null_mut()
+fn t24() -> ::rustls_ffi::verifier::rustls_web_pki_server_cert_verifier_builder {
+    unimplemented!()
 }
-fn t17() -> *const ::rustls_ffi::crypto_provider::rustls_crypto_provider_builder {
-    std::ptr::null()
-}
-fn t18() -> *mut ::rustls_ffi::certificate::rustls_root_cert_store {
-    std::ptr::null_mut()
-}
-fn t19() -> *const ::rustls_ffi::certificate::rustls_root_cert_store {
-    std::ptr::null()
-}
-fn t20() -> *mut ::rustls_ffi::certificate::rustls_root_cert_store_builder {
-    std::ptr::null_mut()
-}
-fn t21() -> *const ::rustls_ffi::certificate::rustls_root_cert_store_builder {
-    std::ptr::null()
-}
-fn t22() -> *mut ::rustls_ffi::verifier::rustls_server_cert_verifier {
-    std::ptr::null_mut()
-}
-fn t23() -> *const ::rustls_ffi::verifier::rustls_server_cert_verifier {
-    std::ptr::null()
-}
-fn t24() -> *mut ::rustls_ffi::verifier::rustls_web_pki_server_cert_verifier_builder {
-    std::ptr::null_mut()
-}
-fn t25() -> *const ::rustls_ffi::verifier::rustls_web_pki_server_cert_verifier_builder {
-    std::ptr::null()
-}
-fn t26() -> *mut ::rustls_ffi::cipher::rustls_supported_ciphersuite {
-    std::ptr::null_mut()
-}
-fn t27() -> *const ::rustls_ffi::cipher::rustls_supported_ciphersuite {
-    std::ptr::null()
+fn t26() -> ::rustls_ffi::cipher::rustls_supported_ciphersuite {
+    unimplemented!()
 }
 fn t28() -> ::rustls_ffi::rslice::rustls_slice_bytes<'static> {
     unsafe { std::mem::zeroed() }

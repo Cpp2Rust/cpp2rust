@@ -4,21 +4,20 @@
 #ifndef __cplusplus
 #include "rustls.h"
 
-typedef rustls_connection *t1;
-typedef const rustls_connection *t2;
-typedef const rustls_certificate *t3;
+typedef rustls_connection t1;
+typedef rustls_certificate t3;
 typedef rustls_str t4;
 typedef rustls_result t5;
 typedef rustls_io_result t6;
 typedef rustls_tls_version t7;
 
-rustls_result f1() { return RUSTLS_RESULT_OK; }
-rustls_result f2() { return RUSTLS_RESULT_NULL_PARAMETER; }
-rustls_result f3() { return RUSTLS_RESULT_PLAINTEXT_EMPTY; }
-rustls_result f4() { return RUSTLS_RESULT_UNEXPECTED_EOF; }
+rustls_result f1(void) { return RUSTLS_RESULT_OK; }
+rustls_result f2(void) { return RUSTLS_RESULT_NULL_PARAMETER; }
+rustls_result f3(void) { return RUSTLS_RESULT_PLAINTEXT_EMPTY; }
+rustls_result f4(void) { return RUSTLS_RESULT_UNEXPECTED_EOF; }
 
-rustls_tls_version f5() { return RUSTLS_TLS_VERSION_TLSV1_2; }
-rustls_tls_version f6() { return RUSTLS_TLS_VERSION_TLSV1_3; }
+rustls_tls_version f5(void) { return RUSTLS_TLS_VERSION_TLSV1_2; }
+rustls_tls_version f6(void) { return RUSTLS_TLS_VERSION_TLSV1_3; }
 
 rustls_result f7(rustls_connection *conn, uint8_t *buf, size_t count,
                  size_t *out_n) {
@@ -65,26 +64,16 @@ const rustls_certificate *f19(const rustls_connection *conn, size_t i) {
 }
 void f20(rustls_connection *conn) { return rustls_connection_free(conn); }
 
-typedef rustls_client_config *t8;
-typedef const rustls_client_config *t9;
-typedef rustls_client_config_builder *t10;
-typedef const rustls_client_config_builder *t11;
-typedef rustls_certified_key *t12;
-typedef const rustls_certified_key *t13;
-typedef rustls_crypto_provider *t14;
-typedef const rustls_crypto_provider *t15;
-typedef rustls_crypto_provider_builder *t16;
-typedef const rustls_crypto_provider_builder *t17;
-typedef rustls_root_cert_store *t18;
-typedef const rustls_root_cert_store *t19;
-typedef rustls_root_cert_store_builder *t20;
-typedef const rustls_root_cert_store_builder *t21;
-typedef rustls_server_cert_verifier *t22;
-typedef const rustls_server_cert_verifier *t23;
-typedef rustls_web_pki_server_cert_verifier_builder *t24;
-typedef const rustls_web_pki_server_cert_verifier_builder *t25;
-typedef rustls_supported_ciphersuite *t26;
-typedef const rustls_supported_ciphersuite *t27;
+typedef rustls_client_config t8;
+typedef rustls_client_config_builder t10;
+typedef rustls_certified_key t12;
+typedef rustls_crypto_provider t14;
+typedef rustls_crypto_provider_builder t16;
+typedef rustls_root_cert_store t18;
+typedef rustls_root_cert_store_builder t20;
+typedef rustls_server_cert_verifier t22;
+typedef rustls_web_pki_server_cert_verifier_builder t24;
+typedef rustls_supported_ciphersuite t26;
 typedef rustls_slice_bytes t28;
 typedef rustls_verify_server_cert_params t29;
 
@@ -156,7 +145,7 @@ rustls_result f36(rustls_root_cert_store_builder *builder, const char *filename,
   return rustls_root_cert_store_builder_load_roots_from_file(builder, filename,
                                                              strict);
 }
-rustls_root_cert_store_builder *f37() {
+rustls_root_cert_store_builder *f37(void) {
   return rustls_root_cert_store_builder_new();
 }
 void f38(const rustls_root_cert_store *store) {
@@ -185,7 +174,7 @@ void f43(const rustls_crypto_provider *provider) {
 const rustls_supported_ciphersuite *f44(size_t index) {
   return rustls_default_crypto_provider_ciphersuites_get(index);
 }
-size_t f45() { return rustls_default_crypto_provider_ciphersuites_len(); }
+size_t f45(void) { return rustls_default_crypto_provider_ciphersuites_len(); }
 rustls_result f46(uint8_t *buff, size_t len) {
   return rustls_default_crypto_provider_random(buff, len);
 }
@@ -222,7 +211,7 @@ f54(const rustls_supported_ciphersuite *supported_ciphersuite) {
   return rustls_supported_ciphersuite_protocol_version(supported_ciphersuite);
 }
 
-rustls_str f55() { return rustls_version(); }
+rustls_str f55(void) { return rustls_version(); }
 
 void f56(unsigned int result, char *buf, size_t len, size_t *out_n) {
   return rustls_error(result, buf, len, out_n);

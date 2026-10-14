@@ -48,13 +48,25 @@ impl TestAllocator_double_ {
 }
 pub unsafe fn copy_0(mut copy_vector: Vec<i32>) {}
 pub unsafe fn fn_1(v: *mut Vec<i32>, mut v3: Vec<i32>) {
-    (*v).push(20);
+    {
+        let __a1 = 20;
+        (*v).push(__a1)
+    };
     let mut x: i32 = 0_i32;
     let mut v4: *mut Vec<i32> = (&mut v3 as *mut Vec<i32>);
     let mut v2: Vec<i32> = Vec::new();
-    v2.push(0);
-    v2.push(1);
-    v2.push(3);
+    {
+        let __a1 = 0;
+        v2.push(__a1)
+    };
+    {
+        let __a1 = 1;
+        v2.push(__a1)
+    };
+    {
+        let __a1 = 3;
+        v2.push(__a1)
+    };
     x = (&mut (*v))[(2_usize)];
     v2[(0_usize)] = 1;
     (&mut (*if true {
@@ -70,7 +82,10 @@ pub unsafe fn fn_1(v: *mut Vec<i32>, mut v3: Vec<i32>) {
     assert!(((*((*v).last_mut().unwrap())) == (20)));
     assert!(((v3[(0_usize)]) == (7)));
     assert!(((v3[(1_usize)]) == (13)));
-    (*v).push(20);
+    {
+        let __a1 = 20;
+        (*v).push(__a1)
+    };
 }
 pub fn main() {
     unsafe {
@@ -82,7 +97,10 @@ unsafe fn main_0() -> i32 {
     let mut v1: Vec<i32> = Vec::new();
     assert!(((v1.len()) == (0_usize)));
     assert!(v1.is_empty());
-    v1.push(1);
+    {
+        let __a1 = 1;
+        v1.push(__a1)
+    };
     assert!(!(v1.is_empty()));
     v1.pop();
     assert!(v1.is_empty());
@@ -99,9 +117,18 @@ unsafe fn main_0() -> i32 {
     assert!(((v1[(99_usize)]) == (50)));
     let mut v2: Vec<i32> = Vec::new();
     assert!(((v2.len()) == (0_usize)));
-    v2.push(1);
-    v2.push(2);
-    v2.push(3);
+    {
+        let __a1 = 1;
+        v2.push(__a1)
+    };
+    {
+        let __a1 = 2;
+        v2.push(__a1)
+    };
+    {
+        let __a1 = 3;
+        v2.push(__a1)
+    };
     assert!(((v2.len()) == (3_usize)));
     {
         let pos = v2.as_mut_ptr().offset_from(v2.as_ptr()) as usize;
@@ -197,11 +224,26 @@ unsafe fn main_0() -> i32 {
     assert!(((*(&mut (v6)[(s2).wrapping_sub(1_usize) as usize] as *mut f64)) == (6.5_f64)));
     let mut v7: Vec<i32> = Vec::new();
     let mut v8: Vec<i32> = Vec::new();
-    v7.push(4);
-    v7.push(5);
-    v7.push(6);
-    v8.push(8);
-    v8.push(9);
+    {
+        let __a1 = 4;
+        v7.push(__a1)
+    };
+    {
+        let __a1 = 5;
+        v7.push(__a1)
+    };
+    {
+        let __a1 = 6;
+        v7.push(__a1)
+    };
+    {
+        let __a1 = 8;
+        v8.push(__a1)
+    };
+    {
+        let __a1 = 9;
+        v8.push(__a1)
+    };
     (unsafe { fn_1(&mut v7, v8.clone()) });
     let mut src: [u32; 3] = [1_u32, 2_u32, 3_u32];
     let mut v9: Vec<u32> = core::slice::from_raw_parts(

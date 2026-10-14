@@ -6,6 +6,11 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+#[repr(C)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+pub struct S {
+    pub x: i32,
+}
 pub unsafe fn copy_0(mut copy_vector: Vec<i32>) {}
 pub fn main() {
     unsafe {
@@ -176,6 +181,22 @@ unsafe fn main_0() -> i32 {
             .wrapping_add(((*(&mut (v2)[0_usize as usize] as *mut i32)) as usize)))
             == (103_usize))
     );
+    let mut a: S = S { x: 1 };
+    let mut pa: *mut S = (&mut a as *mut S);
+    let mut v8: Vec<*const *mut S> = Vec::new();
+    {
+        let __a1 = (&mut pa as *mut *mut S).cast_const();
+        v8.push(__a1)
+    };
+    assert!((((*(*v8[(0_usize)])).x) == (1)));
+    let mut ppa: *mut *mut S = (&mut pa as *mut *mut S);
+    let mut v9: Vec<*mut *mut *mut S> = Vec::new();
+    {
+        let __a1 = (&mut ppa as *mut *mut *mut S);
+        v9.push(__a1)
+    };
+    (*(*(*v9[(0_usize)]))).x = 2;
+    assert!(((a.x) == (2)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

@@ -31,43 +31,16 @@ unsafe fn main_0() -> i32 {
     (*ref_1) = 20;
     let i2: *mut i32 = ref_1;
     (*i2) += 5;
-    write!(
-        std::fs::File::from_raw_fd(
-            std::io::stdout()
-                .as_fd()
-                .try_clone_to_owned()
-                .unwrap()
-                .into_raw_fd(),
-        ),
-        "{:}\n",
-        i1,
-    );
+    write!((*libcc2rs::cout_unsafe()), "{:}\n", i1,);
     let mut i3: i32 = 1;
     let mut i4: i32 = 2;
     let mut ref_3: *mut i32 = &mut i3;
     let mut ref_4: *mut i32 = &mut i4;
     (*ref_3) = (*ref_4);
-    write!(
-        std::fs::File::from_raw_fd(
-            std::io::stdout()
-                .as_fd()
-                .try_clone_to_owned()
-                .unwrap()
-                .into_raw_fd(),
-        ),
-        "{:} {:}\n",
-        i3,
-        i4,
-    );
+    write!((*libcc2rs::cout_unsafe()), "{:} {:}\n", i3, i4,);
     (unsafe { set_0(ref_1, 99) });
     write!(
-        std::fs::File::from_raw_fd(
-            std::io::stdout()
-                .as_fd()
-                .try_clone_to_owned()
-                .unwrap()
-                .into_raw_fd(),
-        ),
+        (*libcc2rs::cout_unsafe()),
         "{:} {:}\n",
         i1,
         (unsafe { read_1(ref_1,) }),
@@ -76,18 +49,7 @@ unsafe fn main_0() -> i32 {
     let mut point_ref: *mut Point = &mut point;
     (*point_ref).x = 30;
     (*point_ref).y = 40;
-    write!(
-        std::fs::File::from_raw_fd(
-            std::io::stdout()
-                .as_fd()
-                .try_clone_to_owned()
-                .unwrap()
-                .into_raw_fd(),
-        ),
-        "{:} {:}\n",
-        point.x,
-        point.y,
-    );
+    write!((*libcc2rs::cout_unsafe()), "{:} {:}\n", point.x, point.y,);
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

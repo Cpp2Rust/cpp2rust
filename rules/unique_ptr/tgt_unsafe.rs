@@ -46,6 +46,10 @@ unsafe fn f9<T1>(a0: &mut Option<Box<[T1]>>) {
     *a0 = None
 }
 
+unsafe fn f16<T1>(a0: &mut Option<Box<T1>>) {
+    *a0 = None
+}
+
 unsafe fn f10<T1: Default>() -> Option<Box<T1>> {
     None
 }

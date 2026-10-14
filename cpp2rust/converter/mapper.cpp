@@ -30,7 +30,7 @@ bool Contains(clang::ASTContext &ctx, const clang::Expr *expr) {
 std::string MapFunctionName(clang::ASTContext &ctx,
                             const clang::FunctionDecl *decl) {
   assert(decl);
-  if (!IsUserDefinedDecl(decl) && Matcher::HasRuleNamed(ctx, decl)) {
+  if (!IsUserDefinedDecl(decl) && RuleRegistry::HasExprRule(decl)) {
     return std::format("libcc2rs::{}_{}", decl->getNameAsString(),
                        RuleRegistry::CurrentModel() == Model::kRefCount
                            ? "refcount"
@@ -42,36 +42,31 @@ std::string MapFunctionName(clang::ASTContext &ctx,
 std::string InstantiateTemplate(Converter &converter, const clang::Expr *expr,
                                 unsigned n) {
   auto [rule, subs] = RuleRegistry::Search(converter.GetASTContext(), expr);
-  auto text = std::format("T{}", n);
   if (!rule) {
-    return text;
+    return std::format("T{}", n);
   }
-  auto &ty = subs.at(n - 1);
-  if (ty) {
-    ty = Matcher::MapBinding(subs, n - 1);
-  }
-  return Matcher::InstantiateTgt(subs, text);
+  return Matcher::MapBinding(converter, subs, n - 1);
 }
 
 std::string Map(clang::ASTContext &ctx, clang::QualType qual_type) {
-  auto [rule, subs] = RuleRegistry::Search(ctx, qual_type);
-  if (rule) {
-    return Matcher::InstantiateTgt(Matcher::MapBindings(subs),
-                                   rule->type_info.type);
-  }
-  return {};
+  auto rule = RuleRegistry::Search(ctx, qual_type).first;
+  return rule ? rule->type_info.type : std::string();
 }
 
 std::string Map(Converter &converter, clang::QualType qual_type) {
-  return Map(converter.GetASTContext(), qual_type);
+  auto [rule, subs] =
+      RuleRegistry::Search(converter.GetASTContext(), qual_type);
+  if (rule) {
+    return Matcher::InstantiateTgt(converter, subs, rule->type_info.type);
+  }
+  return {};
 }
 
 std::string MapInitializer(Converter &converter, clang::QualType qual_type) {
   auto [rule, subs] =
       RuleRegistry::Search(converter.GetASTContext(), qual_type);
   if (rule && !rule->initializer.empty()) {
-    return Matcher::InstantiateTgt(Matcher::MapBindings(subs),
-                                   rule->initializer);
+    return Matcher::InstantiateTgt(converter, subs, rule->initializer);
   }
   return {};
 }
@@ -79,8 +74,7 @@ std::string MapInitializer(Converter &converter, clang::QualType qual_type) {
 std::string GetParamType(Converter &converter, const clang::Expr *expr,
                          unsigned index) {
   auto [rule, subs] = RuleRegistry::Search(converter.GetASTContext(), expr);
-  return Matcher::InstantiateTgt(Matcher::MapBindings(subs),
-                                 rule->params.at(index).type);
+  return Matcher::InstantiateTgt(converter, subs, rule->params.at(index).type);
 }
 
 } // namespace cpp2rust::Mapper

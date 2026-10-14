@@ -7,7 +7,7 @@
 
 #include "../common/init.h"
 
-template <typename T2, typename T1> std::unique_ptr<T1[]> f1(std::size_t n) {
+template <typename T1> std::unique_ptr<T1[]> f1(std::size_t n) {
   return std::make_unique<T1[]>(n);
 }
 

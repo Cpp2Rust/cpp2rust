@@ -202,24 +202,24 @@ fn main_0() -> i32 {
     );
     let key: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([0, 4, 5, 6])));
     assert!(
-        ((((key.as_pointer() as Ptr<i32>).offset(1)) as Ptr::<i32>)
+        ((((key.as_pointer() as Ptr<i32>).offset(1)) as Ptr<i32>)
             .to_any()
             .memcmp(
                 &((((kTable_14.with(|v| v.as_pointer()) as Ptr<Box<[i32]>>)
                     .offset(1)
-                    .as_pointer()) as Ptr::<i32>) as Ptr::<i32>)
+                    .as_pointer()) as Ptr::<i32>) as Ptr<i32>)
                     .to_any(),
                 ::std::mem::size_of::<[i32; 3]>()
             )
             == 0)
     );
     assert!(
-        ((((key.as_pointer() as Ptr<i32>).offset(1)) as Ptr::<i32>)
+        ((((key.as_pointer() as Ptr<i32>).offset(1)) as Ptr<i32>)
             .to_any()
             .memcmp(
                 &((((kTable_14.with(|v| v.as_pointer()) as Ptr<Box<[i32]>>)
                     .offset(0)
-                    .as_pointer()) as Ptr::<i32>) as Ptr::<i32>)
+                    .as_pointer()) as Ptr::<i32>) as Ptr<i32>)
                     .to_any(),
                 ::std::mem::size_of::<[i32; 3]>()
             )

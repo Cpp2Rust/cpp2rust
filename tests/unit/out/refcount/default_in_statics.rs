@@ -150,7 +150,7 @@ fn main_0() -> i32 {
     'loop_: while (i < 3) {
         assert!(
             (elem!(
-                (array_field_ptr!(static_outer_1.with(|v| v.as_pointer()), arr) as Ptr<Ptr::<i32>>),
+                (array_field_ptr!(static_outer_1.with(|v| v.as_pointer()), arr) as Ptr<Ptr<i32>>),
                 i
             )
             .read())

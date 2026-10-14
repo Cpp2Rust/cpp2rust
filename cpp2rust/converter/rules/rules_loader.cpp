@@ -253,26 +253,6 @@ private:
   llvm::DenseSet<const void *> seen_;
 };
 
-llvm::json::Object ReadIndex(const std::filesystem::path &path) {
-  auto buf = llvm::MemoryBuffer::getFile(path.string());
-  if (!buf) {
-    llvm::errs() << "Missing " << path.string() << ", run cpp-rule-indexer\n";
-    llvm::report_fatal_error("cannot read the rule index");
-  }
-  auto parsed = llvm::json::parse((*buf)->getBuffer());
-  if (!parsed) {
-    llvm::errs() << "Failed to parse rule index: " << path.string() << ": "
-                 << llvm::toString(parsed.takeError()) << '\n';
-    llvm::report_fatal_error("cannot parse the rule index");
-  }
-  auto index = parsed->getAsObject();
-  if (!index) {
-    llvm::errs() << "Rule index is not an object: " << path.string() << '\n';
-    llvm::report_fatal_error("cannot parse the rule index");
-  }
-  return std::move(*index);
-}
-
 const llvm::json::Object &CIndex() {
   static const llvm::json::Object index =
       ReadIndex(std::filesystem::path(RULES_INDEX_DIR) / "c.json");
@@ -487,10 +467,33 @@ std::string TypeKey(clang::QualType type) {
   if (auto sugar = type->getAs<clang::PredefinedSugarType>()) {
     return sugar->getIdentifier()->getName().str();
   }
+  if (auto builtin = type->getAs<clang::BuiltinType>()) {
+    return builtin->getName(clang::PrintingPolicy(clang::LangOptions())).str();
+  }
   if (auto tag = type->getAsTagDecl()) {
     return ClassKey(tag);
   }
   return {};
+}
+
+llvm::json::Object ReadIndex(const std::filesystem::path &path) {
+  auto buf = llvm::MemoryBuffer::getFile(path.string());
+  if (!buf) {
+    llvm::errs() << "Missing rule index " << path.string() << '\n';
+    llvm::report_fatal_error("cannot read the rule index");
+  }
+  auto parsed = llvm::json::parse((*buf)->getBuffer());
+  if (!parsed) {
+    llvm::errs() << "Failed to parse rule index: " << path.string() << ": "
+                 << llvm::toString(parsed.takeError()) << '\n';
+    llvm::report_fatal_error("cannot parse the rule index");
+  }
+  auto index = parsed->getAsObject();
+  if (!index) {
+    llvm::errs() << "Rule index is not an object: " << path.string() << '\n';
+    llvm::report_fatal_error("cannot parse the rule index");
+  }
+  return std::move(*index);
 }
 
 void PragmaHandler::HandlePragma(clang::Preprocessor &PP,

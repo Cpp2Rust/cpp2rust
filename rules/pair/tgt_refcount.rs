@@ -12,35 +12,10 @@ fn t1<T1: Default, T2: Default>() -> (Value<T1>, Value<T2>) {
     )
 }
 
-fn f1<T1, T2>(a0: (Value<T1>, Value<T2>)) -> Value<T2> {
-    a0.1
-}
-
 fn f2<T1: Clone, T2: Clone>(a0: (Value<T1>, Value<T2>)) -> (Value<T1>, Value<T2>) {
     (
         Rc::new(RefCell::new(a0.0.borrow().clone())),
         Rc::new(RefCell::new(a0.1.borrow().clone())),
-    )
-}
-
-fn f4<T1, T2>(a0: T1, a1: T2) -> (Value<T1>, Value<T2>) {
-    (
-        Rc::new(RefCell::new(a0.try_into().expect("failed conversion"))),
-        Rc::new(RefCell::new(a1.try_into().expect("failed conversion"))),
-    )
-}
-
-fn f5<T1, T2>(a0: T1, a1: T2) -> (Value<T1>, Value<T2>) {
-    (
-        Rc::new(RefCell::new(a0.try_into().expect("failed conversion"))),
-        Rc::new(RefCell::new(a1.try_into().expect("failed conversion"))),
-    )
-}
-
-fn f6<T1, T2>(a0: T1, a1: T2) -> (Value<T1>, Value<T2>) {
-    (
-        Rc::new(RefCell::new(a0.try_into().expect("failed conversion"))),
-        Rc::new(RefCell::new(a1.try_into().expect("failed conversion"))),
     )
 }
 
@@ -65,10 +40,6 @@ fn f10<T1, T2>(a0: T1, a1: T2) -> (Value<T1>, Value<T2>) {
     )
 }
 
-fn f11<T1, T2>(a0: (Value<T1>, Value<T2>)) -> Value<T1> {
-    a0.0
-}
-
 fn f12<T1: Default, T2: Default>(a0: &mut (Value<T1>, Value<T2>)) -> (Value<T1>, Value<T2>) {
     std::mem::take(&mut *a0)
 }
@@ -90,17 +61,10 @@ fn f14<T1: Default + ByteRepr, T2: Default + ByteRepr>(
     a0.write(std::mem::take(&mut *a1))
 }
 
-fn f15<T1, T2>(a0: (Value<T1>, Value<T2>)) -> Value<T1> {
-    a0.0
-}
-
-fn f16<T1, T2>(a0: (Value<T1>, Value<T2>)) -> Value<T2> {
+fn f15<T1, T2>(a0: (Value<T1>, Value<T2>)) -> Value<T2> {
     a0.1
 }
 
-fn f17<T1: Clone, T2: Clone>(a0: (Value<T1>, Value<T2>)) -> (Value<T1>, Value<T2>) {
-    (
-        Rc::new(RefCell::new(a0.0.borrow().clone())),
-        Rc::new(RefCell::new(a0.1.borrow().clone())),
-    )
+fn f16<T1, T2>(a0: (Value<T1>, Value<T2>)) -> Value<T1> {
+    a0.0
 }

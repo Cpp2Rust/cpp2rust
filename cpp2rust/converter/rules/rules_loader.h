@@ -10,7 +10,9 @@
 #include <clang/Basic/SourceLocation.h>
 #include <clang/Frontend/CompilerInstance.h>
 #include <clang/Lex/Pragma.h>
+#include <llvm/Support/JSON.h>
 
+#include <filesystem>
 #include <string>
 
 namespace cpp2rust::RulesLoader {
@@ -32,6 +34,8 @@ std::string DeclKey(const clang::NamedDecl *decl);
 std::string ExprKey(clang::ASTContext &ctx, const clang::Expr *expr);
 
 std::string TypeKey(clang::QualType type);
+
+llvm::json::Object ReadIndex(const std::filesystem::path &path);
 
 class PragmaHandler : public clang::PragmaHandler {
 public:

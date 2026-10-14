@@ -27,43 +27,13 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut x: i32 = 0;
-    write!(
-        std::fs::File::from_raw_fd(
-            std::io::stdout()
-                .as_fd()
-                .try_clone_to_owned()
-                .unwrap()
-                .into_raw_fd(),
-        ),
-        "{:}\n",
-        x,
-    );
+    write!((*libcc2rs::cout_unsafe()), "{:}\n", x,);
     let mut a: i32 = 1;
     let mut b: i32 = (unsafe { identity_0(a) });
-    write!(
-        std::fs::File::from_raw_fd(
-            std::io::stdout()
-                .as_fd()
-                .try_clone_to_owned()
-                .unwrap()
-                .into_raw_fd(),
-        ),
-        "{:}\n",
-        b,
-    );
+    write!((*libcc2rs::cout_unsafe()), "{:}\n", b,);
     let mut c: i32 = 2;
     let mut p: *mut i32 = (&mut c as *mut i32);
-    write!(
-        std::fs::File::from_raw_fd(
-            std::io::stdout()
-                .as_fd()
-                .try_clone_to_owned()
-                .unwrap()
-                .into_raw_fd(),
-        ),
-        "{:}\n",
-        (*p),
-    );
+    write!((*libcc2rs::cout_unsafe()), "{:}\n", (*p),);
     let mut d: i32 = 3;
     let mut e: i32 = 4;
     (unsafe { swap_by_ptr_1((&mut d as *mut i32), (&mut e as *mut i32)) });
@@ -71,17 +41,7 @@ unsafe fn main_0() -> i32 {
     let mut g: i32 = 5;
     (unsafe { swap_by_ref_2(&mut f, &mut g) });
     let mut h: *mut i32 = (Box::leak(Box::new(6)) as *mut i32);
-    write!(
-        std::fs::File::from_raw_fd(
-            std::io::stdout()
-                .as_fd()
-                .try_clone_to_owned()
-                .unwrap()
-                .into_raw_fd(),
-        ),
-        "{:}\n",
-        (*h),
-    );
+    write!((*libcc2rs::cout_unsafe()), "{:}\n", (*h),);
     {
         let __p = h;
         if !__p.is_null() {
@@ -90,13 +50,7 @@ unsafe fn main_0() -> i32 {
     };
     let mut i: *mut i32 = Box::leak(Box::new([7, 8, 0_i32])).as_mut_ptr();
     write!(
-        std::fs::File::from_raw_fd(
-            std::io::stdout()
-                .as_fd()
-                .try_clone_to_owned()
-                .unwrap()
-                .into_raw_fd(),
-        ),
+        (*libcc2rs::cout_unsafe()),
         "{:} {:}\n",
         (*i.offset((0) as isize)),
         (*i.offset((1) as isize)),
@@ -139,32 +93,12 @@ unsafe fn main_0() -> i32 {
     let mut k: *mut i32 = j
         .as_deref_mut()
         .map_or(::std::ptr::null_mut(), |v| v as *mut i32);
-    write!(
-        std::fs::File::from_raw_fd(
-            std::io::stdout()
-                .as_fd()
-                .try_clone_to_owned()
-                .unwrap()
-                .into_raw_fd(),
-        ),
-        "{:}\n",
-        (*k),
-    );
+    write!((*libcc2rs::cout_unsafe()), "{:}\n", (*k),);
     let mut l: Option<Box<i32>> = Some(Box::new(11));
     let mut m: *mut i32 = l
         .as_deref_mut()
         .map_or(::std::ptr::null_mut(), |v| v as *mut i32);
-    write!(
-        std::fs::File::from_raw_fd(
-            std::io::stdout()
-                .as_fd()
-                .try_clone_to_owned()
-                .unwrap()
-                .into_raw_fd(),
-        ),
-        "{:}\n",
-        (*m),
-    );
+    write!((*libcc2rs::cout_unsafe()), "{:}\n", (*m),);
     assert!(((c) == (2)));
     return 0;
 }

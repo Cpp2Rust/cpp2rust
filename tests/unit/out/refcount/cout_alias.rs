@@ -13,15 +13,15 @@ pub fn main() {
 fn main_0() -> i32 {
     let mut cond: bool = true;
     let mut os1: Ptr<std::fs::File> = if cond {
-        libcc2rs::cout()
+        (libcc2rs::cout())
     } else {
-        libcc2rs::cerr()
+        (libcc2rs::cerr())
     };
     write!(os1, "hello\n",);
     let os2: Ptr<std::fs::File> = if cond {
-        libcc2rs::cout()
+        (libcc2rs::cout())
     } else {
-        libcc2rs::cerr()
+        (libcc2rs::cerr())
     };
     write!(os2, "hello\n",);
     return 0;

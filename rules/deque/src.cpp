@@ -36,16 +36,17 @@ template <typename T1> std::deque<T1> f9(std::deque<T1> &&o) {
 
 template <typename T1>
 std::deque<T1> &f10(std::deque<T1> &dst, const std::deque<T1> &src) {
-  return dst.operator=(src);
+  return dst = src;
 }
 
 template <typename T1>
 std::deque<T1> &f11(std::deque<T1> &dst, std::deque<T1> &&src) {
-  return dst.operator=(std::move(src));
+  return dst = std::move(src);
 }
 
 template <typename T1, typename... Args>
-T1 &f12(std::deque<T1> &o, Init<T1, Args> &&...args) {
+auto f12(std::deque<T1> &o, Init<T1, Args> &&...args)
+    -> decltype(o.emplace_back(std::forward<Args>(args)...)) {
   return o.emplace_back(std::forward<Args>(args)...);
 }
 

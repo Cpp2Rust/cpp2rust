@@ -20,7 +20,7 @@ fn main_0() -> i32 {
     ({ bit_cast_1((((a1.as_pointer() as Ptr<u32>).offset(0)) as Ptr<u32>).to_any()) });
     ({ bit_cast_1(((a1.as_pointer()) as Ptr<u32>).to_any()) });
     let mut ptr: AnyPtr = ((a1.as_pointer() as Ptr<u32>) as Ptr<u32>).to_any();
-    assert!(({ (ptr).clone() } == { ((a1.as_pointer() as Ptr::<u32>) as Ptr::<u32>).to_any() }));
+    assert!(({ (ptr).clone() } == { ((a1.as_pointer() as Ptr::<u32>) as Ptr<u32>).to_any() }));
     assert!(
         ({ (elem!((ptr.reinterpret_cast::<u32>()), 0).read()) } == {
             (*a1.borrow())[(0) as usize]

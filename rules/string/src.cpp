@@ -65,7 +65,7 @@ std::string &f21(std::string &s, std::size_t n, char c) {
   return s.append(n, c);
 }
 
-bool f22(std::string &s) { return s.empty(); }
+bool f22(const std::string &s) { return s.empty(); }
 
 std::string f23() { return std::string(); }
 
@@ -79,10 +79,8 @@ std::string f27(const std::string &o) { return std::string(o); }
 
 std::string f28(std::string &&o) { return std::string(std::move(o)); }
 
-std::string &f29(std::string &dst, const std::string &src) {
-  return dst.operator=(src);
-}
+std::string &f29(std::string &dst, const std::string &src) { return dst = src; }
 
 std::string &f30(std::string &dst, std::string &&src) {
-  return dst.operator=(std::move(src));
+  return dst = std::move(src);
 }

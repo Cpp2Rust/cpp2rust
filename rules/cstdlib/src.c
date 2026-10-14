@@ -3,7 +3,7 @@
 
 #include <stdlib.h>
 
-void f1() { return abort(); }
+void f1(void) { return abort(); }
 
 void f2(void *a0) { return free(a0); }
 

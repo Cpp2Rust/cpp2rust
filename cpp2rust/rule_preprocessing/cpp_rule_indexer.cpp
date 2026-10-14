@@ -26,6 +26,7 @@
 #include <vector>
 
 #include "compat/platform_flags.h"
+#include "converter/rules/decls.h"
 #include "converter/rules/rules_loader.h"
 
 namespace fs = std::filesystem;
@@ -133,6 +134,11 @@ std::string ClassOfParameters(const clang::Decl *rule) {
   return {};
 }
 
+std::string ClassOfEnableIf(const clang::Decl *rule) {
+  auto same = RuleDecls::EnableIfSameType(rule);
+  return same.isNull() ? std::string() : ClassOf(same);
+}
+
 const clang::Expr *RuleExpr(const clang::Decl *decl) {
   if (auto var = llvm::dyn_cast<clang::VarDecl>(decl)) {
     return var->getInit();
@@ -169,6 +175,14 @@ std::string DependentExprKey(const clang::Expr *expr) {
         overloads && overloads->decls_begin() != overloads->decls_end()) {
       return RulesLoader::DeclKey(
           (*overloads->decls_begin())->getUnderlyingDecl());
+    }
+    if (auto ref = llvm::dyn_cast<clang::DependentScopeDeclRefExpr>(callee)) {
+      auto qualifier = ref->getQualifier();
+      if (qualifier.getKind() == clang::NestedNameSpecifier::Kind::Type) {
+        return RulesLoader::MemberKey(
+            ClassOf(clang::QualType(qualifier.getAsType(), 0)),
+            RulesLoader::MemberName(ref->getDeclName()));
+      }
     }
     if (auto lookup = llvm::dyn_cast<clang::UnresolvedLookupExpr>(callee);
         lookup && lookup->getQualifier() &&
@@ -227,7 +241,6 @@ void AddRule(llvm::json::Object &rules, std::string key,
 
 void IndexRuleFile(clang::ASTContext &ctx, const std::string &dir_name,
                    llvm::json::Object &rules) {
-  bool is_c = !ctx.getLangOpts().CPlusPlus;
   auto &sm = ctx.getSourceManager();
   for (auto *decl : ctx.getTranslationUnitDecl()->decls()) {
     if (decl->isImplicit() ||
@@ -254,16 +267,16 @@ void IndexRuleFile(clang::ASTContext &ctx, const std::string &dir_name,
       key = ClassOfParameters(decl);
     }
     if (key.empty()) {
+      key = ClassOfEnableIf(decl);
+    }
+    if (key.empty()) {
       llvm::errs() << "ERROR: cannot derive the key of rule '" << name
                    << "' in rule dir " << dir_name << '\n';
       std::exit(EXIT_FAILURE);
     }
     auto range = clang::tooling::getExtendedRange(*decl, clang::tok::semi, ctx);
     auto text = clang::tooling::getText(range, ctx).str() + '\n';
-    llvm::json::Object rule{{"dir", dir_name}, {"text", text}};
-    if (is_c) {
-      rule["name"] = name;
-    }
+    llvm::json::Object rule{{"dir", dir_name}, {"name", name}, {"text", text}};
     if (auto required = RequiredClasses(decl, alias); !required.empty()) {
       rule["requires"] = llvm::json::Array(required);
     }

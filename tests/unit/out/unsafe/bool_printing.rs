@@ -21,69 +21,17 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut i1: i32 = 0;
     let mut i2: i32 = 1;
+    write!((*libcc2rs::cout_unsafe()), "{:}\n", (true as u8),);
+    write!((*libcc2rs::cout_unsafe()), "{:}\n", (false as u8),);
+    write!((*libcc2rs::cout_unsafe()), "{:}\n", (((i1) != (i2)) as u8),);
+    write!((*libcc2rs::cout_unsafe()), "{:}\n", (((i1) == (i2)) as u8),);
     write!(
-        std::fs::File::from_raw_fd(
-            std::io::stdout()
-                .as_fd()
-                .try_clone_to_owned()
-                .unwrap()
-                .into_raw_fd(),
-        ),
-        "{:}\n",
-        (true as u8),
-    );
-    write!(
-        std::fs::File::from_raw_fd(
-            std::io::stdout()
-                .as_fd()
-                .try_clone_to_owned()
-                .unwrap()
-                .into_raw_fd(),
-        ),
-        "{:}\n",
-        (false as u8),
-    );
-    write!(
-        std::fs::File::from_raw_fd(
-            std::io::stdout()
-                .as_fd()
-                .try_clone_to_owned()
-                .unwrap()
-                .into_raw_fd(),
-        ),
-        "{:}\n",
-        (((i1) != (i2)) as u8),
-    );
-    write!(
-        std::fs::File::from_raw_fd(
-            std::io::stdout()
-                .as_fd()
-                .try_clone_to_owned()
-                .unwrap()
-                .into_raw_fd(),
-        ),
-        "{:}\n",
-        (((i1) == (i2)) as u8),
-    );
-    write!(
-        std::fs::File::from_raw_fd(
-            std::io::stdout()
-                .as_fd()
-                .try_clone_to_owned()
-                .unwrap()
-                .into_raw_fd(),
-        ),
+        (*libcc2rs::cout_unsafe()),
         "{:}\n",
         ((unsafe { foo_0() }) as u8),
     );
     write!(
-        std::fs::File::from_raw_fd(
-            std::io::stdout()
-                .as_fd()
-                .try_clone_to_owned()
-                .unwrap()
-                .into_raw_fd(),
-        ),
+        (*libcc2rs::cout_unsafe()),
         "{:}\n",
         ((unsafe { bar_1() }) as u8),
     );

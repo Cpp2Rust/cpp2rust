@@ -5,9 +5,5 @@
 #include <sys/types.h>
 
 typedef size_t t2;
-typedef size_t *t3;
-typedef const size_t *t4;
 typedef __typeof__(sizeof(0)) t5;
 typedef ssize_t t6;
-typedef ssize_t *t7;
-typedef const ssize_t *t8;

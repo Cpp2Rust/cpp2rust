@@ -29,11 +29,11 @@ size_t f6(const void *ptr, size_t size, size_t nmemb, FILE *stream) {
 
 int f7(FILE *stream) { return fflush(stream); }
 
-FILE *f8() { return stdout; }
+FILE *f8(void) { return stdout; }
 
-FILE *f9() { return stderr; }
+FILE *f9(void) { return stderr; }
 
-FILE *f10() { return stdin; }
+FILE *f10(void) { return stdin; }
 
 int f11(int c, FILE *stream) { return fputc(c, stream); }
 

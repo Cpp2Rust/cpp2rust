@@ -18,7 +18,7 @@ pub fn test_memcpy_0() {
         ((dst.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any()
     };
     assert!(
-        ((({ (r).clone() } == { ((dst.as_pointer() as Ptr::<i8>) as Ptr::<i8>).to_any() }) as i32)
+        ((({ (r).clone() } == { ((dst.as_pointer() as Ptr::<i8>) as Ptr<i8>).to_any() }) as i32)
             != 0)
     );
     assert!(
@@ -49,7 +49,7 @@ pub fn test_memset_1() {
         ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any()
     };
     assert!(
-        ((({ (r).clone() } == { ((buf.as_pointer() as Ptr::<i8>) as Ptr::<i8>).to_any() }) as i32)
+        ((({ (r).clone() } == { ((buf.as_pointer() as Ptr::<i8>) as Ptr<i8>).to_any() }) as i32)
             != 0)
     );
     assert!(
@@ -70,33 +70,24 @@ pub fn test_memcmp_2() {
     let b: Value<Box<[i8]>> = Rc::new(RefCell::new(Box::new([1_i8, 2_i8, 3_i8, 4_i8])));
     let c: Value<Box<[i8]>> = Rc::new(RefCell::new(Box::new([1_i8, 2_i8, 9_i8, 4_i8])));
     assert!(
-        (((((a.as_pointer() as Ptr::<i8>) as Ptr::<i8>)
-            .to_any()
-            .memcmp(
-                &((b.as_pointer() as Ptr::<i8>) as Ptr::<i8>).to_any(),
-                4_usize
-            )
-            == 0) as i32)
+        (((((a.as_pointer() as Ptr::<i8>) as Ptr<i8>).to_any().memcmp(
+            &((b.as_pointer() as Ptr::<i8>) as Ptr<i8>).to_any(),
+            4_usize
+        ) == 0) as i32)
             != 0)
     );
     assert!(
-        (((((a.as_pointer() as Ptr::<i8>) as Ptr::<i8>)
-            .to_any()
-            .memcmp(
-                &((c.as_pointer() as Ptr::<i8>) as Ptr::<i8>).to_any(),
-                4_usize
-            )
-            < 0) as i32)
+        (((((a.as_pointer() as Ptr::<i8>) as Ptr<i8>).to_any().memcmp(
+            &((c.as_pointer() as Ptr::<i8>) as Ptr<i8>).to_any(),
+            4_usize
+        ) < 0) as i32)
             != 0)
     );
     assert!(
-        (((((c.as_pointer() as Ptr::<i8>) as Ptr::<i8>)
-            .to_any()
-            .memcmp(
-                &((a.as_pointer() as Ptr::<i8>) as Ptr::<i8>).to_any(),
-                4_usize
-            )
-            > 0) as i32)
+        (((((c.as_pointer() as Ptr::<i8>) as Ptr<i8>).to_any().memcmp(
+            &((a.as_pointer() as Ptr::<i8>) as Ptr<i8>).to_any(),
+            4_usize
+        ) > 0) as i32)
             != 0)
     );
 }
@@ -508,9 +499,8 @@ pub fn test_memchr_8() {
         }
     };
     assert!(
-        ((({ (r).clone() } == {
-            (((data.as_pointer() as Ptr<i8>).offset(2)) as Ptr<i8>).to_any()
-        }) as i32)
+        ((({ (r).clone() } == { (((data.as_pointer() as Ptr<i8>).offset(2)) as Ptr<i8>).to_any() })
+            as i32)
             != 0)
     );
     assert!(

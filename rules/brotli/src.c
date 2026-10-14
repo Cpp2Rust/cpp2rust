@@ -10,7 +10,7 @@ typedef struct BrotliDecoderStateStruct *t3;
 typedef const struct BrotliDecoderStateStruct *t4;
 typedef BrotliDecoderErrorCode t5;
 
-BrotliEncoderMode f1() { return BROTLI_MODE_FONT; }
+BrotliEncoderMode f1(void) { return BROTLI_MODE_FONT; }
 
 BROTLI_BOOL f2(int quality, int lgwin, BrotliEncoderMode mode,
                size_t input_size,
@@ -21,9 +21,9 @@ BROTLI_BOOL f2(int quality, int lgwin, BrotliEncoderMode mode,
                                encoded_size, encoded_buffer);
 }
 
-BrotliEncoderMode f3() { return BROTLI_MODE_TEXT; }
+BrotliEncoderMode f3(void) { return BROTLI_MODE_TEXT; }
 
-BrotliDecoderResult f4() { return BROTLI_DECODER_RESULT_SUCCESS; }
+BrotliDecoderResult f4(void) { return BROTLI_DECODER_RESULT_SUCCESS; }
 
 BrotliDecoderResult
 f5(size_t encoded_size,
@@ -54,57 +54,77 @@ const uint8_t *f9(BrotliDecoderState *state, size_t *size) {
   return BrotliDecoderTakeOutput(state, size);
 }
 
-BrotliDecoderResult f10() { return BROTLI_DECODER_RESULT_ERROR; }
+BrotliDecoderResult f10(void) { return BROTLI_DECODER_RESULT_ERROR; }
 
-BrotliDecoderResult f11() { return BROTLI_DECODER_RESULT_NEEDS_MORE_OUTPUT; }
+BrotliDecoderResult f11(void) {
+  return BROTLI_DECODER_RESULT_NEEDS_MORE_OUTPUT;
+}
 
-BrotliEncoderMode f12() { return BROTLI_MODE_GENERIC; }
+BrotliEncoderMode f12(void) { return BROTLI_MODE_GENERIC; }
 
-BrotliDecoderResult f13() { return BROTLI_DECODER_RESULT_NEEDS_MORE_INPUT; }
+BrotliDecoderResult f13(void) { return BROTLI_DECODER_RESULT_NEEDS_MORE_INPUT; }
 
-BrotliDecoderErrorCode f14() {
+BrotliDecoderErrorCode f14(void) {
   return BROTLI_DECODER_ERROR_FORMAT_EXUBERANT_NIBBLE;
 }
-BrotliDecoderErrorCode f15() {
+BrotliDecoderErrorCode f15(void) {
   return BROTLI_DECODER_ERROR_FORMAT_EXUBERANT_META_NIBBLE;
 }
-BrotliDecoderErrorCode f16() {
+BrotliDecoderErrorCode f16(void) {
   return BROTLI_DECODER_ERROR_FORMAT_SIMPLE_HUFFMAN_ALPHABET;
 }
-BrotliDecoderErrorCode f17() {
+BrotliDecoderErrorCode f17(void) {
   return BROTLI_DECODER_ERROR_FORMAT_SIMPLE_HUFFMAN_SAME;
 }
-BrotliDecoderErrorCode f18() { return BROTLI_DECODER_ERROR_FORMAT_CL_SPACE; }
-BrotliDecoderErrorCode f19() {
+BrotliDecoderErrorCode f18(void) {
+  return BROTLI_DECODER_ERROR_FORMAT_CL_SPACE;
+}
+BrotliDecoderErrorCode f19(void) {
   return BROTLI_DECODER_ERROR_FORMAT_HUFFMAN_SPACE;
 }
-BrotliDecoderErrorCode f20() {
+BrotliDecoderErrorCode f20(void) {
   return BROTLI_DECODER_ERROR_FORMAT_CONTEXT_MAP_REPEAT;
 }
-BrotliDecoderErrorCode f21() {
+BrotliDecoderErrorCode f21(void) {
   return BROTLI_DECODER_ERROR_FORMAT_BLOCK_LENGTH_1;
 }
-BrotliDecoderErrorCode f22() {
+BrotliDecoderErrorCode f22(void) {
   return BROTLI_DECODER_ERROR_FORMAT_BLOCK_LENGTH_2;
 }
-BrotliDecoderErrorCode f23() { return BROTLI_DECODER_ERROR_FORMAT_TRANSFORM; }
-BrotliDecoderErrorCode f24() { return BROTLI_DECODER_ERROR_FORMAT_DICTIONARY; }
-BrotliDecoderErrorCode f25() { return BROTLI_DECODER_ERROR_FORMAT_WINDOW_BITS; }
-BrotliDecoderErrorCode f26() { return BROTLI_DECODER_ERROR_FORMAT_PADDING_1; }
-BrotliDecoderErrorCode f27() { return BROTLI_DECODER_ERROR_FORMAT_PADDING_2; }
-BrotliDecoderErrorCode f28() { return BROTLI_DECODER_ERROR_INVALID_ARGUMENTS; }
-BrotliDecoderErrorCode f29() {
+BrotliDecoderErrorCode f23(void) {
+  return BROTLI_DECODER_ERROR_FORMAT_TRANSFORM;
+}
+BrotliDecoderErrorCode f24(void) {
+  return BROTLI_DECODER_ERROR_FORMAT_DICTIONARY;
+}
+BrotliDecoderErrorCode f25(void) {
+  return BROTLI_DECODER_ERROR_FORMAT_WINDOW_BITS;
+}
+BrotliDecoderErrorCode f26(void) {
+  return BROTLI_DECODER_ERROR_FORMAT_PADDING_1;
+}
+BrotliDecoderErrorCode f27(void) {
+  return BROTLI_DECODER_ERROR_FORMAT_PADDING_2;
+}
+BrotliDecoderErrorCode f28(void) {
+  return BROTLI_DECODER_ERROR_INVALID_ARGUMENTS;
+}
+BrotliDecoderErrorCode f29(void) {
   return BROTLI_DECODER_ERROR_ALLOC_CONTEXT_MODES;
 }
-BrotliDecoderErrorCode f30() { return BROTLI_DECODER_ERROR_ALLOC_TREE_GROUPS; }
-BrotliDecoderErrorCode f31() { return BROTLI_DECODER_ERROR_ALLOC_CONTEXT_MAP; }
-BrotliDecoderErrorCode f32() {
+BrotliDecoderErrorCode f30(void) {
+  return BROTLI_DECODER_ERROR_ALLOC_TREE_GROUPS;
+}
+BrotliDecoderErrorCode f31(void) {
+  return BROTLI_DECODER_ERROR_ALLOC_CONTEXT_MAP;
+}
+BrotliDecoderErrorCode f32(void) {
   return BROTLI_DECODER_ERROR_ALLOC_RING_BUFFER_1;
 }
-BrotliDecoderErrorCode f33() {
+BrotliDecoderErrorCode f33(void) {
   return BROTLI_DECODER_ERROR_ALLOC_RING_BUFFER_2;
 }
-BrotliDecoderErrorCode f34() {
+BrotliDecoderErrorCode f34(void) {
   return BROTLI_DECODER_ERROR_ALLOC_BLOCK_TYPE_TREES;
 }
 
@@ -112,4 +132,4 @@ BrotliDecoderErrorCode f35(const BrotliDecoderState *state) {
   return BrotliDecoderGetErrorCode(state);
 }
 
-uint32_t f36() { return BrotliDecoderVersion(); }
+uint32_t f36(void) { return BrotliDecoderVersion(); }

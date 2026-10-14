@@ -23,6 +23,16 @@ fn main_0() -> i32 {
         Ptr::<i8>::from_string_literal(b"fbo")
             .with_c_str(|__s| (*arr.borrow())[..(*arr.borrow()).len().saturating_sub(1)] == *__s)
     );
+    let mut names: [Ptr<i8>; 1] = [(arr.as_pointer() as Ptr<i8>)];
+    let mut copy: Vec<i8> = {
+        let mut __bytes = names[(0) as usize].to_c_bytes();
+        __bytes.push(0);
+        __bytes
+    };
+    assert!(
+        Ptr::<i8>::from_string_literal(b"fbo")
+            .with_c_str(|__s| copy[..copy.len().saturating_sub(1)] == *__s)
+    );
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}
