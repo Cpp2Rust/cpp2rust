@@ -10,7 +10,7 @@ pub unsafe fn extract_first_0(
     mut buf: *mut libc::c_char,
     mut size: i32,
     mut fmt: *const libc::c_char,
-    __args: &[VaArg],
+    __args: Box<[VaArg]>,
 ) -> i32 {
     let mut ap: *const VaArg = ::std::ptr::null();
     ap = __args.as_ptr();
@@ -32,7 +32,7 @@ unsafe fn main_0() -> i32 {
                 buf.as_mut_ptr(),
                 1,
                 (c"%d".as_ptr().cast_mut()).cast_const(),
-                &[(42).into()],
+                Box::new([(42).into()]),
             )
         }) == (42)) as i32)
             != 0)
@@ -44,7 +44,7 @@ unsafe fn main_0() -> i32 {
                 buf.as_mut_ptr(),
                 1,
                 (c"%d".as_ptr().cast_mut()).cast_const(),
-                &[(65).into()],
+                Box::new([(65).into()]),
             )
         }) == (65)) as i32)
             != 0)

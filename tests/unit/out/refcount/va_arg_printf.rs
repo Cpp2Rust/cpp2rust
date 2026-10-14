@@ -11,7 +11,7 @@ pub fn logf_impl_0(mut fmt: Ptr<i8>, ap: Ptr<VaArg>) -> i32 {
     &(fmt);
     return ({ (*ap.borrow_mut()).arg::<i32>() } + { (*ap.borrow_mut()).arg::<i32>() });
 }
-pub fn logf_1(fmt: Ptr<i8>, __args: &[VaArg]) -> i32 {
+pub fn logf_1(fmt: Ptr<i8>, __args: Box<[VaArg]>) -> i32 {
     let __args: Value<Box<[VaArg]>> = Rc::new(RefCell::new(__args.into()));
     let fmt: Value<Ptr<i8>> = Rc::new(RefCell::new(fmt));
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
@@ -19,7 +19,7 @@ pub fn logf_1(fmt: Ptr<i8>, __args: &[VaArg]) -> i32 {
     let mut result: i32 = ({ logf_impl_0((*fmt.borrow()).clone(), (*ap.borrow()).clone()) });
     return result;
 }
-pub fn lenf_2(fmt: Ptr<i8>, __args: &[VaArg]) -> i32 {
+pub fn lenf_2(fmt: Ptr<i8>, __args: Box<[VaArg]>) -> i32 {
     let __args: Value<Box<[VaArg]>> = Rc::new(RefCell::new(__args.into()));
     let fmt: Value<Ptr<i8>> = Rc::new(RefCell::new(fmt));
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
@@ -38,7 +38,7 @@ fn main_0() -> i32 {
         (((({
             logf_1(
                 Ptr::<i8>::from_string_literal(b"hello %d %d"),
-                &[(10).into(), (dummy.to_c_string_iterator().count()).into()],
+                Box::new([(10).into(), (dummy.to_c_string_iterator().count()).into()]),
             )
         }) == 15) as i32)
             != 0)
@@ -47,7 +47,7 @@ fn main_0() -> i32 {
         (((({
             logf_1(
                 Ptr::<i8>::from_string_literal(b"x %d %d"),
-                &[(1).into(), (2).into()],
+                Box::new([(1).into(), (2).into()]),
             )
         }) == 3) as i32)
             != 0)
@@ -56,7 +56,7 @@ fn main_0() -> i32 {
         (((({
             lenf_2(
                 Ptr::<i8>::from_string_literal(b"%s"),
-                &[((dummy).clone()).into()],
+                Box::new([((dummy).clone()).into()]),
             )
         }) == 5) as i32)
             != 0)
@@ -65,12 +65,12 @@ fn main_0() -> i32 {
         (((({
             lenf_2(
                 Ptr::<i8>::from_string_literal(b"%s"),
-                &[(if (((elem!(dummy, 0).read()) as i32) != 0) {
+                Box::new([(if (((elem!(dummy, 0).read()) as i32) != 0) {
                     (dummy).clone()
                 } else {
                     Ptr::<i8>::from_string_literal(b"")
                 })
-                .into()],
+                .into()]),
             )
         }) == 5) as i32)
             != 0)

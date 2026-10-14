@@ -16,7 +16,7 @@ fn main_0() -> i32 {
         ((({
             let __s = libcc2rs::format_c(
                 &Ptr::<i8>::from_string_literal(b"x=%d y=%u").to_rust_string(),
-                &[(-3_i32).into(), (7_u32).into()],
+                &Box::<[VaArg]>::from([(-3_i32).into(), (7_u32).into()]),
             );
             let __b = __s.as_bytes();
             if ::std::mem::size_of::<[i8; 32]>() > 0 {
@@ -49,7 +49,7 @@ fn main_0() -> i32 {
         ((({
             let __s = libcc2rs::format_c(
                 &Ptr::<i8>::from_string_literal(b"%s").to_rust_string(),
-                &[(Ptr::<i8>::from_string_literal(b"hello")).into()],
+                &Box::<[VaArg]>::from([(Ptr::<i8>::from_string_literal(b"hello")).into()]),
             );
             let __b = __s.as_bytes();
             if 4_usize > 0 {
@@ -82,7 +82,7 @@ fn main_0() -> i32 {
         ((({
             let __s = libcc2rs::format_c(
                 &Ptr::<i8>::from_string_literal(b"%05d|%x|%X").to_rust_string(),
-                &[(42).into(), (255).into(), (255).into()],
+                &Box::<[VaArg]>::from([(42).into(), (255).into(), (255).into()]),
             );
             let __b = __s.as_bytes();
             if ::std::mem::size_of::<[i8; 32]>() > 0 {
@@ -115,7 +115,7 @@ fn main_0() -> i32 {
         ((({
             let __s = libcc2rs::format_c(
                 &Ptr::<i8>::from_string_literal(b"%.2f").to_rust_string(),
-                &[(3.14159_f64).into()],
+                &Box::<[VaArg]>::from([(3.14159_f64).into()]),
             );
             let __b = __s.as_bytes();
             if ::std::mem::size_of::<[i8; 32]>() > 0 {
@@ -148,7 +148,7 @@ fn main_0() -> i32 {
         ((({
             let __s = libcc2rs::format_c(
                 &Ptr::<i8>::from_string_literal(b"%-6s|").to_rust_string(),
-                &[(Ptr::<i8>::from_string_literal(b"ab")).into()],
+                &Box::<[VaArg]>::from([(Ptr::<i8>::from_string_literal(b"ab")).into()]),
             );
             let __b = __s.as_bytes();
             if ::std::mem::size_of::<[i8; 32]>() > 0 {
@@ -181,7 +181,7 @@ fn main_0() -> i32 {
         ((({
             let __s = libcc2rs::format_c(
                 &Ptr::<i8>::from_string_literal(b"%c%%").to_rust_string(),
-                &[(65).into()],
+                &Box::<[VaArg]>::from([(65).into()]),
             );
             let __b = __s.as_bytes();
             if ::std::mem::size_of::<[i8; 32]>() > 0 {
@@ -214,7 +214,7 @@ fn main_0() -> i32 {
         ((({
             let __s = libcc2rs::format_c(
                 &Ptr::<i8>::from_string_literal(b"%+d % d").to_rust_string(),
-                &[(5).into(), (5).into()],
+                &Box::<[VaArg]>::from([(5).into(), (5).into()]),
             );
             let __b = __s.as_bytes();
             if ::std::mem::size_of::<[i8; 32]>() > 0 {
@@ -247,7 +247,7 @@ fn main_0() -> i32 {
         ((({
             let __s = libcc2rs::format_c(
                 &Ptr::<i8>::from_string_literal(b"%ld %lu %zu").to_rust_string(),
-                &[(-1_i64).into(), (1_u64).into(), (9 as usize).into()],
+                &Box::<[VaArg]>::from([(-1_i64).into(), (1_u64).into(), (9 as usize).into()]),
             );
             let __b = __s.as_bytes();
             if ::std::mem::size_of::<[i8; 32]>() > 0 {
@@ -280,7 +280,7 @@ fn main_0() -> i32 {
         ((({
             let __s = libcc2rs::format_c(
                 &Ptr::<i8>::from_string_literal(b"%e").to_rust_string(),
-                &[(1234.5678_f64).into()],
+                &Box::<[VaArg]>::from([(1234.5678_f64).into()]),
             );
             let __b = __s.as_bytes();
             if ::std::mem::size_of::<[i8; 32]>() > 0 {
@@ -313,7 +313,7 @@ fn main_0() -> i32 {
         ((({
             let __s = libcc2rs::format_c(
                 &Ptr::<i8>::from_string_literal(b"%g").to_rust_string(),
-                &[(1234567_f64).into()],
+                &Box::<[VaArg]>::from([(1234567_f64).into()]),
             );
             let __b = __s.as_bytes();
             if ::std::mem::size_of::<[i8; 32]>() > 0 {
@@ -347,7 +347,7 @@ fn main_0() -> i32 {
         ((({
             let __s = libcc2rs::format_c(
                 &Ptr::<i8>::from_string_literal(b"%d").to_rust_string(),
-                &[(123).into()],
+                &Box::<[VaArg]>::from([(123).into()]),
             );
             let __b = __s.as_bytes();
             if 0_usize > 0 {
@@ -371,7 +371,7 @@ fn main_0() -> i32 {
         ((({
             let __s = libcc2rs::format_c(
                 &(fmt.as_pointer() as Ptr<i8>).to_rust_string(),
-                &[(3.26_f64).into()],
+                &Box::<[VaArg]>::from([(3.26_f64).into()]),
             );
             let __b = __s.as_bytes();
             if ::std::mem::size_of::<[i8; 32]>() > 0 {

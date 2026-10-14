@@ -15,7 +15,7 @@ pub unsafe fn inner_0(mut count: i32, mut ap: *const VaArg) -> i32 {
     }
     return total;
 }
-pub unsafe fn outer_1(mut count: i32, __args: &[VaArg]) -> i32 {
+pub unsafe fn outer_1(mut count: i32, __args: Box<[VaArg]>) -> i32 {
     let mut ap: *const VaArg = ::std::ptr::null();
     ap = __args.as_ptr();
     let mut result: i32 = (unsafe { inner_0(count, ap) });
@@ -29,11 +29,12 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     assert!(
-        ((((unsafe { outer_1(3, &[(10).into(), (20).into(), (30).into(),]) }) == (60)) as i32)
+        ((((unsafe { outer_1(3, Box::new([(10).into(), (20).into(), (30).into(),])) }) == (60))
+            as i32)
             != 0)
     );
-    assert!(((((unsafe { outer_1(1, &[(42).into(),]) }) == (42)) as i32) != 0));
-    assert!(((((unsafe { outer_1(0, &[]) }) == (0)) as i32) != 0));
+    assert!(((((unsafe { outer_1(1, Box::new([(42).into(),])) }) == (42)) as i32) != 0));
+    assert!(((((unsafe { outer_1(0, Box::new([])) }) == (0)) as i32) != 0));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

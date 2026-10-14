@@ -19,7 +19,7 @@ pub fn middle_layer_1(mut n: i32, ap: Ptr<VaArg>) -> i32 {
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(ap));
     return ({ extract_nth_0(n, (*ap.borrow()).clone()) });
 }
-pub fn top_level_2(n: i32, __args: &[VaArg]) -> i32 {
+pub fn top_level_2(n: i32, __args: Box<[VaArg]>) -> i32 {
     let __args: Value<Box<[VaArg]>> = Rc::new(RefCell::new(__args.into()));
     let n: Value<i32> = Rc::new(RefCell::new(n));
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
@@ -34,13 +34,21 @@ pub fn main() {
 fn main_0() -> i32 {
     assert!(
         (((({
-            top_level_2(2, &[(100).into(), (200).into(), (300).into(), (400).into()])
+            top_level_2(
+                2,
+                Box::new([(100).into(), (200).into(), (300).into(), (400).into()]),
+            )
         }) == 300) as i32)
             != 0)
     );
-    assert!((((({ top_level_2(0, &[(42).into(), (99).into(),]) }) == 42) as i32) != 0));
+    assert!((((({ top_level_2(0, Box::new([(42).into(), (99).into(),])) }) == 42) as i32) != 0));
     assert!(
-        (((({ top_level_2(3, &[(1).into(), (2).into(), (3).into(), (4).into(),]) }) == 4) as i32)
+        (((({
+            top_level_2(
+                3,
+                Box::new([(1).into(), (2).into(), (3).into(), (4).into()]),
+            )
+        }) == 4) as i32)
             != 0)
     );
     return 0;

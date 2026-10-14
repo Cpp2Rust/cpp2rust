@@ -14,7 +14,7 @@ pub struct pair {
     #[offset(4)]
     pub b: i32,
 }
-pub fn sum_mixed_0(count: i32, __args: &[VaArg]) -> i32 {
+pub fn sum_mixed_0(count: i32, __args: Box<[VaArg]>) -> i32 {
     let __args: Value<Box<[VaArg]>> = Rc::new(RefCell::new(__args.into()));
     let count: Value<i32> = Rc::new(RefCell::new(count));
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
@@ -47,24 +47,24 @@ fn main_0() -> i32 {
         (((({
             sum_mixed_0(
                 3,
-                &[
+                Box::new([
                     (0).into(),
                     (10).into(),
                     (1).into(),
                     (20.5_f64).into(),
                     (2).into(),
                     (30_i64).into(),
-                ],
+                ]),
             )
         }) == 60) as i32)
             != 0)
     );
-    assert!((((({ sum_mixed_0(1, &[(0).into(), (42).into(),]) }) == 42) as i32) != 0));
+    assert!((((({ sum_mixed_0(1, Box::new([(0).into(), (42).into(),])) }) == 42) as i32) != 0));
     assert!(
         (((({
             sum_mixed_0(
                 2,
-                &[(1).into(), (3.7_f64).into(), (2).into(), (100_i64).into()],
+                Box::new([(1).into(), (3.7_f64).into(), (2).into(), (100_i64).into()]),
             )
         }) == 103) as i32)
             != 0)
@@ -74,7 +74,7 @@ fn main_0() -> i32 {
         (((({
             sum_mixed_0(
                 2,
-                &[(3).into(), ((p).clone()).into(), (0).into(), (5).into()],
+                Box::new([(3).into(), ((p).clone()).into(), (0).into(), (5).into()]),
             )
         }) == 61) as i32)
             != 0)

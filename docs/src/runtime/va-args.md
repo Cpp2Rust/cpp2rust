@@ -39,7 +39,7 @@ sum(3, 10, 20, 30);
 ```
 
 ```rust
-pub fn sum_0(count: i32, __args: &[VaArg]) -> i32 {
+pub fn sum_0(count: i32, __args: Box<[VaArg]>) -> i32 {
     let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
     (*ap.borrow_mut()) = VaList::new(__args);
     let total: Value<i32> = Rc::new(RefCell::new(0));
@@ -48,7 +48,7 @@ pub fn sum_0(count: i32, __args: &[VaArg]) -> i32 {
     // ...
 }
 
-sum_0(3, &[10.into(), 20.into(), 30.into()]);
+sum_0(3, Box::new([10.into(), 20.into(), 30.into()]));
 ```
 
 `arg::<T>()` goes through the `VaArgGet` trait, implemented for the integer and
@@ -59,5 +59,5 @@ panics, as does reading past the last argument.
 
 Variadic libc functions such as `printf` and `fcntl` are handled by
 [variadic rules](../rules/writing-rules.md#variadic-functions), whose bodies
-receive the same `&[VaArg]` slice; `format_c` in the
+receive the same `Box<[VaArg]>`; `format_c` in the
 [format module](./io.md#formatting) consumes one to evaluate a format string.

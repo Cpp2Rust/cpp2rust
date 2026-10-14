@@ -12,7 +12,7 @@ pub struct pair {
     pub a: i32,
     pub b: i32,
 }
-pub unsafe fn sum_mixed_0(mut count: i32, __args: &[VaArg]) -> i32 {
+pub unsafe fn sum_mixed_0(mut count: i32, __args: Box<[VaArg]>) -> i32 {
     let mut ap: *const VaArg = ::std::ptr::null();
     ap = __args.as_ptr();
     let mut total: i32 = 0;
@@ -45,32 +45,38 @@ unsafe fn main_0() -> i32 {
         ((((unsafe {
             sum_mixed_0(
                 3,
-                &[
+                Box::new([
                     (0).into(),
                     (10).into(),
                     (1).into(),
                     (20.5_f64).into(),
                     (2).into(),
                     (30_i64).into(),
-                ],
+                ]),
             )
         }) == (60)) as i32)
             != 0)
     );
-    assert!(((((unsafe { sum_mixed_0(1, &[(0).into(), (42).into(),]) }) == (42)) as i32) != 0));
+    assert!(
+        ((((unsafe { sum_mixed_0(1, Box::new([(0).into(), (42).into(),])) }) == (42)) as i32) != 0)
+    );
     assert!(
         ((((unsafe {
             sum_mixed_0(
                 2,
-                &[(1).into(), (3.7_f64).into(), (2).into(), (100_i64).into()],
+                Box::new([(1).into(), (3.7_f64).into(), (2).into(), (100_i64).into()]),
             )
         }) == (103)) as i32)
             != 0)
     );
     let mut p: pair = pair { a: 7, b: 8 };
     assert!(
-        ((((unsafe { sum_mixed_0(2, &[(3).into(), (p).into(), (0).into(), (5).into(),]) }) == (61))
-            as i32)
+        ((((unsafe {
+            sum_mixed_0(
+                2,
+                Box::new([(3).into(), (p).into(), (0).into(), (5).into()]),
+            )
+        }) == (61)) as i32)
             != 0)
     );
     return 0;

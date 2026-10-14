@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn sum_ints_0(first: i32, __args: &[VaArg]) -> i32 {
+pub fn sum_ints_0(first: i32, __args: Box<[VaArg]>) -> i32 {
     let __args: Value<Box<[VaArg]>> = Rc::new(RefCell::new(__args.into()));
     let first: Value<i32> = Rc::new(RefCell::new(first));
     let args: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
@@ -29,15 +29,20 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     assert!(
-        (((({ sum_ints_0(1, &[(2).into(), (3).into(), (4).into(), (0).into(),]) }) == 10) as i32)
+        (((({
+            sum_ints_0(
+                1,
+                Box::new([(2).into(), (3).into(), (4).into(), (0).into()]),
+            )
+        }) == 10) as i32)
             != 0)
     );
-    assert!((((({ sum_ints_0(100, &[(0).into(),]) }) == 100) as i32) != 0));
+    assert!((((({ sum_ints_0(100, Box::new([(0).into(),])) }) == 100) as i32) != 0));
     assert!(
         (((({
             sum_ints_0(
                 5,
-                &[(5).into(), (5).into(), (5).into(), (5).into(), (0).into()],
+                Box::new([(5).into(), (5).into(), (5).into(), (5).into(), (0).into()]),
             )
         }) == 25) as i32)
             != 0)

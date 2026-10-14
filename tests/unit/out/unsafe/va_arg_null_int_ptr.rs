@@ -6,7 +6,7 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn first_nonnull_0(mut count: i32, __args: &[VaArg]) -> i32 {
+pub unsafe fn first_nonnull_0(mut count: i32, __args: Box<[VaArg]>) -> i32 {
     let mut ap: *const VaArg = ::std::ptr::null();
     ap = __args.as_ptr();
     let mut result: i32 = -1_i32;
@@ -33,10 +33,10 @@ unsafe fn main_0() -> i32 {
         ((((unsafe {
             first_nonnull_0(
                 2,
-                &[
+                Box::new([
                     (0 as *mut ::libc::c_void).into(),
                     (&mut x as *mut i32).into(),
-                ],
+                ]),
             )
         }) == (42)) as i32)
             != 0)
@@ -45,18 +45,18 @@ unsafe fn main_0() -> i32 {
         ((((unsafe {
             first_nonnull_0(
                 3,
-                &[
+                Box::new([
                     (0 as *mut ::libc::c_void).into(),
                     (0 as *mut ::libc::c_void).into(),
                     (&mut x as *mut i32).into(),
-                ],
+                ]),
             )
         }) == (42)) as i32)
             != 0)
     );
     assert!(
-        ((((unsafe { first_nonnull_0(1, &[(0 as *mut ::libc::c_void).into(),]) }) == (-1_i32))
-            as i32)
+        ((((unsafe { first_nonnull_0(1, Box::new([(0 as *mut ::libc::c_void).into(),])) })
+            == (-1_i32)) as i32)
             != 0)
     );
     return 0;

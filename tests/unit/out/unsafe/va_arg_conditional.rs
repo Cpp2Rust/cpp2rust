@@ -9,7 +9,7 @@ use std::rc::Rc;
 pub unsafe fn conditional_log_0(
     mut verbose: i32,
     mut fmt: *const libc::c_char,
-    __args: &[VaArg],
+    __args: Box<[VaArg]>,
 ) -> i32 {
     if (verbose != 0) {
         let mut ap: *const VaArg = ::std::ptr::null();
@@ -28,13 +28,21 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     assert!(
         ((((unsafe {
-            conditional_log_0(1, (c"%d".as_ptr().cast_mut()).cast_const(), &[(42).into()])
+            conditional_log_0(
+                1,
+                (c"%d".as_ptr().cast_mut()).cast_const(),
+                Box::new([(42).into()]),
+            )
         }) == (42)) as i32)
             != 0)
     );
     assert!(
         ((((unsafe {
-            conditional_log_0(0, (c"%d".as_ptr().cast_mut()).cast_const(), &[(99).into()])
+            conditional_log_0(
+                0,
+                (c"%d".as_ptr().cast_mut()).cast_const(),
+                Box::new([(99).into()]),
+            )
         }) == (-1_i32)) as i32)
             != 0)
     );

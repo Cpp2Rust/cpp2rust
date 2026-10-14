@@ -6,7 +6,7 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn sum_ints_0(mut first: i32, __args: &[VaArg]) -> i32 {
+pub unsafe fn sum_ints_0(mut first: i32, __args: Box<[VaArg]>) -> i32 {
     let mut args: *const VaArg = ::std::ptr::null();
     let mut total: i32 = first;
     args = __args.as_ptr();
@@ -29,16 +29,20 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     assert!(
-        ((((unsafe { sum_ints_0(1, &[(2).into(), (3).into(), (4).into(), (0).into(),]) }) == (10))
-            as i32)
+        ((((unsafe {
+            sum_ints_0(
+                1,
+                Box::new([(2).into(), (3).into(), (4).into(), (0).into()]),
+            )
+        }) == (10)) as i32)
             != 0)
     );
-    assert!(((((unsafe { sum_ints_0(100, &[(0).into(),]) }) == (100)) as i32) != 0));
+    assert!(((((unsafe { sum_ints_0(100, Box::new([(0).into(),])) }) == (100)) as i32) != 0));
     assert!(
         ((((unsafe {
             sum_ints_0(
                 5,
-                &[(5).into(), (5).into(), (5).into(), (5).into(), (0).into()],
+                Box::new([(5).into(), (5).into(), (5).into(), (5).into(), (0).into()]),
             )
         }) == (25)) as i32)
             != 0)

@@ -10,13 +10,13 @@ pub unsafe fn logf_impl_0(mut fmt: *const libc::c_char, mut ap: *const VaArg) ->
     &(fmt);
     return ((ap.arg::<i32>()) + (ap.arg::<i32>()));
 }
-pub unsafe fn logf_1(mut fmt: *const libc::c_char, __args: &[VaArg]) -> i32 {
+pub unsafe fn logf_1(mut fmt: *const libc::c_char, __args: Box<[VaArg]>) -> i32 {
     let mut ap: *const VaArg = ::std::ptr::null();
     ap = __args.as_ptr();
     let mut result: i32 = (unsafe { logf_impl_0(fmt, ap) });
     return result;
 }
-pub unsafe fn lenf_2(mut fmt: *const libc::c_char, __args: &[VaArg]) -> i32 {
+pub unsafe fn lenf_2(mut fmt: *const libc::c_char, __args: Box<[VaArg]>) -> i32 {
     let mut ap: *const VaArg = ::std::ptr::null();
     ap = __args.as_ptr();
     let mut s: *const libc::c_char = ap.arg::<*const libc::c_char>();
@@ -35,7 +35,7 @@ unsafe fn main_0() -> i32 {
         ((((unsafe {
             logf_1(
                 (c"hello %d %d".as_ptr().cast_mut()).cast_const(),
-                &[(10).into(), (libc::strlen(dummy)).into()],
+                Box::new([(10).into(), (libc::strlen(dummy)).into()]),
             )
         }) == (15)) as i32)
             != 0)
@@ -44,26 +44,30 @@ unsafe fn main_0() -> i32 {
         ((((unsafe {
             logf_1(
                 (c"x %d %d".as_ptr().cast_mut()).cast_const(),
-                &[(1).into(), (2).into()],
+                Box::new([(1).into(), (2).into()]),
             )
         }) == (3)) as i32)
-            != 0)
-    );
-    assert!(
-        ((((unsafe { lenf_2((c"%s".as_ptr().cast_mut()).cast_const(), &[(dummy).into(),]) }) == (5))
-            as i32)
             != 0)
     );
     assert!(
         ((((unsafe {
             lenf_2(
                 (c"%s".as_ptr().cast_mut()).cast_const(),
-                &[(if (((*dummy.offset((0) as isize)) as i32) != 0) {
+                Box::new([(dummy).into()]),
+            )
+        }) == (5)) as i32)
+            != 0)
+    );
+    assert!(
+        ((((unsafe {
+            lenf_2(
+                (c"%s".as_ptr().cast_mut()).cast_const(),
+                Box::new([(if (((*dummy.offset((0) as isize)) as i32) != 0) {
                     dummy
                 } else {
                     (c"".as_ptr().cast_mut() as *const libc::c_char)
                 })
-                .into()],
+                .into()]),
             )
         }) == (5)) as i32)
             != 0)

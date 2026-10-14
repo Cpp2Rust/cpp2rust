@@ -6,7 +6,7 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn sum_with_copy_0(mut count: i32, __args: &[VaArg]) -> i32 {
+pub unsafe fn sum_with_copy_0(mut count: i32, __args: Box<[VaArg]>) -> i32 {
     let mut ap: *const VaArg = ::std::ptr::null();
     let mut aq: *const VaArg = ::std::ptr::null();
     ap = __args.as_ptr();
@@ -34,8 +34,8 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     assert!(
-        ((((unsafe { sum_with_copy_0(3, &[(10).into(), (20).into(), (30).into(),]) }) == (120))
-            as i32)
+        ((((unsafe { sum_with_copy_0(3, Box::new([(10).into(), (20).into(), (30).into(),])) })
+            == (120)) as i32)
             != 0)
     );
     return 0;

@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn sum_then_product_0(first: i32, __args: &[VaArg]) -> i32 {
+pub fn sum_then_product_0(first: i32, __args: Box<[VaArg]>) -> i32 {
     let __args: Value<Box<[VaArg]>> = Rc::new(RefCell::new(__args.into()));
     let first: Value<i32> = Rc::new(RefCell::new(first));
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
@@ -39,7 +39,9 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     assert!(
-        (((({ sum_then_product_0(2, &[(3).into(), (4).into(), (0).into(),]) }) == 33) as i32) != 0)
+        (((({ sum_then_product_0(2, Box::new([(3).into(), (4).into(), (0).into(),])) }) == 33)
+            as i32)
+            != 0)
     );
     return 0;
 }

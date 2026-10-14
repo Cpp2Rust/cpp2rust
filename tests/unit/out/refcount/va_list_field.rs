@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn sum_0(n: i32, __args: &[VaArg]) -> i32 {
+pub fn sum_0(n: i32, __args: Box<[VaArg]>) -> i32 {
     let __args: Value<Box<[VaArg]>> = Rc::new(RefCell::new(__args.into()));
     let n: Value<i32> = Rc::new(RefCell::new(n));
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
@@ -38,7 +38,7 @@ impl Guard_1 {
         }
     }
 }
-pub fn sum_ptr_2(n: i32, __args: &[VaArg]) -> i32 {
+pub fn sum_ptr_2(n: i32, __args: Box<[VaArg]>) -> i32 {
     let __args: Value<Box<[VaArg]>> = Rc::new(RefCell::new(__args.into()));
     let n: Value<i32> = Rc::new(RefCell::new(n));
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
@@ -66,8 +66,8 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((({ sum_0(3, &[(1).into(), (2).into(), (3).into(),]) }) == 6));
-    assert!((({ sum_ptr_2(2, &[(4).into(), (5).into(),]) }) == 9));
+    assert!((({ sum_0(3, Box::new([(1).into(), (2).into(), (3).into(),])) }) == 6));
+    assert!((({ sum_ptr_2(2, Box::new([(4).into(), (5).into(),])) }) == 9));
     return 0;
 }
 pub trait Guard_1Impl {
