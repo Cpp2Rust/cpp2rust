@@ -1000,9 +1000,11 @@ std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
         target = record;
       }
     }
+    auto *record = clang::dyn_cast<clang::CXXRecordDecl>(target);
     return std::format(
-        "anon_{}", type_mapping.try_emplace(GetID(target), type_mapping.size())
-                       .first->second);
+        "{}_{}", record && record->isLambda() ? "lambda" : "anon",
+        type_mapping.try_emplace(GetID(target), type_mapping.size())
+            .first->second);
   }
 
   std::optional<size_t> id;
