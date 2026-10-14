@@ -22,20 +22,23 @@ pub fn log_to_2(mut out: Ptr<CFile>, mut fmt: Ptr<i8>, mut args_2: Ptr<i8>, mut 
     {
         let __s = libcc2rs::format_c(
             &fmt.to_rust_string(),
-            &[((args_2).clone()).into(), (args_3).into()],
+            &Box::<[VaArg]>::from([((args_2).clone()).into(), (args_3).into()]),
         );
         out.with_mut(|__f| __f.write(__s.as_bytes())) as i32
     };
 }
 pub fn log_to_3(mut out: Ptr<CFile>, mut fmt: Ptr<i8>, mut args: i32) {
     {
-        let __s = libcc2rs::format_c(&fmt.to_rust_string(), &[(args).into()]);
+        let __s = libcc2rs::format_c(
+            &fmt.to_rust_string(),
+            &Box::<[VaArg]>::from([(args).into()]),
+        );
         out.with_mut(|__f| __f.write(__s.as_bytes())) as i32
     };
 }
 pub fn log_fmt_4(mut fmt: Ptr<i8>, mut v: i32) {
     {
-        let __s = libcc2rs::format_c(&fmt.to_rust_string(), &[(v).into()]);
+        let __s = libcc2rs::format_c(&fmt.to_rust_string(), &Box::<[VaArg]>::from([(v).into()]));
         libcc2rs::c_stdout().with_mut(|__f| __f.write(__s.as_bytes())) as i32
     };
 }

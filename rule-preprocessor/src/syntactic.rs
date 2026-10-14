@@ -3,7 +3,7 @@
 
 use cfg_expr::Expression;
 use cfg_expr::expr::{Predicate, TargetPredicate};
-use ra_ap_syntax::ast::{HasAttrs, HasGenericParams, HasName, HasTypeBounds};
+use ra_ap_syntax::ast::{HasAttrs, HasGenericArgs, HasGenericParams, HasName, HasTypeBounds};
 use ra_ap_syntax::{AstNode, SyntaxKind, ast, match_ast};
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
@@ -41,8 +41,13 @@ fn pointer_flags(ty: &ast::Type) -> (bool, bool) {
 }
 
 fn is_va_args_type(ty: &ast::Type) -> bool {
-    if let ast::Type::RefType(r) = ty
-        && let Some(ast::Type::SliceType(slice)) = r.ty()
+    if let ast::Type::PathType(boxed) = ty
+        && let Some(segment) = boxed.path().and_then(|p| p.segment())
+        && segment.name_ref().is_some_and(|name| name.text() == "Box")
+        && let Some(ast::GenericArg::TypeArg(arg)) = segment
+            .generic_arg_list()
+            .and_then(|args| args.generic_args().next())
+        && let Some(ast::Type::SliceType(slice)) = arg.ty()
     {
         return matches!(slice.ty(), Some(ast::Type::PathType(path))
                 if path

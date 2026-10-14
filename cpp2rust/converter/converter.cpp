@@ -5307,7 +5307,7 @@ Converter::ConvertVariadicTail(clang::Expr *expr,
   unsigned fixed = tgt_ir ? tgt_ir->params.size() : 0;
 
   Buffer buf(*this);
-  StrCat("&[");
+  StrCat("Box::<[VaArg]>::from([");
   for (unsigned i = fixed; i < all_args.size(); ++i) {
     {
       PushParen p(*this);
@@ -5315,7 +5315,7 @@ Converter::ConvertVariadicTail(clang::Expr *expr,
     }
     StrCat(".into()", token::kComma);
   }
-  StrCat("]");
+  StrCat("])");
   return std::move(buf).str();
 }
 

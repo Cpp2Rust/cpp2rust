@@ -267,7 +267,7 @@ int f1(int a0, int a1, ...) { return fcntl(a0, a1, ...); }
 
 is not expressible. A parameter pack can be forwarded (`args...`), which is
 exactly what the rule body needs to do. The Rust side takes a trailing parameter
-that must be typed `&[VaArg]` and named `va`:
+that must be typed `Box<[VaArg]>` and named `va`:
 
 ```cpp
 // rules/fcntl/src.cpp
@@ -279,7 +279,7 @@ int f1(int a0, int a1, Args... args) {
 
 ```rust
 // rules/fcntl/tgt_refcount.rs
-fn f1(a0: i32, a1: i32, va: &[VaArg]) -> i32 { ... }
+fn f1(a0: i32, a1: i32, va: Box<[VaArg]>) -> i32 { ... }
 ```
 
 Bodies read the arguments through the va-args API in `libcc2rs` (`VaArg`,

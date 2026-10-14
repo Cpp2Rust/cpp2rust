@@ -13,7 +13,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let mut path: Ptr<i8> = Ptr::<i8>::from_string_literal(b"cpp2rust_fd_io_test.tmp");
     let mut fd: i32 = {
-        let __mode = match &[(420).into()].first() {
+        let __mode = match Box::<[VaArg]>::from([(420).into()]).first() {
             Some(__m) => nix::sys::stat::Mode::from_bits_truncate(i32::get(__m) as ::libc::mode_t),
             None => nix::sys::stat::Mode::empty(),
         };
@@ -49,7 +49,7 @@ fn main_0() -> i32 {
     );
     assert!((((FdRegistry::close(fd) == 0) as i32) != 0));
     fd = {
-        let __mode = match &[].first() {
+        let __mode = match Box::<[VaArg]>::from([]).first() {
             Some(__m) => nix::sys::stat::Mode::from_bits_truncate(i32::get(__m) as ::libc::mode_t),
             None => nix::sys::stat::Mode::empty(),
         };
