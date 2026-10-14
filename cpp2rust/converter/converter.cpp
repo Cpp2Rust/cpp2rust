@@ -3232,6 +3232,13 @@ std::string Converter::ConvertDeclRef(clang::Expr *expr,
 }
 
 bool Converter::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
+  if (auto param =
+          clang::dyn_cast<clang::TemplateParamObjectDecl>(expr->getDecl());
+      param && AsLambdaClass(param->getType())) {
+    StrCat(GetDefaultAsString(param->getType()));
+    computed_expr_type_ = ComputedExprType::FreshValue;
+    return false;
+  }
   if (auto init = AsLambdaUncapturedConstant(curr_function_, expr)) {
     Convert(init);
     return false;
