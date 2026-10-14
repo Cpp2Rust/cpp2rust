@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn extract_first_0(mut buf: Ptr<i8>, mut size: i32, fmt: Ptr<i8>, __args: &[VaArg]) -> i32 {
+pub fn extract_first_0(mut buf: Ptr<i8>, mut size: i32, fmt: Ptr<i8>, __args: Box<[VaArg]>) -> i32 {
     let __args: Value<Box<[VaArg]>> = Rc::new(RefCell::new(__args.into()));
     let fmt: Value<Ptr<i8>> = Rc::new(RefCell::new(fmt));
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
@@ -27,7 +27,7 @@ fn main_0() -> i32 {
                 (buf.as_pointer() as Ptr<i8>),
                 1,
                 Ptr::<i8>::from_string_literal(b"%d"),
-                &[(42).into()],
+                Box::new([(42).into()]),
             )
         }) == 42) as i32)
             != 0)
@@ -39,7 +39,7 @@ fn main_0() -> i32 {
                 (buf.as_pointer() as Ptr<i8>),
                 1,
                 Ptr::<i8>::from_string_literal(b"%d"),
-                &[(65).into()],
+                Box::new([(65).into()]),
             )
         }) == 65) as i32)
             != 0)

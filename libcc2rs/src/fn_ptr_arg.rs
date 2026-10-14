@@ -9,6 +9,7 @@ use std::rc::Rc;
 
 use crate::rc::Ptr;
 use crate::reinterpret::ByteRepr;
+use crate::va_args::VaArg;
 use crate::void::{AnyPtr, ErasedPtr};
 
 pub enum ArgRepr {
@@ -123,6 +124,16 @@ impl FnPtrArg for AnyPtr {
                 panic!("ub: calling through incompatible fn pointer type")
             }
         }
+    }
+}
+
+impl FnPtrArg for Box<[VaArg]> {
+    #[inline]
+    fn to_repr(self) -> ArgRepr {
+        ArgRepr::Record(Box::new(self))
+    }
+    fn from_repr(r: ArgRepr) -> Self {
+        record_from_repr(r)
     }
 }
 

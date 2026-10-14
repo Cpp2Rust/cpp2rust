@@ -18,7 +18,7 @@ pub struct registry {
 pub type field = u32;
 pub const field_FIELD_SLOT: field = 0;
 pub const field_FIELD_LEVEL: field = 1;
-pub fn registry_update_0(mut r: Ptr<registry>, field: field, __args: &[VaArg]) -> i32 {
+pub fn registry_update_0(mut r: Ptr<registry>, field: field, __args: Box<[VaArg]>) -> i32 {
     let __args: Value<Box<[VaArg]>> = Rc::new(RefCell::new(__args.into()));
     let field: Value<field> = Rc::new(RefCell::new(field));
     let mut result: i32 = 0;
@@ -59,14 +59,19 @@ fn main_0() -> i32 {
             registry_update_0(
                 (r.as_pointer()),
                 field_FIELD_SLOT,
-                &[(payload.as_pointer()).into()],
+                Box::new([(payload.as_pointer()).into()]),
             )
         }) == 0) as i32)
             != 0)
     );
     assert!(
-        (((({ registry_update_0((r.as_pointer()), field_FIELD_LEVEL, &[(5_i64).into(),]) }) == 0)
-            as i32)
+        (((({
+            registry_update_0(
+                (r.as_pointer()),
+                field_FIELD_LEVEL,
+                Box::new([(5_i64).into()]),
+            )
+        }) == 0) as i32)
             != 0)
     );
     assert!(

@@ -15,7 +15,11 @@ pub struct registry {
 pub type field = u32;
 pub const field_FIELD_SLOT: field = 0;
 pub const field_FIELD_LEVEL: field = 1;
-pub unsafe fn registry_update_0(mut r: *mut registry, mut field: field, __args: &[VaArg]) -> i32 {
+pub unsafe fn registry_update_0(
+    mut r: *mut registry,
+    mut field: field,
+    __args: Box<[VaArg]>,
+) -> i32 {
     let mut result: i32 = 0;
     let mut ap: *const VaArg = ::std::ptr::null();
     ap = __args.as_ptr();
@@ -54,7 +58,7 @@ unsafe fn main_0() -> i32 {
             registry_update_0(
                 (&mut r as *mut registry),
                 field_FIELD_SLOT,
-                &[(&mut payload as *mut i32).into()],
+                Box::new([(&mut payload as *mut i32).into()]),
             )
         }) == (0)) as i32)
             != 0)
@@ -64,7 +68,7 @@ unsafe fn main_0() -> i32 {
             registry_update_0(
                 (&mut r as *mut registry),
                 field_FIELD_LEVEL,
-                &[(5_i64).into()],
+                Box::new([(5_i64).into()]),
             )
         }) == (0)) as i32)
             != 0)

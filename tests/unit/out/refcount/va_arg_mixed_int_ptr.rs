@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn mixed_args_0(count: i32, __args: &[VaArg]) -> i32 {
+pub fn mixed_args_0(count: i32, __args: Box<[VaArg]>) -> i32 {
     let __args: Value<Box<[VaArg]>> = Rc::new(RefCell::new(__args.into()));
     let count: Value<i32> = Rc::new(RefCell::new(count));
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
@@ -35,22 +35,30 @@ fn main_0() -> i32 {
         (((({
             mixed_args_0(
                 3,
-                &[
+                Box::new([
                     (0).into(),
                     (10).into(),
                     (1).into(),
                     (x.as_pointer()).into(),
                     (0).into(),
                     (20).into(),
-                ],
+                ]),
             )
         }) == 130) as i32)
             != 0)
     );
     let y: Value<i32> = Rc::new(RefCell::new(50));
-    assert!((((({ mixed_args_0(1, &[(1).into(), (y.as_pointer()).into(),]) }) == 50) as i32) != 0));
     assert!(
-        (((({ mixed_args_0(2, &[(0).into(), (5).into(), (0).into(), (3).into(),]) }) == 8) as i32)
+        (((({ mixed_args_0(1, Box::new([(1).into(), (y.as_pointer()).into(),])) }) == 50) as i32)
+            != 0)
+    );
+    assert!(
+        (((({
+            mixed_args_0(
+                2,
+                Box::new([(0).into(), (5).into(), (0).into(), (3).into()]),
+            )
+        }) == 8) as i32)
             != 0)
     );
     return 0;

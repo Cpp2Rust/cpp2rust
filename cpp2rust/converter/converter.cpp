@@ -295,6 +295,9 @@ Converter::ConvertFunctionPointerType(const clang::FunctionProtoType *proto) {
     result += ToString(p_ty);
     result += ',';
   }
+  if (proto->isVariadic()) {
+    result += "Box<[VaArg]>,";
+  }
   result += ')';
   if (!proto->getReturnType()->isVoidType()) {
     result += std::format(" -> {}", ToString(proto->getReturnType()));
@@ -2216,8 +2219,9 @@ void Converter::EmitArgList(const CallInfo &info) {
 
   if (info.is_variadic) {
     if (!info.is_libc_passthrough) {
-      StrCat(token::kRef);
+      StrCat("Box::new");
     }
+    PushParen box(*this, !info.is_libc_passthrough);
     PushBracket push(*this, !info.is_libc_passthrough);
     for (auto *arg : info.variadic_args) {
       {
@@ -4044,6 +4048,9 @@ void Converter::ConvertLambdaClosure(const clang::CXXRecordDecl *decl,
     ConvertVarDeclSkipInit(p);
     StrCat(token::kComma);
   }
+  if (call_operator->isVariadic()) {
+    StrCat("__args: Box<[VaArg]>", token::kComma);
+  }
   in_function_formals_ = false;
   StrCat('|');
   ConvertFunctionReturnType(call_operator);
@@ -4605,7 +4612,7 @@ void Converter::ConvertFunctionParameters(clang::FunctionDecl *decl) {
     StrCat(token::kComma);
   }
   if (decl->isVariadic()) {
-    StrCat("__args: &[VaArg]", token::kComma);
+    StrCat("__args: Box<[VaArg]>", token::kComma);
   }
   in_function_formals_ = false;
 }

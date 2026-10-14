@@ -15,7 +15,7 @@ pub unsafe fn negate_1(mut x: i32) -> i32 {
 pub unsafe fn add_2(mut a: i32, mut b: i32) -> i32 {
     return ((a) + (b));
 }
-pub unsafe fn apply_unary_3(mut x: i32, __args: &[VaArg]) -> i32 {
+pub unsafe fn apply_unary_3(mut x: i32, __args: Box<[VaArg]>) -> i32 {
     let mut ap: *const VaArg = ::std::ptr::null();
     ap = __args.as_ptr();
     let mut fn_: Option<unsafe fn(i32) -> i32> = std::mem::transmute::<
@@ -25,7 +25,7 @@ pub unsafe fn apply_unary_3(mut x: i32, __args: &[VaArg]) -> i32 {
     let mut result: i32 = (unsafe { (fn_).unwrap()(x) });
     return result;
 }
-pub unsafe fn apply_binary_4(mut a: i32, mut b: i32, __args: &[VaArg]) -> i32 {
+pub unsafe fn apply_binary_4(mut a: i32, mut b: i32, __args: Box<[VaArg]>) -> i32 {
     let mut ap: *const VaArg = ::std::ptr::null();
     ap = __args.as_ptr();
     let mut fn_: Option<unsafe fn(i32, i32) -> i32> = std::mem::transmute::<
@@ -56,10 +56,9 @@ unsafe fn main_0() -> i32 {
         ((((unsafe {
             apply_unary_3(
                 5,
-                &[
-                    (Some(square_0).map_or(::std::ptr::null_mut(), |f| f as *mut ::libc::c_void))
-                        .into(),
-                ],
+                Box::new([(Some(square_0)
+                    .map_or(::std::ptr::null_mut(), |f| f as *mut ::libc::c_void))
+                .into()]),
             )
         }) == (25)) as i32)
             != 0)
@@ -68,10 +67,9 @@ unsafe fn main_0() -> i32 {
         ((((unsafe {
             apply_unary_3(
                 7,
-                &[
-                    (Some(negate_1).map_or(::std::ptr::null_mut(), |f| f as *mut ::libc::c_void))
-                        .into(),
-                ],
+                Box::new([(Some(negate_1)
+                    .map_or(::std::ptr::null_mut(), |f| f as *mut ::libc::c_void))
+                .into()]),
             )
         }) == (-7_i32)) as i32)
             != 0)
@@ -81,10 +79,9 @@ unsafe fn main_0() -> i32 {
             apply_binary_4(
                 3,
                 4,
-                &[
-                    (Some(add_2).map_or(::std::ptr::null_mut(), |f| f as *mut ::libc::c_void))
-                        .into(),
-                ],
+                Box::new([(Some(add_2)
+                    .map_or(::std::ptr::null_mut(), |f| f as *mut ::libc::c_void))
+                .into()]),
             )
         }) == (7)) as i32)
             != 0)
@@ -98,34 +95,33 @@ unsafe fn main_0() -> i32 {
         }) == (-3_i32)) as i32)
             != 0)
     );
-    let mut vu: Option<unsafe fn(i32) -> i32> = Some(apply_unary_3);
+    let mut vu: Option<unsafe fn(i32, Box<[VaArg]>) -> i32> = Some(apply_unary_3);
     assert!(
         ((((unsafe {
             (vu).unwrap()(
                 6,
-                &[
-                    (Some(square_0).map_or(::std::ptr::null_mut(), |f| f as *mut ::libc::c_void))
-                        .into(),
-                ],
+                Box::new([(Some(square_0)
+                    .map_or(::std::ptr::null_mut(), |f| f as *mut ::libc::c_void))
+                .into()]),
             )
         }) == (36)) as i32)
             != 0)
     );
-    let mut vb: Option<unsafe fn(i32, i32) -> i32> = std::mem::transmute::<
-        Option<unsafe fn(i32) -> i32>,
-        Option<unsafe fn(i32, i32) -> i32>,
+    let mut vb: Option<unsafe fn(i32, i32, Box<[VaArg]>) -> i32> = std::mem::transmute::<
+        Option<unsafe fn(i32, Box<[VaArg]>) -> i32>,
+        Option<unsafe fn(i32, i32, Box<[VaArg]>) -> i32>,
     >(Some(apply_unary_3));
-    vu = std::mem::transmute::<Option<unsafe fn(i32, i32) -> i32>, Option<unsafe fn(i32) -> i32>>(
-        vb,
-    );
+    vu = std::mem::transmute::<
+        Option<unsafe fn(i32, i32, Box<[VaArg]>) -> i32>,
+        Option<unsafe fn(i32, Box<[VaArg]>) -> i32>,
+    >(vb);
     assert!(
         ((((unsafe {
             (vu).unwrap()(
                 2,
-                &[
-                    (Some(negate_1).map_or(::std::ptr::null_mut(), |f| f as *mut ::libc::c_void))
-                        .into(),
-                ],
+                Box::new([(Some(negate_1)
+                    .map_or(::std::ptr::null_mut(), |f| f as *mut ::libc::c_void))
+                .into()]),
             )
         }) == (-2_i32)) as i32)
             != 0)

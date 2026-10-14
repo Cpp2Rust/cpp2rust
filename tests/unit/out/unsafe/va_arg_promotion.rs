@@ -6,7 +6,7 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn test_promotions_0(mut count: i32, __args: &[VaArg]) -> i32 {
+pub unsafe fn test_promotions_0(mut count: i32, __args: Box<[VaArg]>) -> i32 {
     let mut ap: *const VaArg = ::std::ptr::null();
     ap = __args.as_ptr();
     let mut a: i32 = ap.arg::<i32>();
@@ -31,7 +31,7 @@ unsafe fn main_0() -> i32 {
         ((((unsafe {
             test_promotions_0(
                 3,
-                &[(x as i32).into(), (y as i32).into(), (z as f64).into()],
+                Box::new([(x as i32).into(), (y as i32).into(), (z as f64).into()]),
             )
         }) == (78)) as i32)
             != 0)

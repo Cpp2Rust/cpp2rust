@@ -6,7 +6,7 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn sum_0(mut n: i32, __args: &[VaArg]) -> i32 {
+pub unsafe fn sum_0(mut n: i32, __args: Box<[VaArg]>) -> i32 {
     let mut ap: *const VaArg = ::std::ptr::null();
     ap = __args.as_ptr();
     let mut guard: Guard_1 = Guard_1::new({ &mut ap });
@@ -37,7 +37,7 @@ impl Guard_1 {
         if self.active {}
     }
 }
-pub unsafe fn sum_ptr_2(mut n: i32, __args: &[VaArg]) -> i32 {
+pub unsafe fn sum_ptr_2(mut n: i32, __args: Box<[VaArg]>) -> i32 {
     let mut ap: *const VaArg = ::std::ptr::null();
     ap = __args.as_ptr();
     let mut cursor: Cursor_3 = Cursor_3 {
@@ -63,8 +63,8 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(((unsafe { sum_0(3, &[(1).into(), (2).into(), (3).into(),]) }) == (6)));
-    assert!(((unsafe { sum_ptr_2(2, &[(4).into(), (5).into(),]) }) == (9)));
+    assert!(((unsafe { sum_0(3, Box::new([(1).into(), (2).into(), (3).into(),])) }) == (6)));
+    assert!(((unsafe { sum_ptr_2(2, Box::new([(4).into(), (5).into(),])) }) == (9)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

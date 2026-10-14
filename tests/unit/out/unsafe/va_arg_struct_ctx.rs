@@ -12,7 +12,11 @@ pub struct context {
     pub verbose: i32,
     pub last_error: i32,
 }
-pub unsafe fn set_error_0(mut ctx: *mut context, mut fmt: *const libc::c_char, __args: &[VaArg]) {
+pub unsafe fn set_error_0(
+    mut ctx: *mut context,
+    mut fmt: *const libc::c_char,
+    __args: Box<[VaArg]>,
+) {
     if ((*ctx).verbose != 0) {
         let mut ap: *const VaArg = ::std::ptr::null();
         ap = __args.as_ptr();
@@ -30,7 +34,7 @@ impl Default for value {
         unsafe { std::mem::zeroed() }
     }
 }
-pub unsafe fn pick_1(mut use_long: i32, __args: &[VaArg]) -> i64 {
+pub unsafe fn pick_1(mut use_long: i32, __args: Box<[VaArg]>) -> i64 {
     let mut ap: *const VaArg = ::std::ptr::null();
     ap = __args.as_ptr();
     let mut v: value = ap.arg::<value>();
@@ -53,7 +57,7 @@ unsafe fn main_0() -> i32 {
         set_error_0(
             (&mut ctx as *mut context),
             (c"error %d".as_ptr().cast_mut()).cast_const(),
-            &[(42).into()],
+            Box::new([(42).into()]),
         )
     });
     assert!(((((ctx.last_error) == (42)) as i32) != 0));
@@ -62,15 +66,15 @@ unsafe fn main_0() -> i32 {
         set_error_0(
             (&mut ctx as *mut context),
             (c"error %d".as_ptr().cast_mut()).cast_const(),
-            &[(99).into()],
+            Box::new([(99).into()]),
         )
     });
     assert!(((((ctx.last_error) == (42)) as i32) != 0));
     let mut v: value = <value>::default();
     v.l = ((1_i64) << (40));
-    assert!(((((unsafe { pick_1(1, &[(v).into(),]) }) == ((1_i64) << (40))) as i32) != 0));
+    assert!(((((unsafe { pick_1(1, Box::new([(v).into(),])) }) == ((1_i64) << (40))) as i32) != 0));
     v.i = 7;
-    assert!(((((unsafe { pick_1(0, &[(v).into(),]) }) == (7_i64)) as i32) != 0));
+    assert!(((((unsafe { pick_1(0, Box::new([(v).into(),])) }) == (7_i64)) as i32) != 0));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

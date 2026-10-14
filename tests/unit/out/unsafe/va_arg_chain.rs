@@ -17,7 +17,7 @@ pub unsafe fn extract_nth_0(mut n: i32, mut ap: *const VaArg) -> i32 {
 pub unsafe fn middle_layer_1(mut n: i32, mut ap: *const VaArg) -> i32 {
     return (unsafe { extract_nth_0(n, ap) });
 }
-pub unsafe fn top_level_2(mut n: i32, __args: &[VaArg]) -> i32 {
+pub unsafe fn top_level_2(mut n: i32, __args: Box<[VaArg]>) -> i32 {
     let mut ap: *const VaArg = ::std::ptr::null();
     ap = __args.as_ptr();
     let mut result: i32 = (unsafe { middle_layer_1(n, ap) });
@@ -32,14 +32,24 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     assert!(
         ((((unsafe {
-            top_level_2(2, &[(100).into(), (200).into(), (300).into(), (400).into()])
+            top_level_2(
+                2,
+                Box::new([(100).into(), (200).into(), (300).into(), (400).into()]),
+            )
         }) == (300)) as i32)
             != 0)
     );
-    assert!(((((unsafe { top_level_2(0, &[(42).into(), (99).into(),]) }) == (42)) as i32) != 0));
     assert!(
-        ((((unsafe { top_level_2(3, &[(1).into(), (2).into(), (3).into(), (4).into(),]) }) == (4))
-            as i32)
+        ((((unsafe { top_level_2(0, Box::new([(42).into(), (99).into(),])) }) == (42)) as i32)
+            != 0)
+    );
+    assert!(
+        ((((unsafe {
+            top_level_2(
+                3,
+                Box::new([(1).into(), (2).into(), (3).into(), (4).into()]),
+            )
+        }) == (4)) as i32)
             != 0)
     );
     return 0;
