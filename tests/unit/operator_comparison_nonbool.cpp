@@ -42,6 +42,20 @@ struct Boolish {
 MyBool operator==(Boolish a, Boolish b) { return MyBool(a.v == b.v); }
 MyBool operator<(Boolish a, Boolish b) { return MyBool(a.v < b.v); }
 
+struct RefBool {
+  bool value;
+  explicit RefBool(bool v) : value(v) {}
+  RefBool(const RefBool &) = delete;
+  operator bool() const { return value; }
+};
+
+static RefBool ref_true{true};
+
+struct RefInt {
+  int v;
+  RefBool &operator==(const RefInt &) const { return ref_true; }
+};
+
 int main() {
   X a{1}, b{2}, c{1};
   assert((a == c) == 2);
@@ -76,5 +90,10 @@ int main() {
   Boolish bs[] = {{3}, {1}, {2}};
   std::sort(bs, bs + 3);
   assert(bs[0].v == 1 && bs[1].v == 2 && bs[2].v == 3);
+
+  RefInt ri1{1}, ri2{2};
+  assert(ri1 == ri2);
+  RefInt ris[] = {{1}, {2}};
+  assert(std::find(ris, ris + 2, ri2) == ris);
   return 0;
 }
