@@ -10,10 +10,24 @@ pub fn apply_0(mut x: i32, mut fn_: FnPtr<fn(i32) -> i32>) -> i32 {
     return ({ fn_.call(x) });
 }
 pub fn call_nttp_1(mut x: i32) -> i32 {
-    return ({ (FnPtr::<fn(i32) -> i32>::new(int_operator___int__const::__invoke))(x) });
+    return ({
+        (FnPtr::<fn(i32) -> i32>::new(|mut x: i32| -> i32 {
+            {
+                return (x - 1);
+            }
+        }))
+        .call(x)
+    });
 }
 pub fn call_nttp_2(mut x: i32) -> i32 {
-    return ({ (FnPtr::<fn(i32) -> i32>::new(int_operator___int__const::__invoke))(x) });
+    return ({
+        (FnPtr::<fn(i32) -> i32>::new(|mut x: i32| -> i32 {
+            {
+                return (x * 10);
+            }
+        }))
+        .call(x)
+    });
 }
 pub fn call_nttp_3(mut x: i32) -> i32 {
     return ({

@@ -10,10 +10,24 @@ pub unsafe fn apply_0(mut x: i32, mut fn_: Option<unsafe fn(i32) -> i32>) -> i32
     return (unsafe { (fn_).unwrap()(x) });
 }
 pub unsafe fn call_nttp_1(mut x: i32) -> i32 {
-    return (unsafe { (Some(int_operator___int__const::__invoke))(x) });
+    return (unsafe {
+        (Some(|mut x: i32| -> i32 {
+            unsafe {
+                return ((x) - (1));
+            }
+        }))
+        .unwrap()(x)
+    });
 }
 pub unsafe fn call_nttp_2(mut x: i32) -> i32 {
-    return (unsafe { (Some(int_operator___int__const::__invoke))(x) });
+    return (unsafe {
+        (Some(|mut x: i32| -> i32 {
+            unsafe {
+                return ((x) * (10));
+            }
+        }))
+        .unwrap()(x)
+    });
 }
 pub unsafe fn call_nttp_3(mut x: i32) -> i32 {
     return (unsafe {
