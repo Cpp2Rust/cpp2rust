@@ -5,7 +5,7 @@ int pick(int x = [] { return 237; }()) { return x; }
 struct S {
   int j = 10;
   // Below will only work after: https://github.com/Cpp2Rust/cpp2rust/issues/248
-  //int i = [this]() { return j * 2; }();
+  // int i = [this]() { return j * 2; }();
   int k = [] { return 3; }() + 1;
 };
 
