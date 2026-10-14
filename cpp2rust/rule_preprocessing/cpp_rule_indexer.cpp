@@ -21,7 +21,6 @@
 #include <cstdlib>
 #include <filesystem>
 #include <format>
-#include <fstream>
 #include <string>
 #include <unordered_set>
 #include <vector>
@@ -309,54 +308,91 @@ void WriteJson(const fs::path &path, llvm::json::Object object) {
   os << llvm::json::Value(std::move(object));
 }
 
-std::vector<std::string> ReadCXXFlags(const fs::path &rule_dir) {
-  std::vector<std::string> flags;
-  std::ifstream file(rule_dir / "cxxflags");
-  for (std::string flag; std::getline(file, flag);) {
-    if (!flag.empty()) {
-      flags.push_back(flag);
-    }
+llvm::json::Object ReadJson(const fs::path &path) {
+  auto buffer = llvm::MemoryBuffer::getFile(path.string());
+  if (!buffer) {
+    llvm::errs() << "ERROR: cannot read " << path.string() << '\n';
+    std::exit(EXIT_FAILURE);
   }
-  return flags;
+  auto parsed = llvm::json::parse((*buffer)->getBuffer());
+  if (!parsed || !parsed->getAsObject()) {
+    llvm::errs() << "ERROR: cannot parse " << path.string() << '\n';
+    std::exit(EXIT_FAILURE);
+  }
+  return std::move(*parsed->getAsObject());
 }
 
-void IndexRules(const fs::path &rules_dir, const fs::path &index_dir,
-                const std::vector<std::string> &excluded,
-                const std::vector<std::string> &common_headers) {
-  std::vector<fs::path> rule_dirs;
-  for (const auto &entry : fs::directory_iterator(rules_dir)) {
-    if (entry.is_directory() &&
-        !llvm::is_contained(excluded, entry.path().filename().string())) {
-      rule_dirs.push_back(entry.path());
+unsigned SinceStandard(const fs::path &src_path) {
+  auto stem_string = src_path.stem().string();
+  llvm::StringRef stem = stem_string;
+  unsigned standard = 11;
+  if (stem.consume_front("src_cxx") && stem.getAsInteger(10, standard)) {
+    llvm::errs() << "ERROR: unexpected rule file " << src_path.string() << '\n';
+    std::exit(EXIT_FAILURE);
+  }
+  return standard;
+}
+
+void MergeRules(llvm::json::Object &into, llvm::json::Object &&from) {
+  for (auto &[key, entries] : from) {
+    for (auto &entry : *entries.getAsArray()) {
+      AddRule(into, key.str(), std::move(entry));
     }
   }
-  std::ranges::sort(rule_dirs);
-  fs::create_directories(index_dir);
-  for (const char *lang : {"c", "cpp"}) {
-    std::string common;
-    if (lang == std::string("cpp")) {
-      for (const auto &header : common_headers) {
-        common += std::format("#include \"{}\"\n", header);
-      }
+}
+
+void IndexDir(const fs::path &rule_dir, const fs::path &out) {
+  auto dir_name = rule_dir.filename().string();
+  llvm::json::Object c_rules;
+  if (fs::exists(rule_dir / "src.c")) {
+    Index(rule_dir / "src.c", /*is_c=*/true, dir_name, {}, c_rules);
+  }
+  std::vector<fs::path> cxx_srcs;
+  for (const auto &entry : fs::directory_iterator(rule_dir)) {
+    auto name = entry.path().filename().string();
+    if (name == "src.c" || name == "src.cpp" ||
+        (name.starts_with("src_cxx") && name.ends_with(".cpp"))) {
+      cxx_srcs.push_back(entry.path());
     }
-    bool is_c = lang == std::string("c");
+  }
+  std::ranges::sort(cxx_srcs);
+  llvm::json::Object cxx_rules;
+  for (const auto &src_path : cxx_srcs) {
+    auto standard = SinceStandard(src_path);
     llvm::json::Object rules;
-    for (const auto &rule_dir : rule_dirs) {
-      for (const char *name : {"src.c", "src.cpp"}) {
-        auto src_path = rule_dir / name;
-        if (!fs::exists(src_path) || (is_c && src_path.extension() != ".c")) {
-          continue;
-        }
-        llvm::errs() << "Indexing " << src_path.string() << " as " << lang
-                     << '\n';
-        Index(src_path, is_c, rule_dir.filename().string(),
-              ReadCXXFlags(rule_dir), rules);
+    Index(src_path, /*is_c=*/false, dir_name,
+          {std::format("-std=c++{}", standard)}, rules);
+    for (auto &[key, entries] : rules) {
+      for (auto &entry : *entries.getAsArray()) {
+        (*entry.getAsObject())["since"] = standard;
       }
     }
-    WriteJson(index_dir / (std::string(lang) + ".json"),
-              llvm::json::Object{{"common", std::move(common)},
-                                 {"rules", std::move(rules)}});
+    MergeRules(cxx_rules, std::move(rules));
   }
+  WriteJson(out, llvm::json::Object{{"c", std::move(c_rules)},
+                                    {"cpp", std::move(cxx_rules)}});
+}
+
+void MergeIndexes(const std::vector<std::string> &parts,
+                  const std::vector<std::string> &common_headers,
+                  const fs::path &index_dir) {
+  llvm::json::Object c_rules;
+  llvm::json::Object cxx_rules;
+  for (const auto &part : parts) {
+    auto json = ReadJson(part);
+    MergeRules(c_rules, std::move(*json.getObject("c")));
+    MergeRules(cxx_rules, std::move(*json.getObject("cpp")));
+  }
+  std::string common;
+  for (const auto &header : common_headers) {
+    common += std::format("#include \"{}\"\n", header);
+  }
+  fs::create_directories(index_dir);
+  WriteJson(index_dir / "c.json",
+            llvm::json::Object{{"common", ""}, {"rules", std::move(c_rules)}});
+  WriteJson(index_dir / "cpp.json",
+            llvm::json::Object{{"common", std::move(common)},
+                               {"rules", std::move(cxx_rules)}});
 }
 
 } // namespace cpp2rust
@@ -365,14 +401,22 @@ namespace {
 
 llvm::cl::OptionCategory cat("cpp-rule-indexer options");
 
-llvm::cl::list<std::string>
-    Excluded("exclude", llvm::cl::desc("Rule directory that is not indexed"),
-             llvm::cl::value_desc("rule-dir"), llvm::cl::ZeroOrMore,
-             llvm::cl::cat(cat));
+llvm::cl::opt<std::string> Dir("dir", llvm::cl::desc("Rule directory to index"),
+                               llvm::cl::value_desc("rule-dir"),
+                               llvm::cl::cat(cat));
+
+llvm::cl::list<std::string> Parts(llvm::cl::Positional,
+                                  llvm::cl::desc("<indexes to merge>"),
+                                  llvm::cl::ZeroOrMore, llvm::cl::cat(cat));
 
 llvm::cl::list<std::string> CommonHeaders(
     "common-header", llvm::cl::desc("Header the C++ rules depend on"),
     llvm::cl::value_desc("header"), llvm::cl::ZeroOrMore, llvm::cl::cat(cat));
+
+llvm::cl::opt<std::string>
+    Out("o",
+        llvm::cl::desc("Output part of a rule directory, or index directory"),
+        llvm::cl::value_desc("path"), llvm::cl::Required, llvm::cl::cat(cat));
 
 } // namespace
 
@@ -380,8 +424,12 @@ int main(int argc, char *argv[]) {
   llvm::cl::HideUnrelatedOptions(cat);
   llvm::cl::ParseCommandLineOptions(argc, argv);
 
-  cpp2rust::IndexRules(RULES_SRC_DIR, RULES_INDEX_DIR,
-                       {Excluded.begin(), Excluded.end()},
-                       {CommonHeaders.begin(), CommonHeaders.end()});
+  if (!Dir.empty()) {
+    cpp2rust::IndexDir(Dir.getValue(), Out.getValue());
+  } else {
+    cpp2rust::MergeIndexes({Parts.begin(), Parts.end()},
+                           {CommonHeaders.begin(), CommonHeaders.end()},
+                           Out.getValue());
+  }
   return EXIT_SUCCESS;
 }

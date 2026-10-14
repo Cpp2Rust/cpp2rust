@@ -27,9 +27,11 @@
 #include <llvm/Support/MemoryBuffer.h>
 #include <llvm/Support/raw_ostream.h>
 
+#include <algorithm>
 #include <cstdlib>
 #include <filesystem>
 #include <string>
+#include <vector>
 
 #include "compat/platform_flags.h"
 #include "converter/converter_lib.h"
@@ -1120,14 +1122,26 @@ int main(int argc, char *argv[]) {
                                                   CXXFlags.end());
   fs::path dir = SrcDir.getValue();
   llvm::json::Object root;
-  for (const char *name : {"src.c", "src.cpp"}) {
-    auto path = dir / name;
-    if (!fs::exists(path)) {
-      continue;
+  std::vector<fs::path> paths;
+  for (const auto &entry : fs::directory_iterator(dir)) {
+    auto name = entry.path().filename().string();
+    if (name == "src.c" || name == "src.cpp" ||
+        (name.starts_with("src_cxx") && name.ends_with(".cpp"))) {
+      paths.push_back(entry.path());
     }
+  }
+  std::ranges::sort(paths);
+  for (const auto &path : paths) {
     llvm::errs() << "Preprocessing " << path.string() << '\n';
+    llvm::SmallVector<llvm::StringRef, 4> file_flags(cxx_flags);
+    auto stem = path.stem().string();
+    std::string standard_flag;
+    if (llvm::StringRef standard = stem; standard.consume_front("src_cxx")) {
+      standard_flag = "-std=c++" + standard.str();
+      file_flags.push_back(standard_flag);
+    }
     llvm::json::Object file_root;
-    cpp2rust::Extract(path, file_root, cxx_flags);
+    cpp2rust::Extract(path, file_root, file_flags);
     for (auto &[k, v] : file_root) {
       if (!root.try_emplace(k, std::move(v)).second) {
         llvm::errs() << "ERROR: rule name " << k.str()

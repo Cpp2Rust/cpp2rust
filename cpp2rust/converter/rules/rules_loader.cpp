@@ -5,6 +5,7 @@
 
 #include <clang/AST/ASTContext.h>
 #include <clang/AST/RecursiveASTVisitor.h>
+#include <clang/Basic/LangOptions.h>
 #include <clang/Lex/Lexer.h>
 #include <clang/Lex/Preprocessor.h>
 #include <clang/Sema/Sema.h>
@@ -296,9 +297,30 @@ std::string WrapRule(const llvm::json::Object &rule, bool is_cxx) {
       dir, text);
 }
 
+unsigned CxxStandard(const clang::LangOptions &opts) {
+  if (opts.CPlusPlus26) {
+    return 26;
+  }
+  if (opts.CPlusPlus23) {
+    return 23;
+  }
+  if (opts.CPlusPlus20) {
+    return 20;
+  }
+  if (opts.CPlusPlus17) {
+    return 17;
+  }
+  if (opts.CPlusPlus14) {
+    return 14;
+  }
+  return 11;
+}
+
 std::string BuildRulesEpilogue(const std::unordered_set<std::string> &keys,
-                               bool is_cxx) {
+                               const clang::LangOptions &opts) {
+  bool is_cxx = opts.CPlusPlus;
   const auto &index = is_cxx ? CxxIndex() : CIndex();
+  unsigned standard = is_cxx ? CxxStandard(opts) : 0;
   auto common = index.getString("common");
   std::string out;
   if (!common->empty()) {
@@ -312,6 +334,9 @@ std::string BuildRulesEpilogue(const std::unordered_set<std::string> &keys,
     }
     for (const auto &entry : *entries) {
       auto rule = entry.getAsObject();
+      if (auto since = rule->getInteger("since"); since && *since > standard) {
+        continue;
+      }
       if (auto required = rule->getArray("requires");
           required &&
           !llvm::all_of(*required, [&](const llvm::json::Value &key) {
@@ -484,7 +509,7 @@ void PragmaHandler::HandlePragma(clang::Preprocessor &PP,
   RuleUsageCollector collector(CI_.getSema(), keys);
   collector.TraverseDecl(ctx.getTranslationUnitDecl());
 
-  auto text = BuildRulesEpilogue(keys, ctx.getLangOpts().CPlusPlus);
+  auto text = BuildRulesEpilogue(keys, ctx.getLangOpts());
   log() << "rules loaded for this translation unit:\n" << text;
   auto rules_file = src_mgr.createFileID(
       llvm::MemoryBuffer::getMemBufferCopy(text, "<cpp2rust-rules>"),

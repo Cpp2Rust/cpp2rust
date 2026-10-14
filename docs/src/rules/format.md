@@ -5,6 +5,8 @@ library it covers (`rules/unistd`, `rules/vector`, `rules/string`, ...). It
 contains:
 
 - `src.cpp` and/or `src.c`: the C++ (or C) side of each rule.
+- `src_cxxNN.cpp` (optional): C++ rules that exist from C++NN on, for example
+  `src_cxx17.cpp`; see below.
 - `tgt_unsafe.rs`: the Rust targets for the unsafe model.
 - `tgt_refcount.rs`: the Rust targets for the reference counting model
   (optional, see below).
@@ -140,6 +142,21 @@ matches them in code translated as C.
 for the C++ `__builtin_mul_overflow` (returning `bool`) while `src.c` defines
 `f12`/`f13` for the C version (returning `int`); their Rust bodies are
 identical.
+
+## Standard versions
+
+`src.cpp` is parsed as C++11 and its rules are available to every C++
+translation unit. A rule that needs a later standard goes into `src_cxxNN.cpp`,
+which is parsed as C++NN and whose rules are only loaded into translation units
+compiled as C++NN or later:
+
+```cpp
+// rules/new/src_cxx17.cpp
+template <typename T1> T1 *f5(T1 *a0) { return std::launder(a0); }
+```
+
+Rule names are shared across all the files of a module. Platform `#if`s are fine
+in any file; `#if __cplusplus` is not needed.
 
 ## The `rules` crate
 

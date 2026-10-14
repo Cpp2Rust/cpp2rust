@@ -228,11 +228,11 @@ foreach(_header IN LISTS rule_common_headers)
   list(APPEND _common_headers --common-header=${_header})
 endforeach()
 set(cpp_rules_ir_outputs)
-set(cpp_rules_index_inputs)
-set(cpp_rules_index_outputs ${CMAKE_BINARY_DIR}/rules_index/c.json ${CMAKE_BINARY_DIR}/rules_index/cpp.json)
+set(rules_index_parts)
+set(rules_index_parts_dir ${CMAKE_BINARY_DIR}/rules_index/parts)
 set(rust_rules_ir_outputs)
 foreach(_rule_dir IN LISTS rule_subdirs)
-  file(GLOB _cpp_srcs ${_rule_dir}/src.c ${_rule_dir}/src.cpp)
+  file(GLOB _cpp_srcs ${_rule_dir}/src.c ${_rule_dir}/src.cpp ${_rule_dir}/src_cxx*.cpp)
   if(NOT _cpp_srcs)
     continue()
   endif()
@@ -258,7 +258,15 @@ foreach(_rule_dir IN LISTS rule_subdirs)
   list(APPEND cpp_rules_ir_outputs ${_cpp_out})
 
   if(NOT _rule_name STREQUAL "builtin_types")
-    list(APPEND cpp_rules_index_inputs ${_cpp_srcs} ${_cxxflags_file})
+    set(_part ${rules_index_parts_dir}/${_rule_name}.json)
+    add_custom_command(
+      OUTPUT ${_part}
+      COMMAND ${CMAKE_COMMAND} -E make_directory ${rules_index_parts_dir}
+      COMMAND $<TARGET_FILE:cpp-rule-indexer> --dir ${_rule_dir} -o ${_part}
+      DEPENDS ${_cpp_srcs} ${rule_common_headers} ${rule_indexer_sources} ${RUSTLS_HEADER} ${BROTLI_HEADERS}
+      VERBATIM
+    )
+    list(APPEND rules_index_parts ${_part})
   endif()
 
   set(_rust_srcs)
@@ -291,10 +299,11 @@ endforeach()
 
 add_custom_target("preprocess-cpp-rules" ALL DEPENDS ${cpp_rules_ir_outputs})
 
+set(cpp_rules_index_outputs ${CMAKE_BINARY_DIR}/rules_index/c.json ${CMAKE_BINARY_DIR}/rules_index/cpp.json)
 add_custom_command(
   OUTPUT ${cpp_rules_index_outputs}
-  COMMAND $<TARGET_FILE:cpp-rule-indexer> --exclude builtin_types ${_common_headers}
-  DEPENDS ${cpp_rules_index_inputs} ${rule_common_headers} ${rule_indexer_sources} ${RUSTLS_HEADER} ${BROTLI_HEADERS}
+  COMMAND $<TARGET_FILE:cpp-rule-indexer> ${_common_headers} -o ${CMAKE_BINARY_DIR}/rules_index ${rules_index_parts}
+  DEPENDS ${rules_index_parts} ${rule_common_headers} ${rule_indexer_sources}
   VERBATIM
 )
 
