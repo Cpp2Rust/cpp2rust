@@ -296,6 +296,24 @@ std::string GetNumAsString(llvm::APFloat value) {
 bool IsUserDefinedDecl(const clang::Decl *decl) {
   const auto &ctx = decl->getASTContext();
   const auto &src_mgr = ctx.getSourceManager();
+  if (auto fn = llvm::dyn_cast<clang::FunctionDecl>(decl)) {
+    if (const clang::FunctionDecl *definition = nullptr;
+        fn->isDefined(definition)) {
+      decl = definition;
+    } else if (llvm::any_of(fn->redecls(), [&](auto redecl) {
+                 return src_mgr.isInSystemHeader(redecl->getLocation());
+               })) {
+      return false;
+    }
+  } else if (auto var = llvm::dyn_cast<clang::VarDecl>(decl)) {
+    if (auto definition = var->getDefinition()) {
+      decl = definition;
+    } else if (llvm::any_of(var->redecls(), [&](auto redecl) {
+                 return src_mgr.isInSystemHeader(redecl->getLocation());
+               })) {
+      return false;
+    }
+  }
   auto src_loc = decl->getLocation();
   if (auto *spec =
           clang::dyn_cast<clang::ClassTemplateSpecializationDecl>(decl);
@@ -822,12 +840,25 @@ static std::string GetParamSignature(const clang::Decl *decl) {
   return args;
 }
 
+static clang::ASTNameGenerator *name_generator = nullptr;
+
+void SetNameGenerator(clang::ASTNameGenerator *generator) {
+  name_generator = generator;
+}
+
+clang::ASTNameGenerator *GetNameGenerator() { return name_generator; }
+
+static std::string GetMangledName(const clang::Decl *decl) {
+  assert(name_generator);
+  return name_generator->getName(decl);
+}
+
 static std::string GetLexicalSpecializationID(const clang::Decl *decl) {
   auto &ctx = decl->getASTContext();
   std::string id;
   if (const auto *var =
           clang::dyn_cast<clang::VarTemplateSpecializationDecl>(decl)) {
-    id += clang::ASTNameGenerator(var->getASTContext()).getName(var);
+    id += GetMangledName(var);
   }
   if (const auto *self =
           clang::dyn_cast<clang::ClassTemplateSpecializationDecl>(decl)) {
@@ -846,7 +877,7 @@ static std::string GetLexicalSpecializationID(const clang::Decl *decl) {
     }
     if (const auto *fn = clang::dyn_cast<clang::FunctionDecl>(dc);
         fn && fn->getTemplateSpecializationArgs()) {
-      id += clang::ASTNameGenerator(fn->getASTContext()).getName(fn);
+      id += GetMangledName(fn);
     }
   }
   return id;
@@ -919,9 +950,7 @@ std::string DisambiguateAnonymousTag(const clang::TagDecl *tag) {
 static std::unordered_map<std::string, size_t> type_mapping;
 
 static size_t GetDeclId(const clang::NamedDecl *decl, bool internal) {
-  std::string key =
-      clang::ASTNameGenerator(decl->getASTContext()).getName(decl) +
-      GetParamSignature(decl);
+  std::string key = GetMangledName(decl) + GetParamSignature(decl);
   if (internal) {
     key += GetLocationID(decl);
   }
@@ -982,9 +1011,11 @@ std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
         target = record;
       }
     }
+    auto *record = clang::dyn_cast<clang::CXXRecordDecl>(target);
     return std::format(
-        "anon_{}", type_mapping.try_emplace(GetID(target), type_mapping.size())
-                       .first->second);
+        "{}_{}", record && record->isLambda() ? "lambda" : "anon",
+        type_mapping.try_emplace(GetID(target), type_mapping.size())
+            .first->second);
   }
 
   std::optional<size_t> id;
@@ -1344,21 +1375,6 @@ clang::QualType GetDeclRefType(const clang::FunctionDecl *fn,
                                const clang::ValueDecl *decl) {
   auto field = AsLambdaCaptureField(fn, expr);
   return field ? field->getType() : decl->getType();
-}
-
-bool HasStaticLocal(const clang::Stmt *stmt) {
-  if (!stmt) {
-    return false;
-  }
-  if (auto decl_stmt = clang::dyn_cast<clang::DeclStmt>(stmt)) {
-    for (auto decl : decl_stmt->decls()) {
-      if (auto var = clang::dyn_cast<clang::VarDecl>(decl);
-          var && var->isStaticLocal()) {
-        return true;
-      }
-    }
-  }
-  return llvm::any_of(stmt->children(), HasStaticLocal);
 }
 
 bool IsUserOperatorCall(const clang::CXXOperatorCallExpr *expr) {

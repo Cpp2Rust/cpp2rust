@@ -34,7 +34,9 @@ fn main_0() -> i32 {
                 nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_GETFL)
             }),
             ::libc::F_SETFL => {
-                let __flags = nix::fcntl::OFlag::from_bits_retain(i32::get(&&[(0).into()][0]));
+                let __flags = nix::fcntl::OFlag::from_bits_retain(i32::get(
+                    &Box::<[VaArg]>::from([(0).into()])[0],
+                ));
                 FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
                     nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_SETFL(__flags))
                 })
@@ -43,7 +45,9 @@ fn main_0() -> i32 {
                 nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_GETFD)
             }),
             ::libc::F_SETFD => {
-                let __flags = nix::fcntl::FdFlag::from_bits_retain(i32::get(&&[(0).into()][0]));
+                let __flags = nix::fcntl::FdFlag::from_bits_retain(i32::get(
+                    &Box::<[VaArg]>::from([(0).into()])[0],
+                ));
                 FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
                     nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_SETFD(__flags))
                 })
@@ -68,7 +72,7 @@ fn main_0() -> i32 {
                 }),
                 ::libc::F_SETFL => {
                     let __flags = nix::fcntl::OFlag::from_bits_retain(i32::get(
-                        &&[(flags | ::libc::O_NONBLOCK).into()][0],
+                        &Box::<[VaArg]>::from([(flags | ::libc::O_NONBLOCK).into()])[0],
                     ));
                     FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
                         nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_SETFL(__flags))
@@ -79,7 +83,7 @@ fn main_0() -> i32 {
                 }),
                 ::libc::F_SETFD => {
                     let __flags = nix::fcntl::FdFlag::from_bits_retain(i32::get(
-                        &&[(flags | ::libc::O_NONBLOCK).into()][0],
+                        &Box::<[VaArg]>::from([(flags | ::libc::O_NONBLOCK).into()])[0],
                     ));
                     FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
                         nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_SETFD(__flags))
@@ -103,7 +107,9 @@ fn main_0() -> i32 {
                 nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_GETFL)
             }),
             ::libc::F_SETFL => {
-                let __flags = nix::fcntl::OFlag::from_bits_retain(i32::get(&&[(0).into()][0]));
+                let __flags = nix::fcntl::OFlag::from_bits_retain(i32::get(
+                    &Box::<[VaArg]>::from([(0).into()])[0],
+                ));
                 FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
                     nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_SETFL(__flags))
                 })
@@ -112,7 +118,9 @@ fn main_0() -> i32 {
                 nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_GETFD)
             }),
             ::libc::F_SETFD => {
-                let __flags = nix::fcntl::FdFlag::from_bits_retain(i32::get(&&[(0).into()][0]));
+                let __flags = nix::fcntl::FdFlag::from_bits_retain(i32::get(
+                    &Box::<[VaArg]>::from([(0).into()])[0],
+                ));
                 FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
                     nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_SETFD(__flags))
                 })
@@ -151,7 +159,9 @@ fn main_0() -> i32 {
                     nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_GETFL)
                 }),
                 ::libc::F_SETFL => {
-                    let __flags = nix::fcntl::OFlag::from_bits_retain(i32::get(&&[(0).into()][0]));
+                    let __flags = nix::fcntl::OFlag::from_bits_retain(i32::get(
+                        &Box::<[VaArg]>::from([(0).into()])[0],
+                    ));
                     FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
                         nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_SETFL(__flags))
                     })
@@ -160,7 +170,9 @@ fn main_0() -> i32 {
                     nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_GETFD)
                 }),
                 ::libc::F_SETFD => {
-                    let __flags = nix::fcntl::FdFlag::from_bits_retain(i32::get(&&[(0).into()][0]));
+                    let __flags = nix::fcntl::FdFlag::from_bits_retain(i32::get(
+                        &Box::<[VaArg]>::from([(0).into()])[0],
+                    ));
                     FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
                         nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_SETFD(__flags))
                     })
@@ -185,7 +197,9 @@ fn main_0() -> i32 {
                     nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_GETFL)
                 }),
                 ::libc::F_SETFL => {
-                    let __flags = nix::fcntl::OFlag::from_bits_retain(i32::get(&&[(1).into()][0]));
+                    let __flags = nix::fcntl::OFlag::from_bits_retain(i32::get(
+                        &Box::<[VaArg]>::from([(1).into()])[0],
+                    ));
                     FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
                         nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_SETFL(__flags))
                     })
@@ -194,7 +208,9 @@ fn main_0() -> i32 {
                     nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_GETFD)
                 }),
                 ::libc::F_SETFD => {
-                    let __flags = nix::fcntl::FdFlag::from_bits_retain(i32::get(&&[(1).into()][0]));
+                    let __flags = nix::fcntl::FdFlag::from_bits_retain(i32::get(
+                        &Box::<[VaArg]>::from([(1).into()])[0],
+                    ));
                     FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
                         nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_SETFD(__flags))
                     })
@@ -218,7 +234,9 @@ fn main_0() -> i32 {
                     nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_GETFL)
                 }),
                 ::libc::F_SETFL => {
-                    let __flags = nix::fcntl::OFlag::from_bits_retain(i32::get(&&[(0).into()][0]));
+                    let __flags = nix::fcntl::OFlag::from_bits_retain(i32::get(
+                        &Box::<[VaArg]>::from([(0).into()])[0],
+                    ));
                     FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
                         nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_SETFL(__flags))
                     })
@@ -227,7 +245,9 @@ fn main_0() -> i32 {
                     nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_GETFD)
                 }),
                 ::libc::F_SETFD => {
-                    let __flags = nix::fcntl::FdFlag::from_bits_retain(i32::get(&&[(0).into()][0]));
+                    let __flags = nix::fcntl::FdFlag::from_bits_retain(i32::get(
+                        &Box::<[VaArg]>::from([(0).into()])[0],
+                    ));
                     FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
                         nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_SETFD(__flags))
                     })

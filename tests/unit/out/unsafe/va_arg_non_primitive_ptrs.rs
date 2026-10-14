@@ -17,7 +17,7 @@ pub const opt_OPT_STRING_OUT: opt = 0;
 pub const opt_OPT_FILE: opt = 1;
 pub const opt_OPT_NODE: opt = 2;
 pub const opt_OPT_NODE_OUT: opt = 3;
-pub unsafe fn dispatch_0(mut option: i32, __args: &[VaArg]) -> i32 {
+pub unsafe fn dispatch_0(mut option: i32, __args: Box<[VaArg]>) -> i32 {
     let mut ap: *const VaArg = ::std::ptr::null();
     ap = __args.as_ptr();
     let mut result: i32 = 0;
@@ -62,7 +62,7 @@ unsafe fn main_0() -> i32 {
         ((((unsafe {
             dispatch_0(
                 (opt_OPT_STRING_OUT as i32),
-                &[(&mut s as *mut *const libc::c_char).into()],
+                Box::new([(&mut s as *mut *const libc::c_char).into()]),
             )
         }) == (1)) as i32)
             != 0)
@@ -70,7 +70,10 @@ unsafe fn main_0() -> i32 {
     assert!((((!((s).is_null())) as i32) != 0));
     assert!(
         ((((unsafe {
-            dispatch_0((opt_OPT_FILE as i32), &[(libcc2rs::stdout_unsafe()).into()])
+            dispatch_0(
+                (opt_OPT_FILE as i32),
+                Box::new([(libcc2rs::stdout_unsafe()).into()]),
+            )
         }) == (1)) as i32)
             != 0)
     );
@@ -78,7 +81,7 @@ unsafe fn main_0() -> i32 {
         ((((unsafe {
             dispatch_0(
                 (opt_OPT_FILE as i32),
-                &[((0 as *mut ::libc::c_void) as *mut ::libc::FILE).into()],
+                Box::new([((0 as *mut ::libc::c_void) as *mut ::libc::FILE).into()]),
             )
         }) == (0)) as i32)
             != 0)
@@ -88,8 +91,12 @@ unsafe fn main_0() -> i32 {
         next: std::ptr::null_mut(),
     };
     assert!(
-        ((((unsafe { dispatch_0((opt_OPT_NODE as i32), &[(&mut head as *mut node).into(),]) })
-            == (42)) as i32)
+        ((((unsafe {
+            dispatch_0(
+                (opt_OPT_NODE as i32),
+                Box::new([(&mut head as *mut node).into()]),
+            )
+        }) == (42)) as i32)
             != 0)
     );
     let mut outp: *mut node = (&mut head as *mut node);
@@ -97,7 +104,7 @@ unsafe fn main_0() -> i32 {
         ((((unsafe {
             dispatch_0(
                 (opt_OPT_NODE_OUT as i32),
-                &[(&mut outp as *mut *mut node).into()],
+                Box::new([(&mut outp as *mut *mut node).into()]),
             )
         }) == (2)) as i32)
             != 0)

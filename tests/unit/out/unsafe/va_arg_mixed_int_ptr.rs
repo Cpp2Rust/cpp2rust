@@ -6,7 +6,7 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn mixed_args_0(mut count: i32, __args: &[VaArg]) -> i32 {
+pub unsafe fn mixed_args_0(mut count: i32, __args: Box<[VaArg]>) -> i32 {
     let mut ap: *const VaArg = ::std::ptr::null();
     ap = __args.as_ptr();
     let mut total: i32 = 0;
@@ -35,27 +35,31 @@ unsafe fn main_0() -> i32 {
         ((((unsafe {
             mixed_args_0(
                 3,
-                &[
+                Box::new([
                     (0).into(),
                     (10).into(),
                     (1).into(),
                     (&mut x as *mut i32).into(),
                     (0).into(),
                     (20).into(),
-                ],
+                ]),
             )
         }) == (130)) as i32)
             != 0)
     );
     let mut y: i32 = 50;
     assert!(
-        ((((unsafe { mixed_args_0(1, &[(1).into(), (&mut y as *mut i32).into(),]) }) == (50))
-            as i32)
+        ((((unsafe { mixed_args_0(1, Box::new([(1).into(), (&mut y as *mut i32).into(),])) })
+            == (50)) as i32)
             != 0)
     );
     assert!(
-        ((((unsafe { mixed_args_0(2, &[(0).into(), (5).into(), (0).into(), (3).into(),]) }) == (8))
-            as i32)
+        ((((unsafe {
+            mixed_args_0(
+                2,
+                Box::new([(0).into(), (5).into(), (0).into(), (3).into()]),
+            )
+        }) == (8)) as i32)
             != 0)
     );
     return 0;

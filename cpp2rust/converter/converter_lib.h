@@ -7,6 +7,7 @@
 #include <clang/AST/Decl.h>
 #include <clang/AST/DeclCXX.h>
 #include <clang/AST/Expr.h>
+#include <clang/AST/Mangle.h>
 #include <clang/AST/StmtCXX.h>
 #include <clang/AST/Type.h>
 #include <llvm/ADT/APSInt.h>
@@ -181,6 +182,10 @@ unsigned GetColumnNumber(const clang::Decl *decl);
 
 unsigned GetArraySize(clang::QualType array_type);
 
+void SetNameGenerator(clang::ASTNameGenerator *generator);
+
+clang::ASTNameGenerator *GetNameGenerator();
+
 std::string GetID(const clang::Decl *decl);
 std::string GetMethodID(const clang::CXXMethodDecl *decl);
 
@@ -246,8 +251,6 @@ const clang::FieldDecl *AsLambdaCaptureThis(const clang::FunctionDecl *fn);
 clang::QualType GetDeclRefType(const clang::FunctionDecl *fn,
                                const clang::Expr *expr,
                                const clang::ValueDecl *decl);
-
-bool HasStaticLocal(const clang::Stmt *stmt);
 
 bool IsSameTypeComparison(const clang::FunctionDecl *fn,
                           const clang::CXXRecordDecl *record);

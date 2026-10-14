@@ -161,8 +161,8 @@ fn f20(a0: i32, a1: Ptr<i8>) -> Ptr<CFile> {
     Ptr::alloc(CFile::new(a0))
 }
 
-fn f21(a0: Ptr<i8>, a1: usize, a2: Ptr<i8>, va: &[VaArg]) -> i32 {
-    let __s = libcc2rs::format_c(&a2.to_rust_string(), va);
+fn f21(a0: Ptr<i8>, a1: usize, a2: Ptr<i8>, va: Box<[VaArg]>) -> i32 {
+    let __s = libcc2rs::format_c(&a2.to_rust_string(), &va);
     let __b = __s.as_bytes();
     if a1 > 0 {
         let __n = ::std::cmp::min(__b.len(), a1 - 1);
@@ -190,12 +190,12 @@ fn f24(a0: Ptr<CFile>, a1: Ptr<i8>, a2: i32, a3: usize) -> i32 {
     0
 }
 
-fn f28(a0: Ptr<CFile>, a1: Ptr<i8>, va: &[VaArg]) -> i32 {
-    let __s = libcc2rs::format_c(&a1.to_rust_string(), va);
+fn f28(a0: Ptr<CFile>, a1: Ptr<i8>, va: Box<[VaArg]>) -> i32 {
+    let __s = libcc2rs::format_c(&a1.to_rust_string(), &va);
     a0.with_mut(|__f| __f.write(__s.as_bytes())) as i32
 }
 
-fn f29(a0: Ptr<i8>, va: &[VaArg]) -> i32 {
-    let __s = libcc2rs::format_c(&a0.to_rust_string(), va);
+fn f29(a0: Ptr<i8>, va: Box<[VaArg]>) -> i32 {
+    let __s = libcc2rs::format_c(&a0.to_rust_string(), &va);
     libcc2rs::c_stdout().with_mut(|__f| __f.write(__s.as_bytes())) as i32
 }

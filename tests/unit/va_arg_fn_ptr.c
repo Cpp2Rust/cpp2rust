@@ -3,6 +3,8 @@
 
 typedef int (*unary)(int);
 typedef int (*binary)(int, int);
+typedef int (*variadic_unary)(int, ...);
+typedef int (*variadic_binary)(int, int, ...);
 
 int square(int x) { return x * x; }
 int negate(int x) { return -x; }
@@ -39,5 +41,10 @@ int main() {
   assert(apply_binary(3, 4, add) == 7);
   int dummy = 0;
   assert(not_supported(&dummy, square, &dummy) == -3);
+  variadic_unary vu = apply_unary;
+  assert(vu(6, square) == 36);
+  variadic_binary vb = (variadic_binary)apply_unary;
+  vu = (variadic_unary)vb;
+  assert(vu(2, negate) == -2);
   return 0;
 }

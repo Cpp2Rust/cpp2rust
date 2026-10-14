@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn sum_with_copy_0(count: i32, __args: &[VaArg]) -> i32 {
+pub fn sum_with_copy_0(count: i32, __args: Box<[VaArg]>) -> i32 {
     let __args: Value<Box<[VaArg]>> = Rc::new(RefCell::new(__args.into()));
     let count: Value<i32> = Rc::new(RefCell::new(count));
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
@@ -34,7 +34,8 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     assert!(
-        (((({ sum_with_copy_0(3, &[(10).into(), (20).into(), (30).into(),]) }) == 120) as i32)
+        (((({ sum_with_copy_0(3, Box::new([(10).into(), (20).into(), (30).into(),])) }) == 120)
+            as i32)
             != 0)
     );
     return 0;

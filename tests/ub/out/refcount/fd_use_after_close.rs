@@ -12,7 +12,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let mut fd: i32 = {
-        let __mode = match &[].first() {
+        let __mode = match Box::<[VaArg]>::from([]).first() {
             Some(__m) => nix::sys::stat::Mode::from_bits_truncate(i32::get(__m) as ::libc::mode_t),
             None => nix::sys::stat::Mode::empty(),
         };
