@@ -296,6 +296,24 @@ std::string GetNumAsString(llvm::APFloat value) {
 bool IsUserDefinedDecl(const clang::Decl *decl) {
   const auto &ctx = decl->getASTContext();
   const auto &src_mgr = ctx.getSourceManager();
+  if (auto fn = llvm::dyn_cast<clang::FunctionDecl>(decl)) {
+    if (const clang::FunctionDecl *definition = nullptr;
+        fn->isDefined(definition)) {
+      decl = definition;
+    } else if (llvm::any_of(fn->redecls(), [&](auto redecl) {
+                 return src_mgr.isInSystemHeader(redecl->getLocation());
+               })) {
+      return false;
+    }
+  } else if (auto var = llvm::dyn_cast<clang::VarDecl>(decl)) {
+    if (auto definition = var->getDefinition()) {
+      decl = definition;
+    } else if (llvm::any_of(var->redecls(), [&](auto redecl) {
+                 return src_mgr.isInSystemHeader(redecl->getLocation());
+               })) {
+      return false;
+    }
+  }
   auto src_loc = decl->getLocation();
   if (auto *spec =
           clang::dyn_cast<clang::ClassTemplateSpecializationDecl>(decl);
