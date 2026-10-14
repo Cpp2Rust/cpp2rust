@@ -389,10 +389,7 @@ std::string ConstructorKey(const std::string &class_key) {
 }
 
 std::string FunctionKey(const clang::FunctionDecl *decl) {
-  if (const clang::FunctionDecl *definition = nullptr;
-      decl->isDefined(definition) &&
-      !decl->getASTContext().getSourceManager().isInSystemHeader(
-          definition->getLocation())) {
+  if (decl->isDefined() && IsUserDefinedDecl(decl)) {
     return {};
   }
   if (auto method = llvm::dyn_cast<clang::CXXMethodDecl>(decl)) {
@@ -408,6 +405,11 @@ std::string FunctionKey(const clang::FunctionDecl *decl) {
 std::string DeclKey(const clang::NamedDecl *decl) {
   if (auto fn = decl->getAsFunction()) {
     return FunctionKey(fn);
+  }
+  if (auto var = llvm::dyn_cast<clang::VarDecl>(decl);
+      var && var->hasDefinition() != clang::VarDecl::DeclarationOnly &&
+      IsUserDefinedDecl(var)) {
+    return {};
   }
   if (auto record = llvm::dyn_cast<clang::RecordDecl>(decl->getDeclContext())) {
     return MemberKey(ClassKey(record), MemberName(decl->getDeclName()));
