@@ -8,7 +8,7 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(24)]
-pub struct Sorted__lambda_at_lambda_decltype_type_cpp______ {
+pub struct Sorted__lambda_at_lambda_decltype_type_cpp_22_18__ {
     #[offset(0)]
     #[byte_size(16)]
     pub items: Value<Box<[i32]>>,
@@ -18,15 +18,42 @@ pub struct Sorted__lambda_at_lambda_decltype_type_cpp______ {
     #[byte_size(1)]
     pub cmp: FnPtr<fn(i32, i32) -> bool>,
 }
-impl Default for Sorted__lambda_at_lambda_decltype_type_cpp______ {
+impl Default for Sorted__lambda_at_lambda_decltype_type_cpp_22_18__ {
     fn default() -> Self {
         {
-            Sorted__lambda_at_lambda_decltype_type_cpp______ {
+            Sorted__lambda_at_lambda_decltype_type_cpp_22_18__ {
                 items: Rc::new(RefCell::new((0..4).map(|_| 0_i32).collect::<Box<[i32]>>())),
                 size: 0,
                 cmp: FnPtr::<fn(i32, i32) -> bool>::new(|mut a: i32, mut b: i32| -> bool {
                     {
                         return (a > b);
+                    }
+                }),
+            }
+        }
+    }
+}
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(24)]
+pub struct Sorted__lambda_at_lambda_decltype_type_cpp_19_23__ {
+    #[offset(0)]
+    #[byte_size(16)]
+    pub items: Value<Box<[i32]>>,
+    #[offset(16)]
+    pub size: i32,
+    #[offset(20)]
+    #[byte_size(1)]
+    pub cmp: FnPtr<fn(i32, i32) -> bool>,
+}
+impl Default for Sorted__lambda_at_lambda_decltype_type_cpp_19_23__ {
+    fn default() -> Self {
+        {
+            Sorted__lambda_at_lambda_decltype_type_cpp_19_23__ {
+                items: Rc::new(RefCell::new((0..4).map(|_| 0_i32).collect::<Box<[i32]>>())),
+                size: 0,
+                cmp: FnPtr::<fn(i32, i32) -> bool>::new(|mut a: i32, mut b: i32| -> bool {
+                    {
+                        return (a < b);
                     }
                 }),
             }
@@ -46,12 +73,12 @@ fn main_0() -> i32 {
                 }
             },
         )));
-    let desc: Value<Sorted__lambda_at_lambda_decltype_type_cpp______> = Rc::new(RefCell::new(
-        <Sorted__lambda_at_lambda_decltype_type_cpp______>::default(),
+    let desc: Value<Sorted__lambda_at_lambda_decltype_type_cpp_22_18__> = Rc::new(RefCell::new(
+        <Sorted__lambda_at_lambda_decltype_type_cpp_22_18__>::default(),
     ));
-    ({ Sorted__lambda_at_lambda_decltype_type_cpp______Impl::insert(&desc.as_pointer(), 2) });
-    ({ Sorted__lambda_at_lambda_decltype_type_cpp______Impl::insert(&desc.as_pointer(), 7) });
-    ({ Sorted__lambda_at_lambda_decltype_type_cpp______Impl::insert(&desc.as_pointer(), 4) });
+    ({ Sorted__lambda_at_lambda_decltype_type_cpp_22_18__Impl::insert(&desc.as_pointer(), 2) });
+    ({ Sorted__lambda_at_lambda_decltype_type_cpp_22_18__Impl::insert(&desc.as_pointer(), 7) });
+    ({ Sorted__lambda_at_lambda_decltype_type_cpp_22_18__Impl::insert(&desc.as_pointer(), 4) });
     assert!(
         ((elem!(
             (array_field_ptr!(desc.as_pointer(), items) as Ptr::<i32>),
@@ -76,12 +103,12 @@ fn main_0() -> i32 {
         .read())
             == 2)
     );
-    let asc: Value<Sorted__lambda_at_lambda_decltype_type_cpp______> = Rc::new(RefCell::new(
-        <Sorted__lambda_at_lambda_decltype_type_cpp______>::default(),
+    let asc: Value<Sorted__lambda_at_lambda_decltype_type_cpp_19_23__> = Rc::new(RefCell::new(
+        <Sorted__lambda_at_lambda_decltype_type_cpp_19_23__>::default(),
     ));
-    ({ Sorted__lambda_at_lambda_decltype_type_cpp______Impl::insert(&asc.as_pointer(), 2) });
-    ({ Sorted__lambda_at_lambda_decltype_type_cpp______Impl::insert(&asc.as_pointer(), 7) });
-    ({ Sorted__lambda_at_lambda_decltype_type_cpp______Impl::insert(&asc.as_pointer(), 4) });
+    ({ Sorted__lambda_at_lambda_decltype_type_cpp_19_23__Impl::insert(&asc.as_pointer(), 2) });
+    ({ Sorted__lambda_at_lambda_decltype_type_cpp_19_23__Impl::insert(&asc.as_pointer(), 7) });
+    ({ Sorted__lambda_at_lambda_decltype_type_cpp_19_23__Impl::insert(&asc.as_pointer(), 4) });
     assert!(((elem!((array_field_ptr!(asc.as_pointer(), items) as Ptr::<i32>), 0).read()) == 2));
     assert!(((elem!((array_field_ptr!(asc.as_pointer(), items) as Ptr::<i32>), 1).read()) == 4));
     assert!(((elem!((array_field_ptr!(asc.as_pointer(), items) as Ptr::<i32>), 2).read()) == 7));
@@ -116,11 +143,11 @@ fn main_0() -> i32 {
     assert!((({ (*less.borrow()).call(1, 3,) }) as bool));
     return 0;
 }
-pub trait Sorted__lambda_at_lambda_decltype_type_cpp______Impl {
+pub trait Sorted__lambda_at_lambda_decltype_type_cpp_19_23__Impl {
     fn insert(&self, v: i32);
 }
-impl Sorted__lambda_at_lambda_decltype_type_cpp______Impl
-    for Ptr<Sorted__lambda_at_lambda_decltype_type_cpp______>
+impl Sorted__lambda_at_lambda_decltype_type_cpp_19_23__Impl
+    for Ptr<Sorted__lambda_at_lambda_decltype_type_cpp_19_23__>
 {
     fn insert(&self, mut v: i32) {
         let mut i: i32 = (*self).with(|__s| __s.size);
@@ -139,6 +166,13 @@ impl Sorted__lambda_at_lambda_decltype_type_cpp______Impl
         elem!((array_field_ptr!((*self), items) as Ptr::<i32>), i).write(v);
         field!((*self), size).with_mut(|__v| __v.postfix_inc());
     }
+}
+pub trait Sorted__lambda_at_lambda_decltype_type_cpp_22_18__Impl {
+    fn insert(&self, v: i32);
+}
+impl Sorted__lambda_at_lambda_decltype_type_cpp_22_18__Impl
+    for Ptr<Sorted__lambda_at_lambda_decltype_type_cpp_22_18__>
+{
     fn insert(&self, mut v: i32) {
         let mut i: i32 = (*self).with(|__s| __s.size);
         'loop_: while (i > 0)

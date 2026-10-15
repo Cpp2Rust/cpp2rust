@@ -265,11 +265,11 @@ Matcher::Bindings getBindings(const clang::NamedDecl *rule,
     auto name = params->getParam(i)->getName();
     unsigned n = 0;
     if (!name.consume_front("T") || name.getAsInteger(10, n) ||
-        args[i].getKind() != clang::TemplateArgument::Type) {
+        args[i].getKind() == clang::TemplateArgument::Pack) {
       continue;
     }
     bindings.resize(std::max<size_t>(bindings.size(), n));
-    bindings[n - 1] = args[i].getAsType();
+    bindings[n - 1] = args[i];
   }
   return bindings;
 }

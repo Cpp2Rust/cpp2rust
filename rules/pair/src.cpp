@@ -48,3 +48,19 @@ template <typename T1, typename T2> const T2 &f15(const std::pair<T1, T2> &a0) {
 template <typename T1, typename T2> const T1 &f16(const std::pair<T1, T2> &a0) {
   return a0.first;
 }
+
+template <typename T1, typename T2> T1 &f17(std::pair<T1, T2> &a0) {
+  return std::get<0>(a0);
+}
+
+template <typename T1, typename T2> T2 &f18(std::pair<T1, T2> &a0) {
+  return std::get<1>(a0);
+}
+
+template <typename T1, typename T2> const T1 &f19(const std::pair<T1, T2> &a0) {
+  return std::get<0>(a0);
+}
+
+template <typename T1, typename T2> const T2 &f20(const std::pair<T1, T2> &a0) {
+  return std::get<1>(a0);
+}

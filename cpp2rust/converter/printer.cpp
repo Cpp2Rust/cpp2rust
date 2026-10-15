@@ -8,10 +8,8 @@
 #include <clang/Basic/SourceManager.h>
 #include <clang/Lex/Lexer.h>
 
-#include <array>
 #include <cctype>
 #include <format>
-#include <regex>
 #include <string_view>
 #include <utility>
 
@@ -76,24 +74,6 @@ clang::QualType normalizeQualType(clang::ASTContext &ctx,
 
   return qual_type.getCanonicalType().getUnqualifiedType().getDesugaredType(
       ctx);
-}
-
-std::string normalizeTranslationRule(std::string rule) {
-  // Detach pointer from double reference. Useful for matching translation
-  // rules.
-  ReplaceAll(rule, "*&&", "* &&");
-
-  static const std::array<std::pair<std::regex, std::string>, 1>
-      normalization_rules{{
-          // Ignore constant template parameters, i.e. replace them with _.
-          {std::regex(R"(\b\d+\b)"), "_"},
-      }};
-
-  for (const auto &r : normalization_rules) {
-    rule = std::regex_replace(rule, r.first, r.second);
-  }
-
-  return rule;
 }
 
 } // namespace
@@ -171,7 +151,7 @@ std::string ToString(clang::ASTContext &ctx, clang::QualType qual_type,
       std::string out;
       llvm::raw_string_ostream os(out);
       ctx.getPointerType(pointee).print(os, getPrintPolicy(ctx));
-      return normalizeTranslationRule(std::move(out));
+      return out;
     }
   }
 
@@ -200,7 +180,7 @@ std::string ToString(clang::ASTContext &ctx, clang::QualType qual_type,
   std::string type;
   llvm::raw_string_ostream os(type);
   normalizeQualType(ctx, qual_type).print(os, getPrintPolicy(ctx));
-  return normalizeTranslationRule(std::move(type));
+  return type;
 }
 
 std::string ToString(clang::ASTContext &ctx, const clang::NamedDecl *decl) {
@@ -237,7 +217,7 @@ std::string ToString(clang::ASTContext &ctx, const clang::NamedDecl *decl) {
 
   if (!func_decl) {
     decl->printQualifiedName(os, getPrintPolicy(ctx));
-    return normalizeTranslationRule(std::move(out));
+    return out;
   }
 
   os << ToString(ctx, func_decl->getReturnType()) << ' ';
@@ -324,7 +304,7 @@ std::string ToString(clang::ASTContext &ctx, const clang::NamedDecl *decl) {
     }
   }
 
-  return normalizeTranslationRule(std::move(out));
+  return out;
 }
 
 std::string ToString(clang::ASTContext &ctx, const clang::Expr *expr) {

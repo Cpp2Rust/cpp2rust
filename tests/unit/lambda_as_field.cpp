@@ -1,6 +1,4 @@
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
-// no-compile
-// Blocked by https://github.com/Cpp2Rust/cpp2rust/issues/435
 #include <assert.h>
 #include <utility>
 
