@@ -1,4 +1,3 @@
-// no-compile: unsafe
 #include <cassert>
 #include <vector>
 

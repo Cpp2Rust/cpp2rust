@@ -3374,8 +3374,46 @@ bool Converter::ConvertCXXOperatorCallExpr(clang::CXXOperatorCallExpr *expr) {
     }
     break;
   case clang::OverloadedOperatorKind::OO_Subscript: {
+    auto *base = expr->getArg(0);
+    auto *idx = expr->getArg(1);
+    // Rust borrows the container before computing the index, so an index that
+    // reads the container, or that has side effects through anything the
+    // container is reached through, is computed beforehand.
+    std::unordered_set<const clang::ValueDecl *> base_vars;
+    auto *inner = base->IgnoreParenImpCasts();
+    if (idx->HasSideEffects(ctx_)) {
+      base_vars = GetAllVars(base);
+    } else if (auto *ref = clang::dyn_cast<clang::DeclRefExpr>(inner)) {
+      base_vars.insert(ref->getDecl());
+    } else if (auto *member = clang::dyn_cast<clang::MemberExpr>(inner)) {
+      base_vars.insert(member->getMemberDecl());
+    } else {
+      base_vars = GetAllVars(base);
+    }
+    if (!IsUniquePtr(base->getType()) &&
+        std::ranges::any_of(GetAllVars(idx), [&](const clang::ValueDecl *var) {
+          return base_vars.contains(var);
+        })) {
+      std::string idx_str;
+      {
+        PushExplicitAutoref no_autoref(*this, std::nullopt);
+        idx_str = ConvertRValue(idx);
+      }
+      PushParen paren(*this);
+      StrCat(token::kStar);
+      PushBrace brace(*this);
+      StrCat("let __idx =", idx_str);
+      if (Mapper::Map(*this, idx->getType()) != "usize") {
+        StrCat(keyword::kAs, "usize");
+      }
+      StrCat(token::kSemiColon, IsMutatingCall(expr) ? "&mut" : "&");
+      PushExplicitAutoref autoref(*this, IsMutatingCall(expr));
+      Convert(base->IgnoreImplicit());
+      StrCat("[__idx]");
+      break;
+    }
     PushExplicitAutoref autoref(*this, IsMutatingCall(expr));
-    ConvertArraySubscript(expr->getArg(0), expr->getArg(1), expr->getType());
+    ConvertArraySubscript(base, idx, expr->getType());
     break;
   }
   case clang::OverloadedOperatorKind::OO_LessLess:
