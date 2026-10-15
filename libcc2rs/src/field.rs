@@ -274,7 +274,7 @@ impl<S: Record> FieldPtr<S> for Ptr<S> {
             PtrKind::Field(_, _, FieldShape::Single) => {
                 self.field_ptr(get, get_mut, offset).decay()
             }
-            _ => self.elems_of(get, get_mut, offset(&S::OFFSETS)),
+            _ => self.elems_of(get, get_mut, offset(&S::OFFSETS), true),
         }
     }
 }
@@ -290,7 +290,8 @@ impl<S: Record> Ptr<S> {
     // A pointer to the first element of the array or vector that `get` gives
     // in the struct that self points to, which is at byte `offset` of the
     // struct. The pointer reaches the array or vector through the Value that
-    // holds the struct, or else through self.
+    // holds the struct, or else through self. `inline` tells if the elements
+    // are in the memory of the struct, as those of an array are.
     // The projection of an array of structs takes the array as a Box, the
     // contents of its Value.
     #[allow(clippy::borrowed_box)]
@@ -300,6 +301,7 @@ impl<S: Record> Ptr<S> {
         get: impl Fn(&S) -> &C + 'static,
         get_mut: impl Fn(&mut S) -> &mut C + 'static,
         offset: usize,
+        inline: bool,
     ) -> Ptr<T>
     where
         C: AsRef<[T]> + AsMut<[T]> + 'static,
@@ -318,18 +320,21 @@ impl<S: Record> Ptr<S> {
                 move |s: &S| get(s).as_ref(),
                 move |s: &mut S| get_mut(s).as_mut(),
                 address(w.as_ptr() as *const ()),
+                inline,
             )),
             PtrKind::StackArray(w) | PtrKind::HeapArray(w) => Rc::new(InValue::new(
                 w,
                 move |a: &Box<[S]>| get(&a[idx]).as_ref(),
                 move |a: &mut Box<[S]>| get_mut(&mut a[idx]).as_mut(),
                 address(w.as_ptr() as *const ()),
+                inline,
             )),
             PtrKind::StackVec(w) | PtrKind::HeapVec(w) => Rc::new(InValue::new(
                 w,
                 move |v: &Vec<S>| get(&v[idx]).as_ref(),
                 move |v: &mut Vec<S>| get_mut(&mut v[idx]).as_mut(),
                 address(w.as_ptr() as *const ()),
+                inline,
             )),
             _ => Rc::new(FieldOf::new(
                 self.clone(),
@@ -355,11 +360,13 @@ struct InValue<R, G, M> {
     get_mut: M,
     // The address of the field, for comparisons.
     address: usize,
+    // Whether the elements are in the memory of the struct.
+    inline: bool,
 }
 
 impl<R, G, M> InValue<R, G, M> {
     #[inline]
-    fn new<T>(root: &Weak<RefCell<R>>, get: G, get_mut: M, address: usize) -> Self
+    fn new<T>(root: &Weak<RefCell<R>>, get: G, get_mut: M, address: usize, inline: bool) -> Self
     where
         G: Fn(&R) -> &[T],
         M: Fn(&mut R) -> &mut [T],
@@ -369,6 +376,7 @@ impl<R, G, M> InValue<R, G, M> {
             get,
             get_mut,
             address,
+            inline,
         }
     }
 }
@@ -403,6 +411,11 @@ where
 
     fn address(&self) -> usize {
         self.address
+    }
+
+    fn struct_root(&self) -> Option<usize> {
+        self.inline
+            .then_some(self.root.as_ptr() as *const () as usize)
     }
 }
 
@@ -445,7 +458,7 @@ where
                 .decay(),
             _ => self
                 .base
-                .elems_of(self.get, self.get_mut, (self.offset)(&S::OFFSETS)),
+                .elems_of(self.get, self.get_mut, (self.offset)(&S::OFFSETS), false),
         }
     }
 }
@@ -1584,6 +1597,70 @@ mod tests {
         assert_eq!(arr.offset(2).read(), 3);
         let v: Ptr<i32> = field_ref!(s, v).as_pointer();
         assert_eq!(v.offset(1).read(), 6);
+    }
+
+    #[derive(Clone, Default, Record, ByteRepr)]
+    #[byte_size(44)]
+    struct Adjacent {
+        #[offset(0)]
+        #[byte_size(8)]
+        a: Box<[i32]>,
+        #[offset(8)]
+        #[byte_size(8)]
+        b: Box<[i32]>,
+        #[offset(16)]
+        #[byte_size(24)]
+        v: Vec<i32>,
+        #[offset(40)]
+        c: i32,
+    }
+
+    #[derive(Default, Record, ByteRepr)]
+    #[byte_size(48)]
+    struct HoldsAdjacent {
+        #[offset(0)]
+        n: i32,
+        #[offset(4)]
+        #[byte_size(44)]
+        adj: Adjacent,
+    }
+
+    fn adjacent() -> Adjacent {
+        Adjacent {
+            a: vec![1, 2].into_boxed_slice(),
+            b: vec![3, 4].into_boxed_slice(),
+            v: vec![5, 6, 7, 8, 9, 10],
+            c: 11,
+        }
+    }
+
+    fn check_adjacent(s: Ptr<Adjacent>) {
+        // One past the end of an array field is the next field.
+        let a: Ptr<i32> = array_field_ptr!(s, a);
+        let b: Ptr<i32> = array_field_ptr!(s, b);
+        assert_eq!(a.offset(2), b);
+        assert!(a.offset(2) <= b && a.offset(2) >= b);
+        assert!(a.offset(1) < b && b < a.offset(3));
+        assert_ne!(a.offset(1), b);
+        assert_eq!(b.offset(-2), a);
+        // The elements of a vector are not in the struct.
+        let v: Ptr<i32> = field_ref!(s, v).as_pointer();
+        assert_ne!(v.offset(6), field_ptr!(s, c));
+    }
+
+    #[test]
+    fn adjacent_array_fields() {
+        let s: Value<Adjacent> = Rc::new(RefCell::new(adjacent()));
+        check_adjacent(s.as_pointer());
+        let held: Value<HoldsAdjacent> = Rc::new(RefCell::new(HoldsAdjacent {
+            n: 0,
+            adj: adjacent(),
+        }));
+        check_adjacent(field_ptr!(held, adj));
+        // Fields of different structs are not equal.
+        let other: Value<Adjacent> = Rc::new(RefCell::new(adjacent()));
+        let a: Ptr<i32> = array_field_ptr!(s, a);
+        assert_ne!(a.offset(2), array_field_ptr!(other, b));
     }
 
     #[test]

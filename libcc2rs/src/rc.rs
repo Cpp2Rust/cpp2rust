@@ -51,6 +51,12 @@ pub trait SliceParent<T> {
     fn borrow_slice_mut<'a>(&self, root: &'a SliceRoot) -> RefMut<'a, [T]>;
     fn address(&self) -> usize;
 
+    // The address of the allocation of the struct that the elements are in,
+    // if they are in its memory, as the elements of an array field are.
+    fn struct_root(&self) -> Option<usize> {
+        None
+    }
+
     // Calls `f` with element `idx`.
     fn with_elem(&self, idx: usize, f: &mut dyn FnMut(&T)) {
         let root = self.root();
@@ -342,6 +348,27 @@ impl<T> PtrKind<T> {
             PtrKind::Reinterpreted(data) => data.alloc.address(),
         }
     }
+
+    // The address of the allocation of the struct that the pointer points
+    // into, if it points to a field or to an element of an array field, which
+    // are at their address in the struct.
+    fn struct_root(&self) -> Option<usize> {
+        match self {
+            PtrKind::Field(root, _, FieldShape::Single | FieldShape::Array) => {
+                Some(root.as_ptr() as *const () as usize)
+            }
+            PtrKind::Nested(parent) => parent.struct_root(),
+            _ => None,
+        }
+    }
+
+    // Whether both pointers point into the same struct, where they are
+    // compared by their address, e.g., one past the end of an array field is
+    // the next field.
+    fn in_same_struct(&self, other: &Self) -> bool {
+        self.struct_root()
+            .is_some_and(|root| other.struct_root() == Some(root))
+    }
 }
 
 impl<T> Eq for PtrKind<T> {}
@@ -390,7 +417,13 @@ impl<T> Clone for Ptr<T> {
 
 impl<T> PartialEq for Ptr<T> {
     fn eq(&self, other: &Self) -> bool {
-        self.byte_offset() == other.byte_offset() && self.kind == other.kind
+        if self.byte_offset() == other.byte_offset() {
+            return self.kind == other.kind;
+        }
+        match (&self.kind, &other.kind) {
+            (PtrKind::Nested(a), PtrKind::Nested(b)) if Rc::ptr_eq(a, b) => false,
+            (a, b) => a.in_same_struct(b) && self.address() == other.address(),
+        }
     }
 }
 
@@ -400,6 +433,9 @@ impl<T> Ord for Ptr<T> {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         match self.kind.partial_cmp(&other.kind) {
             Some(std::cmp::Ordering::Equal) | None => self.byte_offset().cmp(&other.byte_offset()),
+            Some(_) if self.kind.in_same_struct(&other.kind) => {
+                self.address().cmp(&other.address())
+            }
             Some(ord) => ord,
         }
     }
