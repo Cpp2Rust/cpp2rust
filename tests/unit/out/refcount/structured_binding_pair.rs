@@ -6,15 +6,10 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn make_std_pair_0(x: i32) -> (Value<i32>, Value<bool>) {
-    let x: Value<i32> = Rc::new(RefCell::new(x));
+pub fn make_std_pair_0(mut x: i32) -> (Value<i32>, Value<bool>) {
     return (
-        Rc::new(RefCell::new(
-            (*x.borrow()).try_into().expect("failed conversion"),
-        )),
-        Rc::new(RefCell::new(
-            ((*x.borrow()) > 0).try_into().expect("failed conversion"),
-        )),
+        Rc::new(RefCell::new(x.try_into().expect("failed conversion"))),
+        Rc::new(RefCell::new((x > 0).try_into().expect("failed conversion"))),
     );
 }
 pub fn main() {
@@ -41,8 +36,7 @@ fn main_0() -> i32 {
     let __decomp_3: Ptr<(Value<i32>, Value<i32>)> = p.as_pointer();
     x.write(3);
     {
-        let _ptr = y.clone();
-        _ptr.write(_ptr.read() + 4)
+        y.with_mut(|__v| *__v = *__v + 4)
     };
     assert!(((*(*p.borrow()).0.borrow()) == 3));
     assert!(((*(*p.borrow()).1.borrow()) == 6));

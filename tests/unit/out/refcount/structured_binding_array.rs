@@ -12,20 +12,19 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2, 3])));
-    let __decomp_0: Value<Box<[i32]>> =
-        Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 3, _>(
-            |__i: usize| (*arr.borrow())[(__i) as usize],
-        ))));
-    (*__decomp_0.borrow_mut())[(0) as usize] = 10;
-    assert!(((*__decomp_0.borrow())[(0) as usize] == 10));
-    assert!(((*__decomp_0.borrow())[(1) as usize] == 2));
-    assert!(((*__decomp_0.borrow())[(2) as usize] == 3));
+    let mut __decomp_0: [i32; 3] = Box::new(std::array::from_fn::<_, 3, _>(|__i: usize| {
+        (*arr.borrow())[(__i) as usize]
+    }));
+    __decomp_0[(0) as usize] = 10;
+    assert!((__decomp_0[(0) as usize] == 10));
+    assert!((__decomp_0[(1) as usize] == 2));
+    assert!((__decomp_0[(2) as usize] == 3));
     assert!(((*arr.borrow())[(0) as usize] == 1));
-    let __decomp_1: Ptr<i32> = (arr.as_pointer() as Ptr<i32>);
-    (__decomp_1).offset((0) as isize).write(7);
+    let __decomp_1: Ptr<i32> = arr.as_pointer();
+    elem!((__decomp_1), 0).write(7);
     {
-        let _ptr = (__decomp_1).offset((2) as isize);
-        _ptr.write(_ptr.read() + ((__decomp_1).offset((1) as isize).read()))
+        let __rhs = (elem!((__decomp_1), 1).read());
+        elem!((__decomp_1), 2).with_mut(|__v| *__v = *__v + __rhs)
     };
     assert!(((*arr.borrow())[(0) as usize] == 7));
     assert!(((*arr.borrow())[(2) as usize] == 5));

@@ -12,41 +12,35 @@ thread_local!(
 thread_local!(
     pub static moves_1: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, Default)]
+#[byte_size(8)]
 pub struct Movable {
-    pub x: Value<i32>,
-    pub y: Value<i32>,
+    #[offset(0)]
+    pub x: i32,
+    #[offset(4)]
+    pub y: i32,
 }
 impl Movable {
-    pub fn new(x: i32, y: i32) -> Self {
-        let x: Value<i32> = Rc::new(RefCell::new(x));
-        let y: Value<i32> = Rc::new(RefCell::new(y));
-        let __this: Value<Movable> = Rc::new(RefCell::new(Self {
-            x: Rc::new(RefCell::new((*x.borrow()))),
-            y: Rc::new(RefCell::new((*y.borrow()))),
-        }));
-        let this: Ptr<Movable> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    pub fn new(mut x: i32, mut y: i32) -> Self {
+        Self { x: x, y: y }
     }
     pub fn copy_from(other: Ptr<Movable>) -> Self {
-        let __this: Value<Movable> = Rc::new(RefCell::new(Self {
-            x: Rc::new(RefCell::new((*(*other.upgrade().deref()).x.borrow()))),
-            y: Rc::new(RefCell::new((*(*other.upgrade().deref()).y.borrow()))),
-        }));
-        let this: Ptr<Movable> = __this.as_pointer();
+        let __this: Movable = Self {
+            x: other.with(|__s| __s.x),
+            y: other.with(|__s| __s.y),
+        };
         (*copies_0.with(Value::clone).borrow_mut()).prefix_inc();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        __this
     }
     pub fn move_from(other: Ptr<Movable>) -> Self {
-        let __this: Value<Movable> = Rc::new(RefCell::new(Self {
-            x: Rc::new(RefCell::new((*(*other.upgrade().deref()).x.borrow()))),
-            y: Rc::new(RefCell::new((*(*other.upgrade().deref()).y.borrow()))),
-        }));
-        let this: Ptr<Movable> = __this.as_pointer();
-        (*(*other.upgrade().deref()).x.borrow_mut()) = 0;
-        (*(*other.upgrade().deref()).y.borrow_mut()) = 0;
+        let __this: Movable = Self {
+            x: other.with(|__s| __s.x),
+            y: other.with(|__s| __s.y),
+        };
+        field!(other, x).write(0);
+        field!(other, y).write(0);
         (*moves_1.with(Value::clone).borrow_mut()).prefix_inc();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        __this
     }
 }
 impl Clone for Movable {
@@ -58,50 +52,15 @@ impl Clone for Movable {
         Movable::copy_from(__src.as_pointer())
     }
 }
-impl ByteRepr for Movable {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.x.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.y.borrow()).to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            x: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            y: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
-        }
-    }
-}
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(48)]
 pub struct Holder {
+    #[offset(0)]
+    #[byte_size(24)]
     pub xs: Value<Vec<i32>>,
+    #[offset(24)]
+    #[byte_size(24)]
     pub ys: Value<Vec<i32>>,
-}
-impl Clone for Holder {
-    fn clone(&self) -> Self {
-        let __this: Value<Holder> = Rc::new(RefCell::new(Self {
-            xs: Rc::new(RefCell::new((*self.xs.borrow()).clone())),
-            ys: Rc::new(RefCell::new((*self.ys.borrow()).clone())),
-        }));
-        let this: Ptr<Holder> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for Holder {
-    fn byte_size() -> usize {
-        48
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.xs.borrow()).to_bytes(&mut buf[0..24]);
-        (*self.ys.borrow()).to_bytes(&mut buf[24..48]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            xs: Rc::new(RefCell::new(<Vec<i32>>::from_bytes(&buf[0..24]))),
-            ys: Rc::new(RefCell::new(<Vec<i32>>::from_bytes(&buf[24..48]))),
-        }
-    }
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -109,35 +68,24 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let m: Value<Movable> = Rc::new(RefCell::new(Movable::new({ 3 }, { 4 })));
-    let __decomp_2: Value<Movable> = Rc::new(RefCell::new(Movable::move_from({ m.as_pointer() })));
+    let mut __decomp_2: Movable = Movable::move_from({ m.as_pointer() });
     assert!((moves_1.with(|rc| *rc.borrow()) == 1));
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
-    assert!(((*(*__decomp_2.borrow()).x.borrow()) == 3));
-    assert!(((*(*__decomp_2.borrow()).y.borrow()) == 4));
-    assert!(((*(*m.borrow()).x.borrow()) == 0));
-    assert!(((*(*m.borrow()).y.borrow()) == 0));
+    assert!((__decomp_2.x == 3));
+    assert!((__decomp_2.y == 4));
+    assert!(({ (*m.borrow()).x } == 0));
+    assert!(({ (*m.borrow()).y } == 0));
     let h: Value<Holder> = Rc::new(RefCell::new(Holder {
         xs: Rc::new(RefCell::new(vec![1, 2, 3])),
         ys: Rc::new(RefCell::new(vec![4, 5])),
     }));
-    let __decomp_3: Value<Holder> =
-        Rc::new(RefCell::new(({ HolderImpl::extract(&h.as_pointer()) })));
-    assert!(((*(*__decomp_3.borrow()).xs.borrow()).len() == 3_usize));
-    assert!(((*(*__decomp_3.borrow()).ys.borrow()).len() == 2_usize));
-    assert!(
-        ((((*__decomp_3.borrow()).xs.as_pointer() as Ptr<i32>)
-            .offset(2_usize)
-            .read())
-            == 3)
-    );
-    assert!(
-        ((((*__decomp_3.borrow()).ys.as_pointer() as Ptr<i32>)
-            .offset(0_usize)
-            .read())
-            == 4)
-    );
-    assert!((*(*h.borrow()).xs.borrow()).is_empty());
-    assert!((*(*h.borrow()).ys.borrow()).is_empty());
+    let mut __decomp_3: Holder = ({ HolderImpl::extract(&h.as_pointer()) });
+    assert!(((*__decomp_3.xs.borrow()).len() == 3_usize));
+    assert!(((*__decomp_3.ys.borrow()).len() == 2_usize));
+    assert!(((elem!((__decomp_3.xs.as_pointer() as Ptr<i32>), 2_usize).read()) == 3));
+    assert!(((elem!((__decomp_3.ys.as_pointer() as Ptr<i32>), 0_usize).read()) == 4));
+    assert!((*{ (*h.borrow()).xs.clone() }.borrow()).is_empty());
+    assert!((*{ (*h.borrow()).ys.clone() }.borrow()).is_empty());
     return 0;
 }
 pub trait HolderImpl {
@@ -147,10 +95,10 @@ impl HolderImpl for Ptr<Holder> {
     fn extract(&self) -> Holder {
         return Holder {
             xs: Rc::new(RefCell::new(std::mem::take(
-                &mut (*(*(*self).upgrade().deref()).xs.borrow_mut()),
+                &mut (*(*self).with(|__s| __s.xs.clone()).borrow_mut()),
             ))),
             ys: Rc::new(RefCell::new(std::mem::take(
-                &mut (*(*(*self).upgrade().deref()).ys.borrow_mut()),
+                &mut (*(*self).with(|__s| __s.ys.clone()).borrow_mut()),
             ))),
         };
     }

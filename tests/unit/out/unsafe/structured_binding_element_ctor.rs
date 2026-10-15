@@ -9,7 +9,7 @@ use std::rc::Rc;
 pub static mut copies_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 pub static mut moves_1: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
-#[derive(VaArg, Default)]
+#[derive(VaArg, FnPtrArg, MoveCtorUnsafe, Default)]
 pub struct Elem {
     pub v: i32,
 }
@@ -40,7 +40,7 @@ impl Clone for Elem {
     }
 }
 #[repr(C)]
-#[derive(Clone, VaArg, Default)]
+#[derive(Clone, VaArg, FnPtrArg, Default)]
 pub struct Two {
     pub a: Elem,
     pub b: Elem,
