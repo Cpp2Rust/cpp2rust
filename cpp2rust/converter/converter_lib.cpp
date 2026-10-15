@@ -998,6 +998,13 @@ std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
     }
   }
 
+  if (clang::isa<clang::DecompositionDecl>(decl)) {
+    return std::format(
+        "__decomp_{}",
+        type_mapping.try_emplace(GetID(decl), type_mapping.size())
+            .first->second);
+  }
+
   // Anonymous record or enum
   if (name.empty() &&
       (clang::isa<clang::RecordDecl>(decl) ||

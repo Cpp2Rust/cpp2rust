@@ -3273,8 +3273,14 @@ bool Converter::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
     computed_expr_type_ = ComputedExprType::FreshValue;
     return false;
   }
+
   if (auto init = AsLambdaUncapturedConstant(curr_function_, expr)) {
     Convert(init);
+    return false;
+  }
+
+  if (auto *binding = clang::dyn_cast<clang::BindingDecl>(expr->getDecl())) {
+    Convert(binding->getBinding());
     return false;
   }
   ConvertDeclRefValue(expr, expr->getDecl());
