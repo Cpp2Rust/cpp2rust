@@ -528,12 +528,21 @@ IsConvertibleImplicitMemberParent(const clang::CXXRecordDecl *decl) {
          decl->getNumBases() == 0;
 }
 
+static bool HasFieldWithMoveFrom(const clang::RecordDecl *decl) {
+  return llvm::any_of(decl->fields(), [](const clang::FieldDecl *field) {
+    auto *record = field->getType()->getAsRecordDecl();
+    return record && HasMoveFromConstructor(record);
+  });
+}
+
 bool IsConvertibleMoveConstructor(const clang::CXXConstructorDecl *ctor) {
-  return ctor->isMoveConstructor() && !ctor->isDeleted() &&
-         IsConvertibleImplicitMemberParent(ctor->getParent()) &&
-         (ctor->isUserProvided() ||
-          !HasDefaultedCopyConstructor(ctor->getParent())) &&
-         ctor->hasBody();
+  auto *parent = ctor->getParent();
+  if (!ctor->isMoveConstructor() || ctor->isDeleted() || !ctor->hasBody() ||
+      !IsConvertibleImplicitMemberParent(parent)) {
+    return false;
+  }
+  return ctor->isUserProvided() || !HasDefaultedCopyConstructor(parent) ||
+         HasFieldWithMoveFrom(parent);
 }
 
 bool HasMoveFromConstructor(const clang::RecordDecl *decl) {
@@ -544,12 +553,23 @@ bool HasMoveFromConstructor(const clang::RecordDecl *decl) {
          });
 }
 
+static bool HasFieldWithMoveAssign(const clang::RecordDecl *decl) {
+  return llvm::any_of(decl->fields(), [](const clang::FieldDecl *field) {
+    auto *record = field->getType()->getAsCXXRecordDecl();
+    return record && llvm::any_of(record->methods(), [](auto *method) {
+             return IsConvertibleMoveAssignment(method);
+           });
+  });
+}
+
 bool IsConvertibleMoveAssignment(const clang::CXXMethodDecl *method) {
-  return method->isMoveAssignmentOperator() && !method->isDeleted() &&
-         IsConvertibleImplicitMemberParent(method->getParent()) &&
-         (method->isUserProvided() ||
-          !HasDefaultedCopyAssignment(method->getParent())) &&
-         method->hasBody();
+  auto *parent = method->getParent();
+  if (!method->isMoveAssignmentOperator() || method->isDeleted() ||
+      !method->hasBody() || !IsConvertibleImplicitMemberParent(parent)) {
+    return false;
+  }
+  return method->isUserProvided() || !HasDefaultedCopyAssignment(parent) ||
+         HasFieldWithMoveAssign(parent);
 }
 
 bool IsConvertibleImplicitMember(const clang::CXXMethodDecl *method) {

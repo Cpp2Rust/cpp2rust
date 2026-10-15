@@ -40,10 +40,19 @@ impl Clone for Elem {
     }
 }
 #[repr(C)]
-#[derive(Clone, VaArg, FnPtrArg, Default)]
+#[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, Default)]
 pub struct Two {
     pub a: Elem,
     pub b: Elem,
+}
+impl Two {
+    pub unsafe fn move_from(_a0: *mut Two) -> Self {
+        let mut this = Self {
+            a: Elem::move_from({ &mut (*_a0).a }),
+            b: Elem::move_from({ &mut (*_a0).b }),
+        };
+        this
+    }
 }
 pub unsafe fn make_two_2() -> Two {
     return Two {
@@ -74,7 +83,7 @@ unsafe fn main_0() -> i32 {
     assert!((((*__decomp_4).a.v) == (1)));
     (*__decomp_4).a.v = 50;
     assert!(((t.a.v) == (50)));
-    let mut __decomp_5: Two = t.clone();
+    let mut __decomp_5: Two = Two::move_from({ &mut t });
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut moves_1)) == ((base_moves) + (2))));
     assert!(((__decomp_5.a.v) == (1050)));
     assert!(((__decomp_5.b.v) == (1002)));

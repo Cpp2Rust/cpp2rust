@@ -44,7 +44,7 @@ impl Clone for Elem {
         Elem::copy_from(__src.as_pointer())
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, Default)]
 #[byte_size(8)]
 pub struct Two {
     #[offset(0)]
@@ -53,6 +53,14 @@ pub struct Two {
     #[offset(4)]
     #[byte_size(4)]
     pub b: Elem,
+}
+impl Two {
+    pub fn move_from(_a0: Ptr<Two>) -> Self {
+        Self {
+            a: Elem::move_from({ field_ptr!(_a0, a) }),
+            b: Elem::move_from({ field_ptr!(_a0, b) }),
+        }
+    }
 }
 pub fn make_two_2() -> Two {
     return Two {
@@ -81,7 +89,7 @@ fn main_0() -> i32 {
     assert!(({ (*__decomp_4.upgrade().deref()).a.v } == 1));
     field!(field!(__decomp_4, a), v).write(50);
     assert!(({ (*t.borrow()).a.v } == 50));
-    let __decomp_5: Value<Two> = Rc::new(RefCell::new((*t.borrow()).clone()));
+    let __decomp_5: Value<Two> = Rc::new(RefCell::new(Two::move_from({ t.as_pointer() })));
     assert!((moves_1.with(|rc| *rc.borrow()) == (base_moves + 2)));
     assert!(({ (*__decomp_5.borrow()).a.v } == 1050));
     assert!(({ (*__decomp_5.borrow()).b.v } == 1002));
