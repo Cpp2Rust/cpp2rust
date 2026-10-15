@@ -37,3 +37,19 @@ unsafe fn f15<T1, T2>(a0: (T1, T2)) -> T2 {
 unsafe fn f16<T1, T2>(a0: (T1, T2)) -> T1 {
     a0.0
 }
+
+unsafe fn f17<T1, T2>(a0: (T1, T2)) -> T1 {
+    a0.0
+}
+
+unsafe fn f18<T1, T2>(a0: (T1, T2)) -> T2 {
+    a0.1
+}
+
+unsafe fn f19<T1, T2>(a0: (T1, T2)) -> T1 {
+    a0.0
+}
+
+unsafe fn f20<T1, T2>(a0: (T1, T2)) -> T2 {
+    a0.1
+}
