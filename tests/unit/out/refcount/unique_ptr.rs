@@ -122,8 +122,8 @@ pub fn RndStuff_2() {
     let mut p3_0: Ptr<Pair> = (*x3.borrow()).as_pointer();
     let mut i: i32 = 0;
     'loop_: while (i < 10) {
-        assert!(({ (*elem!(p3_0, i).upgrade().deref()).x } == 1));
-        assert!(({ (*elem!(p3_0, i).upgrade().deref()).y } == 2));
+        assert!((elem!(p3_0, i).with(|__s| __s.x) == 1));
+        assert!((elem!(p3_0, i).with(|__s| __s.y) == 2));
         ({
             PairImpl::inc(
                 &(*x3.borrow())
@@ -134,8 +134,8 @@ pub fn RndStuff_2() {
                 10,
             )
         });
-        assert!(({ (*elem!(p3_0, i).upgrade().deref()).x } == 11));
-        assert!(({ (*elem!(p3_0, i).upgrade().deref()).y } == 12));
+        assert!((elem!(p3_0, i).with(|__s| __s.x) == 11));
+        assert!((elem!(p3_0, i).with(|__s| __s.y) == 12));
         i.prefix_inc();
     }
     (x3.as_pointer() as Ptr<Option<Value<Box<[Pair]>>>>).write(
@@ -158,8 +158,8 @@ pub fn RndStuff_2() {
     assert!(({ (p3_0).clone() } != { (p3_1).clone() }));
     let mut i: i32 = 0;
     'loop_: while (i < 50) {
-        assert!(({ (*elem!(p3_1, i).upgrade().deref()).x } == -1_i32));
-        assert!(({ (*elem!(p3_1, i).upgrade().deref()).y } == -2_i32));
+        assert!((elem!(p3_1, i).with(|__s| __s.x) == -1_i32));
+        assert!((elem!(p3_1, i).with(|__s| __s.y) == -2_i32));
         ({
             PairImpl::inc(
                 &(*x3.borrow())
@@ -170,8 +170,8 @@ pub fn RndStuff_2() {
                 -10_i32,
             )
         });
-        assert!(({ (*elem!(p3_1, i).upgrade().deref()).x } == -11_i32));
-        assert!(({ (*elem!(p3_1, i).upgrade().deref()).y } == -12_i32));
+        assert!((elem!(p3_1, i).with(|__s| __s.x) == -11_i32));
+        assert!((elem!(p3_1, i).with(|__s| __s.y) == -12_i32));
         i.prefix_inc();
     }
 }

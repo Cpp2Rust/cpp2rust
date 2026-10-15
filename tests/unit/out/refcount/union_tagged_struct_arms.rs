@@ -47,12 +47,12 @@ pub struct anon_3 {
     #[offset(32)]
     pub width: i32,
 }
-#[derive(VaArg, FnPtrArg, ByteRepr, DeepClone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, Clone)]
 #[byte_size(40)]
 pub struct anon_0 {
     #[offset(0)]
     #[byte_size(40)]
-    __bytes: Value<Box<[u8]>>,
+    __bytes: Box<[u8]>,
 }
 impl anon_0 {
     pub fn list(this: Ptr<Self>) -> Ptr<anon_1> {
@@ -68,7 +68,7 @@ impl anon_0 {
 impl Default for anon_0 {
     fn default() -> Self {
         anon_0 {
-            __bytes: Rc::new(RefCell::new(Box::from([0u8; 40]))),
+            __bytes: Box::from([0u8; 40]),
         }
     }
 }

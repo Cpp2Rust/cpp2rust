@@ -17,12 +17,12 @@ pub struct Inner {
 pub fn sum_inner_0(mut i: Ptr<Inner>) -> i32 {
     return ({ i.with(|__s| __s.a) } + { i.with(|__s| __s.b) });
 }
-#[derive(VaArg, FnPtrArg, ByteRepr, DeepClone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, Clone)]
 #[byte_size(16)]
 pub struct anon_1 {
     #[offset(0)]
     #[byte_size(16)]
-    __bytes: Value<Box<[u8]>>,
+    __bytes: Box<[u8]>,
 }
 impl anon_1 {
     pub fn inner(this: Ptr<Self>) -> Ptr<Inner> {
@@ -35,7 +35,7 @@ impl anon_1 {
 impl Default for anon_1 {
     fn default() -> Self {
         anon_1 {
-            __bytes: Rc::new(RefCell::new(Box::from([0u8; 16]))),
+            __bytes: Box::from([0u8; 16]),
         }
     }
 }

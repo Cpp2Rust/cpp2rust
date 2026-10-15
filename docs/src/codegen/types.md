@@ -38,9 +38,9 @@ pub struct Item {
     #[offset(0)]
     pub id: i32,
     #[offset(4)]
-    pub name: Value<Box<[u8]>>,
+    pub name: Box<[u8]>,
     #[offset(16)]
-    pub refs: Value<Vec<i32>>,
+    pub refs: Vec<i32>,
 }
 pub fn count_0(item: Item) -> i32 {
     let item: Value<Item> = Rc::new(RefCell::new(item));
@@ -48,9 +48,8 @@ pub fn count_0(item: Item) -> i32 {
 }
 ```
 
-Fields are stored inline in their struct, so a whole struct lives in a single
-`Value`, like the elements of an array; only arrays and vectors are `Value`s of
-their own (see [Boxing](types/boxing.md)). A pointer to a field records the
-allocation of the struct plus the byte offset of the field in it, which the
-`#[offset(N)]` attributes give (see
-[Pointers to fields](../runtime/rc.md#pointers-to-fields)).
+Fields are stored inline in their struct, arrays and vectors included, so a
+whole struct lives in a single `Value`, like the elements of an array (see
+[Boxing](types/boxing.md)). A pointer to a field records the allocation of the
+struct plus the byte offset of the field in it, which the `#[offset(N)]`
+attributes give (see [Pointers to fields](../runtime/rc.md#pointers-to-fields)).

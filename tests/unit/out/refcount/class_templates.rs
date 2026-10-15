@@ -6,26 +6,26 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(24)]
 pub struct MyContainer_int_ {
     #[offset(0)]
     #[byte_size(24)]
-    vec_: Value<Vec<i32>>,
+    vec_: Vec<i32>,
 }
-#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(24)]
 pub struct MyContainer_char_ {
     #[offset(0)]
     #[byte_size(24)]
-    vec_: Value<Vec<i8>>,
+    vec_: Vec<i8>,
 }
-#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(24)]
 pub struct MyContainer_float_ {
     #[offset(0)]
     #[byte_size(24)]
-    vec_: Value<Vec<f32>>,
+    vec_: Vec<f32>,
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(2)]
@@ -112,7 +112,7 @@ fn main_0() -> i32 {
         let __a1 = Elem { i: 2 };
         ev.push(__a1)
     };
-    assert!(({ ev[0_usize].i } == 2));
+    assert!((ev[0_usize].i == 2));
     assert!(((({ Boxed_short_::twice(2_i16,) }) as i32) == 4));
     let oi: Value<Outer_int_> = Rc::new(RefCell::new(Outer_int_ { v: 3 }));
     assert!(
@@ -225,22 +225,22 @@ pub trait MyContainer_char_Impl {
 }
 impl MyContainer_char_Impl for Ptr<MyContainer_char_> {
     fn empty(&self) -> bool {
-        return (*(*self).with(|__s| __s.vec_.clone()).borrow()).is_empty();
+        return (*(*self).upgrade().deref()).vec_.is_empty();
     }
     fn size(&self) -> usize {
-        return (*(*self).with(|__s| __s.vec_.clone()).borrow()).len();
+        return (*(*self).upgrade().deref()).vec_.len();
     }
     fn back_4(&self) -> Ptr<i8> {
-        return ((*self).with(|__s| __s.vec_.as_pointer()) as Ptr<i8>).to_last();
+        return (field_ref!((*self), vec_).as_pointer() as Ptr<i8>).to_last();
     }
     fn pop_back(&self) {
-        (*(*self).with(|__s| __s.vec_.clone()).borrow_mut()).pop();
+        field!((*self), vec_).with_mut(|__v: &mut Vec<i8>| __v.pop());
         return;
     }
     fn push_back(&self, item: Ptr<i8>) {
         {
             let a0_clone = (item.read()).clone();
-            (*(*self).with(|__s| __s.vec_.clone()).borrow_mut()).push(a0_clone)
+            field!((*self), vec_).with_mut(|__v: &mut Vec<i8>| __v.push(a0_clone))
         };
     }
 }
@@ -256,22 +256,22 @@ pub trait MyContainer_float_Impl {
 }
 impl MyContainer_float_Impl for Ptr<MyContainer_float_> {
     fn empty(&self) -> bool {
-        return (*(*self).with(|__s| __s.vec_.clone()).borrow()).is_empty();
+        return (*(*self).upgrade().deref()).vec_.is_empty();
     }
     fn size(&self) -> usize {
-        return (*(*self).with(|__s| __s.vec_.clone()).borrow()).len();
+        return (*(*self).upgrade().deref()).vec_.len();
     }
     fn back_4(&self) -> Ptr<f32> {
-        return ((*self).with(|__s| __s.vec_.as_pointer()) as Ptr<f32>).to_last();
+        return (field_ref!((*self), vec_).as_pointer() as Ptr<f32>).to_last();
     }
     fn pop_back(&self) {
-        (*(*self).with(|__s| __s.vec_.clone()).borrow_mut()).pop();
+        field!((*self), vec_).with_mut(|__v: &mut Vec<f32>| __v.pop());
         return;
     }
     fn push_back(&self, item: Ptr<f32>) {
         {
             let a0_clone = (item.read()).clone();
-            (*(*self).with(|__s| __s.vec_.clone()).borrow_mut()).push(a0_clone)
+            field!((*self), vec_).with_mut(|__v: &mut Vec<f32>| __v.push(a0_clone))
         };
     }
 }
@@ -287,22 +287,22 @@ pub trait MyContainer_int_Impl {
 }
 impl MyContainer_int_Impl for Ptr<MyContainer_int_> {
     fn empty(&self) -> bool {
-        return (*(*self).with(|__s| __s.vec_.clone()).borrow()).is_empty();
+        return (*(*self).upgrade().deref()).vec_.is_empty();
     }
     fn size(&self) -> usize {
-        return (*(*self).with(|__s| __s.vec_.clone()).borrow()).len();
+        return (*(*self).upgrade().deref()).vec_.len();
     }
     fn back_4(&self) -> Ptr<i32> {
-        return ((*self).with(|__s| __s.vec_.as_pointer()) as Ptr<i32>).to_last();
+        return (field_ref!((*self), vec_).as_pointer() as Ptr<i32>).to_last();
     }
     fn pop_back(&self) {
-        (*(*self).with(|__s| __s.vec_.clone()).borrow_mut()).pop();
+        field!((*self), vec_).with_mut(|__v: &mut Vec<i32>| __v.pop());
         return;
     }
     fn push_back(&self, item: Ptr<i32>) {
         {
             let a0_clone = (item.read()).clone();
-            (*(*self).with(|__s| __s.vec_.clone()).borrow_mut()).push(a0_clone)
+            field!((*self), vec_).with_mut(|__v: &mut Vec<i32>| __v.push(a0_clone))
         };
     }
 }

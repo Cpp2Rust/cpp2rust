@@ -28,9 +28,8 @@ fn main_0() -> i32 {
         let _other: Ptr<Item> = (arr.offset((1) as isize));
         ItemImpl::foo(&arr.offset((0) as isize), _other)
     });
-    let mut result: i32 = ({ (*elem!(arr, 0).upgrade().deref()).value } + {
-        (*elem!(arr, 1).upgrade().deref()).value
-    });
+    let mut result: i32 =
+        (elem!(arr, 0).with(|__s| __s.value) + elem!(arr, 1).with(|__s| __s.value));
     arr.delete();
     assert!((result == 11));
     return 0;

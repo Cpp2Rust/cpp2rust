@@ -6,31 +6,31 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(16)]
 pub struct record {
     #[offset(0)]
     pub code: u16,
     #[offset(2)]
     #[byte_size(14)]
-    pub pad: Value<Box<[i8]>>,
+    pub pad: Box<[i8]>,
 }
 impl Default for record {
     fn default() -> Self {
         {
             record {
                 code: 0_u16,
-                pad: Rc::new(RefCell::new((0..14).map(|_| 0_i8).collect::<Box<[i8]>>())),
+                pad: (0..14).map(|_| 0_i8).collect::<Box<[i8]>>(),
             }
         }
     }
 }
-#[derive(VaArg, FnPtrArg, ByteRepr, DeepClone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, Clone)]
 #[byte_size(128)]
 pub struct anon_0 {
     #[offset(0)]
     #[byte_size(128)]
-    __bytes: Value<Box<[u8]>>,
+    __bytes: Box<[u8]>,
 }
 impl anon_0 {
     pub fn h(this: Ptr<Self>) -> Ptr<record> {
@@ -43,7 +43,7 @@ impl anon_0 {
 impl Default for anon_0 {
     fn default() -> Self {
         anon_0 {
-            __bytes: Rc::new(RefCell::new(Box::from([0u8; 128]))),
+            __bytes: Box::from([0u8; 128]),
         }
     }
 }
@@ -54,12 +54,12 @@ pub struct inner {
     #[byte_size(128)]
     pub view: anon_0,
 }
-#[derive(VaArg, FnPtrArg, ByteRepr, DeepClone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, Clone)]
 #[byte_size(128)]
 pub struct anon_1 {
     #[offset(0)]
     #[byte_size(128)]
-    __bytes: Value<Box<[u8]>>,
+    __bytes: Box<[u8]>,
 }
 impl anon_1 {
     pub fn h(this: Ptr<Self>) -> Ptr<record> {
@@ -72,7 +72,7 @@ impl anon_1 {
 impl Default for anon_1 {
     fn default() -> Self {
         anon_1 {
-            __bytes: Rc::new(RefCell::new(Box::from([0u8; 128]))),
+            __bytes: Box::from([0u8; 128]),
         }
     }
 }
@@ -108,22 +108,14 @@ fn main_0() -> i32 {
     (*ex.borrow_mut()).variant = 6;
     (*ex.borrow_mut()).len = (16usize as u32);
     field!(anon_1::h(field_ptr!(ex.as_pointer(), body)), code).write(2_u16);
-    elem!(
-        (array_field_ptr!(anon_1::h(field_ptr!(ex.as_pointer(), body)), pad) as Ptr::<i8>),
-        0
-    )
-    .write((('X' as i32) as i8));
+    array_elem!(anon_1::h(field_ptr!(ex.as_pointer(), body)), pad, 0).write((('X' as i32) as i8));
     assert!(
         ((((anon_1::h(field_ptr!(ex.as_pointer(), body)).with(|__s| __s.code) as i32) == 2)
             as i32)
             != 0)
     );
     assert!(
-        (((((elem!(
-            (array_field_ptr!(anon_1::h(field_ptr!(ex.as_pointer(), body)), pad) as Ptr::<i8>),
-            0
-        )
-        .read()) as i32)
+        (((((array_elem!(anon_1::h(field_ptr!(ex.as_pointer(), body)), pad, 0).read()) as i32)
             == ('X' as i32)) as i32)
             != 0)
     );

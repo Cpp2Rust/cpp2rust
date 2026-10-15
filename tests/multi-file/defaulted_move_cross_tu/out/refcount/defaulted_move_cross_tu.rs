@@ -11,26 +11,24 @@ use std::rc::{Rc, Weak};
 pub struct S {
     #[offset(0)]
     #[byte_size(24)]
-    pub v: Value<Vec<i32>>,
+    pub v: Vec<i32>,
     #[offset(24)]
     #[byte_size(8)]
-    pub n: Value<Box<[i32]>>,
+    pub n: Box<[i32]>,
 }
 impl S {
     pub fn new(mut x: i32) -> Self {
         Self {
-            v: Rc::new(RefCell::new(vec![x; (x as usize) as usize])),
-            n: Rc::new(RefCell::new(Box::new([x, (x + 1)]))),
+            v: vec![x; (x as usize) as usize],
+            n: Box::new([x, (x + 1)]),
         }
     }
     pub fn move_from(_a0: Ptr<S>) -> Self {
         Self {
-            v: Rc::new(RefCell::new(std::mem::take(
-                &mut (*{ (*_a0.upgrade().deref()).v.clone() }.borrow_mut()),
-            ))),
-            n: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 2, _>(
-                |__i: usize| (*{ (*_a0.upgrade().deref()).n.clone() }.borrow())[(__i) as usize],
-            )))),
+            v: field!(_a0, v).with_mut(std::mem::take),
+            n: Box::new(std::array::from_fn::<_, 2, _>(|__i: usize| {
+                (*_a0.upgrade().deref()).n[(__i) as usize]
+            })),
         }
     }
 }
@@ -38,18 +36,15 @@ impl Default for S {
     fn default() -> Self {
         {
             S {
-                v: Rc::new(RefCell::new(Default::default())),
-                n: Rc::new(RefCell::new((0..2).map(|_| 0_i32).collect::<Box<[i32]>>())),
+                v: Default::default(),
+                n: (0..2).map(|_| 0_i32).collect::<Box<[i32]>>(),
             }
         }
     }
 }
 pub fn sum_0(s: Ptr<S>) -> i32 {
-    return ({
-        ({ ((*s.with(|__s| __s.v.clone()).borrow()).len() as i32) } + {
-            (elem!((array_field_ptr!(s, n) as Ptr::<i32>), 0).read())
-        })
-    } + { (elem!((array_field_ptr!(s, n) as Ptr::<i32>), 1).read()) });
+    return ({ ({ ((*s.upgrade().deref()).v.len() as i32) } + { (array_elem!(s, n, 0).read()) }) }
+        + { (array_elem!(s, n, 1).read()) });
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -64,10 +59,10 @@ fn main_0() -> i32 {
 pub fn shuffle_1(mut x: i32) -> i32 {
     let a: Value<S> = Rc::new(RefCell::new(S::new({ x })));
     let b: Value<S> = Rc::new(RefCell::new(S::move_from({ a.as_pointer() })));
-    assert!((*{ (*a.borrow()).v.clone() }.borrow()).is_empty());
+    assert!((*a.borrow()).v.is_empty());
     let c: Value<S> = Rc::new(RefCell::new(S::new({ 1 })));
     ({ SImpl::move_assign(&c.as_pointer(), b.as_pointer()) });
-    assert!((*{ (*b.borrow()).v.clone() }.borrow()).is_empty());
+    assert!((*b.borrow()).v.is_empty());
     return ({ sum_0(c.as_pointer()) });
 }
 pub trait SImpl {
@@ -75,9 +70,8 @@ pub trait SImpl {
 }
 impl SImpl for Ptr<S> {
     fn move_assign(&self, _a0: Ptr<S>) -> Ptr<S> {
-        ((*self).with(|__s| __s.v.as_pointer()) as Ptr<Vec<i32>>).write(std::mem::take(
-            &mut (*{ (*_a0.upgrade().deref()).v.clone() }.borrow_mut()),
-        ));
+        (field_ref!((*self), v).as_pointer() as Ptr<Vec<i32>>)
+            .write(field!(_a0, v).with_mut(std::mem::take));
         {
             ((array_field_ptr!((*self), n)) as Ptr<i32>)
                 .to_any()

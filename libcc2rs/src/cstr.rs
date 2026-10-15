@@ -7,7 +7,7 @@ use std::fmt;
 use std::rc::Rc;
 
 use crate::CStringIterator;
-use crate::rc::{Ptr, PtrKind};
+use crate::rc::{FieldShape, Ptr, PtrKind};
 use crate::reinterpret::{ByteRepr, with_scratch};
 
 // The element types of C strings: `char` and `signed char` map to `i8`,
@@ -263,12 +263,15 @@ impl<T: CChar> Ptr<T> {
             }
             PtrKind::Nested(parent) => {
                 let root = parent.root();
-                f(until_nul(&parent.borrow_slice(&*root)[self.offset..]))
+                f(until_nul(&parent.borrow_slice(&root)[self.offset..]))
             }
-            PtrKind::Field(root) => {
+            PtrKind::Field(root, _, FieldShape::Single) => {
                 let root = crate::field::upgrade(root);
                 let b = Ptr::<T>::borrow_field(&*root, self.offset);
                 f(until_nul(std::slice::from_ref(&*b)))
+            }
+            PtrKind::Field(..) => {
+                self.with_slice(self.len() - self.get_offset(), |s| f(until_nul(s)))
             }
             PtrKind::Reinterpreted(_) => f(&self.to_c_string_iterator().collect::<Vec<T>>()),
         }

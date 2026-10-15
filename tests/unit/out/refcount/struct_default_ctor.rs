@@ -31,20 +31,18 @@ pub struct Declared {
     pub v: i32,
 }
 impl Declared {}
-#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(16)]
 pub struct Holder {
     #[offset(0)]
     #[byte_size(16)]
-    pub items: Value<Box<[S]>>,
+    pub items: Box<[S]>,
 }
 impl Default for Holder {
     fn default() -> Self {
         {
             Holder {
-                items: Rc::new(RefCell::new(
-                    (0..2).map(|_| <S>::default()).collect::<Box<[S]>>(),
-                )),
+                items: (0..2).map(|_| <S>::default()).collect::<Box<[S]>>(),
             }
         }
     }
@@ -82,24 +80,14 @@ fn main_0() -> i32 {
             .map(|_| <Holder>::default())
             .collect::<Box<[Holder]>>(),
     );
-    assert!(
-        ({
-            (*elem!(
-                (array_field_ptr!(h.offset((0) as isize), items) as Ptr<S>),
-                1
-            )
-            .upgrade()
-            .deref())
-            .a
-        } == 11)
-    );
+    assert!((array_elem!(h.offset((0) as isize), items, 1).with(|__s| __s.a) == 11));
     h.delete();
     let mut fs: Ptr<FromStatic> = Ptr::alloc_array(
         (0..2_usize)
             .map(|_| <FromStatic>::default())
             .collect::<Box<[FromStatic]>>(),
     );
-    assert!(({ (*elem!(fs, 1).upgrade().deref()).v } == 3));
+    assert!((elem!(fs, 1).with(|__s| __s.v) == 3));
     fs.delete();
     return 0;
 }

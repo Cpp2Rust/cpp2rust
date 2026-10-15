@@ -24,7 +24,7 @@ use std::collections::BTreeMap;
 use std::rc::Rc;
 
 use crate::fn_ptr::{FnPtr, FnSig};
-use crate::rc::{AsPointer, DeepClone, Ptr, Value};
+use crate::rc::{AsPointer, Ptr, Value};
 use crate::reinterpret::ByteRepr;
 
 // The C++ move constructor of a type, in the refcount model, for the types
@@ -155,7 +155,7 @@ pub trait CopyClone<T> {
 
 impl<T: Clone> CopyClone<Value<T>> for &Capture<'_, Value<T>> {
     fn copy_capture(&self) -> Value<T> {
-        self.0.deep_clone()
+        Rc::new(RefCell::new(self.0.borrow().clone()))
     }
 }
 
@@ -207,7 +207,7 @@ pub trait MoveClone<T> {
 
 impl<T: Clone> MoveClone<Value<T>> for &Capture<'_, Value<T>> {
     fn move_capture(&self) -> Value<T> {
-        self.0.deep_clone()
+        Rc::new(RefCell::new(self.0.borrow().clone()))
     }
 }
 

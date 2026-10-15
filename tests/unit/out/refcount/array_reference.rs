@@ -69,12 +69,10 @@ pub struct Point {
 }
 pub fn sum_points_11(p: Ptr<Point>) -> i32 {
     return ({
-        ({
-            ({ { (*elem!((p), 0).upgrade().deref()).x } } + {
-                { (*elem!((p), 0).upgrade().deref()).y }
-            })
-        } + { { (*elem!((p), 1).upgrade().deref()).x } })
-    } + { { (*elem!((p), 1).upgrade().deref()).y } });
+        ({ ({ elem!((p), 0).with(|__s| __s.x) } + { elem!((p), 0).with(|__s| __s.y) }) } + {
+            elem!((p), 1).with(|__s| __s.x)
+        })
+    } + { elem!((p), 1).with(|__s| __s.y) });
 }
 pub fn shift_points_12(p: Ptr<Point>, mut d: i32) {
     {

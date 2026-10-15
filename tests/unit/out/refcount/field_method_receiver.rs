@@ -12,7 +12,7 @@ pub struct Counter {
     #[offset(0)]
     pub n: i32,
 }
-#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(40)]
 pub struct S {
     #[offset(0)]
@@ -22,10 +22,10 @@ pub struct S {
     pub c: Counter,
     #[offset(8)]
     #[byte_size(8)]
-    pub arr: Value<Box<[Counter]>>,
+    pub arr: Box<[Counter]>,
     #[offset(16)]
     #[byte_size(24)]
-    pub v: Value<Vec<i32>>,
+    pub v: Vec<i32>,
 }
 impl Default for S {
     fn default() -> Self {
@@ -33,12 +33,10 @@ impl Default for S {
             S {
                 tag: 0_i32,
                 c: <Counter>::default(),
-                arr: Rc::new(RefCell::new(
-                    (0..2)
-                        .map(|_| <Counter>::default())
-                        .collect::<Box<[Counter]>>(),
-                )),
-                v: Rc::new(RefCell::new(Default::default())),
+                arr: (0..2)
+                    .map(|_| <Counter>::default())
+                    .collect::<Box<[Counter]>>(),
+                v: Default::default(),
             }
         }
     }
@@ -83,11 +81,10 @@ pub fn run_0(mut o: Ptr<S>) {
     assert!((({ CounterImpl::get(&field_ptr!(o, c),) }) == 1));
     {
         let __a1 = ({ CounterImpl::get(&field_ptr!(o, c)) });
-        (*o.with(|__s| __s.v.clone()).borrow_mut()).push(__a1)
+        field!(o, v).with_mut(|__v: &mut Vec<i32>| __v.push(__a1))
     };
     assert!(
-        ((*o.with(|__s| __s.v.clone()).borrow()).len() == 1_usize)
-            && ((elem!((o.with(|__s| __s.v.as_pointer()) as Ptr<i32>), 0_usize).read()) == 1)
+        ((*o.upgrade().deref()).v.len() == 1_usize) && ((vec_elem!(o, v, 0_usize).read()) == 1)
     );
     assert!((o.with(|__s| __s.tag) == 1));
 }

@@ -6,22 +6,22 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(32)]
 pub struct pair {
     #[offset(0)]
     #[byte_size(16)]
-    pub a: Value<Box<[i32]>>,
+    pub a: Box<[i32]>,
     #[offset(16)]
     #[byte_size(16)]
-    pub b: Value<Box<[i32]>>,
+    pub b: Box<[i32]>,
 }
 impl Default for pair {
     fn default() -> Self {
         {
             pair {
-                a: Rc::new(RefCell::new((0..4).map(|_| 0_i32).collect::<Box<[i32]>>())),
-                b: Rc::new(RefCell::new((0..4).map(|_| 0_i32).collect::<Box<[i32]>>())),
+                a: (0..4).map(|_| 0_i32).collect::<Box<[i32]>>(),
+                b: (0..4).map(|_| 0_i32).collect::<Box<[i32]>>(),
             }
         }
     }

@@ -6,24 +6,22 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(32)]
 pub struct UserDefined {
     #[offset(0)]
     #[byte_size(4)]
-    pub a: Value<Vec<i32>>,
+    pub a: Vec<i32>,
     #[offset(8)]
     #[byte_size(24)]
-    pub v: Value<Vec<i32>>,
+    pub v: Vec<i32>,
 }
 impl Default for UserDefined {
     fn default() -> Self {
         {
             UserDefined {
-                a: Rc::new(RefCell::new(
-                    std::array::from_fn::<_, 1, _>(|_| Default::default()).to_vec(),
-                )),
-                v: Rc::new(RefCell::new(Default::default())),
+                a: std::array::from_fn::<_, 1, _>(|_| Default::default()).to_vec(),
+                v: Default::default(),
             }
         }
     }
@@ -70,8 +68,8 @@ fn main_0() -> i32 {
     (*st.borrow_mut()).st_size = 1024_i64;
     assert!(({ (*st.borrow()).st_size } == 1024_i64));
     let ud: Value<UserDefined> = Rc::new(RefCell::new(<UserDefined>::default()));
-    assert!(((elem!(({ (*ud.borrow()).a.as_pointer() } as Ptr<i32>), 0_usize).read()) == 0));
-    assert!(((*{ (*ud.borrow()).v.clone() }.borrow()).len() == 0_usize));
+    assert!(((vec_elem!(ud.as_pointer(), a, 0_usize).read()) == 0));
+    assert!(((*ud.borrow()).v.len() == 0_usize));
     let mut filt: FieldIsLibcType = <FieldIsLibcType>::default();
     assert!(((filt.addr.sa_family as i32) == 0));
     return 0;

@@ -14,7 +14,7 @@ pub struct In {
     #[offset(4)]
     pub b: i32,
 }
-#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(40)]
 pub struct S {
     #[offset(0)]
@@ -24,10 +24,10 @@ pub struct S {
     pub in_: In,
     #[offset(12)]
     #[byte_size(4)]
-    pub bytes: Value<Box<[u8]>>,
+    pub bytes: Box<[u8]>,
     #[offset(16)]
     #[byte_size(12)]
-    pub arr: Value<Box<[i32]>>,
+    pub arr: Box<[i32]>,
     #[offset(32)]
     pub tail: i64,
 }
@@ -37,8 +37,8 @@ impl Default for S {
             S {
                 x: 0_i32,
                 in_: <In>::default(),
-                bytes: Rc::new(RefCell::new((0..4).map(|_| 0_u8).collect::<Box<[u8]>>())),
-                arr: Rc::new(RefCell::new((0..3).map(|_| 0_i32).collect::<Box<[i32]>>())),
+                bytes: (0..4).map(|_| 0_u8).collect::<Box<[u8]>>(),
+                arr: (0..3).map(|_| 0_i32).collect::<Box<[i32]>>(),
                 tail: 0_i64,
             }
         }
@@ -81,34 +81,30 @@ pub fn check_final_2(mut s: Ptr<S>) {
             != 0)
     );
     assert!(
-        ((((((((elem!((array_field_ptr!(s, bytes) as Ptr::<u8>), 0).read()) as i32) == 67) as i32)
-            != 0)
-            && (((((elem!((array_field_ptr!(s, bytes) as Ptr::<u8>), 1).read()) as i32) == 83)
-                as i32)
-                != 0)) as i32)
+        ((((((((array_elem!(s, bytes, 0).read()) as i32) == 67) as i32) != 0)
+            && (((((array_elem!(s, bytes, 1).read()) as i32) == 83) as i32) != 0))
+            as i32)
             != 0)
     );
     assert!(
-        ((((((((elem!((array_field_ptr!(s, bytes) as Ptr::<u8>), 2).read()) as i32) == 99) as i32)
-            != 0)
-            && (((((elem!((array_field_ptr!(s, bytes) as Ptr::<u8>), 3).read()) as i32) == 115)
-                as i32)
-                != 0)) as i32)
+        ((((((((array_elem!(s, bytes, 2).read()) as i32) == 99) as i32) != 0)
+            && (((((array_elem!(s, bytes, 3).read()) as i32) == 115) as i32) != 0))
+            as i32)
             != 0)
     );
     assert!(
-        (((((((elem!((array_field_ptr!(s, arr) as Ptr::<i32>), 0).read())
+        (((((((array_elem!(s, arr, 0).read())
             == (((72340172838076673_u64 as u64).wrapping_mul((((131) as u8) as u64))) as i32))
             as i32)
             != 0)
-            && ((((elem!((array_field_ptr!(s, arr) as Ptr::<i32>), 1).read())
+            && ((((array_elem!(s, arr, 1).read())
                 == (((72340172838076673_u64 as u64).wrapping_mul((((147) as u8) as u64))) as i32))
                 as i32)
                 != 0)) as i32)
             != 0)
     );
     assert!(
-        ((((elem!((array_field_ptr!(s, arr) as Ptr::<i32>), 2).read())
+        ((((array_elem!(s, arr, 2).read())
             == (((72340172838076673_u64 as u64).wrapping_mul((((11) as u8) as u64))) as i32))
             as i32)
             != 0)
@@ -360,7 +356,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<u8>(), ((64) as u8))
         });
         assert!(
-            (((((elem!((array_field_ptr!((s), bytes) as Ptr::<u8>), 0).read()) as i32)
+            (((((array_elem!((s), bytes, 0).read()) as i32)
                 == ((((72340172838076673_u64 as u64).wrapping_mul((((64) as u8) as u64))) as u8)
                     as i32)) as i32)
                 != 0)
@@ -371,7 +367,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
                 all_bytes_1(_p, ::std::mem::size_of::<u8>(), ((64) as u8))
             }) != 0)
         );
-        elem!((array_field_ptr!((s), bytes) as Ptr::<u8>), 0).write(
+        array_elem!((s), bytes, 0).write(
             (((72340172838076673_u64 as u64).wrapping_mul(((((64) + 1) as u8) as u64))) as u8),
         );
         assert!(
@@ -394,7 +390,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<u8>(), _v)
         });
         assert!(
-            (((((elem!((array_field_ptr!((s), bytes) as Ptr::<u8>), 0).read()) as i32)
+            (((((array_elem!((s), bytes, 0).read()) as i32)
                 == ((((72340172838076673_u64 as u64).wrapping_mul(((((64) + 2) as u8) as u64)))
                     as u8) as i32)) as i32)
                 != 0)
@@ -406,7 +402,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
                 all_bytes_1(_p, ::std::mem::size_of::<u8>(), _v)
             }) != 0)
         );
-        elem!((array_field_ptr!((s), bytes) as Ptr::<u8>), 0).write(
+        array_elem!((s), bytes, 0).write(
             (((72340172838076673_u64 as u64).wrapping_mul(((((64) + 3) as u8) as u64))) as u8),
         );
         assert!(
@@ -437,7 +433,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<u8>(), ((80) as u8))
         });
         assert!(
-            (((((elem!((array_field_ptr!((s), bytes) as Ptr::<u8>), 1).read()) as i32)
+            (((((array_elem!((s), bytes, 1).read()) as i32)
                 == ((((72340172838076673_u64 as u64).wrapping_mul((((80) as u8) as u64))) as u8)
                     as i32)) as i32)
                 != 0)
@@ -448,7 +444,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
                 all_bytes_1(_p, ::std::mem::size_of::<u8>(), ((80) as u8))
             }) != 0)
         );
-        elem!((array_field_ptr!((s), bytes) as Ptr::<u8>), 1).write(
+        array_elem!((s), bytes, 1).write(
             (((72340172838076673_u64 as u64).wrapping_mul(((((80) + 1) as u8) as u64))) as u8),
         );
         assert!(
@@ -471,7 +467,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<u8>(), _v)
         });
         assert!(
-            (((((elem!((array_field_ptr!((s), bytes) as Ptr::<u8>), 1).read()) as i32)
+            (((((array_elem!((s), bytes, 1).read()) as i32)
                 == ((((72340172838076673_u64 as u64).wrapping_mul(((((80) + 2) as u8) as u64)))
                     as u8) as i32)) as i32)
                 != 0)
@@ -483,7 +479,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
                 all_bytes_1(_p, ::std::mem::size_of::<u8>(), _v)
             }) != 0)
         );
-        elem!((array_field_ptr!((s), bytes) as Ptr::<u8>), 1).write(
+        array_elem!((s), bytes, 1).write(
             (((72340172838076673_u64 as u64).wrapping_mul(((((80) + 3) as u8) as u64))) as u8),
         );
         assert!(
@@ -514,7 +510,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<u8>(), ((96) as u8))
         });
         assert!(
-            (((((elem!((array_field_ptr!((s), bytes) as Ptr::<u8>), 2).read()) as i32)
+            (((((array_elem!((s), bytes, 2).read()) as i32)
                 == ((((72340172838076673_u64 as u64).wrapping_mul((((96) as u8) as u64))) as u8)
                     as i32)) as i32)
                 != 0)
@@ -525,7 +521,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
                 all_bytes_1(_p, ::std::mem::size_of::<u8>(), ((96) as u8))
             }) != 0)
         );
-        elem!((array_field_ptr!((s), bytes) as Ptr::<u8>), 2).write(
+        array_elem!((s), bytes, 2).write(
             (((72340172838076673_u64 as u64).wrapping_mul(((((96) + 1) as u8) as u64))) as u8),
         );
         assert!(
@@ -548,7 +544,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<u8>(), _v)
         });
         assert!(
-            (((((elem!((array_field_ptr!((s), bytes) as Ptr::<u8>), 2).read()) as i32)
+            (((((array_elem!((s), bytes, 2).read()) as i32)
                 == ((((72340172838076673_u64 as u64).wrapping_mul(((((96) + 2) as u8) as u64)))
                     as u8) as i32)) as i32)
                 != 0)
@@ -560,7 +556,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
                 all_bytes_1(_p, ::std::mem::size_of::<u8>(), _v)
             }) != 0)
         );
-        elem!((array_field_ptr!((s), bytes) as Ptr::<u8>), 2).write(
+        array_elem!((s), bytes, 2).write(
             (((72340172838076673_u64 as u64).wrapping_mul(((((96) + 3) as u8) as u64))) as u8),
         );
         assert!(
@@ -591,7 +587,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<u8>(), ((112) as u8))
         });
         assert!(
-            (((((elem!((array_field_ptr!((s), bytes) as Ptr::<u8>), 3).read()) as i32)
+            (((((array_elem!((s), bytes, 3).read()) as i32)
                 == ((((72340172838076673_u64 as u64).wrapping_mul((((112) as u8) as u64))) as u8)
                     as i32)) as i32)
                 != 0)
@@ -602,7 +598,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
                 all_bytes_1(_p, ::std::mem::size_of::<u8>(), ((112) as u8))
             }) != 0)
         );
-        elem!((array_field_ptr!((s), bytes) as Ptr::<u8>), 3).write(
+        array_elem!((s), bytes, 3).write(
             (((72340172838076673_u64 as u64).wrapping_mul(((((112) + 1) as u8) as u64))) as u8),
         );
         assert!(
@@ -625,7 +621,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<u8>(), _v)
         });
         assert!(
-            (((((elem!((array_field_ptr!((s), bytes) as Ptr::<u8>), 3).read()) as i32)
+            (((((array_elem!((s), bytes, 3).read()) as i32)
                 == ((((72340172838076673_u64 as u64).wrapping_mul(((((112) + 2) as u8) as u64)))
                     as u8) as i32)) as i32)
                 != 0)
@@ -637,7 +633,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
                 all_bytes_1(_p, ::std::mem::size_of::<u8>(), _v)
             }) != 0)
         );
-        elem!((array_field_ptr!((s), bytes) as Ptr::<u8>), 3).write(
+        array_elem!((s), bytes, 3).write(
             (((72340172838076673_u64 as u64).wrapping_mul(((((112) + 3) as u8) as u64))) as u8),
         );
         assert!(
@@ -670,7 +666,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<i32>(), ((128) as u8))
         });
         assert!(
-            ((((elem!((array_field_ptr!((s), arr) as Ptr::<i32>), 0).read())
+            ((((array_elem!((s), arr, 0).read())
                 == (((72340172838076673_u64 as u64).wrapping_mul((((128) as u8) as u64))) as i32))
                 as i32)
                 != 0)
@@ -681,7 +677,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
                 all_bytes_1(_p, ::std::mem::size_of::<i32>(), ((128) as u8))
             }) != 0)
         );
-        elem!((array_field_ptr!((s), arr) as Ptr::<i32>), 0).write(
+        array_elem!((s), arr, 0).write(
             (((72340172838076673_u64 as u64).wrapping_mul(((((128) + 1) as u8) as u64))) as i32),
         );
         assert!(
@@ -704,7 +700,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<i32>(), _v)
         });
         assert!(
-            ((((elem!((array_field_ptr!((s), arr) as Ptr::<i32>), 0).read())
+            ((((array_elem!((s), arr, 0).read())
                 == (((72340172838076673_u64 as u64).wrapping_mul(((((128) + 2) as u8) as u64)))
                     as i32)) as i32)
                 != 0)
@@ -716,7 +712,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
                 all_bytes_1(_p, ::std::mem::size_of::<i32>(), _v)
             }) != 0)
         );
-        elem!((array_field_ptr!((s), arr) as Ptr::<i32>), 0).write(
+        array_elem!((s), arr, 0).write(
             (((72340172838076673_u64 as u64).wrapping_mul(((((128) + 3) as u8) as u64))) as i32),
         );
         assert!(
@@ -749,7 +745,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<i32>(), ((144) as u8))
         });
         assert!(
-            ((((elem!((array_field_ptr!((s), arr) as Ptr::<i32>), 1).read())
+            ((((array_elem!((s), arr, 1).read())
                 == (((72340172838076673_u64 as u64).wrapping_mul((((144) as u8) as u64))) as i32))
                 as i32)
                 != 0)
@@ -760,7 +756,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
                 all_bytes_1(_p, ::std::mem::size_of::<i32>(), ((144) as u8))
             }) != 0)
         );
-        elem!((array_field_ptr!((s), arr) as Ptr::<i32>), 1).write(
+        array_elem!((s), arr, 1).write(
             (((72340172838076673_u64 as u64).wrapping_mul(((((144) + 1) as u8) as u64))) as i32),
         );
         assert!(
@@ -783,7 +779,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<i32>(), _v)
         });
         assert!(
-            ((((elem!((array_field_ptr!((s), arr) as Ptr::<i32>), 1).read())
+            ((((array_elem!((s), arr, 1).read())
                 == (((72340172838076673_u64 as u64).wrapping_mul(((((144) + 2) as u8) as u64)))
                     as i32)) as i32)
                 != 0)
@@ -795,7 +791,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
                 all_bytes_1(_p, ::std::mem::size_of::<i32>(), _v)
             }) != 0)
         );
-        elem!((array_field_ptr!((s), arr) as Ptr::<i32>), 1).write(
+        array_elem!((s), arr, 1).write(
             (((72340172838076673_u64 as u64).wrapping_mul(((((144) + 3) as u8) as u64))) as i32),
         );
         assert!(
@@ -828,7 +824,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<i32>(), ((8) as u8))
         });
         assert!(
-            ((((elem!((array_field_ptr!((s), arr) as Ptr::<i32>), 2).read())
+            ((((array_elem!((s), arr, 2).read())
                 == (((72340172838076673_u64 as u64).wrapping_mul((((8) as u8) as u64))) as i32))
                 as i32)
                 != 0)
@@ -839,7 +835,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
                 all_bytes_1(_p, ::std::mem::size_of::<i32>(), ((8) as u8))
             }) != 0)
         );
-        elem!((array_field_ptr!((s), arr) as Ptr::<i32>), 2).write(
+        array_elem!((s), arr, 2).write(
             (((72340172838076673_u64 as u64).wrapping_mul(((((8) + 1) as u8) as u64))) as i32),
         );
         assert!(
@@ -862,7 +858,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<i32>(), _v)
         });
         assert!(
-            ((((elem!((array_field_ptr!((s), arr) as Ptr::<i32>), 2).read())
+            ((((array_elem!((s), arr, 2).read())
                 == (((72340172838076673_u64 as u64).wrapping_mul(((((8) + 2) as u8) as u64)))
                     as i32)) as i32)
                 != 0)
@@ -874,7 +870,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
                 all_bytes_1(_p, ::std::mem::size_of::<i32>(), _v)
             }) != 0)
         );
-        elem!((array_field_ptr!((s), arr) as Ptr::<i32>), 2).write(
+        array_elem!((s), arr, 2).write(
             (((72340172838076673_u64 as u64).wrapping_mul(((((8) + 3) as u8) as u64))) as i32),
         );
         assert!(
@@ -1008,11 +1004,11 @@ pub fn check_struct_3(mut s: Ptr<S>) {
         set_bytes_0(_p, _n, 133_u8)
     });
     assert!(
-        (((((((elem!((array_field_ptr!(s, arr) as Ptr::<i32>), 0).read())
+        (((((((array_elem!(s, arr, 0).read())
             == (((72340172838076673_u64 as u64).wrapping_mul((((133) as u8) as u64))) as i32))
             as i32)
             != 0)
-            && ((((elem!((array_field_ptr!(s, arr) as Ptr::<i32>), 2).read())
+            && ((((array_elem!(s, arr, 2).read())
                 == (((72340172838076673_u64 as u64).wrapping_mul((((133) as u8) as u64))) as i32))
                 as i32)
                 != 0)) as i32)
@@ -1024,16 +1020,16 @@ pub fn check_struct_3(mut s: Ptr<S>) {
         set_bytes_0(_p, _n, 134_u8)
     });
     assert!(
-        ((((elem!((array_field_ptr!(s, arr) as Ptr::<i32>), 1).read())
+        ((((array_elem!(s, arr, 1).read())
             == (((72340172838076673_u64 as u64).wrapping_mul((((134) as u8) as u64))) as i32))
             as i32)
             != 0)
     );
-    elem!((array_field_ptr!(s, arr) as Ptr::<i32>), 0)
+    array_elem!(s, arr, 0)
         .write((((72340172838076673_u64 as u64).wrapping_mul((((131) as u8) as u64))) as i32));
-    elem!((array_field_ptr!(s, arr) as Ptr::<i32>), 1)
+    array_elem!(s, arr, 1)
         .write((((72340172838076673_u64 as u64).wrapping_mul((((147) as u8) as u64))) as i32));
-    elem!((array_field_ptr!(s, arr) as Ptr::<i32>), 2)
+    array_elem!(s, arr, 2)
         .write((((72340172838076673_u64 as u64).wrapping_mul((((11) as u8) as u64))) as i32));
     let mut ib: Ptr<i32> = (array_field_ptr!(s, bytes) as Ptr<u8>).reinterpret_cast::<i32>();
     ib.write((((72340172838076673_u64 as u64).wrapping_mul((((69) as u8) as u64))) as i32));
@@ -1044,10 +1040,10 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             all_bytes_1(_p, _n, 69_u8)
         }) != 0)
     );
-    elem!((array_field_ptr!(s, bytes) as Ptr::<u8>), 0).write(67_u8);
-    elem!((array_field_ptr!(s, bytes) as Ptr::<u8>), 1).write(83_u8);
-    elem!((array_field_ptr!(s, bytes) as Ptr::<u8>), 2).write(99_u8);
-    elem!((array_field_ptr!(s, bytes) as Ptr::<u8>), 3).write(115_u8);
+    array_elem!(s, bytes, 0).write(67_u8);
+    array_elem!(s, bytes, 1).write(83_u8);
+    array_elem!(s, bytes, 2).write(99_u8);
+    array_elem!(s, bytes, 3).write(115_u8);
     assert!(
         ((({ (ib.read()) } == {
             (((array_field_ptr!(s, bytes)) as Ptr<u8>)
@@ -1132,12 +1128,12 @@ fn main_0() -> i32 {
         set_bytes_0(_p, ::std::mem::size_of::<i32>(), 119_u8)
     });
     assert!(
-        ((((elem!((array_field_ptr!(view, arr) as Ptr::<i32>), 0).read())
+        ((((array_elem!(view, arr, 0).read())
             == (((72340172838076673_u64 as u64).wrapping_mul((((119) as u8) as u64))) as i32))
             as i32)
             != 0)
     );
-    elem!((array_field_ptr!(view, bytes) as Ptr::<u8>), 3).write(17_u8);
+    array_elem!(view, bytes, 3).write(17_u8);
     assert!(
         (((((elem!(raw_, (12_usize as usize).wrapping_add(3_usize)).read()) as i32) == 17) as i32)
             != 0)

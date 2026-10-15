@@ -177,7 +177,7 @@ fn main_0() -> i32 {
         let __a1 = MoveOnly::move_from({ f.as_pointer() });
         vec_.push(__a1)
     };
-    assert!(({ vec_[0_usize].v } == 7) && ({ vec_[1_usize].v } == 8));
+    assert!((vec_[0_usize].v == 7) && (vec_[1_usize].v == 8));
     assert!(({ (*f.borrow()).v } == 0));
     let m: Value<ConstMove> = Rc::new(RefCell::new(ConstMove::new()));
     let mut m1: ConstMove = ConstMove::new_1({ m.as_pointer() });

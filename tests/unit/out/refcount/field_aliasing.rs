@@ -14,7 +14,7 @@ pub struct In {
     #[offset(4)]
     pub y: i32,
 }
-#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(32)]
 pub struct S {
     #[offset(0)]
@@ -26,7 +26,7 @@ pub struct S {
     pub n: i32,
     #[offset(16)]
     #[byte_size(16)]
-    pub arr: Value<Box<[i32]>>,
+    pub arr: Box<[i32]>,
 }
 impl Default for S {
     fn default() -> Self {
@@ -35,7 +35,7 @@ impl Default for S {
                 in_: <In>::default(),
                 total: 0_i32,
                 n: 0_i32,
-                arr: Rc::new(RefCell::new((0..4).map(|_| 0_i32).collect::<Box<[i32]>>())),
+                arr: (0..4).map(|_| 0_i32).collect::<Box<[i32]>>(),
             }
         }
     }
@@ -68,23 +68,14 @@ fn main_0() -> i32 {
             && (((q.with(|__s| __s.in_.y) == 2) as i32) != 0)) as i32)
             != 0)
     );
-    elem!(
-        (array_field_ptr!(p, arr) as Ptr::<i32>),
-        p.with(|__s| __s.n)
-    )
-    .write({ p.with(|__s| __s.total) });
+    array_elem!(p, arr, p.with(|__s| __s.n)).write({ p.with(|__s| __s.total) });
     {
         field!(p, n).with_mut(|__v| *__v = *__v + 1)
     };
-    elem!(
-        (array_field_ptr!(p, arr) as Ptr::<i32>),
-        p.with(|__s| __s.n)
-    )
-    .write(q.with(|__s| __s.in_.x));
+    array_elem!(p, arr, p.with(|__s| __s.n)).write(q.with(|__s| __s.in_.x));
     assert!(
-        ((((((((((elem!((array_field_ptr!(q, arr) as Ptr::<i32>), 0).read()) == 3) as i32) != 0)
-            && ((((elem!((array_field_ptr!(q, arr) as Ptr::<i32>), 1).read()) == 4) as i32) != 0))
-            as i32)
+        ((((((((((array_elem!(q, arr, 0).read()) == 3) as i32) != 0)
+            && ((((array_elem!(q, arr, 1).read()) == 4) as i32) != 0)) as i32)
             != 0)
             && (((q.with(|__s| __s.n) == 1) as i32) != 0)) as i32)
             != 0)

@@ -23,12 +23,12 @@ impl Table {
 thread_local!(
     pub static table_0: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([7, 8, 9])));
 );
-#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(16)]
 pub struct S {
     #[offset(0)]
     #[byte_size(12)]
-    pub data: Value<Box<[i32]>>,
+    pub data: Box<[i32]>,
     #[offset(12)]
     #[byte_size(4)]
     pub inner: Inner,
@@ -37,7 +37,7 @@ impl Default for S {
     fn default() -> Self {
         {
             S {
-                data: Rc::new(RefCell::new((0..3).map(|_| 0_i32).collect::<Box<[i32]>>())),
+                data: (0..3).map(|_| 0_i32).collect::<Box<[i32]>>(),
                 inner: <Inner>::default(),
             }
         }
@@ -49,7 +49,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let s: Value<S> = Rc::new(RefCell::new(S {
-        data: Rc::new(RefCell::new(Box::new([1, 2, 3]))),
+        data: Box::new([1, 2, 3]),
         inner: Inner { x: 9 },
     }));
     assert!(((({ SImpl::operator_index_1(&s.as_pointer(), 1,) }).read()) == 2));
@@ -65,7 +65,7 @@ fn main_0() -> i32 {
     let mut p: Ptr<i32> = ({ SImpl::operator_addr(&s.as_pointer()) });
     assert!(((p.read()) == 1));
     p.write(5);
-    assert!(((elem!((array_field_ptr!(s.as_pointer(), data) as Ptr::<i32>), 0).read()) == 5));
+    assert!(((array_elem!(s.as_pointer(), data, 0).read()) == 5));
     let t: Value<Table> = Rc::new(RefCell::new(<Table>::default()));
     assert!(((({ Table::operator_index(1,) }).read()) == 8));
     ({ Table::operator_index(1) }).write(80);

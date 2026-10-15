@@ -6,26 +6,26 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(16)]
 pub struct shape_a {
     #[offset(0)]
     pub code: u16,
     #[offset(2)]
     #[byte_size(14)]
-    pub pad: Value<Box<[i8]>>,
+    pub pad: Box<[i8]>,
 }
 impl Default for shape_a {
     fn default() -> Self {
         {
             shape_a {
                 code: 0_u16,
-                pad: Rc::new(RefCell::new((0..14).map(|_| 0_i8).collect::<Box<[i8]>>())),
+                pad: (0..14).map(|_| 0_i8).collect::<Box<[i8]>>(),
             }
         }
     }
 }
-#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(16)]
 pub struct shape_b {
     #[offset(0)]
@@ -36,7 +36,7 @@ pub struct shape_b {
     pub hi: u32,
     #[offset(8)]
     #[byte_size(8)]
-    pub fill: Value<Box<[i8]>>,
+    pub fill: Box<[i8]>,
 }
 impl Default for shape_b {
     fn default() -> Self {
@@ -45,17 +45,17 @@ impl Default for shape_b {
                 code: 0_u16,
                 lo: 0_u16,
                 hi: 0_u32,
-                fill: Rc::new(RefCell::new((0..8).map(|_| 0_i8).collect::<Box<[i8]>>())),
+                fill: (0..8).map(|_| 0_i8).collect::<Box<[i8]>>(),
             }
         }
     }
 }
-#[derive(VaArg, FnPtrArg, ByteRepr, DeepClone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, Clone)]
 #[byte_size(256)]
 pub struct anon_0 {
     #[offset(0)]
     #[byte_size(256)]
-    __bytes: Value<Box<[u8]>>,
+    __bytes: Box<[u8]>,
 }
 impl anon_0 {
     pub fn a(this: Ptr<Self>) -> Ptr<shape_a> {
@@ -71,7 +71,7 @@ impl anon_0 {
 impl Default for anon_0 {
     fn default() -> Self {
         anon_0 {
-            __bytes: Rc::new(RefCell::new(Box::from([0u8; 256]))),
+            __bytes: Box::from([0u8; 256]),
         }
     }
 }

@@ -6,14 +6,14 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(12)]
 pub struct S {
     #[offset(0)]
     pub before: i32,
     #[offset(4)]
     #[byte_size(4)]
-    pub mask: Value<Box<[u8]>>,
+    pub mask: Box<[u8]>,
     #[offset(8)]
     pub after: i32,
 }
@@ -22,7 +22,7 @@ impl Default for S {
         {
             S {
                 before: 0_i32,
-                mask: Rc::new(RefCell::new((0..4).map(|_| 0_u8).collect::<Box<[u8]>>())),
+                mask: (0..4).map(|_| 0_u8).collect::<Box<[u8]>>(),
                 after: 0_i32,
             }
         }

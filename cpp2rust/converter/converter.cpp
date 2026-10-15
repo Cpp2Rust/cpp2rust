@@ -5241,7 +5241,7 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
   }
 
   if (ph_ctx.needs_lvalue()) {
-    return ConvertLValue(arg);
+    return ConvertBorrowMut(arg);
   }
 
   if (ph_ctx.access == TranslationRule::Access::kTake) {
@@ -5263,9 +5263,7 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
       }
       return ConvertFreshRValue(arg);
     }
-    auto lvalue = ConvertLValue(arg);
-    SetFresh();
-    return std::format("std::mem::take(&mut {})", std::move(lvalue));
+    return ConvertTake(arg);
   }
 
   if (ph_ctx.access == TranslationRule::Access::kMove) {
@@ -5273,6 +5271,16 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
   }
 
   return ConvertRValue(arg, ph_ctx.implicit_convert_to);
+}
+
+std::string Converter::ConvertBorrowMut(clang::Expr *arg) {
+  return ConvertLValue(arg);
+}
+
+std::string Converter::ConvertTake(clang::Expr *arg) {
+  auto lvalue = ConvertLValue(arg);
+  SetFresh();
+  return std::format("std::mem::take(&mut {})", std::move(lvalue));
 }
 
 std::string Converter::ConvertMappedMethodCall(
@@ -5289,10 +5297,16 @@ std::string Converter::GetMappedAsString(clang::Expr *expr, clang::Expr **args,
   if (!tgt_ir)
     return {};
 
+  auto saved_borrows = std::exchange(mut_borrows_, {});
   auto result = ConvertIRFragment(tgt_ir->body, expr, args, num_args, ctx);
   if (tgt_ir->multi_statement) {
-    return '{' + result + '}';
+    result = '{' + result + '}';
   }
+  // The arguments borrowed through pointers are borrowed for the whole call.
+  for (auto &[place, name] : std::ranges::reverse_view(mut_borrows_)) {
+    result = std::format("{}.with_mut(|{}| {})", place, name, result);
+  }
+  mut_borrows_ = std::move(saved_borrows);
   return result;
 }
 

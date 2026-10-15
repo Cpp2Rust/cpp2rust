@@ -12,7 +12,7 @@ pub struct Bar {
     #[offset(0)]
     pub w: i32,
 }
-#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(40)]
 pub struct Foo {
     #[offset(0)]
@@ -25,7 +25,7 @@ pub struct Foo {
     pub z: Ptr<i32>,
     #[offset(24)]
     #[byte_size(12)]
-    pub a: Value<Box<[i32]>>,
+    pub a: Box<[i32]>,
     #[offset(36)]
     #[byte_size(4)]
     pub bar: Bar,
@@ -37,7 +37,7 @@ impl Default for Foo {
                 x: 0_i32,
                 y: <Ptr<i32>>::default(),
                 z: Ptr::<i32>::null(),
-                a: Rc::new(RefCell::new((0..3).map(|_| 0_i32).collect::<Box<[i32]>>())),
+                a: (0..3).map(|_| 0_i32).collect::<Box<[i32]>>(),
                 bar: <Bar>::default(),
             }
         }
@@ -86,7 +86,7 @@ fn main_0() -> i32 {
         x: 1,
         y: x1.as_pointer(),
         z: (x1.as_pointer()),
-        a: Rc::new(RefCell::new(Box::new([0, 1, 2]))),
+        a: Box::new([0, 1, 2]),
         bar: Bar { w: 10 },
     };
     assert!((f1.x == 1));
@@ -107,15 +107,15 @@ fn main_0() -> i32 {
     assert!(((f1.y.read()) == 4));
     assert!(({ (f1.z).clone() } == { (x1.as_pointer()) }));
     assert!(((f1.z.read()) == 4));
-    elem!((f2.a.as_pointer() as Ptr::<i32>), 0).with_mut(|__v| __v.prefix_inc());
-    elem!((f2.a.as_pointer() as Ptr::<i32>), 1).with_mut(|__v| __v.prefix_inc());
-    elem!((f2.a.as_pointer() as Ptr::<i32>), 2).with_mut(|__v| __v.prefix_inc());
-    assert!(((elem!((f2.a.as_pointer() as Ptr::<i32>), 0).read()) == 1));
-    assert!(((elem!((f2.a.as_pointer() as Ptr::<i32>), 1).read()) == 2));
-    assert!(((elem!((f2.a.as_pointer() as Ptr::<i32>), 2).read()) == 3));
-    assert!(((elem!((f1.a.as_pointer() as Ptr::<i32>), 0).read()) == 0));
-    assert!(((elem!((f1.a.as_pointer() as Ptr::<i32>), 1).read()) == 1));
-    assert!(((elem!((f1.a.as_pointer() as Ptr::<i32>), 2).read()) == 2));
+    f2.a[(0) as usize].prefix_inc();
+    f2.a[(1) as usize].prefix_inc();
+    f2.a[(2) as usize].prefix_inc();
+    assert!((f2.a[(0) as usize] == 1));
+    assert!((f2.a[(1) as usize] == 2));
+    assert!((f2.a[(2) as usize] == 3));
+    assert!((f1.a[(0) as usize] == 0));
+    assert!((f1.a[(1) as usize] == 1));
+    assert!((f1.a[(2) as usize] == 2));
     f2.bar.w = 20;
     assert!((f2.bar.w == 20));
     assert!((f1.bar.w == 10));
@@ -181,20 +181,16 @@ fn main_0() -> i32 {
         let mut j: i32 = 0;
         'loop_: while (j < 10) {
             assert!(
-                ((elem!(
-                    ((m1.as_pointer() as Ptr<Vec<i32>>)
-                        .offset((i as usize))
-                        .as_pointer() as Ptr<i32>),
+                ((index!(
+                    elem!((m1.as_pointer() as Ptr<Vec<i32>>), (i as usize)),
                     (j as usize)
                 )
                 .read())
                     == 0)
             );
             assert!(
-                ((elem!(
-                    ((m2.as_pointer() as Ptr<Vec<i32>>)
-                        .offset((i as usize))
-                        .as_pointer() as Ptr<i32>),
+                ((index!(
+                    elem!((m2.as_pointer() as Ptr<Vec<i32>>), (i as usize)),
                     (j as usize)
                 )
                 .read())
@@ -208,10 +204,8 @@ fn main_0() -> i32 {
     'loop_: while (i < N) {
         let mut j: i32 = 0;
         'loop_: while (j < 10) {
-            elem!(
-                ((m2.as_pointer() as Ptr<Vec<i32>>)
-                    .offset((i as usize))
-                    .as_pointer() as Ptr<i32>),
+            index!(
+                elem!((m2.as_pointer() as Ptr<Vec<i32>>), (i as usize)),
                 (j as usize)
             )
             .with_mut(|__v| __v.postfix_inc());
@@ -242,20 +236,16 @@ fn main_0() -> i32 {
         let mut j: i32 = 0;
         'loop_: while (j < 10) {
             assert!(
-                ((elem!(
-                    ((m1.as_pointer() as Ptr<Vec<i32>>)
-                        .offset((i as usize))
-                        .as_pointer() as Ptr<i32>),
+                ((index!(
+                    elem!((m1.as_pointer() as Ptr<Vec<i32>>), (i as usize)),
                     (j as usize)
                 )
                 .read())
                     == 0)
             );
             assert!(
-                ((elem!(
-                    ((m2.as_pointer() as Ptr<Vec<i32>>)
-                        .offset((i as usize))
-                        .as_pointer() as Ptr<i32>),
+                ((index!(
+                    elem!((m2.as_pointer() as Ptr<Vec<i32>>), (i as usize)),
                     (j as usize)
                 )
                 .read())

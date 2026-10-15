@@ -59,6 +59,16 @@ pub fn expand(input: TokenStream) -> TokenStream {
             }
         }
     });
+    let len_at = fields.iter().rev().map(|(ident, _)| {
+        quote! {
+            if offset >= Self::OFFSETS.#ident {
+                if let ::core::option::Option::Some(len) = ::libcc2rs::__len_field!(
+                    &self.#ident, offset - Self::OFFSETS.#ident) {
+                    return ::core::option::Option::Some(len);
+                }
+            }
+        }
+    });
 
     quote! {
         #[doc(hidden)]
@@ -96,6 +106,12 @@ pub fn expand(input: TokenStream) -> TokenStream {
                     return ::core::option::Option::Some(self);
                 }
                 #(#locate_mut)*
+                ::core::option::Option::None
+            }
+
+            #[allow(unused_comparisons)]
+            fn len_at(&self, offset: usize) -> ::core::option::Option<usize> {
+                #(#len_at)*
                 ::core::option::Option::None
             }
         }

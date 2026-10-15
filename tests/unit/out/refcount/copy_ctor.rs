@@ -89,7 +89,7 @@ impl Clone for Ignored {
         Ignored::copy_from(__src.as_pointer())
     }
 }
-#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(12)]
 pub struct Holder {
     #[offset(0)]
@@ -97,18 +97,16 @@ pub struct Holder {
     pub c: Counted,
     #[offset(4)]
     #[byte_size(8)]
-    pub arr: Value<Box<[Counted]>>,
+    pub arr: Box<[Counted]>,
 }
 impl Default for Holder {
     fn default() -> Self {
         {
             Holder {
                 c: <Counted>::default(),
-                arr: Rc::new(RefCell::new(
-                    (0..2)
-                        .map(|_| <Counted>::default())
-                        .collect::<Box<[Counted]>>(),
-                )),
+                arr: (0..2)
+                    .map(|_| <Counted>::default())
+                    .collect::<Box<[Counted]>>(),
             }
         }
     }
@@ -236,26 +234,11 @@ fn main_0() -> i32 {
     assert!((copies_0.with(|rc| *rc.borrow()) == 6));
     let hold: Value<Holder> = Rc::new(RefCell::new(Holder {
         c: Counted::new({ 8 }),
-        arr: Rc::new(RefCell::new(Box::new([
-            Counted::new({ 9 }),
-            Counted::new({ 10 }),
-        ]))),
+        arr: Box::new([Counted::new({ 9 }), Counted::new({ 10 })]),
     }));
     let mut hold2: Holder = (*hold.borrow()).clone();
     assert!(
-        ((hold2.c.v == 8)
-            && ({
-                (*elem!((hold2.arr.as_pointer() as Ptr<Counted>), 0)
-                    .upgrade()
-                    .deref())
-                .v
-            } == 9))
-            && ({
-                (*elem!((hold2.arr.as_pointer() as Ptr<Counted>), 1)
-                    .upgrade()
-                    .deref())
-                .v
-            } == 10)
+        ((hold2.c.v == 8) && (hold2.arr[(0) as usize].v == 9)) && (hold2.arr[(1) as usize].v == 10)
     );
     assert!((copies_0.with(|rc| *rc.borrow()) == 9));
     let mut vec_: Vec<Counted> = Vec::new();
@@ -263,7 +246,7 @@ fn main_0() -> i32 {
         let a0_clone = (*a.borrow()).clone();
         vec_.push(a0_clone)
     };
-    assert!(({ vec_[0_usize].v } == 1));
+    assert!((vec_[0_usize].v == 1));
     assert!((copies_0.with(|rc| *rc.borrow()) == 10));
     let i1: Value<Ignored> = Rc::new(RefCell::new(Ignored::new({ 1 })));
     let mut i2: Ignored = Ignored::copy_from({ i1.as_pointer() });

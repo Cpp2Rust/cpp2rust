@@ -6,21 +6,21 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(12)]
 pub struct Inner {
     #[offset(0)]
     pub a: i32,
     #[offset(4)]
     #[byte_size(8)]
-    pub name: Value<Box<[i8]>>,
+    pub name: Box<[i8]>,
 }
 impl Default for Inner {
     fn default() -> Self {
         {
             Inner {
                 a: 0_i32,
-                name: Rc::new(RefCell::new((0..8).map(|_| 0_i8).collect::<Box<[i8]>>())),
+                name: (0..8).map(|_| 0_i8).collect::<Box<[i8]>>(),
             }
         }
     }
@@ -33,7 +33,7 @@ pub struct Header {
     #[offset(4)]
     pub size: i16,
 }
-#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(104)]
 pub struct Outer {
     #[offset(0)]
@@ -43,16 +43,16 @@ pub struct Outer {
     pub inner: Inner,
     #[offset(16)]
     #[byte_size(36)]
-    pub items: Value<Box<[Inner]>>,
+    pub items: Box<[Inner]>,
     #[offset(56)]
     #[byte_size(24)]
-    pub v: Value<Vec<i32>>,
+    pub v: Vec<i32>,
     #[offset(80)]
     #[byte_size(8)]
     pub cursor: Ptr<i32>,
     #[offset(88)]
     #[byte_size(16)]
-    pub buf: Value<Box<[i32]>>,
+    pub buf: Box<[i32]>,
 }
 impl Default for Outer {
     fn default() -> Self {
@@ -60,12 +60,10 @@ impl Default for Outer {
             Outer {
                 x: 0_i32,
                 inner: <Inner>::default(),
-                items: Rc::new(RefCell::new(
-                    (0..3).map(|_| <Inner>::default()).collect::<Box<[Inner]>>(),
-                )),
-                v: Rc::new(RefCell::new(Default::default())),
+                items: (0..3).map(|_| <Inner>::default()).collect::<Box<[Inner]>>(),
+                v: Default::default(),
                 cursor: Ptr::<i32>::null(),
-                buf: Rc::new(RefCell::new((0..4).map(|_| 0_i32).collect::<Box<[i32]>>())),
+                buf: (0..4).map(|_| 0_i32).collect::<Box<[i32]>>(),
             }
         }
     }
@@ -98,14 +96,7 @@ fn main_0() -> i32 {
         a
     ));
     pi.write(4);
-    assert!(
-        ({
-            (*elem!((array_field_ptr!(o.as_pointer(), items) as Ptr<Inner>), 1)
-                .upgrade()
-                .deref())
-            .a
-        } == 4)
-    );
+    assert!((array_elem!(o.as_pointer(), items, 1).with(|__s| __s.a) == 4));
     assert!(
         ({
             (field_ptr!(
@@ -136,13 +127,10 @@ fn main_0() -> i32 {
         { ((array_field_ptr!(o.as_pointer(), buf) as Ptr<i32>).offset((1) as isize)) };
     { (*o.borrow()).cursor.clone() }.write(5);
     {
-        (*o.borrow_mut())
-            .cursor
-            .postfix_inc()
-            .with_mut(|__v| *__v = *__v + 1)
+        { (*o.borrow_mut()).cursor.postfix_inc() }.with_mut(|__v| *__v = *__v + 1)
     };
     assert!(
-        ((elem!((array_field_ptr!(o.as_pointer(), buf) as Ptr::<i32>), 1).read()) == 6)
+        ((array_elem!(o.as_pointer(), buf, 1).read()) == 6)
             && ({ { (*o.borrow()).cursor.clone() } } == {
                 ((array_field_ptr!(o.as_pointer(), buf) as Ptr<i32>).offset((2) as isize))
             })
@@ -158,8 +146,7 @@ fn main_0() -> i32 {
         OuterImpl::push(&o.as_pointer(), _k)
     });
     assert!(
-        ((*{ (*o.borrow()).v.clone() }.borrow()).len() == 1_usize)
-            && ((elem!(({ (*o.borrow()).v.as_pointer() } as Ptr<i32>), 0_usize).read()) == 7)
+        ((*o.borrow()).v.len() == 1_usize) && ((vec_elem!(o.as_pointer(), v, 0_usize).read()) == 7)
     );
     assert!((({ OuterImpl::sum(&o.as_pointer(),) }) == 7));
     let y: Value<i32> = Rc::new(RefCell::new(0));
@@ -223,8 +210,9 @@ pub trait OuterImpl {
 }
 impl OuterImpl for Ptr<Outer> {
     fn next(&self) -> i32 {
-        return (elem!(
-            (array_field_ptr!((*self), buf) as Ptr::<i32>),
+        return (array_elem!(
+            (*self),
+            buf,
             field!((*self), x).with_mut(|__v| __v.postfix_inc())
         )
         .read());
@@ -235,7 +223,7 @@ impl OuterImpl for Ptr<Outer> {
     fn push(&self, mut k: i32) {
         {
             let __a1 = (k + (*self).with(|__s| __s.x));
-            (*(*self).with(|__s| __s.v.clone()).borrow_mut()).push(__a1)
+            field!((*self), v).with_mut(|__v: &mut Vec<i32>| __v.push(__a1))
         };
     }
 }

@@ -40,21 +40,21 @@ and the refcount model produces
 
 ```rust
 pub struct Number {
-    __bytes: Value<Box<[u8]>>,
+    __bytes: Box<[u8]>,
 }
 impl Number {
-    pub fn i(&self) -> Ptr<i32> {
-        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
+    pub fn i(this: Ptr<Self>) -> Ptr<i32> {
+        this.reinterpret_cast()
     }
-    pub fn f(&self) -> Ptr<f32> {
-        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
+    pub fn f(this: Ptr<Self>) -> Ptr<f32> {
+        this.reinterpret_cast()
     }
 }
 impl Default for Number {
     fn default() -> Self {
         Number {
             // 4 is sizeof(union Number): the size of its largest member
-            __bytes: Rc::new(RefCell::new(Box::from([0u8; 4]))),
+            __bytes: Box::from([0u8; 4]),
         }
     }
 }
@@ -78,13 +78,13 @@ fields; the whole function is `unsafe`, so no extra block is needed.
 ## Refcount model
 
 Rust unions are unusable from safe code, so the refcount model stores the union
-as one byte buffer, `__bytes: Value<Box<[u8]>>`, sized to the largest member,
-and emits one accessor method per member. Each accessor takes a pointer to the
-buffer and [reinterprets](../../runtime/reinterpret.md) it as the member type,
-returning a `Ptr<T>` (a `Ptr` to the element type for array members). Member
-access `u.i` therefore becomes a call, `u.i()`, and the read or write goes
-through the pointer: `.read()` and `.write(v)` for scalars, `.upgrade().deref()`
-for struct members whose fields are then accessed as usual.
+as one byte buffer, `__bytes: Box<[u8]>`, sized to the largest member, and emits
+one accessor method per member. Each accessor takes a pointer to the union and
+[reinterprets](../../runtime/reinterpret.md) it as the member type, returning a
+`Ptr<T>` (a `Ptr` to the element type for array members). Member access `u.i`
+therefore becomes a call, `u.i()`, and the read or write goes through the
+pointer: `.read()` and `.write(v)` for scalars, `.upgrade().deref()` for struct
+members whose fields are then accessed as usual.
 
 Because every member views the same bytes, writing through one member and
 reading through another has C's semantics: the bytes are reinterpreted, not

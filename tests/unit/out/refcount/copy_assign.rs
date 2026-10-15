@@ -69,7 +69,7 @@ impl Default for RefQualified {
         { RefQualified::new() }
     }
 }
-#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(24)]
 pub struct Holder {
     #[offset(0)]
@@ -77,18 +77,16 @@ pub struct Holder {
     pub p: Partial,
     #[offset(8)]
     #[byte_size(16)]
-    pub arr: Value<Box<[Partial]>>,
+    pub arr: Box<[Partial]>,
 }
 impl Default for Holder {
     fn default() -> Self {
         {
             Holder {
                 p: <Partial>::default(),
-                arr: Rc::new(RefCell::new(
-                    (0..2)
-                        .map(|_| <Partial>::default())
-                        .collect::<Box<[Partial]>>(),
-                )),
+                arr: (0..2)
+                    .map(|_| <Partial>::default())
+                    .collect::<Box<[Partial]>>(),
             }
         }
     }
@@ -138,10 +136,7 @@ fn main_0() -> i32 {
     assert!((assigns_0.with(|rc| *rc.borrow()) == 6));
     let h: Value<Holder> = Rc::new(RefCell::new(Holder {
         p: Partial::new({ 4 }, { 40 }),
-        arr: Rc::new(RefCell::new(Box::new([
-            Partial::new({ 5 }, { 50 }),
-            Partial::new({ 6 }, { 60 }),
-        ]))),
+        arr: Box::new([Partial::new({ 5 }, { 50 }), Partial::new({ 6 }, { 60 })]),
     }));
     ({ PartialImpl::copy_assign(&field_ptr!(h.as_pointer(), p), b.as_pointer()) });
     ({
@@ -152,18 +147,8 @@ fn main_0() -> i32 {
     });
     assert!(({ (*h.borrow()).p.v } == 2) && ({ (*h.borrow()).p.keep } == 40));
     assert!(
-        ({
-            (*elem!((array_field_ptr!(h.as_pointer(), arr) as Ptr<Partial>), 1)
-                .upgrade()
-                .deref())
-            .v
-        } == 2)
-            && ({
-                (*elem!((array_field_ptr!(h.as_pointer(), arr) as Ptr<Partial>), 1)
-                    .upgrade()
-                    .deref())
-                .keep
-            } == 60)
+        (array_elem!(h.as_pointer(), arr, 1).with(|__s| __s.v) == 2)
+            && (array_elem!(h.as_pointer(), arr, 1).with(|__s| __s.keep) == 60)
     );
     assert!((assigns_0.with(|rc| *rc.borrow()) == 8));
     let n: Value<NonConstAssign> = Rc::new(RefCell::new(NonConstAssign::new()));

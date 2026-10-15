@@ -26,27 +26,9 @@ fn main_0() -> i32 {
         elem!((v.as_pointer() as Ptr<Vec<i32>>), 1_usize)
             .with_mut(|__v: &mut Vec<i32>| __v.resize_with(__a0, || <i32>::default()))
     };
-    elem!(
-        ((v.as_pointer() as Ptr<Vec<i32>>)
-            .offset(0_usize)
-            .as_pointer() as Ptr<i32>),
-        0_usize
-    )
-    .write(1);
-    elem!(
-        ((v.as_pointer() as Ptr<Vec<i32>>)
-            .offset(0_usize)
-            .as_pointer() as Ptr<i32>),
-        1_usize
-    )
-    .write(5);
-    elem!(
-        ((v.as_pointer() as Ptr<Vec<i32>>)
-            .offset(1_usize)
-            .as_pointer() as Ptr<i32>),
-        0_usize
-    )
-    .write(6);
+    index!(elem!((v.as_pointer() as Ptr<Vec<i32>>), 0_usize), 0_usize).write(1);
+    index!(elem!((v.as_pointer() as Ptr<Vec<i32>>), 0_usize), 1_usize).write(5);
+    index!(elem!((v.as_pointer() as Ptr<Vec<i32>>), 1_usize), 0_usize).write(6);
     'loop_: for mut v2 in v.as_pointer() as Ptr<Vec<i32>> {
         'loop_: for mut i in Ptr::<Vec<i32>>::decay(&(v2)) as Ptr<i32> {
             i.with_mut(|__v| __v.prefix_inc());

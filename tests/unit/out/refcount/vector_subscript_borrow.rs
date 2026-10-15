@@ -12,8 +12,7 @@ thread_local!(
 pub fn bump_1(mut v: Ptr<Vec<i32>>, mut x: i32) -> i32 {
     {
         let __rhs = x;
-        elem!(((Ptr::<Vec<i32>>::decay(&(v))) as Ptr<i32>), 0_usize)
-            .with_mut(|__v| *__v = *__v + __rhs)
+        index!(v, 0_usize).with_mut(|__v| *__v = *__v + __rhs)
     };
     return (*next_0.with(Value::clone).borrow_mut()).postfix_inc();
 }

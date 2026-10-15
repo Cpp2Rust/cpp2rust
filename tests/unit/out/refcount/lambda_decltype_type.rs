@@ -6,12 +6,12 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(24)]
 pub struct Sorted__lambda_at_lambda_decltype_type_cpp_22_18__ {
     #[offset(0)]
     #[byte_size(16)]
-    pub items: Value<Box<[i32]>>,
+    pub items: Box<[i32]>,
     #[offset(16)]
     pub size: i32,
     #[offset(20)]
@@ -22,7 +22,7 @@ impl Default for Sorted__lambda_at_lambda_decltype_type_cpp_22_18__ {
     fn default() -> Self {
         {
             Sorted__lambda_at_lambda_decltype_type_cpp_22_18__ {
-                items: Rc::new(RefCell::new((0..4).map(|_| 0_i32).collect::<Box<[i32]>>())),
+                items: (0..4).map(|_| 0_i32).collect::<Box<[i32]>>(),
                 size: 0,
                 cmp: FnPtr::<fn(i32, i32) -> bool>::new(|mut a: i32, mut b: i32| -> bool {
                     {
@@ -33,12 +33,12 @@ impl Default for Sorted__lambda_at_lambda_decltype_type_cpp_22_18__ {
         }
     }
 }
-#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(24)]
 pub struct Sorted__lambda_at_lambda_decltype_type_cpp_19_23__ {
     #[offset(0)]
     #[byte_size(16)]
-    pub items: Value<Box<[i32]>>,
+    pub items: Box<[i32]>,
     #[offset(16)]
     pub size: i32,
     #[offset(20)]
@@ -49,7 +49,7 @@ impl Default for Sorted__lambda_at_lambda_decltype_type_cpp_19_23__ {
     fn default() -> Self {
         {
             Sorted__lambda_at_lambda_decltype_type_cpp_19_23__ {
-                items: Rc::new(RefCell::new((0..4).map(|_| 0_i32).collect::<Box<[i32]>>())),
+                items: (0..4).map(|_| 0_i32).collect::<Box<[i32]>>(),
                 size: 0,
                 cmp: FnPtr::<fn(i32, i32) -> bool>::new(|mut a: i32, mut b: i32| -> bool {
                     {
@@ -79,39 +79,18 @@ fn main_0() -> i32 {
     ({ Sorted__lambda_at_lambda_decltype_type_cpp_22_18__Impl::insert(&desc.as_pointer(), 2) });
     ({ Sorted__lambda_at_lambda_decltype_type_cpp_22_18__Impl::insert(&desc.as_pointer(), 7) });
     ({ Sorted__lambda_at_lambda_decltype_type_cpp_22_18__Impl::insert(&desc.as_pointer(), 4) });
-    assert!(
-        ((elem!(
-            (array_field_ptr!(desc.as_pointer(), items) as Ptr::<i32>),
-            0
-        )
-        .read())
-            == 7)
-    );
-    assert!(
-        ((elem!(
-            (array_field_ptr!(desc.as_pointer(), items) as Ptr::<i32>),
-            1
-        )
-        .read())
-            == 4)
-    );
-    assert!(
-        ((elem!(
-            (array_field_ptr!(desc.as_pointer(), items) as Ptr::<i32>),
-            2
-        )
-        .read())
-            == 2)
-    );
+    assert!(((array_elem!(desc.as_pointer(), items, 0).read()) == 7));
+    assert!(((array_elem!(desc.as_pointer(), items, 1).read()) == 4));
+    assert!(((array_elem!(desc.as_pointer(), items, 2).read()) == 2));
     let asc: Value<Sorted__lambda_at_lambda_decltype_type_cpp_19_23__> = Rc::new(RefCell::new(
         <Sorted__lambda_at_lambda_decltype_type_cpp_19_23__>::default(),
     ));
     ({ Sorted__lambda_at_lambda_decltype_type_cpp_19_23__Impl::insert(&asc.as_pointer(), 2) });
     ({ Sorted__lambda_at_lambda_decltype_type_cpp_19_23__Impl::insert(&asc.as_pointer(), 7) });
     ({ Sorted__lambda_at_lambda_decltype_type_cpp_19_23__Impl::insert(&asc.as_pointer(), 4) });
-    assert!(((elem!((array_field_ptr!(asc.as_pointer(), items) as Ptr::<i32>), 0).read()) == 2));
-    assert!(((elem!((array_field_ptr!(asc.as_pointer(), items) as Ptr::<i32>), 1).read()) == 4));
-    assert!(((elem!((array_field_ptr!(asc.as_pointer(), items) as Ptr::<i32>), 2).read()) == 7));
+    assert!(((array_elem!(asc.as_pointer(), items, 0).read()) == 2));
+    assert!(((array_elem!(asc.as_pointer(), items, 1).read()) == 4));
+    assert!(((array_elem!(asc.as_pointer(), items, 2).read()) == 7));
     let fresh: Value<FnPtr<fn(i32, i32) -> bool>> =
         Rc::new(RefCell::new(FnPtr::<fn(i32, i32) -> bool>::new(
             |mut a: i32, mut b: i32| -> bool {
@@ -153,17 +132,14 @@ impl Sorted__lambda_at_lambda_decltype_type_cpp_19_23__Impl
         let mut i: i32 = (*self).with(|__s| __s.size);
         'loop_: while (i > 0)
             && ({
-                let _b: i32 =
-                    (elem!((array_field_ptr!((*self), items) as Ptr::<i32>), (i - 1)).read());
+                let _b: i32 = (array_elem!((*self), items, (i - 1)).read());
                 (*(*self).upgrade().deref()).cmp.call(v, _b)
             })
         {
-            elem!((array_field_ptr!((*self), items) as Ptr::<i32>), i).write({
-                (elem!((array_field_ptr!((*self), items) as Ptr::<i32>), (i - 1)).read())
-            });
+            array_elem!((*self), items, i).write({ (array_elem!((*self), items, (i - 1)).read()) });
             i.postfix_dec();
         }
-        elem!((array_field_ptr!((*self), items) as Ptr::<i32>), i).write(v);
+        array_elem!((*self), items, i).write(v);
         field!((*self), size).with_mut(|__v| __v.postfix_inc());
     }
 }
@@ -177,17 +153,14 @@ impl Sorted__lambda_at_lambda_decltype_type_cpp_22_18__Impl
         let mut i: i32 = (*self).with(|__s| __s.size);
         'loop_: while (i > 0)
             && ({
-                let _b: i32 =
-                    (elem!((array_field_ptr!((*self), items) as Ptr::<i32>), (i - 1)).read());
+                let _b: i32 = (array_elem!((*self), items, (i - 1)).read());
                 (*(*self).upgrade().deref()).cmp.call(v, _b)
             })
         {
-            elem!((array_field_ptr!((*self), items) as Ptr::<i32>), i).write({
-                (elem!((array_field_ptr!((*self), items) as Ptr::<i32>), (i - 1)).read())
-            });
+            array_elem!((*self), items, i).write({ (array_elem!((*self), items, (i - 1)).read()) });
             i.postfix_dec();
         }
-        elem!((array_field_ptr!((*self), items) as Ptr::<i32>), i).write(v);
+        array_elem!((*self), items, i).write(v);
         field!((*self), size).with_mut(|__v| __v.postfix_inc());
     }
 }

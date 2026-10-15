@@ -9,12 +9,12 @@ use std::rc::{Rc, Weak};
 pub fn unused_param_0(mut x: i32) {
     &(x);
 }
-#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(24)]
 pub struct NonTrivial {
     #[offset(0)]
     #[byte_size(24)]
-    pub data: Value<Vec<i32>>,
+    pub data: Vec<i32>,
 }
 pub fn unused_ref_param_1(x: Ptr<NonTrivial>) {
     &(*x.upgrade().deref());

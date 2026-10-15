@@ -769,6 +769,17 @@ protected:
   std::string ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
                                  const PlaceholderCtx &ph_ctx);
 
+  // Moves the value out of `arg`, leaving a default value behind.
+  virtual std::string ConvertTake(clang::Expr *arg);
+
+  // The place of `arg`, which is borrowed mutably by a rule.
+  virtual std::string ConvertBorrowMut(clang::Expr *arg);
+
+  // The places that the arguments of the rule being converted are borrowed
+  // through, with the names they are borrowed as, e.g., a pointer and the
+  // closure parameter of its with_mut.
+  std::vector<std::pair<std::string, std::string>> mut_borrows_;
+
   std::string ConvertVariadicTail(clang::Expr *expr,
                                   const std::vector<clang::Expr *> &all_args);
 

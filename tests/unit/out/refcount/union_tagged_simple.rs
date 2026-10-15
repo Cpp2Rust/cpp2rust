@@ -9,12 +9,12 @@ use std::rc::{Rc, Weak};
 pub type Kind_enum = u32;
 pub const Kind_enum_KIND_NONE: Kind_enum = 0;
 pub const Kind_enum_KIND_DONE: Kind_enum = 1;
-#[derive(VaArg, FnPtrArg, ByteRepr, DeepClone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, Clone)]
 #[byte_size(8)]
 pub struct anon_0 {
     #[offset(0)]
     #[byte_size(8)]
-    __bytes: Value<Box<[u8]>>,
+    __bytes: Box<[u8]>,
 }
 impl anon_0 {
     pub fn obj(this: Ptr<Self>) -> Ptr<AnyPtr> {
@@ -27,7 +27,7 @@ impl anon_0 {
 impl Default for anon_0 {
     fn default() -> Self {
         anon_0 {
-            __bytes: Rc::new(RefCell::new(Box::from([0u8; 8]))),
+            __bytes: Box::from([0u8; 8]),
         }
     }
 }

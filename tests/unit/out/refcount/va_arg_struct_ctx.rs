@@ -24,12 +24,12 @@ pub fn set_error_0(mut ctx: Ptr<context>, fmt: Ptr<i8>, __args: Box<[VaArg]>) {
         field!(ctx, last_error).write(__rhs);
     }
 }
-#[derive(VaArg, FnPtrArg, ByteRepr, DeepClone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, Clone)]
 #[byte_size(8)]
 pub struct value {
     #[offset(0)]
     #[byte_size(8)]
-    __bytes: Value<Box<[u8]>>,
+    __bytes: Box<[u8]>,
 }
 impl value {
     pub fn i(this: Ptr<Self>) -> Ptr<i32> {
@@ -42,7 +42,7 @@ impl value {
 impl Default for value {
     fn default() -> Self {
         value {
-            __bytes: Rc::new(RefCell::new(Box::from([0u8; 8]))),
+            __bytes: Box::from([0u8; 8]),
         }
     }
 }

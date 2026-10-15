@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(16)]
 pub struct record {
     #[offset(0)]
@@ -17,7 +17,7 @@ pub struct record {
     pub hi: u32,
     #[offset(8)]
     #[byte_size(8)]
-    pub pad: Value<Box<[i8]>>,
+    pub pad: Box<[i8]>,
 }
 impl Default for record {
     fn default() -> Self {
@@ -26,17 +26,17 @@ impl Default for record {
                 code: 0_u16,
                 lo: 0_u16,
                 hi: 0_u32,
-                pad: Rc::new(RefCell::new((0..8).map(|_| 0_i8).collect::<Box<[i8]>>())),
+                pad: (0..8).map(|_| 0_i8).collect::<Box<[i8]>>(),
             }
         }
     }
 }
-#[derive(VaArg, FnPtrArg, ByteRepr, DeepClone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, Clone)]
 #[byte_size(128)]
 pub struct anon_0 {
     #[offset(0)]
     #[byte_size(128)]
-    __bytes: Value<Box<[u8]>>,
+    __bytes: Box<[u8]>,
 }
 impl anon_0 {
     pub fn h(this: Ptr<Self>) -> Ptr<record> {
@@ -49,7 +49,7 @@ impl anon_0 {
 impl Default for anon_0 {
     fn default() -> Self {
         anon_0 {
-            __bytes: Rc::new(RefCell::new(Box::from([0u8; 128]))),
+            __bytes: Box::from([0u8; 128]),
         }
     }
 }

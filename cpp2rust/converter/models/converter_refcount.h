@@ -63,8 +63,6 @@ public:
 
   bool RecordDerivesClone(const clang::RecordDecl *decl);
 
-  bool RecordDerivesDeepClone(const clang::RecordDecl *decl);
-
   void EmitByteSizeAttr(const clang::RecordDecl *decl) override;
 
   bool
@@ -317,6 +315,14 @@ public:
 
   bool IsReferenceType(const clang::Expr *expr) const override;
 
+  std::string ConvertTake(clang::Expr *arg) override;
+
+  std::string ConvertBorrowMut(clang::Expr *arg) override;
+
+  // Whether the receiver of a method call translated by a rule is being
+  // converted.
+  bool in_receiver_ = false;
+
   std::string
   ConvertMappedMethodCall(clang::Expr *expr,
                           const TranslationRule::MethodCallFragment &mc,
@@ -424,6 +430,13 @@ private:
 
   // Element `idx` of pointer `base`, accessed without creating a pointer to it.
   void ConvertPointerElem(clang::Expr *base, clang::Expr *idx);
+
+  // The place of element `idx` of the container `container`, e.g., a
+  // std::vector.
+  std::string ConvertElemPlace(clang::Expr *container, clang::Expr *idx);
+
+  // The place of `expr`, which is reached through a pointer.
+  std::string ConvertPlace(clang::Expr *expr);
 
   std::string GetSafeTypeAsString(clang::QualType qual_type) const;
 

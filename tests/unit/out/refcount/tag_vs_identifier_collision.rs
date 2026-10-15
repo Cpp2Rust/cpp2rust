@@ -26,12 +26,12 @@ pub struct point_struct {
     #[offset(4)]
     pub y: i32,
 }
-#[derive(VaArg, FnPtrArg, ByteRepr, DeepClone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, Clone)]
 #[byte_size(4)]
 pub struct point {
     #[offset(0)]
     #[byte_size(4)]
-    __bytes: Value<Box<[u8]>>,
+    __bytes: Box<[u8]>,
 }
 impl point {
     pub fn whole(this: Ptr<Self>) -> Ptr<i32> {
@@ -44,16 +44,16 @@ impl point {
 impl Default for point {
     fn default() -> Self {
         point {
-            __bytes: Rc::new(RefCell::new(Box::from([0u8; 4]))),
+            __bytes: Box::from([0u8; 4]),
         }
     }
 }
-#[derive(VaArg, FnPtrArg, ByteRepr, DeepClone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, Clone)]
 #[byte_size(4)]
 pub struct slot_union {
     #[offset(0)]
     #[byte_size(4)]
-    __bytes: Value<Box<[u8]>>,
+    __bytes: Box<[u8]>,
 }
 impl slot_union {
     pub fn i(this: Ptr<Self>) -> Ptr<i32> {
@@ -66,7 +66,7 @@ impl slot_union {
 impl Default for slot_union {
     fn default() -> Self {
         slot_union {
-            __bytes: Rc::new(RefCell::new(Box::from([0u8; 4]))),
+            __bytes: Box::from([0u8; 4]),
         }
     }
 }

@@ -14,15 +14,15 @@ pub struct Point {
     #[offset(4)]
     pub y: i32,
 }
-#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(48)]
 pub struct Holder {
     #[offset(0)]
     #[byte_size(24)]
-    pub values: Value<Vec<i32>>,
+    pub values: Vec<i32>,
     #[offset(24)]
     #[byte_size(24)]
-    pub points: Value<Vec<Point>>,
+    pub points: Vec<Point>,
 }
 pub fn push_and_index_0(v: Ptr<Vec<i32>>) -> i32 {
     {
@@ -35,7 +35,7 @@ pub fn sum_ref_1(v: Ptr<Vec<i32>>) -> i32 {
     let mut s: i32 = 0;
     let mut i: usize = 0_usize;
     'loop_: while ({ i } < { (*v.upgrade().deref()).len() }) {
-        s += (elem!((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>), i).read());
+        s += (index!(v, i).read());
         i.prefix_inc();
     }
     return s;
@@ -87,83 +87,36 @@ fn main_0() -> i32 {
     let h: Value<Holder> = Rc::new(RefCell::new(<Holder>::default()));
     {
         let __a0 = 2_usize as usize;
-        (*{ (*h.borrow()).values.clone() }.borrow_mut()).resize_with(__a0, || <i32>::default())
+        (*h.borrow_mut())
+            .values
+            .resize_with(__a0, || <i32>::default())
     };
-    elem!(({ (*h.borrow()).values.as_pointer() } as Ptr<i32>), 1_usize).write(6);
+    vec_elem!(h.as_pointer(), values, 1_usize).write(6);
     {
         let __a1 = Point { x: 1, y: 2 };
-        (*{ (*h.borrow()).points.clone() }.borrow_mut()).push(__a1)
+        (*h.borrow_mut()).points.push(__a1)
     };
-    field!(
-        elem!(
-            ({ (*h.borrow()).points.as_pointer() } as Ptr<Point>),
-            0_usize
-        ),
-        y
-    )
-    .write(5);
-    assert!(((elem!(({ (*h.borrow()).values.as_pointer() } as Ptr<i32>), 1_usize).read()) == 6));
+    field!(vec_elem!(h.as_pointer(), points, 0_usize), y).write(5);
+    assert!(((vec_elem!(h.as_pointer(), values, 1_usize).read()) == 6));
     assert!(
         (({
-            PointImpl::sum(&({ (*h.borrow()).points.as_pointer() } as Ptr<Point>).offset(0_usize))
+            PointImpl::sum(
+                &(field_ref!(h.as_pointer(), points).as_pointer() as Ptr<Point>).offset(0_usize),
+            )
         }) == 6)
     );
     let mut hp: Ptr<Holder> = (h.as_pointer());
-    let __rhs = ((elem!(
-        (hp.with(|__s| __s.values.as_pointer()) as Ptr<i32>),
-        1_usize
-    )
-    .read())
-        + 1);
-    elem!(
-        (hp.with(|__s| __s.values.as_pointer()) as Ptr<i32>),
-        0_usize
-    )
-    .write(__rhs);
-    let __rhs = (elem!(
-        (hp.with(|__s| __s.values.as_pointer()) as Ptr<i32>),
-        0_usize
-    )
-    .read());
-    field!(
-        elem!(
-            (hp.with(|__s| __s.points.as_pointer()) as Ptr<Point>),
-            0_usize
-        ),
-        x
-    )
-    .write(__rhs);
+    let __rhs = ((vec_elem!(hp, values, 1_usize).read()) + 1);
+    vec_elem!(hp, values, 0_usize).write(__rhs);
+    let __rhs = (vec_elem!(hp, values, 0_usize).read());
+    field!(vec_elem!(hp, points, 0_usize), x).write(__rhs);
     assert!(
-        ((elem!(({ (*h.borrow()).values.as_pointer() } as Ptr<i32>), 0_usize).read()) == 7)
-            && ({
-                (*elem!(
-                    ({ (*h.borrow()).points.as_pointer() } as Ptr<Point>),
-                    0_usize
-                )
-                .upgrade()
-                .deref())
-                .x
-            } == 7)
+        ((vec_elem!(h.as_pointer(), values, 0_usize).read()) == 7)
+            && (vec_elem!(h.as_pointer(), points, 0_usize).with(|__s| __s.x) == 7)
     );
-    let mut q: Point = (*elem!(
-        ({ (*h.borrow()).points.as_pointer() } as Ptr<Point>),
-        0_usize
-    )
-    .upgrade()
-    .deref())
-    .clone();
+    let mut q: Point = vec_elem!(h.as_pointer(), points, 0_usize).read();
     q.x = 0;
-    assert!(
-        ({
-            (*elem!(
-                ({ (*h.borrow()).points.as_pointer() } as Ptr<Point>),
-                0_usize
-            )
-            .upgrade()
-            .deref())
-            .x
-        } == 7)
-    );
+    assert!((vec_elem!(h.as_pointer(), points, 0_usize).with(|__s| __s.x) == 7));
     let grid: Value<Vec<Vec<i32>>> = Rc::new(RefCell::new(Vec::new()));
     {
         let __a1 = vec![0; 3_usize as usize];
@@ -173,74 +126,56 @@ fn main_0() -> i32 {
         let __a1 = vec![0; 3_usize as usize];
         (*grid.borrow_mut()).push(__a1)
     };
-    elem!(
-        ((grid.as_pointer() as Ptr<Vec<i32>>)
-            .offset(1_usize)
-            .as_pointer() as Ptr<i32>),
+    index!(
+        elem!((grid.as_pointer() as Ptr<Vec<i32>>), 1_usize),
         2_usize
     )
     .write(8);
     assert!(
-        ((elem!(
-            ((grid.as_pointer() as Ptr<Vec<i32>>)
-                .offset(1_usize)
-                .as_pointer() as Ptr<i32>),
+        ((index!(
+            elem!((grid.as_pointer() as Ptr<Vec<i32>>), 1_usize),
             2_usize
         )
         .read())
             == 8)
-            && ((elem!(
-                ((grid.as_pointer() as Ptr<Vec<i32>>)
-                    .offset(0_usize)
-                    .as_pointer() as Ptr<i32>),
+            && ((index!(
+                elem!((grid.as_pointer() as Ptr<Vec<i32>>), 0_usize),
                 2_usize
             )
             .read())
                 == 0)
     );
-    let __rhs = (elem!(
-        ((grid.as_pointer() as Ptr<Vec<i32>>)
-            .offset(1_usize)
-            .as_pointer() as Ptr<i32>),
+    let __rhs = (index!(
+        elem!((grid.as_pointer() as Ptr<Vec<i32>>), 1_usize),
         2_usize
     )
     .read());
-    elem!(
-        ((grid.as_pointer() as Ptr<Vec<i32>>)
-            .offset(0_usize)
-            .as_pointer() as Ptr<i32>),
+    index!(
+        elem!((grid.as_pointer() as Ptr<Vec<i32>>), 0_usize),
         1_usize
     )
     .write(__rhs);
-    let __rhs = (elem!(
-        ((grid.as_pointer() as Ptr<Vec<i32>>)
-            .offset(0_usize)
-            .as_pointer() as Ptr<i32>),
+    let __rhs = (index!(
+        elem!((grid.as_pointer() as Ptr<Vec<i32>>), 0_usize),
         1_usize
     )
     .read());
     {
-        elem!(
-            ((grid.as_pointer() as Ptr<Vec<i32>>)
-                .offset(1_usize)
-                .as_pointer() as Ptr<i32>),
+        index!(
+            elem!((grid.as_pointer() as Ptr<Vec<i32>>), 1_usize),
             0_usize
         )
         .with_mut(|__v| *__v = *__v + __rhs)
     };
     assert!(
-        ((elem!(
-            ((grid.as_pointer() as Ptr<Vec<i32>>)
-                .offset(0_usize)
-                .as_pointer() as Ptr<i32>),
+        ((index!(
+            elem!((grid.as_pointer() as Ptr<Vec<i32>>), 0_usize),
             1_usize
         )
         .read())
             == 8)
-            && ((elem!(
-                ((grid.as_pointer() as Ptr<Vec<i32>>)
-                    .offset(1_usize)
-                    .as_pointer() as Ptr<i32>),
+            && ((index!(
+                elem!((grid.as_pointer() as Ptr<Vec<i32>>), 1_usize),
                 0_usize
             )
             .read())

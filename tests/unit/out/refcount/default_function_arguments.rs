@@ -96,8 +96,8 @@ fn main_0() -> i32 {
     assert!((b.v == 1));
     assert!(({ Bar::new({ Some(2) },).v } == 2));
     let mut arr: [Bar; 3] = [Bar::new(None), Bar::new(None), Bar::new(None)];
-    assert!(({ arr[(0) as usize].v } == 1));
-    assert!(({ arr[(2) as usize].v } == 1));
+    assert!((arr[(0) as usize].v == 1));
+    assert!((arr[(2) as usize].v == 1));
     assert!((({ lazy_4(Some(5),) }) == 5));
     assert!((counter_2.with(|rc| *rc.borrow()) == 0));
     assert!((({ lazy_4(None,) }) == 1));
