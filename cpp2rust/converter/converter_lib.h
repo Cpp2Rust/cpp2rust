@@ -188,9 +188,9 @@ unsigned GetColumnNumber(const clang::Decl *decl);
 
 unsigned GetArraySize(clang::QualType array_type);
 
-void SetNameGenerator(clang::ASTNameGenerator *generator);
+void SetMangleContext(clang::MangleContext *context);
 
-clang::ASTNameGenerator *GetNameGenerator();
+clang::MangleContext *GetMangleContext();
 
 std::string GetID(const clang::Decl *decl);
 std::string GetMethodID(const clang::CXXMethodDecl *decl);

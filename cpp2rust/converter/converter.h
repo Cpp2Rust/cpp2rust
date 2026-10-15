@@ -35,15 +35,15 @@ public:
                      const char *keyword_mut = keyword::kMut)
       : rs_code_(&rs_code), ctx_(ctx), keyword_unsafe_(keyword_unsafe),
         keyword_mut_(keyword_mut) {
-    if (!GetNameGenerator()) {
-      name_generator_ = std::make_unique<clang::ASTNameGenerator>(ctx);
-      SetNameGenerator(name_generator_.get());
+    if (!GetMangleContext()) {
+      mangle_context_.reset(ctx.createMangleContext());
+      SetMangleContext(mangle_context_.get());
     }
   }
 
   virtual ~Converter() {
-    if (name_generator_) {
-      SetNameGenerator(nullptr);
+    if (mangle_context_) {
+      SetMangleContext(nullptr);
     }
   }
 
@@ -806,7 +806,7 @@ protected:
 
   std::string *rs_code_;
   clang::ASTContext &ctx_;
-  std::unique_ptr<clang::ASTNameGenerator> name_generator_;
+  std::unique_ptr<clang::MangleContext> mangle_context_;
   clang::FunctionDecl *curr_function_ = nullptr;
   bool in_function_formals_ = false;
   enum class MethodTarget : uint8_t {
