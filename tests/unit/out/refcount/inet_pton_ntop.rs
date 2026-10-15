@@ -23,8 +23,7 @@ pub fn test_s6_addr_access_0() {
         ((In6Addr::s6_addr(addr.as_pointer()) as Ptr<u8>) as Ptr<u8>).to_any()
     };
     assert!(
-        (((((anon_1::__u6_addr8(field_ptr!(ap, __in6_u)).reinterpret_cast::<u8>() as Ptr::<u8>)
-            as Ptr<u8>)
+        (((((In6Addr::s6_addr((ap).clone()) as Ptr::<u8>) as Ptr<u8>)
             .to_any()
             .memcmp(
                 &((loopback.as_pointer() as Ptr::<u8>) as Ptr<u8>).to_any(),
@@ -36,20 +35,11 @@ pub fn test_s6_addr_access_0() {
     elem!((In6Addr::s6_addr(addr.as_pointer()) as Ptr::<u8>), 0).write(32_u8);
     elem!((In6Addr::s6_addr((ap).clone()) as Ptr::<u8>), 1).write(1_u8);
     assert!(
-        ((((((((elem!(
-            (anon_1::__u6_addr8(field_ptr!(addr.as_pointer(), __in6_u)).reinterpret_cast::<u8>()
-                as Ptr::<u8>),
-            0
-        )
-        .read()) as i32)
-            == 32) as i32)
+        ((((((((elem!((In6Addr::s6_addr(addr.as_pointer()) as Ptr::<u8>), 0).read()) as i32) == 32)
+            as i32)
             != 0)
-            && (((((elem!(
-                (anon_1::__u6_addr8(field_ptr!(ap, __in6_u)).reinterpret_cast::<u8>() as Ptr::<u8>),
-                1
-            )
-            .read()) as i32)
-                == 1) as i32)
+            && (((((elem!((In6Addr::s6_addr((ap).clone()) as Ptr::<u8>), 1).read()) as i32) == 1)
+                as i32)
                 != 0)) as i32)
             != 0)
     );
@@ -58,36 +48,21 @@ pub fn test_s6_addr_access_0() {
     });
     elem!((In6Addr::s6_addr((ap).clone()) as Ptr::<u8>), 15).with_mut(|__v| __v.postfix_inc());
     assert!(
-        (((((elem!(
-            (anon_1::__u6_addr8(field_ptr!(addr.as_pointer(), __in6_u)).reinterpret_cast::<u8>()
-                as Ptr::<u8>),
-            15
-        )
-        .read()) as i32)
-            == 6) as i32)
+        (((((elem!((In6Addr::s6_addr(addr.as_pointer()) as Ptr::<u8>), 15).read()) as i32) == 6)
+            as i32)
             != 0)
     );
     let mut bytes: Ptr<u8> = (In6Addr::s6_addr(addr.as_pointer()) as Ptr<u8>);
     elem!(bytes, 2).write(7_u8);
     assert!(
-        (((((elem!(
-            (anon_1::__u6_addr8(field_ptr!(ap, __in6_u)).reinterpret_cast::<u8>() as Ptr::<u8>),
-            2
-        )
-        .read()) as i32)
-            == 7) as i32)
+        (((((elem!((In6Addr::s6_addr((ap).clone()) as Ptr::<u8>), 2).read()) as i32) == 7) as i32)
             != 0)
     );
     let mut fourth: Ptr<u8> = ((In6Addr::s6_addr((ap).clone()) as Ptr<u8>).offset((3) as isize));
     fourth.write(8_u8);
     assert!(
-        (((((elem!(
-            (anon_1::__u6_addr8(field_ptr!(addr.as_pointer(), __in6_u)).reinterpret_cast::<u8>()
-                as Ptr::<u8>),
-            3
-        )
-        .read()) as i32)
-            == 8) as i32)
+        (((((elem!((In6Addr::s6_addr(addr.as_pointer()) as Ptr::<u8>), 3).read()) as i32) == 8)
+            as i32)
             != 0)
     );
     {
@@ -100,8 +75,7 @@ pub fn test_s6_addr_access_0() {
         ((In6Addr::s6_addr((ap).clone()) as Ptr<u8>) as Ptr<u8>).to_any()
     };
     assert!(
-        (((((anon_1::__u6_addr8(field_ptr!(addr.as_pointer(), __in6_u)).reinterpret_cast::<u8>()
-            as Ptr::<u8>) as Ptr<u8>)
+        (((((In6Addr::s6_addr(addr.as_pointer()) as Ptr::<u8>) as Ptr<u8>)
             .to_any()
             .memcmp(
                 &((loopback.as_pointer() as Ptr::<u8>) as Ptr<u8>).to_any(),

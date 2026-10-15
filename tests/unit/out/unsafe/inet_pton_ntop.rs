@@ -26,7 +26,7 @@ pub unsafe fn test_s6_addr_access_0() {
     assert!(
         (((({
             let sa = core::slice::from_raw_parts(
-                ((*ap).__in6_u.__u6_addr8.as_mut_ptr() as *const ::libc::c_void) as *const u8,
+                ((*&raw mut (*ap).s6_addr).as_mut_ptr() as *const ::libc::c_void) as *const u8,
                 16_usize as usize,
             );
             let sb = core::slice::from_raw_parts(
@@ -47,21 +47,21 @@ pub unsafe fn test_s6_addr_access_0() {
     (*&raw mut (*&mut addr).s6_addr)[(0) as usize] = 32_u8;
     (*&raw mut (*ap).s6_addr)[(1) as usize] = 1_u8;
     assert!(
-        (((((((addr.__in6_u.__u6_addr8[(0) as usize] as i32) == (32)) as i32) != 0)
-            && (((((*ap).__in6_u.__u6_addr8[(1) as usize] as i32) == (1)) as i32) != 0))
+        ((((((((*&raw mut (*&mut addr).s6_addr)[(0) as usize] as i32) == (32)) as i32) != 0)
+            && (((((*&raw mut (*ap).s6_addr)[(1) as usize] as i32) == (1)) as i32) != 0))
             as i32)
             != 0)
     );
     (*&raw mut (*&mut addr).s6_addr)[(15) as usize] =
         (((*&raw mut (*&mut addr).s6_addr)[(15) as usize] as i32) + 4) as u8;
     (*&raw mut (*ap).s6_addr)[(15) as usize].postfix_inc();
-    assert!(((((addr.__in6_u.__u6_addr8[(15) as usize] as i32) == (6)) as i32) != 0));
+    assert!((((((*&raw mut (*&mut addr).s6_addr)[(15) as usize] as i32) == (6)) as i32) != 0));
     let mut bytes: *mut u8 = (*&raw mut (*&mut addr).s6_addr).as_mut_ptr();
     (*bytes.offset((2) as isize)) = 7_u8;
-    assert!((((((*ap).__in6_u.__u6_addr8[(2) as usize] as i32) == (7)) as i32) != 0));
+    assert!((((((*&raw mut (*ap).s6_addr)[(2) as usize] as i32) == (7)) as i32) != 0));
     let mut fourth: *mut u8 = (&mut (*&raw mut (*ap).s6_addr)[(3) as usize] as *mut u8);
     (*fourth) = 8_u8;
-    assert!(((((addr.__in6_u.__u6_addr8[(3) as usize] as i32) == (8)) as i32) != 0));
+    assert!((((((*&raw mut (*&mut addr).s6_addr)[(3) as usize] as i32) == (8)) as i32) != 0));
     {
         if 16_usize != 0 {
             ::std::ptr::copy_nonoverlapping(
@@ -75,7 +75,8 @@ pub unsafe fn test_s6_addr_access_0() {
     assert!(
         (((({
             let sa = core::slice::from_raw_parts(
-                (addr.__in6_u.__u6_addr8.as_mut_ptr() as *const ::libc::c_void) as *const u8,
+                ((*&raw mut (*&mut addr).s6_addr).as_mut_ptr() as *const ::libc::c_void)
+                    as *const u8,
                 16_usize as usize,
             );
             let sb = core::slice::from_raw_parts(
