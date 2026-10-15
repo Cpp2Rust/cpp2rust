@@ -69,18 +69,18 @@ fn f16<T1, T2>(a0: (Value<T1>, Value<T2>)) -> Value<T1> {
     a0.0
 }
 
-fn f17<T1, T2>(a0: (Value<T1>, Value<T2>)) -> Value<T1> {
-    a0.0
+fn f17<T1, T2>(a0: (Value<T1>, Value<T2>)) -> Ptr<T1> {
+    a0.0.as_pointer()
 }
 
-fn f18<T1, T2>(a0: (Value<T1>, Value<T2>)) -> Value<T2> {
-    a0.1
+fn f18<T1, T2>(a0: (Value<T1>, Value<T2>)) -> Ptr<T2> {
+    a0.1.as_pointer()
 }
 
-fn f19<T1, T2>(a0: (Value<T1>, Value<T2>)) -> Value<T1> {
-    a0.0
+fn f19<T1, T2>(a0: (Value<T1>, Value<T2>)) -> Ptr<T1> {
+    a0.0.as_pointer()
 }
 
-fn f20<T1, T2>(a0: (Value<T1>, Value<T2>)) -> Value<T2> {
-    a0.1
+fn f20<T1, T2>(a0: (Value<T1>, Value<T2>)) -> Ptr<T2> {
+    a0.1.as_pointer()
 }
