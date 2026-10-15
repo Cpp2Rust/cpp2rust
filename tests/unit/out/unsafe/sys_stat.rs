@@ -37,24 +37,24 @@ pub unsafe fn test_fstat_1() {
 pub unsafe fn test_st_mtime_access_2() {
     let mut st: ::libc::stat = unsafe { std::mem::zeroed() };
     let mut sp: *mut ::libc::stat = (&mut st as *mut ::libc::stat);
-    *&raw mut (*&mut st).st_mtime = 5_i64;
+    (*&raw mut (*&mut st).st_mtime) = 5_i64;
     assert!(((((*&raw mut (*&mut st).st_mtime) == (5_i64)) as i32) != 0));
-    *&raw mut (*sp).st_mtime = 6_i64;
+    (*&raw mut (*sp).st_mtime) = 6_i64;
     assert!(((((*&raw mut (*sp).st_mtime) == (6_i64)) as i32) != 0));
-    *&raw mut (*&mut st).st_mtime += 2_i64;
+    (*&raw mut (*&mut st).st_mtime) += 2_i64;
     assert!(((((*&raw mut (*&mut st).st_mtime) == (8_i64)) as i32) != 0));
-    *&raw mut (*sp).st_mtime -= 1_i64;
+    (*&raw mut (*sp).st_mtime) -= 1_i64;
     assert!(((((*&raw mut (*sp).st_mtime) == (7_i64)) as i32) != 0));
-    *&raw mut (*&mut st).st_mtime.postfix_inc();
-    *&raw mut (*sp).st_mtime.prefix_inc();
+    (*&raw mut (*&mut st).st_mtime).postfix_inc();
+    (*&raw mut (*sp).st_mtime).prefix_inc();
     assert!(((((*&raw mut (*&mut st).st_mtime) == (9_i64)) as i32) != 0));
-    let mut mtime: *mut i64 = (&mut *&raw mut (*&mut st).st_mtime as *mut i64);
+    let mut mtime: *mut i64 = (&mut (*&raw mut (*&mut st).st_mtime) as *mut i64);
     (*mtime) = 10_i64;
     assert!(((((*&raw mut (*&mut st).st_mtime) == (10_i64)) as i32) != 0));
-    let mut mtime_via_ptr: *mut i64 = (&mut *&raw mut (*sp).st_mtime as *mut i64);
+    let mut mtime_via_ptr: *mut i64 = (&mut (*&raw mut (*sp).st_mtime) as *mut i64);
     (*mtime_via_ptr) = 11_i64;
     assert!(((((*mtime) == (11_i64)) as i32) != 0));
-    let mut copy: i64 = *&raw mut (*sp).st_mtime;
+    let mut copy: i64 = (*&raw mut (*sp).st_mtime);
     assert!(((((copy) == (11_i64)) as i32) != 0));
 }
 pub fn main() {

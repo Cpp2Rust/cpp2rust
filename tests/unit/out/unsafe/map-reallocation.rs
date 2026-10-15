@@ -22,7 +22,7 @@ unsafe fn main_0() -> i32 {
         .1) = sentinel;
     let mut it: UnsafeMapIterator<i32, i32> =
         UnsafeMapIterator::find_key(&m as *const BTreeMap<i32, Box<(i32, i32)>>, &sentinel);
-    let mut p: *mut i32 = (&mut *&raw mut (*it.deref()).1 as *mut i32);
+    let mut p: *mut i32 = (&mut (*&raw mut (*it.deref()).1) as *mut i32);
     assert!(
         ((*&raw mut (*it.deref()).1) == (sentinel))
             && (!(c"iterator does not have correct value before insert".as_ptr()).is_null())
@@ -60,7 +60,7 @@ unsafe fn main_0() -> i32 {
         ((*p) == (sentinel))
             && (!(c"pointer does not have correct value after insert".as_ptr()).is_null())
     );
-    *&raw mut (*it.deref()).1 = 57005;
+    (*&raw mut (*it.deref()).1) = 57005;
     assert!(
         ((*&mut m
             .entry(sentinel.clone())
