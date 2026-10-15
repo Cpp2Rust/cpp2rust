@@ -28,6 +28,7 @@
 
 #include "converter/lex.h"
 #include "converter/mapper.h"
+#include "converter/rules/decls.h"
 #include "converter/rules/registry.h"
 
 // https://doc.rust-lang.org/reference/keywords.html
