@@ -685,13 +685,9 @@ bool IsCallToOstream(clang::CallExpr *expr) {
 }
 
 bool IsCDecl(const clang::NamedDecl *decl, llvm::StringRef name) {
-  bool is_extern_c = false;
-  if (auto *function = clang::dyn_cast_or_null<clang::FunctionDecl>(decl)) {
-    is_extern_c = function->isExternC();
-  } else if (auto *var = clang::dyn_cast_or_null<clang::VarDecl>(decl)) {
-    is_extern_c = var->isExternC();
-  }
-  return is_extern_c && decl->getIdentifier() && decl->getName() == name;
+  auto *function = clang::dyn_cast_or_null<clang::FunctionDecl>(decl);
+  return function && function->isExternC() && function->getIdentifier() &&
+         function->getName() == name;
 }
 
 bool IsStdFunction(const clang::Expr *expr, llvm::StringRef name) {

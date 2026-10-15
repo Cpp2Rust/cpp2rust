@@ -5,6 +5,7 @@
 
 #include <clang/AST/RecordLayout.h>
 #include <clang/Basic/OperatorKinds.h>
+#include <clang/Lex/Lexer.h>
 #include <llvm/Support/ErrorHandling.h>
 
 #include <algorithm>
@@ -1238,15 +1239,17 @@ void ConverterRefCount::ConvertPrintf(clang::CallExpr *expr) {
       expr->getArg(is_fprintf)->IgnoreImplicit()));
   bool ends_newline = format.ends_with("\\n\"");
 
-  const clang::NamedDecl *stream = nullptr;
-  if (auto *ref = clang::dyn_cast<clang::DeclRefExpr>(
-          expr->getArg(0)->IgnoreParenImpCasts())) {
-    stream = ref->getDecl();
+  llvm::StringRef stream = "stdout";
+  if (is_fprintf) {
+    auto loc = expr->getArg(0)->IgnoreParenImpCasts()->getBeginLoc();
+    stream = loc.isMacroID()
+                 ? clang::Lexer::getImmediateMacroName(
+                       loc, ctx_.getSourceManager(), ctx_.getLangOpts())
+                 : "";
   }
-  if (!is_fprintf || IsCDecl(stream, "stdout") ||
-      IsCDecl(stream, "__stdoutp")) {
+  if (stream == "stdout") {
     StrCat(ends_newline ? "println!(" : "print!(");
-  } else if (IsCDecl(stream, "stderr") || IsCDecl(stream, "__stderrp")) {
+  } else if (stream == "stderr") {
     StrCat(ends_newline ? "eprintln!(" : "eprint!(");
   } else {
     llvm::errs() << "Unknown fprintf fd:\n";
