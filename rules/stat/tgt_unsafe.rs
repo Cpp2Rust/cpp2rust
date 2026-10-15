@@ -16,3 +16,7 @@ unsafe fn f2(a0: i32, a1: *mut ::libc::stat) -> i32 {
 unsafe fn f3(a0: *const libc::c_char, a1: ::libc::mode_t) -> i32 {
     libc::mkdir(a0, a1 as ::libc::mode_t)
 }
+
+unsafe fn f4(a0: *mut ::libc::stat) -> *mut ::libc::time_t {
+    &raw mut (*a0).st_mtime
+}

@@ -1981,14 +1981,7 @@ void ConverterRefCount::ConvertUnionMemberAccessor(clang::MemberExpr *expr) {
   auto member = expr->getMemberDecl();
   auto *record = clang::cast<clang::RecordDecl>(member->getDeclContext());
   auto name = GetNamedDeclAsString(member);
-  auto *accessed = expr;
-  if (auto [inner, libc_record, libc_name] = ReplaceNonUniformLibcField(expr);
-      inner) {
-    record = libc_record;
-    name = libc_name;
-    accessed = inner;
-  }
-  auto ptr = ConvertRecordPtr(accessed);
+  auto ptr = ConvertRecordPtr(expr);
   auto str = std::format("{}::{}({}{})", GetRecordName(record), name, ptr,
                          isFresh() ? "" : ".clone()");
 
@@ -2027,6 +2020,22 @@ bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
     return false;
   }
   bool known = Mapper::Contains(ctx_, expr);
+
+  if (known && RuleRegistry::ReturnsPointer(ctx_, expr)) {
+    auto str = GetMappedAsString(expr);
+    if (isAddrOf()) {
+      StrCat(str);
+      computed_expr_type_ = ComputedExprType::FreshPointer;
+      return false;
+    }
+    if (isLValue()) {
+      pending_deref_.set(str, /*fresh=*/true);
+      return false;
+    }
+    StrCat(DerefPtrExpr(str, expr->getType()));
+    SetDerefFreshness(expr->getType());
+    return false;
+  }
 
   if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(member);
       method && !known) {

@@ -160,6 +160,12 @@ std::optional<ExprKey> getExprKey(clang::ASTContext &ctx,
     return Unqualified{ref->getDeclName()};
   }
   if (auto member = llvm::dyn_cast<clang::MemberExpr>(expr)) {
+    auto &sm = ctx.getSourceManager();
+    if (RuleDecls::GetMacroMemberBase(sm, member)) {
+      auto macro = clang::Lexer::getImmediateMacroName(member->getMemberLoc(),
+                                                       sm, ctx.getLangOpts());
+      return Unqualified{clang::DeclarationName(&ctx.Idents.get(macro))};
+    }
     return getDeclKey(member->getMemberDecl());
   }
   if (auto ref = llvm::dyn_cast<clang::DeclRefExpr>(expr)) {

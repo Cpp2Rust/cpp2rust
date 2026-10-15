@@ -18,3 +18,7 @@ fn t3() -> libcc2rs::SockaddrIn6 {
 fn t4() -> libcc2rs::In6Addr {
     Default::default()
 }
+
+fn f7(a0: Ptr<In6Addr>) -> Ptr<u8> {
+    In6Addr::s6_addr(a0)
+}

@@ -9,7 +9,7 @@ use std::rc::Rc;
 pub unsafe fn sink_0(mut it: UnsafeMapIterator<i32, i32>) -> i32 {
     let mut cit: UnsafeMapIterator<i32, i32> = it.clone();
     return if cit == it.clone() {
-        *&raw mut (*it.deref()).1
+        (*&raw mut (*it.deref()).1)
     } else {
         0
     };

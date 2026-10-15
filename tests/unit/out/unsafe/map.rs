@@ -140,19 +140,19 @@ unsafe fn main_0() -> i32 {
     let mut x1: u32 = if it == end {
         0_u32
     } else {
-        *&raw mut (*it.deref()).1
+        (*&raw mut (*it.deref()).1)
     };
     assert!(((x1) == (4_u32)));
     let mut x2: u32 = if const_it == end.clone() {
         0_u32
     } else {
-        *&raw mut (*const_it.deref()).1
+        (*&raw mut (*const_it.deref()).1)
     };
     assert!(((x2) == (0_u32)));
     let mut x3: u32 = if it == UnsafeMapIterator::end(&m as *const BTreeMap<i16, Box<(i16, u32)>>) {
         0_u32
     } else {
-        *&raw mut (*it.deref()).1
+        (*&raw mut (*it.deref()).1)
     };
     assert!(((x3) == (4_u32)));
     let mut x4: u32 = if const_it
@@ -160,7 +160,7 @@ unsafe fn main_0() -> i32 {
     {
         0_u32
     } else {
-        *&raw mut (*const_it.deref()).1
+        (*&raw mut (*const_it.deref()).1)
     };
     assert!(((x4) == (0_u32)));
     (*&mut m
@@ -169,7 +169,7 @@ unsafe fn main_0() -> i32 {
         .1) = 5_u32;
     let mut it4: UnsafeMapIterator<i16, u32> =
         UnsafeMapIterator::find_key(&m as *const BTreeMap<i16, Box<(i16, u32)>>, &4_i16);
-    let mut p: *mut u32 = (&mut *&raw mut (*it4.deref()).1 as *mut u32);
+    let mut p: *mut u32 = (&mut (*&raw mut (*it4.deref()).1) as *mut u32);
     let mut x5: u32 = (*p);
     assert!(
         ((*&mut m

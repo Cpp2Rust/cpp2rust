@@ -45,3 +45,7 @@ fn f3(a0: Ptr<i8>, a1: ::libc::mode_t) -> i32 {
         }
     }
 }
+
+fn f4(a0: Ptr<Stat>) -> Ptr<i64> {
+    field_ptr!(a0, st_mtime)
+}

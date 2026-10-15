@@ -38,3 +38,7 @@ unsafe fn f5() -> i32 {
 unsafe fn f6() -> i32 {
     libc::TCP_NODELAY
 }
+
+unsafe fn f7(a0: *mut ::libc::in6_addr) -> *mut [u8; 16] {
+    &raw mut (*a0).s6_addr
+}
