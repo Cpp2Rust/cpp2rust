@@ -4502,24 +4502,7 @@ void Converter::ConvertVarInit(clang::QualType qual_type, clang::Expr *expr) {
       StrCat(keyword_mut_);
     }
   }
-  auto *ignore_casts = expr->IgnoreCasts();
-  // FIXME: this looks very complicated
-  if (auto *ctor = clang::dyn_cast<clang::CXXConstructExpr>(ignore_casts);
-      ctor && ctor->getNumArgs() != 0 && IsReferenceType(ctor->getArg(0)) &&
-      clang::isa<clang::CallExpr>(ctor->getArg(0)->IgnoreCasts()) &&
-      !Mapper::Contains(
-          ctx_, clang::cast<clang::CallExpr>(ctor->getArg(0)->IgnoreCasts())
-                    ->getCallee()) &&
-      Printer::ToString(ctx_, ctor->getConstructor()->getThisType()) ==
-          "std::string") {
-    {
-      PushParen paren(*this);
-      StrCat(token::kStar);
-      PushInitType init_type(*this, qual_type);
-      Convert(expr);
-    }
-    StrCat(".clone()");
-  } else if (IsReferenceType(expr) || qual_type->isFunctionPointerType()) {
+  if (IsReferenceType(expr) || qual_type->isFunctionPointerType()) {
     PushExprKind push(*this, ExprKind::AddrOf);
     PushInitType init_type(*this, qual_type);
     Convert(expr, qual_type);
