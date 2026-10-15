@@ -30,8 +30,8 @@ unsafe fn main_0() -> i32 {
     assert!(((*b) == (2)));
     assert!(((p.0) == (1)));
     let __decomp_7: *mut (i32, i32) = &mut p;
-    let x: *mut i32 = (unsafe { get_8(__decomp_7) });
-    let y: *mut i32 = (unsafe { get_9(__decomp_7) });
+    let x: *mut i32 = &mut (*__decomp_7).0;
+    let y: *mut i32 = &mut (*__decomp_7).1;
     (*x) = 3;
     (*y) += 4;
     assert!(((p.0) == (3)));
