@@ -3220,13 +3220,21 @@ void ConverterRefCount::ConvertFunctionMain(
   if (decl->getNumParams() != 0U) {
     StrCat(std::format(R"(
 pub fn main() {{
-    let argv: Vec<Value<Vec<i8>>> = ::std::env::args()
-        .map(|x| Rc::new(RefCell::new(x.bytes().map(|c| c as i8).collect())))
-        .collect();
-    let mut argv: Value<Vec<Ptr<i8>>> = Rc::new(RefCell::new(
-        argv.iter().map(|x| {{ x.borrow_mut().push(0); x.as_pointer() }}).collect(),
+    let size: usize = ::std::env::args().map(|arg| arg.len() + 1).sum();
+    let args: Value<Box<[i8]>> = Rc::new(RefCell::new(vec![0; size].into_boxed_slice()));
+    let args_ptr: Ptr<i8> = args.as_pointer();
+    let mut off = 0;
+    let argv: Value<Box<[Ptr<i8>]>> = Rc::new(RefCell::new(
+        ::std::env::args()
+            .map(|arg| {{
+                let ptr = args_ptr.offset(off);
+                ptr.write_c_bytes(arg.as_bytes());
+                off += arg.len() + 1;
+                ptr
+            }})
+            .chain(::std::iter::once(Ptr::null()))
+            .collect(),
     ));
-    (*argv.borrow_mut()).push(Ptr::null());
     __cpp2rust_init_globals();
     ::std::process::exit({}(::std::env::args().len() as i32,
                                 argv.as_pointer()));
