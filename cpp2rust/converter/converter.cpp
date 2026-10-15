@@ -3521,7 +3521,7 @@ void Converter::SetUFCSReceiver(clang::Expr *base, bool is_arrow,
 void Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
   if (auto mapped = GetMappedAsString(expr); !mapped.empty()) {
     if (RuleRegistry::ReturnsPointer(ctx_, expr)) {
-      PushParen paren(*this, expr->getType()->isArrayType());
+      PushParen paren(*this);
       StrCat(token::kStar, mapped);
     } else {
       StrCat(mapped);

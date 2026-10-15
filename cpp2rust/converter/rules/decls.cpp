@@ -50,21 +50,27 @@ const clang::Expr *GetReturned(const clang::FunctionDecl *rule) {
   return returned;
 }
 
+namespace {
+clang::FileID getMacroExpansion(const clang::SourceManager &sm,
+                                clang::SourceLocation loc) {
+  while (loc.isMacroID() && sm.isMacroArgExpansion(loc)) {
+    loc = sm.getImmediateSpellingLoc(loc);
+  }
+  return loc.isMacroID() ? sm.getFileID(loc) : clang::FileID();
+}
+} // namespace
+
 const clang::Expr *GetMacroMemberBase(const clang::SourceManager &sm,
                                       const clang::MemberExpr *member) {
-  auto loc = member->getMemberLoc();
-  if (!loc.isMacroID()) {
-    return nullptr;
-  }
-  auto file = sm.getFileID(loc);
-  const auto &expansion = sm.getSLocEntry(file).getExpansion();
-  if (expansion.isMacroArgExpansion() || expansion.isFunctionMacroExpansion()) {
+  auto file = getMacroExpansion(sm, member->getMemberLoc());
+  if (file.isInvalid() ||
+      sm.getSLocEntry(file).getExpansion().isFunctionMacroExpansion()) {
     return nullptr;
   }
   const clang::Expr *base = member->getBase();
   while (true) {
     auto inner = llvm::dyn_cast<clang::MemberExpr>(base->IgnoreParenImpCasts());
-    if (!inner || sm.getFileID(inner->getMemberLoc()) != file) {
+    if (!inner || getMacroExpansion(sm, inner->getMemberLoc()) != file) {
       return base;
     }
     base = inner->getBase();
