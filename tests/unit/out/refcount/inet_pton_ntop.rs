@@ -6,11 +6,117 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+pub fn test_s6_addr_access_0() {
+    let loopback: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
+        0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8,
+        1_u8,
+    ])));
+    let addr: Value<libcc2rs::In6Addr> = Rc::new(RefCell::new(Default::default()));
+    let mut ap: Ptr<libcc2rs::In6Addr> = (addr.as_pointer());
+    {
+        ((In6Addr::s6_addr(addr.as_pointer()) as Ptr<u8>) as Ptr<u8>)
+            .to_any()
+            .memcpy(
+                &((loopback.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
+                16_usize as usize,
+            );
+        ((In6Addr::s6_addr(addr.as_pointer()) as Ptr<u8>) as Ptr<u8>).to_any()
+    };
+    assert!(
+        (((((anon_1::__u6_addr8(field_ptr!(ap, __in6_u)).reinterpret_cast::<u8>() as Ptr::<u8>)
+            as Ptr<u8>)
+            .to_any()
+            .memcmp(
+                &((loopback.as_pointer() as Ptr::<u8>) as Ptr<u8>).to_any(),
+                16_usize
+            )
+            == 0) as i32)
+            != 0)
+    );
+    elem!((In6Addr::s6_addr(addr.as_pointer()) as Ptr::<u8>), 0).write(32_u8);
+    elem!((In6Addr::s6_addr((ap).clone()) as Ptr::<u8>), 1).write(1_u8);
+    assert!(
+        ((((((((elem!(
+            (anon_1::__u6_addr8(field_ptr!(addr.as_pointer(), __in6_u)).reinterpret_cast::<u8>()
+                as Ptr::<u8>),
+            0
+        )
+        .read()) as i32)
+            == 32) as i32)
+            != 0)
+            && (((((elem!(
+                (anon_1::__u6_addr8(field_ptr!(ap, __in6_u)).reinterpret_cast::<u8>() as Ptr::<u8>),
+                1
+            )
+            .read()) as i32)
+                == 1) as i32)
+                != 0)) as i32)
+            != 0)
+    );
+    elem!((In6Addr::s6_addr(addr.as_pointer()) as Ptr::<u8>), 15).write({
+        (((elem!((In6Addr::s6_addr(addr.as_pointer()) as Ptr::<u8>), 15).read()) as i32) + 4) as u8
+    });
+    elem!((In6Addr::s6_addr((ap).clone()) as Ptr::<u8>), 15).with_mut(|__v| __v.postfix_inc());
+    assert!(
+        (((((elem!(
+            (anon_1::__u6_addr8(field_ptr!(addr.as_pointer(), __in6_u)).reinterpret_cast::<u8>()
+                as Ptr::<u8>),
+            15
+        )
+        .read()) as i32)
+            == 6) as i32)
+            != 0)
+    );
+    let mut bytes: Ptr<u8> = (In6Addr::s6_addr(addr.as_pointer()) as Ptr<u8>);
+    elem!(bytes, 2).write(7_u8);
+    assert!(
+        (((((elem!(
+            (anon_1::__u6_addr8(field_ptr!(ap, __in6_u)).reinterpret_cast::<u8>() as Ptr::<u8>),
+            2
+        )
+        .read()) as i32)
+            == 7) as i32)
+            != 0)
+    );
+    let mut fourth: Ptr<u8> = ((In6Addr::s6_addr((ap).clone()) as Ptr<u8>).offset((3) as isize));
+    fourth.write(8_u8);
+    assert!(
+        (((((elem!(
+            (anon_1::__u6_addr8(field_ptr!(addr.as_pointer(), __in6_u)).reinterpret_cast::<u8>()
+                as Ptr::<u8>),
+            3
+        )
+        .read()) as i32)
+            == 8) as i32)
+            != 0)
+    );
+    {
+        ((In6Addr::s6_addr((ap).clone()) as Ptr<u8>) as Ptr<u8>)
+            .to_any()
+            .memcpy(
+                &((loopback.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
+                16_usize as usize,
+            );
+        ((In6Addr::s6_addr((ap).clone()) as Ptr<u8>) as Ptr<u8>).to_any()
+    };
+    assert!(
+        (((((anon_1::__u6_addr8(field_ptr!(addr.as_pointer(), __in6_u)).reinterpret_cast::<u8>()
+            as Ptr::<u8>) as Ptr<u8>)
+            .to_any()
+            .memcmp(
+                &((loopback.as_pointer() as Ptr::<u8>) as Ptr<u8>).to_any(),
+                16_usize
+            )
+            == 0) as i32)
+            != 0)
+    );
+}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
+    ({ test_s6_addr_access_0() });
     let buf: Value<Box<[u8]>> = Rc::new(RefCell::new((0..16).map(|_| 0_u8).collect::<Box<[u8]>>()));
     assert!(
         (((if libc::AF_INET == libc::AF_INET {
