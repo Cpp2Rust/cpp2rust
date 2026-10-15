@@ -19,3 +19,5 @@ int f5(void) { return IPPROTO_MPTCP; }
 #endif
 
 int f6(void) { return TCP_NODELAY; }
+
+uint8_t *f7(struct in6_addr a0) { return a0.s6_addr; }
