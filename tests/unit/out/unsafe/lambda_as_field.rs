@@ -38,7 +38,7 @@ impl Guard__lambda_at_lambda_as_field_cpp_45_13__ {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, FnPtrArg)]
+#[derive(Clone, VaArg, FnPtrArg)]
 pub struct Holder__lambda_at_lambda_as_field_cpp_39_12__ {
     pub f: FnPtr<fn(i32) -> i32>,
     pub calls: i32,
@@ -64,7 +64,7 @@ impl Default for Holder__lambda_at_lambda_as_field_cpp_39_12__ {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+#[derive(Clone, VaArg, FnPtrArg, Default)]
 pub struct Holder__lambda_at_lambda_as_field_cpp_51_12__ {
     pub f: FnPtr<fn(i32) -> i32>,
     pub calls: i32,

@@ -769,6 +769,10 @@ bool Converter::IsPassThroughRule(clang::Expr *expr) const {
 }
 
 bool Converter::RecordDerivesCopy(const clang::RecordDecl *decl) {
+  if (auto cxx = llvm::dyn_cast<clang::CXXRecordDecl>(decl);
+      cxx && cxx->isLambda()) {
+    return false;
+  }
   if (auto rule =
           RuleRegistry::Search(ctx_, ctx_.getCanonicalTagType(decl)).first) {
     auto &derives = rule->type_info.derives;

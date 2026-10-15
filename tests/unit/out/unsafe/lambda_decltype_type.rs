@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, FnPtrArg)]
+#[derive(Clone, VaArg, FnPtrArg)]
 pub struct Sorted__lambda_at_lambda_decltype_type_cpp_22_18__ {
     pub items: [i32; 4],
     pub size: i32,
@@ -45,7 +45,7 @@ impl Default for Sorted__lambda_at_lambda_decltype_type_cpp_22_18__ {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, FnPtrArg)]
+#[derive(Clone, VaArg, FnPtrArg)]
 pub struct Sorted__lambda_at_lambda_decltype_type_cpp_19_23__ {
     pub items: [i32; 4],
     pub size: i32,
@@ -125,7 +125,7 @@ unsafe fn main_0() -> i32 {
                 return ((a) > (b));
             }
         });
-    assigned = greater;
+    assigned = (greater).clone();
     assert!(((unsafe { assigned.call(5, 4,) }) as bool));
     let mut less: FnPtr<fn(i32, i32) -> bool> =
         FnPtr::<fn(i32, i32) -> bool>::new(|mut a: i32, mut b: i32| -> bool {
