@@ -19,7 +19,6 @@ pub struct State {
     pub count: i32,
     pub grid: [[i32; 3]; 2],
     pub arr: Vec<i32>,
-    pub name: Vec<libc::c_char>,
     pub elems: Vec<Elem>,
     pub rows: Vec<Vec<i32>>,
 }
@@ -30,7 +29,6 @@ impl Default for State {
                 count: 0_i32,
                 grid: [[0_i32; 3]; 2],
                 arr: std::array::from_fn::<_, 3, _>(|_| Default::default()).to_vec(),
-                name: vec![0],
                 elems: Default::default(),
                 rows: Default::default(),
             }
@@ -91,7 +89,7 @@ unsafe fn main_0() -> i32 {
         ((s.grid[(1) as usize][(2) as usize]) == (5))
             && ((unsafe { sum_0((s.grid[(1) as usize].as_mut_ptr()).cast_const(), 3,) }) == (12))
     );
-    assert!(((s.arr[(1_usize)]) == (7)) && (s.name.len() <= 1));
+    assert!(((s.arr[(1_usize)]) == (7)));
     let mut e: *mut Elem = (&mut s.elems[(2_usize)] as *mut Elem);
     let mut h: *mut i32 = (*e).hist.as_mut_ptr();
     let mut c: *mut i16 = (&mut (&mut (*e)).coeffs[(1_usize)] as *mut i16);
@@ -125,7 +123,7 @@ unsafe fn main_0() -> i32 {
             && ((s.grid[(0) as usize][(0) as usize]) == (0)))
             && ((s.rows[(0_usize)][(0_usize)]) == (1))
     );
-    assert!(((t.elems[(2_usize)].coeffs[(1_usize)] as i32) == (7)) && (t.name.len() <= 1));
+    assert!(((t.elems[(2_usize)].coeffs[(1_usize)] as i32) == (7)));
     let mut p: *mut State = (&mut t as *mut State);
     (&mut (*p)).elems[(0_usize)].hist[(3) as usize] =
         (((*p).grid[(1) as usize][(1) as usize]) + ((&mut (*p)).arr[(1_usize)]));

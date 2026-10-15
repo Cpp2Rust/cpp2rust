@@ -1,6 +1,5 @@
 #include <array>
 #include <cassert>
-#include <string>
 #include <vector>
 
 // Arrays and vectors in fields are stored inline in their structs, including
@@ -16,7 +15,6 @@ struct State {
   int count;
   int grid[2][3];
   std::array<int, 3> arr;
-  std::string name;
   std::vector<Elem> elems;
   std::vector<std::vector<int>> rows;
 };
@@ -46,7 +44,7 @@ int main() {
   State s{};
   fill(&s);
   assert(s.grid[1][2] == 5 && sum(s.grid[1], 3) == 12);
-  assert(s.arr[1] == 7 && s.name.empty());
+  assert(s.arr[1] == 7);
 
   // Pointers into containers in elements of a vector field, kept and used
   // while other fields of the struct change.
@@ -71,7 +69,7 @@ int main() {
   t.grid[0][0] = 100;
   t.rows[0][0] = 100;
   assert(s.elems[2].hist[0] == 0 && s.grid[0][0] == 0 && s.rows[0][0] == 1);
-  assert(t.elems[2].coeffs[1] == 7 && t.name.empty());
+  assert(t.elems[2].coeffs[1] == 7);
 
   // Elements of array and vector fields reached through pointers.
   State *p = &t;

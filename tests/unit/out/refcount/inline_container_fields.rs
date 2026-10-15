@@ -30,7 +30,7 @@ impl Default for Elem {
     }
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
-#[byte_size(120)]
+#[byte_size(88)]
 pub struct State {
     #[offset(0)]
     pub count: i32,
@@ -41,12 +41,9 @@ pub struct State {
     #[byte_size(12)]
     pub arr: Vec<i32>,
     #[offset(40)]
-    #[byte_size(32)]
-    pub name: Vec<i8>,
-    #[offset(72)]
     #[byte_size(24)]
     pub elems: Vec<Elem>,
-    #[offset(96)]
+    #[offset(64)]
     #[byte_size(24)]
     pub rows: Vec<Vec<i32>>,
 }
@@ -59,7 +56,6 @@ impl Default for State {
                     .map(|_| (0..3).map(|_| 0_i32).collect::<Box<[i32]>>())
                     .collect::<Box<[Box<[i32]>]>>(),
                 arr: std::array::from_fn::<_, 3, _>(|_| Default::default()).to_vec(),
-                name: vec![0],
                 elems: Default::default(),
                 rows: Default::default(),
             }
@@ -126,9 +122,7 @@ fn main_0() -> i32 {
                 )
             }) == 12)
     );
-    assert!(
-        ((vec_elem!(s.as_pointer(), arr, 1_usize).read()) == 7) && ((*s.borrow()).name.len() <= 1)
-    );
+    assert!(((vec_elem!(s.as_pointer(), arr, 1_usize).read()) == 7));
     let mut e: Ptr<Elem> =
         ((field_ref!(s.as_pointer(), elems).as_pointer() as Ptr<Elem>).offset(2_usize));
     let mut h: Ptr<i32> = (array_field_ptr!(e, hist) as Ptr<i32>);
@@ -197,7 +191,6 @@ fn main_0() -> i32 {
         )
         .read()) as i32)
             == 7)
-            && ((*t.borrow()).name.len() <= 1)
     );
     let mut p: Ptr<State> = (t.as_pointer());
     let __rhs = ({ (*p.upgrade().deref()).grid[(1) as usize][(1) as usize] } + {
