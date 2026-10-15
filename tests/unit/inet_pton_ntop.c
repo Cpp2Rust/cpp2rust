@@ -2,7 +2,31 @@
 #include <assert.h>
 #include <string.h>
 
+static void test_s6_addr_access(void) {
+  const unsigned char loopback[16] = {0, 0, 0, 0, 0, 0, 0, 0,
+                                      0, 0, 0, 0, 0, 0, 0, 1};
+  struct in6_addr addr;
+  struct in6_addr *ap = &addr;
+  memcpy(addr.s6_addr, loopback, 16);
+  assert(memcmp(ap->s6_addr, loopback, 16) == 0);
+  addr.s6_addr[0] = 0x20;
+  ap->s6_addr[1] = 0x01;
+  assert(addr.s6_addr[0] == 0x20 && ap->s6_addr[1] == 0x01);
+  addr.s6_addr[15] += 4;
+  ap->s6_addr[15]++;
+  assert(addr.s6_addr[15] == 6);
+  unsigned char *bytes = addr.s6_addr;
+  bytes[2] = 7;
+  assert(ap->s6_addr[2] == 7);
+  unsigned char *fourth = &ap->s6_addr[3];
+  *fourth = 8;
+  assert(addr.s6_addr[3] == 8);
+  memcpy(ap->s6_addr, loopback, 16);
+  assert(memcmp(addr.s6_addr, loopback, 16) == 0);
+}
+
 int main(void) {
+  test_s6_addr_access();
   unsigned char buf[16];
   assert(inet_pton(AF_INET, "1.2.3.4", buf) == 1);
   assert(buf[0] == 1 && buf[1] == 2 && buf[2] == 3 && buf[3] == 4);

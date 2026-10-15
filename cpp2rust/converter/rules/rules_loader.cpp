@@ -25,6 +25,7 @@
 #include <vector>
 
 #include "converter/converter_lib.h"
+#include "converter/rules/decls.h"
 #include "logging.h"
 
 namespace cpp2rust::RulesLoader {
