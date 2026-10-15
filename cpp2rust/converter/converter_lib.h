@@ -60,9 +60,6 @@ bool IsUnionArrayMember(const clang::Expr *base);
 
 clang::Expr *SubscriptedArray(clang::Expr *base);
 
-std::tuple<clang::MemberExpr *, clang::RecordDecl *, std::string>
-ReplaceNonUniformLibcField(clang::MemberExpr *expr);
-
 bool IsStringLiteralExpr(const clang::Expr *expr);
 
 bool IsCodeUnitStringLiteral(const clang::StringLiteral *expr);

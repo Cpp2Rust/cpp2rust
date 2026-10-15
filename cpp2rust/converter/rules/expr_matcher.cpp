@@ -92,6 +92,12 @@ ResolvedDecl getResolvedDecl(clang::ASTContext &ctx, const clang::Expr *expr,
   } else if (auto construct = llvm::dyn_cast<clang::CXXConstructExpr>(expr)) {
     return construct->getConstructor()->getCanonicalDecl();
   } else if (auto member = llvm::dyn_cast<clang::MemberExpr>(expr)) {
+    auto &sm = ctx.getSourceManager();
+    if (RuleDecls::GetMacroMemberBase(sm, member)) {
+      return MacroUsage{clang::Lexer::getImmediateMacroName(
+                            member->getMemberLoc(), sm, ctx.getLangOpts())
+                            .str()};
+    }
     return member->getMemberDecl()->getCanonicalDecl();
   } else if (auto ref = llvm::dyn_cast<clang::DeclRefExpr>(expr)) {
     return ref->getDecl()->getCanonicalDecl();
@@ -144,7 +150,11 @@ std::vector<clang::Expr *> getOperands(clang::ASTContext &ctx,
   } else if (auto construct = llvm::dyn_cast<clang::CXXConstructExpr>(expr)) {
     operands.assign(construct->arg_begin(), construct->arg_end());
   } else if (auto member = llvm::dyn_cast<clang::MemberExpr>(expr)) {
-    auto base = member->getBase()->IgnoreParenImpCasts();
+    auto macro_base =
+        RuleDecls::GetMacroMemberBase(ctx.getSourceManager(), member);
+    auto base = const_cast<clang::Expr *>(macro_base ? macro_base
+                                                     : member->getBase())
+                    ->IgnoreParenImpCasts();
     if (auto arrow = llvm::dyn_cast<clang::CXXOperatorCallExpr>(base);
         arrow && arrow->getOperator() == clang::OO_Arrow) {
       base = arrow->getArg(0);

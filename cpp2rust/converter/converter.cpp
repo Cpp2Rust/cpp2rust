@@ -3521,6 +3521,7 @@ void Converter::SetUFCSReceiver(clang::Expr *base, bool is_arrow,
 void Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
   if (auto mapped = GetMappedAsString(expr); !mapped.empty()) {
     if (RuleRegistry::ReturnsPointer(ctx_, expr)) {
+      PushParen paren(*this, expr->getType()->isArrayType());
       StrCat(token::kStar, mapped);
     } else {
       StrCat(mapped);
@@ -3529,11 +3530,6 @@ void Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
   }
 
   auto *member = expr->getMemberDecl();
-  auto [inner, record, name_override] = ReplaceNonUniformLibcField(expr);
-  if (inner) {
-    expr = inner;
-  }
-
   auto *base = expr->getBase();
   bool base_is_this = clang::isa<clang::CXXThisExpr>(base->IgnoreCasts()) &&
                       !ThisIsRustPtr() && !AsLambdaOperatorCall(curr_function_);
@@ -3552,8 +3548,6 @@ void Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
       method && IsOverloadedMethod(method)) {
     StrCat(token::kDot);
     StrCat(GetMethodName(method));
-  } else if (!name_override.empty()) {
-    StrCat(token::kDot, name_override);
   } else if (member->getDeclName().isIdentifier()) {
     StrCat(token::kDot);
     StrCat(GetNamedDeclAsString(member));

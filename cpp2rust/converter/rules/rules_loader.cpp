@@ -442,6 +442,12 @@ std::string ExprKey(clang::ASTContext &ctx, const clang::Expr *expr) {
     return FunctionKey(construct->getConstructor());
   }
   if (auto member = llvm::dyn_cast<clang::MemberExpr>(expr)) {
+    if (RuleDecls::GetMacroMemberBase(ctx.getSourceManager(), member)) {
+      return clang::Lexer::getImmediateMacroName(member->getMemberLoc(),
+                                                 ctx.getSourceManager(),
+                                                 ctx.getLangOpts())
+          .str();
+    }
     return DeclKey(member->getMemberDecl());
   }
   if (auto ref = llvm::dyn_cast<clang::DeclRefExpr>(expr)) {
