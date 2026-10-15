@@ -53,3 +53,11 @@ unsafe fn f19<T1, T2>(a0: &(T1, T2)) -> *const T1 {
 unsafe fn f20<T1, T2>(a0: &(T1, T2)) -> *const T2 {
     &a0.1
 }
+
+unsafe fn f21<T1, T2>(a0: &mut (T1, T2)) -> *mut T1 {
+    &mut a0.0
+}
+
+unsafe fn f22<T1, T2>(a0: &mut (T1, T2)) -> *mut T2 {
+    &mut a0.1
+}

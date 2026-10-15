@@ -669,6 +669,15 @@ bool Converter::VisitVarDecl(clang::VarDecl *decl) {
   }
   EmitScopedDestructor(decl);
 
+  if (auto *decomp = clang::dyn_cast<clang::DecompositionDecl>(decl)) {
+    for (auto *binding : decomp->bindings()) {
+      if (auto *holding = binding->getHoldingVar()) {
+        StrCat(token::kSemiColon);
+        VisitVarDecl(holding);
+      }
+    }
+  }
+
   return false;
 }
 
@@ -3299,8 +3308,14 @@ bool Converter::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
     computed_expr_type_ = ComputedExprType::FreshValue;
     return false;
   }
+
   if (auto init = AsLambdaUncapturedConstant(curr_function_, expr)) {
     Convert(init);
+    return false;
+  }
+
+  if (auto *binding = clang::dyn_cast<clang::BindingDecl>(expr->getDecl())) {
+    Convert(binding->getBinding());
     return false;
   }
   ConvertDeclRefValue(expr, expr->getDecl());

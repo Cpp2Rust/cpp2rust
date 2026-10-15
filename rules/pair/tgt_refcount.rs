@@ -84,3 +84,11 @@ fn f19<T1, T2>(a0: (Value<T1>, Value<T2>)) -> Ptr<T1> {
 fn f20<T1, T2>(a0: (Value<T1>, Value<T2>)) -> Ptr<T2> {
     a0.1.as_pointer()
 }
+
+fn f21<T1, T2>(a0: (Value<T1>, Value<T2>)) -> Ptr<T1> {
+    a0.0.as_pointer()
+}
+
+fn f22<T1, T2>(a0: (Value<T1>, Value<T2>)) -> Ptr<T2> {
+    a0.1.as_pointer()
+}

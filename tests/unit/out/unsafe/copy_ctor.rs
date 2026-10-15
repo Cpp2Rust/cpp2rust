@@ -113,9 +113,17 @@ impl Clone for Box_int_ {
     }
 }
 #[repr(C)]
-#[derive(Clone, VaArg, FnPtrArg, Default)]
+#[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, Default)]
 pub struct Owner {
     pub box_: Box_int_,
+}
+impl Owner {
+    pub unsafe fn move_from(_a0: *mut Owner) -> Self {
+        let mut this = Self {
+            box_: Box_int_::move_from({ &mut (*_a0).box_ }),
+        };
+        this
+    }
 }
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, Default)]
@@ -226,7 +234,7 @@ unsafe fn main_0() -> i32 {
     let mut o: Owner = Owner {
         box_: Box_int_::new({ 3 }),
     };
-    let mut o2: Owner = o.clone();
+    let mut o2: Owner = Owner::move_from({ &mut o });
     assert!(((o2.box_.val) == (3)));
     let mut ol1: OutOfLine = OutOfLine::new({ 5 });
     let mut ol2: OutOfLine = OutOfLine::copy_from({ &ol1 });
