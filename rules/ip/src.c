@@ -20,4 +20,7 @@ int f5(void) { return IPPROTO_MPTCP; }
 
 int f6(void) { return TCP_NODELAY; }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreturn-stack-address"
 uint8_t *f7(struct in6_addr a0) { return a0.s6_addr; }
+#pragma clang diagnostic pop
