@@ -152,9 +152,9 @@ std::vector<clang::Expr *> getOperands(clang::ASTContext &ctx,
   } else if (auto member = llvm::dyn_cast<clang::MemberExpr>(expr)) {
     auto macro_base =
         RuleDecls::GetMacroMemberBase(ctx.getSourceManager(), member);
-    auto base = const_cast<clang::Expr *>(macro_base ? macro_base
-                                                     : member->getBase())
-                    ->IgnoreParenImpCasts();
+    auto base =
+        const_cast<clang::Expr *>(macro_base ? macro_base : member->getBase())
+            ->IgnoreParenImpCasts();
     if (auto arrow = llvm::dyn_cast<clang::CXXOperatorCallExpr>(base);
         arrow && arrow->getOperator() == clang::OO_Arrow) {
       base = arrow->getArg(0);

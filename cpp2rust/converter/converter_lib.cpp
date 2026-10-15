@@ -1805,8 +1805,8 @@ BuildUnifiedArgs(clang::Expr *expr, clang::Expr **args, unsigned num_args) {
   } else if (auto *member = clang::dyn_cast<clang::MemberExpr>(expr)) {
     auto *base = RuleDecls::GetMacroMemberBase(
         member->getMemberDecl()->getASTContext().getSourceManager(), member);
-    all_args.push_back(const_cast<clang::Expr *>(base ? base
-                                                      : member->getBase()));
+    all_args.push_back(
+        const_cast<clang::Expr *>(base ? base : member->getBase()));
   }
   for (unsigned i = 0; i < num_args; ++i) {
     all_args.push_back(args[i]);
