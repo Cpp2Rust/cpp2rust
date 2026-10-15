@@ -668,19 +668,42 @@ bool IsConvertibleFunctionDecl(const clang::FunctionDecl *decl) {
   return decl->hasBody() && decl->isThisDeclarationADefinition();
 }
 
+bool IsStdDecl(const clang::NamedDecl *decl, llvm::StringRef name) {
+  return decl && decl->isInStdNamespace() && decl->getIdentifier() &&
+         decl->getName() == name;
+}
+
 bool IsUniquePtr(clang::QualType type) {
-  auto *record_decl = type.getNonReferenceType()->getAsCXXRecordDecl();
-  return record_decl && record_decl->getNameAsString() == "unique_ptr";
+  return IsStdDecl(type.getNonReferenceType()->getAsCXXRecordDecl(),
+                   "unique_ptr");
 }
 
 bool IsCallToOstream(clang::CallExpr *expr) {
-  if (auto *op = clang::dyn_cast<clang::CXXOperatorCallExpr>(expr)) {
-    if (auto *record_decl = expr->getType()->getAsCXXRecordDecl()) {
-      return record_decl->getNameAsString() == "basic_ostream" &&
-             op->getOperator() == clang::OverloadedOperatorKind::OO_LessLess;
-    }
+  auto *op = clang::dyn_cast<clang::CXXOperatorCallExpr>(expr);
+  return op &&
+         op->getOperator() == clang::OverloadedOperatorKind::OO_LessLess &&
+         IsStdDecl(expr->getType()->getAsCXXRecordDecl(), "basic_ostream");
+}
+
+bool IsCDecl(const clang::NamedDecl *decl, llvm::StringRef name) {
+  bool is_extern_c = false;
+  if (auto *function = clang::dyn_cast_or_null<clang::FunctionDecl>(decl)) {
+    is_extern_c = function->isExternC();
+  } else if (auto *var = clang::dyn_cast_or_null<clang::VarDecl>(decl)) {
+    is_extern_c = var->isExternC();
   }
-  return false;
+  return is_extern_c && decl->getIdentifier() && decl->getName() == name;
+}
+
+bool IsStdFunction(const clang::Expr *expr, llvm::StringRef name) {
+  expr = expr->IgnoreUnlessSpelledInSource();
+  const clang::NamedDecl *decl = nullptr;
+  if (auto *call = clang::dyn_cast<clang::CallExpr>(expr)) {
+    decl = call->getDirectCallee();
+  } else if (auto *ref = clang::dyn_cast<clang::DeclRefExpr>(expr)) {
+    decl = clang::dyn_cast<clang::FunctionDecl>(ref->getDecl());
+  }
+  return IsStdDecl(decl, name);
 }
 
 bool IsAsciiStringLiteral(const clang::StringLiteral *str) {

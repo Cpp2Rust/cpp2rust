@@ -1720,7 +1720,6 @@ const clang::Expr *Converter::GetParentExpr(const clang::Expr *expr) {
 bool Converter::GetFmtArg(clang::Expr *arg, std::string &fmt,
                           std::string &fmt_args, const char *&fmt_trait,
                           std::string &fmt_width) {
-  std::string arg_str = Printer::ToString(ctx_, arg);
   if (auto *str_lit =
           clang::dyn_cast<clang::StringLiteral>(arg->IgnoreImplicit())) {
     if (!IsAsciiStringLiteral(str_lit)) {
@@ -1734,20 +1733,20 @@ bool Converter::GetFmtArg(clang::Expr *arg, std::string &fmt,
     fmt += trim;
   } else if (auto ch = GetEscapedUTF8CharLiteral(arg); !ch.empty()) {
     fmt += std::move(ch);
-  } else if (arg_str.contains("std::endl")) {
+  } else if (IsStdFunction(arg, "endl")) {
     fmt += "\\n";
-  } else if (arg_str.contains("std::hex")) {
+  } else if (IsStdFunction(arg, "hex")) {
     fmt_trait = "x";
-  } else if (arg_str.contains("std::dec")) {
+  } else if (IsStdFunction(arg, "dec")) {
     fmt_trait = "";
-  } else if (arg_str.contains("Setw")) {
+  } else if (IsStdFunction(arg, "setw")) {
     fmt_width = Trim(ToString(arg));
   } else if (!arg->getType()->isCharType() &&
              Mapper::Map(*this, arg->getType()) !=
                  std::format("Vec<{}>", CharRustType())) {
     fmt += ("{:" + fmt_width + fmt_trait + "}");
     fmt_width.clear(); // Reset setw after first usage
-    arg_str = ToString(arg);
+    auto arg_str = ToString(arg);
     if (arg->getType()->isBooleanType()) {
       arg_str = std::format("({} as u8)", std::move(arg_str));
     }
@@ -1767,7 +1766,7 @@ bool Converter::GetRawArg(clang::Expr *arg, std::string &raw_args) {
     std::string str = ToString(arg);
     raw_args += "(&(" + str + ").iter().take((" + str +
                 ").len() - 1).map(|&c| c as u8).collect::<Vec<u8>>()[..]";
-  } else if (Printer::ToString(ctx_, arg).contains("std::endl")) {
+  } else if (IsStdFunction(arg, "endl")) {
     raw_args += "(&[b'\\n']";
   } else if (clang::isa<clang::StringLiteral>(arg->IgnoreImplicit())) {
     raw_args += "(b" + GetEscapedStringLiteral(arg);
@@ -1853,8 +1852,7 @@ void Converter::ConvertCallToOstream(clang::CallExpr *expr) {
 }
 
 void Converter::ConvertPrintf(clang::CallExpr *expr) {
-  bool is_fprintf =
-      Printer::ToString(ctx_, expr->getCallee()).starts_with("int fprintf");
+  bool is_fprintf = IsCDecl(expr->getDirectCallee(), "fprintf");
 
   StrCat("printf(");
   for (unsigned i = is_fprintf; i < expr->getNumArgs(); ++i) {
@@ -2338,9 +2336,8 @@ std::optional<Converter::TempMaterializationCtx>
 Converter::ConvertCallExpr(clang::CallExpr *expr) {
   auto *callee = expr->getCallee();
 
-  auto fn = Printer::ToString(ctx_, callee);
-  bool is_printf = fn.starts_with("int printf");
-  bool is_fprintf = fn.starts_with("int fprintf");
+  bool is_printf = IsCDecl(expr->getDirectCallee(), "printf");
+  bool is_fprintf = IsCDecl(expr->getDirectCallee(), "fprintf");
   unsigned format_arg = is_fprintf ? 1 : 0;
   if ((is_printf || is_fprintf) &&
       clang::isa<clang::StringLiteral>(
@@ -4295,7 +4292,7 @@ std::string Converter::GetArrayDefaultAsString(clang::QualType qual_type) {
   if (clang::isa<clang::IncompleteArrayType>(qual_type)) {
     return "[]";
   }
-  if (Printer::ToString(ctx_, qual_type).contains("std::array")) {
+  if (IsStdDecl(qual_type->getAsCXXRecordDecl(), "array")) {
     assert(GetTemplateArgs(qual_type).has_value());
     auto template_args = *GetTemplateArgs(qual_type);
     assert(template_args.size() == 2);

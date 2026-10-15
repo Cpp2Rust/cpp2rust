@@ -15,7 +15,6 @@
 #include "converter/converter_lib.h"
 #include "converter/lex.h"
 #include "converter/mapper.h"
-#include "converter/printer.h"
 #include "converter/rules/registry.h"
 
 namespace cpp2rust {
@@ -1234,19 +1233,24 @@ static std::vector<const char *> printf2fmt(std::string &format) {
 }
 
 void ConverterRefCount::ConvertPrintf(clang::CallExpr *expr) {
-  bool is_fprintf =
-      Printer::ToString(ctx_, expr->getCallee()).starts_with("int fprintf");
+  bool is_fprintf = IsCDecl(expr->getDirectCallee(), "fprintf");
   auto format = GetEscapedStringLiteral(clang::cast<clang::StringLiteral>(
       expr->getArg(is_fprintf)->IgnoreImplicit()));
   bool ends_newline = format.ends_with("\\n\"");
 
-  auto fd = is_fprintf ? Printer::ToString(ctx_, expr->getArg(0)) : "stdout";
-  if (fd == "stdout" || fd == "__stdoutp") {
+  const clang::NamedDecl *stream = nullptr;
+  if (auto *ref = clang::dyn_cast<clang::DeclRefExpr>(
+          expr->getArg(0)->IgnoreParenImpCasts())) {
+    stream = ref->getDecl();
+  }
+  if (!is_fprintf || IsCDecl(stream, "stdout") ||
+      IsCDecl(stream, "__stdoutp")) {
     StrCat(ends_newline ? "println!(" : "print!(");
-  } else if (fd == "stderr" || fd == "__stderrp") {
+  } else if (IsCDecl(stream, "stderr") || IsCDecl(stream, "__stderrp")) {
     StrCat(ends_newline ? "eprintln!(" : "eprint!(");
   } else {
-    llvm::errs() << "Unknown fprintf fd: " << fd << '\n';
+    llvm::errs() << "Unknown fprintf fd:\n";
+    expr->getArg(0)->dump(llvm::errs(), ctx_);
     exit(1);
   }
   if (ends_newline) {

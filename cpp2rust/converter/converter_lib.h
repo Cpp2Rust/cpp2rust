@@ -147,9 +147,15 @@ bool IsMethodOnPtr(const clang::CXXMethodDecl *method);
 
 bool IsConvertibleFunctionDecl(const clang::FunctionDecl *decl);
 
+bool IsStdDecl(const clang::NamedDecl *decl, llvm::StringRef name);
+
 bool IsUniquePtr(clang::QualType type);
 
 bool IsCallToOstream(clang::CallExpr *expr);
+
+bool IsCDecl(const clang::NamedDecl *decl, llvm::StringRef name);
+
+bool IsStdFunction(const clang::Expr *expr, llvm::StringRef name);
 
 bool IsAsciiStringLiteral(const clang::StringLiteral *str);
 
