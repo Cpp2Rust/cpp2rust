@@ -6,10 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn f1_0(first: Ptr<i32>, last: Ptr<i32>) {
-    let first: Value<Ptr<i32>> = Rc::new(RefCell::new(first));
-    let last: Value<Ptr<i32>> = Rc::new(RefCell::new(last));
-    (*first.borrow()).sort((*last.borrow()).get_offset());
+pub fn f1_0(mut first: Ptr<i32>, mut last: Ptr<i32>) {
+    first.sort(last.get_offset());
     return;
 }
 pub fn main() {

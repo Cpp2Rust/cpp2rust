@@ -24,20 +24,20 @@ fn main_0() -> i32 {
         let __a1 = 3;
         (*v.borrow_mut()).push(__a1)
     };
-    let v_begin: Value<Ptr<i32>> = Rc::new(RefCell::new((v.as_pointer() as Ptr<i32>)));
-    let v_end: Value<Ptr<i32>> = Rc::new(RefCell::new((v.as_pointer() as Ptr<i32>).to_end()));
-    let it: Value<Ptr<i32>> = Rc::new(RefCell::new({
-        let count = ((*v_end.borrow()).get_offset() - (*v_begin.borrow()).get_offset()) as usize;
-        (*v_begin.borrow()).offset(
-            (*v_begin.borrow())
+    let mut v_begin: Ptr<i32> = (v.as_pointer() as Ptr<i32>);
+    let mut v_end: Ptr<i32> = (v.as_pointer() as Ptr<i32>).to_end();
+    let mut it: Ptr<i32> = {
+        let count = (v_end.get_offset() - v_begin.get_offset()) as usize;
+        v_begin.offset(
+            v_begin
                 .clone()
                 .into_iter()
                 .take(count)
                 .position(|value_0| value_0.read() == 2)
                 .unwrap_or(count) as isize,
         )
-    }));
-    let mut v_result_true: bool = (*it.borrow()) != (v.as_pointer() as Ptr<i32>).to_end();
+    };
+    let mut v_result_true: bool = it != (v.as_pointer() as Ptr<i32>).to_end();
     let m: Value<BTreeMap<i32, Value<(Value<i32>, Value<f64>)>>> =
         Rc::new(RefCell::new(BTreeMap::new()));
     (m.as_pointer() as Ptr<BTreeMap<i32, Value<(Value<i32>, Value<f64>)>>>)

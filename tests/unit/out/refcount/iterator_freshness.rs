@@ -6,9 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn foo_0(a0: Ptr<i32>) {
-    let a0: Value<Ptr<i32>> = Rc::new(RefCell::new(a0));
-}
+pub fn foo_0(mut a0: Ptr<i32>) {}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
@@ -19,8 +17,8 @@ fn main_0() -> i32 {
             .map(|_| <i32>::default())
             .collect::<Vec<_>>(),
     ));
-    let it: Value<Ptr<i32>> = Rc::new(RefCell::new((vec_.as_pointer() as Ptr<i32>)));
-    ({ foo_0((*it.borrow()).clone()) });
+    let mut it: Ptr<i32> = (vec_.as_pointer() as Ptr<i32>);
+    ({ foo_0((it).clone()) });
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

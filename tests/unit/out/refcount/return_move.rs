@@ -30,13 +30,11 @@ thread_local!(
 pub fn id_1(mut n: Ptr<node>) -> Ptr<node> {
     return n;
 }
-pub fn pick_2(a: Ptr<node>, b: Ptr<node>) -> Ptr<node> {
-    let a: Value<Ptr<node>> = Rc::new(RefCell::new(a));
-    let b: Value<Ptr<node>> = Rc::new(RefCell::new(b));
-    return if !(*a.borrow()).is_null() {
-        (*a.borrow()).clone()
+pub fn pick_2(mut a: Ptr<node>, mut b: Ptr<node>) -> Ptr<node> {
+    return if !(a).is_null() {
+        (a).clone()
     } else {
-        (*b.borrow()).clone()
+        (b).clone()
     };
 }
 pub fn local_ptr_3(mut n: Ptr<node>) -> Ptr<node> {

@@ -32,10 +32,10 @@ bool IsFlatVec(clang::QualType type) {
 }
 
 // Whether decl may be stored without a Value, if its address is not taken:
-// scalars, arrays of non-arrays, user-defined structs, unique_ptrs and
-// vectors, unless they have a destructor, which is called with a pointer to
-// them.
-bool CanUnbox(const clang::VarDecl *decl) {
+// scalars, arrays of non-arrays, user-defined structs, unique_ptrs, vectors
+// and iterators translated to pointers, unless they have a destructor, which
+// is called with a pointer to them.
+bool CanUnbox(clang::ASTContext &ctx, const clang::VarDecl *decl) {
   auto type = decl->getType();
   if (IsFlatVec(type)) {
     // Vectors are flat Vecs.
@@ -44,7 +44,8 @@ bool CanUnbox(const clang::VarDecl *decl) {
       return false;
     }
   } else if (type->isStructureOrClassType()) {
-    if ((!IsUserDefinedDecl(type->getAsRecordDecl()) && !IsUniquePtr(type)) ||
+    if ((!IsUserDefinedDecl(type->getAsRecordDecl()) && !IsUniquePtr(type) &&
+         !RuleRegistry::MapsToRefcountPointer(ctx, type)) ||
         TypeNeedsDestruction(type)) {
       return false;
     }
@@ -194,7 +195,8 @@ public:
 
 private:
   // The arguments of a call translated by a rule are passed by value or
-  // borrowed, unless the rule takes a pointer to them.
+  // borrowed, unless the rule takes a pointer to them. A pointer parameter
+  // receives the value of an argument that is itself translated to a pointer.
   void AddRuleArgs(clang::Expr *expr, clang::Expr **args, unsigned num_args) {
     auto *rule = RuleRegistry::GetExprRule(ctx_, expr);
     if (!rule) {
@@ -203,8 +205,10 @@ private:
     // Variadic arguments are not considered.
     auto all_args = BuildUnifiedArgs(expr, args, num_args);
     for (unsigned i = 0; i < all_args.size() && i < rule->params.size(); ++i) {
-      if (!rule->params[i].is_pointer()) {
-        AddValueUse(IgnoreNoOpCasts(all_args[i]));
+      auto *arg = IgnoreNoOpCasts(all_args[i]);
+      if (!rule->params[i].is_pointer() || arg->getType()->isPointerType() ||
+          RuleRegistry::MapsToPointer(ctx_, arg->getType())) {
+        AddValueUse(arg);
       }
     }
   }
@@ -213,7 +217,14 @@ private:
   // without making a pointer to it.
   void AddValueUse(clang::Expr *expr, bool write = false) {
     expr = expr->IgnoreParens();
-    if (auto *member = clang::dyn_cast<clang::MemberExpr>(expr)) {
+    // The value of a conditional lvalue is the value of either operand; it is
+    // written through a pointer to the operand.
+    if (auto *cond = clang::dyn_cast<clang::ConditionalOperator>(expr)) {
+      if (!write) {
+        AddValueUse(cond->getTrueExpr());
+        AddValueUse(cond->getFalseExpr());
+      }
+    } else if (auto *member = clang::dyn_cast<clang::MemberExpr>(expr)) {
       auto *field = clang::dyn_cast<clang::FieldDecl>(member->getMemberDecl());
       // A union member is accessed through a pointer to the union.
       if (!member->isArrow() && field && !field->getParent()->isUnion()) {
@@ -244,7 +255,7 @@ private:
 
   void AddressTaken(const clang::ValueDecl *decl) {
     if (auto *var = clang::dyn_cast<clang::VarDecl>(decl);
-        var && CanUnbox(var)) {
+        var && CanUnbox(ctx_, var)) {
       address_taken_.insert(var);
     }
   }
@@ -256,13 +267,13 @@ private:
 };
 } // namespace
 
-BoxedVars::BoxedVars(clang::ASTContext &ctx) {
+BoxedVars::BoxedVars(clang::ASTContext &ctx) : ctx_(ctx) {
   AddressTakenVisitor(ctx, address_taken_)
       .TraverseDecl(ctx.getTranslationUnitDecl());
 }
 
 bool BoxedVars::contains(const clang::VarDecl *decl) const {
-  return !CanUnbox(decl) || address_taken_.contains(decl);
+  return !CanUnbox(ctx_, decl) || address_taken_.contains(decl);
 }
 
 namespace {
