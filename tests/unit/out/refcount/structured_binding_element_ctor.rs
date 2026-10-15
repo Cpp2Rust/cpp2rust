@@ -105,8 +105,8 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new((*p.borrow()).0.borrow().clone())),
         Rc::new(RefCell::new((*p.borrow()).1.borrow().clone())),
     )));
-    let x: Ptr<Elem> = ({ get_8(__decomp_7.as_pointer()) });
-    let y: Ptr<Elem> = ({ get_9(__decomp_7.as_pointer()) });
+    let x: Ptr<Elem> = (*__decomp_7.borrow()).0.as_pointer();
+    let y: Ptr<Elem> = (*__decomp_7.borrow()).1.as_pointer();
     assert!((copies_0.with(|rc| *rc.borrow()) == (before_copies + 2)));
     assert!(({ (*x.upgrade().deref()).v } == ({ (*(*p.borrow()).0.borrow()).v } + 100)));
     assert!(({ (*y.upgrade().deref()).v } == ({ (*(*p.borrow()).1.borrow()).v } + 100)));

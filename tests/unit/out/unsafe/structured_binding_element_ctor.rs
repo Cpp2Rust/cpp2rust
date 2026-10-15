@@ -88,8 +88,8 @@ unsafe fn main_0() -> i32 {
     let mut p: (Elem, Elem) = (Elem::new({ 7 }).into(), Elem::new({ 8 }).into());
     before_copies = (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0));
     let mut __decomp_7: (Elem, Elem) = p.clone();
-    let x: *mut Elem = (unsafe { get_8(&mut __decomp_7) });
-    let y: *mut Elem = (unsafe { get_9(&mut __decomp_7) });
+    let x: *mut Elem = &mut __decomp_7.0;
+    let y: *mut Elem = &mut __decomp_7.1;
     assert!(
         ((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == ((before_copies) + (2)))
     );
