@@ -5,6 +5,7 @@
 
 #include <clang/AST/RecordLayout.h>
 #include <clang/Basic/OperatorKinds.h>
+#include <clang/Lex/Lexer.h>
 #include <llvm/Support/ErrorHandling.h>
 
 #include <algorithm>
@@ -15,7 +16,6 @@
 #include "converter/converter_lib.h"
 #include "converter/lex.h"
 #include "converter/mapper.h"
-#include "converter/printer.h"
 #include "converter/rules/registry.h"
 
 namespace cpp2rust {
@@ -1234,19 +1234,26 @@ static std::vector<const char *> printf2fmt(std::string &format) {
 }
 
 void ConverterRefCount::ConvertPrintf(clang::CallExpr *expr) {
-  bool is_fprintf =
-      Printer::ToString(ctx_, expr->getCallee()).starts_with("int fprintf");
+  bool is_fprintf = IsCDecl(expr->getDirectCallee(), "fprintf");
   auto format = GetEscapedStringLiteral(clang::cast<clang::StringLiteral>(
       expr->getArg(is_fprintf)->IgnoreImplicit()));
   bool ends_newline = format.ends_with("\\n\"");
 
-  auto fd = is_fprintf ? Printer::ToString(ctx_, expr->getArg(0)) : "stdout";
-  if (fd == "stdout" || fd == "__stdoutp") {
+  llvm::StringRef stream = "stdout";
+  if (is_fprintf) {
+    auto loc = expr->getArg(0)->IgnoreParenImpCasts()->getBeginLoc();
+    stream = loc.isMacroID()
+                 ? clang::Lexer::getImmediateMacroName(
+                       loc, ctx_.getSourceManager(), ctx_.getLangOpts())
+                 : "";
+  }
+  if (stream == "stdout") {
     StrCat(ends_newline ? "println!(" : "print!(");
-  } else if (fd == "stderr" || fd == "__stderrp") {
+  } else if (stream == "stderr") {
     StrCat(ends_newline ? "eprintln!(" : "eprint!(");
   } else {
-    llvm::errs() << "Unknown fprintf fd: " << fd << '\n';
+    llvm::errs() << "Unknown fprintf fd:\n";
+    expr->getArg(0)->dump(llvm::errs(), ctx_);
     exit(1);
   }
   if (ends_newline) {

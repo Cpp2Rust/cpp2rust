@@ -28,8 +28,6 @@
 
 #include "converter/lex.h"
 #include "converter/mapper.h"
-#include "converter/printer.h"
-#include "converter/rules/decls.h"
 #include "converter/rules/registry.h"
 
 // https://doc.rust-lang.org/reference/keywords.html
@@ -630,19 +628,38 @@ bool IsConvertibleFunctionDecl(const clang::FunctionDecl *decl) {
   return decl->hasBody() && decl->isThisDeclarationADefinition();
 }
 
+bool IsStdDecl(const clang::NamedDecl *decl, llvm::StringRef name) {
+  return decl && decl->isInStdNamespace() && decl->getIdentifier() &&
+         decl->getName() == name;
+}
+
 bool IsUniquePtr(clang::QualType type) {
-  auto *record_decl = type.getNonReferenceType()->getAsCXXRecordDecl();
-  return record_decl && record_decl->getNameAsString() == "unique_ptr";
+  return IsStdDecl(type.getNonReferenceType()->getAsCXXRecordDecl(),
+                   "unique_ptr");
 }
 
 bool IsCallToOstream(clang::CallExpr *expr) {
-  if (auto *op = clang::dyn_cast<clang::CXXOperatorCallExpr>(expr)) {
-    if (auto *record_decl = expr->getType()->getAsCXXRecordDecl()) {
-      return record_decl->getNameAsString() == "basic_ostream" &&
-             op->getOperator() == clang::OverloadedOperatorKind::OO_LessLess;
-    }
+  auto *op = clang::dyn_cast<clang::CXXOperatorCallExpr>(expr);
+  return op &&
+         op->getOperator() == clang::OverloadedOperatorKind::OO_LessLess &&
+         IsStdDecl(expr->getType()->getAsCXXRecordDecl(), "basic_ostream");
+}
+
+bool IsCDecl(const clang::NamedDecl *decl, llvm::StringRef name) {
+  auto *function = clang::dyn_cast_or_null<clang::FunctionDecl>(decl);
+  return function && function->isExternC() && function->getIdentifier() &&
+         function->getName() == name;
+}
+
+bool IsStdFunction(const clang::Expr *expr, llvm::StringRef name) {
+  expr = expr->IgnoreUnlessSpelledInSource();
+  const clang::NamedDecl *decl = nullptr;
+  if (auto *call = clang::dyn_cast<clang::CallExpr>(expr)) {
+    decl = call->getDirectCallee();
+  } else if (auto *ref = clang::dyn_cast<clang::DeclRefExpr>(expr)) {
+    decl = clang::dyn_cast<clang::FunctionDecl>(ref->getDecl());
   }
-  return false;
+  return IsStdDecl(decl, name);
 }
 
 bool IsAsciiStringLiteral(const clang::StringLiteral *str) {
@@ -802,21 +819,45 @@ static std::string GetParamSignature(const clang::Decl *decl) {
   return args;
 }
 
-static clang::ASTNameGenerator *name_generator = nullptr;
+static clang::MangleContext *mangle_context = nullptr;
 
-void SetNameGenerator(clang::ASTNameGenerator *generator) {
-  name_generator = generator;
+void SetMangleContext(clang::MangleContext *context) {
+  mangle_context = context;
 }
 
-clang::ASTNameGenerator *GetNameGenerator() { return name_generator; }
+clang::MangleContext *GetMangleContext() { return mangle_context; }
 
 static std::string GetMangledName(const clang::Decl *decl) {
-  assert(name_generator);
-  return name_generator->getName(decl);
+  assert(mangle_context);
+  auto *named = clang::cast<clang::NamedDecl>(decl);
+  if (!mangle_context->shouldMangleDeclName(named)) {
+    return named->getNameAsString();
+  }
+  clang::GlobalDecl global;
+  if (auto *ctor = clang::dyn_cast<clang::CXXConstructorDecl>(decl)) {
+    global = clang::GlobalDecl(ctor, clang::Ctor_Complete);
+  } else if (auto *dtor = clang::dyn_cast<clang::CXXDestructorDecl>(decl)) {
+    global = clang::GlobalDecl(dtor, clang::Dtor_Complete);
+  } else {
+    global = clang::GlobalDecl(named);
+  }
+  std::string name;
+  llvm::raw_string_ostream os(name);
+  mangle_context->mangleName(global, os);
+  return name;
+}
+
+static std::string
+GetMangledTypeName(const clang::ClassTemplateSpecializationDecl *decl) {
+  assert(mangle_context);
+  std::string name;
+  llvm::raw_string_ostream os(name);
+  mangle_context->mangleCanonicalTypeName(
+      decl->getASTContext().getCanonicalTagType(decl), os);
+  return name;
 }
 
 static std::string GetLexicalSpecializationID(const clang::Decl *decl) {
-  auto &ctx = decl->getASTContext();
   std::string id;
   if (const auto *var =
           clang::dyn_cast<clang::VarTemplateSpecializationDecl>(decl)) {
@@ -824,18 +865,18 @@ static std::string GetLexicalSpecializationID(const clang::Decl *decl) {
   }
   if (const auto *self =
           clang::dyn_cast<clang::ClassTemplateSpecializationDecl>(decl)) {
-    id += Printer::ToString(ctx, GetTypeForDecl(ctx, self));
+    id += GetMangledTypeName(self);
   }
   if (const auto *spec =
           clang::dyn_cast<clang::ClassTemplateSpecializationDecl>(
               decl->getLexicalDeclContext());
       spec && decl->getLexicalDeclContext() != decl->getDeclContext()) {
-    id += Printer::ToString(ctx, GetTypeForDecl(ctx, spec));
+    id += GetMangledTypeName(spec);
   }
   for (const auto *dc = decl->getDeclContext(); dc; dc = dc->getParent()) {
     if (const auto *spec =
             clang::dyn_cast<clang::ClassTemplateSpecializationDecl>(dc)) {
-      id += Printer::ToString(ctx, GetTypeForDecl(ctx, spec));
+      id += GetMangledTypeName(spec);
     }
     if (const auto *fn = clang::dyn_cast<clang::FunctionDecl>(dc);
         fn && fn->getTemplateSpecializationArgs()) {
