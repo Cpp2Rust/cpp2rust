@@ -237,6 +237,8 @@ private:
       case clang::TemplateArgument::Null:
       case clang::TemplateArgument::Integral:
       case clang::TemplateArgument::NullPtr:
+      case clang::TemplateArgument::Declaration:
+      case clang::TemplateArgument::StructuralValue:
       case clang::TemplateArgument::Expression:
       case clang::TemplateArgument::Template:
         break;

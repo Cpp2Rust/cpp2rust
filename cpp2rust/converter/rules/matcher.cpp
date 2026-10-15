@@ -12,22 +12,20 @@ namespace cpp2rust::Matcher {
 
 std::string MapBinding(Converter &converter, const Bindings &bindings,
                        unsigned n) {
-  auto type = bindings.at(n);
-  assert(!type.isNull() && "template parameter is not bound to a type");
-  return converter.GetUnboxedTypeAsString(type);
+  return converter.GetTemplateArgumentAsString(bindings.at(n));
 }
 
-// Substitutes concrete types into a target template string using the provided
-// type mapping. Each template parameter in `tgt_template` is replaced with its
-// corresponding instantiated type from `types`.
+// Substitutes template arguments into a target template string. Each template
+// parameter in `tgt_template` is replaced with its corresponding argument from
+// `bindings`, which is either a type or a value.
 //
 // Example:
-//   types        = { int }
-//   tgt_template = "Vec<T1>"
-//   result       = "Vec<i32>"
-std::string InstantiateTgt(Converter &converter, const Bindings &types,
+//   bindings     = { int, 4 }
+//   tgt_template = "[T1; T2]"
+//   result       = "[i32; 4_usize]"
+std::string InstantiateTgt(Converter &converter, const Bindings &bindings,
                            const std::string &tgt_template) {
-  assert(types.size() <= TranslationRule::kMaxGenerics &&
+  assert(bindings.size() <= TranslationRule::kMaxGenerics &&
          "template placeholder exceeds kMaxGenerics");
   std::string instantiated_template = tgt_template;
   std::string::size_type pos = 0;
@@ -40,7 +38,7 @@ std::string InstantiateTgt(Converter &converter, const Bindings &types,
       continue;
     }
     auto repl =
-        MapBinding(converter, types, instantiated_template[pos + 1] - '1');
+        MapBinding(converter, bindings, instantiated_template[pos + 1] - '1');
     instantiated_template.replace(pos, 2, repl);
     pos += repl.length();
   }

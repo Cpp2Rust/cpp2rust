@@ -139,6 +139,28 @@ std::string Converter::GetUnboxedTypeAsString(clang::QualType qual_type) {
   return ToString(qual_type);
 }
 
+std::string
+Converter::GetTemplateArgumentAsString(const clang::TemplateArgument &arg) {
+  switch (arg.getKind()) {
+  case clang::TemplateArgument::Type:
+    return GetUnboxedTypeAsString(arg.getAsType());
+  case clang::TemplateArgument::Integral:
+  case clang::TemplateArgument::NullPtr:
+  case clang::TemplateArgument::Declaration:
+  case clang::TemplateArgument::StructuralValue: {
+    auto expr = GetSema().BuildExpressionFromNonTypeTemplateArgument(
+        arg, clang::SourceLocation());
+    assert(expr.isUsable() && "cannot build non-type template argument");
+    Buffer buf(*this);
+    Convert(expr.get());
+    return std::move(buf).str();
+  }
+  default:
+    assert(0 && "template parameter is not bound to a type or a value");
+    return {};
+  }
+}
+
 bool Converter::ConvertMappedType(clang::QualType qual_type) {
   std::string type_as_string = Mapper::Map(*this, qual_type);
   if (type_as_string == token::kIgnoreRule) {
@@ -747,6 +769,10 @@ bool Converter::IsPassThroughRule(clang::Expr *expr) const {
 }
 
 bool Converter::RecordDerivesCopy(const clang::RecordDecl *decl) {
+  if (auto cxx = llvm::dyn_cast<clang::CXXRecordDecl>(decl);
+      cxx && cxx->isLambda()) {
+    return false;
+  }
   if (auto rule =
           RuleRegistry::Search(ctx_, ctx_.getCanonicalTagType(decl)).first) {
     auto &derives = rule->type_info.derives;
