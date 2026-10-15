@@ -147,9 +147,15 @@ bool IsMethodOnPtr(const clang::CXXMethodDecl *method);
 
 bool IsConvertibleFunctionDecl(const clang::FunctionDecl *decl);
 
+bool IsStdDecl(const clang::NamedDecl *decl, llvm::StringRef name);
+
 bool IsUniquePtr(clang::QualType type);
 
 bool IsCallToOstream(clang::CallExpr *expr);
+
+bool IsCDecl(const clang::NamedDecl *decl, llvm::StringRef name);
+
+bool IsStdFunction(const clang::Expr *expr, llvm::StringRef name);
 
 bool IsAsciiStringLiteral(const clang::StringLiteral *str);
 
@@ -182,9 +188,9 @@ unsigned GetColumnNumber(const clang::Decl *decl);
 
 unsigned GetArraySize(clang::QualType array_type);
 
-void SetNameGenerator(clang::ASTNameGenerator *generator);
+void SetMangleContext(clang::MangleContext *context);
 
-clang::ASTNameGenerator *GetNameGenerator();
+clang::MangleContext *GetMangleContext();
 
 std::string GetID(const clang::Decl *decl);
 std::string GetMethodID(const clang::CXXMethodDecl *decl);
