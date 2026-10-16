@@ -15,7 +15,6 @@
 #include <cstdlib>
 #include <filesystem>
 #include <format>
-#include <set>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -86,7 +85,7 @@ clang::QualType getInitPattern(const clang::FunctionDecl *rule) {
 }
 
 void collectGenerics(const std::vector<TranslationRule::BodyFragment> &body,
-                     std::set<unsigned> &used) {
+                     std::unordered_set<unsigned> &used) {
   for (const auto &fragment : body) {
     if (auto generic =
             std::get_if<TranslationRule::GenericFragment>(&fragment)) {
@@ -100,7 +99,7 @@ void collectGenerics(const std::vector<TranslationRule::BodyFragment> &body,
   }
 }
 
-void collectGenerics(llvm::StringRef type, std::set<unsigned> &used) {
+void collectGenerics(llvm::StringRef type, std::unordered_set<unsigned> &used) {
   auto is_ident = [](char c) { return llvm::isAlnum(c) || c == '_'; };
   for (size_t i = 0; i < type.size(); ++i) {
     if (type[i] != 'T' || (i > 0 && is_ident(type[i - 1]))) {
@@ -128,7 +127,7 @@ void checkGenerics(const std::string &dir, const std::string &name,
       declared.insert(param->getName().str());
     }
   }
-  std::set<unsigned> used;
+  std::unordered_set<unsigned> used;
   collectGenerics(rule.body, used);
   collectGenerics(rule.return_type.type, used);
   for (const auto &param : rule.params) {
