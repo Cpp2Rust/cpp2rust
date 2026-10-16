@@ -114,10 +114,10 @@ fn f10<T1: CppInputIterator<T2>, T2: PartialEq + Clone + ByteRepr>(a0: T1, a1: T
     }
 }
 
-fn f12<T1: CppInputIterator<T3>, T2: Clone + Into<T3>, T3: ByteRepr>(a0: T1, a1: T1, a2: T2) {
+fn f12<T1: CppInputIterator<T2>, T2: Clone + ByteRepr>(a0: T1, a1: T1, a2: T2) {
     let mut __it = a0;
     while __it != a1 {
-        __it.iter_deref().write(a2.clone().into());
+        __it.iter_deref().write(Clone::clone(&a2));
         __it.iter_inc();
     }
 }

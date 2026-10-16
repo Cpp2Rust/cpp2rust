@@ -104,10 +104,10 @@ unsafe fn f10<T1: UnsafeCppInputIterator<T2>, T2: PartialEq + Clone>(a0: T1, a1:
     }
 }
 
-unsafe fn f12<T1: UnsafeCppInputIterator<T3>, T2: Clone + Into<T3>, T3>(a0: T1, a1: T1, a2: T2) {
+unsafe fn f12<T1: UnsafeCppInputIterator<T2>, T2: Clone>(a0: T1, a1: T1, a2: T2) {
     let mut __it = a0;
     while __it != a1 {
-        *__it.iter_deref() = a2.clone().into();
+        *__it.iter_deref() = Clone::clone(&a2);
         __it.iter_inc();
     }
 }
