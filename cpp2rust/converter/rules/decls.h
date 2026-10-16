@@ -42,7 +42,6 @@ const clang::Expr *GetReturned(const clang::FunctionDecl *rule);
 const clang::Expr *GetMacroMemberBase(const clang::SourceManager &sm,
                                       const clang::MemberExpr *member);
 
-clang::QualType EnableIfSameType(const clang::Decl *rule);
 
 std::optional<std::vector<clang::TemplateArgument>>
 DeduceFromType(clang::Sema &sema, clang::TemplateParameterList *params,

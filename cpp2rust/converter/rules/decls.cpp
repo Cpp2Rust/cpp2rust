@@ -77,30 +77,6 @@ const clang::Expr *GetMacroMemberBase(const clang::SourceManager &sm,
   }
 }
 
-clang::QualType EnableIfSameType(const clang::Decl *rule) {
-  auto tmpl = llvm::dyn_cast<clang::TemplateDecl>(rule);
-  if (!tmpl) {
-    return {};
-  }
-  for (auto param : *tmpl->getTemplateParameters()) {
-    auto type_param = llvm::dyn_cast<clang::TemplateTypeParmDecl>(param);
-    if (!type_param || type_param->getIdentifier() ||
-        !type_param->hasDefaultArgument()) {
-      continue;
-    }
-    auto same = type_param->getDefaultArgument()
-                    .getArgument()
-                    .getAsType()
-                    ->getAs<clang::TemplateSpecializationType>();
-    if (!same || !same->isTypeAlias() ||
-        same->getTemplateName().getAsTemplateDecl()->getName() != "SameAs") {
-      continue;
-    }
-    return same->template_arguments()[1].getAsType();
-  }
-  return {};
-}
-
 std::optional<std::vector<clang::TemplateArgument>>
 DeduceFromType(clang::Sema &sema, clang::TemplateParameterList *params,
                clang::QualType pattern, clang::QualType actual) {

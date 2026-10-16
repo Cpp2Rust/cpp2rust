@@ -5,6 +5,7 @@
 #include <clang/AST/Decl.h>
 #include <clang/AST/DeclTemplate.h>
 #include <clang/AST/ExprCXX.h>
+#include <clang/AST/RecursiveASTVisitor.h>
 #include <clang/Basic/TokenKinds.h>
 #include <clang/Frontend/ASTUnit.h>
 #include <clang/Tooling/Tooling.h>
@@ -26,7 +27,6 @@
 #include <vector>
 
 #include "compat/platform_flags.h"
-#include "converter/rules/decls.h"
 #include "converter/rules/rules_loader.h"
 
 namespace fs = std::filesystem;
@@ -134,9 +134,52 @@ std::string ClassOfParameters(const clang::Decl *rule) {
   return {};
 }
 
-std::string ClassOfEnableIf(const clang::Decl *rule) {
-  auto same = RuleDecls::EnableIfSameType(rule);
-  return same.isNull() ? std::string() : ClassOf(same);
+class DeclaredNames : public clang::RecursiveASTVisitor<DeclaredNames> {
+public:
+  explicit DeclaredNames(const clang::SourceManager &sm) : sm_(sm) {}
+
+  bool VisitTemplateSpecializationType(clang::TemplateSpecializationType *type) {
+    add(type->getTemplateName().getAsTemplateDecl());
+    return true;
+  }
+
+  bool VisitTagType(clang::TagType *type) {
+    add(type->getDecl());
+    return true;
+  }
+
+  bool VisitDeclRefExpr(clang::DeclRefExpr *expr) {
+    add(expr->getDecl());
+    return true;
+  }
+
+  bool VisitOverloadExpr(clang::OverloadExpr *expr) {
+    if (expr->decls_begin() != expr->decls_end()) {
+      add((*expr->decls_begin())->getUnderlyingDecl());
+    }
+    return true;
+  }
+
+  std::unordered_set<std::string> names;
+
+private:
+  void add(const clang::NamedDecl *decl) {
+    if (!decl || !sm_.isInSystemHeader(decl->getLocation())) {
+      return;
+    }
+    if (auto key = RulesLoader::ClassKey(decl); !key.empty()) {
+      names.insert(key);
+    }
+  }
+
+  const clang::SourceManager &sm_;
+};
+
+std::unordered_set<std::string> DeclaredNamesOf(clang::ASTContext &ctx,
+                                                const clang::Decl *rule) {
+  DeclaredNames visitor(ctx.getSourceManager());
+  visitor.TraverseDecl(const_cast<clang::Decl *>(rule));
+  return std::move(visitor.names);
 }
 
 const clang::Expr *RuleExpr(const clang::Decl *decl) {
@@ -266,8 +309,9 @@ void IndexRuleFile(clang::ASTContext &ctx, const std::string &dir_name,
     if (key.empty()) {
       key = ClassOfParameters(decl);
     }
-    if (key.empty()) {
-      key = ClassOfEnableIf(decl);
+    bool any_class = key.empty() && llvm::isa<clang::TemplateDecl>(decl);
+    if (any_class) {
+      key = RulesLoader::kAnyClassKey;
     }
     if (key.empty()) {
       llvm::errs() << "ERROR: cannot derive the key of rule '" << name
@@ -277,7 +321,10 @@ void IndexRuleFile(clang::ASTContext &ctx, const std::string &dir_name,
     auto range = clang::tooling::getExtendedRange(*decl, clang::tok::semi, ctx);
     auto text = clang::tooling::getText(range, ctx).str() + '\n';
     llvm::json::Object rule{{"dir", dir_name}, {"name", name}, {"text", text}};
-    if (auto required = RequiredClasses(decl, alias); !required.empty()) {
+    if (any_class) {
+      rule["declares"] = llvm::json::Array(DeclaredNamesOf(ctx, decl));
+    } else if (auto required = RequiredClasses(decl, alias);
+               !required.empty()) {
       rule["requires"] = llvm::json::Array(required);
     }
     AddRule(rules, key, std::move(rule));

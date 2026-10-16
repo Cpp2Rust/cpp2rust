@@ -299,8 +299,31 @@ unsigned CxxStandard(const clang::LangOptions &opts) {
   return 11;
 }
 
+bool IsDeclared(clang::ASTContext &ctx, llvm::StringRef key) {
+  const clang::DeclContext *scope = ctx.getTranslationUnitDecl();
+  while (true) {
+    auto [name, rest] = key.split('/');
+    auto found = scope->lookup(&ctx.Idents.get(name));
+    if (rest.empty()) {
+      return !found.empty();
+    }
+    scope = nullptr;
+    for (auto decl : found) {
+      if (llvm::isa<clang::NamespaceDecl, clang::TagDecl>(decl)) {
+        scope = llvm::cast<clang::DeclContext>(decl);
+        break;
+      }
+    }
+    if (!scope) {
+      return false;
+    }
+    key = rest;
+  }
+}
+
 std::string BuildRulesEpilogue(const std::unordered_set<std::string> &keys,
-                               const clang::LangOptions &opts) {
+                               clang::ASTContext &ctx) {
+  const auto &opts = ctx.getLangOpts();
   bool is_cxx = opts.CPlusPlus;
   const auto &index = is_cxx ? CxxIndex() : CIndex();
   unsigned standard = is_cxx ? CxxStandard(opts) : 0;
@@ -310,7 +333,9 @@ std::string BuildRulesEpilogue(const std::unordered_set<std::string> &keys,
     out += "namespace cpp2rust_rules {\n" + common->str() + "}\n";
   }
   auto rules = index.getObject("rules");
-  for (const auto &key : keys) {
+  std::vector<std::string> candidates(keys.begin(), keys.end());
+  candidates.push_back(kAnyClassKey);
+  for (const auto &key : candidates) {
     auto entries = rules->getArray(key);
     if (!entries) {
       continue;
@@ -324,6 +349,13 @@ std::string BuildRulesEpilogue(const std::unordered_set<std::string> &keys,
           required &&
           !llvm::all_of(*required, [&](const llvm::json::Value &key) {
             return keys.contains(key.getAsString()->str());
+          })) {
+        continue;
+      }
+      if (auto declared = rule->getArray("declares");
+          declared &&
+          !llvm::all_of(*declared, [&](const llvm::json::Value &name) {
+            return IsDeclared(ctx, *name.getAsString());
           })) {
         continue;
       }
@@ -521,7 +553,7 @@ void PragmaHandler::HandlePragma(clang::Preprocessor &PP,
   RuleUsageCollector collector(CI_.getSema(), keys);
   collector.TraverseDecl(ctx.getTranslationUnitDecl());
 
-  auto text = BuildRulesEpilogue(keys, ctx.getLangOpts());
+  auto text = BuildRulesEpilogue(keys, ctx);
   log() << "rules loaded for this translation unit:\n" << text;
   auto rules_file = src_mgr.createFileID(
       llvm::MemoryBuffer::getMemBufferCopy(text, "<cpp2rust-rules>"),

@@ -39,6 +39,9 @@ using ExprKey = std::variant<Member, Constructor, Unqualified>;
 
 using TypeKey = std::variant<const clang::Decl *, const clang::Type *>;
 
+inline const TypeKey kAnyClass = static_cast<const clang::Decl *>(nullptr);
+inline const Constructor kAnyConstructor{nullptr};
+
 std::optional<ExprKey> GetExprKey(clang::ASTContext &ctx,
                                   const clang::Expr *use);
 

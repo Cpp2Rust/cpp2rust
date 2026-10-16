@@ -12,6 +12,7 @@
 #include <llvm/ADT/StringExtras.h>
 
 #include <algorithm>
+#include <set>
 #include <cstdlib>
 #include <filesystem>
 #include <format>
@@ -22,6 +23,7 @@
 #include <variant>
 
 #include "converter/converter_lib.h"
+#include "converter/rules/decls.h"
 #include "converter/rules/expr_matcher.h"
 #include "converter/rules/rule_keys.h"
 #include "converter/rules/rules_loader.h"
@@ -250,6 +252,15 @@ ExprMatch findExpr(const clang::Expr *use) {
   if (auto member = std::get_if<RuleKeys::Member>(&*key)) {
     consider(RuleKeys::Unqualified{member->name});
   }
+  if (std::holds_alternative<RuleKeys::Constructor>(*key)) {
+    if (auto record = RuleDecls::SkipImplicit(use)
+                          ->getType()
+                          .getCanonicalType()
+                          ->getAsCXXRecordDecl();
+        record && !IsUserDefinedDecl(record)) {
+      consider(RuleKeys::kAnyConstructor);
+    }
+  }
   return best;
 }
 
@@ -275,6 +286,9 @@ TypeRuleMatch findType(clang::QualType use) {
           auto better = AstMatcher::MoreSpecializedType(*sema_, it->second.decl,
                                                         best.rule_decl->decl);
           if (!better) {
+            use.dump(llvm::errs(), sema_->Context);
+            it->second.decl->dump(llvm::errs());
+            best.rule_decl->decl->dump(llvm::errs());
             llvm::report_fatal_error(
                 "type matches several rules, none more specialized");
           }
