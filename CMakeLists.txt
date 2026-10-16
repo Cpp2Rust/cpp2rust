@@ -179,6 +179,9 @@ file(GLOB_RECURSE rule_preprocessor_sources
 file(GLOB_RECURSE libcc2rs_sources CONFIGURE_DEPENDS
      ${PROJECT_SOURCE_DIR}/libcc2rs/src/*.rs
      ${PROJECT_SOURCE_DIR}/libcc2rs-macros/src/*.rs)
+file(GLOB rule_shim_sources CONFIGURE_DEPENDS
+     ${PROJECT_SOURCE_DIR}/rules/*/shim.rs)
+list(APPEND libcc2rs_sources ${rule_shim_sources})
 list(APPEND libcc2rs_sources
      ${PROJECT_SOURCE_DIR}/libcc2rs/Cargo.toml
      ${PROJECT_SOURCE_DIR}/libcc2rs-macros/Cargo.toml)
