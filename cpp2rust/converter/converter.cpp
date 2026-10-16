@@ -3363,9 +3363,6 @@ bool Converter::ConvertCXXOperatorCallExpr(clang::CXXOperatorCallExpr *expr) {
   case clang::OverloadedOperatorKind::OO_Arrow:
     if (IsUniquePtr(expr->getArg(0)->getType())) {
       ConvertUniquePtrDeref(expr);
-    } else if (GetStrongestIteratorCategory(ctx_, expr->getArg(0)->getType()) ==
-               IteratorCategory::Bidirectional) {
-      Convert(expr->getArg(0));
     } else if (expr->getOperator() == clang::OverloadedOperatorKind::OO_Star) {
       PushParen paren(*this);
       StrCat(token::kStar);
@@ -5453,14 +5450,6 @@ void Converter::ConvertConstructFromArgs(clang::QualType type,
 std::string Converter::AccessLValueObject(clang::MemberExpr *member) {
   auto *object = member->getBase();
   auto type = object->getType();
-  if (member->isArrow()) {
-    auto *op =
-        clang::dyn_cast<clang::CXXOperatorCallExpr>(object->IgnoreImplicit());
-    if (op && GetStrongestIteratorCategory(ctx_, op->getArg(0)->getType()) ==
-                  IteratorCategory::Bidirectional) {
-      return ToString(object);
-    }
-  }
   if (type->isPointerType() ||
       (IsReferenceType(object) && clang::isa<clang::CallExpr>(object))) {
     return std::format("({}{})", GetPointerDerefPrefix(type->getPointeeType()),

@@ -97,8 +97,8 @@ static bool IsFieldOfVectorElem(const clang::MemberExpr *expr) {
 }
 
 static bool IsPointerType(clang::ASTContext &ctx, clang::QualType type) {
-  return type->isPointerType() || GetStrongestIteratorCategory(ctx, type) ==
-                                      IteratorCategory::Contiguous;
+  return type->isPointerType() ||
+         RuleRegistry::MapsToRefcountPointer(ctx, type);
 }
 
 void ConverterRefCount::PendingDeref::set(std::string str, bool fresh) {
@@ -2848,12 +2848,6 @@ bool ConverterRefCount::ConvertCXXOperatorCallExpr(
       break;
     }
 
-    if (GetStrongestIteratorCategory(ctx_, expr->getArg(0)->getType()) ==
-        IteratorCategory::Bidirectional) {
-      Convert(expr->getArg(0));
-      break;
-    }
-
     {
       bool deref = !isAddrOf();
       PushParen paren(*this, deref);
@@ -3314,7 +3308,8 @@ void ConverterRefCount::ConvertArrow(clang::Expr *expr) {
   bool is_overloaded_arrow =
       op && op->getOperator() == clang::OverloadedOperatorKind::OO_Arrow;
 
-  if (!is_overloaded_arrow || IsUserOperatorCall(op)) {
+  if (!is_overloaded_arrow || IsUserOperatorCall(op) ||
+      RuleRegistry::ReturnsPointer(ctx_, expr)) {
     auto pointee_type = expr->getType()->getPointeeType();
     // Virtual methods, which take &mut self, are called through PtrDyn.
     if (auto *record = pointee_type->getAsRecordDecl();
@@ -3333,12 +3328,6 @@ void ConverterRefCount::ConvertArrow(clang::Expr *expr) {
     return;
   }
 
-  if (GetStrongestIteratorCategory(ctx_, op->getArg(0)->getType()) ==
-      IteratorCategory::Bidirectional) {
-    Convert(op->getArg(0));
-    return;
-  }
-
   Convert(expr);
 }
 
@@ -3348,12 +3337,6 @@ std::string ConverterRefCount::AccessLValueObject(clang::MemberExpr *member) {
 
   bool is_mut = method && !method->isConst();
   if (member->isArrow()) {
-    auto *op =
-        clang::dyn_cast<clang::CXXOperatorCallExpr>(object->IgnoreImplicit());
-    if (op && GetStrongestIteratorCategory(ctx_, op->getArg(0)->getType()) ==
-                  IteratorCategory::Bidirectional) {
-      return ConvertRValue(op->getArg(0));
-    }
     auto str = is_mut ? ConvertLValue(object) : ConvertRValue(object);
     auto pointee_type = object->getType()->getPointeeType();
     return DerefPtrExpr(str, pointee_type);

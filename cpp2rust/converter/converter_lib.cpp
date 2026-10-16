@@ -1892,7 +1892,7 @@ clang::Expr *GetCallee(clang::CallExpr *expr) {
 }
 
 bool HasReceiver(clang::Expr *expr) {
-  if (clang::isa<clang::CXXMemberCallExpr>(expr))
+  if (clang::isa<clang::CXXMemberCallExpr, clang::MemberExpr>(expr))
     return true;
   if (auto *opcall = clang::dyn_cast<clang::CXXOperatorCallExpr>(expr)) {
     if (auto *callee = opcall->getCalleeDecl()) {
@@ -1918,26 +1918,6 @@ std::optional<clang::QualType> GetParamImplicitConvertTarget(clang::Expr *expr,
     return std::nullopt;
   }
   return fn->getParamDecl(param_idx)->getType().getNonReferenceType();
-}
-
-std::optional<IteratorCategory>
-GetStrongestIteratorCategory(clang::ASTContext &ctx, clang::QualType type) {
-  type = type.getNonReferenceType().getUnqualifiedType();
-  if (!Mapper::Contains(ctx, type)) {
-    return std::nullopt;
-  }
-  if (RuleRegistry::MapsToRefcountPointer(ctx, type)) {
-    return IteratorCategory::Contiguous;
-  }
-  auto mapped = Mapper::Map(ctx, type);
-  if (mapped.empty()) {
-    return std::nullopt;
-  }
-  if (mapped.starts_with("BidirectionalIterator<") ||
-      mapped.starts_with("UnsafeBidirectionalIterator<")) {
-    return IteratorCategory::Bidirectional;
-  }
-  return std::nullopt;
 }
 
 std::string GetClassName(clang::QualType type) {

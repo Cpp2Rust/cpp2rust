@@ -138,7 +138,8 @@ class DeclaredNames : public clang::RecursiveASTVisitor<DeclaredNames> {
 public:
   explicit DeclaredNames(const clang::SourceManager &sm) : sm_(sm) {}
 
-  bool VisitTemplateSpecializationType(clang::TemplateSpecializationType *type) {
+  bool
+  VisitTemplateSpecializationType(clang::TemplateSpecializationType *type) {
     add(type->getTemplateName().getAsTemplateDecl());
     return true;
   }

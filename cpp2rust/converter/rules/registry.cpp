@@ -12,10 +12,10 @@
 #include <llvm/ADT/StringExtras.h>
 
 #include <algorithm>
-#include <set>
 #include <cstdlib>
 #include <filesystem>
 #include <format>
+#include <set>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -88,7 +88,8 @@ clang::QualType getInitPattern(const clang::FunctionDecl *rule) {
 void collectGenerics(const std::vector<TranslationRule::BodyFragment> &body,
                      std::set<unsigned> &used) {
   for (const auto &fragment : body) {
-    if (auto generic = std::get_if<TranslationRule::GenericFragment>(&fragment)) {
+    if (auto generic =
+            std::get_if<TranslationRule::GenericFragment>(&fragment)) {
       used.insert(generic->n);
     } else if (auto call = std::get_if<
                    std::unique_ptr<TranslationRule::MethodCallFragment>>(
