@@ -132,7 +132,8 @@ decltype(*std::declval<const T1 &>()) f5(const T1 &a0) {
 }
 
 template <
-    typename T1, typename T2 = typename std::iterator_traits<T1>::value_type,
+    typename T3, typename T1 = typename std::remove_reference<T3>::type,
+    typename T2 = typename std::iterator_traits<T1>::value_type,
     typename = typename std::enable_if<
         (std::is_base_of<
              std::input_iterator_tag,
@@ -140,8 +141,9 @@ template <
          std::is_base_of<
              std::output_iterator_tag,
              typename std::iterator_traits<T1>::iterator_category>::value) &&
-        !std::is_pointer<T1>::value>::type>
-T1 &f6(T1 &a0) {
+        !std::is_pointer<T1>::value &&
+        std::is_lvalue_reference<T3>::value>::type>
+T1 &f6(T3 &&a0) {
   return ++a0;
 }
 
@@ -192,14 +194,15 @@ bool f10(const T1 &a0, const T1 &a1) {
   return a0 != a1;
 }
 
-template <
-    typename T1, typename T2 = typename std::iterator_traits<T1>::value_type,
-    typename = typename std::enable_if<
-        std::is_base_of<
-            std::bidirectional_iterator_tag,
-            typename std::iterator_traits<T1>::iterator_category>::value &&
-        !std::is_pointer<T1>::value>::type>
-T1 &f11(T1 &a0) {
+template <typename T3, typename T1 = typename std::remove_reference<T3>::type,
+          typename T2 = typename std::iterator_traits<T1>::value_type,
+          typename = typename std::enable_if<
+              std::is_base_of<std::bidirectional_iterator_tag,
+                              typename std::iterator_traits<
+                                  T1>::iterator_category>::value &&
+              !std::is_pointer<T1>::value &&
+              std::is_lvalue_reference<T3>::value>::type>
+T1 &f11(T3 &&a0) {
   return --a0;
 }
 
@@ -356,4 +359,31 @@ template <
         !std::is_pointer<T1>::value && !std::is_pointer<T2>::value>::type>
 T1 f24(const T2 &a0) {
   return T1(a0);
+}
+
+template <
+    typename T3, typename T1 = typename std::remove_reference<T3>::type,
+    typename T2 = typename std::iterator_traits<T1>::value_type,
+    typename = typename std::enable_if<
+        (std::is_base_of<
+             std::input_iterator_tag,
+             typename std::iterator_traits<T1>::iterator_category>::value ||
+         std::is_base_of<
+             std::output_iterator_tag,
+             typename std::iterator_traits<T1>::iterator_category>::value) &&
+        !std::is_pointer<T1>::value && !std::is_reference<T3>::value>::type>
+T1 &f25(T3 &&a0) {
+  return ++a0;
+}
+
+template <
+    typename T3, typename T1 = typename std::remove_reference<T3>::type,
+    typename T2 = typename std::iterator_traits<T1>::value_type,
+    typename = typename std::enable_if<
+        std::is_base_of<
+            std::bidirectional_iterator_tag,
+            typename std::iterator_traits<T1>::iterator_category>::value &&
+        !std::is_pointer<T1>::value && !std::is_reference<T3>::value>::type>
+T1 &f26(T3 &&a0) {
+  return --a0;
 }

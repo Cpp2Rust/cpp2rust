@@ -118,3 +118,13 @@ unsafe fn f23<T1: UnsafeCppRandomAccessIterator<T2>, T2>(a0: T1, a1: T1) -> bool
 unsafe fn f24<T1: From<T2>, T2>(a0: T2) -> T1 {
     <T1>::from(a0)
 }
+
+unsafe fn f25<T1: UnsafeCppIterator<T2>, T2>(a0: T1) -> T1 {
+    let mut __it = a0;
+    __it.iter_inc()
+}
+
+unsafe fn f26<T1: UnsafeCppBidirectionalIterator<T2>, T2>(a0: T1) -> T1 {
+    let mut __it = a0;
+    __it.iter_dec()
+}

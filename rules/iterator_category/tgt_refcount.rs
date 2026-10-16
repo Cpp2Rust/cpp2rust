@@ -118,3 +118,13 @@ fn f23<T1: CppRandomAccessIterator<T2>, T2>(a0: T1, a1: T1) -> bool {
 fn f24<T1: From<T2>, T2>(a0: T2) -> T1 {
     <T1>::from(a0)
 }
+
+fn f25<T1: CppIterator<T2>, T2>(a0: T1) -> T1 {
+    let mut __it = a0;
+    __it.iter_inc()
+}
+
+fn f26<T1: CppBidirectionalIterator<T2>, T2>(a0: T1) -> T1 {
+    let mut __it = a0;
+    __it.iter_dec()
+}
