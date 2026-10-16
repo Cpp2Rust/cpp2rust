@@ -14,8 +14,8 @@ fn f1<T1: CppRandomAccessIterator<T2>, T2: Ord + Clone + ByteRepr>(a0: T1, a1: T
             .with(|__a| a0.iter_at(__y).with(|__b| __a.cmp(__b)))
     });
     let __values: Vec<_> = __order.iter().map(|&__i| a0.iter_at(__i).read()).collect();
-    for (__i, __v) in __values.into_iter().enumerate() {
-        a0.iter_at(__i as isize).write(__v);
+    for (__i, __v) in (0..__n).zip(__values) {
+        a0.iter_at(__i).write(__v);
     }
 }
 
@@ -65,8 +65,8 @@ where
         }
     });
     let __values: Vec<_> = __order.iter().map(|&__i| a0.iter_at(__i).read()).collect();
-    for (__i, __v) in __values.into_iter().enumerate() {
-        a0.iter_at(__i as isize).write(__v);
+    for (__i, __v) in (0..__n).zip(__values) {
+        a0.iter_at(__i).write(__v);
     }
 }
 

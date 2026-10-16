@@ -12,8 +12,8 @@ unsafe fn f1<T1: UnsafeCppRandomAccessIterator<T2>, T2: Ord>(a0: T1, a1: T1) {
         .iter()
         .map(|&__i| std::ptr::read(a0.iter_at(__i)))
         .collect();
-    for (__i, __v) in __values.into_iter().enumerate() {
-        std::ptr::write(a0.iter_at(__i as isize), __v);
+    for (__i, __v) in (0..__n).zip(__values) {
+        std::ptr::write(a0.iter_at(__i), __v);
     }
 }
 
@@ -61,8 +61,8 @@ where
         .iter()
         .map(|&__i| std::ptr::read(a0.iter_at(__i)))
         .collect();
-    for (__i, __v) in __values.into_iter().enumerate() {
-        std::ptr::write(a0.iter_at(__i as isize), __v);
+    for (__i, __v) in (0..__n).zip(__values) {
+        std::ptr::write(a0.iter_at(__i), __v);
     }
 }
 

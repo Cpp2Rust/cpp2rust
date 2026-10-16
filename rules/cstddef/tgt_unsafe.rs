@@ -9,6 +9,14 @@ fn t2() -> usize {
     0_usize
 }
 
+fn t3() -> isize {
+    0_isize
+}
+
+fn t4() -> isize {
+    0_isize
+}
+
 fn t5() -> usize {
     0_usize
 }
