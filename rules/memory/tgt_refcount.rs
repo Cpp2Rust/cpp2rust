@@ -3,6 +3,10 @@
 
 use libcc2rs::*;
 
-fn f1(_a0: Ptr<i8>, _a1: usize) {}
+fn f1(a0: Ptr<i8>, a1: usize) {
+    ()
+}
 
-fn f2(_a0: Ptr<i8>, _a1: usize) {}
+fn f2(a0: Ptr<i8>, a1: usize) {
+    ()
+}

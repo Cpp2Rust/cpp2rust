@@ -34,6 +34,21 @@ fn main_0() -> i32 {
     };
     assert!(it != (v.as_pointer() as Ptr<i32>).to_end());
     assert!(((it.read()) == 7));
+    {
+        let count = (v.as_pointer() as Ptr<i32>).to_end().get_offset()
+            - (v.as_pointer() as Ptr<i32>).get_offset();
+        let random = std::hash::RandomState::new();
+        for i in (1..count).rev() {
+            let j = std::hash::BuildHasher::hash_one(&random, i) as usize % (i + 1);
+            let x = (v.as_pointer() as Ptr<i32>).offset(i);
+            let y = (v.as_pointer() as Ptr<i32>).offset(j);
+            let tmp = x.read();
+            x.write(y.read());
+            y.write(tmp);
+        }
+    };
+    (v.as_pointer() as Ptr<i32>).sort((v.as_pointer() as Ptr<i32>).to_end().get_offset());
+    assert!(({ (*v.borrow())[0_usize] } == 4) && ({ (*v.borrow())[1_usize] } == 7));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

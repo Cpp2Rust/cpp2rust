@@ -33,6 +33,20 @@ unsafe fn main_0() -> i32 {
                 .to_vec()
         }
     );
+    assert!(
+        s1 != {
+            let s = c"world".as_ptr();
+            std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1)
+                .to_vec()
+        }
+    );
+    assert!(
+        !(s1 != {
+            let s = c"hello".as_ptr();
+            std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1)
+                .to_vec()
+        })
+    );
     let mut p1: *const libc::c_char = (s1.as_mut_ptr()).cast_const();
     assert!((((*p1.offset((0) as isize)) as i32) == (('h' as libc::c_char) as i32)));
     assert!((((*p1.offset((1) as isize)) as i32) == (('e' as libc::c_char) as i32)));
