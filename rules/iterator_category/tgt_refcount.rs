@@ -114,3 +114,7 @@ fn f22<T1: CppRandomAccessIterator<T2>, T2>(a0: T1, a1: T1) -> bool {
 fn f23<T1: CppRandomAccessIterator<T2>, T2>(a0: T1, a1: T1) -> bool {
     a0 >= a1
 }
+
+fn f24<T1: From<T2>, T2>(a0: T2) -> T1 {
+    T1::from(a0)
+}
