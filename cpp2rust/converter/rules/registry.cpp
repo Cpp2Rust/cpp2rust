@@ -253,11 +253,9 @@ ExprMatch findExpr(const clang::Expr *use) {
     consider(RuleKeys::Unqualified{member->name});
   }
   if (std::holds_alternative<RuleKeys::Constructor>(*key)) {
-    if (auto record = RuleDecls::SkipImplicit(use)
-                          ->getType()
-                          .getCanonicalType()
-                          ->getAsCXXRecordDecl();
-        record && !IsUserDefinedDecl(record)) {
+    auto type = RuleDecls::SkipImplicit(use)->getType();
+    if (auto record = type.getCanonicalType()->getAsCXXRecordDecl();
+        record && !type->isDependentType() && !IsUserDefinedDecl(record)) {
       consider(RuleKeys::kAnyConstructor);
     }
   }

@@ -267,7 +267,7 @@ std::vector<TypeKey> GetTypeKeys(clang::ASTContext &ctx, clang::QualType use) {
     keys.push_back(*key);
   }
   if (auto record = use.getCanonicalType()->getAsCXXRecordDecl();
-      record && !IsUserDefinedDecl(record)) {
+      record && !use->isDependentType() && !IsUserDefinedDecl(record)) {
     keys.push_back(kAnyClass);
   }
   for (auto type = use;; type = type.getSingleStepDesugaredType(ctx)) {
