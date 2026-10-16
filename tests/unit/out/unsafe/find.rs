@@ -72,18 +72,18 @@ unsafe fn main_0() -> i32 {
     let mut w: Vec<i32> = vec![1, 2, 3, 4, 5];
     assert!(
         {
-            let mut __it = UnsafeRandomAccessIterator::Vec(w.as_mut_ptr()).iter_add(2_i64);
+            let mut __it = UnsafeRandomAccessIterator::Vec(w.as_mut_ptr()).iter_add(2_isize);
             while __it != UnsafeRandomAccessIterator::Vec(w.as_mut_ptr().add(w.len()))
                 && *__it.iter_deref() != 4
             {
                 __it.iter_inc();
             }
             __it
-        } == UnsafeRandomAccessIterator::Vec(w.as_mut_ptr()).iter_add(3_i64)
+        } == UnsafeRandomAccessIterator::Vec(w.as_mut_ptr()).iter_add(3_isize)
     );
     assert!(
         {
-            let mut __it = UnsafeRandomAccessIterator::Vec(w.as_mut_ptr()).iter_add(2_i64);
+            let mut __it = UnsafeRandomAccessIterator::Vec(w.as_mut_ptr()).iter_add(2_isize);
             while __it != UnsafeRandomAccessIterator::Vec(w.as_mut_ptr().add(w.len()))
                 && *__it.iter_deref() != 1
             {
@@ -94,14 +94,14 @@ unsafe fn main_0() -> i32 {
     );
     assert!(
         {
-            let mut __it = UnsafeRandomAccessIterator::Vec(w.as_mut_ptr()).iter_add(2_i64);
-            while __it != UnsafeRandomAccessIterator::Vec(w.as_mut_ptr()).iter_add(4_i64)
+            let mut __it = UnsafeRandomAccessIterator::Vec(w.as_mut_ptr()).iter_add(2_isize);
+            while __it != UnsafeRandomAccessIterator::Vec(w.as_mut_ptr()).iter_add(4_isize)
                 && *__it.iter_deref() != 5
             {
                 __it.iter_inc();
             }
             __it
-        } == UnsafeRandomAccessIterator::Vec(w.as_mut_ptr()).iter_add(4_i64)
+        } == UnsafeRandomAccessIterator::Vec(w.as_mut_ptr()).iter_add(4_isize)
     );
     return 0;
 }

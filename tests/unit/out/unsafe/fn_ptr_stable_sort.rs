@@ -56,9 +56,9 @@ unsafe fn main_0() -> i32 {
                 std::ptr::read(UnsafeRandomAccessIterator::Vec(v.as_mut_ptr()).iter_at(__i))
             })
             .collect();
-        for (__i, __v) in __values.into_iter().enumerate() {
+        for (__i, __v) in (0..__n).zip(__values) {
             std::ptr::write(
-                UnsafeRandomAccessIterator::Vec(v.as_mut_ptr()).iter_at(__i as isize),
+                UnsafeRandomAccessIterator::Vec(v.as_mut_ptr()).iter_at(__i),
                 __v,
             );
         }

@@ -275,8 +275,8 @@ unsafe fn main_0() -> i32 {
             .iter()
             .map(|&__i| std::ptr::read(xs.as_mut_ptr().iter_at(__i)))
             .collect();
-        for (__i, __v) in __values.into_iter().enumerate() {
-            std::ptr::write(xs.as_mut_ptr().iter_at(__i as isize), __v);
+        for (__i, __v) in (0..__n).zip(__values) {
+            std::ptr::write(xs.as_mut_ptr().iter_at(__i), __v);
         }
     };
     assert!(
@@ -305,8 +305,8 @@ unsafe fn main_0() -> i32 {
             .iter()
             .map(|&__i| std::ptr::read(ms.as_mut_ptr().iter_at(__i)))
             .collect();
-        for (__i, __v) in __values.into_iter().enumerate() {
-            std::ptr::write(ms.as_mut_ptr().iter_at(__i as isize), __v);
+        for (__i, __v) in (0..__n).zip(__values) {
+            std::ptr::write(ms.as_mut_ptr().iter_at(__i), __v);
         }
     };
     assert!(
@@ -360,8 +360,8 @@ unsafe fn main_0() -> i32 {
             .iter()
             .map(|&__i| std::ptr::read(bs.as_mut_ptr().iter_at(__i)))
             .collect();
-        for (__i, __v) in __values.into_iter().enumerate() {
-            std::ptr::write(bs.as_mut_ptr().iter_at(__i as isize), __v);
+        for (__i, __v) in (0..__n).zip(__values) {
+            std::ptr::write(bs.as_mut_ptr().iter_at(__i), __v);
         }
     };
     assert!(

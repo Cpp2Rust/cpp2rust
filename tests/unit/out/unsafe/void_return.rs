@@ -19,8 +19,8 @@ pub unsafe fn f1_0(
             .iter()
             .map(|&__i| std::ptr::read(first.clone().iter_at(__i)))
             .collect();
-        for (__i, __v) in __values.into_iter().enumerate() {
-            std::ptr::write(first.clone().iter_at(__i as isize), __v);
+        for (__i, __v) in (0..__n).zip(__values) {
+            std::ptr::write(first.clone().iter_at(__i), __v);
         }
     };
     return;
@@ -34,8 +34,8 @@ pub unsafe fn f1_1(mut first: *mut i32, mut last: *mut i32) {
             .iter()
             .map(|&__i| std::ptr::read(first.iter_at(__i)))
             .collect();
-        for (__i, __v) in __values.into_iter().enumerate() {
-            std::ptr::write(first.iter_at(__i as isize), __v);
+        for (__i, __v) in (0..__n).zip(__values) {
+            std::ptr::write(first.iter_at(__i), __v);
         }
     };
     return;

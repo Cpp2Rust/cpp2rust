@@ -19,8 +19,8 @@ fn main_0() -> i32 {
     assert!(((r.read()) == 13));
     let mut s: Ptr<i32> = r.offset(-((2) as isize));
     assert!(((s.read()) == 11));
-    let mut diff: i64 = ((r).clone() - (p).clone()) as i64;
-    assert!((diff == 3_i64));
+    let mut diff: isize = (((r).clone() - (p).clone()) as i64 as isize);
+    assert!((diff == 3_isize));
     let mut idx: usize = ((((r).clone() - (p).clone()) as i64) as usize);
     assert!((idx == 3_usize));
     let mut q2: Ptr<i32> = (p).clone();
@@ -62,13 +62,13 @@ fn main_0() -> i32 {
     let mut bp: Ptr<u8> = (bytes.as_pointer() as Ptr<u8>);
     let mut bq: Ptr<u8> = bp.offset((4) as isize);
     assert!((((bq.read()) as i32) == 4));
-    let mut bdiff: i64 = ((bq).clone() - (bp).clone()) as i64;
-    assert!((bdiff == 4_i64));
+    let mut bdiff: isize = (((bq).clone() - (bp).clone()) as i64 as isize);
+    assert!((bdiff == 4_isize));
     let mut cp: Ptr<i32> = (arr.as_pointer() as Ptr<i32>);
     let mut cq: Ptr<i32> = cp.offset((2) as isize);
     assert!(((cq.read()) == 12));
-    let mut cdiff: i64 = ((cq).clone() - (cp).clone()) as i64;
-    assert!((cdiff == 2_i64));
+    let mut cdiff: isize = (((cq).clone() - (cp).clone()) as i64 as isize);
+    assert!((cdiff == 2_isize));
     let mut n: usize = 3_usize;
     let mut q5: Ptr<i32> = (arr.as_pointer() as Ptr<i32>).offset((n) as isize);
     assert!(((q5.read()) == 13));
