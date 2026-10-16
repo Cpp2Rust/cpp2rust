@@ -166,46 +166,24 @@ unsafe fn main_0() -> i32 {
         }
         i.prefix_inc();
     }
-    let mut map1: BTreeMap<i32, Box<(i32, i32)>> = BTreeMap::new();
+    let mut map1: UnsafeMap<i32, (i32, i32)> = UnsafeMap::new();
     let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {
-        (*&mut map1
-            .entry(i.clone())
-            .or_insert_with(|| Box::new((i, <i32>::default())))
-            .1) = i;
+        (*&mut (*map1.get_or_insert_with(i.clone(), || (i, <i32>::default()))).1) = i;
         i.prefix_inc();
     }
-    let mut map2: BTreeMap<i32, Box<(i32, i32)>> = map1.clone();
+    let mut map2: UnsafeMap<i32, (i32, i32)> = map1.clone();
     let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {
-        assert!(
-            ((*&mut map2
-                .entry(i.clone())
-                .or_insert_with(|| Box::new((i, <i32>::default())))
-                .1)
-                == (i))
-        );
-        (*&mut map2
-            .entry(i.clone())
-            .or_insert_with(|| Box::new((i, <i32>::default())))
-            .1)
-            .prefix_inc();
+        assert!(((*&mut (*map2.get_or_insert_with(i.clone(), || (i, <i32>::default()))).1) == (i)));
+        (*&mut (*map2.get_or_insert_with(i.clone(), || (i, <i32>::default()))).1).prefix_inc();
         i.prefix_inc();
     }
     let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {
+        assert!(((*&mut (*map1.get_or_insert_with(i.clone(), || (i, <i32>::default()))).1) == (i)));
         assert!(
-            ((*&mut map1
-                .entry(i.clone())
-                .or_insert_with(|| Box::new((i, <i32>::default())))
-                .1)
-                == (i))
-        );
-        assert!(
-            ((*&mut map2
-                .entry(i.clone())
-                .or_insert_with(|| Box::new((i, <i32>::default())))
-                .1)
+            ((*&mut (*map2.get_or_insert_with(i.clone(), || (i, <i32>::default()))).1)
                 == ((i) + (1)))
         );
         i.prefix_inc();

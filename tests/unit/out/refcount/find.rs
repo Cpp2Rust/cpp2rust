@@ -39,58 +39,54 @@ fn main_0() -> i32 {
     }));
     let mut v_result_true: bool =
         (*it.borrow()) != RandomAccessIterator::Vec((v.as_pointer() as Ptr<i32>).to_end());
-    let m: Value<BTreeMap<i32, Value<(Value<i32>, Value<f64>)>>> =
-        Rc::new(RefCell::new(BTreeMap::new()));
-    (m.as_pointer() as Ptr<BTreeMap<i32, Value<(Value<i32>, Value<f64>)>>>)
-        .with_mut(|__v: &mut BTreeMap<i32, Value<(Value<i32>, Value<f64>)>>| {
-            __v.entry(1.clone())
-                .or_insert_with(|| {
-                    Rc::new(RefCell::new((
-                        Rc::new(RefCell::new(1)),
-                        Rc::new(RefCell::new(<f64>::default())),
-                    )))
-                })
-                .borrow()
-                .1
-                .as_pointer()
+    let m: Value<Map<i32, (Value<i32>, Value<f64>)>> = Rc::new(RefCell::new(Map::new()));
+    (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<f64>)>>)
+        .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<f64>)>| {
+            __m.get_or_insert_with(1.clone(), || {
+                (
+                    Rc::new(RefCell::new(1)),
+                    Rc::new(RefCell::new(<f64>::default())),
+                )
+            })
+            .borrow()
+            .1
+            .as_pointer()
         })
         .write(1_f64);
-    (m.as_pointer() as Ptr<BTreeMap<i32, Value<(Value<i32>, Value<f64>)>>>)
-        .with_mut(|__v: &mut BTreeMap<i32, Value<(Value<i32>, Value<f64>)>>| {
-            __v.entry(2.clone())
-                .or_insert_with(|| {
-                    Rc::new(RefCell::new((
-                        Rc::new(RefCell::new(2)),
-                        Rc::new(RefCell::new(<f64>::default())),
-                    )))
-                })
-                .borrow()
-                .1
-                .as_pointer()
+    (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<f64>)>>)
+        .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<f64>)>| {
+            __m.get_or_insert_with(2.clone(), || {
+                (
+                    Rc::new(RefCell::new(2)),
+                    Rc::new(RefCell::new(<f64>::default())),
+                )
+            })
+            .borrow()
+            .1
+            .as_pointer()
         })
         .write(2_f64);
-    (m.as_pointer() as Ptr<BTreeMap<i32, Value<(Value<i32>, Value<f64>)>>>)
-        .with_mut(|__v: &mut BTreeMap<i32, Value<(Value<i32>, Value<f64>)>>| {
-            __v.entry(3.clone())
-                .or_insert_with(|| {
-                    Rc::new(RefCell::new((
-                        Rc::new(RefCell::new(3)),
-                        Rc::new(RefCell::new(<f64>::default())),
-                    )))
-                })
-                .borrow()
-                .1
-                .as_pointer()
+    (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<f64>)>>)
+        .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<f64>)>| {
+            __m.get_or_insert_with(3.clone(), || {
+                (
+                    Rc::new(RefCell::new(3)),
+                    Rc::new(RefCell::new(<f64>::default())),
+                )
+            })
+            .borrow()
+            .1
+            .as_pointer()
         })
         .write(3_f64);
-    let m_begin: Value<BidirectionalIterator<(Value<i32>, Value<f64>)>> =
-        Rc::new(RefCell::new(RefcountMapIter::begin(
-            (m.as_pointer() as Ptr<BTreeMap<i32, Value<(Value<i32>, Value<f64>)>>>),
-        )));
-    let m_end: Value<BidirectionalIterator<(Value<i32>, Value<f64>)>> =
-        Rc::new(RefCell::new(RefcountMapIter::end(
-            (m.as_pointer() as Ptr<BTreeMap<i32, Value<(Value<i32>, Value<f64>)>>>),
-        )));
+    let m_begin: Value<BidirectionalIterator<(Value<i32>, Value<f64>)>> = Rc::new(RefCell::new(
+        (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<f64>)>>)
+            .with(|__m: &Map<i32, (Value<i32>, Value<f64>)>| __m.begin()),
+    ));
+    let m_end: Value<BidirectionalIterator<(Value<i32>, Value<f64>)>> = Rc::new(RefCell::new(
+        (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<f64>)>>)
+            .with(|__m: &Map<i32, (Value<i32>, Value<f64>)>| __m.end()),
+    ));
     let mut m_result_true: bool = (*m_begin.borrow()) != (*m_end.borrow());
     assert!(
         ((v_result_true) && (m_result_true))

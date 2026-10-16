@@ -14,7 +14,7 @@ pub fn sink_0(it: BidirectionalIterator<(Value<i32>, Value<i32>)>) -> i32 {
     return if (*cit.borrow())
         == <BidirectionalIterator<(Value<i32>, Value<i32>)>>::from((*it.borrow()).clone())
     {
-        { (*it.borrow()).iter_deref().second }
+        (*(*it.borrow()).iter_deref().1.borrow())
     } else {
         0
     };
@@ -24,31 +24,28 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let m: Value<BTreeMap<i32, Value<(Value<i32>, Value<i32>)>>> =
-        Rc::new(RefCell::new(BTreeMap::new()));
-    (m.as_pointer() as Ptr<BTreeMap<i32, Value<(Value<i32>, Value<i32>)>>>)
-        .with_mut(|__v: &mut BTreeMap<i32, Value<(Value<i32>, Value<i32>)>>| {
-            __v.entry(0.clone())
-                .or_insert_with(|| {
-                    Rc::new(RefCell::new((
-                        Rc::new(RefCell::new(0)),
-                        Rc::new(RefCell::new(<i32>::default())),
-                    )))
-                })
-                .borrow()
-                .1
-                .as_pointer()
+    let m: Value<Map<i32, (Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
+    (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
+        .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<i32>)>| {
+            __m.get_or_insert_with(0.clone(), || {
+                (
+                    Rc::new(RefCell::new(0)),
+                    Rc::new(RefCell::new(<i32>::default())),
+                )
+            })
+            .borrow()
+            .1
+            .as_pointer()
         })
         .write(1);
-    let end: Value<BidirectionalIterator<(Value<i32>, Value<i32>)>> =
-        Rc::new(RefCell::new(RefcountMapIter::end(
-            (m.as_pointer() as Ptr<BTreeMap<i32, Value<(Value<i32>, Value<i32>)>>>),
-        )));
-    let it0: Value<BidirectionalIterator<(Value<i32>, Value<i32>)>> =
-        Rc::new(RefCell::new(RefcountMapIter::find_key(
-            (m.as_pointer() as Ptr<BTreeMap<i32, Value<(Value<i32>, Value<i32>)>>>),
-            &0,
-        )));
+    let end: Value<BidirectionalIterator<(Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(
+        (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
+            .with(|__m: &Map<i32, (Value<i32>, Value<i32>)>| __m.end()),
+    ));
+    let it0: Value<BidirectionalIterator<(Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(
+        (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
+            .with(|__m: &Map<i32, (Value<i32>, Value<i32>)>| __m.find(&0)),
+    ));
     let const_it: Value<BidirectionalIterator<(Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(
         <BidirectionalIterator<(Value<i32>, Value<i32>)>>::from((*it0.borrow()).clone()),
     ));

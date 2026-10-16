@@ -39,23 +39,12 @@ unsafe fn main_0() -> i32 {
     };
     let mut v_result_true: bool =
         it != UnsafeRandomAccessIterator::Vec(v.as_mut_ptr().add(v.len()));
-    let mut m: BTreeMap<i32, Box<(i32, f64)>> = BTreeMap::new();
-    (*&mut m
-        .entry(1.clone())
-        .or_insert_with(|| Box::new((1, <f64>::default())))
-        .1) = 1_f64;
-    (*&mut m
-        .entry(2.clone())
-        .or_insert_with(|| Box::new((2, <f64>::default())))
-        .1) = 2_f64;
-    (*&mut m
-        .entry(3.clone())
-        .or_insert_with(|| Box::new((3, <f64>::default())))
-        .1) = 3_f64;
-    let mut m_begin: UnsafeBidirectionalIterator<(i32, f64)> =
-        UnsafeMapIterator::begin(&m as *const BTreeMap<i32, Box<(i32, f64)>>);
-    let mut m_end: UnsafeBidirectionalIterator<(i32, f64)> =
-        UnsafeMapIterator::end(&m as *const BTreeMap<i32, Box<(i32, f64)>>);
+    let mut m: UnsafeMap<i32, (i32, f64)> = UnsafeMap::new();
+    (*&mut (*m.get_or_insert_with(1.clone(), || (1, <f64>::default()))).1) = 1_f64;
+    (*&mut (*m.get_or_insert_with(2.clone(), || (2, <f64>::default()))).1) = 2_f64;
+    (*&mut (*m.get_or_insert_with(3.clone(), || (3, <f64>::default()))).1) = 3_f64;
+    let mut m_begin: UnsafeBidirectionalIterator<(i32, f64)> = m.begin();
+    let mut m_end: UnsafeBidirectionalIterator<(i32, f64)> = m.end();
     let mut m_result_true: bool = m_begin != m_end;
     assert!(
         ((v_result_true) && (m_result_true))

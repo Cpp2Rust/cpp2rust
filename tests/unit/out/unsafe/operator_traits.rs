@@ -263,24 +263,12 @@ unsafe fn main_0() -> i32 {
         .iter_deref())
         .v) == (2))
     );
-    let mut m: BTreeMap<Lt, Box<(Lt, i32)>> = BTreeMap::new();
-    (*&mut m
-        .entry(Lt { v: 2 }.clone())
-        .or_insert_with(|| Box::new((Lt { v: 2 }, <i32>::default())))
-        .1) = 20;
-    (*&mut m
-        .entry(Lt { v: 1 }.clone())
-        .or_insert_with(|| Box::new((Lt { v: 1 }, <i32>::default())))
-        .1) = 10;
+    let mut m: UnsafeMap<Lt, (Lt, i32)> = UnsafeMap::new();
+    (*&mut (*m.get_or_insert_with(Lt { v: 2 }.clone(), || (Lt { v: 2 }, <i32>::default()))).1) = 20;
+    (*&mut (*m.get_or_insert_with(Lt { v: 1 }.clone(), || (Lt { v: 1 }, <i32>::default()))).1) = 10;
+    assert!(((m.begin().iter_deref().1) == (10)));
     assert!(
-        (((*UnsafeMapIterator::begin(&m as *const BTreeMap<Lt, Box<(Lt, i32)>>).iter_deref())
-            .second)
-            == (10))
-    );
-    assert!(
-        ((*&mut m
-            .entry(Lt { v: 2 }.clone())
-            .or_insert_with(|| Box::new((Lt { v: 2 }, <i32>::default())))
+        ((*&mut (*m.get_or_insert_with(Lt { v: 2 }.clone(), || (Lt { v: 2 }, <i32>::default())))
             .1)
             == (20))
     );

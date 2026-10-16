@@ -10,7 +10,7 @@ pub unsafe fn sink_0(mut it: UnsafeBidirectionalIterator<(i32, i32)>) -> i32 {
     let mut cit: UnsafeBidirectionalIterator<(i32, i32)> =
         <UnsafeBidirectionalIterator<(i32, i32)>>::from((it).clone());
     return if cit == <UnsafeBidirectionalIterator<(i32, i32)>>::from((it).clone()) {
-        (*it.iter_deref()).second
+        it.iter_deref().1
     } else {
         0
     };
@@ -22,15 +22,10 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut m: BTreeMap<i32, Box<(i32, i32)>> = BTreeMap::new();
-    (*&mut m
-        .entry(0.clone())
-        .or_insert_with(|| Box::new((0, <i32>::default())))
-        .1) = 1;
-    let mut end: UnsafeBidirectionalIterator<(i32, i32)> =
-        UnsafeMapIterator::end(&m as *const BTreeMap<i32, Box<(i32, i32)>>);
-    let mut it0: UnsafeBidirectionalIterator<(i32, i32)> =
-        UnsafeMapIterator::find_key(&m as *const BTreeMap<i32, Box<(i32, i32)>>, &0);
+    let mut m: UnsafeMap<i32, (i32, i32)> = UnsafeMap::new();
+    (*&mut (*m.get_or_insert_with(0.clone(), || (0, <i32>::default()))).1) = 1;
+    let mut end: UnsafeBidirectionalIterator<(i32, i32)> = m.end();
+    let mut it0: UnsafeBidirectionalIterator<(i32, i32)> = m.find(&0);
     let mut const_it: UnsafeBidirectionalIterator<(i32, i32)> =
         <UnsafeBidirectionalIterator<(i32, i32)>>::from((it0).clone());
     let mut r: i32 = if const_it == <UnsafeBidirectionalIterator<(i32, i32)>>::from((end).clone()) {
