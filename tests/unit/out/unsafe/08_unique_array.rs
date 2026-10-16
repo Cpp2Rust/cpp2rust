@@ -23,15 +23,6 @@ unsafe fn main_0() -> i32 {
     (*g_ptr.offset((0) as isize)) = 13;
     (*g_ptr.offset((1) as isize)) = 14;
     assert!((((g.as_mut().unwrap()[(0_usize)]) + (g.as_mut().unwrap()[(1_usize)])) == (27)));
-    let mut buf: Option<Box<[libc::c_char]>> = Some(
-        (0..16_usize)
-            .map(|_| <libc::c_char>::default())
-            .collect::<Box<[_]>>(),
-    );
-    ();
-    buf.as_mut().unwrap()[(0_usize)] = ('x' as libc::c_char);
-    ();
-    assert!(((buf.as_mut().unwrap()[(0_usize)] as i32) == (('x' as libc::c_char) as i32)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

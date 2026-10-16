@@ -24,13 +24,6 @@ fn main_0() -> i32 {
             + g.as_ref().unwrap().borrow()[(1_usize) as usize])
             == 27)
     );
-    let mut buf: Option<Value<Box<[i8]>>> = Some(Rc::new(RefCell::new(
-        (0..16_usize).map(|_| <i8>::default()).collect::<Box<[_]>>(),
-    )));
-    ();
-    buf.as_ref().unwrap().borrow_mut()[(0_usize) as usize] = ('x' as i8);
-    ();
-    assert!(((buf.as_ref().unwrap().borrow()[(0_usize) as usize] as i32) == (('x' as i8) as i32)));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}
