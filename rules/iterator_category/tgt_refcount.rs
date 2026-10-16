@@ -40,19 +40,19 @@ fn f4<T1: CppIterator<T2>, T2>(a0: &mut T1, a1: T1) {
 }
 
 fn f5<T1: CppIterator<T2>, T2>(a0: T1) -> Ptr<T2> {
-    a0.deref()
+    a0.iter_deref()
 }
 
 fn f6<T1: CppIterator<T2>, T2>(a0: &mut T1) -> T1 {
-    a0.prefix_inc()
+    a0.iter_inc()
 }
 
 fn f7<T1: CppIterator<T2>, T2>(a0: &mut T1) -> T1 {
-    a0.postfix_inc()
+    a0.iter_post_inc()
 }
 
 fn f8<T1: CppInputIterator<T2>, T2>(a0: T1) -> Ptr<T2> {
-    a0.deref()
+    a0.iter_deref()
 }
 
 fn f9<T1: CppInputIterator<T2>, T2>(a0: T1, a1: T1) -> bool {
@@ -64,39 +64,39 @@ fn f10<T1: CppInputIterator<T2>, T2>(a0: T1, a1: T1) -> bool {
 }
 
 fn f11<T1: CppBidirectionalIterator<T2>, T2>(a0: &mut T1) -> T1 {
-    a0.prefix_dec()
+    a0.iter_dec()
 }
 
 fn f12<T1: CppBidirectionalIterator<T2>, T2>(a0: &mut T1) -> T1 {
-    a0.postfix_dec()
+    a0.iter_post_dec()
 }
 
 fn f13<T1: CppRandomAccessIterator<T2>, T2>(a0: &mut T1, a1: isize) -> T1 {
-    a0.plus_assign(a1)
+    a0.iter_add_assign(a1)
 }
 
 fn f14<T1: CppRandomAccessIterator<T2>, T2>(a0: &mut T1, a1: isize) -> T1 {
-    a0.plus_assign(-a1)
+    a0.iter_add_assign(-a1)
 }
 
 fn f15<T1: CppRandomAccessIterator<T2>, T2>(a0: T1, a1: isize) -> T1 {
-    a0.plus(a1)
+    a0.iter_add(a1)
 }
 
 fn f16<T1: CppRandomAccessIterator<T2>, T2>(a0: isize, a1: T1) -> T1 {
-    a1.plus(a0)
+    a1.iter_add(a0)
 }
 
 fn f17<T1: CppRandomAccessIterator<T2>, T2>(a0: T1, a1: isize) -> T1 {
-    a0.plus(-a1)
+    a0.iter_add(-a1)
 }
 
 fn f18<T1: CppRandomAccessIterator<T2>, T2>(a0: T1, a1: T1) -> isize {
-    a0.distance(&a1)
+    a0.iter_distance(&a1)
 }
 
 fn f19<T1: CppRandomAccessIterator<T2>, T2>(a0: T1, a1: isize) -> Ptr<T2> {
-    a0.at(a1)
+    a0.iter_at(a1)
 }
 
 fn f20<T1: CppRandomAccessIterator<T2>, T2>(a0: T1, a1: T1) -> bool {

@@ -8,46 +8,137 @@ use std::marker::PhantomData;
 use crate::{PostfixDec, PostfixInc, PrefixDec, PrefixInc, Ptr};
 
 pub trait CppIterator<T>: Clone {
-    fn deref(&self) -> Ptr<T>;
-    fn prefix_inc(&mut self) -> Self;
-    fn postfix_inc(&mut self) -> Self;
+    fn iter_deref(&self) -> Ptr<T>;
+    fn iter_inc(&mut self) -> Self;
+    fn iter_post_inc(&mut self) -> Self;
 }
 
 pub trait CppInputIterator<T>: CppIterator<T> + PartialEq {}
 
 pub trait CppBidirectionalIterator<T>: CppInputIterator<T> {
-    fn prefix_dec(&mut self) -> Self;
-    fn postfix_dec(&mut self) -> Self;
+    fn iter_dec(&mut self) -> Self;
+    fn iter_post_dec(&mut self) -> Self;
 }
 
 pub trait CppRandomAccessIterator<T>: CppBidirectionalIterator<T> + PartialOrd {
-    fn plus(&self, n: isize) -> Self;
-    fn plus_assign(&mut self, n: isize) -> Self;
-    fn distance(&self, from: &Self) -> isize;
-    fn at(&self, n: isize) -> Ptr<T>;
+    fn iter_add(&self, n: isize) -> Self;
+    fn iter_add_assign(&mut self, n: isize) -> Self;
+    fn iter_distance(&self, from: &Self) -> isize;
+    fn iter_at(&self, n: isize) -> Ptr<T>;
 }
 
 pub trait UnsafeCppIterator<T>: Clone {
-    fn deref(&self) -> *mut T;
-    fn prefix_inc(&mut self) -> Self;
-    fn postfix_inc(&mut self) -> Self;
+    fn iter_deref(&self) -> *mut T;
+    fn iter_inc(&mut self) -> Self;
+    fn iter_post_inc(&mut self) -> Self;
 }
 
 pub trait UnsafeCppInputIterator<T>: UnsafeCppIterator<T> + PartialEq {}
 
 pub trait UnsafeCppBidirectionalIterator<T>: UnsafeCppInputIterator<T> {
-    fn prefix_dec(&mut self) -> Self;
-    fn postfix_dec(&mut self) -> Self;
+    fn iter_dec(&mut self) -> Self;
+    fn iter_post_dec(&mut self) -> Self;
 }
 
 pub trait UnsafeCppRandomAccessIterator<T>:
     UnsafeCppBidirectionalIterator<T> + PartialOrd
 {
-    fn plus(&self, n: isize) -> Self;
-    fn plus_assign(&mut self, n: isize) -> Self;
-    fn distance(&self, from: &Self) -> isize;
-    fn at(&self, n: isize) -> *mut T;
+    fn iter_add(&self, n: isize) -> Self;
+    fn iter_add_assign(&mut self, n: isize) -> Self;
+    fn iter_distance(&self, from: &Self) -> isize;
+    fn iter_at(&self, n: isize) -> *mut T;
 }
+
+impl<T> CppIterator<T> for Ptr<T> {
+    fn iter_deref(&self) -> Ptr<T> {
+        self.clone()
+    }
+    fn iter_inc(&mut self) -> Self {
+        PrefixInc::prefix_inc(self)
+    }
+    fn iter_post_inc(&mut self) -> Self {
+        PostfixInc::postfix_inc(self)
+    }
+}
+
+impl<T> CppInputIterator<T> for Ptr<T> {}
+
+impl<T> CppBidirectionalIterator<T> for Ptr<T> {
+    fn iter_dec(&mut self) -> Self {
+        PrefixDec::prefix_dec(self)
+    }
+    fn iter_post_dec(&mut self) -> Self {
+        PostfixDec::postfix_dec(self)
+    }
+}
+
+impl<T> CppRandomAccessIterator<T> for Ptr<T> {
+    fn iter_add(&self, n: isize) -> Self {
+        self.offset(n)
+    }
+    fn iter_add_assign(&mut self, n: isize) -> Self {
+        *self = self.offset(n);
+        self.clone()
+    }
+    fn iter_distance(&self, from: &Self) -> isize {
+        self.get_offset() as isize - from.get_offset() as isize
+    }
+    fn iter_at(&self, n: isize) -> Ptr<T> {
+        self.offset(n)
+    }
+}
+
+macro_rules! raw_pointer_iterator {
+    ($ptr:ty, $deref:expr) => {
+        impl<T> UnsafeCppIterator<T> for $ptr {
+            fn iter_deref(&self) -> *mut T {
+                $deref(*self)
+            }
+            fn iter_inc(&mut self) -> Self {
+                *self = self.wrapping_add(1);
+                *self
+            }
+            fn iter_post_inc(&mut self) -> Self {
+                let old = *self;
+                *self = self.wrapping_add(1);
+                old
+            }
+        }
+
+        impl<T> UnsafeCppInputIterator<T> for $ptr {}
+
+        impl<T> UnsafeCppBidirectionalIterator<T> for $ptr {
+            fn iter_dec(&mut self) -> Self {
+                *self = self.wrapping_sub(1);
+                *self
+            }
+            fn iter_post_dec(&mut self) -> Self {
+                let old = *self;
+                *self = self.wrapping_sub(1);
+                old
+            }
+        }
+
+        impl<T> UnsafeCppRandomAccessIterator<T> for $ptr {
+            fn iter_add(&self, n: isize) -> Self {
+                self.wrapping_offset(n)
+            }
+            fn iter_add_assign(&mut self, n: isize) -> Self {
+                *self = self.wrapping_offset(n);
+                *self
+            }
+            fn iter_distance(&self, from: &Self) -> isize {
+                unsafe { self.offset_from(*from) }
+            }
+            fn iter_at(&self, n: isize) -> *mut T {
+                $deref(self.wrapping_offset(n))
+            }
+        }
+    };
+}
+
+raw_pointer_iterator!(*mut T, |p: *mut T| p);
+raw_pointer_iterator!(*const T, |p: *const T| p.cast_mut());
 
 macro_rules! uninhabited_iterator {
     ($name:ident, $what:literal) => {
@@ -85,13 +176,13 @@ macro_rules! uninhabited_iterator {
 macro_rules! uninhabited_iterator_ops {
     ($name:ident, $iter:ident, $ptr:ty) => {
         impl<T> $iter<T> for $name<T> {
-            fn deref(&self) -> $ptr {
+            fn iter_deref(&self) -> $ptr {
                 self.never()
             }
-            fn prefix_inc(&mut self) -> Self {
+            fn iter_inc(&mut self) -> Self {
                 self.never()
             }
-            fn postfix_inc(&mut self) -> Self {
+            fn iter_post_inc(&mut self) -> Self {
                 self.never()
             }
         }
@@ -124,225 +215,139 @@ impl<T> UnsafeCppInputIterator<T> for UnsafeForwardIterator<T> {}
 impl<T> UnsafeCppInputIterator<T> for UnsafeBidirectionalIterator<T> {}
 
 impl<T> CppBidirectionalIterator<T> for BidirectionalIterator<T> {
-    fn prefix_dec(&mut self) -> Self {
+    fn iter_dec(&mut self) -> Self {
         self.never()
     }
-    fn postfix_dec(&mut self) -> Self {
+    fn iter_post_dec(&mut self) -> Self {
         self.never()
     }
 }
 
 impl<T> UnsafeCppBidirectionalIterator<T> for UnsafeBidirectionalIterator<T> {
-    fn prefix_dec(&mut self) -> Self {
+    fn iter_dec(&mut self) -> Self {
         self.never()
     }
-    fn postfix_dec(&mut self) -> Self {
+    fn iter_post_dec(&mut self) -> Self {
         self.never()
     }
 }
 
-pub enum RandomAccessIterator<T> {
-    Vec(Ptr<T>),
-}
-
-impl<T> RandomAccessIterator<T> {
-    pub fn vec_ptr(&self) -> Ptr<T> {
-        match self {
-            Self::Vec(p) => p.clone(),
+macro_rules! random_access_iterator {
+    ($name:ident, $ptr:ty, $iter:ident, $input:ident, $bidi:ident, $random:ident, $null:expr) => {
+        pub enum $name<T> {
+            Vec($ptr),
         }
-    }
-}
 
-impl<T> Default for RandomAccessIterator<T> {
-    fn default() -> Self {
-        Self::Vec(Ptr::null())
-    }
-}
-
-impl<T> Clone for RandomAccessIterator<T> {
-    fn clone(&self) -> Self {
-        match self {
-            Self::Vec(p) => Self::Vec(p.clone()),
-        }
-    }
-}
-
-impl<T> PartialEq for RandomAccessIterator<T> {
-    fn eq(&self, other: &Self) -> bool {
-        match (self, other) {
-            (Self::Vec(a), Self::Vec(b)) => a == b,
-        }
-    }
-}
-
-impl<T> PartialOrd for RandomAccessIterator<T> {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        match (self, other) {
-            (Self::Vec(a), Self::Vec(b)) => a.partial_cmp(b),
-        }
-    }
-}
-
-impl<T> CppIterator<T> for RandomAccessIterator<T> {
-    fn deref(&self) -> Ptr<T> {
-        self.vec_ptr()
-    }
-    fn prefix_inc(&mut self) -> Self {
-        match self {
-            Self::Vec(p) => Self::Vec(PrefixInc::prefix_inc(p)),
-        }
-    }
-    fn postfix_inc(&mut self) -> Self {
-        match self {
-            Self::Vec(p) => Self::Vec(PostfixInc::postfix_inc(p)),
-        }
-    }
-}
-
-impl<T> CppInputIterator<T> for RandomAccessIterator<T> {}
-
-impl<T> CppBidirectionalIterator<T> for RandomAccessIterator<T> {
-    fn prefix_dec(&mut self) -> Self {
-        match self {
-            Self::Vec(p) => Self::Vec(PrefixDec::prefix_dec(p)),
-        }
-    }
-    fn postfix_dec(&mut self) -> Self {
-        match self {
-            Self::Vec(p) => Self::Vec(PostfixDec::postfix_dec(p)),
-        }
-    }
-}
-
-impl<T> CppRandomAccessIterator<T> for RandomAccessIterator<T> {
-    fn plus(&self, n: isize) -> Self {
-        match self {
-            Self::Vec(p) => Self::Vec(p.offset(n)),
-        }
-    }
-    fn plus_assign(&mut self, n: isize) -> Self {
-        match self {
-            Self::Vec(p) => {
-                *p = p.offset(n);
-                Self::Vec(p.clone())
+        impl<T> $name<T> {
+            pub fn vec_ptr(&self) -> $ptr {
+                match self {
+                    Self::Vec(p) => p.clone(),
+                }
             }
         }
-    }
-    fn distance(&self, from: &Self) -> isize {
-        match (self, from) {
-            (Self::Vec(a), Self::Vec(b)) => a.get_offset() as isize - b.get_offset() as isize,
-        }
-    }
-    fn at(&self, n: isize) -> Ptr<T> {
-        match self {
-            Self::Vec(p) => p.offset(n),
-        }
-    }
-}
 
-pub enum UnsafeRandomAccessIterator<T> {
-    Vec(*mut T),
-}
-
-impl<T> UnsafeRandomAccessIterator<T> {
-    pub fn vec_ptr(&self) -> *mut T {
-        match self {
-            Self::Vec(p) => *p,
-        }
-    }
-}
-
-impl<T> Default for UnsafeRandomAccessIterator<T> {
-    fn default() -> Self {
-        Self::Vec(std::ptr::null_mut())
-    }
-}
-
-impl<T> Clone for UnsafeRandomAccessIterator<T> {
-    fn clone(&self) -> Self {
-        Self::Vec(self.vec_ptr())
-    }
-}
-
-impl<T> PartialEq for UnsafeRandomAccessIterator<T> {
-    fn eq(&self, other: &Self) -> bool {
-        match (self, other) {
-            (Self::Vec(a), Self::Vec(b)) => a == b,
-        }
-    }
-}
-
-impl<T> PartialOrd for UnsafeRandomAccessIterator<T> {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        match (self, other) {
-            (Self::Vec(a), Self::Vec(b)) => a.partial_cmp(b),
-        }
-    }
-}
-
-impl<T> UnsafeCppIterator<T> for UnsafeRandomAccessIterator<T> {
-    fn deref(&self) -> *mut T {
-        self.vec_ptr()
-    }
-    fn prefix_inc(&mut self) -> Self {
-        match self {
-            Self::Vec(p) => {
-                *p = p.wrapping_add(1);
-                Self::Vec(*p)
+        impl<T> Default for $name<T> {
+            fn default() -> Self {
+                Self::Vec($null)
             }
         }
-    }
-    fn postfix_inc(&mut self) -> Self {
-        match self {
-            Self::Vec(p) => {
-                let old = *p;
-                *p = p.wrapping_add(1);
-                Self::Vec(old)
+
+        impl<T> Clone for $name<T> {
+            fn clone(&self) -> Self {
+                Self::Vec(self.vec_ptr())
             }
         }
-    }
+
+        impl<T> PartialEq for $name<T> {
+            fn eq(&self, other: &Self) -> bool {
+                match (self, other) {
+                    (Self::Vec(a), Self::Vec(b)) => a == b,
+                }
+            }
+        }
+
+        impl<T> PartialOrd for $name<T> {
+            fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+                match (self, other) {
+                    (Self::Vec(a), Self::Vec(b)) => a.partial_cmp(b),
+                }
+            }
+        }
+
+        impl<T> $iter<T> for $name<T> {
+            fn iter_deref(&self) -> $ptr {
+                match self {
+                    Self::Vec(p) => $iter::<T>::iter_deref(p),
+                }
+            }
+            fn iter_inc(&mut self) -> Self {
+                match self {
+                    Self::Vec(p) => Self::Vec($iter::<T>::iter_inc(p)),
+                }
+            }
+            fn iter_post_inc(&mut self) -> Self {
+                match self {
+                    Self::Vec(p) => Self::Vec($iter::<T>::iter_post_inc(p)),
+                }
+            }
+        }
+
+        impl<T> $input<T> for $name<T> {}
+
+        impl<T> $bidi<T> for $name<T> {
+            fn iter_dec(&mut self) -> Self {
+                match self {
+                    Self::Vec(p) => Self::Vec($bidi::<T>::iter_dec(p)),
+                }
+            }
+            fn iter_post_dec(&mut self) -> Self {
+                match self {
+                    Self::Vec(p) => Self::Vec($bidi::<T>::iter_post_dec(p)),
+                }
+            }
+        }
+
+        impl<T> $random<T> for $name<T> {
+            fn iter_add(&self, n: isize) -> Self {
+                match self {
+                    Self::Vec(p) => Self::Vec($random::<T>::iter_add(p, n)),
+                }
+            }
+            fn iter_add_assign(&mut self, n: isize) -> Self {
+                match self {
+                    Self::Vec(p) => Self::Vec($random::<T>::iter_add_assign(p, n)),
+                }
+            }
+            fn iter_distance(&self, from: &Self) -> isize {
+                match (self, from) {
+                    (Self::Vec(a), Self::Vec(b)) => $random::<T>::iter_distance(a, b),
+                }
+            }
+            fn iter_at(&self, n: isize) -> $ptr {
+                match self {
+                    Self::Vec(p) => $random::<T>::iter_at(p, n),
+                }
+            }
+        }
+    };
 }
 
-impl<T> UnsafeCppInputIterator<T> for UnsafeRandomAccessIterator<T> {}
+random_access_iterator!(
+    RandomAccessIterator,
+    Ptr<T>,
+    CppIterator,
+    CppInputIterator,
+    CppBidirectionalIterator,
+    CppRandomAccessIterator,
+    Ptr::null()
+);
 
-impl<T> UnsafeCppBidirectionalIterator<T> for UnsafeRandomAccessIterator<T> {
-    fn prefix_dec(&mut self) -> Self {
-        match self {
-            Self::Vec(p) => {
-                *p = p.wrapping_sub(1);
-                Self::Vec(*p)
-            }
-        }
-    }
-    fn postfix_dec(&mut self) -> Self {
-        match self {
-            Self::Vec(p) => {
-                let old = *p;
-                *p = p.wrapping_sub(1);
-                Self::Vec(old)
-            }
-        }
-    }
-}
-
-impl<T> UnsafeCppRandomAccessIterator<T> for UnsafeRandomAccessIterator<T> {
-    fn plus(&self, n: isize) -> Self {
-        Self::Vec(self.vec_ptr().wrapping_offset(n))
-    }
-    fn plus_assign(&mut self, n: isize) -> Self {
-        match self {
-            Self::Vec(p) => {
-                *p = p.wrapping_offset(n);
-                Self::Vec(*p)
-            }
-        }
-    }
-    fn distance(&self, from: &Self) -> isize {
-        match (self, from) {
-            (Self::Vec(a), Self::Vec(b)) => unsafe { a.offset_from(*b) },
-        }
-    }
-    fn at(&self, n: isize) -> *mut T {
-        self.vec_ptr().wrapping_offset(n)
-    }
-}
+random_access_iterator!(
+    UnsafeRandomAccessIterator,
+    *mut T,
+    UnsafeCppIterator,
+    UnsafeCppInputIterator,
+    UnsafeCppBidirectionalIterator,
+    UnsafeCppRandomAccessIterator,
+    std::ptr::null_mut()
+);
