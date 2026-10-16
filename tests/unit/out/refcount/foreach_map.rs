@@ -37,21 +37,23 @@ fn main_0() -> i32 {
     }
     let mut sum: f64 = 0_f64;
     'loop_: for __begin1 in RefcountMapIter::begin(m.as_pointer()) {
-        let __begin1: Value<RefcountMapIter<i32, f64>> = Rc::new(RefCell::new(__begin1));
-        let i: Ptr<(Value<i32>, Value<f64>)> = (*__begin1.borrow()).deref();
+        let __begin1: Value<BidirectionalIterator<(Value<i32>, Value<f64>)>> =
+            Rc::new(RefCell::new(__begin1));
+        let i: Ptr<(Value<i32>, Value<f64>)> = (*__begin1.borrow()).iter_deref();
         sum += (*(*i.upgrade().deref()).1.borrow());
     }
     'loop_: for __begin1 in RefcountMapIter::begin(m.as_pointer()) {
-        let __begin1: Value<RefcountMapIter<i32, f64>> = Rc::new(RefCell::new(__begin1));
+        let __begin1: Value<BidirectionalIterator<(Value<i32>, Value<f64>)>> =
+            Rc::new(RefCell::new(__begin1));
         let i: Value<(Value<i32>, Value<f64>)> = Rc::new(RefCell::new((
             Rc::new(RefCell::new(
-                (*(*__begin1.borrow()).deref().upgrade().deref())
+                (*(*__begin1.borrow()).iter_deref().upgrade().deref())
                     .0
                     .borrow()
                     .clone(),
             )),
             Rc::new(RefCell::new(
-                (*(*__begin1.borrow()).deref().upgrade().deref())
+                (*(*__begin1.borrow()).iter_deref().upgrade().deref())
                     .1
                     .borrow()
                     .clone(),
@@ -61,16 +63,17 @@ fn main_0() -> i32 {
     }
     assert!((sum == 7475_f64));
     'loop_: for __begin1 in RefcountMapIter::begin(m.as_pointer()) {
-        let __begin1: Value<RefcountMapIter<i32, f64>> = Rc::new(RefCell::new(__begin1));
+        let __begin1: Value<BidirectionalIterator<(Value<i32>, Value<f64>)>> =
+            Rc::new(RefCell::new(__begin1));
         let i: Value<(Value<i32>, Value<f64>)> = Rc::new(RefCell::new((
             Rc::new(RefCell::new(
-                (*(*__begin1.borrow()).deref().upgrade().deref())
+                (*(*__begin1.borrow()).iter_deref().upgrade().deref())
                     .0
                     .borrow()
                     .clone(),
             )),
             Rc::new(RefCell::new(
-                (*(*__begin1.borrow()).deref().upgrade().deref())
+                (*(*__begin1.borrow()).iter_deref().upgrade().deref())
                     .1
                     .borrow()
                     .clone(),
@@ -80,8 +83,9 @@ fn main_0() -> i32 {
         assert!(((*(*i.borrow()).1.borrow()) == (-1_i32 as f64)));
     }
     'loop_: for __begin1 in RefcountMapIter::begin(m.as_pointer()) {
-        let __begin1: Value<RefcountMapIter<i32, f64>> = Rc::new(RefCell::new(__begin1));
-        let i: Ptr<(Value<i32>, Value<f64>)> = (*__begin1.borrow()).deref();
+        let __begin1: Value<BidirectionalIterator<(Value<i32>, Value<f64>)>> =
+            Rc::new(RefCell::new(__begin1));
+        let i: Ptr<(Value<i32>, Value<f64>)> = (*__begin1.borrow()).iter_deref();
         assert!(((*(*i.upgrade().deref()).1.borrow()) != (-1_i32 as f64)));
     }
     return 0;

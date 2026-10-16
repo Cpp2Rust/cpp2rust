@@ -30,16 +30,14 @@ fn main_0() -> i32 {
                 .as_pointer()
         })
         .write(__rhs);
-    let it: Value<RefcountMapIter<i32, i32>> = Rc::new(RefCell::new(RefcountMapIter::find_key(
-        (m.as_pointer() as Ptr<BTreeMap<i32, Value<(Value<i32>, Value<i32>)>>>),
-        &sentinel,
-    )));
-    let mut p: Ptr<i32> = ((*it.borrow())
-        .deref()
-        .with(|__p| __p.1.clone())
-        .as_pointer());
+    let it: Value<BidirectionalIterator<(Value<i32>, Value<i32>)>> =
+        Rc::new(RefCell::new(RefcountMapIter::find_key(
+            (m.as_pointer() as Ptr<BTreeMap<i32, Value<(Value<i32>, Value<i32>)>>>),
+            &sentinel,
+        )));
+    let mut p: Ptr<i32> = (field_ptr!((*it.borrow()).iter_deref(), second));
     assert!(
-        ((*(*it.borrow()).deref().with(|__p| __p.1.clone()).borrow()) == sentinel)
+        ({ (*it.borrow()).iter_deref().second } == sentinel)
             && (!(Ptr::<i8>::from_string_literal(
                 b"iterator does not have correct value before insert"
             ))
@@ -91,14 +89,14 @@ fn main_0() -> i32 {
         i.prefix_inc();
     }
     assert!(
-        ((*(*it.borrow()).deref().with(|__p| __p.1.clone()).borrow()) != 0)
+        ({ (*it.borrow()).iter_deref().second } != 0)
             && (!(Ptr::<i8>::from_string_literal(
                 b"in refcount, iterator points to index 0 instead of sentinel"
             ))
             .is_null())
     );
     assert!(
-        ((*(*it.borrow()).deref().with(|__p| __p.1.clone()).borrow()) == sentinel)
+        ({ (*it.borrow()).iter_deref().second } == sentinel)
             && (!(Ptr::<i8>::from_string_literal(
                 b"iterator does not have correct value after insert"
             ))
@@ -111,10 +109,7 @@ fn main_0() -> i32 {
             ))
             .is_null())
     );
-    (*(*it.borrow())
-        .deref()
-        .with(|__p| __p.1.clone())
-        .borrow_mut()) = 57005;
+    (*it.borrow()).iter_deref().second = 57005;
     assert!(
         (((m.as_pointer() as Ptr<BTreeMap<i32, Value<(Value<i32>, Value<i32>)>>>)
             .with_mut(|__v: &mut BTreeMap<i32, Value<(Value<i32>, Value<i32>)>>| {
@@ -136,8 +131,9 @@ fn main_0() -> i32 {
     assert!(((*m.borrow()).len() == (((N + 1) as u32) as usize)));
     let mut prev: i32 = -1_i32;
     'loop_: for __begin1 in RefcountMapIter::begin(m.as_pointer()) {
-        let __begin1: Value<RefcountMapIter<i32, i32>> = Rc::new(RefCell::new(__begin1));
-        let pair: Ptr<(Value<i32>, Value<i32>)> = (*__begin1.borrow()).deref();
+        let __begin1: Value<BidirectionalIterator<(Value<i32>, Value<i32>)>> =
+            Rc::new(RefCell::new(__begin1));
+        let pair: Ptr<(Value<i32>, Value<i32>)> = (*__begin1.borrow()).iter_deref();
         assert!(({ (*(*pair.upgrade().deref()).0.borrow()) } > { prev }));
         prev = (*(*pair.upgrade().deref()).0.borrow());
     }

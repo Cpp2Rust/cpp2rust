@@ -85,7 +85,7 @@ template <
              std::output_iterator_tag,
              typename std::iterator_traits<T1>::iterator_category>::value) &&
         !std::is_pointer<T1>::value && !std::is_reference<T1>::value>::type>
-T1 f2(T1 &&a0) {
+typename std::remove_reference<T1>::type f2(T1 &&a0) {
   return T1(std::move(a0));
 }
 
