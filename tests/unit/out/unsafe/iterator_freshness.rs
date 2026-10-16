@@ -19,7 +19,7 @@ unsafe fn main_0() -> i32 {
         .collect::<Vec<_>>();
     let mut it: UnsafeRandomAccessIterator<i32> =
         UnsafeRandomAccessIterator::Vec(vec_.as_mut_ptr());
-    (unsafe { foo_0(it.clone()) });
+    (unsafe { foo_0((it).clone()) });
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

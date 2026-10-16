@@ -31,8 +31,8 @@ unsafe fn main_0() -> i32 {
     let mut v_end: UnsafeRandomAccessIterator<i32> =
         UnsafeRandomAccessIterator::Vec(v.as_mut_ptr().add(v.len()));
     let mut it: UnsafeRandomAccessIterator<i32> = {
-        let mut __it = v_begin.clone();
-        while __it != v_end.clone() && *__it.iter_deref() != 2 {
+        let mut __it = (v_begin).clone();
+        while __it != (v_end).clone() && *__it.iter_deref() != 2 {
             __it.iter_inc();
         }
         __it

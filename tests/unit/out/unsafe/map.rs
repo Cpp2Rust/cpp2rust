@@ -117,7 +117,7 @@ unsafe fn main_0() -> i32 {
     let r: *mut UnsafeMap<i16, (i16, u32)> = &mut m;
     assert!((((*r).len()) == (4_usize)));
     assert!(m.find(&4_i16) != m.end());
-    (*r).erase(&it4.clone());
+    (*r).erase(&(it4).clone());
     assert!((((*r).len()) == (3_usize)));
     assert!(m.find(&4_i16) == m.end());
     let mut other_map: UnsafeMap<(i32, i64), ((i32, i64), f64)> = UnsafeMap::new();
