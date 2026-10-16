@@ -24,7 +24,7 @@ fn t5<T1>() -> UnsafeRandomAccessIterator<T1> {
 }
 
 unsafe fn f1<T1: UnsafeCppIterator<T2>, T2>(a0: T1) -> T1 {
-    a0.clone()
+    (a0).clone()
 }
 
 unsafe fn f2<T1: UnsafeCppIterator<T2>, T2>(a0: T1) -> T1 {

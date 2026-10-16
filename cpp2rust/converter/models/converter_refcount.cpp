@@ -2375,7 +2375,6 @@ bool ConverterRefCount::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
                      getConversionKind() != ConversionKind::Unboxed;
   PushConversionKind push(*this, boxed_array ? ConversionKind::Pointee
                                              : ConversionKind::Unboxed);
-  PushSuppressIteratorClone push_suppress(*this, expr);
 
   if (auto str = GetMappedAsString(expr, expr->getArgs(), expr->getNumArgs());
       !str.empty()) {
@@ -2408,9 +2407,7 @@ bool ConverterRefCount::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
 
   if (ctor->isCopyOrMoveConstructor() &&
       !IsConvertibleCopyOrMoveConstructor(ctor)) {
-    StrCat(PushSuppressIteratorClone::take(*this)
-               ? ConvertRValue(expr->getArg(0))
-               : ConvertFreshRValue(expr->getArg(0)));
+    StrCat(ConvertFreshRValue(expr->getArg(0)));
     return false;
   }
 

@@ -3912,8 +3912,6 @@ void Converter::ConvertCXXConstructExprArgs(clang::CXXConstructExpr *expr) {
 }
 
 bool Converter::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
-  PushSuppressIteratorClone push(*this, expr);
-
   if (expr->isElidable()) {
     Convert(expr->getArg(0));
     return false;
@@ -3936,11 +3934,9 @@ bool Converter::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
     return false;
   }
   if (IsPassThroughConstructor(ctor)) {
-    // Take suppress before recursing into the child.
-    bool suppress = PushSuppressIteratorClone::take(*this);
     Convert(expr->getArg(0));
     if ((ctor->isCopyConstructor() || IsDefaultedMoveConstructor(ctor)) &&
-        !suppress && !TypeIsCopyable(expr->getType())) {
+        !TypeIsCopyable(expr->getType())) {
       StrCat(".clone()");
       SetFreshType(expr->getType());
     }

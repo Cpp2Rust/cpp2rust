@@ -24,7 +24,7 @@ fn t5<T1>() -> RandomAccessIterator<T1> {
 }
 
 fn f1<T1: CppIterator<T2>, T2>(a0: T1) -> T1 {
-    a0.clone()
+    (a0).clone()
 }
 
 fn f2<T1: CppIterator<T2>, T2>(a0: T1) -> T1 {
