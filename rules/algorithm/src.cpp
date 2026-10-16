@@ -26,7 +26,7 @@ template <typename T1, typename T2> void f6(T1 first, T1 last, T2 comp) {
   return std::stable_sort(first, last, comp);
 }
 
-template <typename T1> T1 *f8(T1 *first, T1 *last) {
+template <typename T1> T1 f8(T1 first, T1 last) {
   return std::max_element(first, last);
 }
 
