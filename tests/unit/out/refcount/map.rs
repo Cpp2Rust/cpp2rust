@@ -309,7 +309,7 @@ fn main_0() -> i32 {
     let mut x1: u32 = if (*it.borrow()) == (*end.borrow()) {
         0_u32
     } else {
-        (*(*it.borrow()).iter_deref().1.borrow())
+        (*(*(*it.borrow()).iter_deref().upgrade().deref()).1.borrow())
     };
     assert!((x1 == 4_u32));
     let mut x2: u32 = if (*const_it.borrow())
@@ -317,7 +317,9 @@ fn main_0() -> i32 {
     {
         0_u32
     } else {
-        (*(*const_it.borrow()).iter_deref().1.borrow())
+        (*(*(*const_it.borrow()).iter_deref().upgrade().deref())
+            .1
+            .borrow())
     };
     assert!((x2 == 0_u32));
     let mut x3: u32 = if (*it.borrow())
@@ -326,7 +328,7 @@ fn main_0() -> i32 {
     {
         0_u32
     } else {
-        (*(*it.borrow()).iter_deref().1.borrow())
+        (*(*(*it.borrow()).iter_deref().upgrade().deref()).1.borrow())
     };
     assert!((x3 == 4_u32));
     let mut x4: u32 = if (*const_it.borrow())
@@ -336,7 +338,9 @@ fn main_0() -> i32 {
         ) {
         0_u32
     } else {
-        (*(*const_it.borrow()).iter_deref().1.borrow())
+        (*(*(*const_it.borrow()).iter_deref().upgrade().deref())
+            .1
+            .borrow())
     };
     assert!((x4 == 0_u32));
     (m.as_pointer() as Ptr<Map<i16, (Value<i16>, Value<u32>)>>)
@@ -356,7 +360,9 @@ fn main_0() -> i32 {
         (m.as_pointer() as Ptr<Map<i16, (Value<i16>, Value<u32>)>>)
             .with(|__m: &Map<i16, (Value<i16>, Value<u32>)>| __m.find(&4_i16)),
     ));
-    let mut p: Ptr<u32> = ((*it4.borrow()).iter_deref().1.as_pointer());
+    let mut p: Ptr<u32> = ((*(*it4.borrow()).iter_deref().upgrade().deref())
+        .1
+        .as_pointer());
     let mut x5: u32 = (p.read());
     assert!(
         (((m.as_pointer() as Ptr<Map<i16, (Value<i16>, Value<u32>)>>)
@@ -374,7 +380,7 @@ fn main_0() -> i32 {
             .read())
             == 5_u32)
     );
-    assert!(((*(*it4.borrow()).iter_deref().1.borrow()) == 5_u32));
+    assert!(((*(*(*it4.borrow()).iter_deref().upgrade().deref()).1.borrow()) == 5_u32));
     assert!(((p.read()) == 5_u32));
     assert!((x5 == 5_u32));
     p.with_mut(|__v| __v.prefix_inc());
@@ -394,7 +400,7 @@ fn main_0() -> i32 {
             .read())
             == 6_u32)
     );
-    assert!(((*(*it4.borrow()).iter_deref().1.borrow()) == 6_u32));
+    assert!(((*(*(*it4.borrow()).iter_deref().upgrade().deref()).1.borrow()) == 6_u32));
     assert!(((p.read()) == 6_u32));
     assert!((x5 == 5_u32));
     let const_it4: Value<BidirectionalIterator<(Value<i16>, Value<u32>)>> = Rc::new(RefCell::new(

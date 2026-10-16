@@ -18,9 +18,9 @@ unsafe fn main_0() -> i32 {
     let mut m: UnsafeMap<i32, (i32, i32)> = UnsafeMap::new();
     (*&mut (*m.get_or_insert_with(sentinel.clone(), || (sentinel, <i32>::default()))).1) = sentinel;
     let mut it: UnsafeBidirectionalIterator<(i32, i32)> = m.find(&sentinel);
-    let mut p: *mut i32 = (&mut it.iter_deref().1 as *mut i32);
+    let mut p: *mut i32 = (&mut (*it.iter_deref()).1 as *mut i32);
     assert!(
-        ((it.iter_deref().1) == (sentinel))
+        (((*it.iter_deref()).1) == (sentinel))
             && (!(c"iterator does not have correct value before insert".as_ptr()).is_null())
     );
     assert!(
@@ -38,19 +38,19 @@ unsafe fn main_0() -> i32 {
         i.prefix_inc();
     }
     assert!(
-        ((it.iter_deref().1) != (0))
+        (((*it.iter_deref()).1) != (0))
             && (!(c"in refcount, iterator points to index 0 instead of sentinel".as_ptr())
                 .is_null())
     );
     assert!(
-        ((it.iter_deref().1) == (sentinel))
+        (((*it.iter_deref()).1) == (sentinel))
             && (!(c"iterator does not have correct value after insert".as_ptr()).is_null())
     );
     assert!(
         ((*p) == (sentinel))
             && (!(c"pointer does not have correct value after insert".as_ptr()).is_null())
     );
-    it.iter_deref().1 = 57005;
+    (*it.iter_deref()).1 = 57005;
     assert!(
         ((*&mut (*m.get_or_insert_with(sentinel.clone(), || (sentinel, <i32>::default()))).1)
             == (57005))

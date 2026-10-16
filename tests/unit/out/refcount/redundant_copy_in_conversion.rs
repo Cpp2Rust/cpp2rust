@@ -14,7 +14,7 @@ pub fn sink_0(it: BidirectionalIterator<(Value<i32>, Value<i32>)>) -> i32 {
     return if (*cit.borrow())
         == <BidirectionalIterator<(Value<i32>, Value<i32>)>>::from((*it.borrow()).clone())
     {
-        (*(*it.borrow()).iter_deref().1.borrow())
+        (*(*(*it.borrow()).iter_deref().upgrade().deref()).1.borrow())
     } else {
         0
     };

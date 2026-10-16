@@ -69,42 +69,46 @@ unsafe fn main_0() -> i32 {
     let mut it: UnsafeBidirectionalIterator<(i16, u32)> = m.find(&1_i16);
     let mut const_it: UnsafeBidirectionalIterator<(i16, u32)> =
         <UnsafeBidirectionalIterator<(i16, u32)>>::from(m.find(&10_i16));
-    let mut x1: u32 = if it == end { 0_u32 } else { it.iter_deref().1 };
+    let mut x1: u32 = if it == end {
+        0_u32
+    } else {
+        (*it.iter_deref()).1
+    };
     assert!(((x1) == (4_u32)));
     let mut x2: u32 = if const_it == <UnsafeBidirectionalIterator<(i16, u32)>>::from((end).clone())
     {
         0_u32
     } else {
-        const_it.iter_deref().1
+        (*const_it.iter_deref()).1
     };
     assert!(((x2) == (0_u32)));
     let mut x3: u32 = if it == m.end() {
         0_u32
     } else {
-        it.iter_deref().1
+        (*it.iter_deref()).1
     };
     assert!(((x3) == (4_u32)));
     let mut x4: u32 = if const_it == <UnsafeBidirectionalIterator<(i16, u32)>>::from(m.end()) {
         0_u32
     } else {
-        const_it.iter_deref().1
+        (*const_it.iter_deref()).1
     };
     assert!(((x4) == (0_u32)));
     (*&mut (*m.get_or_insert_with(4_i16.clone(), || (4_i16, <u32>::default()))).1) = 5_u32;
     let mut it4: UnsafeBidirectionalIterator<(i16, u32)> = m.find(&4_i16);
-    let mut p: *mut u32 = (&mut it4.iter_deref().1 as *mut u32);
+    let mut p: *mut u32 = (&mut (*it4.iter_deref()).1 as *mut u32);
     let mut x5: u32 = (*p);
     assert!(
         ((*&mut (*m.get_or_insert_with(4_i16.clone(), || (4_i16, <u32>::default()))).1) == (5_u32))
     );
-    assert!(((it4.iter_deref().1) == (5_u32)));
+    assert!((((*it4.iter_deref()).1) == (5_u32)));
     assert!(((*p) == (5_u32)));
     assert!(((x5) == (5_u32)));
     (*p).prefix_inc();
     assert!(
         ((*&mut (*m.get_or_insert_with(4_i16.clone(), || (4_i16, <u32>::default()))).1) == (6_u32))
     );
-    assert!(((it4.iter_deref().1) == (6_u32)));
+    assert!((((*it4.iter_deref()).1) == (6_u32)));
     assert!(((*p) == (6_u32)));
     assert!(((x5) == (5_u32)));
     let mut const_it4: UnsafeBidirectionalIterator<(i16, u32)> =

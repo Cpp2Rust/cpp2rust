@@ -10,7 +10,7 @@ pub unsafe fn sink_0(mut it: UnsafeBidirectionalIterator<(i32, i32)>) -> i32 {
     let mut cit: UnsafeBidirectionalIterator<(i32, i32)> =
         <UnsafeBidirectionalIterator<(i32, i32)>>::from((it).clone());
     return if cit == <UnsafeBidirectionalIterator<(i32, i32)>>::from((it).clone()) {
-        it.iter_deref().1
+        (*it.iter_deref()).1
     } else {
         0
     };

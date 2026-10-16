@@ -196,18 +196,17 @@ fn main_0() -> i32 {
     let mut nine: Eq = Eq { v: 9 };
     assert!(
         ({
+            let mut __it = RandomAccessIterator::Vec((eqs.as_pointer() as Ptr<Eq>));
+            while __it != RandomAccessIterator::Vec((eqs.as_pointer() as Ptr<Eq>).to_end())
+                && __it.iter_deref().with(|__v| *__v != two)
             {
-                let mut __it = RandomAccessIterator::Vec((eqs.as_pointer() as Ptr<Eq>));
-                while __it != RandomAccessIterator::Vec((eqs.as_pointer() as Ptr<Eq>).to_end())
-                    && __it.iter_deref().with(|__v| *__v != two)
-                {
-                    __it.iter_inc();
-                }
-                __it
+                __it.iter_inc();
             }
-            .iter_deref()
-            .v
-        } == 2)
+            __it
+        }
+        .iter_deref()
+        .with(|__s| __s.v)
+            == 2)
     );
     assert!(
         {
@@ -253,18 +252,17 @@ fn main_0() -> i32 {
     let mut three: Cmp = Cmp { v: 3 };
     assert!(
         ({
+            let mut __it = RandomAccessIterator::Vec((cmps.as_pointer() as Ptr<Cmp>));
+            while __it != RandomAccessIterator::Vec((cmps.as_pointer() as Ptr<Cmp>).to_end())
+                && __it.iter_deref().with(|__v| *__v != three)
             {
-                let mut __it = RandomAccessIterator::Vec((cmps.as_pointer() as Ptr<Cmp>));
-                while __it != RandomAccessIterator::Vec((cmps.as_pointer() as Ptr<Cmp>).to_end())
-                    && __it.iter_deref().with(|__v| *__v != three)
-                {
-                    __it.iter_inc();
-                }
-                __it
+                __it.iter_inc();
             }
-            .iter_deref()
-            .v
-        } == 3)
+            __it
+        }
+        .iter_deref()
+        .with(|__s| __s.v)
+            == 3)
     );
     let frees: Value<Vec<Free>> = Rc::new(RefCell::new(vec![Free { v: 2 }, Free { v: 1 }]));
     {
@@ -300,18 +298,17 @@ fn main_0() -> i32 {
     let mut ftwo: Free = Free { v: 2 };
     assert!(
         ({
+            let mut __it = RandomAccessIterator::Vec((frees.as_pointer() as Ptr<Free>));
+            while __it != RandomAccessIterator::Vec((frees.as_pointer() as Ptr<Free>).to_end())
+                && __it.iter_deref().with(|__v| *__v != ftwo)
             {
-                let mut __it = RandomAccessIterator::Vec((frees.as_pointer() as Ptr<Free>));
-                while __it != RandomAccessIterator::Vec((frees.as_pointer() as Ptr<Free>).to_end())
-                    && __it.iter_deref().with(|__v| *__v != ftwo)
-                {
-                    __it.iter_inc();
-                }
-                __it
+                __it.iter_inc();
             }
-            .iter_deref()
-            .v
-        } == 2)
+            __it
+        }
+        .iter_deref()
+        .with(|__s| __s.v)
+            == 2)
     );
     let m: Value<Map<Lt, (Value<Lt>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
     (m.as_pointer() as Ptr<Map<Lt, (Value<Lt>, Value<i32>)>>)
@@ -341,11 +338,13 @@ fn main_0() -> i32 {
         })
         .write(10);
     assert!(
-        ((*(m.as_pointer() as Ptr<Map<Lt, (Value<Lt>, Value<i32>)>>)
+        ((*(*(m.as_pointer() as Ptr<Map<Lt, (Value<Lt>, Value<i32>)>>)
             .with(|__m: &Map<Lt, (Value<Lt>, Value<i32>)>| __m.begin())
             .iter_deref()
-            .1
-            .borrow())
+            .upgrade()
+            .deref())
+        .1
+        .borrow())
             == 10)
     );
     assert!(

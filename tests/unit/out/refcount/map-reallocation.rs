@@ -32,9 +32,11 @@ fn main_0() -> i32 {
         (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
             .with(|__m: &Map<i32, (Value<i32>, Value<i32>)>| __m.find(&sentinel)),
     ));
-    let mut p: Ptr<i32> = ((*it.borrow()).iter_deref().1.as_pointer());
+    let mut p: Ptr<i32> = ((*(*it.borrow()).iter_deref().upgrade().deref())
+        .1
+        .as_pointer());
     assert!(
-        ((*(*it.borrow()).iter_deref().1.borrow()) == sentinel)
+        ((*(*(*it.borrow()).iter_deref().upgrade().deref()).1.borrow()) == sentinel)
             && (!(Ptr::<i8>::from_string_literal(
                 b"iterator does not have correct value before insert"
             ))
@@ -84,14 +86,14 @@ fn main_0() -> i32 {
         i.prefix_inc();
     }
     assert!(
-        ((*(*it.borrow()).iter_deref().1.borrow()) != 0)
+        ((*(*(*it.borrow()).iter_deref().upgrade().deref()).1.borrow()) != 0)
             && (!(Ptr::<i8>::from_string_literal(
                 b"in refcount, iterator points to index 0 instead of sentinel"
             ))
             .is_null())
     );
     assert!(
-        ((*(*it.borrow()).iter_deref().1.borrow()) == sentinel)
+        ((*(*(*it.borrow()).iter_deref().upgrade().deref()).1.borrow()) == sentinel)
             && (!(Ptr::<i8>::from_string_literal(
                 b"iterator does not have correct value after insert"
             ))
@@ -104,7 +106,9 @@ fn main_0() -> i32 {
             ))
             .is_null())
     );
-    (*(*it.borrow()).iter_deref().1.borrow_mut()) = 57005;
+    (*(*(*it.borrow()).iter_deref().upgrade().deref())
+        .1
+        .borrow_mut()) = 57005;
     assert!(
         (((m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
             .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<i32>)>| {

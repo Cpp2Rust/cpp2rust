@@ -266,7 +266,7 @@ unsafe fn main_0() -> i32 {
     let mut m: UnsafeMap<Lt, (Lt, i32)> = UnsafeMap::new();
     (*&mut (*m.get_or_insert_with(Lt { v: 2 }.clone(), || (Lt { v: 2 }, <i32>::default()))).1) = 20;
     (*&mut (*m.get_or_insert_with(Lt { v: 1 }.clone(), || (Lt { v: 1 }, <i32>::default()))).1) = 10;
-    assert!(((m.begin().iter_deref().1) == (10)));
+    assert!((((*m.begin().iter_deref()).1) == (10)));
     assert!(
         ((*&mut (*m.get_or_insert_with(Lt { v: 2 }.clone(), || (Lt { v: 2 }, <i32>::default())))
             .1)
