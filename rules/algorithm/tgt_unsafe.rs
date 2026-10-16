@@ -85,6 +85,33 @@ unsafe fn f9<T1>(a0: &mut T1, a1: &mut T1) {
     std::mem::swap(&mut *a0, &mut *a1)
 }
 
+unsafe fn f10<T1: UnsafeCppInputIterator<T2>, T2: PartialEq + Clone>(a0: T1, a1: T1) -> T1 {
+    if a0 == a1 {
+        a1
+    } else {
+        let mut __write = a0.clone();
+        let mut __it = a0;
+        __it.iter_inc();
+        while __it != a1 {
+            if *__write.iter_deref() != *__it.iter_deref() {
+                __write.iter_inc();
+                *__write.iter_deref() = (*__it.iter_deref()).clone();
+            }
+            __it.iter_inc();
+        }
+        __write.iter_inc();
+        __write
+    }
+}
+
+unsafe fn f12<T1: UnsafeCppInputIterator<T3>, T2: Clone + Into<T3>, T3>(a0: T1, a1: T1, a2: T2) {
+    let mut __it = a0;
+    while __it != a1 {
+        *__it.iter_deref() = a2.clone().into();
+        __it.iter_inc();
+    }
+}
+
 unsafe fn f13(
     a0: *const libc::c_char,
     a1: *const libc::c_char,

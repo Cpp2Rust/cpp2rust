@@ -94,6 +94,34 @@ fn f9<T1: Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>) {
     a1.write(tmp);
 }
 
+fn f10<T1: CppInputIterator<T2>, T2: PartialEq + Clone + ByteRepr>(a0: T1, a1: T1) -> T1 {
+    if a0 == a1 {
+        a1
+    } else {
+        let mut __write = a0.clone();
+        let mut __it = a0;
+        __it.iter_inc();
+        while __it != a1 {
+            let __v = __it.iter_deref().read();
+            if __write.iter_deref().with(|__w| *__w != __v) {
+                __write.iter_inc();
+                __write.iter_deref().write(__v);
+            }
+            __it.iter_inc();
+        }
+        __write.iter_inc();
+        __write
+    }
+}
+
+fn f12<T1: CppInputIterator<T3>, T2: Clone + Into<T3>, T3: ByteRepr>(a0: T1, a1: T1, a2: T2) {
+    let mut __it = a0;
+    while __it != a1 {
+        __it.iter_deref().write(a2.clone().into());
+        __it.iter_inc();
+    }
+}
+
 fn f13(a0: Ptr<i8>, a1: Ptr<i8>, a2: &mut ::std::fs::File) -> ::std::fs::File {
     a0.with_slice(a1.get_offset() - a0.get_offset(), |__s| {
         CChar::with_u8_slice(__s, |__b| a2.write_all(__b))
