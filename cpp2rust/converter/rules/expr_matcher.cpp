@@ -155,10 +155,6 @@ std::vector<clang::Expr *> getOperands(clang::ASTContext &ctx,
     auto base =
         const_cast<clang::Expr *>(macro_base ? macro_base : member->getBase())
             ->IgnoreParenImpCasts();
-    if (auto arrow = llvm::dyn_cast<clang::CXXOperatorCallExpr>(base);
-        arrow && arrow->getOperator() == clang::OO_Arrow) {
-      base = arrow->getArg(0);
-    }
     operands.push_back(getObject(ctx, base));
   }
   while (!operands.empty() &&

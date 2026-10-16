@@ -28,17 +28,6 @@ class Sema;
 
 namespace cpp2rust {
 
-// Order matters: each category is a superset of the previous one.
-// Use >= to check "at least this capable".
-enum class IteratorCategory {
-  Forward,
-  Bidirectional,
-  RandomAccess,
-  Contiguous,
-};
-
-std::optional<IteratorCategory>
-GetStrongestIteratorCategory(clang::ASTContext &ctx, clang::QualType type);
 bool IsBuiltinConstantP(const clang::Expr *expr);
 
 bool IsGlobalVar(const clang::VarDecl *decl);

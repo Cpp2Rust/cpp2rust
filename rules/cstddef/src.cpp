@@ -3,4 +3,6 @@
 
 #include <cstddef>
 
+typedef std::ptrdiff_t t4;
+
 typedef std::size_t t9;

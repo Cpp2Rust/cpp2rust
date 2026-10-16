@@ -36,20 +36,32 @@ unsafe fn main_0() -> i32 {
         v.push(__a1)
     };
     {
-        let len = v.as_mut_ptr().add(v.len()).offset_from(v.as_mut_ptr()) as usize;
-        ::std::slice::from_raw_parts_mut(v.as_mut_ptr(), len).sort_by(|x, y| {
-            if (Compare_0 as unsafe fn(*const Item, *const Item) -> bool)
-                .call(x as *const _, y as *const _)
-            {
+        let __n = UnsafeRandomAccessIterator::Vec(v.as_mut_ptr().add(v.len()))
+            .iter_distance(&UnsafeRandomAccessIterator::Vec(v.as_mut_ptr()));
+        let mut __order: Vec<isize> = (0..__n).collect();
+        __order.sort_by(|&__x, &__y| {
+            let __a = UnsafeRandomAccessIterator::Vec(v.as_mut_ptr()).iter_at(__x) as *const _;
+            let __b = UnsafeRandomAccessIterator::Vec(v.as_mut_ptr()).iter_at(__y) as *const _;
+            if (Compare_0 as unsafe fn(*const Item, *const Item) -> bool).call(__a, __b) {
                 std::cmp::Ordering::Less
-            } else if (Compare_0 as unsafe fn(*const Item, *const Item) -> bool)
-                .call(y as *const _, x as *const _)
-            {
+            } else if (Compare_0 as unsafe fn(*const Item, *const Item) -> bool).call(__b, __a) {
                 std::cmp::Ordering::Greater
             } else {
                 std::cmp::Ordering::Equal
             }
-        })
+        });
+        let __values: Vec<_> = __order
+            .iter()
+            .map(|&__i| {
+                std::ptr::read(UnsafeRandomAccessIterator::Vec(v.as_mut_ptr()).iter_at(__i))
+            })
+            .collect();
+        for (__i, __v) in (0..__n).zip(__values) {
+            std::ptr::write(
+                UnsafeRandomAccessIterator::Vec(v.as_mut_ptr()).iter_at(__i),
+                __v,
+            );
+        }
     };
     assert!(((v[(0_usize)].key) == (1)));
     assert!(((v[(1_usize)].key) == (2)));
