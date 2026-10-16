@@ -5,7 +5,9 @@ use std::cmp::Ordering;
 use std::convert::Infallible;
 use std::marker::PhantomData;
 
-use crate::{PostfixDec, PostfixInc, PrefixDec, PrefixInc, Ptr};
+use std::rc::Rc;
+
+use crate::{MapNode, PostfixDec, PostfixInc, PrefixDec, PrefixInc, Ptr, UnsafeMapNode, Value};
 
 pub trait CppIterator<T>: Clone {
     fn iter_deref(&self) -> Ptr<T>;
@@ -192,43 +194,141 @@ macro_rules! uninhabited_iterator_ops {
 uninhabited_iterator!(InputIterator, "input iterators");
 uninhabited_iterator!(OutputIterator, "output iterators");
 uninhabited_iterator!(ForwardIterator, "forward iterators");
-uninhabited_iterator!(BidirectionalIterator, "bidirectional iterators");
 uninhabited_iterator!(UnsafeInputIterator, "input iterators");
 uninhabited_iterator!(UnsafeOutputIterator, "output iterators");
 uninhabited_iterator!(UnsafeForwardIterator, "forward iterators");
-uninhabited_iterator!(UnsafeBidirectionalIterator, "bidirectional iterators");
 
 uninhabited_iterator_ops!(InputIterator, CppIterator, Ptr<T>);
 uninhabited_iterator_ops!(OutputIterator, CppIterator, Ptr<T>);
 uninhabited_iterator_ops!(ForwardIterator, CppIterator, Ptr<T>);
-uninhabited_iterator_ops!(BidirectionalIterator, CppIterator, Ptr<T>);
 uninhabited_iterator_ops!(UnsafeInputIterator, UnsafeCppIterator, *mut T);
 uninhabited_iterator_ops!(UnsafeOutputIterator, UnsafeCppIterator, *mut T);
 uninhabited_iterator_ops!(UnsafeForwardIterator, UnsafeCppIterator, *mut T);
-uninhabited_iterator_ops!(UnsafeBidirectionalIterator, UnsafeCppIterator, *mut T);
 
 impl<T> CppInputIterator<T> for InputIterator<T> {}
 impl<T> CppInputIterator<T> for ForwardIterator<T> {}
-impl<T> CppInputIterator<T> for BidirectionalIterator<T> {}
 impl<T> UnsafeCppInputIterator<T> for UnsafeInputIterator<T> {}
 impl<T> UnsafeCppInputIterator<T> for UnsafeForwardIterator<T> {}
-impl<T> UnsafeCppInputIterator<T> for UnsafeBidirectionalIterator<T> {}
 
-impl<T> CppBidirectionalIterator<T> for BidirectionalIterator<T> {
-    fn iter_dec(&mut self) -> Self {
-        self.never()
-    }
-    fn iter_post_dec(&mut self) -> Self {
-        self.never()
+pub enum BidirectionalIterator<T> {
+    Map(Value<MapNode<T>>),
+}
+
+impl<T> Default for BidirectionalIterator<T> {
+    fn default() -> Self {
+        Self::Map(MapNode::header())
     }
 }
 
-impl<T> UnsafeCppBidirectionalIterator<T> for UnsafeBidirectionalIterator<T> {
+impl<T> Clone for BidirectionalIterator<T> {
+    fn clone(&self) -> Self {
+        match self {
+            Self::Map(node) => Self::Map(node.clone()),
+        }
+    }
+}
+
+impl<T> PartialEq for BidirectionalIterator<T> {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (Self::Map(a), Self::Map(b)) => Rc::ptr_eq(a, b),
+        }
+    }
+}
+
+impl<T> CppIterator<T> for BidirectionalIterator<T> {
+    fn iter_deref(&self) -> Ptr<T> {
+        match self {
+            Self::Map(node) => MapNode::value(node),
+        }
+    }
+    fn iter_inc(&mut self) -> Self {
+        match self {
+            Self::Map(node) => *node = MapNode::next(node),
+        }
+        self.clone()
+    }
+    fn iter_post_inc(&mut self) -> Self {
+        let old = self.clone();
+        self.iter_inc();
+        old
+    }
+}
+
+impl<T> CppInputIterator<T> for BidirectionalIterator<T> {}
+
+impl<T> CppBidirectionalIterator<T> for BidirectionalIterator<T> {
     fn iter_dec(&mut self) -> Self {
-        self.never()
+        match self {
+            Self::Map(node) => *node = MapNode::prev(node),
+        }
+        self.clone()
     }
     fn iter_post_dec(&mut self) -> Self {
-        self.never()
+        let old = self.clone();
+        self.iter_dec();
+        old
+    }
+}
+
+pub enum UnsafeBidirectionalIterator<T> {
+    Map(*mut UnsafeMapNode<T>),
+}
+
+impl<T> Default for UnsafeBidirectionalIterator<T> {
+    fn default() -> Self {
+        Self::Map(std::ptr::null_mut())
+    }
+}
+
+impl<T> Clone for UnsafeBidirectionalIterator<T> {
+    fn clone(&self) -> Self {
+        match self {
+            Self::Map(node) => Self::Map(*node),
+        }
+    }
+}
+
+impl<T> PartialEq for UnsafeBidirectionalIterator<T> {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (Self::Map(a), Self::Map(b)) => a == b,
+        }
+    }
+}
+
+impl<T> UnsafeCppIterator<T> for UnsafeBidirectionalIterator<T> {
+    fn iter_deref(&self) -> *mut T {
+        match self {
+            Self::Map(node) => UnsafeMapNode::value(*node),
+        }
+    }
+    fn iter_inc(&mut self) -> Self {
+        match self {
+            Self::Map(node) => *node = UnsafeMapNode::next(*node),
+        }
+        self.clone()
+    }
+    fn iter_post_inc(&mut self) -> Self {
+        let old = self.clone();
+        self.iter_inc();
+        old
+    }
+}
+
+impl<T> UnsafeCppInputIterator<T> for UnsafeBidirectionalIterator<T> {}
+
+impl<T> UnsafeCppBidirectionalIterator<T> for UnsafeBidirectionalIterator<T> {
+    fn iter_dec(&mut self) -> Self {
+        match self {
+            Self::Map(node) => *node = UnsafeMapNode::prev(*node),
+        }
+        self.clone()
+    }
+    fn iter_post_dec(&mut self) -> Self {
+        let old = self.clone();
+        self.iter_dec();
+        old
     }
 }
 

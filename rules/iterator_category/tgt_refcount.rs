@@ -16,7 +16,7 @@ fn t3<T1>() -> ForwardIterator<T1> {
 }
 
 fn t4<T1>() -> BidirectionalIterator<T1> {
-    BidirectionalIterator::uninitialized()
+    BidirectionalIterator::default()
 }
 
 fn t5<T1>() -> RandomAccessIterator<T1> {

@@ -804,7 +804,8 @@ bool Converter::RecordHasCopyableFields(const clang::RecordDecl *decl) {
       return false;
     }
 
-    if (mapped.starts_with("BTreeMap<")) {
+    if (mapped.starts_with("BTreeMap<") || mapped.starts_with("Map<") ||
+        mapped.starts_with("UnsafeMap<")) {
       return false;
     }
 
@@ -1575,7 +1576,7 @@ bool Converter::VisitCXXForRangeStmtMap(clang::CXXForRangeStmt *stmt) {
   StrCat("'loop_:");
   auto map_type = Mapper::Map(*this, stmt->getRangeInit()->getType());
   StrCat(keyword::kFor, GetNamedDeclAsString(begin), keyword::kIn,
-         "UnsafeMapIterator::begin(&");
+         "UnsafeMap::range(&");
   Convert(stmt->getRangeInit());
   StrCat(std::format(" as *const {})", map_type));
   {

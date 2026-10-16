@@ -1933,8 +1933,8 @@ GetStrongestIteratorCategory(clang::ASTContext &ctx, clang::QualType type) {
   if (mapped.empty()) {
     return std::nullopt;
   }
-  if (mapped.starts_with("RefcountMapIter<") ||
-      mapped.starts_with("UnsafeMapIterator<")) {
+  if (mapped.starts_with("BidirectionalIterator<") ||
+      mapped.starts_with("UnsafeBidirectionalIterator<")) {
     return IteratorCategory::Bidirectional;
   }
   return std::nullopt;

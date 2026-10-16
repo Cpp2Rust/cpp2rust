@@ -2279,7 +2279,7 @@ bool ConverterRefCount::VisitCXXForRangeStmtMap(clang::CXXForRangeStmt *stmt) {
   auto begin_name = GetNamedDeclAsString(begin);
 
   StrCat("'loop_:");
-  StrCat(keyword::kFor, begin_name, keyword::kIn, "RefcountMapIter::begin(",
+  StrCat(keyword::kFor, begin_name, keyword::kIn, "Map::range(",
          ConvertObject(stmt->getRangeInit()), ')');
   PushBrace brace(*this);
 

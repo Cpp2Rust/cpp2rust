@@ -16,7 +16,7 @@ fn t3<T1>() -> UnsafeForwardIterator<T1> {
 }
 
 fn t4<T1>() -> UnsafeBidirectionalIterator<T1> {
-    UnsafeBidirectionalIterator::uninitialized()
+    UnsafeBidirectionalIterator::default()
 }
 
 fn t5<T1>() -> UnsafeRandomAccessIterator<T1> {
