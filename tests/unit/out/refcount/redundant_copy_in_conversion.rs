@@ -6,11 +6,15 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn sink_0(it: RefcountMapIter<i32, i32>) -> i32 {
-    let it: Value<RefcountMapIter<i32, i32>> = Rc::new(RefCell::new(it));
-    let cit: Value<RefcountMapIter<i32, i32>> = Rc::new(RefCell::new((*it.borrow()).clone()));
-    return if (*cit.borrow()) == (*it.borrow()) {
-        (*(*it.borrow()).deref().with(|__p| __p.1.clone()).borrow())
+pub fn sink_0(it: BidirectionalIterator<(Value<i32>, Value<i32>)>) -> i32 {
+    let it: Value<BidirectionalIterator<(Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(it));
+    let cit: Value<BidirectionalIterator<(Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(
+        <BidirectionalIterator<(Value<i32>, Value<i32>)>>::from((*it.borrow()).clone()),
+    ));
+    return if (*cit.borrow())
+        == <BidirectionalIterator<(Value<i32>, Value<i32>)>>::from((*it.borrow()).clone())
+    {
+        { (*it.borrow()).iter_deref().second }
     } else {
         0
     };
@@ -36,15 +40,21 @@ fn main_0() -> i32 {
                 .as_pointer()
         })
         .write(1);
-    let end: Value<RefcountMapIter<i32, i32>> = Rc::new(RefCell::new(RefcountMapIter::end(
-        (m.as_pointer() as Ptr<BTreeMap<i32, Value<(Value<i32>, Value<i32>)>>>),
-    )));
-    let it0: Value<RefcountMapIter<i32, i32>> = Rc::new(RefCell::new(RefcountMapIter::find_key(
-        (m.as_pointer() as Ptr<BTreeMap<i32, Value<(Value<i32>, Value<i32>)>>>),
-        &0,
-    )));
-    let const_it: Value<RefcountMapIter<i32, i32>> = Rc::new(RefCell::new((*it0.borrow()).clone()));
-    let mut r: i32 = if (*const_it.borrow()) == (*end.borrow()) {
+    let end: Value<BidirectionalIterator<(Value<i32>, Value<i32>)>> =
+        Rc::new(RefCell::new(RefcountMapIter::end(
+            (m.as_pointer() as Ptr<BTreeMap<i32, Value<(Value<i32>, Value<i32>)>>>),
+        )));
+    let it0: Value<BidirectionalIterator<(Value<i32>, Value<i32>)>> =
+        Rc::new(RefCell::new(RefcountMapIter::find_key(
+            (m.as_pointer() as Ptr<BTreeMap<i32, Value<(Value<i32>, Value<i32>)>>>),
+            &0,
+        )));
+    let const_it: Value<BidirectionalIterator<(Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(
+        <BidirectionalIterator<(Value<i32>, Value<i32>)>>::from((*it0.borrow()).clone()),
+    ));
+    let mut r: i32 = if (*const_it.borrow())
+        == <BidirectionalIterator<(Value<i32>, Value<i32>)>>::from((*end.borrow()).clone())
+    {
         0
     } else {
         1

@@ -135,19 +135,18 @@ unsafe fn main_0() -> i32 {
         UnsafeMapIterator::end(&m as *const BTreeMap<i16, Box<(i16, u32)>>);
     let mut it: UnsafeBidirectionalIterator<(i16, u32)> =
         UnsafeMapIterator::find_key(&m as *const BTreeMap<i16, Box<(i16, u32)>>, &1_i16);
-    let mut const_it: UnsafeBidirectionalIterator<(i16, u32)> = {
-        let mut __tmp_0: UnsafeBidirectionalIterator<(i16, u32)> =
-            UnsafeMapIterator::find_key(&m as *const BTreeMap<i16, Box<(i16, u32)>>, &10_i16);
-        std__Rb_tree_const_iterator_std_pair_const_short__unsigned_int__::new_1({ &mut __tmp_0 })
-    };
+    let mut const_it: UnsafeBidirectionalIterator<(i16, u32)> =
+        <UnsafeBidirectionalIterator<(i16, u32)>>::from(UnsafeMapIterator::find_key(
+            &m as *const BTreeMap<i16, Box<(i16, u32)>>,
+            &10_i16,
+        ));
     let mut x1: u32 = if it == end {
         0_u32
     } else {
         (*it.iter_deref()).second
     };
     assert!(((x1) == (4_u32)));
-    let mut x2: u32 = if const_it
-        == std__Rb_tree_const_iterator_std_pair_const_short__unsigned_int__::new_1({ &end })
+    let mut x2: u32 = if const_it == <UnsafeBidirectionalIterator<(i16, u32)>>::from((end).clone())
     {
         0_u32
     } else {
@@ -160,11 +159,10 @@ unsafe fn main_0() -> i32 {
         (*it.iter_deref()).second
     };
     assert!(((x3) == (4_u32)));
-    let mut x4: u32 = if const_it == {
-        let mut __tmp_1: UnsafeBidirectionalIterator<(i16, u32)> =
-            UnsafeMapIterator::end(&m as *const BTreeMap<i16, Box<(i16, u32)>>);
-        std__Rb_tree_const_iterator_std_pair_const_short__unsigned_int__::new_1({ &mut __tmp_1 })
-    } {
+    let mut x4: u32 = if const_it
+        == <UnsafeBidirectionalIterator<(i16, u32)>>::from(UnsafeMapIterator::end(
+            &m as *const BTreeMap<i16, Box<(i16, u32)>>,
+        )) {
         0_u32
     } else {
         (*const_it.iter_deref()).second
@@ -199,11 +197,11 @@ unsafe fn main_0() -> i32 {
     assert!((((*it4.iter_deref()).second) == (6_u32)));
     assert!(((*p) == (6_u32)));
     assert!(((x5) == (5_u32)));
-    let mut const_it4: UnsafeBidirectionalIterator<(i16, u32)> = {
-        let mut __tmp_2: UnsafeBidirectionalIterator<(i16, u32)> =
-            UnsafeMapIterator::find_key(&m as *const BTreeMap<i16, Box<(i16, u32)>>, &4_i16);
-        std__Rb_tree_const_iterator_std_pair_const_short__unsigned_int__::new_1({ &mut __tmp_2 })
-    };
+    let mut const_it4: UnsafeBidirectionalIterator<(i16, u32)> =
+        <UnsafeBidirectionalIterator<(i16, u32)>>::from(UnsafeMapIterator::find_key(
+            &m as *const BTreeMap<i16, Box<(i16, u32)>>,
+            &4_i16,
+        ));
     assert!((((*const_it4.iter_deref()).1) == (6_u32)));
     let r: *mut BTreeMap<i16, Box<(i16, u32)>> = &mut m;
     assert!((((*r).len()) == (4_usize)));

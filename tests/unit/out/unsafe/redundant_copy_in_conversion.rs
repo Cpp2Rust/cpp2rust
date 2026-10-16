@@ -8,8 +8,8 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn sink_0(mut it: UnsafeBidirectionalIterator<(i32, i32)>) -> i32 {
     let mut cit: UnsafeBidirectionalIterator<(i32, i32)> =
-        std__Rb_tree_const_iterator_std_pair_const_int__int__::new_1({ &it });
-    return if cit == std__Rb_tree_const_iterator_std_pair_const_int__int__::new_1({ &it }) {
+        <UnsafeBidirectionalIterator<(i32, i32)>>::from((it).clone());
+    return if cit == <UnsafeBidirectionalIterator<(i32, i32)>>::from((it).clone()) {
         (*it.iter_deref()).second
     } else {
         0
@@ -32,13 +32,12 @@ unsafe fn main_0() -> i32 {
     let mut it0: UnsafeBidirectionalIterator<(i32, i32)> =
         UnsafeMapIterator::find_key(&m as *const BTreeMap<i32, Box<(i32, i32)>>, &0);
     let mut const_it: UnsafeBidirectionalIterator<(i32, i32)> =
-        std__Rb_tree_const_iterator_std_pair_const_int__int__::new_1({ &it0 });
-    let mut r: i32 =
-        if const_it == std__Rb_tree_const_iterator_std_pair_const_int__int__::new_1({ &end }) {
-            0
-        } else {
-            1
-        };
+        <UnsafeBidirectionalIterator<(i32, i32)>>::from((it0).clone());
+    let mut r: i32 = if const_it == <UnsafeBidirectionalIterator<(i32, i32)>>::from((end).clone()) {
+        0
+    } else {
+        1
+    };
     r += (unsafe { sink_0(it0.clone()) });
     r += if end == end { 0 } else { 1 };
     assert!(((r) == (2)));

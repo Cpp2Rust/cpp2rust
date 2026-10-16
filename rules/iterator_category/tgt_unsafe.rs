@@ -116,5 +116,5 @@ unsafe fn f23<T1: UnsafeCppRandomAccessIterator<T2>, T2>(a0: T1, a1: T1) -> bool
 }
 
 unsafe fn f24<T1: From<T2>, T2>(a0: T2) -> T1 {
-    T1::from(a0)
+    <T1>::from(a0)
 }

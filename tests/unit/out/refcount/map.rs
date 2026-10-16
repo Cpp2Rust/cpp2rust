@@ -311,31 +311,33 @@ fn main_0() -> i32 {
             .read())
             == 5_u32)
     );
-    let end: Value<RefcountMapIter<i16, u32>> = Rc::new(RefCell::new(RefcountMapIter::end(
-        (m.as_pointer() as Ptr<BTreeMap<i16, Value<(Value<i16>, Value<u32>)>>>),
-    )));
-    let it: Value<RefcountMapIter<i16, u32>> = Rc::new(RefCell::new(RefcountMapIter::find_key(
-        (m.as_pointer() as Ptr<BTreeMap<i16, Value<(Value<i16>, Value<u32>)>>>),
-        &1_i16,
-    )));
-    let const_it: Value<RefcountMapIter<i16, u32>> =
+    let end: Value<BidirectionalIterator<(Value<i16>, Value<u32>)>> =
+        Rc::new(RefCell::new(RefcountMapIter::end(
+            (m.as_pointer() as Ptr<BTreeMap<i16, Value<(Value<i16>, Value<u32>)>>>),
+        )));
+    let it: Value<BidirectionalIterator<(Value<i16>, Value<u32>)>> =
         Rc::new(RefCell::new(RefcountMapIter::find_key(
             (m.as_pointer() as Ptr<BTreeMap<i16, Value<(Value<i16>, Value<u32>)>>>),
-            &10_i16,
+            &1_i16,
         )));
+    let const_it: Value<BidirectionalIterator<(Value<i16>, Value<u32>)>> = Rc::new(RefCell::new(
+        <BidirectionalIterator<(Value<i16>, Value<u32>)>>::from(RefcountMapIter::find_key(
+            (m.as_pointer() as Ptr<BTreeMap<i16, Value<(Value<i16>, Value<u32>)>>>),
+            &10_i16,
+        )),
+    ));
     let mut x1: u32 = if (*it.borrow()) == (*end.borrow()) {
         0_u32
     } else {
-        (*(*it.borrow()).deref().with(|__p| __p.1.clone()).borrow())
+        { (*it.borrow()).iter_deref().second }
     };
     assert!((x1 == 4_u32));
-    let mut x2: u32 = if (*const_it.borrow()) == (*end.borrow()) {
+    let mut x2: u32 = if (*const_it.borrow())
+        == <BidirectionalIterator<(Value<i16>, Value<u32>)>>::from((*end.borrow()).clone())
+    {
         0_u32
     } else {
-        (*(*const_it.borrow())
-            .deref()
-            .with(|__p| __p.1.clone())
-            .borrow())
+        { (*const_it.borrow()).iter_deref().second }
     };
     assert!((x2 == 0_u32));
     let mut x3: u32 = if (*it.borrow())
@@ -344,19 +346,16 @@ fn main_0() -> i32 {
         ) {
         0_u32
     } else {
-        (*(*it.borrow()).deref().with(|__p| __p.1.clone()).borrow())
+        { (*it.borrow()).iter_deref().second }
     };
     assert!((x3 == 4_u32));
     let mut x4: u32 = if (*const_it.borrow())
-        == RefcountMapIter::end(
+        == <BidirectionalIterator<(Value<i16>, Value<u32>)>>::from(RefcountMapIter::end(
             (m.as_pointer() as Ptr<BTreeMap<i16, Value<(Value<i16>, Value<u32>)>>>),
-        ) {
+        )) {
         0_u32
     } else {
-        (*(*const_it.borrow())
-            .deref()
-            .with(|__p| __p.1.clone())
-            .borrow())
+        { (*const_it.borrow()).iter_deref().second }
     };
     assert!((x4 == 0_u32));
     (m.as_pointer() as Ptr<BTreeMap<i16, Value<(Value<i16>, Value<u32>)>>>)
@@ -373,14 +372,12 @@ fn main_0() -> i32 {
                 .as_pointer()
         })
         .write(5_u32);
-    let it4: Value<RefcountMapIter<i16, u32>> = Rc::new(RefCell::new(RefcountMapIter::find_key(
-        (m.as_pointer() as Ptr<BTreeMap<i16, Value<(Value<i16>, Value<u32>)>>>),
-        &4_i16,
-    )));
-    let mut p: Ptr<u32> = ((*it4.borrow())
-        .deref()
-        .with(|__p| __p.1.clone())
-        .as_pointer());
+    let it4: Value<BidirectionalIterator<(Value<i16>, Value<u32>)>> =
+        Rc::new(RefCell::new(RefcountMapIter::find_key(
+            (m.as_pointer() as Ptr<BTreeMap<i16, Value<(Value<i16>, Value<u32>)>>>),
+            &4_i16,
+        )));
+    let mut p: Ptr<u32> = (field_ptr!((*it4.borrow()).iter_deref(), second));
     let mut x5: u32 = (p.read());
     assert!(
         (((m.as_pointer() as Ptr<BTreeMap<i16, Value<(Value<i16>, Value<u32>)>>>)
@@ -399,7 +396,7 @@ fn main_0() -> i32 {
             .read())
             == 5_u32)
     );
-    assert!(((*(*it4.borrow()).deref().with(|__p| __p.1.clone()).borrow()) == 5_u32));
+    assert!(({ (*it4.borrow()).iter_deref().second } == 5_u32));
     assert!(((p.read()) == 5_u32));
     assert!((x5 == 5_u32));
     p.with_mut(|__v| __v.prefix_inc());
@@ -420,16 +417,17 @@ fn main_0() -> i32 {
             .read())
             == 6_u32)
     );
-    assert!(((*(*it4.borrow()).deref().with(|__p| __p.1.clone()).borrow()) == 6_u32));
+    assert!(({ (*it4.borrow()).iter_deref().second } == 6_u32));
     assert!(((p.read()) == 6_u32));
     assert!((x5 == 5_u32));
-    let const_it4: Value<RefcountMapIter<i16, u32>> =
-        Rc::new(RefCell::new(RefcountMapIter::find_key(
+    let const_it4: Value<BidirectionalIterator<(Value<i16>, Value<u32>)>> = Rc::new(RefCell::new(
+        <BidirectionalIterator<(Value<i16>, Value<u32>)>>::from(RefcountMapIter::find_key(
             (m.as_pointer() as Ptr<BTreeMap<i16, Value<(Value<i16>, Value<u32>)>>>),
             &4_i16,
-        )));
+        )),
+    ));
     assert!(
-        ((*(*(*const_it4.borrow()).deref().upgrade().deref())
+        ((*(*(*const_it4.borrow()).iter_deref().upgrade().deref())
             .1
             .borrow())
             == 6_u32)
@@ -631,8 +629,9 @@ fn main_0() -> i32 {
     assert!(((*m2.borrow()).len() == indexes.len()));
     let mut last: i32 = -1_i32;
     'loop_: for __begin1 in RefcountMapIter::begin(m2.as_pointer()) {
-        let __begin1: Value<RefcountMapIter<i32, bool>> = Rc::new(RefCell::new(__begin1));
-        let pair: Ptr<(Value<i32>, Value<bool>)> = (*__begin1.borrow()).deref();
+        let __begin1: Value<BidirectionalIterator<(Value<i32>, Value<bool>)>> =
+            Rc::new(RefCell::new(__begin1));
+        let pair: Ptr<(Value<i32>, Value<bool>)> = (*__begin1.borrow()).iter_deref();
         assert!(({ (*(*pair.upgrade().deref()).0.borrow()) } > { last }));
         assert!(
             ({ ((*(*pair.upgrade().deref()).1.borrow()) as i32) } == {
