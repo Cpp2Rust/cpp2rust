@@ -9,7 +9,6 @@
 #include <type_traits>
 #include <vector>
 
-
 template <typename T1> void f1(T1 first, T1 last) {
   return std::sort(first, last);
 }
