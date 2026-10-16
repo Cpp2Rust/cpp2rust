@@ -120,6 +120,22 @@ unsafe fn main_0() -> i32 {
     (*r).erase(&(it4).clone());
     assert!((((*r).len()) == (3_usize)));
     assert!(m.find(&4_i16) == m.end());
+    (*&mut (*m.get_or_insert_with(7_i16.clone(), || (7_i16, <u32>::default()))).1) = 7_u32;
+    (*&mut (*m.get_or_insert_with(8_i16.clone(), || (8_i16, <u32>::default()))).1) = 8_u32;
+    (*&mut (*m.get_or_insert_with(9_i16.clone(), || (9_i16, <u32>::default()))).1) = 9_u32;
+    assert!((((*r).len()) == (6_usize)));
+    assert!(((m.erase_key(&10_i16)) == (0_usize)));
+    let mut key9: i32 = 9;
+    assert!(((m.erase_key(&(key9 as i16))) == (1_usize)));
+    assert!((((*r).len()) == (5_usize)));
+    let mut cit: UnsafeBidirectionalIterator<(i16, u32)> =
+        <UnsafeBidirectionalIterator<(i16, u32)>>::from(m.find(&7_i16));
+    let mut next: UnsafeBidirectionalIterator<(i16, u32)> = m.erase(&(cit).clone());
+    assert!(next == m.find(&8_i16));
+    next = m.erase(&(next).clone());
+    assert!(next == m.end());
+    assert!((((*r).len()) == (3_usize)));
+    assert!(m.find(&8_i16) == m.end());
     let mut other_map: UnsafeMap<(i32, i64), ((i32, i64), f64)> = UnsafeMap::new();
     assert!(((other_map.len()) == (0_usize)));
     let mut key0: (i32, i64) = (1.into(), 1.into());

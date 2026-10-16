@@ -177,6 +177,14 @@ impl<K: Ord, T> Map<K, T> {
         }
     }
 
+    fn unlink(node: &Value<MapNode<T>>) -> Value<MapNode<T>> {
+        let prev = MapNode::prev(node);
+        let next = MapNode::next(node);
+        prev.borrow_mut().next = Rc::downgrade(&next);
+        next.borrow_mut().prev = Rc::downgrade(&prev);
+        next
+    }
+
     pub fn erase(&mut self, it: &BidirectionalIterator<T>) -> BidirectionalIterator<T>
     where
         T: MapEntry<K>,
@@ -189,12 +197,19 @@ impl<K: Ord, T> Map<K, T> {
             .expect("ub: erase of end iterator")
             .borrow()
             .key();
-        let prev = MapNode::prev(node);
-        let next = MapNode::next(node);
-        prev.borrow_mut().next = Rc::downgrade(&next);
-        next.borrow_mut().prev = Rc::downgrade(&prev);
+        let next = Self::unlink(node);
         self.nodes.remove(&key);
         BidirectionalIterator::Map(next)
+    }
+
+    pub fn erase_key(&mut self, key: &K) -> usize {
+        match self.nodes.remove(key) {
+            Some(node) => {
+                Self::unlink(&node);
+                1
+            }
+            None => 0,
+        }
     }
 }
 
@@ -369,20 +384,35 @@ impl<K: Ord, T> UnsafeMap<K, T> {
         }
     }
 
-    pub fn erase(&mut self, it: &UnsafeBidirectionalIterator<T>) -> UnsafeBidirectionalIterator<T>
-    where
-        T: MapEntry<K>,
-    {
-        let UnsafeBidirectionalIterator::Map(node) = *it;
-        let key = unsafe { (*UnsafeMapNode::value(node)).key() };
+    fn unlink(node: *mut UnsafeMapNode<T>) -> *mut UnsafeMapNode<T> {
         let prev = UnsafeMapNode::prev(node);
         let next = UnsafeMapNode::next(node);
         unsafe {
             (*prev).next = next;
             (*next).prev = prev;
         }
+        next
+    }
+
+    pub fn erase(&mut self, it: &UnsafeBidirectionalIterator<T>) -> UnsafeBidirectionalIterator<T>
+    where
+        T: MapEntry<K>,
+    {
+        let UnsafeBidirectionalIterator::Map(node) = *it;
+        let key = unsafe { (*UnsafeMapNode::value(node)).key() };
+        let next = Self::unlink(node);
         self.nodes.remove(&key);
         UnsafeBidirectionalIterator::Map(next)
+    }
+
+    pub fn erase_key(&mut self, key: &K) -> usize {
+        match self.nodes.remove(key) {
+            Some(mut node) => {
+                Self::unlink(&mut *node);
+                1
+            }
+            None => 0,
+        }
     }
 }
 

@@ -86,3 +86,15 @@ template <typename T1, typename T2>
 std::map<T1, T2> &f26(std::map<T1, T2> &dst, const std::map<T1, T2> &src) {
   return dst = src;
 }
+
+template <typename T1, typename T2>
+typename std::map<T1, T2>::iterator
+f27(std::map<T1, T2> &o, typename std::map<T1, T2>::const_iterator it) {
+  return o.erase(it);
+}
+
+template <typename T1, typename T2>
+std::size_t f28(std::map<T1, T2> &o,
+                const typename std::map<T1, T2>::key_type &key) {
+  return o.erase(key);
+}

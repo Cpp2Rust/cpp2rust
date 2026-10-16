@@ -124,3 +124,14 @@ fn f26<T1: Ord + Clone + 'static, T2: Clone + 'static>(a0: Ptr<Map<T1, (Value<T1
     }
     a0.write(__m)
 }
+
+fn f27<T1: Ord + Clone + 'static, T2: 'static>(
+    a0: Ptr<Map<T1, (Value<T1>, Value<T2>)>>,
+    a1: BidirectionalIterator<(Value<T1>, Value<T2>)>,
+) -> BidirectionalIterator<(Value<T1>, Value<T2>)> {
+    a0.with_mut(|__m: &mut Map<T1, (Value<T1>, Value<T2>)>| __m.erase(&a1))
+}
+
+fn f28<T1: Ord + 'static, T2: 'static>(a0: Ptr<Map<T1, (Value<T1>, Value<T2>)>>, a1: T1) -> usize {
+    a0.with_mut(|__m: &mut Map<T1, (Value<T1>, Value<T2>)>| __m.erase_key(&a1))
+}
