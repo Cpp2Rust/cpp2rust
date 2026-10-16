@@ -793,22 +793,6 @@ bool Converter::RecordHasCopyableFields(const clang::RecordDecl *decl) {
     return false;
   }
   for (auto f : decl->fields()) {
-    // Records that contain std::vector, std::array, std::string or anything
-    // that is translated to Vec<>, do not derive Copy
-    auto mapped = Mapper::Map(*this, f->getType());
-    if (mapped.starts_with("Vec<")) {
-      return false;
-    }
-
-    if (IsUniquePtr(f->getType())) {
-      return false;
-    }
-
-    if (mapped.starts_with("BTreeMap<") || mapped.starts_with("Map<") ||
-        mapped.starts_with("UnsafeMap<")) {
-      return false;
-    }
-
     if (auto ptr_ty = f->getType()->getAs<clang::PointerType>()) {
       if (ptr_ty->getPointeeType()->isFunctionType()) {
         if (!FunctionPointerImplementsCopy()) {
