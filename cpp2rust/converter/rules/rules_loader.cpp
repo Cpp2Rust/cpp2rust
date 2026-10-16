@@ -8,6 +8,7 @@
 #include <clang/Basic/LangOptions.h>
 #include <clang/Lex/Lexer.h>
 #include <clang/Lex/Preprocessor.h>
+#include <clang/Sema/Lookup.h>
 #include <clang/Sema/Sema.h>
 #include <llvm/ADT/DenseSet.h>
 #include <llvm/ADT/STLExtras.h>
@@ -203,6 +204,7 @@ private:
           AddTemplateArgs(spec->getTemplateArgs().asArray());
         }
         AddSpecialMembers(record);
+        AddIterator(type, record);
       }
       return;
     }
@@ -223,6 +225,46 @@ private:
           method->isMoveAssignmentOperator()) {
         AddKey(FunctionKey(method));
       }
+    }
+  }
+
+  void AddIterator(clang::QualType type, const clang::CXXRecordDecl *record) {
+    auto *std_namespace = sema_.getStdNamespace();
+    if (!std_namespace ||
+        !ctx_.getSourceManager().isInSystemHeader(record->getLocation())) {
+      return;
+    }
+    clang::ClassTemplateDecl *traits = nullptr;
+    for (auto *decl :
+         std_namespace->lookup(&ctx_.Idents.get("iterator_traits"))) {
+      if ((traits = llvm::dyn_cast<clang::ClassTemplateDecl>(decl))) {
+        break;
+      }
+    }
+    if (!traits) {
+      return;
+    }
+    auto loc = record->getLocation();
+    RuleDecls::Trial trial(sema_);
+    clang::TemplateArgumentListInfo args(loc, loc);
+    args.addArgument(
+        clang::TemplateArgumentLoc(clang::TemplateArgument(type),
+                                   ctx_.getTrivialTypeSourceInfo(type, loc)));
+    auto instance = sema_.CheckTemplateIdType(
+        clang::ElaboratedTypeKeyword::None, clang::TemplateName(traits), loc,
+        args, /*Scope=*/nullptr, /*ForNestedNameSpecifier=*/false);
+    if (instance.isNull() || !sema_.isCompleteType(loc, instance) ||
+        trial.failed()) {
+      return;
+    }
+    auto *instance_record = instance->getAsCXXRecordDecl();
+    if (!instance_record) {
+      return;
+    }
+    clang::LookupResult category(sema_, &ctx_.Idents.get("iterator_category"),
+                                 loc, clang::Sema::LookupMemberName);
+    if (sema_.LookupQualifiedName(category, instance_record)) {
+      AddKey(kAnyIteratorKey);
     }
   }
 
@@ -299,31 +341,8 @@ unsigned CxxStandard(const clang::LangOptions &opts) {
   return 11;
 }
 
-bool IsDeclared(clang::ASTContext &ctx, llvm::StringRef key) {
-  const clang::DeclContext *scope = ctx.getTranslationUnitDecl();
-  while (true) {
-    auto [name, rest] = key.split('/');
-    auto found = scope->lookup(&ctx.Idents.get(name));
-    if (rest.empty()) {
-      return !found.empty();
-    }
-    scope = nullptr;
-    for (auto decl : found) {
-      if (llvm::isa<clang::NamespaceDecl, clang::TagDecl>(decl)) {
-        scope = llvm::cast<clang::DeclContext>(decl);
-        break;
-      }
-    }
-    if (!scope) {
-      return false;
-    }
-    key = rest;
-  }
-}
-
 std::string BuildRulesEpilogue(const std::unordered_set<std::string> &keys,
-                               clang::ASTContext &ctx) {
-  const auto &opts = ctx.getLangOpts();
+                               const clang::LangOptions &opts) {
   bool is_cxx = opts.CPlusPlus;
   const auto &index = is_cxx ? CxxIndex() : CIndex();
   unsigned standard = is_cxx ? CxxStandard(opts) : 0;
@@ -349,13 +368,6 @@ std::string BuildRulesEpilogue(const std::unordered_set<std::string> &keys,
           required &&
           !llvm::all_of(*required, [&](const llvm::json::Value &key) {
             return keys.contains(key.getAsString()->str());
-          })) {
-        continue;
-      }
-      if (auto declared = rule->getArray("declares");
-          declared &&
-          !llvm::all_of(*declared, [&](const llvm::json::Value &name) {
-            return IsDeclared(ctx, *name.getAsString());
           })) {
         continue;
       }
@@ -553,7 +565,7 @@ void PragmaHandler::HandlePragma(clang::Preprocessor &PP,
   RuleUsageCollector collector(CI_.getSema(), keys);
   collector.TraverseDecl(ctx.getTranslationUnitDecl());
 
-  auto text = BuildRulesEpilogue(keys, ctx);
+  auto text = BuildRulesEpilogue(keys, ctx.getLangOpts());
   log() << "rules loaded for this translation unit:\n" << text;
   auto rules_file = src_mgr.createFileID(
       llvm::MemoryBuffer::getMemBufferCopy(text, "<cpp2rust-rules>"),

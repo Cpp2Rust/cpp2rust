@@ -21,6 +21,8 @@ inline constexpr const char *kPragmaName = "cpp2rust_rules";
 
 inline constexpr const char *kAnyClassKey = "*";
 
+inline constexpr const char *kAnyIteratorKey = "std/iterator_traits";
+
 std::string ClassKey(const clang::NamedDecl *decl);
 
 std::string MemberName(clang::DeclarationName name);
