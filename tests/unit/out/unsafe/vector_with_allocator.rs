@@ -131,16 +131,45 @@ unsafe fn main_0() -> i32 {
     };
     assert!(((v2.len()) == (3_usize)));
     {
-        let pos = v2.as_mut_ptr().offset_from(v2.as_ptr()) as usize;
+        let pos = {
+            let mut __tmp_0: UnsafeRandomAccessIterator<i32> =
+                UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr());
+            __gnu_cxx___normal_iterator_const_int_ptr__std_vector_int__TestAllocator_int___::new_1(
+                { &mut __tmp_0 },
+            )
+        }
+        .vec_ptr()
+        .offset_from(v2.as_ptr()) as usize;
         v2.remove(pos);
-        v2.as_mut_ptr()
+        {
+            let mut __tmp_1: UnsafeRandomAccessIterator<i32> =
+                UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr());
+            __gnu_cxx___normal_iterator_const_int_ptr__std_vector_int__TestAllocator_int___::new_1(
+                { &mut __tmp_1 },
+            )
+        }
     };
     assert!(((v2.len()) == (2_usize)));
     assert!(((v2[(0_usize)]) == (2)));
     assert!(((v2[(1_usize)]) == (3)));
     {
-        let pos = v2.as_mut_ptr().offset_from(v2.as_ptr()) as usize;
+        let pos = {
+            let mut __tmp_2: UnsafeRandomAccessIterator<i32> =
+                UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr());
+            __gnu_cxx___normal_iterator_const_int_ptr__std_vector_int__TestAllocator_int___::new_1(
+                { &mut __tmp_2 },
+            )
+        }
+        .vec_ptr()
+        .offset_from(v2.as_ptr()) as usize;
         v2.insert(pos, 100);
+        {
+            let mut __tmp_3: UnsafeRandomAccessIterator<i32> =
+                UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr());
+            __gnu_cxx___normal_iterator_const_int_ptr__std_vector_int__TestAllocator_int___::new_1(
+                { &mut __tmp_3 },
+            )
+        }
     };
     (unsafe { copy_0(v2.clone()) });
     assert!(((v2.len()) == (3_usize)));

@@ -16,14 +16,14 @@ unsafe fn main_0() -> i32 {
     let mut input: [i32; 3] = [1, 2, 3];
     let mut output: [i32; 3] = [0_i32; 3];
     {
-        let mut outptr = output.as_mut_ptr().clone();
-        let mut curr = input.as_mut_ptr().clone();
-        while curr < input.as_mut_ptr().offset((3) as isize) {
-            *outptr = (*curr).clone().into();
-            curr = curr.offset(1);
-            outptr = outptr.offset(1);
+        let mut __first = input.as_mut_ptr();
+        let mut __out = output.as_mut_ptr();
+        while __first != input.as_mut_ptr().offset((3) as isize) {
+            *__out.iter_deref() = (*__first.iter_deref()).clone().into();
+            __first.iter_inc();
+            __out.iter_inc();
         }
-        outptr
+        __out
     };
     return 0;
 }

@@ -28,21 +28,21 @@ unsafe fn main_0() -> i32 {
     }
     let mut sum: f64 = 0_f64;
     'loop_: for __begin1 in UnsafeMapIterator::begin(&m as *const BTreeMap<i32, Box<(i32, f64)>>) {
-        let i: *const (i32, f64) = &(*__begin1.deref());
+        let i: *const (i32, f64) = &(*__begin1.iter_deref());
         sum += (*i).1;
     }
     'loop_: for __begin1 in UnsafeMapIterator::begin(&m as *const BTreeMap<i32, Box<(i32, f64)>>) {
-        let mut i: (i32, f64) = (*__begin1.deref()).clone();
+        let mut i: (i32, f64) = (*__begin1.iter_deref()).clone();
         sum += (i.0 as f64);
     }
     assert!(((sum) == (7475_f64)));
     'loop_: for __begin1 in UnsafeMapIterator::begin(&m as *const BTreeMap<i32, Box<(i32, f64)>>) {
-        let mut i: (i32, f64) = (*__begin1.deref()).clone();
+        let mut i: (i32, f64) = (*__begin1.iter_deref()).clone();
         i.1 = (-1_i32 as f64);
         assert!(((i.1) == (-1_i32 as f64)));
     }
     'loop_: for __begin1 in UnsafeMapIterator::begin(&m as *const BTreeMap<i32, Box<(i32, f64)>>) {
-        let i: *const (i32, f64) = &(*__begin1.deref());
+        let i: *const (i32, f64) = &(*__begin1.iter_deref());
         assert!((((*i).1) != (-1_i32 as f64)));
     }
     return 0;

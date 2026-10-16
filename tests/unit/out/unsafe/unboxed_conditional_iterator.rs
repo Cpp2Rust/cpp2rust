@@ -43,30 +43,33 @@ pub unsafe fn lehmer_2(mut sigma: *const u32, mut len: u32, mut code: *mut u32) 
     }
     let mut i: u32 = 0_u32;
     'loop_: while ((i) < (len)) {
-        let mut it: *mut u32 = {
-            let mut it = items.as_mut_ptr();
-            while it != items.as_mut_ptr().add(items.len()) && *it != (*sigma.offset((i) as isize))
+        let mut it: UnsafeRandomAccessIterator<u32> = {
+            let mut __it = UnsafeRandomAccessIterator::Vec(items.as_mut_ptr());
+            while __it != UnsafeRandomAccessIterator::Vec(items.as_mut_ptr().add(items.len()))
+                && *__it.iter_deref() != (*sigma.offset((i) as isize))
             {
-                it = it.add(1);
+                __it.iter_inc();
             }
-            it
+            __it
         };
-        assert!(it != items.as_mut_ptr().add(items.len()));
-        (*code.offset((i) as isize)) = (it.offset_from(items.as_mut_ptr()) as u32);
+        assert!(it != UnsafeRandomAccessIterator::Vec(items.as_mut_ptr().add(items.len())));
+        (*code.offset((i) as isize)) =
+            (it.iter_distance(&UnsafeRandomAccessIterator::Vec(items.as_mut_ptr())) as u32);
         {
-            let pos = it.offset_from(items.as_ptr()) as usize;
+            let pos = __gnu_cxx___normal_iterator_const_unsigned_int_ptr__std_vector_unsigned_int__std_allocator_unsigned_int___ :: new_1 ( { & it } , )  .vec_ptr().offset_from(items .as_ptr()) as usize;
             items.remove(pos);
-            it
+            __gnu_cxx___normal_iterator_const_unsigned_int_ptr__std_vector_unsigned_int__std_allocator_unsigned_int___ :: new_1 ( { & it } , )
         };
         i.prefix_inc();
     }
 }
 pub unsafe fn sum_3(v: *mut Vec<i32>) -> i32 {
     let mut s: i32 = 0;
-    let mut it: *mut i32 = (*v).as_mut_ptr();
-    'loop_: while it != (*v).as_mut_ptr().add((*v).len()) {
-        s += (*it);
-        it.prefix_inc();
+    let mut it: UnsafeRandomAccessIterator<i32> =
+        UnsafeRandomAccessIterator::Vec((*v).as_mut_ptr());
+    'loop_: while it != UnsafeRandomAccessIterator::Vec((*v).as_mut_ptr().add((*v).len())) {
+        s += (*it.iter_deref());
+        it.iter_inc();
     }
     return s;
 }
