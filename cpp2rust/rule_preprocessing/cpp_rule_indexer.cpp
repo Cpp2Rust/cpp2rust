@@ -335,15 +335,27 @@ llvm::json::Object ReadJson(const fs::path &path) {
   return std::move(*parsed->getAsObject());
 }
 
-unsigned SinceStandard(const fs::path &src_path) {
+struct StandardRange {
+  unsigned since = 11;
+  unsigned until = 0;
+};
+
+StandardRange RuleFileStandards(const fs::path &src_path) {
   auto stem_string = src_path.stem().string();
   llvm::StringRef stem = stem_string;
-  unsigned standard = 11;
-  if (stem.consume_front("src_cxx") && stem.getAsInteger(10, standard)) {
+  StandardRange range;
+  bool valid = stem.consume_front("src");
+  if (valid && stem.consume_front("_cxx")) {
+    valid = !stem.consumeInteger(10, range.since);
+  }
+  if (valid && stem.consume_front("_until_cxx")) {
+    valid = !stem.consumeInteger(10, range.until);
+  }
+  if (!valid || !stem.empty()) {
     llvm::errs() << "ERROR: unexpected rule file " << src_path.string() << '\n';
     std::exit(EXIT_FAILURE);
   }
-  return standard;
+  return range;
 }
 
 void MergeRules(llvm::json::Object &into, llvm::json::Object &&from) {
@@ -364,20 +376,24 @@ void IndexDir(const fs::path &rule_dir, const fs::path &out) {
   for (const auto &entry : fs::directory_iterator(rule_dir)) {
     auto name = entry.path().filename().string();
     if (name == "src.c" || name == "src.cpp" ||
-        (name.starts_with("src_cxx") && name.ends_with(".cpp"))) {
+        (name.starts_with("src_") && name.ends_with(".cpp"))) {
       cxx_srcs.push_back(entry.path());
     }
   }
   std::ranges::sort(cxx_srcs);
   llvm::json::Object cxx_rules;
   for (const auto &src_path : cxx_srcs) {
-    auto standard = SinceStandard(src_path);
+    auto range = RuleFileStandards(src_path);
     llvm::json::Object rules;
     Index(src_path, /*is_c=*/false, dir_name,
-          {std::format("-std=c++{}", standard)}, rules);
+          {std::format("-std=c++{}", range.since)}, rules);
     for (auto &[key, entries] : rules) {
       for (auto &entry : *entries.getAsArray()) {
-        (*entry.getAsObject())["since"] = standard;
+        auto &rule = *entry.getAsObject();
+        rule["since"] = range.since;
+        if (range.until) {
+          rule["until"] = range.until;
+        }
       }
     }
     MergeRules(cxx_rules, std::move(rules));

@@ -320,6 +320,9 @@ std::string BuildRulesEpilogue(const std::unordered_set<std::string> &keys,
       if (auto since = rule->getInteger("since"); since && *since > standard) {
         continue;
       }
+      if (auto until = rule->getInteger("until"); until && *until <= standard) {
+        continue;
+      }
       if (auto required = rule->getArray("requires");
           required &&
           !llvm::all_of(*required, [&](const llvm::json::Value &key) {

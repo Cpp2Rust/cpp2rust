@@ -184,3 +184,10 @@ unsafe fn f29(a0: &mut Vec<libc::c_char>, a1: Vec<libc::c_char>) {
 unsafe fn f30(a0: &mut Vec<libc::c_char>, a1: &mut Vec<libc::c_char>) {
     *a0 = std::mem::take(&mut *a1)
 }
+
+unsafe fn f31(a0: Vec<libc::c_char>, a1: *const libc::c_char) -> bool {
+    a0 != {
+        let s = a1;
+        std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1).to_vec()
+    }
+}
