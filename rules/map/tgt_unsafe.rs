@@ -8,14 +8,6 @@ fn t1<T1, T2>() -> BTreeMap<T1, Box<(T1, T2)>> {
     BTreeMap::new()
 }
 
-fn t2<T1: Clone + Ord, T2>() -> UnsafeMapIterator<T1, T2> {
-    UnsafeMapIterator::null()
-}
-
-fn t3<T1: Clone + Ord, T2>() -> UnsafeMapIterator<T1, T2> {
-    UnsafeMapIterator::null()
-}
-
 fn t4() -> usize {
     0_usize
 }
@@ -68,24 +60,11 @@ unsafe fn f10<T1: Ord + Clone, T2>(
 ) -> UnsafeMapIterator<T1, T2> {
     UnsafeMapIterator::find_key(&*a0 as *const BTreeMap<T1, Box<(T1, T2)>>, &a1)
 }
-unsafe fn f11<T1: PartialEq, T2: PartialEq>(
-    a0: UnsafeMapIterator<T1, T2>,
-    a1: UnsafeMapIterator<T1, T2>,
-) -> bool {
-    a0 != a1
-}
 unsafe fn f12<T1: Ord + Clone, T2>(
     a0: &mut BTreeMap<T1, Box<(T1, T2)>>,
 ) -> UnsafeMapIterator<T1, T2> {
     UnsafeMapIterator::begin(&*a0 as *const BTreeMap<T1, Box<(T1, T2)>>)
 }
-unsafe fn f13<T1: PartialEq, T2: PartialEq>(
-    a0: UnsafeMapIterator<T1, T2>,
-    a1: UnsafeMapIterator<T1, T2>,
-) -> bool {
-    a0 == a1
-}
-
 unsafe fn f14<T1: Ord + Clone, T2>(
     a0: &mut BTreeMap<T1, Box<(T1, T2)>>,
 ) -> UnsafeMapIterator<T1, T2> {
@@ -95,35 +74,11 @@ unsafe fn f15<T1: Ord, T2>(a0: &mut BTreeMap<T1, Box<(T1, T2)>>, a1: T1) -> *con
     (&a0.get(&a1).expect("out of range!").1 as *const T2)
 }
 
-unsafe fn f16<T1: PartialEq, T2: PartialEq>(
-    a0: UnsafeMapIterator<T1, T2>,
-    a1: UnsafeMapIterator<T1, T2>,
-) -> bool {
-    a0 == a1
-}
 unsafe fn f17<T1: Ord + Clone, T2>(
     a0: BTreeMap<T1, Box<(T1, T2)>>,
     a1: T1,
 ) -> UnsafeMapIterator<T1, T2> {
     UnsafeMapIterator::find_key(&a0 as *const BTreeMap<T1, Box<(T1, T2)>>, &a1)
-}
-
-unsafe fn f19<T1: Clone, T2>(a0: UnsafeMapIterator<T1, T2>) -> UnsafeMapIterator<T1, T2> {
-    a0.clone()
-}
-
-unsafe fn f20<T1: Ord + Clone, T2>(a0: UnsafeMapIterator<T1, T2>) -> *const T1 {
-    &raw const (*a0.deref()).0
-}
-unsafe fn f21<T1: Ord + Clone, T2>(a0: UnsafeMapIterator<T1, T2>) -> *mut T2 {
-    &raw mut (*a0.deref()).1
-}
-
-unsafe fn f22<T1: Ord + Clone, T2>(a0: UnsafeMapIterator<T1, T2>) -> *const T1 {
-    &raw const (*a0.deref()).0
-}
-unsafe fn f23<T1: Ord + Clone, T2>(a0: UnsafeMapIterator<T1, T2>) -> *mut T2 {
-    &raw mut (*a0.deref()).1
 }
 
 unsafe fn f24<T1, T2>(a0: &mut BTreeMap<T1, Box<(T1, T2)>>) -> BTreeMap<T1, Box<(T1, T2)>> {
@@ -141,10 +96,3 @@ unsafe fn f26<T1: Clone, T2: Clone>(
     *a0 = a1.clone()
 }
 
-unsafe fn f27<T1: Ord + Clone, T2>(a0: UnsafeMapIterator<T1, T2>) -> *mut (T1, T2) {
-    a0.deref()
-}
-
-unsafe fn f28<T1: Ord + Clone, T2>(a0: UnsafeMapIterator<T1, T2>) -> *const (T1, T2) {
-    a0.deref().cast_const()
-}

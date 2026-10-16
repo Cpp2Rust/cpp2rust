@@ -63,38 +63,6 @@ fn f9<T1: Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>) {
     a1.write(tmp);
 }
 
-fn f10<T1: PartialEq + Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>) -> Ptr<T1> {
-    let count = a1.get_offset() - a0.get_offset();
-    if count <= 1 {
-        a1
-    } else {
-        let mut iter = PtrValueIter::new(&a0, count);
-        let mut write_ptr = a0;
-        let mut last_unique = iter.next().unwrap();
-
-        // the first unique value is already in place
-        write_ptr += 1;
-
-        for current_val in iter {
-            if current_val != last_unique {
-                write_ptr.write(current_val.clone());
-                last_unique = current_val;
-                write_ptr += 1;
-            }
-        }
-        write_ptr
-    }
-}
-
-fn f12<T1: Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>, a2: T1) {
-    let mut __a0 = a0;
-    while __a0 != a1 {
-        let v = a2.clone();
-        __a0.write(v);
-        __a0 += 1;
-    }
-}
-
 fn f13(a0: Ptr<i8>, a1: Ptr<i8>, a2: &mut ::std::fs::File) -> ::std::fs::File {
     a0.with_slice(a1.get_offset() - a0.get_offset(), |__s| {
         CChar::with_u8_slice(__s, |__b| a2.write_all(__b))

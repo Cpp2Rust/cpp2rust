@@ -62,34 +62,6 @@ unsafe fn f9<T1>(a0: &mut T1, a1: &mut T1) {
     std::mem::swap(&mut *a0, &mut *a1)
 }
 
-unsafe fn f10<T1: PartialOrd + Clone>(a0: *mut T1, a1: *mut T1) -> *mut T1 {
-    if a0 == a1 {
-        a0
-    } else {
-        let mut write = a0;
-        let mut prev = a0;
-        let mut it = a0;
-        it = it.add(1);
-
-        while it != a1 {
-            if *prev != *it {
-                write = write.add(1);
-                *write = (*it).clone();
-                prev = write;
-            }
-            it = it.add(1);
-        }
-
-        write = write.add(1);
-        write
-    }
-}
-
-unsafe fn f12<T1: Clone>(a0: *mut T1, a1: *mut T1, a2: T1) {
-    let count = a1.offset_from(a0) as usize;
-    std::slice::from_raw_parts_mut(a0, count).fill(a2)
-}
-
 unsafe fn f13(
     a0: *const libc::c_char,
     a1: *const libc::c_char,
