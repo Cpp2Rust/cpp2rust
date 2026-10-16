@@ -190,3 +190,7 @@ fn f29(a0: Ptr<Vec<i8>>, a1: Vec<i8>) {
 fn f30(a0: Ptr<Vec<i8>>, a1: &mut Vec<i8>) {
     a0.write(std::mem::take(&mut *a1))
 }
+
+fn f31(a0: Vec<i8>, a1: Ptr<i8>) -> bool {
+    a1.with_c_str(|__s| a0[..a0.len().saturating_sub(1)] != *__s)
+}
