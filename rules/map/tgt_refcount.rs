@@ -42,18 +42,7 @@ fn f5<T1, T2>() -> Map<T1, (Value<T1>, Value<T2>)> {
 }
 
 fn f6<T1: Ord + Clone, T2: Clone>(a0: Map<T1, (Value<T1>, Value<T2>)>) -> Map<T1, (Value<T1>, Value<T2>)> {
-    let mut __m = Map::new();
-    for (__k, __v) in a0.entries() {
-        let __v = __v.borrow();
-        __m.insert(
-            __k.clone(),
-            Rc::new(RefCell::new((
-                Rc::new(RefCell::new(__v.0.borrow().clone())),
-                Rc::new(RefCell::new(__v.1.borrow().clone())),
-            ))),
-        );
-    }
-    __m
+    a0.clone()
 }
 
 fn f7<T1: Ord, T2>(a0: &mut Map<T1, (Value<T1>, Value<T2>)>, a1: T1) -> Ptr<T2> {
@@ -111,18 +100,7 @@ fn f25<T1: 'static, T2: 'static>(a0: Ptr<Map<T1, (Value<T1>, Value<T2>)>>, a1: P
 }
 
 fn f26<T1: Ord + Clone + 'static, T2: Clone + 'static>(a0: Ptr<Map<T1, (Value<T1>, Value<T2>)>>, a1: Map<T1, (Value<T1>, Value<T2>)>) {
-    let mut __m = Map::new();
-    for (__k, __v) in a1.entries() {
-        let __v = __v.borrow();
-        __m.insert(
-            __k.clone(),
-            Rc::new(RefCell::new((
-                Rc::new(RefCell::new(__v.0.borrow().clone())),
-                Rc::new(RefCell::new(__v.1.borrow().clone())),
-            ))),
-        );
-    }
-    a0.write(__m)
+    a0.write(a1.clone())
 }
 
 fn f27<T1: Ord + Clone + 'static, T2: 'static>(

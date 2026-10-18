@@ -3,7 +3,6 @@
 
 use std::cell::RefCell;
 use std::collections::BTreeMap;
-use std::ops::Bound;
 use std::rc::{Rc, Weak};
 
 use crate::{
@@ -87,11 +86,24 @@ impl<K, T> Default for Map<K, T> {
 
 impl<K: 'static, T: 'static> ByteRepr for Map<K, T> {}
 
-impl<K: Ord + Clone, T> Clone for Map<K, T> {
+impl<K: Ord + Clone, V: Clone> Clone for Map<K, (Value<K>, Value<V>)> {
     fn clone(&self) -> Self {
         let mut map = Self::default();
-        for (key, value) in self.entries() {
-            map.link(key.clone(), value);
+        let mut prev = map.header.clone();
+        for (key, node) in &self.nodes {
+            let value = {
+                let node = node.borrow();
+                let entry = node
+                    .value
+                    .as_ref()
+                    .expect("map node without a value")
+                    .borrow();
+                (
+                    Rc::new(RefCell::new(entry.0.borrow().clone())),
+                    Rc::new(RefCell::new(entry.1.borrow().clone())),
+                )
+            };
+            prev = map.link_after(prev, key.clone(), Rc::new(RefCell::new(value)));
         }
         map
     }
@@ -117,23 +129,15 @@ impl<K, T> Map<K, T> {
     pub fn end(&self) -> BidirectionalIterator<T> {
         BidirectionalIterator::Map(self.header.clone())
     }
-
-    pub fn entries(&self) -> impl Iterator<Item = (&K, Value<T>)> + '_ {
-        self.nodes.iter().map(|(key, node)| {
-            let value = node.borrow().value.clone();
-            (key, value.expect("map node without a value"))
-        })
-    }
 }
 
 impl<K: Ord, T> Map<K, T> {
-    fn link(&mut self, key: K, value: Value<T>) -> Value<MapNode<T>> {
-        let prev = self
-            .nodes
-            .range((Bound::Unbounded, Bound::Excluded(&key)))
-            .next_back()
-            .map(|(_, node)| node.clone())
-            .unwrap_or_else(|| self.header.clone());
+    fn link_after(
+        &mut self,
+        prev: Value<MapNode<T>>,
+        key: K,
+        value: Value<T>,
+    ) -> Value<MapNode<T>> {
         let next = MapNode::next(&prev);
         let node = Rc::new(RefCell::new(MapNode {
             value: Some(value),
@@ -156,18 +160,20 @@ impl<K: Ord, T> Map<K, T> {
     }
 
     pub fn get_or_insert_with(&mut self, key: K, value: impl FnOnce() -> T) -> Value<T> {
-        if let Some(existing) = self.get(&key) {
-            return existing;
-        }
+        let prev = match self.nodes.range(..=&key).next_back() {
+            Some((k, node)) if *k == key => {
+                return node
+                    .borrow()
+                    .value
+                    .clone()
+                    .expect("map node without a value");
+            }
+            Some((_, node)) => node.clone(),
+            None => self.header.clone(),
+        };
         let value = Rc::new(RefCell::new(value()));
-        self.link(key, value.clone());
+        self.link_after(prev, key, value.clone());
         value
-    }
-
-    pub fn insert(&mut self, key: K, value: Value<T>) {
-        if !self.nodes.contains_key(&key) {
-            self.link(key, value);
-        }
     }
 
     pub fn find(&self, key: &K) -> BidirectionalIterator<T> {
@@ -292,11 +298,10 @@ impl<K, T> Default for UnsafeMap<K, T> {
 impl<K: Ord + Clone, T: Clone> Clone for UnsafeMap<K, T> {
     fn clone(&self) -> Self {
         let mut map = Self::default();
+        let mut prev = map.header_ptr();
         for (key, node) in &self.nodes {
-            map.link(
-                key.clone(),
-                node.value.clone().expect("map node without a value"),
-            );
+            let value = node.value.clone().expect("map node without a value");
+            prev = map.link_after(prev, key.clone(), value);
         }
         map
     }
@@ -340,13 +345,12 @@ impl<K, T> UnsafeMap<K, T> {
 }
 
 impl<K: Ord, T> UnsafeMap<K, T> {
-    fn link(&mut self, key: K, value: T) -> *mut UnsafeMapNode<T> {
-        let prev = self
-            .nodes
-            .range((Bound::Unbounded, Bound::Excluded(&key)))
-            .next_back()
-            .map(|(_, node)| &**node as *const UnsafeMapNode<T> as *mut UnsafeMapNode<T>)
-            .unwrap_or_else(|| self.header_ptr());
+    fn link_after(
+        &mut self,
+        prev: *mut UnsafeMapNode<T>,
+        key: K,
+        value: T,
+    ) -> *mut UnsafeMapNode<T> {
         let next = UnsafeMapNode::next(prev);
         let mut node = Box::new(UnsafeMapNode {
             value: Some(value),
@@ -369,10 +373,17 @@ impl<K: Ord, T> UnsafeMap<K, T> {
     }
 
     pub fn get_or_insert_with(&mut self, key: K, value: impl FnOnce() -> T) -> *mut T {
-        if let Some(existing) = self.get(&key) {
-            return existing;
-        }
-        UnsafeMapNode::value(self.link(key, value()))
+        let prev = match self.nodes.range(..=&key).next_back() {
+            Some((k, node)) => {
+                let node = &**node as *const UnsafeMapNode<T> as *mut UnsafeMapNode<T>;
+                if *k == key {
+                    return UnsafeMapNode::value(node);
+                }
+                node
+            }
+            None => self.header_ptr(),
+        };
+        UnsafeMapNode::value(self.link_after(prev, key, value()))
     }
 
     pub fn find(&self, key: &K) -> UnsafeBidirectionalIterator<T> {

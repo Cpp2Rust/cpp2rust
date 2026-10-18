@@ -274,20 +274,8 @@ fn main_0() -> i32 {
             .write(__rhs);
         i.prefix_inc();
     }
-    let map2: Value<Map<i32, (Value<i32>, Value<i32>)>> = Rc::new(RefCell::new({
-        let mut __m = Map::new();
-        for (__k, __v) in (*map1.borrow()).entries() {
-            let __v = __v.borrow();
-            __m.insert(
-                __k.clone(),
-                Rc::new(RefCell::new((
-                    Rc::new(RefCell::new(__v.0.borrow().clone())),
-                    Rc::new(RefCell::new(__v.1.borrow().clone())),
-                ))),
-            );
-        }
-        __m
-    }));
+    let map2: Value<Map<i32, (Value<i32>, Value<i32>)>> =
+        Rc::new(RefCell::new((*map1.borrow()).clone()));
     let mut i: i32 = 0;
     'loop_: while (i < N) {
         assert!(
