@@ -29,6 +29,14 @@ fn main_0() -> i32 {
         Ptr::<i8>::from_string_literal(b"hello")
             .with_c_str(|__s| (*s1.borrow())[..(*s1.borrow()).len().saturating_sub(1)] == *__s)
     );
+    assert!(
+        Ptr::<i8>::from_string_literal(b"world")
+            .with_c_str(|__s| (*s1.borrow())[..(*s1.borrow()).len().saturating_sub(1)] != *__s)
+    );
+    assert!(
+        !(Ptr::<i8>::from_string_literal(b"hello")
+            .with_c_str(|__s| (*s1.borrow())[..(*s1.borrow()).len().saturating_sub(1)] != *__s))
+    );
     let mut p1: Ptr<i8> = (s1.as_pointer() as Ptr<i8>);
     assert!((((elem!(p1, 0).read()) as i32) == (('h' as i8) as i32)));
     assert!((((elem!(p1, 1).read()) as i32) == (('e' as i8) as i32)));

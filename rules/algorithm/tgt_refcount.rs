@@ -144,3 +144,16 @@ fn f16<T1: PartialOrd + Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>) -> Ptr<T1> {
 fn f17<T1: PartialOrd + Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>) -> Ptr<T1> {
     if a0.read() >= a1.read() { a0 } else { a1 }
 }
+
+fn f18<T1: Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>) {
+    let count = a1.get_offset() - a0.get_offset();
+    let random = std::hash::RandomState::new();
+    for i in (1..count).rev() {
+        let j = std::hash::BuildHasher::hash_one(&random, i) as usize % (i + 1);
+        let x = a0.offset(i);
+        let y = a0.offset(j);
+        let tmp = x.read();
+        x.write(y.read());
+        y.write(tmp);
+    }
+}

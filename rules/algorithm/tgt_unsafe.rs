@@ -155,3 +155,11 @@ unsafe fn f17<T1: PartialOrd>(a0: *const T1, a1: *const T1) -> *const T1 {
         (a1) as *const _
     }
 }
+
+unsafe fn f18<T1>(a0: *mut T1, a1: *mut T1) {
+    let len = a1.offset_from(a0) as usize;
+    let slice = ::std::slice::from_raw_parts_mut(a0, len);
+    for i in (1..len).rev() {
+        slice.swap(i, libc::rand() as usize % (i + 1));
+    }
+}
