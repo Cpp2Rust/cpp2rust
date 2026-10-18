@@ -149,7 +149,7 @@ fn f18<T1: CppRandomAccessIterator<T2>, T2: Clone + ByteRepr>(a0: T1, a1: T1) {
     let __n = a1.iter_distance(&a0);
     let __random = std::hash::RandomState::new();
     for __i in (1..__n).rev() {
-        let __j = std::hash::BuildHasher::hash_one(&__random, __i) as isize % (__i + 1);
+        let __j = (std::hash::BuildHasher::hash_one(&__random, __i) % (__i + 1) as u64) as isize;
         let __x = a0.iter_at(__i);
         let __y = a0.iter_at(__j);
         let __tmp = __x.read();
