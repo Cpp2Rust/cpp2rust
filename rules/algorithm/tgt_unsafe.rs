@@ -156,10 +156,10 @@ unsafe fn f17<T1: PartialOrd>(a0: *const T1, a1: *const T1) -> *const T1 {
     }
 }
 
-unsafe fn f18<T1>(a0: *mut T1, a1: *mut T1) {
-    let len = a1.offset_from(a0) as usize;
-    let slice = ::std::slice::from_raw_parts_mut(a0, len);
-    for i in (1..len).rev() {
-        slice.swap(i, libc::rand() as usize % (i + 1));
+unsafe fn f18<T1: UnsafeCppRandomAccessIterator<T2>, T2>(a0: T1, a1: T1) {
+    let __n = a1.iter_distance(&a0);
+    for __i in (1..__n).rev() {
+        let __j = libc::rand() as isize % (__i + 1);
+        std::ptr::swap(a0.iter_at(__i), a0.iter_at(__j));
     }
 }
