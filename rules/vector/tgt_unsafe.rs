@@ -7,14 +7,6 @@ fn t5<T1>() -> Vec<T1> {
     Default::default()
 }
 
-fn t6<T1>() -> *mut T1 {
-    Default::default()
-}
-
-fn t7<T1>() -> *const T1 {
-    Default::default()
-}
-
 fn t9() -> usize {
     0_usize
 }
@@ -31,8 +23,8 @@ unsafe fn f47(a0: Vec<bool>) -> Vec<bool> {
     a0
 }
 
-unsafe fn f60<T1>(a0: &mut Vec<T1>, a1: *const T1) -> *const T1 {
-    let pos = a1.offset_from(a0.as_ptr()) as usize;
+unsafe fn f60<T1>(a0: &mut Vec<T1>, a1: UnsafeRandomAccessIterator<T1>) -> UnsafeRandomAccessIterator<T1> {
+    let pos = a1.vec_ptr().offset_from(a0.as_ptr()) as usize;
     a0.remove(pos);
     a1
 }
@@ -86,8 +78,8 @@ unsafe fn f71<T1>(a0: &mut Vec<T1>, a1: usize) {
     }
 }
 
-unsafe fn f72<T1>(a0: &mut Vec<T1>) -> *mut T1 {
-    a0.as_mut_ptr()
+unsafe fn f72<T1>(a0: &mut Vec<T1>) -> UnsafeRandomAccessIterator<T1> {
+    UnsafeRandomAccessIterator::Vec(a0.as_mut_ptr())
 }
 
 unsafe fn f73<T1: Default>(a0: &mut Vec<T1>, a1: &mut T1) {
@@ -104,62 +96,29 @@ unsafe fn f75<T1>(a0: &mut Vec<T1>) {
     a0.clear()
 }
 
-unsafe fn f76<T1>(a0: &mut Vec<T1>) -> *mut T1 {
-    a0.as_mut_ptr().add(a0.len())
+unsafe fn f76<T1>(a0: &mut Vec<T1>) -> UnsafeRandomAccessIterator<T1> {
+    UnsafeRandomAccessIterator::Vec(a0.as_mut_ptr().add(a0.len()))
 }
 
-unsafe fn f77<T1>(a0: &mut Vec<T1>, a1: *const T1, a2: T1) {
-    let pos = a1.offset_from(a0.as_ptr()) as usize;
+unsafe fn f77<T1>(a0: &mut Vec<T1>, a1: UnsafeRandomAccessIterator<T1>, a2: T1) -> UnsafeRandomAccessIterator<T1> {
+    let pos = a1.vec_ptr().offset_from(a0.as_ptr()) as usize;
     a0.insert(pos, a2);
+    a1
 }
 
 unsafe fn f78<T1: Default + Clone>(a0: usize, a1: T1) -> Vec<T1> {
     vec![a1; a0 as usize]
 }
 
-unsafe fn f79<T1>(a0: &mut Vec<T1>, a1: *const T1, a2: T1) {
-    let pos = a1.offset_from(a0.as_ptr()) as usize;
+unsafe fn f79<T1>(a0: &mut Vec<T1>, a1: UnsafeRandomAccessIterator<T1>, a2: T1) -> UnsafeRandomAccessIterator<T1> {
+    let pos = a1.vec_ptr().offset_from(a0.as_ptr()) as usize;
     a0.insert(pos, a2);
+    a1
 }
 
 unsafe fn f80<T1: Clone>(a0: &mut Vec<T1>, a1: T1) {
     let a0_clone = a1.clone();
     a0.push(a0_clone)
-}
-
-unsafe fn f81<T1>(a0: *mut T1) -> *mut T1 {
-    a0
-}
-
-unsafe fn f82<T1>(a0: *const T1) -> *const T1 {
-    a0
-}
-
-unsafe fn f83<T1>(a0: *const T1) -> *const T1 {
-    a0
-}
-
-unsafe fn f84<T1>(a0: *mut T1, a1: usize) -> *mut T1 {
-    a0.add(a1 as usize)
-}
-
-unsafe fn f85<T1>(a0: *const T1, a1: *const T1) -> bool {
-    a0 != a1
-}
-unsafe fn f86<T1>(a0: *const T1, a1: *const T1) -> bool {
-    a0 == a1
-}
-
-unsafe fn f87<T1>(a0: &mut *mut T1) -> *mut T1 {
-    a0.postfix_inc()
-}
-
-unsafe fn f88<T1>(a0: *const T1, a1: *const T1) -> isize {
-    a0.offset_from(a1)
-}
-
-unsafe fn f89<T1>(a0: &mut *mut T1) -> *mut T1 {
-    a0.prefix_inc()
 }
 
 unsafe fn f90<T1: Clone>(a0: *const T1, a1: *const T1) -> Vec<T1> {
@@ -181,21 +140,12 @@ unsafe fn f93<T1>(a0: &mut Vec<T1>) -> *const T1 {
     a0.as_ptr()
 }
 
-unsafe fn f94<T1: Ord>(a0: *const T1, a1: *const T1) -> *const T1 {
-    core::slice::from_raw_parts(a0, (a1).offset_from(a0) as usize)
-        .iter()
-        .enumerate()
-        .max_by(|(idx_a, val_a), (idx_b, val_b)| val_a.cmp(val_b).then_with(|| idx_b.cmp(idx_a)))
-        .map(|(_, value)| value)
-        .unwrap()
+unsafe fn f95<T1>(a0: Vec<T1>) -> UnsafeRandomAccessIterator<T1> {
+    UnsafeRandomAccessIterator::Vec(a0.as_ptr().cast_mut())
 }
 
-unsafe fn f95<T1>(a0: Vec<T1>) -> *const T1 {
-    a0.as_ptr()
-}
-
-unsafe fn f96<T1>(a0: Vec<T1>) -> *const T1 {
-    a0.as_ptr().add(a0.len())
+unsafe fn f96<T1>(a0: Vec<T1>) -> UnsafeRandomAccessIterator<T1> {
+    UnsafeRandomAccessIterator::Vec(a0.as_ptr().add(a0.len()).cast_mut())
 }
 
 unsafe fn f97(a0: &mut Vec<bool>, a1: &mut Vec<bool>) {
@@ -216,17 +166,17 @@ unsafe fn f99<T1>(a0: &Vec<T1>) -> &T1 {
 
 unsafe fn f101<T1: Clone>(
     a0: &mut Vec<T1>,
-    a1: *const T1,
+    a1: UnsafeRandomAccessIterator<T1>,
     a2: *const T1,
     a3: *const T1,
-) -> *mut T1 {
-    let __off = a1.offset_from(a0.as_ptr()) as usize;
+) -> UnsafeRandomAccessIterator<T1> {
+    let __off = a1.vec_ptr().offset_from(a0.as_ptr()) as usize;
     let count = a3.offset_from(a2) as usize;
     a0.splice(
         __off..__off,
         std::slice::from_raw_parts(a2, count).iter().cloned(),
     );
-    a0.as_mut_ptr().add(__off)
+    UnsafeRandomAccessIterator::Vec(a0.as_mut_ptr().add(__off))
 }
 
 unsafe fn f102<T1: Default + Clone>(a0: &mut Vec<T1>, a1: usize, a2: T1) {
@@ -238,8 +188,8 @@ unsafe fn f103<T1: Clone>(a0: &mut Vec<T1>, a1: &mut Vec<T1>) {
     *a0 = std::mem::take(&mut *a1)
 }
 
-unsafe fn f104<T1>(a0: Vec<T1>) -> *const T1 {
-    a0.as_ptr().add(a0.len())
+unsafe fn f104<T1>(a0: Vec<T1>) -> UnsafeRandomAccessIterator<T1> {
+    UnsafeRandomAccessIterator::Vec(a0.as_ptr().add(a0.len()).cast_mut())
 }
 
 unsafe fn f105<T1: Clone>(a0: &mut Vec<T1>, a1: Vec<T1>) {

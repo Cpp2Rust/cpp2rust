@@ -6,55 +6,86 @@ use std::cell::RefCell;
 use std::io::Write;
 use std::rc::Rc;
 
-fn f1<T1: Ord + 'static>(a0: Ptr<T1>, a1: Ptr<T1>) {
-    a0.sort(a1.get_offset())
-}
-
-fn f2<T1: Clone + PartialOrd + ByteRepr, T2: Clone + From<T1> + ByteRepr>(
-    a0: Ptr<T1>,
-    a1: Ptr<T1>,
-    a2: Ptr<T2>,
-) -> Ptr<T2> {
-    let count = a1.get_offset() - a0.get_offset();
-    let mut outptr = a2;
-    for value in PtrValueIter::new(&a0, count) {
-        outptr.write(value.into());
-        outptr += 1;
+fn f1<T1: CppRandomAccessIterator<T2>, T2: Ord + Clone + ByteRepr>(a0: T1, a1: T1) {
+    let __n = a1.iter_distance(&a0);
+    let mut __order: Vec<isize> = (0..__n).collect();
+    __order.sort_by(|&__x, &__y| {
+        a0.iter_at(__x)
+            .with(|__a| a0.iter_at(__y).with(|__b| __a.cmp(__b)))
+    });
+    let __values: Vec<_> = __order.iter().map(|&__i| a0.iter_at(__i).read()).collect();
+    for (__i, __v) in (0..__n).zip(__values) {
+        a0.iter_at(__i).write(__v);
     }
-    outptr
 }
 
-fn f3<T1: PartialEq + Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>, a2: T1) -> Ptr<T1> {
-    let count = (a1.get_offset() - a0.get_offset()) as usize;
-    a0.offset(
-        a0.clone()
-            .into_iter()
-            .take(count)
-            .position(|value_0| value_0.read() == a2)
-            .unwrap_or(count) as isize,
-    )
+fn f2<
+    T1: CppInputIterator<T3>,
+    T2: CppIterator<T4>,
+    T3: Clone + ByteRepr,
+    T4: From<T3> + ByteRepr,
+>(
+    a0: T1,
+    a1: T1,
+    a2: T2,
+) -> T2 {
+    let mut __first = a0;
+    let mut __out = a2;
+    while __first != a1 {
+        __out.iter_deref().write(__first.iter_deref().read().into());
+        __first.iter_inc();
+        __out.iter_inc();
+    }
+    __out
 }
 
-fn f6<T1: Ord + Clone + 'static, T2>(a0: Ptr<T1>, a1: Ptr<T1>, a2: T2)
+fn f3<T1: CppInputIterator<T3>, T2, T3: PartialEq<T2> + ByteRepr>(a0: T1, a1: T1, a2: T2) -> T1 {
+    let mut __it = a0;
+    while __it != a1 && __it.iter_deref().with(|__v| *__v != a2) {
+        __it.iter_inc();
+    }
+    __it
+}
+
+fn f6<T1: CppRandomAccessIterator<T3>, T2, T3: Clone + ByteRepr>(a0: T1, a1: T1, a2: T2)
 where
-    T2: Callable2<Ptr<T1>, Ptr<T1>, bool>,
+    T2: Callable2<Ptr<T3>, Ptr<T3>, bool>,
 {
-    a0.sort_with_cmp(a1.get_offset(), |x, y| a2.call(x, y))
+    let __n = a1.iter_distance(&a0);
+    let mut __order: Vec<isize> = (0..__n).collect();
+    __order.sort_by(|&__x, &__y| {
+        let __a = a0.iter_at(__x);
+        let __b = a0.iter_at(__y);
+        if a2.call(__a.clone(), __b.clone()) {
+            std::cmp::Ordering::Less
+        } else if a2.call(__b, __a) {
+            std::cmp::Ordering::Greater
+        } else {
+            std::cmp::Ordering::Equal
+        }
+    });
+    let __values: Vec<_> = __order.iter().map(|&__i| a0.iter_at(__i).read()).collect();
+    for (__i, __v) in (0..__n).zip(__values) {
+        a0.iter_at(__i).write(__v);
+    }
 }
 
-fn f8<T1: PartialOrd + Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>) -> Ptr<T1> {
-    let count = a1.get_offset() - a0.get_offset();
-    let max_index = PtrValueIter::new(&a0, count)
-        .enumerate()
-        .max_by(|(idx_a, val_a), (idx_b, val_b)| {
-            val_a
-                .partial_cmp(val_b)
-                .unwrap_or(std::cmp::Ordering::Equal)
-                .then_with(|| idx_b.cmp(idx_a))
-        })
-        .map(|(idx, _)| idx)
-        .unwrap_or(0);
-    a0 + max_index
+fn f8<T1: CppInputIterator<T2>, T2: PartialOrd + ByteRepr>(a0: T1, a1: T1) -> T1 {
+    let mut __best = a0.clone();
+    if a0 != a1 {
+        let mut __it = a0;
+        __it.iter_inc();
+        while __it != a1 {
+            if __best
+                .iter_deref()
+                .with(|__b| __it.iter_deref().with(|__v| __b < __v))
+            {
+                __best = __it.clone();
+            }
+            __it.iter_inc();
+        }
+    }
+    __best
 }
 
 fn f9<T1: Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>) {
@@ -63,35 +94,31 @@ fn f9<T1: Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>) {
     a1.write(tmp);
 }
 
-fn f10<T1: PartialEq + Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>) -> Ptr<T1> {
-    let count = a1.get_offset() - a0.get_offset();
-    if count <= 1 {
+fn f10<T1: CppInputIterator<T2>, T2: PartialEq + Clone + ByteRepr>(a0: T1, a1: T1) -> T1 {
+    if a0 == a1 {
         a1
     } else {
-        let mut iter = PtrValueIter::new(&a0, count);
-        let mut write_ptr = a0;
-        let mut last_unique = iter.next().unwrap();
-
-        // the first unique value is already in place
-        write_ptr += 1;
-
-        for current_val in iter {
-            if current_val != last_unique {
-                write_ptr.write(current_val.clone());
-                last_unique = current_val;
-                write_ptr += 1;
+        let mut __write = a0.clone();
+        let mut __it = a0;
+        __it.iter_inc();
+        while __it != a1 {
+            let __v = __it.iter_deref().read();
+            if __write.iter_deref().with(|__w| *__w != __v) {
+                __write.iter_inc();
+                __write.iter_deref().write(__v);
             }
+            __it.iter_inc();
         }
-        write_ptr
+        __write.iter_inc();
+        __write
     }
 }
 
-fn f12<T1: Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>, a2: T1) {
-    let mut __a0 = a0;
-    while __a0 != a1 {
-        let v = a2.clone();
-        __a0.write(v);
-        __a0 += 1;
+fn f12<T1: CppInputIterator<T2>, T2: Clone + ByteRepr>(a0: T1, a1: T1, a2: T2) {
+    let mut __it = a0;
+    while __it != a1 {
+        __it.iter_deref().write(Clone::clone(&a2));
+        __it.iter_inc();
     }
 }
 

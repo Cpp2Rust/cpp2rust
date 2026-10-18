@@ -8,6 +8,7 @@
 #include <clang/Basic/LangOptions.h>
 #include <clang/Lex/Lexer.h>
 #include <clang/Lex/Preprocessor.h>
+#include <clang/Sema/Lookup.h>
 #include <clang/Sema/Sema.h>
 #include <llvm/ADT/DenseSet.h>
 #include <llvm/ADT/STLExtras.h>
@@ -203,6 +204,7 @@ private:
           AddTemplateArgs(spec->getTemplateArgs().asArray());
         }
         AddSpecialMembers(record);
+        AddIterator(type, record);
       }
       return;
     }
@@ -223,6 +225,46 @@ private:
           method->isMoveAssignmentOperator()) {
         AddKey(FunctionKey(method));
       }
+    }
+  }
+
+  void AddIterator(clang::QualType type, const clang::CXXRecordDecl *record) {
+    auto *std_namespace = sema_.getStdNamespace();
+    if (!std_namespace ||
+        !ctx_.getSourceManager().isInSystemHeader(record->getLocation())) {
+      return;
+    }
+    clang::ClassTemplateDecl *traits = nullptr;
+    for (auto *decl :
+         std_namespace->lookup(&ctx_.Idents.get("iterator_traits"))) {
+      if ((traits = llvm::dyn_cast<clang::ClassTemplateDecl>(decl))) {
+        break;
+      }
+    }
+    if (!traits) {
+      return;
+    }
+    auto loc = record->getLocation();
+    RuleDecls::Trial trial(sema_);
+    clang::TemplateArgumentListInfo args(loc, loc);
+    args.addArgument(
+        clang::TemplateArgumentLoc(clang::TemplateArgument(type),
+                                   ctx_.getTrivialTypeSourceInfo(type, loc)));
+    auto instance = sema_.CheckTemplateIdType(
+        clang::ElaboratedTypeKeyword::None, clang::TemplateName(traits), loc,
+        args, /*Scope=*/nullptr, /*ForNestedNameSpecifier=*/false);
+    if (instance.isNull() || !sema_.isCompleteType(loc, instance) ||
+        trial.failed()) {
+      return;
+    }
+    auto *instance_record = instance->getAsCXXRecordDecl();
+    if (!instance_record) {
+      return;
+    }
+    clang::LookupResult category(sema_, &ctx_.Idents.get("iterator_category"),
+                                 loc, clang::Sema::LookupMemberName);
+    if (sema_.LookupQualifiedName(category, instance_record)) {
+      AddKey(kAnyIteratorKey);
     }
   }
 
@@ -310,7 +352,9 @@ std::string BuildRulesEpilogue(const std::unordered_set<std::string> &keys,
     out += "namespace cpp2rust_rules {\n" + common->str() + "}\n";
   }
   auto rules = index.getObject("rules");
-  for (const auto &key : keys) {
+  std::vector<std::string> candidates(keys.begin(), keys.end());
+  candidates.push_back(kAnyClassKey);
+  for (const auto &key : candidates) {
     auto entries = rules->getArray(key);
     if (!entries) {
       continue;

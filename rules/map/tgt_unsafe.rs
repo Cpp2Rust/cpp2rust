@@ -1,150 +1,87 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use libcc2rs::{MapIterator, UnsafeMapIterator};
-use std::collections::BTreeMap;
+use libcc2rs::*;
 
-fn t1<T1, T2>() -> BTreeMap<T1, Box<(T1, T2)>> {
-    BTreeMap::new()
-}
-
-fn t2<T1: Clone + Ord, T2>() -> UnsafeMapIterator<T1, T2> {
-    UnsafeMapIterator::null()
-}
-
-fn t3<T1: Clone + Ord, T2>() -> UnsafeMapIterator<T1, T2> {
-    UnsafeMapIterator::null()
+fn t1<T1, T2>() -> UnsafeMap<T1, (T1, T2)> {
+    UnsafeMap::new()
 }
 
 fn t4() -> usize {
     0_usize
 }
 
-unsafe fn f1<T1: Ord + Clone, T2: Default>(
-    a0: &mut BTreeMap<T1, Box<(T1, T2)>>,
-    a1: T1,
-) -> &mut T2 {
-    &mut a0
-        .entry(a1.clone())
-        .or_insert_with(|| Box::new((a1, <T2>::default())))
-        .1
+unsafe fn f1<T1: Ord + Clone, T2: Default>(a0: &mut UnsafeMap<T1, (T1, T2)>, a1: T1) -> &mut T2 {
+    &mut (*a0.get_or_insert_with(a1.clone(), || (a1, <T2>::default()))).1
 }
-unsafe fn f2<T1, T2>(a0: BTreeMap<T1, Box<(T1, T2)>>) -> usize {
+
+unsafe fn f2<T1, T2>(a0: UnsafeMap<T1, (T1, T2)>) -> usize {
     a0.len()
 }
-unsafe fn f3<T1: Ord + Clone, T2>(
-    a0: &mut BTreeMap<T1, Box<(T1, T2)>>,
-    a1: UnsafeMapIterator<T1, T2>,
-) -> UnsafeMapIterator<T1, T2> {
-    UnsafeMapIterator::erase(&*a0 as *const BTreeMap<T1, Box<(T1, T2)>>, &a1)
+
+unsafe fn f3<T1: Ord + Clone, T2>(a0: &mut UnsafeMap<T1, (T1, T2)>, a1: UnsafeBidirectionalIterator<(T1, T2)>) -> UnsafeBidirectionalIterator<(T1, T2)> {
+    a0.erase(&a1)
 }
 
-unsafe fn f5<T1, T2>() -> BTreeMap<T1, Box<(T1, T2)>> {
-    BTreeMap::new()
+unsafe fn f5<T1, T2>() -> UnsafeMap<T1, (T1, T2)> {
+    UnsafeMap::new()
 }
 
-unsafe fn f6<T1: Clone, T2: Clone>(a0: BTreeMap<T1, Box<(T1, T2)>>) -> BTreeMap<T1, Box<(T1, T2)>> {
-    a0.clone()
-}
-unsafe fn f7<T1: Ord, T2>(a0: &mut BTreeMap<T1, Box<(T1, T2)>>, a1: T1) -> *const T2 {
-    (&a0.get(&a1).expect("out of range!").1 as *const T2)
-}
-
-unsafe fn f8<T1: Ord + Clone, T2: Default>(
-    a0: &mut BTreeMap<T1, Box<(T1, T2)>>,
-    a1: T1,
-) -> &mut T2 {
-    &mut a0
-        .entry(a1.clone())
-        .or_insert_with(|| Box::new((a1, <T2>::default())))
-        .1
-}
-unsafe fn f9<T1: Ord + Clone, T2>(a0: BTreeMap<T1, Box<(T1, T2)>>) -> UnsafeMapIterator<T1, T2> {
-    UnsafeMapIterator::end(&a0 as *const BTreeMap<T1, Box<(T1, T2)>>)
-}
-unsafe fn f10<T1: Ord + Clone, T2>(
-    a0: &mut BTreeMap<T1, Box<(T1, T2)>>,
-    a1: T1,
-) -> UnsafeMapIterator<T1, T2> {
-    UnsafeMapIterator::find_key(&*a0 as *const BTreeMap<T1, Box<(T1, T2)>>, &a1)
-}
-unsafe fn f11<T1: PartialEq, T2: PartialEq>(
-    a0: UnsafeMapIterator<T1, T2>,
-    a1: UnsafeMapIterator<T1, T2>,
-) -> bool {
-    a0 != a1
-}
-unsafe fn f12<T1: Ord + Clone, T2>(
-    a0: &mut BTreeMap<T1, Box<(T1, T2)>>,
-) -> UnsafeMapIterator<T1, T2> {
-    UnsafeMapIterator::begin(&*a0 as *const BTreeMap<T1, Box<(T1, T2)>>)
-}
-unsafe fn f13<T1: PartialEq, T2: PartialEq>(
-    a0: UnsafeMapIterator<T1, T2>,
-    a1: UnsafeMapIterator<T1, T2>,
-) -> bool {
-    a0 == a1
-}
-
-unsafe fn f14<T1: Ord + Clone, T2>(
-    a0: &mut BTreeMap<T1, Box<(T1, T2)>>,
-) -> UnsafeMapIterator<T1, T2> {
-    UnsafeMapIterator::end(&*a0 as *const BTreeMap<T1, Box<(T1, T2)>>)
-}
-unsafe fn f15<T1: Ord, T2>(a0: &mut BTreeMap<T1, Box<(T1, T2)>>, a1: T1) -> *const T2 {
-    (&a0.get(&a1).expect("out of range!").1 as *const T2)
-}
-
-unsafe fn f16<T1: PartialEq, T2: PartialEq>(
-    a0: UnsafeMapIterator<T1, T2>,
-    a1: UnsafeMapIterator<T1, T2>,
-) -> bool {
-    a0 == a1
-}
-unsafe fn f17<T1: Ord + Clone, T2>(
-    a0: BTreeMap<T1, Box<(T1, T2)>>,
-    a1: T1,
-) -> UnsafeMapIterator<T1, T2> {
-    UnsafeMapIterator::find_key(&a0 as *const BTreeMap<T1, Box<(T1, T2)>>, &a1)
-}
-
-unsafe fn f19<T1: Clone, T2>(a0: UnsafeMapIterator<T1, T2>) -> UnsafeMapIterator<T1, T2> {
+unsafe fn f6<T1: Ord + Clone, T2: Clone>(a0: UnsafeMap<T1, (T1, T2)>) -> UnsafeMap<T1, (T1, T2)> {
     a0.clone()
 }
 
-unsafe fn f20<T1: Ord + Clone, T2>(a0: UnsafeMapIterator<T1, T2>) -> *const T1 {
-    &raw const (*a0.deref()).0
-}
-unsafe fn f21<T1: Ord + Clone, T2>(a0: UnsafeMapIterator<T1, T2>) -> *mut T2 {
-    &raw mut (*a0.deref()).1
+unsafe fn f7<T1: Ord, T2>(a0: &mut UnsafeMap<T1, (T1, T2)>, a1: T1) -> *const T2 {
+    &raw const (*a0.get(&a1).expect("out of range!")).1
 }
 
-unsafe fn f22<T1: Ord + Clone, T2>(a0: UnsafeMapIterator<T1, T2>) -> *const T1 {
-    &raw const (*a0.deref()).0
-}
-unsafe fn f23<T1: Ord + Clone, T2>(a0: UnsafeMapIterator<T1, T2>) -> *mut T2 {
-    &raw mut (*a0.deref()).1
+unsafe fn f8<T1: Ord + Clone, T2: Default>(a0: &mut UnsafeMap<T1, (T1, T2)>, a1: T1) -> &mut T2 {
+    &mut (*a0.get_or_insert_with(a1.clone(), || (a1, <T2>::default()))).1
 }
 
-unsafe fn f24<T1, T2>(a0: &mut BTreeMap<T1, Box<(T1, T2)>>) -> BTreeMap<T1, Box<(T1, T2)>> {
+unsafe fn f9<T1, T2>(a0: UnsafeMap<T1, (T1, T2)>) -> UnsafeBidirectionalIterator<(T1, T2)> {
+    a0.end()
+}
+
+unsafe fn f10<T1: Ord, T2>(a0: &mut UnsafeMap<T1, (T1, T2)>, a1: T1) -> UnsafeBidirectionalIterator<(T1, T2)> {
+    a0.find(&a1)
+}
+
+unsafe fn f12<T1, T2>(a0: &mut UnsafeMap<T1, (T1, T2)>) -> UnsafeBidirectionalIterator<(T1, T2)> {
+    a0.begin()
+}
+
+unsafe fn f14<T1, T2>(a0: &mut UnsafeMap<T1, (T1, T2)>) -> UnsafeBidirectionalIterator<(T1, T2)> {
+    a0.end()
+}
+
+unsafe fn f15<T1: Ord, T2>(a0: &mut UnsafeMap<T1, (T1, T2)>, a1: T1) -> *const T2 {
+    &raw const (*a0.get(&a1).expect("out of range!")).1
+}
+
+unsafe fn f17<T1: Ord, T2>(a0: UnsafeMap<T1, (T1, T2)>, a1: T1) -> UnsafeBidirectionalIterator<(T1, T2)> {
+    a0.find(&a1)
+}
+
+unsafe fn f24<T1, T2>(a0: &mut UnsafeMap<T1, (T1, T2)>) -> UnsafeMap<T1, (T1, T2)> {
     std::mem::take(&mut *a0)
 }
 
-unsafe fn f25<T1, T2>(a0: &mut BTreeMap<T1, Box<(T1, T2)>>, a1: &mut BTreeMap<T1, Box<(T1, T2)>>) {
+unsafe fn f25<T1, T2>(a0: &mut UnsafeMap<T1, (T1, T2)>, a1: &mut UnsafeMap<T1, (T1, T2)>) {
     *a0 = std::mem::take(&mut *a1)
 }
 
-unsafe fn f26<T1: Clone, T2: Clone>(
-    a0: &mut BTreeMap<T1, Box<(T1, T2)>>,
-    a1: BTreeMap<T1, Box<(T1, T2)>>,
-) {
+unsafe fn f26<T1: Ord + Clone, T2: Clone>(a0: &mut UnsafeMap<T1, (T1, T2)>, a1: UnsafeMap<T1, (T1, T2)>) {
     *a0 = a1.clone()
 }
 
-unsafe fn f27<T1: Ord + Clone, T2>(a0: UnsafeMapIterator<T1, T2>) -> *mut (T1, T2) {
-    a0.deref()
+unsafe fn f27<T1: Ord + Clone, T2>(
+    a0: &mut UnsafeMap<T1, (T1, T2)>,
+    a1: UnsafeBidirectionalIterator<(T1, T2)>,
+) -> UnsafeBidirectionalIterator<(T1, T2)> {
+    a0.erase(&a1)
 }
 
-unsafe fn f28<T1: Ord + Clone, T2>(a0: UnsafeMapIterator<T1, T2>) -> *const (T1, T2) {
-    a0.deref().cast_const()
+unsafe fn f28<T1: Ord, T2>(a0: &mut UnsafeMap<T1, (T1, T2)>, a1: T1) -> usize {
+    a0.erase_key(&a1)
 }

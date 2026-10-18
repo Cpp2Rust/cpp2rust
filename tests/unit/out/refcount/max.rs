@@ -54,21 +54,23 @@ fn main_0() -> i32 {
     assert!((((((r1 + r2) + r3) + r4) + r5) == 56));
     let values: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 7, 7, 3])));
     let mut max: Ptr<i32> = {
-        let count = (values.as_pointer() as Ptr<i32>)
-            .offset((4) as isize)
-            .get_offset()
-            - (values.as_pointer() as Ptr<i32>).get_offset();
-        let max_index = PtrValueIter::new(&(values.as_pointer() as Ptr<i32>), count)
-            .enumerate()
-            .max_by(|(idx_a, val_a), (idx_b, val_b)| {
-                val_a
-                    .partial_cmp(val_b)
-                    .unwrap_or(std::cmp::Ordering::Equal)
-                    .then_with(|| idx_b.cmp(idx_a))
-            })
-            .map(|(idx, _)| idx)
-            .unwrap_or(0);
-        (values.as_pointer() as Ptr<i32>) + max_index
+        let mut __best = (values.as_pointer() as Ptr<i32>).clone();
+        if (values.as_pointer() as Ptr<i32>)
+            != (values.as_pointer() as Ptr<i32>).offset((4) as isize)
+        {
+            let mut __it = (values.as_pointer() as Ptr<i32>);
+            __it.iter_inc();
+            while __it != (values.as_pointer() as Ptr<i32>).offset((4) as isize) {
+                if __best
+                    .iter_deref()
+                    .with(|__b| __it.iter_deref().with(|__v| __b < __v))
+                {
+                    __best = __it.clone();
+                }
+                __it.iter_inc();
+            }
+        }
+        __best
     };
     assert!(({ (max).clone() } == { (values.as_pointer() as Ptr::<i32>).offset((1) as isize) }));
     return 0;

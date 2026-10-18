@@ -131,16 +131,25 @@ unsafe fn main_0() -> i32 {
     };
     assert!(((v2.len()) == (3_usize)));
     {
-        let pos = v2.as_mut_ptr().offset_from(v2.as_ptr()) as usize;
+        let pos = <UnsafeRandomAccessIterator<i32>>::from(UnsafeRandomAccessIterator::Vec(
+            v2.as_mut_ptr(),
+        ))
+        .vec_ptr()
+        .offset_from(v2.as_ptr()) as usize;
         v2.remove(pos);
-        v2.as_mut_ptr()
+        <UnsafeRandomAccessIterator<i32>>::from(UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr()))
     };
     assert!(((v2.len()) == (2_usize)));
     assert!(((v2[(0_usize)]) == (2)));
     assert!(((v2[(1_usize)]) == (3)));
     {
-        let pos = v2.as_mut_ptr().offset_from(v2.as_ptr()) as usize;
+        let pos = <UnsafeRandomAccessIterator<i32>>::from(UnsafeRandomAccessIterator::Vec(
+            v2.as_mut_ptr(),
+        ))
+        .vec_ptr()
+        .offset_from(v2.as_ptr()) as usize;
         v2.insert(pos, 100);
+        <UnsafeRandomAccessIterator<i32>>::from(UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr()))
     };
     (unsafe { copy_0(v2.clone()) });
     assert!(((v2.len()) == (3_usize)));

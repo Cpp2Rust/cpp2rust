@@ -160,7 +160,33 @@ fn main_0() -> i32 {
     let mut w: Wrapped_int_ = Wrapped_int_ { v: 2 };
     assert!((w.v == 2));
     let lts: Value<Vec<Lt>> = Rc::new(RefCell::new(vec![Lt { v: 3 }, Lt { v: 1 }, Lt { v: 2 }]));
-    (lts.as_pointer() as Ptr<Lt>).sort((lts.as_pointer() as Ptr<Lt>).to_end().get_offset());
+    {
+        let __n = RandomAccessIterator::Vec((lts.as_pointer() as Ptr<Lt>).to_end())
+            .iter_distance(&RandomAccessIterator::Vec((lts.as_pointer() as Ptr<Lt>)));
+        let mut __order: Vec<isize> = (0..__n).collect();
+        __order.sort_by(|&__x, &__y| {
+            RandomAccessIterator::Vec((lts.as_pointer() as Ptr<Lt>))
+                .iter_at(__x)
+                .with(|__a| {
+                    RandomAccessIterator::Vec((lts.as_pointer() as Ptr<Lt>))
+                        .iter_at(__y)
+                        .with(|__b| __a.cmp(__b))
+                })
+        });
+        let __values: Vec<_> = __order
+            .iter()
+            .map(|&__i| {
+                RandomAccessIterator::Vec((lts.as_pointer() as Ptr<Lt>))
+                    .iter_at(__i)
+                    .read()
+            })
+            .collect();
+        for (__i, __v) in (0..__n).zip(__values) {
+            RandomAccessIterator::Vec((lts.as_pointer() as Ptr<Lt>))
+                .iter_at(__i)
+                .write(__v);
+        }
+    };
     assert!(
         (({ (*lts.borrow())[0_usize].v } == 1) && ({ (*lts.borrow())[1_usize].v } == 2))
             && ({ (*lts.borrow())[2_usize].v } == 3)
@@ -170,136 +196,169 @@ fn main_0() -> i32 {
     let mut nine: Eq = Eq { v: 9 };
     assert!(
         ({
-            ({
-                let count = ((eqs.as_pointer() as Ptr<Eq>).to_end().get_offset()
-                    - (eqs.as_pointer() as Ptr<Eq>).get_offset())
-                    as usize;
-                (eqs.as_pointer() as Ptr<Eq>).offset(
-                    (eqs.as_pointer() as Ptr<Eq>)
-                        .clone()
-                        .into_iter()
-                        .take(count)
-                        .position(|value_0| value_0.read() == two)
-                        .unwrap_or(count) as isize,
-                )
+            let mut __it = RandomAccessIterator::Vec((eqs.as_pointer() as Ptr<Eq>));
+            while __it != RandomAccessIterator::Vec((eqs.as_pointer() as Ptr<Eq>).to_end())
+                && __it.iter_deref().with(|__v| *__v != two)
+            {
+                __it.iter_inc();
             }
-            .read())
-            .v
-        } == 2)
+            __it
+        }
+        .iter_deref()
+        .with(|__s| __s.v)
+            == 2)
     );
     assert!(
         {
-            let count = ((eqs.as_pointer() as Ptr<Eq>).to_end().get_offset()
-                - (eqs.as_pointer() as Ptr<Eq>).get_offset()) as usize;
-            (eqs.as_pointer() as Ptr<Eq>).offset(
-                (eqs.as_pointer() as Ptr<Eq>)
-                    .clone()
-                    .into_iter()
-                    .take(count)
-                    .position(|value_0| value_0.read() == nine)
-                    .unwrap_or(count) as isize,
-            )
-        } == (eqs.as_pointer() as Ptr<Eq>).to_end()
+            let mut __it = RandomAccessIterator::Vec((eqs.as_pointer() as Ptr<Eq>));
+            while __it != RandomAccessIterator::Vec((eqs.as_pointer() as Ptr<Eq>).to_end())
+                && __it.iter_deref().with(|__v| *__v != nine)
+            {
+                __it.iter_inc();
+            }
+            __it
+        } == RandomAccessIterator::Vec((eqs.as_pointer() as Ptr<Eq>).to_end())
     );
     let cmps: Value<Vec<Cmp>> =
         Rc::new(RefCell::new(vec![Cmp { v: 3 }, Cmp { v: 1 }, Cmp { v: 2 }]));
-    (cmps.as_pointer() as Ptr<Cmp>).sort((cmps.as_pointer() as Ptr<Cmp>).to_end().get_offset());
+    {
+        let __n = RandomAccessIterator::Vec((cmps.as_pointer() as Ptr<Cmp>).to_end())
+            .iter_distance(&RandomAccessIterator::Vec((cmps.as_pointer() as Ptr<Cmp>)));
+        let mut __order: Vec<isize> = (0..__n).collect();
+        __order.sort_by(|&__x, &__y| {
+            RandomAccessIterator::Vec((cmps.as_pointer() as Ptr<Cmp>))
+                .iter_at(__x)
+                .with(|__a| {
+                    RandomAccessIterator::Vec((cmps.as_pointer() as Ptr<Cmp>))
+                        .iter_at(__y)
+                        .with(|__b| __a.cmp(__b))
+                })
+        });
+        let __values: Vec<_> = __order
+            .iter()
+            .map(|&__i| {
+                RandomAccessIterator::Vec((cmps.as_pointer() as Ptr<Cmp>))
+                    .iter_at(__i)
+                    .read()
+            })
+            .collect();
+        for (__i, __v) in (0..__n).zip(__values) {
+            RandomAccessIterator::Vec((cmps.as_pointer() as Ptr<Cmp>))
+                .iter_at(__i)
+                .write(__v);
+        }
+    };
     assert!(({ (*cmps.borrow())[0_usize].v } == 1) && ({ (*cmps.borrow())[2_usize].v } == 3));
     let mut three: Cmp = Cmp { v: 3 };
     assert!(
         ({
-            ({
-                let count = ((cmps.as_pointer() as Ptr<Cmp>).to_end().get_offset()
-                    - (cmps.as_pointer() as Ptr<Cmp>).get_offset())
-                    as usize;
-                (cmps.as_pointer() as Ptr<Cmp>).offset(
-                    (cmps.as_pointer() as Ptr<Cmp>)
-                        .clone()
-                        .into_iter()
-                        .take(count)
-                        .position(|value_0| value_0.read() == three)
-                        .unwrap_or(count) as isize,
-                )
+            let mut __it = RandomAccessIterator::Vec((cmps.as_pointer() as Ptr<Cmp>));
+            while __it != RandomAccessIterator::Vec((cmps.as_pointer() as Ptr<Cmp>).to_end())
+                && __it.iter_deref().with(|__v| *__v != three)
+            {
+                __it.iter_inc();
             }
-            .read())
-            .v
-        } == 3)
+            __it
+        }
+        .iter_deref()
+        .with(|__s| __s.v)
+            == 3)
     );
     let frees: Value<Vec<Free>> = Rc::new(RefCell::new(vec![Free { v: 2 }, Free { v: 1 }]));
-    (frees.as_pointer() as Ptr<Free>).sort((frees.as_pointer() as Ptr<Free>).to_end().get_offset());
+    {
+        let __n = RandomAccessIterator::Vec((frees.as_pointer() as Ptr<Free>).to_end())
+            .iter_distance(&RandomAccessIterator::Vec(
+                (frees.as_pointer() as Ptr<Free>),
+            ));
+        let mut __order: Vec<isize> = (0..__n).collect();
+        __order.sort_by(|&__x, &__y| {
+            RandomAccessIterator::Vec((frees.as_pointer() as Ptr<Free>))
+                .iter_at(__x)
+                .with(|__a| {
+                    RandomAccessIterator::Vec((frees.as_pointer() as Ptr<Free>))
+                        .iter_at(__y)
+                        .with(|__b| __a.cmp(__b))
+                })
+        });
+        let __values: Vec<_> = __order
+            .iter()
+            .map(|&__i| {
+                RandomAccessIterator::Vec((frees.as_pointer() as Ptr<Free>))
+                    .iter_at(__i)
+                    .read()
+            })
+            .collect();
+        for (__i, __v) in (0..__n).zip(__values) {
+            RandomAccessIterator::Vec((frees.as_pointer() as Ptr<Free>))
+                .iter_at(__i)
+                .write(__v);
+        }
+    };
     assert!(({ (*frees.borrow())[0_usize].v } == 1));
     let mut ftwo: Free = Free { v: 2 };
     assert!(
         ({
-            ({
-                let count = ((frees.as_pointer() as Ptr<Free>).to_end().get_offset()
-                    - (frees.as_pointer() as Ptr<Free>).get_offset())
-                    as usize;
-                (frees.as_pointer() as Ptr<Free>).offset(
-                    (frees.as_pointer() as Ptr<Free>)
-                        .clone()
-                        .into_iter()
-                        .take(count)
-                        .position(|value_0| value_0.read() == ftwo)
-                        .unwrap_or(count) as isize,
-                )
+            let mut __it = RandomAccessIterator::Vec((frees.as_pointer() as Ptr<Free>));
+            while __it != RandomAccessIterator::Vec((frees.as_pointer() as Ptr<Free>).to_end())
+                && __it.iter_deref().with(|__v| *__v != ftwo)
+            {
+                __it.iter_inc();
             }
-            .read())
-            .v
-        } == 2)
+            __it
+        }
+        .iter_deref()
+        .with(|__s| __s.v)
+            == 2)
     );
-    let m: Value<BTreeMap<Lt, Value<(Value<Lt>, Value<i32>)>>> =
-        Rc::new(RefCell::new(BTreeMap::new()));
-    (m.as_pointer() as Ptr<BTreeMap<Lt, Value<(Value<Lt>, Value<i32>)>>>)
-        .with_mut(|__v: &mut BTreeMap<Lt, Value<(Value<Lt>, Value<i32>)>>| {
-            __v.entry(Lt { v: 2 }.clone())
-                .or_insert_with(|| {
-                    Rc::new(RefCell::new((
-                        Rc::new(RefCell::new(Lt { v: 2 })),
-                        Rc::new(RefCell::new(<i32>::default())),
-                    )))
-                })
-                .borrow()
-                .1
-                .as_pointer()
+    let m: Value<Map<Lt, (Value<Lt>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
+    (m.as_pointer() as Ptr<Map<Lt, (Value<Lt>, Value<i32>)>>)
+        .with_mut(|__m: &mut Map<Lt, (Value<Lt>, Value<i32>)>| {
+            __m.get_or_insert_with(Lt { v: 2 }.clone(), || {
+                (
+                    Rc::new(RefCell::new(Lt { v: 2 })),
+                    Rc::new(RefCell::new(<i32>::default())),
+                )
+            })
+            .borrow()
+            .1
+            .as_pointer()
         })
         .write(20);
-    (m.as_pointer() as Ptr<BTreeMap<Lt, Value<(Value<Lt>, Value<i32>)>>>)
-        .with_mut(|__v: &mut BTreeMap<Lt, Value<(Value<Lt>, Value<i32>)>>| {
-            __v.entry(Lt { v: 1 }.clone())
-                .or_insert_with(|| {
-                    Rc::new(RefCell::new((
-                        Rc::new(RefCell::new(Lt { v: 1 })),
-                        Rc::new(RefCell::new(<i32>::default())),
-                    )))
-                })
-                .borrow()
-                .1
-                .as_pointer()
+    (m.as_pointer() as Ptr<Map<Lt, (Value<Lt>, Value<i32>)>>)
+        .with_mut(|__m: &mut Map<Lt, (Value<Lt>, Value<i32>)>| {
+            __m.get_or_insert_with(Lt { v: 1 }.clone(), || {
+                (
+                    Rc::new(RefCell::new(Lt { v: 1 })),
+                    Rc::new(RefCell::new(<i32>::default())),
+                )
+            })
+            .borrow()
+            .1
+            .as_pointer()
         })
         .write(10);
     assert!(
-        ((*RefcountMapIter::begin(
-            (m.as_pointer() as Ptr<BTreeMap<Lt, Value<(Value<Lt>, Value<i32>)>>>)
-        )
-        .deref()
-        .with(|__p| __p.1.clone())
+        ((*(*(m.as_pointer() as Ptr<Map<Lt, (Value<Lt>, Value<i32>)>>)
+            .with(|__m: &Map<Lt, (Value<Lt>, Value<i32>)>| __m.begin())
+            .iter_deref()
+            .upgrade()
+            .deref())
+        .1
         .borrow())
             == 10)
     );
     assert!(
-        (((m.as_pointer() as Ptr<BTreeMap<Lt, Value<(Value<Lt>, Value<i32>)>>>)
-            .with_mut(|__v: &mut BTreeMap<Lt, Value<(Value<Lt>, Value<i32>)>>| {
-                __v.entry(Lt { v: 2 }.clone())
-                    .or_insert_with(|| {
-                        Rc::new(RefCell::new((
-                            Rc::new(RefCell::new(Lt { v: 2 })),
-                            Rc::new(RefCell::new(<i32>::default())),
-                        )))
-                    })
-                    .borrow()
-                    .1
-                    .as_pointer()
+        (((m.as_pointer() as Ptr<Map<Lt, (Value<Lt>, Value<i32>)>>)
+            .with_mut(|__m: &mut Map<Lt, (Value<Lt>, Value<i32>)>| {
+                __m.get_or_insert_with(Lt { v: 2 }.clone(), || {
+                    (
+                        Rc::new(RefCell::new(Lt { v: 2 })),
+                        Rc::new(RefCell::new(<i32>::default())),
+                    )
+                })
+                .borrow()
+                .1
+                .as_pointer()
             })
             .read())
             == 20)

@@ -793,21 +793,6 @@ bool Converter::RecordHasCopyableFields(const clang::RecordDecl *decl) {
     return false;
   }
   for (auto f : decl->fields()) {
-    // Records that contain std::vector, std::array, std::string or anything
-    // that is translated to Vec<>, do not derive Copy
-    auto mapped = Mapper::Map(*this, f->getType());
-    if (mapped.starts_with("Vec<")) {
-      return false;
-    }
-
-    if (IsUniquePtr(f->getType())) {
-      return false;
-    }
-
-    if (mapped.starts_with("BTreeMap<")) {
-      return false;
-    }
-
     if (auto ptr_ty = f->getType()->getAs<clang::PointerType>()) {
       if (ptr_ty->getPointeeType()->isFunctionType()) {
         if (!FunctionPointerImplementsCopy()) {
@@ -1575,7 +1560,7 @@ bool Converter::VisitCXXForRangeStmtMap(clang::CXXForRangeStmt *stmt) {
   StrCat("'loop_:");
   auto map_type = Mapper::Map(*this, stmt->getRangeInit()->getType());
   StrCat(keyword::kFor, GetNamedDeclAsString(begin), keyword::kIn,
-         "UnsafeMapIterator::begin(&");
+         "UnsafeMap::range(&");
   Convert(stmt->getRangeInit());
   StrCat(std::format(" as *const {})", map_type));
   {
@@ -3362,9 +3347,6 @@ bool Converter::ConvertCXXOperatorCallExpr(clang::CXXOperatorCallExpr *expr) {
   case clang::OverloadedOperatorKind::OO_Arrow:
     if (IsUniquePtr(expr->getArg(0)->getType())) {
       ConvertUniquePtrDeref(expr);
-    } else if (GetStrongestIteratorCategory(ctx_, expr->getArg(0)->getType()) ==
-               IteratorCategory::Bidirectional) {
-      Convert(expr->getArg(0));
     } else if (expr->getOperator() == clang::OverloadedOperatorKind::OO_Star) {
       PushParen paren(*this);
       StrCat(token::kStar);
@@ -3914,8 +3896,6 @@ void Converter::ConvertCXXConstructExprArgs(clang::CXXConstructExpr *expr) {
 }
 
 bool Converter::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
-  PushSuppressIteratorClone push(*this, expr);
-
   if (expr->isElidable()) {
     Convert(expr->getArg(0));
     return false;
@@ -3938,11 +3918,9 @@ bool Converter::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
     return false;
   }
   if (IsPassThroughConstructor(ctor)) {
-    // Take suppress before recursing into the child.
-    bool suppress = PushSuppressIteratorClone::take(*this);
     Convert(expr->getArg(0));
     if ((ctor->isCopyConstructor() || IsDefaultedMoveConstructor(ctor)) &&
-        !suppress && !TypeIsCopyable(expr->getType())) {
+        !TypeIsCopyable(expr->getType())) {
       StrCat(".clone()");
       SetFreshType(expr->getType());
     }
@@ -5452,14 +5430,6 @@ void Converter::ConvertConstructFromArgs(clang::QualType type,
 std::string Converter::AccessLValueObject(clang::MemberExpr *member) {
   auto *object = member->getBase();
   auto type = object->getType();
-  if (member->isArrow()) {
-    auto *op =
-        clang::dyn_cast<clang::CXXOperatorCallExpr>(object->IgnoreImplicit());
-    if (op && GetStrongestIteratorCategory(ctx_, op->getArg(0)->getType()) ==
-                  IteratorCategory::Bidirectional) {
-      return ToString(object);
-    }
-  }
   if (type->isPointerType() ||
       (IsReferenceType(object) && clang::isa<clang::CallExpr>(object))) {
     return std::format("({}{})", GetPointerDerefPrefix(type->getPointeeType()),

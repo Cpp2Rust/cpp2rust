@@ -22,6 +22,7 @@
 #include <variant>
 
 #include "converter/converter_lib.h"
+#include "converter/rules/decls.h"
 #include "converter/rules/expr_matcher.h"
 #include "converter/rules/rule_keys.h"
 #include "converter/rules/rules_loader.h"
@@ -83,6 +84,40 @@ clang::QualType getInitPattern(const clang::FunctionDecl *rule) {
   return alias->template_arguments()[0].getAsType();
 }
 
+void collectGenerics(const std::vector<TranslationRule::BodyFragment> &body,
+                     std::unordered_set<unsigned> &used) {
+  for (const auto &fragment : body) {
+    if (auto generic =
+            std::get_if<TranslationRule::GenericFragment>(&fragment)) {
+      used.insert(generic->n);
+    } else if (auto call = std::get_if<
+                   std::unique_ptr<TranslationRule::MethodCallFragment>>(
+                   &fragment)) {
+      collectGenerics((*call)->receiver, used);
+      collectGenerics((*call)->body, used);
+    }
+  }
+}
+
+void collectGenerics(llvm::StringRef type, std::unordered_set<unsigned> &used) {
+  auto is_ident = [](char c) { return llvm::isAlnum(c) || c == '_'; };
+  for (size_t i = 0; i < type.size(); ++i) {
+    if (type[i] != 'T' || (i > 0 && is_ident(type[i - 1]))) {
+      continue;
+    }
+    size_t end = i + 1;
+    while (end < type.size() && llvm::isDigit(type[end])) {
+      ++end;
+    }
+    unsigned n = 0;
+    if (end > i + 1 && (end == type.size() || !is_ident(type[end])) &&
+        !type.slice(i + 1, end).getAsInteger(10, n)) {
+      used.insert(n);
+    }
+    i = end - 1;
+  }
+}
+
 void checkGenerics(const std::string &dir, const std::string &name,
                    const clang::FunctionDecl *decl,
                    const TranslationRule::ExprRule &rule) {
@@ -92,10 +127,16 @@ void checkGenerics(const std::string &dir, const std::string &name,
       declared.insert(param->getName().str());
     }
   }
-  for (unsigned i = 1; i <= rule.generics.size(); ++i) {
+  std::unordered_set<unsigned> used;
+  collectGenerics(rule.body, used);
+  collectGenerics(rule.return_type.type, used);
+  for (const auto &param : rule.params) {
+    collectGenerics(param.type, used);
+  }
+  for (unsigned i : used) {
     if (!declared.contains(std::format("T{}", i))) {
       llvm::errs() << dir << "::" << name << ": generic T" << i
-                   << " declared but missing from src\n";
+                   << " used by the target but missing from src\n";
       llvm::report_fatal_error("Absent generic from src");
     }
   }
@@ -211,6 +252,13 @@ ExprMatch findExpr(const clang::Expr *use) {
   if (auto member = std::get_if<RuleKeys::Member>(&*key)) {
     consider(RuleKeys::Unqualified{member->name});
   }
+  if (std::holds_alternative<RuleKeys::Constructor>(*key)) {
+    auto type = RuleDecls::SkipImplicit(use)->getType();
+    if (auto record = type.getCanonicalType()->getAsCXXRecordDecl();
+        record && !type->isDependentType() && !IsUserDefinedDecl(record)) {
+      consider(RuleKeys::kAnyConstructor);
+    }
+  }
   return best;
 }
 
@@ -236,6 +284,9 @@ TypeRuleMatch findType(clang::QualType use) {
           auto better = AstMatcher::MoreSpecializedType(*sema_, it->second.decl,
                                                         best.rule_decl->decl);
           if (!better) {
+            use.dump(llvm::errs(), sema_->Context);
+            it->second.decl->dump(llvm::errs());
+            best.rule_decl->decl->dump(llvm::errs());
             llvm::report_fatal_error(
                 "type matches several rules, none more specialized");
           }

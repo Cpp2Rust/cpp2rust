@@ -20,35 +20,17 @@ fn main_0() -> i32 {
         let __a1 = 7;
         (*v.borrow_mut()).push(__a1)
     };
-    let mut it: Ptr<i32> = {
-        let count = ((v.as_pointer() as Ptr<i32>).to_end().get_offset()
-            - (v.as_pointer() as Ptr<i32>).get_offset()) as usize;
-        (v.as_pointer() as Ptr<i32>).offset(
-            (v.as_pointer() as Ptr<i32>)
-                .clone()
-                .into_iter()
-                .take(count)
-                .position(|value_0| value_0.read() == 7)
-                .unwrap_or(count) as isize,
-        )
-    };
-    assert!(it != (v.as_pointer() as Ptr<i32>).to_end());
-    assert!(((it.read()) == 7));
-    {
-        let count = (v.as_pointer() as Ptr<i32>).to_end().get_offset()
-            - (v.as_pointer() as Ptr<i32>).get_offset();
-        let random = std::hash::RandomState::new();
-        for i in (1..count).rev() {
-            let j = std::hash::BuildHasher::hash_one(&random, i) as usize % (i + 1);
-            let x = (v.as_pointer() as Ptr<i32>).offset(i);
-            let y = (v.as_pointer() as Ptr<i32>).offset(j);
-            let tmp = x.read();
-            x.write(y.read());
-            y.write(tmp);
+    let it: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new({
+        let mut __it = RandomAccessIterator::Vec((v.as_pointer() as Ptr<i32>));
+        while __it != RandomAccessIterator::Vec((v.as_pointer() as Ptr<i32>).to_end())
+            && __it.iter_deref().with(|__v| *__v != 7)
+        {
+            __it.iter_inc();
         }
-    };
-    (v.as_pointer() as Ptr<i32>).sort((v.as_pointer() as Ptr<i32>).to_end().get_offset());
-    assert!(({ (*v.borrow())[0_usize] } == 4) && ({ (*v.borrow())[1_usize] } == 7));
+        __it
+    }));
+    assert!((*it.borrow()) != RandomAccessIterator::Vec((v.as_pointer() as Ptr<i32>).to_end()));
+    assert!((((*it.borrow()).iter_deref().read()) == 7));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

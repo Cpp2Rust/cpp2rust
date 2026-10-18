@@ -255,73 +255,68 @@ fn main_0() -> i32 {
         }
         i.prefix_inc();
     }
-    let map1: Value<BTreeMap<i32, Value<(Value<i32>, Value<i32>)>>> =
-        Rc::new(RefCell::new(BTreeMap::new()));
+    let map1: Value<Map<i32, (Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
     let mut i: i32 = 0;
     'loop_: while (i < N) {
         let __rhs = i;
-        (map1.as_pointer() as Ptr<BTreeMap<i32, Value<(Value<i32>, Value<i32>)>>>)
-            .with_mut(|__v: &mut BTreeMap<i32, Value<(Value<i32>, Value<i32>)>>| {
-                __v.entry(i.clone())
-                    .or_insert_with(|| {
-                        Rc::new(RefCell::new((
-                            Rc::new(RefCell::new(i)),
-                            Rc::new(RefCell::new(<i32>::default())),
-                        )))
-                    })
-                    .borrow()
-                    .1
-                    .as_pointer()
+        (map1.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
+            .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<i32>)>| {
+                __m.get_or_insert_with(i.clone(), || {
+                    (
+                        Rc::new(RefCell::new(i)),
+                        Rc::new(RefCell::new(<i32>::default())),
+                    )
+                })
+                .borrow()
+                .1
+                .as_pointer()
             })
             .write(__rhs);
         i.prefix_inc();
     }
-    let map2: Value<BTreeMap<i32, Value<(Value<i32>, Value<i32>)>>> = Rc::new(RefCell::new(
-        (*map1.borrow())
-            .iter()
-            .map(|(k, v)| {
-                let __v = v.borrow();
-                (
-                    k.clone(),
-                    Rc::new(RefCell::new((
-                        Rc::new(RefCell::new(__v.0.borrow().clone())),
-                        Rc::new(RefCell::new(__v.1.borrow().clone())),
-                    ))),
-                )
-            })
-            .collect(),
-    ));
+    let map2: Value<Map<i32, (Value<i32>, Value<i32>)>> = Rc::new(RefCell::new({
+        let mut __m = Map::new();
+        for (__k, __v) in (*map1.borrow()).entries() {
+            let __v = __v.borrow();
+            __m.insert(
+                __k.clone(),
+                Rc::new(RefCell::new((
+                    Rc::new(RefCell::new(__v.0.borrow().clone())),
+                    Rc::new(RefCell::new(__v.1.borrow().clone())),
+                ))),
+            );
+        }
+        __m
+    }));
     let mut i: i32 = 0;
     'loop_: while (i < N) {
         assert!(
-            (((map2.as_pointer() as Ptr<BTreeMap<i32, Value<(Value<i32>, Value<i32>)>>>)
-                .with_mut(|__v: &mut BTreeMap<i32, Value<(Value<i32>, Value<i32>)>>| {
-                    __v.entry(i.clone())
-                        .or_insert_with(|| {
-                            Rc::new(RefCell::new((
-                                Rc::new(RefCell::new(i)),
-                                Rc::new(RefCell::new(<i32>::default())),
-                            )))
-                        })
-                        .borrow()
-                        .1
-                        .as_pointer()
-                })
-                .read())
-                == i)
-        );
-        (map2.as_pointer() as Ptr<BTreeMap<i32, Value<(Value<i32>, Value<i32>)>>>)
-            .with_mut(|__v: &mut BTreeMap<i32, Value<(Value<i32>, Value<i32>)>>| {
-                __v.entry(i.clone())
-                    .or_insert_with(|| {
-                        Rc::new(RefCell::new((
+            (((map2.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
+                .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<i32>)>| {
+                    __m.get_or_insert_with(i.clone(), || {
+                        (
                             Rc::new(RefCell::new(i)),
                             Rc::new(RefCell::new(<i32>::default())),
-                        )))
+                        )
                     })
                     .borrow()
                     .1
                     .as_pointer()
+                })
+                .read())
+                == i)
+        );
+        (map2.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
+            .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<i32>)>| {
+                __m.get_or_insert_with(i.clone(), || {
+                    (
+                        Rc::new(RefCell::new(i)),
+                        Rc::new(RefCell::new(<i32>::default())),
+                    )
+                })
+                .borrow()
+                .1
+                .as_pointer()
             })
             .with_mut(|__v| __v.prefix_inc());
         i.prefix_inc();
@@ -329,35 +324,33 @@ fn main_0() -> i32 {
     let mut i: i32 = 0;
     'loop_: while (i < N) {
         assert!(
-            (((map1.as_pointer() as Ptr<BTreeMap<i32, Value<(Value<i32>, Value<i32>)>>>)
-                .with_mut(|__v: &mut BTreeMap<i32, Value<(Value<i32>, Value<i32>)>>| {
-                    __v.entry(i.clone())
-                        .or_insert_with(|| {
-                            Rc::new(RefCell::new((
-                                Rc::new(RefCell::new(i)),
-                                Rc::new(RefCell::new(<i32>::default())),
-                            )))
-                        })
-                        .borrow()
-                        .1
-                        .as_pointer()
+            (((map1.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
+                .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<i32>)>| {
+                    __m.get_or_insert_with(i.clone(), || {
+                        (
+                            Rc::new(RefCell::new(i)),
+                            Rc::new(RefCell::new(<i32>::default())),
+                        )
+                    })
+                    .borrow()
+                    .1
+                    .as_pointer()
                 })
                 .read())
                 == i)
         );
         assert!(
-            (((map2.as_pointer() as Ptr<BTreeMap<i32, Value<(Value<i32>, Value<i32>)>>>)
-                .with_mut(|__v: &mut BTreeMap<i32, Value<(Value<i32>, Value<i32>)>>| {
-                    __v.entry(i.clone())
-                        .or_insert_with(|| {
-                            Rc::new(RefCell::new((
-                                Rc::new(RefCell::new(i)),
-                                Rc::new(RefCell::new(<i32>::default())),
-                            )))
-                        })
-                        .borrow()
-                        .1
-                        .as_pointer()
+            (((map2.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
+                .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<i32>)>| {
+                    __m.get_or_insert_with(i.clone(), || {
+                        (
+                            Rc::new(RefCell::new(i)),
+                            Rc::new(RefCell::new(<i32>::default())),
+                        )
+                    })
+                    .borrow()
+                    .1
+                    .as_pointer()
                 })
                 .read())
                 == (i + 1))

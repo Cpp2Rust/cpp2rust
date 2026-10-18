@@ -15,16 +15,12 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let N: i32 = 10000;
     let sentinel: i32 = ((N) / (2));
-    let mut m: BTreeMap<i32, Box<(i32, i32)>> = BTreeMap::new();
-    (*&mut m
-        .entry(sentinel.clone())
-        .or_insert_with(|| Box::new((sentinel, <i32>::default())))
-        .1) = sentinel;
-    let mut it: UnsafeMapIterator<i32, i32> =
-        UnsafeMapIterator::find_key(&m as *const BTreeMap<i32, Box<(i32, i32)>>, &sentinel);
-    let mut p: *mut i32 = (&mut (*&raw mut (*it.deref()).1) as *mut i32);
+    let mut m: UnsafeMap<i32, (i32, i32)> = UnsafeMap::new();
+    (*&mut (*m.get_or_insert_with(sentinel.clone(), || (sentinel, <i32>::default()))).1) = sentinel;
+    let mut it: UnsafeBidirectionalIterator<(i32, i32)> = m.find(&sentinel);
+    let mut p: *mut i32 = (&mut (*it.iter_deref()).1 as *mut i32);
     assert!(
-        ((*&raw mut (*it.deref()).1) == (sentinel))
+        (((*it.iter_deref()).1) == (sentinel))
             && (!(c"iterator does not have correct value before insert".as_ptr()).is_null())
     );
     assert!(
@@ -33,46 +29,37 @@ unsafe fn main_0() -> i32 {
     );
     let mut i: i32 = 0;
     'loop_: while ((i) < (sentinel)) {
-        (*&mut m
-            .entry(i.clone())
-            .or_insert_with(|| Box::new((i, <i32>::default())))
-            .1) = i;
+        (*&mut (*m.get_or_insert_with(i.clone(), || (i, <i32>::default()))).1) = i;
         i.prefix_inc();
     }
     let mut i: i32 = ((sentinel) + (1));
     'loop_: while ((i) <= (N)) {
-        (*&mut m
-            .entry(i.clone())
-            .or_insert_with(|| Box::new((i, <i32>::default())))
-            .1) = i;
+        (*&mut (*m.get_or_insert_with(i.clone(), || (i, <i32>::default()))).1) = i;
         i.prefix_inc();
     }
     assert!(
-        ((*&raw mut (*it.deref()).1) != (0))
+        (((*it.iter_deref()).1) != (0))
             && (!(c"in refcount, iterator points to index 0 instead of sentinel".as_ptr())
                 .is_null())
     );
     assert!(
-        ((*&raw mut (*it.deref()).1) == (sentinel))
+        (((*it.iter_deref()).1) == (sentinel))
             && (!(c"iterator does not have correct value after insert".as_ptr()).is_null())
     );
     assert!(
         ((*p) == (sentinel))
             && (!(c"pointer does not have correct value after insert".as_ptr()).is_null())
     );
-    (*&raw mut (*it.deref()).1) = 57005;
+    (*it.iter_deref()).1 = 57005;
     assert!(
-        ((*&mut m
-            .entry(sentinel.clone())
-            .or_insert_with(|| Box::new((sentinel, <i32>::default())))
-            .1)
+        ((*&mut (*m.get_or_insert_with(sentinel.clone(), || (sentinel, <i32>::default()))).1)
             == (57005))
     );
     assert!(((*p) == (57005)));
     assert!(((m.len()) == ((((N) + (1)) as u32) as usize)));
     let mut prev: i32 = -1_i32;
-    'loop_: for __begin1 in UnsafeMapIterator::begin(&m as *const BTreeMap<i32, Box<(i32, i32)>>) {
-        let pair: *mut (i32, i32) = &mut (*__begin1.deref());
+    'loop_: for __begin1 in UnsafeMap::range(&m as *const UnsafeMap<i32, (i32, i32)>) {
+        let pair: *mut (i32, i32) = &mut (*__begin1.iter_deref());
         assert!((((*pair).0) > (prev)));
         prev = (*pair).0;
     }

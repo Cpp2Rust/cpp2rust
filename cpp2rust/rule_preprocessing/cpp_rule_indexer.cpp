@@ -26,7 +26,6 @@
 #include <vector>
 
 #include "compat/platform_flags.h"
-#include "converter/rules/decls.h"
 #include "converter/rules/rules_loader.h"
 
 namespace fs = std::filesystem;
@@ -132,11 +131,6 @@ std::string ClassOfParameters(const clang::Decl *rule) {
     }
   }
   return {};
-}
-
-std::string ClassOfEnableIf(const clang::Decl *rule) {
-  auto same = RuleDecls::EnableIfSameType(rule);
-  return same.isNull() ? std::string() : ClassOf(same);
 }
 
 const clang::Expr *RuleExpr(const clang::Decl *decl) {
@@ -266,8 +260,9 @@ void IndexRuleFile(clang::ASTContext &ctx, const std::string &dir_name,
     if (key.empty()) {
       key = ClassOfParameters(decl);
     }
-    if (key.empty()) {
-      key = ClassOfEnableIf(decl);
+    bool any_class = key.empty() && llvm::isa<clang::TemplateDecl>(decl);
+    if (any_class) {
+      key = RulesLoader::kAnyClassKey;
     }
     if (key.empty()) {
       llvm::errs() << "ERROR: cannot derive the key of rule '" << name
@@ -277,7 +272,10 @@ void IndexRuleFile(clang::ASTContext &ctx, const std::string &dir_name,
     auto range = clang::tooling::getExtendedRange(*decl, clang::tok::semi, ctx);
     auto text = clang::tooling::getText(range, ctx).str() + '\n';
     llvm::json::Object rule{{"dir", dir_name}, {"name", name}, {"text", text}};
-    if (auto required = RequiredClasses(decl, alias); !required.empty()) {
+    if (any_class) {
+      rule["requires"] = llvm::json::Array{RulesLoader::kAnyIteratorKey};
+    } else if (auto required = RequiredClasses(decl, alias);
+               !required.empty()) {
       rule["requires"] = llvm::json::Array(required);
     }
     AddRule(rules, key, std::move(rule));

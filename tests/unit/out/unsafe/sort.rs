@@ -55,8 +55,25 @@ unsafe fn main_0() -> i32 {
         v.push(__a1)
     };
     {
-        let len = v.as_mut_ptr().add(v.len()).offset_from(v.as_mut_ptr()) as usize;
-        ::std::slice::from_raw_parts_mut(v.as_mut_ptr(), len).sort()
+        let __n = UnsafeRandomAccessIterator::Vec(v.as_mut_ptr().add(v.len()))
+            .iter_distance(&UnsafeRandomAccessIterator::Vec(v.as_mut_ptr()));
+        let mut __order: Vec<isize> = (0..__n).collect();
+        __order.sort_by(|&__x, &__y| {
+            (*UnsafeRandomAccessIterator::Vec(v.as_mut_ptr()).iter_at(__x))
+                .cmp(&*UnsafeRandomAccessIterator::Vec(v.as_mut_ptr()).iter_at(__y))
+        });
+        let __values: Vec<_> = __order
+            .iter()
+            .map(|&__i| {
+                std::ptr::read(UnsafeRandomAccessIterator::Vec(v.as_mut_ptr()).iter_at(__i))
+            })
+            .collect();
+        for (__i, __v) in (0..__n).zip(__values) {
+            std::ptr::write(
+                UnsafeRandomAccessIterator::Vec(v.as_mut_ptr()).iter_at(__i),
+                __v,
+            );
+        }
     };
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < ((v.len()).wrapping_sub(1_usize))) {
