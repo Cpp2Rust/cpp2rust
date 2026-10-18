@@ -33,6 +33,38 @@ unsafe fn main_0() -> i32 {
     };
     assert!(it != UnsafeRandomAccessIterator::Vec(v.as_mut_ptr().add(v.len())));
     assert!(((*it.iter_deref()) == (7)));
+    {
+        let len = UnsafeRandomAccessIterator::Vec(v.as_mut_ptr().add(v.len()))
+            .offset_from(UnsafeRandomAccessIterator::Vec(v.as_mut_ptr()))
+            as usize;
+        let slice =
+            ::std::slice::from_raw_parts_mut(UnsafeRandomAccessIterator::Vec(v.as_mut_ptr()), len);
+        for i in (1..len).rev() {
+            slice.swap(i, libc::rand() as usize % (i + 1));
+        }
+    };
+    {
+        let __n = UnsafeRandomAccessIterator::Vec(v.as_mut_ptr().add(v.len()))
+            .iter_distance(&UnsafeRandomAccessIterator::Vec(v.as_mut_ptr()));
+        let mut __order: Vec<isize> = (0..__n).collect();
+        __order.sort_by(|&__x, &__y| {
+            (*UnsafeRandomAccessIterator::Vec(v.as_mut_ptr()).iter_at(__x))
+                .cmp(&*UnsafeRandomAccessIterator::Vec(v.as_mut_ptr()).iter_at(__y))
+        });
+        let __values: Vec<_> = __order
+            .iter()
+            .map(|&__i| {
+                std::ptr::read(UnsafeRandomAccessIterator::Vec(v.as_mut_ptr()).iter_at(__i))
+            })
+            .collect();
+        for (__i, __v) in (0..__n).zip(__values) {
+            std::ptr::write(
+                UnsafeRandomAccessIterator::Vec(v.as_mut_ptr()).iter_at(__i),
+                __v,
+            );
+        }
+    };
+    assert!(((v[(0_usize)]) == (4)) && ((v[(1_usize)]) == (7)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}
