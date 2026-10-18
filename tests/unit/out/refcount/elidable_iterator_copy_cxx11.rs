@@ -32,32 +32,17 @@ fn main_0() -> i32 {
     assert!((*it.borrow()) != RandomAccessIterator::Vec((v.as_pointer() as Ptr<i32>).to_end()));
     assert!((((*it.borrow()).iter_deref().read()) == 7));
     {
-        let count = Rc::new(RefCell::new(RandomAccessIterator::Vec(
-            (v.as_pointer() as Ptr<i32>).to_end(),
-        )))
-        .as_pointer()
-        .get_offset()
-            - Rc::new(RefCell::new(RandomAccessIterator::Vec(
-                (v.as_pointer() as Ptr<i32>),
-            )))
-            .as_pointer()
-            .get_offset();
-        let random = std::hash::RandomState::new();
-        for i in (1..count).rev() {
-            let j = std::hash::BuildHasher::hash_one(&random, i) as usize % (i + 1);
-            let x = Rc::new(RefCell::new(RandomAccessIterator::Vec(
-                (v.as_pointer() as Ptr<i32>),
-            )))
-            .as_pointer()
-            .offset(i);
-            let y = Rc::new(RefCell::new(RandomAccessIterator::Vec(
-                (v.as_pointer() as Ptr<i32>),
-            )))
-            .as_pointer()
-            .offset(j);
-            let tmp = x.read();
-            x.write(y.read());
-            y.write(tmp);
+        let __n = RandomAccessIterator::Vec((v.as_pointer() as Ptr<i32>).to_end())
+            .iter_distance(&RandomAccessIterator::Vec((v.as_pointer() as Ptr<i32>)));
+        let __random = std::hash::RandomState::new();
+        for __i in (1..__n).rev() {
+            let __j =
+                (std::hash::BuildHasher::hash_one(&__random, __i) % (__i + 1) as u64) as isize;
+            let __x = RandomAccessIterator::Vec((v.as_pointer() as Ptr<i32>)).iter_at(__i);
+            let __y = RandomAccessIterator::Vec((v.as_pointer() as Ptr<i32>)).iter_at(__j);
+            let __tmp = __x.read();
+            __x.write(__y.read());
+            __y.write(__tmp);
         }
     };
     {

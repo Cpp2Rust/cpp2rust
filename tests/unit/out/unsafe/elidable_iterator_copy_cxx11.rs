@@ -34,13 +34,14 @@ unsafe fn main_0() -> i32 {
     assert!(it != UnsafeRandomAccessIterator::Vec(v.as_mut_ptr().add(v.len())));
     assert!(((*it.iter_deref()) == (7)));
     {
-        let len = UnsafeRandomAccessIterator::Vec(v.as_mut_ptr().add(v.len()))
-            .offset_from(UnsafeRandomAccessIterator::Vec(v.as_mut_ptr()))
-            as usize;
-        let slice =
-            ::std::slice::from_raw_parts_mut(UnsafeRandomAccessIterator::Vec(v.as_mut_ptr()), len);
-        for i in (1..len).rev() {
-            slice.swap(i, libc::rand() as usize % (i + 1));
+        let __n = UnsafeRandomAccessIterator::Vec(v.as_mut_ptr().add(v.len()))
+            .iter_distance(&UnsafeRandomAccessIterator::Vec(v.as_mut_ptr()));
+        for __i in (1..__n).rev() {
+            let __j = libc::rand() as isize % (__i + 1);
+            std::ptr::swap(
+                UnsafeRandomAccessIterator::Vec(v.as_mut_ptr()).iter_at(__i),
+                UnsafeRandomAccessIterator::Vec(v.as_mut_ptr()).iter_at(__j),
+            );
         }
     };
     {

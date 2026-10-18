@@ -145,15 +145,15 @@ fn f17<T1: PartialOrd + Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>) -> Ptr<T1> {
     if a0.read() >= a1.read() { a0 } else { a1 }
 }
 
-fn f18<T1: Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>) {
-    let count = a1.get_offset() - a0.get_offset();
-    let random = std::hash::RandomState::new();
-    for i in (1..count).rev() {
-        let j = std::hash::BuildHasher::hash_one(&random, i) as usize % (i + 1);
-        let x = a0.offset(i);
-        let y = a0.offset(j);
-        let tmp = x.read();
-        x.write(y.read());
-        y.write(tmp);
+fn f18<T1: CppRandomAccessIterator<T2>, T2: Clone + ByteRepr>(a0: T1, a1: T1) {
+    let __n = a1.iter_distance(&a0);
+    let __random = std::hash::RandomState::new();
+    for __i in (1..__n).rev() {
+        let __j = (std::hash::BuildHasher::hash_one(&__random, __i) % (__i + 1) as u64) as isize;
+        let __x = a0.iter_at(__i);
+        let __y = a0.iter_at(__j);
+        let __tmp = __x.read();
+        __x.write(__y.read());
+        __y.write(__tmp);
     }
 }
