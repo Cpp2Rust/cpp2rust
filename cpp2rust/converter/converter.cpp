@@ -1373,6 +1373,9 @@ bool Converter::VisitDeclStmt(clang::DeclStmt *stmt) {
       hoisted_records_ += std::move(buf).str();
       continue;
     }
+    if (var && IsAliasOfInit(ctx_, var)) {
+      continue;
+    }
     if (var && var->isImplicit()) {
       VisitVarDecl(var);
     } else {
@@ -1491,10 +1494,7 @@ bool Converter::VisitForStmt(clang::ForStmt *stmt) {
 bool Converter::VisitCXXForRangeStmt(clang::CXXForRangeStmt *stmt) {
   PushBreakTarget push(break_target_, BreakTarget::Loop);
   Convert(stmt->getInit());
-  if (!IsAliasOfInit(ctx_, clang::cast<clang::VarDecl>(
-                               stmt->getRangeStmt()->getSingleDecl()))) {
-    Convert(stmt->getRangeStmt());
-  }
+  Convert(stmt->getRangeStmt());
   auto *begin =
       clang::cast<clang::VarDecl>(stmt->getBeginStmt()->getSingleDecl());
   auto *end = clang::cast<clang::VarDecl>(stmt->getEndStmt()->getSingleDecl());
