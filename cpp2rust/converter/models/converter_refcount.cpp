@@ -1901,6 +1901,7 @@ bool ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
         return false;
       }
     }
+    assert(IsUserDefinedDecl(record) && "aggregate list without a rule");
 
     if (record->isUnion()) {
       auto *field = expr->getInitializedFieldInUnion();

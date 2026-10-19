@@ -170,7 +170,8 @@ std::vector<clang::Expr *> getOperands(clang::ASTContext &ctx,
     operands.assign(construct->arg_begin(), construct->arg_end());
   } else if (auto list = llvm::dyn_cast<clang::InitListExpr>(expr)) {
     operands.assign(list->inits().begin(), list->inits().end());
-  } else if (auto list = llvm::dyn_cast<clang::CXXStdInitializerListExpr>(expr)) {
+  } else if (auto list =
+                 llvm::dyn_cast<clang::CXXStdInitializerListExpr>(expr)) {
     operands.push_back(list->getSubExpr()->IgnoreImplicit());
   } else if (auto member = llvm::dyn_cast<clang::MemberExpr>(expr)) {
     auto macro_base =
@@ -256,7 +257,10 @@ clang::TemplateArgumentListInfo getResultArgs(clang::Sema &sema,
   clang::TemplateArgumentListInfo explicit_args(loc, loc);
   llvm::SmallBitVector deducible;
   sema.MarkDeducedTemplateParameters(rule, deducible);
-  if (deducible.all()) {
+  bool aggregate =
+      llvm::isa<clang::InitListExpr, clang::CXXStdInitializerListExpr>(
+          RuleDecls::SkipImplicit(use));
+  if (deducible.all() && !aggregate) {
     return explicit_args;
   }
   auto params = rule->getTemplateParameters();
@@ -270,7 +274,7 @@ clang::TemplateArgumentListInfo getResultArgs(clang::Sema &sema,
     return explicit_args;
   }
   auto last = static_cast<unsigned>(deducible.find_last_unset());
-  for (unsigned i = 0; i <= last; ++i) {
+  for (unsigned i = 0; i < params->size() && i <= last; ++i) {
     auto param = params->getParam(i);
     if (param->isParameterPack() || (*deduced)[i].isNull()) {
       break;
