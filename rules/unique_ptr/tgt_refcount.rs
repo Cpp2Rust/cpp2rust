@@ -89,7 +89,7 @@ fn f18<T1>(a0: Value<T1>) -> Ptr<T1> {
 }
 
 fn f19<T1>(a0: Value<T1>, a1: usize) -> Ptr<T1> {
-    a0.as_pointer().offset(a1 as isize)
+    (a0.as_pointer() as Ptr<T1>).offset(a1 as isize)
 }
 
 fn f20<T1>(a0: Option<Value<T1>>) -> bool {
