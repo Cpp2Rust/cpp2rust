@@ -73,8 +73,8 @@ unsafe fn main_0() -> i32 {
     assert!(((m.x) == (0)));
     assert!(((m.y) == (0)));
     let mut h: Holder = Holder {
-        xs: vec![1, 2, 3],
-        ys: vec![4, 5],
+        xs: Vec::from([1, 2, 3]),
+        ys: Vec::from([4, 5]),
     };
     let mut __decomp_3: Holder = (unsafe { Holder::extract(&mut h) });
     assert!(((__decomp_3.xs.len()) == (3_usize)));
