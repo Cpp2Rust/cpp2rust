@@ -10,7 +10,7 @@ fn f40<T1>(a0: Ptr<T1>) -> Ptr<T1> {
 }
 
 fn f60<T1: ByteRepr>(a0: Ptr<Vec<T1>>, a1: RandomAccessIterator<T1>) -> RandomAccessIterator<T1> {
-    let __off = a1.iter_distance(&RandomAccessIterator::Vec(a0.decay())) as usize;
+    let __off = a1.index();
     a0.with_mut(|__v: &mut Vec<T1>| __v.remove(__off));
     RandomAccessIterator::Vec(a0.decay() + __off)
 }
@@ -91,7 +91,7 @@ fn f101<T1: Clone + ByteRepr, T2, T3: CppInputIterator<T1>>(
     a2: T3,
     a3: T3,
 ) -> RandomAccessIterator<T1> {
-    let start_idx = a1.iter_distance(&RandomAccessIterator::Vec(a0.decay())) as usize;
+    let start_idx = a1.index();
     let mut temp_vec: Vec<T1> = Vec::new();
     let mut __it = a2;
     while __it != a3 {
