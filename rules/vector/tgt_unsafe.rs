@@ -163,7 +163,7 @@ unsafe fn f99<T1>(a0: &Vec<T1>) -> &T1 {
     ((a0).last().unwrap())
 }
 
-unsafe fn f101<T1: Clone, T3: UnsafeCppInputIterator<T1>>(
+unsafe fn f101<T1: Clone, T2, T3: UnsafeCppInputIterator<T1>>(
     a0: &mut Vec<T1>,
     a1: UnsafeRandomAccessIterator<T1>,
     a2: T3,

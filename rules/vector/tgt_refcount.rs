@@ -85,7 +85,7 @@ fn f99<T1>(a0: Ptr<T1>) -> Ptr<T1> {
     a0.to_last()
 }
 
-fn f101<T1: Clone + ByteRepr, T3: CppInputIterator<T1>>(
+fn f101<T1: Clone + ByteRepr, T2, T3: CppInputIterator<T1>>(
     a0: Ptr<Vec<T1>>,
     a1: RandomAccessIterator<T1>,
     a2: T3,
