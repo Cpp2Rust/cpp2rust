@@ -134,7 +134,7 @@ unsafe fn main_0() -> i32 {
         let pos = <UnsafeRandomAccessIterator<i32>>::from(UnsafeRandomAccessIterator::Vec(
             v2.as_mut_ptr(),
         ))
-        .vec_ptr()
+        .ptr()
         .offset_from(v2.as_ptr()) as usize;
         v2.remove(pos);
         <UnsafeRandomAccessIterator<i32>>::from(UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr()))
@@ -146,7 +146,7 @@ unsafe fn main_0() -> i32 {
         let pos = <UnsafeRandomAccessIterator<i32>>::from(UnsafeRandomAccessIterator::Vec(
             v2.as_mut_ptr(),
         ))
-        .vec_ptr()
+        .ptr()
         .offset_from(v2.as_ptr()) as usize;
         v2.insert(pos, 100);
         <UnsafeRandomAccessIterator<i32>>::from(UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr()))

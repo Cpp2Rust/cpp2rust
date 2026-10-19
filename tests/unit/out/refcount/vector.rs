@@ -58,7 +58,7 @@ fn main_0() -> i32 {
         let idx = <RandomAccessIterator<i32>>::from(RandomAccessIterator::Vec(
             (v2.as_pointer() as Ptr<i32>),
         ))
-        .vec_ptr()
+        .ptr()
         .get_offset();
         (v2.as_pointer() as Ptr<Vec<i32>>).with_mut(|__v: &mut Vec<i32>| __v.remove(idx));
         RandomAccessIterator::Vec((v2.as_pointer() as Ptr<Vec<i32>>).decay())
@@ -70,7 +70,7 @@ fn main_0() -> i32 {
         let __off = <RandomAccessIterator<i32>>::from(RandomAccessIterator::Vec(
             (v2.as_pointer() as Ptr<i32>),
         ))
-        .vec_ptr()
+        .ptr()
         .get_offset();
         (*v2.borrow_mut()).insert(__off, 100);
         <RandomAccessIterator<i32>>::from(RandomAccessIterator::Vec((v2.as_pointer() as Ptr<i32>)))
@@ -85,7 +85,7 @@ fn main_0() -> i32 {
         let __off = <RandomAccessIterator<i32>>::from(
             RandomAccessIterator::Vec((v2.as_pointer() as Ptr<i32>)).iter_add(1_isize),
         )
-        .vec_ptr()
+        .ptr()
         .get_offset();
         (*v2.borrow_mut()).insert(__off, x);
         <RandomAccessIterator<i32>>::from(
@@ -100,7 +100,7 @@ fn main_0() -> i32 {
         let __off = <RandomAccessIterator<i32>>::from(RandomAccessIterator::Vec(
             (v2.as_pointer() as Ptr<i32>).to_end(),
         ))
-        .vec_ptr()
+        .ptr()
         .get_offset();
         (*v2.borrow_mut()).splice(__off..__off, std::iter::repeat_n(9, 2_usize));
         <RandomAccessIterator<i32>>::from(RandomAccessIterator::Vec(
@@ -114,7 +114,7 @@ fn main_0() -> i32 {
         let __off = <RandomAccessIterator<i32>>::from(
             RandomAccessIterator::Vec((v2.as_pointer() as Ptr<i32>)).iter_add(2_isize),
         )
-        .vec_ptr()
+        .ptr()
         .get_offset();
         (*v2.borrow_mut()).splice(__off..__off, vec![11, 12, 13]);
         <RandomAccessIterator<i32>>::from(
@@ -133,7 +133,7 @@ fn main_0() -> i32 {
         let start_idx = <RandomAccessIterator<i32>>::from(RandomAccessIterator::Vec(
             (v2.as_pointer() as Ptr<i32>),
         ))
-        .vec_ptr()
+        .ptr()
         .get_offset();
         let mut temp_vec: Vec<i32> = Vec::new();
         let mut __it = RandomAccessIterator::Vec((src.as_pointer() as Ptr<i32>));
@@ -154,7 +154,7 @@ fn main_0() -> i32 {
         let idx = <RandomAccessIterator<i32>>::from(RandomAccessIterator::Vec(
             (v2.as_pointer() as Ptr<i32>),
         ))
-        .vec_ptr()
+        .ptr()
         .get_offset();
         (v2.as_pointer() as Ptr<Vec<i32>>).with_mut(|__v: &mut Vec<i32>| __v.remove(idx));
         RandomAccessIterator::Vec((v2.as_pointer() as Ptr<Vec<i32>>).decay())
@@ -163,7 +163,7 @@ fn main_0() -> i32 {
         let idx = <RandomAccessIterator<i32>>::from(RandomAccessIterator::Vec(
             (v2.as_pointer() as Ptr<i32>),
         ))
-        .vec_ptr()
+        .ptr()
         .get_offset();
         (v2.as_pointer() as Ptr<Vec<i32>>).with_mut(|__v: &mut Vec<i32>| __v.remove(idx));
         RandomAccessIterator::Vec((v2.as_pointer() as Ptr<Vec<i32>>).decay())
@@ -174,7 +174,7 @@ fn main_0() -> i32 {
             let idx = <RandomAccessIterator<i32>>::from(
                 RandomAccessIterator::Vec((v2.as_pointer() as Ptr<i32>)).iter_add(1_isize),
             )
-            .vec_ptr()
+            .ptr()
             .get_offset();
             (v2.as_pointer() as Ptr<Vec<i32>>).with_mut(|__v: &mut Vec<i32>| __v.remove(idx));
             RandomAccessIterator::Vec((v2.as_pointer() as Ptr<Vec<i32>>).decay())

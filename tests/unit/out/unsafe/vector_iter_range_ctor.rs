@@ -106,7 +106,7 @@ unsafe fn main_0() -> i32 {
         let __off = <UnsafeRandomAccessIterator<(i32, i32)>>::from(
             UnsafeRandomAccessIterator::Vec(v6.as_mut_ptr()).iter_add(1_isize),
         )
-        .vec_ptr()
+        .ptr()
         .offset_from(v6.as_ptr()) as usize;
         let mut __tmp = Vec::new();
         let mut __it = m.begin();

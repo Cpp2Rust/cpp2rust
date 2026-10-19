@@ -339,7 +339,7 @@ macro_rules! random_access_iterator {
         }
 
         impl<T> $name<T> {
-            pub fn vec_ptr(&self) -> $ptr {
+            pub fn ptr(&self) -> $ptr {
                 match self {
                     Self::Vec(p) => p.clone(),
                 }
@@ -354,7 +354,7 @@ macro_rules! random_access_iterator {
 
         impl<T> Clone for $name<T> {
             fn clone(&self) -> Self {
-                Self::Vec(self.vec_ptr())
+                Self::Vec(self.ptr())
             }
         }
 
