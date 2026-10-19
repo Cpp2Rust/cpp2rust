@@ -477,18 +477,18 @@ impl<T: ByteRepr> AllocOps for NestedOps<T> {
     fn read_bytes(&self, parent: &dyn Any, byte_offset: usize, buf: &mut [u8]) {
         let parent = parent.downcast_ref::<Rc<dyn SliceParent<T>>>().unwrap();
         let root = parent.root();
-        slice_read_bytes(&parent.borrow_slice(&*root), byte_offset, buf);
+        slice_read_bytes(&parent.borrow_slice(&root), byte_offset, buf);
     }
 
     fn write_bytes(&self, parent: &dyn Any, byte_offset: usize, data: &[u8]) {
         let parent = parent.downcast_ref::<Rc<dyn SliceParent<T>>>().unwrap();
         let root = parent.root();
-        slice_write_bytes(&mut parent.borrow_slice_mut(&*root), byte_offset, data);
+        slice_write_bytes(&mut parent.borrow_slice_mut(&root), byte_offset, data);
     }
 
     fn total_byte_len(&self, parent: &dyn Any) -> usize {
         let parent = parent.downcast_ref::<Rc<dyn SliceParent<T>>>().unwrap();
         let root = parent.root();
-        parent.borrow_slice(&*root).len() * T::byte_size()
+        parent.borrow_slice(&root).len() * T::byte_size()
     }
 }

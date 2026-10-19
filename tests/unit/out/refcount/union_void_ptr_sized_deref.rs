@@ -10,12 +10,12 @@ pub type Width_enum = u32;
 pub const Width_enum_W_64: Width_enum = 0;
 pub const Width_enum_W_32: Width_enum = 1;
 pub const Width_enum_W_16: Width_enum = 2;
-#[derive(VaArg, FnPtrArg, ByteRepr, DeepClone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, Clone)]
 #[byte_size(8)]
 pub struct anon_0 {
     #[offset(0)]
     #[byte_size(8)]
-    __bytes: Value<Box<[u8]>>,
+    __bytes: Box<[u8]>,
 }
 impl anon_0 {
     pub fn text(this: Ptr<Self>) -> Ptr<Ptr<i8>> {
@@ -34,7 +34,7 @@ impl anon_0 {
 impl Default for anon_0 {
     fn default() -> Self {
         anon_0 {
-            __bytes: Rc::new(RefCell::new(Box::from([0u8; 8]))),
+            __bytes: Box::from([0u8; 8]),
         }
     }
 }

@@ -16,8 +16,9 @@ namespace cpp2rust {
 // to a function, or captured by a lambda. Any use that doesn't just read or
 // write the value of a variable is taken to make a pointer to it.
 //
-// Only scalars, arrays and user-defined structs are stored directly; other
-// variables are always boxed.
+// Only scalars, arrays, user-defined structs, unique_ptrs, vectors and
+// iterators translated to pointers are stored directly; other variables are
+// always boxed.
 class BoxedVars {
 public:
   explicit BoxedVars(clang::ASTContext &ctx);
@@ -25,7 +26,9 @@ public:
   bool contains(const clang::VarDecl *decl) const;
 
 private:
+  clang::ASTContext &ctx_;
   std::unordered_set<const clang::VarDecl *> address_taken_;
+  std::unordered_set<const clang::VarDecl *> range_iterators_;
 };
 
 // The reads of the value of variables in a returned expression that are the

@@ -28,17 +28,6 @@ class Sema;
 
 namespace cpp2rust {
 
-// Order matters: each category is a superset of the previous one.
-// Use >= to check "at least this capable".
-enum class IteratorCategory {
-  Forward,
-  Bidirectional,
-  RandomAccess,
-  Contiguous,
-};
-
-std::optional<IteratorCategory>
-GetStrongestIteratorCategory(clang::ASTContext &ctx, clang::QualType type);
 bool IsBuiltinConstantP(const clang::Expr *expr);
 
 bool IsGlobalVar(const clang::VarDecl *decl);
@@ -59,9 +48,6 @@ bool IsInMainFile(const clang::Decl *decl);
 bool IsUnionArrayMember(const clang::Expr *base);
 
 clang::Expr *SubscriptedArray(clang::Expr *base);
-
-std::tuple<clang::MemberExpr *, clang::RecordDecl *, std::string>
-ReplaceNonUniformLibcField(clang::MemberExpr *expr);
 
 bool IsStringLiteralExpr(const clang::Expr *expr);
 
@@ -147,9 +133,15 @@ bool IsMethodOnPtr(const clang::CXXMethodDecl *method);
 
 bool IsConvertibleFunctionDecl(const clang::FunctionDecl *decl);
 
+bool IsStdDecl(const clang::NamedDecl *decl, llvm::StringRef name);
+
 bool IsUniquePtr(clang::QualType type);
 
 bool IsCallToOstream(clang::CallExpr *expr);
+
+bool IsCDecl(const clang::NamedDecl *decl, llvm::StringRef name);
+
+bool IsStdFunction(const clang::Expr *expr, llvm::StringRef name);
 
 bool IsAsciiStringLiteral(const clang::StringLiteral *str);
 
@@ -182,9 +174,9 @@ unsigned GetColumnNumber(const clang::Decl *decl);
 
 unsigned GetArraySize(clang::QualType array_type);
 
-void SetNameGenerator(clang::ASTNameGenerator *generator);
+void SetMangleContext(clang::MangleContext *context);
 
-clang::ASTNameGenerator *GetNameGenerator();
+clang::MangleContext *GetMangleContext();
 
 std::string GetID(const clang::Decl *decl);
 std::string GetMethodID(const clang::CXXMethodDecl *decl);
@@ -329,9 +321,9 @@ clang::Expr *BuildInitExpr(clang::Sema &sema, clang::QualType type,
                            llvm::ArrayRef<clang::Expr *> args,
                            clang::SourceLocation loc);
 
-std::string GetClassName(clang::QualType type);
-
 bool IsVaListType(clang::QualType type);
+
+bool IsAliasOfInit(clang::ASTContext &ctx, const clang::VarDecl *var);
 
 bool NeedsImplicitScalarCast(clang::ASTContext &ctx, clang::QualType from,
                              clang::QualType to);

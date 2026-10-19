@@ -14,14 +14,18 @@ fn main_0() -> i32 {
     let mut g: Option<Value<Box<[i32]>>> = Some(Rc::new(RefCell::new(
         (0..2_usize).map(|_| <i32>::default()).collect::<Box<[_]>>(),
     )));
-    g.as_ref().unwrap().borrow_mut()[(0_usize) as usize] = 11;
-    g.as_ref().unwrap().borrow_mut()[(1_usize) as usize] = 12;
+    (g.as_pointer() as Ptr<i32>)
+        .offset(0_usize as isize)
+        .write(11);
+    (g.as_pointer() as Ptr<i32>)
+        .offset(1_usize as isize)
+        .write(12);
     let mut g_ptr: Ptr<i32> = g.as_pointer();
     elem!(g_ptr, 0).write(13);
     elem!(g_ptr, 1).write(14);
     assert!(
-        ((g.as_ref().unwrap().borrow()[(0_usize) as usize]
-            + g.as_ref().unwrap().borrow()[(1_usize) as usize])
+        ((((g.as_pointer() as Ptr<i32>).offset(0_usize as isize).read())
+            + ((g.as_pointer() as Ptr<i32>).offset(1_usize as isize).read()))
             == 27)
     );
     return 0;

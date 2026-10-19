@@ -61,11 +61,15 @@ A `Ptr<T>` knows what it points into:
 - `StackVec` and `HeapVec`: a growable buffer; `std::vector` contents and string
   literals live in one.
 - `Nested`: an inner vector or array of a nested container, such as a row of
-  `std::vector<std::vector<int>>` or of `int[2][3]`. The inner container is
-  stored inline in the outer one, so the pointer holds the pointer to it, as an
-  `Rc<dyn SliceParent<T>>`, and reaches it through the outer container on every
-  access.
-- `Field`: a field of a struct (see [Pointers to fields](#pointers-to-fields)).
+  `std::vector<std::vector<int>>` or of `int[2][3]`, or a field of a struct that
+  is itself an element of one. The inner container is stored inline in the outer
+  one, so the pointer holds the way to reach it, as an `Rc<dyn SliceParent<T>>`:
+  the pointer to it, the `Value` and the field, or the pointer to the struct and
+  the field (see
+  [Pointers into array and vector fields](#pointers-into-array-and-vector-fields)).
+  It reaches the inner container through the outer one on every access.
+- `Field`: a field of a struct, or an element of an array or vector field of a
+  struct (see [Pointers to fields](#pointers-to-fields)).
 - `Reinterpreted`: a byte-level view produced by a cast (see
   [Type Reinterpretation](./reinterpret.md)).
 
@@ -115,9 +119,9 @@ pub struct point {
 
 Creating a field pointer allocates nothing. The byte offset of the field is kept
 in the pointer's offset, which for a field pointer counts bytes, as for a
-reinterpreted pointer. Pointers to fields of fields, and to fields of array
-elements, add up the offsets, and keep the allocation of the outermost struct or
-array as their root.
+reinterpreted pointer. Pointers to fields of fields, and to fields of elements
+of arrays in `Value`s, add up the offsets, and keep the allocation of the
+outermost struct or array as their root.
 
 An access through a field pointer borrows the root, and finds the field from its
 offset and its type with `Record::locate`, which the derive generates as a
@@ -126,20 +130,52 @@ structs. A field is identified by its type too, as a struct and its first field
 share an offset. An offset that doesn't find a field of the pointer's type
 panics with `ub: invalid field pointer`.
 
-Arrays and vectors are not stored inline: an array field is a `Value<Box<[T]>>`
-of its own, and a `std::vector` field a `Value<Vec<T>>`. Pointers to their
-elements are ordinary array pointers, and pointers to the fields of those have
-the array or vector as their root. A field pointer hence always points to a
-single object, which is why it needs no element index.
+Arrays and vectors are stored inline too, so a field pointer can point to a
+whole array or vector field, but it always points to a single object.
 
-`array_field_ptr!(p, arr)` is a pointer to element 0 of the array field `arr`,
-and is how the elements of an array field are accessed. It is an ordinary array
-pointer into the array's `Value`, except when `p` is a reinterpreted pointer:
-the array then lives in the bytes of the original allocation, so the result is a
-reinterpreted pointer to those bytes, at the offset of the field. Writes to the
-elements hence reach the original allocation, and the pointer can go past the
-end of the struct, as C code does with a trailing `char name[1]` in an
-over-allocated struct.
+### Pointers into array and vector fields
+
+A pointer to an element of an array or vector field reaches the array or vector
+through the struct's allocation on every access. When the pointer is made from a
+pointer to a struct in a `Value` (a variable, an element of an array or vector
+variable, or a heap allocation), whose type is known, it is a `Nested` pointer
+whose parent holds a weak reference to the `Value` and a closure that projects
+its contents to the field. The array or vector is then reached without looking
+the field up, nor checking its type.
+
+Otherwise, the struct is reached through a field pointer, whose root has lost
+its type, and the pointer is a `Field` pointer too, with the shape `Array` or
+`Vec`: it holds the byte offset of the field, in the padding of the tag of
+`PtrKind`, and the pointer's offset is the index of the element. Creating one
+allocates nothing, pointer arithmetic changes the index alone, and the length of
+the array or vector is found anew on every use, as the vector may grow.
+`Record::len_at` gives it from the offset of the field, without knowing its
+type.
+
+`array_field_ptr!(p, arr)` is a pointer to element 0 of the array field `arr`.
+When `p` is a reinterpreted pointer, the array lives in the bytes of the
+original allocation, so the result is a reinterpreted pointer to those bytes, at
+the offset of the field. Writes to the elements hence reach the original
+allocation, and the pointer can go past the end of the struct, as C code does
+with a trailing `char name[1]` in an over-allocated struct. A vector field
+decays with `field_ref!(p, v).as_pointer()`, which is a pointer either to the
+whole vector or to its first element, depending on the type asked for.
+
+A struct that is an element of an array or vector field, or of a nested
+container, has no byte offset in the outermost struct. A pointer to one of its
+fields, or into one of its array or vector fields, is hence a `Nested` pointer,
+whose parent holds the pointer to the struct and the closures that project the
+struct to the field, which `field_ptr!`, `array_field_ptr!` and `field_ref!`
+pass. These pointers allocate their parent once, and access the field through
+the pointer to the struct without looking it up.
+
+An element that is only read or written, as in `p->arr[i] = x` or
+`y = p->v[i].z`, needs no pointer: `array_elem!(p, arr, i)` and
+`vec_elem!(p, v, i)` are its place, which is accessed in a closure that borrows
+the struct, `p.with(|s| f(&s.arr[i]))`, as `field!` does for a field.
+`array_elem!` goes through `array_field_ptr!` instead when `p` is reinterpreted.
+An element of an array that is itself reached through a place, such as a row of
+a two-dimensional array field, is `index!(place, i)`.
 
 Reading a field through a pointer borrows the struct only for the duration of a
 closure, e.g., `p.with(|s| s.y)`, so that the borrow ends before the rest of the

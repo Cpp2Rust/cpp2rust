@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(32)]
 pub struct S {
     #[offset(0)]
@@ -17,7 +17,7 @@ pub struct S {
     pub b: i64,
     #[offset(16)]
     #[byte_size(5)]
-    pub c: Value<Box<[i8]>>,
+    pub c: Box<[i8]>,
     #[offset(24)]
     pub last: i32,
 }
@@ -28,7 +28,7 @@ impl Default for S {
                 keep: 0_i32,
                 a: 0_i32,
                 b: 0_i64,
-                c: Rc::new(RefCell::new((0..5).map(|_| 0_i8).collect::<Box<[i8]>>())),
+                c: (0..5).map(|_| 0_i8).collect::<Box<[i8]>>(),
                 last: 0_i32,
             }
         }
@@ -58,15 +58,14 @@ fn main_0() -> i32 {
         ((((((((((((p.with(|__s| __s.a) == 0) as i32) != 0)
             && (((p.with(|__s| __s.b) == 0_i64) as i32) != 0)) as i32)
             != 0)
-            && (((((elem!((array_field_ptr!(p, c) as Ptr::<i8>), 4).read()) as i32) == 0) as i32)
-                != 0)) as i32)
+            && (((((array_elem!(p, c, 4).read()) as i32) == 0) as i32) != 0)) as i32)
             != 0)
             && (((p.with(|__s| __s.last) == 0) as i32) != 0)) as i32)
             != 0)
     );
     field!(p, a).write(1);
     field!(p, b).write(2_i64);
-    elem!((array_field_ptr!(p, c) as Ptr::<i8>), 0).write((('x' as i32) as i8));
+    array_elem!(p, c, 0).write((('x' as i32) as i8));
     field!(p, last).write(3);
     {
         ((field_ptr!(p, b)) as Ptr<i64>).to_any().memset(
@@ -82,8 +81,7 @@ fn main_0() -> i32 {
     );
     assert!(
         ((((((p.with(|__s| __s.b) == 0_i64) as i32) != 0)
-            && (((((elem!((array_field_ptr!(p, c) as Ptr::<i8>), 0).read()) as i32) == 0) as i32)
-                != 0)) as i32)
+            && (((((array_elem!(p, c, 0).read()) as i32) == 0) as i32) != 0)) as i32)
             != 0)
     );
     assert!((((p.with(|__s| __s.last) == 3) as i32) != 0));

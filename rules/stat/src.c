@@ -14,3 +14,5 @@ int f1(const char *pathname, struct stat *statbuf) {
 int f2(int fd, struct stat *statbuf) { return fstat(fd, statbuf); }
 
 int f3(const char *pathname, mode_t mode) { return mkdir(pathname, mode); }
+
+time_t f4(struct stat a0) { return a0.st_mtime; }

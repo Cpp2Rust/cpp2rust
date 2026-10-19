@@ -8,6 +8,7 @@
 #include <clang/Basic/LangOptions.h>
 #include <clang/Lex/Lexer.h>
 #include <clang/Lex/Preprocessor.h>
+#include <clang/Sema/Lookup.h>
 #include <clang/Sema/Sema.h>
 #include <llvm/ADT/DenseSet.h>
 #include <llvm/ADT/STLExtras.h>
@@ -25,6 +26,7 @@
 #include <vector>
 
 #include "converter/converter_lib.h"
+#include "converter/rules/decls.h"
 #include "logging.h"
 
 namespace cpp2rust::RulesLoader {
@@ -202,6 +204,7 @@ private:
           AddTemplateArgs(spec->getTemplateArgs().asArray());
         }
         AddSpecialMembers(record);
+        AddIterator(type, record);
       }
       return;
     }
@@ -222,6 +225,46 @@ private:
           method->isMoveAssignmentOperator()) {
         AddKey(FunctionKey(method));
       }
+    }
+  }
+
+  void AddIterator(clang::QualType type, const clang::CXXRecordDecl *record) {
+    auto *std_namespace = sema_.getStdNamespace();
+    if (!std_namespace ||
+        !ctx_.getSourceManager().isInSystemHeader(record->getLocation())) {
+      return;
+    }
+    clang::ClassTemplateDecl *traits = nullptr;
+    for (auto *decl :
+         std_namespace->lookup(&ctx_.Idents.get("iterator_traits"))) {
+      if ((traits = llvm::dyn_cast<clang::ClassTemplateDecl>(decl))) {
+        break;
+      }
+    }
+    if (!traits) {
+      return;
+    }
+    auto loc = record->getLocation();
+    RuleDecls::Trial trial(sema_);
+    clang::TemplateArgumentListInfo args(loc, loc);
+    args.addArgument(
+        clang::TemplateArgumentLoc(clang::TemplateArgument(type),
+                                   ctx_.getTrivialTypeSourceInfo(type, loc)));
+    auto instance = sema_.CheckTemplateIdType(
+        clang::ElaboratedTypeKeyword::None, clang::TemplateName(traits), loc,
+        args, /*Scope=*/nullptr, /*ForNestedNameSpecifier=*/false);
+    if (instance.isNull() || !sema_.isCompleteType(loc, instance) ||
+        trial.failed()) {
+      return;
+    }
+    auto *instance_record = instance->getAsCXXRecordDecl();
+    if (!instance_record) {
+      return;
+    }
+    clang::LookupResult category(sema_, &ctx_.Idents.get("iterator_category"),
+                                 loc, clang::Sema::LookupMemberName);
+    if (sema_.LookupQualifiedName(category, instance_record)) {
+      AddKey(kAnyIteratorKey);
     }
   }
 
@@ -309,7 +352,9 @@ std::string BuildRulesEpilogue(const std::unordered_set<std::string> &keys,
     out += "namespace cpp2rust_rules {\n" + common->str() + "}\n";
   }
   auto rules = index.getObject("rules");
-  for (const auto &key : keys) {
+  std::vector<std::string> candidates(keys.begin(), keys.end());
+  candidates.push_back(kAnyClassKey);
+  for (const auto &key : candidates) {
     auto entries = rules->getArray(key);
     if (!entries) {
       continue;
@@ -317,6 +362,9 @@ std::string BuildRulesEpilogue(const std::unordered_set<std::string> &keys,
     for (const auto &entry : *entries) {
       auto rule = entry.getAsObject();
       if (auto since = rule->getInteger("since"); since && *since > standard) {
+        continue;
+      }
+      if (auto until = rule->getInteger("until"); until && *until <= standard) {
         continue;
       }
       if (auto required = rule->getArray("requires");
@@ -441,7 +489,20 @@ std::string ExprKey(clang::ASTContext &ctx, const clang::Expr *expr) {
   if (auto construct = llvm::dyn_cast<clang::CXXConstructExpr>(expr)) {
     return FunctionKey(construct->getConstructor());
   }
+  if (llvm::isa<clang::InitListExpr, clang::CXXStdInitializerListExpr>(expr)) {
+    if (auto record = expr->getType()->getAsRecordDecl();
+        record && !IsUserDefinedDecl(record)) {
+      return ConstructorKey(ClassKey(record));
+    }
+    return {};
+  }
   if (auto member = llvm::dyn_cast<clang::MemberExpr>(expr)) {
+    if (RuleDecls::GetMacroMemberBase(ctx.getSourceManager(), member)) {
+      return clang::Lexer::getImmediateMacroName(member->getMemberLoc(),
+                                                 ctx.getSourceManager(),
+                                                 ctx.getLangOpts())
+          .str();
+    }
     return DeclKey(member->getMemberDecl());
   }
   if (auto ref = llvm::dyn_cast<clang::DeclRefExpr>(expr)) {

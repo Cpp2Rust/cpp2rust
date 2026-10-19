@@ -1,12 +1,10 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+use libcc2rs::*;
+
 fn t1() -> Vec<libc::c_char> {
     vec![0]
-}
-
-fn t2() -> *mut libc::c_char {
-    ::std::ptr::null_mut()
 }
 
 fn t3() -> usize {
@@ -80,8 +78,8 @@ unsafe fn f10(a0: *const libc::c_char) -> Vec<libc::c_char> {
 unsafe fn f11(a0: Vec<libc::c_char>) -> *const libc::c_char {
     a0.as_ptr()
 }
-unsafe fn f12(a0: &mut Vec<libc::c_char>) -> *mut libc::c_char {
-    a0.as_mut_ptr()
+unsafe fn f12(a0: &mut Vec<libc::c_char>) -> UnsafeRandomAccessIterator<libc::c_char> {
+    UnsafeRandomAccessIterator::Vec(a0.as_mut_ptr())
 }
 unsafe fn f13(a0: &mut Vec<libc::c_char>, a1: usize) {
     a0.pop();
@@ -100,8 +98,8 @@ unsafe fn f14(
         ::std::slice::from_raw_parts(a3, a4 as usize).to_vec(),
     );
 }
-unsafe fn f15(a0: &mut Vec<libc::c_char>) -> *mut libc::c_char {
-    a0.as_mut_ptr().add(a0.len() - 1)
+unsafe fn f15(a0: &mut Vec<libc::c_char>) -> UnsafeRandomAccessIterator<libc::c_char> {
+    UnsafeRandomAccessIterator::Vec(a0.as_mut_ptr().add(a0.len() - 1))
 }
 unsafe fn f16(a0: Vec<libc::c_char>, a1: *const libc::c_char) -> usize {
     match a0.iter().rposition(|&c| {
@@ -133,9 +131,6 @@ unsafe fn f18(a0: Vec<libc::c_char>, a1: *const libc::c_char) -> bool {
 }
 unsafe fn f19(a0: Vec<libc::c_char>) -> usize {
     (a0.len() - 1)
-}
-unsafe fn f20(a0: *mut libc::c_char, a1: usize) -> *mut libc::c_char {
-    a0.add(a1 as usize)
 }
 unsafe fn f21(a0: &mut Vec<libc::c_char>, a1: usize, a2: libc::c_char) {
     a0.splice(
@@ -183,4 +178,11 @@ unsafe fn f29(a0: &mut Vec<libc::c_char>, a1: Vec<libc::c_char>) {
 
 unsafe fn f30(a0: &mut Vec<libc::c_char>, a1: &mut Vec<libc::c_char>) {
     *a0 = std::mem::take(&mut *a1)
+}
+
+unsafe fn f31(a0: Vec<libc::c_char>, a1: *const libc::c_char) -> bool {
+    a0 != {
+        let s = a1;
+        std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1).to_vec()
+    }
 }

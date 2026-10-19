@@ -21,8 +21,11 @@ fn main_0() -> i32 {
         i.prefix_inc();
     }
     let mut sum: i32 = 0;
-    'loop_: for mut x in v.as_pointer() as Ptr<i32> {
-        let mut x: i32 = x.read();
+    'loop_: for x in IterRange::new(
+        (v.as_pointer() as Ptr<i32>).begin(),
+        (v.as_pointer() as Ptr<i32>).end(),
+    ) {
+        let mut x: i32 = (x.iter_deref().read());
         sum += x;
     }
     assert!((sum == 45));

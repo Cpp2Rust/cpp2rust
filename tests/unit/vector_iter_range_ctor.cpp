@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <cstddef>
 #include <cstdint>
+#include <map>
 #include <vector>
 
 int main() {
@@ -32,6 +33,18 @@ int main() {
   std::vector<uint8_t> v5(start, start + len);
   assert(v5.size() == 5);
   assert(v5[0] == 10 && v5[4] == 50);
+
+  std::map<int, int> m;
+  m[1] = 10;
+  m[2] = 20;
+  m[3] = 30;
+  std::vector<std::pair<int, int>> v6(m.begin(), m.end());
+  assert(v6.size() == 3);
+  assert(v6[0].first == 1 && v6[0].second == 10);
+  assert(v6[2].first == 3 && v6[2].second == 30);
+  v6.insert(v6.begin() + 1, m.begin(), m.end());
+  assert(v6.size() == 6);
+  assert(v6[1].first == 1 && v6[3].first == 3 && v6[4].first == 2);
 
   return 0;
 }

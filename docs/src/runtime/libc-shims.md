@@ -4,9 +4,9 @@ libc structs hold raw pointers, which are incompatible with the refcounted
 pointers the refcount model uses, so a libc struct cannot be used directly. The
 shim modules therefore define Rust counterparts for the libc types translated
 programs use. A shim struct mirrors its C struct member by member, like a
-translated struct: fields are stored inline, except for arrays, which are
-`Value<Box<[T]>>`s of their own (see [Boxing](../codegen/types/boxing.md)). A
-shim converts to or from the underlying libc or nix type at the call boundary.
+translated struct: fields are stored inline, arrays included (see
+[Boxing](../codegen/types/boxing.md)). A shim converts to or from the underlying
+libc or nix type at the call boundary.
 
 `Stat` is a typical shim:
 

@@ -45,12 +45,12 @@ pub struct nested {
     #[offset(16)]
     pub c: i8,
 }
-#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(8)]
 pub struct array {
     #[offset(0)]
     #[byte_size(3)]
-    pub name: Value<Box<[i8]>>,
+    pub name: Box<[i8]>,
     #[offset(4)]
     pub x: i32,
 }
@@ -58,7 +58,7 @@ impl Default for array {
     fn default() -> Self {
         {
             array {
-                name: Rc::new(RefCell::new((0..3).map(|_| 0_i8).collect::<Box<[i8]>>())),
+                name: (0..3).map(|_| 0_i8).collect::<Box<[i8]>>(),
                 x: 0_i32,
             }
         }
@@ -221,11 +221,11 @@ fn main_0() -> i32 {
     );
     let a: Value<Box<[array]>> = Rc::new(RefCell::new(Box::new([
         array {
-            name: Rc::new(RefCell::new(i8::array_from_literal(b"ab\0"))),
+            name: i8::array_from_literal(b"ab\0"),
             x: 1,
         },
         array {
-            name: Rc::new(RefCell::new(i8::array_from_literal(b"cd\0"))),
+            name: i8::array_from_literal(b"cd\0"),
             x: 2,
         },
     ])));
@@ -254,18 +254,10 @@ fn main_0() -> i32 {
         ((a2.as_pointer() as Ptr<array>) as Ptr<array>).to_any()
     };
     assert!(
-        (((((((((((elem!(
-            (array_field_ptr!((a2.as_pointer() as Ptr<array>).offset(1), name) as Ptr::<i8>),
-            1
-        )
-        .read()) as i32)
+        (((((((((((array_elem!((a2.as_pointer() as Ptr<array>).offset(1), name, 1).read()) as i32)
             == ('d' as i32)) as i32)
             != 0)
-            && (((((elem!(
-                (array_field_ptr!((a2.as_pointer() as Ptr<array>).offset(1), name) as Ptr::<i8>),
-                2
-            )
-            .read()) as i32)
+            && (((((array_elem!((a2.as_pointer() as Ptr<array>).offset(1), name, 2).read()) as i32)
                 == 0) as i32)
                 != 0)) as i32)
             != 0)

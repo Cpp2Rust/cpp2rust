@@ -41,3 +41,7 @@ template <typename T1, std::size_t T2>
 std::array<T1, T2> &f7(std::array<T1, T2> &dst, const std::array<T1, T2> &src) {
   return dst = src;
 }
+
+template <typename T1, std::size_t T2> std::array<T1, T2> f8(T1 (&&a0)[T2]) {
+  return std::array<T1, T2>{a0};
+}

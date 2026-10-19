@@ -16,14 +16,25 @@ fn main_0() -> i32 {
         __bytes.push(0);
         __bytes
     }));
-    'loop_: for mut c in x.as_pointer().to_string_iterator() as StringIterator<i8> {
+    'loop_: for c in IterRange::new(
+        RandomAccessIterator::Vec((x.as_pointer() as Ptr<i8>)),
+        RandomAccessIterator::Vec((x.as_pointer() as Ptr<i8>).to_last()),
+    ) {
+        let c: Ptr<i8> = c.iter_deref();
         c.with_mut(|__v| __v.prefix_inc());
     }
-    'loop_: for mut c in x.as_pointer().to_string_iterator() as StringIterator<i8> {
+    'loop_: for c in IterRange::new(
+        RandomAccessIterator::Vec((x.as_pointer() as Ptr<i8>)),
+        RandomAccessIterator::Vec((x.as_pointer() as Ptr<i8>).to_last()),
+    ) {
+        let c: Ptr<i8> = c.iter_deref();
         println!("{}", ((c.read()) as i32) as u8 as char);
     }
-    'loop_: for mut c in x.as_pointer().to_string_iterator() as StringIterator<i8> {
-        let mut c: i8 = c.read().clone();
+    'loop_: for c in IterRange::new(
+        RandomAccessIterator::Vec((x.as_pointer() as Ptr<i8>)),
+        RandomAccessIterator::Vec((x.as_pointer() as Ptr<i8>).to_last()),
+    ) {
+        let mut c: i8 = (c.iter_deref().read());
         println!("{}", (c as i32) as u8 as char);
     }
     let v: Value<Vec<Ptr<i32>>> = Rc::new(RefCell::new(Vec::new()));
@@ -35,8 +46,11 @@ fn main_0() -> i32 {
         let __a1 = Ptr::alloc(3);
         (*v.borrow_mut()).push(__a1)
     };
-    'loop_: for mut p in v.as_pointer() as Ptr<Ptr<i32>> {
-        let mut p: Ptr<i32> = p.read();
+    'loop_: for p in IterRange::new(
+        (v.as_pointer() as Ptr<Ptr<i32>>).begin(),
+        (v.as_pointer() as Ptr<Ptr<i32>>).end(),
+    ) {
+        let mut p: Ptr<i32> = (p.iter_deref().read());
         println!("{}", (p.read()));
     }
     return 0;

@@ -12,12 +12,12 @@ pub const Tag_enum_T_NUM_U: Tag_enum = 1;
 pub const Tag_enum_T_TEXT: Tag_enum = 2;
 pub const Tag_enum_T_FLOAT: Tag_enum = 3;
 pub const Tag_enum_T_REF: Tag_enum = 4;
-#[derive(VaArg, FnPtrArg, ByteRepr, DeepClone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, Clone)]
 #[byte_size(8)]
 pub struct anon_0 {
     #[offset(0)]
     #[byte_size(8)]
-    __bytes: Value<Box<[u8]>>,
+    __bytes: Box<[u8]>,
 }
 impl anon_0 {
     pub fn text(this: Ptr<Self>) -> Ptr<Ptr<i8>> {
@@ -39,7 +39,7 @@ impl anon_0 {
 impl Default for anon_0 {
     fn default() -> Self {
         anon_0 {
-            __bytes: Rc::new(RefCell::new(Box::from([0u8; 8]))),
+            __bytes: Box::from([0u8; 8]),
         }
     }
 }

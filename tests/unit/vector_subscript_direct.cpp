@@ -1,5 +1,3 @@
-// The unsafe model cannot express v[push_and_index(v)] without two borrows.
-// no-compile: unsafe
 #include <array>
 #include <cassert>
 #include <vector>

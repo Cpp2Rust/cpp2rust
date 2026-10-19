@@ -22,15 +22,35 @@ unsafe fn main_0() -> i32 {
         let __a1 = 7;
         v.push(__a1)
     };
-    let mut it: *mut i32 = {
-        let mut it = v.as_mut_ptr();
-        while it != v.as_mut_ptr().add(v.len()) && *it != 7 {
-            it = it.add(1);
+    let mut it: UnsafeRandomAccessIterator<i32> = {
+        let mut __it = v.begin();
+        while __it != v.end() && *__it.iter_deref() != 7 {
+            __it.iter_inc();
         }
-        it
+        __it
     };
-    assert!(it != v.as_mut_ptr().add(v.len()));
-    assert!(((*it) == (7)));
+    assert!(it != v.end());
+    assert!(((*it.iter_deref()) == (7)));
+    {
+        let __n = v.end().iter_distance(&v.begin());
+        for __i in (1..__n).rev() {
+            let __j = libc::rand() as isize % (__i + 1);
+            std::ptr::swap(v.begin().iter_at(__i), v.begin().iter_at(__j));
+        }
+    };
+    {
+        let __n = v.end().iter_distance(&v.begin());
+        let mut __order: Vec<isize> = (0..__n).collect();
+        __order.sort_by(|&__x, &__y| (*v.begin().iter_at(__x)).cmp(&*v.begin().iter_at(__y)));
+        let __values: Vec<_> = __order
+            .iter()
+            .map(|&__i| std::ptr::read(v.begin().iter_at(__i)))
+            .collect();
+        for (__i, __v) in (0..__n).zip(__values) {
+            std::ptr::write(v.begin().iter_at(__i), __v);
+        }
+    };
+    assert!(((v[(0_usize)]) == (4)) && ((v[(1_usize)]) == (7)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

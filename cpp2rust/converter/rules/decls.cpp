@@ -50,28 +50,31 @@ const clang::Expr *GetReturned(const clang::FunctionDecl *rule) {
   return returned;
 }
 
-clang::QualType EnableIfSameType(const clang::Decl *rule) {
-  auto tmpl = llvm::dyn_cast<clang::TemplateDecl>(rule);
-  if (!tmpl) {
-    return {};
+namespace {
+clang::FileID getMacroExpansion(const clang::SourceManager &sm,
+                                clang::SourceLocation loc) {
+  while (loc.isMacroID() && sm.isMacroArgExpansion(loc)) {
+    loc = sm.getImmediateSpellingLoc(loc);
   }
-  for (auto param : *tmpl->getTemplateParameters()) {
-    auto type_param = llvm::dyn_cast<clang::TemplateTypeParmDecl>(param);
-    if (!type_param || type_param->getIdentifier() ||
-        !type_param->hasDefaultArgument()) {
-      continue;
-    }
-    auto same = type_param->getDefaultArgument()
-                    .getArgument()
-                    .getAsType()
-                    ->getAs<clang::TemplateSpecializationType>();
-    if (!same || !same->isTypeAlias() ||
-        same->getTemplateName().getAsTemplateDecl()->getName() != "SameAs") {
-      continue;
-    }
-    return same->template_arguments()[1].getAsType();
+  return loc.isMacroID() ? sm.getFileID(loc) : clang::FileID();
+}
+} // namespace
+
+const clang::Expr *GetMacroMemberBase(const clang::SourceManager &sm,
+                                      const clang::MemberExpr *member) {
+  auto file = getMacroExpansion(sm, member->getMemberLoc());
+  if (file.isInvalid() ||
+      sm.getSLocEntry(file).getExpansion().isFunctionMacroExpansion()) {
+    return nullptr;
   }
-  return {};
+  const clang::Expr *base = member->getBase();
+  while (true) {
+    auto inner = llvm::dyn_cast<clang::MemberExpr>(base->IgnoreParenImpCasts());
+    if (!inner || getMacroExpansion(sm, inner->getMemberLoc()) != file) {
+      return base;
+    }
+    base = inner->getBase();
+  }
 }
 
 std::optional<std::vector<clang::TemplateArgument>>
@@ -87,6 +90,15 @@ DeduceFromType(clang::Sema &sema, clang::TemplateParameterList *params,
           clang::TemplateDeductionResult::Success ||
       trial.failed()) {
     return std::nullopt;
+  }
+  for (unsigned i = 0; i < deduced.size(); ++i) {
+    auto nttp =
+        llvm::dyn_cast<clang::NonTypeTemplateParmDecl>(params->getParam(i));
+    if (nttp && !nttp->getType()->isDependentType() &&
+        deduced[i].getKind() == clang::TemplateArgument::Integral) {
+      deduced[i] = clang::TemplateArgument(
+          sema.Context, deduced[i].getAsIntegral(), nttp->getType());
+    }
   }
   return std::vector<clang::TemplateArgument>(deduced.begin(), deduced.end());
 }

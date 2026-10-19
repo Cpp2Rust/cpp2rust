@@ -1,3 +1,4 @@
+// ADDITIONAL_COMPILE_FLAGS: -std=c++17
 #include <cassert>
 #include <cstdint>
 #include <string>
@@ -14,6 +15,8 @@ int main() {
   assert(s1[3] == 'l');
   assert(s1[4] == 'o');
   assert(s1 == "hello");
+  assert(s1 != "world");
+  assert(!(s1 != "hello"));
   const char *p1 = s1.data();
   assert(p1[0] == 'h');
   assert(p1[1] == 'e');

@@ -16,12 +16,14 @@
 #include <llvm/ADT/SmallBitVector.h>
 
 #include <cassert>
+#include <compare>
 #include <optional>
 #include <string>
 #include <variant>
 #include <vector>
 
 #include "converter/rules/decls.h"
+#include "converter/rules/rule_keys.h"
 
 namespace cpp2rust::AstMatcher {
 
@@ -50,18 +52,25 @@ bool hasSameArgTypes(clang::ASTContext &ctx, const clang::Expr *use,
 struct MacroUsage {
   std::string name;
 
-  bool operator==(const MacroUsage &) const = default;
+  auto operator<=>(const MacroUsage &) const = default;
 };
 
 struct RewrittenOperatorUsage {
   const clang::Decl *decl;
   clang::BinaryOperatorKind op;
 
-  bool operator==(const RewrittenOperatorUsage &) const = default;
+  auto operator<=>(const RewrittenOperatorUsage &) const = default;
 };
 
-using ResolvedDecl = std::variant<std::monostate, const clang::Decl *,
-                                  MacroUsage, RewrittenOperatorUsage>;
+struct AggregateUsage {
+  RuleKeys::TypeKey type;
+
+  auto operator<=>(const AggregateUsage &) const = default;
+};
+
+using ResolvedDecl =
+    std::variant<std::monostate, const clang::Decl *, MacroUsage,
+                 RewrittenOperatorUsage, AggregateUsage>;
 
 ResolvedDecl getResolvedDecl(clang::ASTContext &ctx, const clang::Expr *expr,
                              bool must_resolve) {
@@ -85,6 +94,17 @@ ResolvedDecl getResolvedDecl(clang::ASTContext &ctx, const clang::Expr *expr,
   if (auto cast = llvm::dyn_cast<clang::ExplicitCastExpr>(expr)) {
     return getResolvedDecl(ctx, cast->getSubExpr(), must_resolve);
   }
+  if (auto list = llvm::dyn_cast<clang::InitListExpr>(expr);
+      list && list->getType()->isRecordType()) {
+    return AggregateUsage{*RuleKeys::GetTypeKey(list->getType())};
+  }
+  if (llvm::isa<clang::CXXStdInitializerListExpr>(expr)) {
+    return AggregateUsage{*RuleKeys::GetTypeKey(expr->getType())};
+  }
+  if (auto construct = llvm::dyn_cast<clang::CXXUnresolvedConstructExpr>(expr);
+      construct && construct->isListInitialization()) {
+    return AggregateUsage{*RuleKeys::GetTypeKey(construct->getTypeAsWritten())};
+  }
   if (auto call = llvm::dyn_cast<clang::CallExpr>(expr)) {
     if (auto callee = call->getDirectCallee()) {
       return callee->getCanonicalDecl();
@@ -92,6 +112,12 @@ ResolvedDecl getResolvedDecl(clang::ASTContext &ctx, const clang::Expr *expr,
   } else if (auto construct = llvm::dyn_cast<clang::CXXConstructExpr>(expr)) {
     return construct->getConstructor()->getCanonicalDecl();
   } else if (auto member = llvm::dyn_cast<clang::MemberExpr>(expr)) {
+    auto &sm = ctx.getSourceManager();
+    if (RuleDecls::GetMacroMemberBase(sm, member)) {
+      return MacroUsage{clang::Lexer::getImmediateMacroName(
+                            member->getMemberLoc(), sm, ctx.getLangOpts())
+                            .str()};
+    }
     return member->getMemberDecl()->getCanonicalDecl();
   } else if (auto ref = llvm::dyn_cast<clang::DeclRefExpr>(expr)) {
     return ref->getDecl()->getCanonicalDecl();
@@ -143,12 +169,17 @@ std::vector<clang::Expr *> getOperands(clang::ASTContext &ctx,
     operands.insert(operands.end(), call->arg_begin(), call->arg_end());
   } else if (auto construct = llvm::dyn_cast<clang::CXXConstructExpr>(expr)) {
     operands.assign(construct->arg_begin(), construct->arg_end());
+  } else if (auto list = llvm::dyn_cast<clang::InitListExpr>(expr)) {
+    operands.assign(list->inits().begin(), list->inits().end());
+  } else if (auto list =
+                 llvm::dyn_cast<clang::CXXStdInitializerListExpr>(expr)) {
+    operands.push_back(list->getSubExpr()->IgnoreImplicit());
   } else if (auto member = llvm::dyn_cast<clang::MemberExpr>(expr)) {
-    auto base = member->getBase()->IgnoreParenImpCasts();
-    if (auto arrow = llvm::dyn_cast<clang::CXXOperatorCallExpr>(base);
-        arrow && arrow->getOperator() == clang::OO_Arrow) {
-      base = arrow->getArg(0);
-    }
+    auto macro_base =
+        RuleDecls::GetMacroMemberBase(ctx.getSourceManager(), member);
+    auto base =
+        const_cast<clang::Expr *>(macro_base ? macro_base : member->getBase())
+            ->IgnoreParenImpCasts();
     operands.push_back(getObject(ctx, base));
   }
   while (!operands.empty() &&
@@ -227,7 +258,10 @@ clang::TemplateArgumentListInfo getResultArgs(clang::Sema &sema,
   clang::TemplateArgumentListInfo explicit_args(loc, loc);
   llvm::SmallBitVector deducible;
   sema.MarkDeducedTemplateParameters(rule, deducible);
-  if (deducible.all()) {
+  bool aggregate =
+      llvm::isa<clang::InitListExpr, clang::CXXStdInitializerListExpr>(
+          RuleDecls::SkipImplicit(use));
+  if (deducible.all() && !aggregate) {
     return explicit_args;
   }
   auto params = rule->getTemplateParameters();
@@ -241,7 +275,7 @@ clang::TemplateArgumentListInfo getResultArgs(clang::Sema &sema,
     return explicit_args;
   }
   auto last = static_cast<unsigned>(deducible.find_last_unset());
-  for (unsigned i = 0; i <= last; ++i) {
+  for (unsigned i = 0; i < params->size() && i <= last; ++i) {
     auto param = params->getParam(i);
     if (param->isParameterPack() || (*deduced)[i].isNull()) {
       break;
@@ -314,6 +348,17 @@ MatchResult matchTemplate(clang::Sema &sema, const clang::Expr *use,
   auto explicit_args = getResultArgs(sema, rule, use);
   auto specialization =
       deduce(sema, rule, explicit_args, getOperands(ctx, use));
+  if (!specialization) {
+    return std::nullopt;
+  }
+  if (std::holds_alternative<AggregateUsage>(usage_decl)) {
+    auto returned = RuleDecls::GetReturned(rule->getTemplatedDecl());
+    if (getResolvedDecl(ctx, returned, /*must_resolve=*/false) != usage_decl) {
+      return std::nullopt;
+    }
+    checkCallable(sema, use, rule->getTemplatedDecl());
+    return specialization->getTemplateSpecializationArgs()->asArray();
+  }
   auto returned =
       substituteSpecializationInRuleTmpl(sema, rule, specialization);
   if (!returned ||

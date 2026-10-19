@@ -23,10 +23,24 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut p: Option<Box<Point>> = Some(Box::new(Point { x: 3, y: 4 }));
-    (*p.as_deref_mut().unwrap()).x += 10;
-    (*p.as_deref_mut().unwrap()).y =
-        (((*p.as_deref_mut().unwrap()).x) + ((*p.as_deref_mut().unwrap()).y));
-    let mut s: i32 = (unsafe { sum_0((*p.as_deref_mut().unwrap())) });
+    (*p.as_deref()
+        .map_or(::std::ptr::null_mut(), |v| v as *const Point as *mut Point))
+    .x += 10;
+    (*p.as_deref()
+        .map_or(::std::ptr::null_mut(), |v| v as *const Point as *mut Point))
+    .y = (((*p
+        .as_deref()
+        .map_or(::std::ptr::null_mut(), |v| v as *const Point as *mut Point))
+    .x) + ((*p
+        .as_deref()
+        .map_or(::std::ptr::null_mut(), |v| v as *const Point as *mut Point))
+    .y));
+    let mut s: i32 = (unsafe {
+        sum_0(
+            (*p.as_deref()
+                .map_or(::std::ptr::null_mut(), |v| v as *const Point as *mut Point)),
+        )
+    });
     assert!(((s) == (30)));
     return 0;
 }

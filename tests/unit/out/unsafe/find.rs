@@ -26,71 +26,60 @@ unsafe fn main_0() -> i32 {
         let __a1 = 3;
         v.push(__a1)
     };
-    let mut v_begin: *mut i32 = v.as_mut_ptr();
-    let mut v_end: *mut i32 = v.as_mut_ptr().add(v.len());
-    let mut it: *mut i32 = {
-        let mut it = v_begin;
-        while it != v_end && *it != 2 {
-            it = it.add(1);
+    let mut v_begin: UnsafeRandomAccessIterator<i32> = v.begin();
+    let mut v_end: UnsafeRandomAccessIterator<i32> = v.end();
+    let mut it: UnsafeRandomAccessIterator<i32> = {
+        let mut __it = (v_begin).clone();
+        while __it != (v_end).clone() && *__it.iter_deref() != 2 {
+            __it.iter_inc();
         }
-        it
+        __it
     };
-    let mut v_result_true: bool = it != v.as_mut_ptr().add(v.len());
-    let mut m: BTreeMap<i32, Box<(i32, f64)>> = BTreeMap::new();
-    (*&mut m
-        .entry(1.clone())
-        .or_insert_with(|| Box::new((1, <f64>::default())))
-        .1) = 1_f64;
-    (*&mut m
-        .entry(2.clone())
-        .or_insert_with(|| Box::new((2, <f64>::default())))
-        .1) = 2_f64;
-    (*&mut m
-        .entry(3.clone())
-        .or_insert_with(|| Box::new((3, <f64>::default())))
-        .1) = 3_f64;
-    let mut m_begin: UnsafeMapIterator<i32, f64> =
-        UnsafeMapIterator::begin(&m as *const BTreeMap<i32, Box<(i32, f64)>>);
-    let mut m_end: UnsafeMapIterator<i32, f64> =
-        UnsafeMapIterator::end(&m as *const BTreeMap<i32, Box<(i32, f64)>>);
+    let mut v_result_true: bool = it != v.end();
+    let mut m: UnsafeMap<i32, (i32, f64)> = UnsafeMap::new();
+    (*&mut (*m.get_or_insert_with(1.clone(), || (1, <f64>::default()))).1) = 1_f64;
+    (*&mut (*m.get_or_insert_with(2.clone(), || (2, <f64>::default()))).1) = 2_f64;
+    (*&mut (*m.get_or_insert_with(3.clone(), || (3, <f64>::default()))).1) = 3_f64;
+    let mut m_begin: UnsafeBidirectionalIterator<(i32, f64)> = m.begin();
+    let mut m_end: UnsafeBidirectionalIterator<(i32, f64)> = m.end();
     let mut m_result_true: bool = m_begin != m_end;
     assert!(
         ((v_result_true) && (m_result_true))
             && ({
-                let mut it = v.as_mut_ptr();
-                while it != v.as_mut_ptr() && *it != 2 {
-                    it = it.add(1);
+                let mut __it = v.begin();
+                while __it != v.begin() && *__it.iter_deref() != 2 {
+                    __it.iter_inc();
                 }
-                it
-            } == v.as_mut_ptr())
+                __it
+            } == v.begin())
     );
-    let mut w: Vec<i32> = vec![1, 2, 3, 4, 5];
+    let mut w: Vec<i32> = Vec::from([1, 2, 3, 4, 5]);
     assert!(
         {
-            let mut it = w.as_mut_ptr().add(2_i64 as usize);
-            while it != w.as_mut_ptr().add(w.len()) && *it != 4 {
-                it = it.add(1);
+            let mut __it = w.begin().iter_add(2_isize);
+            while __it != w.end() && *__it.iter_deref() != 4 {
+                __it.iter_inc();
             }
-            it
-        } == w.as_mut_ptr().add(3_i64 as usize)
-    );
-    assert!(
-        {
-            let mut it = w.as_mut_ptr().add(2_i64 as usize);
-            while it != w.as_mut_ptr().add(w.len()) && *it != 1 {
-                it = it.add(1);
-            }
-            it
-        } == w.as_mut_ptr().add(w.len())
+            __it
+        } == w.begin().iter_add(3_isize)
     );
     assert!(
         {
-            let mut it = w.as_mut_ptr().add(2_i64 as usize);
-            while it != w.as_mut_ptr().add(4_i64 as usize) && *it != 5 {
-                it = it.add(1);
+            let mut __it = w.begin().iter_add(2_isize);
+            while __it != w.end() && *__it.iter_deref() != 1 {
+                __it.iter_inc();
             }
-            it
-        } == w.as_mut_ptr().add(4_i64 as usize)
+            __it
+        } == w.end()
+    );
+    assert!(
+        {
+            let mut __it = w.begin().iter_add(2_isize);
+            while __it != w.begin().iter_add(4_isize) && *__it.iter_deref() != 5 {
+                __it.iter_inc();
+            }
+            __it
+        } == w.begin().iter_add(4_isize)
     );
     return 0;
 }

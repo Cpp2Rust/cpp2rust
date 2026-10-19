@@ -27,7 +27,7 @@ pub fn fn_0(v: Ptr<Vec<i32>>, v3: Vec<i32>) {
         let __a1 = 3;
         (*v2.borrow_mut()).push(__a1)
     };
-    x = (elem!((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>), 2_usize).read());
+    x = (index!(v, 2_usize).read());
     (*v2.borrow_mut())[0_usize] = 1;
     elem!(
         ((if true {
@@ -39,11 +39,11 @@ pub fn fn_0(v: Ptr<Vec<i32>>, v3: Vec<i32>) {
     )
     .write(7);
     (v2.as_pointer() as Ptr<Vec<i32>>).write((*v.upgrade().deref()).clone());
-    elem!(((Ptr::<Vec<i32>>::decay(&(v4))) as Ptr<i32>), 1_usize).write(13);
+    index!(v4, 1_usize).write(13);
     assert!((x == 6));
     assert!((((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>).read()) == 4));
-    assert!(((elem!((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>), 1_usize).read()) == 5));
-    assert!(((elem!((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>), 2_usize).read()) == 6));
+    assert!(((index!(v, 1_usize).read()) == 5));
+    assert!(((index!(v, 2_usize).read()) == 6));
     assert!((((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>).to_last().read()) == 20));
     assert!(({ (*v2.borrow())[0_usize] } == 4));
     assert!(({ (*v2.borrow())[1_usize] } == 5));

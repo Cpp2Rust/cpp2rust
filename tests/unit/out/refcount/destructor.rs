@@ -33,20 +33,18 @@ pub struct Outer {
     #[byte_size(1)]
     pub m: Middle,
 }
-#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg, Destructor)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Destructor)]
 #[byte_size(3)]
 pub struct ArrayMember {
     #[offset(0)]
     #[byte_size(3)]
-    pub items: Value<Box<[S]>>,
+    pub items: Box<[S]>,
 }
 impl Default for ArrayMember {
     fn default() -> Self {
         {
             ArrayMember {
-                items: Rc::new(RefCell::new(
-                    (0..3).map(|_| <S>::default()).collect::<Box<[S]>>(),
-                )),
+                items: (0..3).map(|_| <S>::default()).collect::<Box<[S]>>(),
             }
         }
     }
@@ -200,7 +198,7 @@ pub trait ArrayMemberImpl {
 impl ArrayMemberImpl for Ptr<ArrayMember> {
     fn destructor(&self) {
         {
-            let __p = (*self.upgrade().deref()).items.as_pointer();
+            let __p = array_field_ptr!(self, items);
             for __i in 0..__p.len() {
                 SImpl::destructor(&__p.offset(__i as isize));
             }

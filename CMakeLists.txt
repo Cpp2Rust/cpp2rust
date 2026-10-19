@@ -179,6 +179,9 @@ file(GLOB_RECURSE rule_preprocessor_sources
 file(GLOB_RECURSE libcc2rs_sources CONFIGURE_DEPENDS
      ${PROJECT_SOURCE_DIR}/libcc2rs/src/*.rs
      ${PROJECT_SOURCE_DIR}/libcc2rs-macros/src/*.rs)
+file(GLOB rule_shim_sources CONFIGURE_DEPENDS
+     ${PROJECT_SOURCE_DIR}/rules/*/shim.rs)
+list(APPEND libcc2rs_sources ${rule_shim_sources})
 list(APPEND libcc2rs_sources
      ${PROJECT_SOURCE_DIR}/libcc2rs/Cargo.toml
      ${PROJECT_SOURCE_DIR}/libcc2rs-macros/Cargo.toml)
@@ -231,7 +234,7 @@ set(rules_index_parts_dir ${CMAKE_BINARY_DIR}/rules_index/parts)
 set(RULES_IR_DIR "${CMAKE_BINARY_DIR}/rules")
 set(rust_rules_ir_outputs)
 foreach(_rule_dir IN LISTS rule_subdirs)
-  file(GLOB _cpp_srcs ${_rule_dir}/src.c ${_rule_dir}/src.cpp ${_rule_dir}/src_cxx*.cpp)
+  file(GLOB _cpp_srcs ${_rule_dir}/src.c ${_rule_dir}/src.cpp ${_rule_dir}/src_*.cpp)
   if(NOT _cpp_srcs)
     continue()
   endif()

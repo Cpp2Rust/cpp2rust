@@ -53,8 +53,11 @@ made from the `Value` or the `Ptr` of the struct (see
 [Pointers to fields](../../runtime/rc.md#pointers-to-fields)). An array decays
 with `arr.as_pointer() as Ptr<T>`, a `Ptr` to element 0 of the whole array, and
 `&arr[i]` is that pointer offset by `i`. An array field decays with
-`array_field_ptr!(p, arr)`, and `p->arr[i]` is read and written through that
-pointer offset by `i`.
+`array_field_ptr!(p, arr)`, and a vector field with
+`field_ref!(p, v).as_pointer()`, which is a pointer to the vector or to its
+first element, depending on the type asked for; `p->arr[i]` and `p->v[i]` are
+read and written in place, through `array_elem!(p, arr, i)` and
+`vec_elem!(p, v, i)`.
 
 Both models push the address down to the innermost place expression:
 `&(cond ? x : y)` becomes `if cond { &mut x } else { &mut y }` in the unsafe
@@ -91,12 +94,10 @@ of the dereference:
   closure that borrows the record for its duration: `p->x` is
   `p.with(|__s| __s.x)`, and `p->a.b` is `p.with(|__s| __s.a.b)`; `ReadField`
   converts the record with `record_ptr_` set, so that its dereference is emitted
-  as `__s`. A field that is a [`Value` of its own](boxing.md), or a
-  `std::unique_ptr`, is copied out as well, i.e., its `Rc`: `p->v.size()` is
-  `(*p.with(|__s| __s.v.clone()).borrow()).len()`. When the record is not
-  reached through a pointer, the copy is in a block, `{ (*s.borrow()).x }`. In
-  all cases the record doesn't stay borrowed for the rest of the statement,
-  which may write to it.
+  as `__s`. A `std::unique_ptr` field is copied out as well, i.e., its `Rc`.
+  When the record is not reached through a pointer, the copy is in a block,
+  `{ (*s.borrow()).x }`. In all cases the record doesn't stay borrowed for the
+  rest of the statement, which may write to it.
 - An address-of use prints `p` itself.
 - An lvalue use prints nothing at once. The converter records the pointer
   expression as a [pending dereference](../expressions/pending-deref.md), and

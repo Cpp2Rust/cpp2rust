@@ -15,6 +15,7 @@
 #include <optional>
 #include <vector>
 
+#include "converter/converter_lib.h"
 #include "converter/rules/decls.h"
 
 namespace cpp2rust::RuleKeys {
@@ -160,6 +161,12 @@ std::optional<ExprKey> getExprKey(clang::ASTContext &ctx,
     return Unqualified{ref->getDeclName()};
   }
   if (auto member = llvm::dyn_cast<clang::MemberExpr>(expr)) {
+    auto &sm = ctx.getSourceManager();
+    if (RuleDecls::GetMacroMemberBase(sm, member)) {
+      auto macro = clang::Lexer::getImmediateMacroName(member->getMemberLoc(),
+                                                       sm, ctx.getLangOpts());
+      return Unqualified{clang::DeclarationName(&ctx.Idents.get(macro))};
+    }
     return getDeclKey(member->getMemberDecl());
   }
   if (auto ref = llvm::dyn_cast<clang::DeclRefExpr>(expr)) {
@@ -175,6 +182,13 @@ std::optional<ExprKey> getExprKey(clang::ASTContext &ctx,
   }
   if (llvm::isa<clang::ArraySubscriptExpr>(expr)) {
     return getOperatorKey(ctx, clang::OO_Subscript);
+  }
+  if (auto list = llvm::dyn_cast<clang::InitListExpr>(expr);
+      list && list->getType()->isRecordType()) {
+    return getConstructorKey(getParent(list->getType()));
+  }
+  if (llvm::isa<clang::CXXStdInitializerListExpr>(expr)) {
+    return getConstructorKey(getParent(expr->getType()));
   }
   return std::nullopt;
 }
@@ -199,6 +213,12 @@ std::vector<ExprKey> GetExprKeys(clang::ASTContext &ctx,
           llvm::dyn_cast<clang::CXXUnresolvedConstructExpr>(returned)) {
     std::vector<ExprKey> keys;
     for (auto type : resolveMemberType(construct->getTypeAsWritten())) {
+      if (type->getAs<clang::TemplateTypeParmType>()) {
+        if (!llvm::is_contained(keys, ExprKey{kAnyConstructor})) {
+          keys.push_back(kAnyConstructor);
+        }
+        continue;
+      }
       auto key = getConstructorKey(getParent(type));
       assert(key && "expression rule has no key");
       if (!llvm::is_contained(keys, *key)) {
@@ -234,18 +254,7 @@ std::vector<TypeKey> GetTypeKeys(const clang::NamedDecl *rule) {
   assert(alias && "type rule is not an alias");
   auto pattern = alias->getUnderlyingType();
   if (pattern->getAs<clang::TemplateTypeParmType>()) {
-    pattern = RuleDecls::EnableIfSameType(rule);
-    assert(!pattern.isNull() &&
-           "type rule matching any type must be constrained by enable_if");
-    std::vector<TypeKey> keys;
-    for (auto type : resolveMemberType(pattern)) {
-      auto key = GetTypeKey(type);
-      assert(key && "type rule has no key");
-      if (!llvm::is_contained(keys, *key)) {
-        keys.push_back(*key);
-      }
-    }
-    return keys;
+    return {kAnyClass};
   }
   if (auto member = pattern->getAs<clang::DependentNameType>()) {
     auto qualifier = member->getQualifier().getAsType();
@@ -263,6 +272,10 @@ std::vector<TypeKey> GetTypeKeys(clang::ASTContext &ctx, clang::QualType use) {
   std::vector<TypeKey> keys;
   if (auto key = GetTypeKey(use)) {
     keys.push_back(*key);
+  }
+  if (auto record = use.getCanonicalType()->getAsCXXRecordDecl();
+      record && !use->isDependentType() && !IsUserDefinedDecl(record)) {
+    keys.push_back(kAnyClass);
   }
   for (auto type = use;; type = type.getSingleStepDesugaredType(ctx)) {
     if (auto typedef_type =

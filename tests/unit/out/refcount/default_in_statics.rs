@@ -15,7 +15,7 @@ pub struct Inner {
     #[byte_size(8)]
     pub name: Ptr<i8>,
 }
-#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(88)]
 pub struct Outer {
     #[offset(0)]
@@ -26,7 +26,7 @@ pub struct Outer {
     pub p2: Ptr<i32>,
     #[offset(16)]
     #[byte_size(24)]
-    pub arr: Value<Box<[Ptr<i32>]>>,
+    pub arr: Box<[Ptr<i32>]>,
     #[offset(40)]
     #[byte_size(8)]
     pub cp: Ptr<i8>,
@@ -48,11 +48,9 @@ impl Default for Outer {
             Outer {
                 p1: Ptr::<i32>::null(),
                 p2: Ptr::<i32>::null(),
-                arr: Rc::new(RefCell::new(
-                    (0..3)
-                        .map(|_| Ptr::<i32>::null())
-                        .collect::<Box<[Ptr<i32>]>>(),
-                )),
+                arr: (0..3)
+                    .map(|_| Ptr::<i32>::null())
+                    .collect::<Box<[Ptr<i32>]>>(),
                 cp: Ptr::<i8>::null(),
                 pp: Ptr::<Ptr<i32>>::null(),
                 inner: <Inner>::default(),
@@ -148,14 +146,7 @@ fn main_0() -> i32 {
     assert!(({ (*static_outer_1.with(Value::clone).borrow()).fn_.clone() }).is_null());
     let mut i: i32 = 0;
     'loop_: while (i < 3) {
-        assert!(
-            (elem!(
-                (array_field_ptr!(static_outer_1.with(|v| v.as_pointer()), arr) as Ptr<Ptr<i32>>),
-                i
-            )
-            .read())
-            .is_null()
-        );
+        assert!((array_elem!(static_outer_1.with(|v| v.as_pointer()), arr, i).read()).is_null());
         i.prefix_inc();
     }
     assert!(

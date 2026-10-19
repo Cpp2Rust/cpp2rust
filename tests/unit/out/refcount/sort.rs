@@ -52,7 +52,30 @@ fn main_0() -> i32 {
         let __a1 = 6;
         (*v.borrow_mut()).push(__a1)
     };
-    (v.as_pointer() as Ptr<i32>).sort((v.as_pointer() as Ptr<i32>).to_end().get_offset());
+    {
+        let __n = (v.as_pointer() as Ptr<i32>)
+            .end()
+            .iter_distance(&(v.as_pointer() as Ptr<i32>).begin());
+        let mut __order: Vec<isize> = (0..__n).collect();
+        __order.sort_by(|&__x, &__y| {
+            (v.as_pointer() as Ptr<i32>)
+                .begin()
+                .iter_at(__x)
+                .with(|__a| {
+                    (v.as_pointer() as Ptr<i32>)
+                        .begin()
+                        .iter_at(__y)
+                        .with(|__b| __a.cmp(__b))
+                })
+        });
+        let __values: Vec<_> = __order
+            .iter()
+            .map(|&__i| (v.as_pointer() as Ptr<i32>).begin().iter_at(__i).read())
+            .collect();
+        for (__i, __v) in (0..__n).zip(__values) {
+            (v.as_pointer() as Ptr<i32>).begin().iter_at(__i).write(__v);
+        }
+    };
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < ((*v.borrow()).len()).wrapping_sub(1_usize)) {
         assert!(

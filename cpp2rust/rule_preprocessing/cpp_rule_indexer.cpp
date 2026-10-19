@@ -26,7 +26,6 @@
 #include <vector>
 
 #include "compat/platform_flags.h"
-#include "converter/rules/decls.h"
 #include "converter/rules/rules_loader.h"
 
 namespace fs = std::filesystem;
@@ -132,11 +131,6 @@ std::string ClassOfParameters(const clang::Decl *rule) {
     }
   }
   return {};
-}
-
-std::string ClassOfEnableIf(const clang::Decl *rule) {
-  auto same = RuleDecls::EnableIfSameType(rule);
-  return same.isNull() ? std::string() : ClassOf(same);
 }
 
 const clang::Expr *RuleExpr(const clang::Decl *decl) {
@@ -266,8 +260,9 @@ void IndexRuleFile(clang::ASTContext &ctx, const std::string &dir_name,
     if (key.empty()) {
       key = ClassOfParameters(decl);
     }
-    if (key.empty()) {
-      key = ClassOfEnableIf(decl);
+    bool any_class = key.empty() && llvm::isa<clang::TemplateDecl>(decl);
+    if (any_class) {
+      key = RulesLoader::kAnyClassKey;
     }
     if (key.empty()) {
       llvm::errs() << "ERROR: cannot derive the key of rule '" << name
@@ -277,7 +272,10 @@ void IndexRuleFile(clang::ASTContext &ctx, const std::string &dir_name,
     auto range = clang::tooling::getExtendedRange(*decl, clang::tok::semi, ctx);
     auto text = clang::tooling::getText(range, ctx).str() + '\n';
     llvm::json::Object rule{{"dir", dir_name}, {"name", name}, {"text", text}};
-    if (auto required = RequiredClasses(decl, alias); !required.empty()) {
+    if (any_class) {
+      rule["requires"] = llvm::json::Array{RulesLoader::kAnyIteratorKey};
+    } else if (auto required = RequiredClasses(decl, alias);
+               !required.empty()) {
       rule["requires"] = llvm::json::Array(required);
     }
     AddRule(rules, key, std::move(rule));
@@ -335,15 +333,27 @@ llvm::json::Object ReadJson(const fs::path &path) {
   return std::move(*parsed->getAsObject());
 }
 
-unsigned SinceStandard(const fs::path &src_path) {
+struct StandardRange {
+  unsigned since = 11;
+  unsigned until = 0;
+};
+
+StandardRange RuleFileStandards(const fs::path &src_path) {
   auto stem_string = src_path.stem().string();
   llvm::StringRef stem = stem_string;
-  unsigned standard = 11;
-  if (stem.consume_front("src_cxx") && stem.getAsInteger(10, standard)) {
+  StandardRange range;
+  bool valid = stem.consume_front("src");
+  if (valid && stem.consume_front("_cxx")) {
+    valid = !stem.consumeInteger(10, range.since);
+  }
+  if (valid && stem.consume_front("_until_cxx")) {
+    valid = !stem.consumeInteger(10, range.until);
+  }
+  if (!valid || !stem.empty()) {
     llvm::errs() << "ERROR: unexpected rule file " << src_path.string() << '\n';
     std::exit(EXIT_FAILURE);
   }
-  return standard;
+  return range;
 }
 
 void MergeRules(llvm::json::Object &into, llvm::json::Object &&from) {
@@ -364,20 +374,24 @@ void IndexDir(const fs::path &rule_dir, const fs::path &out) {
   for (const auto &entry : fs::directory_iterator(rule_dir)) {
     auto name = entry.path().filename().string();
     if (name == "src.c" || name == "src.cpp" ||
-        (name.starts_with("src_cxx") && name.ends_with(".cpp"))) {
+        (name.starts_with("src_") && name.ends_with(".cpp"))) {
       cxx_srcs.push_back(entry.path());
     }
   }
   std::ranges::sort(cxx_srcs);
   llvm::json::Object cxx_rules;
   for (const auto &src_path : cxx_srcs) {
-    auto standard = SinceStandard(src_path);
+    auto range = RuleFileStandards(src_path);
     llvm::json::Object rules;
     Index(src_path, /*is_c=*/false, dir_name,
-          {std::format("-std=c++{}", standard)}, rules);
+          {std::format("-std=c++{}", range.since)}, rules);
     for (auto &[key, entries] : rules) {
       for (auto &entry : *entries.getAsArray()) {
-        (*entry.getAsObject())["since"] = standard;
+        auto &rule = *entry.getAsObject();
+        rule["since"] = range.since;
+        if (range.until) {
+          rule["until"] = range.until;
+        }
       }
     }
     MergeRules(cxx_rules, std::move(rules));

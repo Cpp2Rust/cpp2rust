@@ -14,12 +14,12 @@ pub struct Outer_RunInfo {
     #[offset(4)]
     pub num_extra_zero_runs: i32,
 }
-#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(24)]
 pub struct Outer {
     #[offset(0)]
     #[byte_size(24)]
-    pub runs: Value<Vec<Outer_RunInfo>>,
+    pub runs: Vec<Outer_RunInfo>,
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -32,25 +32,11 @@ fn main_0() -> i32 {
     info.num_extra_zero_runs = 2;
     {
         let a0_clone = info.clone();
-        (*o.runs.borrow_mut()).push(a0_clone)
+        o.runs.push(a0_clone)
     };
-    assert!(((*o.runs.borrow()).len() == 1_usize));
-    assert!(
-        ({
-            (*elem!((o.runs.as_pointer() as Ptr<Outer_RunInfo>), 0_usize)
-                .upgrade()
-                .deref())
-            .block_idx
-        } == 1)
-    );
-    assert!(
-        ({
-            (*elem!((o.runs.as_pointer() as Ptr<Outer_RunInfo>), 0_usize)
-                .upgrade()
-                .deref())
-            .num_extra_zero_runs
-        } == 2)
-    );
+    assert!((o.runs.len() == 1_usize));
+    assert!((o.runs[0_usize].block_idx == 1));
+    assert!((o.runs[0_usize].num_extra_zero_runs == 2));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

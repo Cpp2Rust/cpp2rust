@@ -1,12 +1,10 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use crate::{ByteRepr, DeepClone, Record, Value};
-use std::cell::RefCell;
+use crate::{ByteRepr, Record};
 use std::mem::{offset_of, size_of};
-use std::rc::Rc;
 
-#[derive(DeepClone, Record, ByteRepr)]
+#[derive(Clone, Record, ByteRepr)]
 #[byte_size(size_of::<::libc::termios>())]
 pub struct Termios {
     #[offset(offset_of!(::libc::termios, c_iflag))]
@@ -22,7 +20,7 @@ pub struct Termios {
     pub c_line: u8,
     #[offset(offset_of!(::libc::termios, c_cc))]
     #[byte_size(::libc::NCCS)]
-    pub c_cc: Value<Box<[u8]>>,
+    pub c_cc: Box<[u8]>,
     #[offset(offset_of!(::libc::termios, c_ispeed))]
     pub c_ispeed: u32,
     #[offset(offset_of!(::libc::termios, c_ospeed))]
@@ -37,7 +35,7 @@ impl Default for Termios {
             c_cflag: 0,
             c_lflag: 0,
             c_line: 0,
-            c_cc: Rc::new(RefCell::new(vec![0u8; 32].into_boxed_slice())),
+            c_cc: vec![0u8; 32].into_boxed_slice(),
             c_ispeed: 0,
             c_ospeed: 0,
         }
@@ -47,7 +45,7 @@ impl Default for Termios {
 impl Termios {
     #[allow(clippy::unnecessary_cast)]
     pub fn from_libc(t: &::libc::termios) -> Self {
-        let s = Self {
+        let mut s = Self {
             c_iflag: t.c_iflag as u32,
             c_oflag: t.c_oflag as u32,
             c_cflag: t.c_cflag as u32,
@@ -59,7 +57,7 @@ impl Termios {
             ..Self::default()
         };
         {
-            let mut cc = s.c_cc.borrow_mut();
+            let cc = &mut s.c_cc;
             let n = t.c_cc.len().min(cc.len());
             cc[..n].copy_from_slice(&t.c_cc[..n]);
         }
@@ -76,7 +74,7 @@ impl Termios {
             c_line: self.c_line,
             c_cc: {
                 let mut cc = [0u8; 32];
-                let src = self.c_cc.borrow();
+                let src = &self.c_cc;
                 let n = src.len().min(cc.len());
                 cc[..n].copy_from_slice(&src[..n]);
                 cc
@@ -95,7 +93,7 @@ impl Termios {
             c_lflag: self.c_lflag as u64,
             c_cc: {
                 let mut cc = [0u8; 20];
-                let src = self.c_cc.borrow();
+                let src = &self.c_cc;
                 let n = src.len().min(cc.len());
                 cc[..n].copy_from_slice(&src[..n]);
                 cc

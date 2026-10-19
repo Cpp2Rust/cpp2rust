@@ -16,21 +16,21 @@ pub struct Layout {
     #[offset(8)]
     pub c: u16,
 }
-#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(66)]
 pub struct Frame {
     #[offset(0)]
     pub tag: u16,
     #[offset(2)]
     #[byte_size(64)]
-    pub body: Value<Box<[i8]>>,
+    pub body: Box<[i8]>,
 }
 impl Default for Frame {
     fn default() -> Self {
         {
             Frame {
                 tag: 0_u16,
-                body: Rc::new(RefCell::new((0..64).map(|_| 0_i8).collect::<Box<[i8]>>())),
+                body: (0..64).map(|_| 0_i8).collect::<Box<[i8]>>(),
             }
         }
     }

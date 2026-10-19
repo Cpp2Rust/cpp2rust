@@ -6,8 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn foo_0(a0: Ptr<i32>) {
-    let a0: Value<Ptr<i32>> = Rc::new(RefCell::new(a0));
+pub fn foo_0(a0: RandomAccessIterator<i32>) {
+    let a0: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(a0));
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -19,7 +19,8 @@ fn main_0() -> i32 {
             .map(|_| <i32>::default())
             .collect::<Vec<_>>(),
     ));
-    let it: Value<Ptr<i32>> = Rc::new(RefCell::new((vec_.as_pointer() as Ptr<i32>)));
+    let it: Value<RandomAccessIterator<i32>> =
+        Rc::new(RefCell::new((vec_.as_pointer() as Ptr<i32>).begin()));
     ({ foo_0((*it.borrow()).clone()) });
     return 0;
 }

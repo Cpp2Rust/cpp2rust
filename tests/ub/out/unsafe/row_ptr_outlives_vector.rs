@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn second_row_0() -> *mut i32 {
-    let mut rows: Vec<Vec<i32>> = vec![vec![1, 2, 3], vec![4, 5, 6]];
+    let mut rows: Vec<Vec<i32>> = Vec::from([Vec::from([1, 2, 3]), Vec::from([4, 5, 6])]);
     return rows[(1_usize)].as_mut_ptr();
 }
 pub fn main() {

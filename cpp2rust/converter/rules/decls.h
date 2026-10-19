@@ -9,6 +9,7 @@
 #include <clang/AST/TemplateBase.h>
 #include <clang/AST/Type.h>
 #include <clang/Basic/Diagnostic.h>
+#include <clang/Basic/SourceManager.h>
 #include <clang/Sema/Sema.h>
 
 #include <optional>
@@ -38,7 +39,8 @@ const clang::Expr *SkipImplicit(const clang::Expr *expr);
 
 const clang::Expr *GetReturned(const clang::FunctionDecl *rule);
 
-clang::QualType EnableIfSameType(const clang::Decl *rule);
+const clang::Expr *GetMacroMemberBase(const clang::SourceManager &sm,
+                                      const clang::MemberExpr *member);
 
 std::optional<std::vector<clang::TemplateArgument>>
 DeduceFromType(clang::Sema &sema, clang::TemplateParameterList *params,

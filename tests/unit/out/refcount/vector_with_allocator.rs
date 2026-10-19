@@ -34,7 +34,7 @@ pub fn fn_1(v: Ptr<Vec<i32>>, v3: Vec<i32>) {
         let __a1 = 3;
         v2.push(__a1)
     };
-    x = (elem!((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>), 2_usize).read());
+    x = (index!(v, 2_usize).read());
     v2[0_usize] = 1;
     elem!(
         ((if true {
@@ -45,11 +45,11 @@ pub fn fn_1(v: Ptr<Vec<i32>>, v3: Vec<i32>) {
         0_usize
     )
     .write(7);
-    elem!(((Ptr::<Vec<i32>>::decay(&(v4))) as Ptr<i32>), 1_usize).write(13);
+    index!(v4, 1_usize).write(13);
     assert!((x == 6));
     assert!((((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>).read()) == 4));
-    assert!(((elem!((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>), 1_usize).read()) == 5));
-    assert!(((elem!((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>), 2_usize).read()) == 6));
+    assert!(((index!(v, 1_usize).read()) == 5));
+    assert!(((index!(v, 2_usize).read()) == 6));
     assert!((((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>).to_last().read()) == 20));
     assert!(({ (*v3.borrow())[0_usize] } == 7));
     assert!(({ (*v3.borrow())[1_usize] } == 13));
@@ -100,17 +100,19 @@ fn main_0() -> i32 {
     };
     assert!(((*v2.borrow()).len() == 3_usize));
     {
-        let idx = (v2.as_pointer() as Ptr<i32>).get_offset();
-        (v2.as_pointer() as Ptr<Vec<i32>>).with_mut(|__v: &mut Vec<i32>| __v.remove(idx));
-        (v2.as_pointer() as Ptr<Vec<i32>>).decay()
+        let __off =
+            <RandomAccessIterator<i32>>::from((v2.as_pointer() as Ptr<i32>).begin()).index();
+        (v2.as_pointer() as Ptr<Vec<i32>>).with_mut(|__v: &mut Vec<i32>| __v.remove(__off));
+        RandomAccessIterator::Vec((v2.as_pointer() as Ptr<Vec<i32>>).decay() + __off)
     };
     assert!(((*v2.borrow()).len() == 2_usize));
     assert!(({ (*v2.borrow())[0_usize] } == 2));
     assert!(({ (*v2.borrow())[1_usize] } == 3));
     {
-        let __off = (v2.as_pointer() as Ptr<i32>).get_offset();
+        let __off =
+            <RandomAccessIterator<i32>>::from((v2.as_pointer() as Ptr<i32>).begin()).index();
         (*v2.borrow_mut()).insert(__off, 100);
-        (v2.as_pointer() as Ptr<i32>)
+        <RandomAccessIterator<i32>>::from((v2.as_pointer() as Ptr<i32>).begin())
     };
     ({ copy_0((*v2.borrow()).clone()) });
     assert!(((*v2.borrow()).len() == 3_usize));
@@ -241,43 +243,47 @@ fn main_0() -> i32 {
     ({ fn_1(v7.as_pointer(), v8.clone()) });
     let src: Value<Box<[u32]>> = Rc::new(RefCell::new(Box::new([1_u32, 2_u32, 3_u32])));
     let mut v9: Vec<u32> = {
-        let __count = (src.as_pointer() as Ptr<u32>)
-            .offset((3) as isize)
-            .get_offset()
-            - (src.as_pointer() as Ptr<u32>).get_offset();
-        PtrValueIter::new(&(src.as_pointer() as Ptr<u32>), __count)
-            .map(|item| u32::try_from(item).ok().unwrap())
-            .collect::<Vec<_>>()
+        let mut __v = Vec::new();
+        let mut __it = (src.as_pointer() as Ptr<u32>);
+        while __it != (src.as_pointer() as Ptr<u32>).offset((3) as isize) {
+            __v.push(<u32>::try_from(__it.iter_deref().read()).ok().unwrap());
+            __it.iter_inc();
+        }
+        __v
     };
     assert!((v9.len() == 3_usize));
     assert!(((v9[0_usize] == 1_u32) && (v9[1_usize] == 2_u32)) && (v9[2_usize] == 3_u32));
     let mut v10: Vec<u64> = {
-        let __count = (src.as_pointer() as Ptr<u32>)
-            .offset((3) as isize)
-            .get_offset()
-            - (src.as_pointer() as Ptr<u32>).get_offset();
-        PtrValueIter::new(&(src.as_pointer() as Ptr<u32>), __count)
-            .map(|item| u64::try_from(item).ok().unwrap())
-            .collect::<Vec<_>>()
+        let mut __v = Vec::new();
+        let mut __it = (src.as_pointer() as Ptr<u32>);
+        while __it != (src.as_pointer() as Ptr<u32>).offset((3) as isize) {
+            __v.push(<u64>::try_from(__it.iter_deref().read()).ok().unwrap());
+            __it.iter_inc();
+        }
+        __v
     };
     assert!((v10.len() == 3_usize));
     assert!(((v10[0_usize] == 1_u64) && (v10[1_usize] == 2_u64)) && (v10[2_usize] == 3_u64));
     let mut v11: Vec<i32> = {
-        let __count = (src.as_pointer() as Ptr<u32>)
-            .offset((3) as isize)
-            .get_offset()
-            - (src.as_pointer() as Ptr<u32>).get_offset();
-        PtrValueIter::new(&(src.as_pointer() as Ptr<u32>), __count)
-            .map(|item| i32::try_from(item).ok().unwrap())
-            .collect::<Vec<_>>()
+        let mut __v = Vec::new();
+        let mut __it = (src.as_pointer() as Ptr<u32>);
+        while __it != (src.as_pointer() as Ptr<u32>).offset((3) as isize) {
+            __v.push(<i32>::try_from(__it.iter_deref().read()).ok().unwrap());
+            __it.iter_inc();
+        }
+        __v
     };
     assert!((v11.len() == 3_usize));
     assert!(((v11[0_usize] == 1) && (v11[1_usize] == 2)) && (v11[2_usize] == 3));
     let src1: Value<Box<[u32]>> = Rc::new(RefCell::new(Box::new([1_u32, 2_u32, 3_u32])));
     let mut v12: Vec<u32> = {
-        let __count = (src1.as_pointer() as Ptr<u32>).to_end().get_offset()
-            - (src1.as_pointer() as Ptr<u32>).get_offset();
-        PtrValueIter::new(&(src1.as_pointer() as Ptr<u32>), __count).collect::<Vec<_>>()
+        let mut __v = Vec::new();
+        let mut __it = (src1.as_pointer() as Ptr<u32>);
+        while __it != (src1.as_pointer() as Ptr<u32>).to_end() {
+            __v.push(<u32>::try_from(__it.iter_deref().read()).ok().unwrap());
+            __it.iter_inc();
+        }
+        __v
     };
     assert!((v12.len() == 3_usize));
     assert!(((v12[0_usize] == 1_u32) && (v12[1_usize] == 2_u32)) && (v12[2_usize] == 3_u32));
@@ -286,8 +292,13 @@ fn main_0() -> i32 {
     let mut start: Ptr<u8> = (buf.as_pointer() as Ptr<u8>);
     let mut len: usize = 5_usize;
     let mut v13: Vec<u8> = {
-        let __count = start.offset((len) as isize).get_offset() - start.get_offset();
-        PtrValueIter::new(&start, __count).collect::<Vec<_>>()
+        let mut __v = Vec::new();
+        let mut __it = (start).clone();
+        while __it != start.offset((len) as isize) {
+            __v.push(<u8>::try_from(__it.iter_deref().read()).ok().unwrap());
+            __it.iter_inc();
+        }
+        __v
     };
     assert!((v13.len() == 5_usize));
     assert!(((v13[0_usize] as i32) == 10) && ((v13[4_usize] as i32) == 50));

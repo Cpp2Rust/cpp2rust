@@ -63,8 +63,6 @@ public:
 
   bool RecordDerivesClone(const clang::RecordDecl *decl);
 
-  bool RecordDerivesDeepClone(const clang::RecordDecl *decl);
-
   void EmitByteSizeAttr(const clang::RecordDecl *decl) override;
 
   bool
@@ -216,15 +214,6 @@ public:
 
   bool VisitCXXDeleteExpr(clang::CXXDeleteExpr *expr) override;
 
-  bool VisitCXXForRangeStmtMap(clang::CXXForRangeStmt *stmt) override;
-
-  bool VisitCXXForRangeStmtVector(clang::CXXForRangeStmt *stmt) override;
-
-  bool VisitCXXForRangeStmtString(clang::CXXForRangeStmt *stmt) override;
-
-  void EmitByValueShadow(const clang::VarDecl *loop_var, std::string box_expr,
-                         const std::string &type_override = "");
-
   std::string ConvertStream(clang::Expr *expr) override;
 
   bool VisitCXXConstructExpr(clang::CXXConstructExpr *expr) override;
@@ -287,8 +276,6 @@ public:
   void ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
                          std::string_view assign_operator) override;
 
-  void ConvertUniquePtrDeref(clang::CXXOperatorCallExpr *expr) override;
-
   bool ConvertCXXOperatorCallExpr(clang::CXXOperatorCallExpr *expr) override;
 
   void ConvertFunctionParameters(clang::FunctionDecl *decl) override;
@@ -316,6 +303,14 @@ public:
   void ConvertGenericBinaryOperator(clang::BinaryOperator *expr) override;
 
   bool IsReferenceType(const clang::Expr *expr) const override;
+
+  std::string ConvertTake(clang::Expr *arg) override;
+
+  std::string ConvertBorrowMut(clang::Expr *arg) override;
+
+  // Whether the receiver of a method call translated by a rule is being
+  // converted.
+  bool in_receiver_ = false;
 
   std::string
   ConvertMappedMethodCall(clang::Expr *expr,
@@ -424,6 +419,13 @@ private:
 
   // Element `idx` of pointer `base`, accessed without creating a pointer to it.
   void ConvertPointerElem(clang::Expr *base, clang::Expr *idx);
+
+  // The place of element `idx` of the container `container`, e.g., a
+  // std::vector.
+  std::string ConvertElemPlace(clang::Expr *container, clang::Expr *idx);
+
+  // The place of `expr`, which is reached through a pointer.
+  std::string ConvertPlace(clang::Expr *expr);
 
   std::string GetSafeTypeAsString(clang::QualType qual_type) const;
 

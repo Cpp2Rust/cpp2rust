@@ -6,12 +6,12 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(32)]
 pub struct S {
     #[offset(0)]
     #[byte_size(24)]
-    pub v: Value<Vec<i32>>,
+    pub v: Vec<i32>,
     #[offset(24)]
     pub a: i32,
 }
@@ -23,10 +23,13 @@ fn main_0() -> i32 {
     let s: Value<S> = Rc::new(RefCell::new(<S>::default()));
     {
         let __a1 = 1;
-        (*{ (*s.borrow()).v.clone() }.borrow_mut()).push(__a1)
+        (*s.borrow_mut()).v.push(__a1)
     };
-    'loop_: for mut e in { (*s.borrow()).v.as_pointer() } as Ptr<i32> {
-        let mut e: i32 = e.read();
+    'loop_: for e in IterRange::new(
+        (field_ref!(s.as_pointer(), v).as_pointer() as Ptr<i32>).begin(),
+        (field_ref!(s.as_pointer(), v).as_pointer() as Ptr<i32>).end(),
+    ) {
+        let mut e: i32 = (e.iter_deref().read());
         (*s.borrow_mut()).a.postfix_inc();
     }
     return 0;

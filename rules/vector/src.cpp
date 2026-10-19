@@ -9,20 +9,9 @@
 #include <vector>
 
 #include "../common/init.h"
-#include "../common/traits.h"
 
 template <typename T1, typename T2 = std::allocator<T1>>
 using t5 = std::vector<T1, T2>;
-
-template <typename It, typename T1 = ValueOf<It>,
-          typename T2 = AllocatorOf<It, std::allocator<T1>>,
-          typename = SameAs<It, typename std::vector<T1, T2>::iterator>>
-using t6 = It;
-
-template <typename It, typename T1 = ValueOf<It>,
-          typename T2 = AllocatorOf<It, std::allocator<T1>>,
-          typename = SameAs<It, typename std::vector<T1, T2>::const_iterator>>
-using t7 = It;
 
 template <typename T1, typename T2 = std::allocator<T1>>
 using t9 = typename std::vector<T1, T2>::size_type;
@@ -147,95 +136,19 @@ void f80(std::vector<T1, T2> &o, const T1 &value) {
   return o.push_back(value);
 }
 
-template <typename It, typename T1 = ValueOf<It>,
-          typename T2 = AllocatorOf<It, std::allocator<T1>>,
-          typename = SameAs<It, typename std::vector<T1, T2>::iterator>>
-typename std::vector<T1, T2>::reference f81(It it) {
-  return *it;
-}
-
-template <typename It, typename T1 = ValueOf<It>,
-          typename T2 = AllocatorOf<It, std::allocator<T1>>,
-          typename = SameAs<It, typename std::vector<T1, T2>::iterator>>
-typename std::vector<T1, T2>::iterator f82(const It &it) {
-  return typename std::vector<T1, T2>::iterator(it);
-}
-
-template <typename It, typename T1 = ValueOf<It>,
-          typename T2 = AllocatorOf<It, std::allocator<T1>>,
-          typename = SameAs<It, typename std::vector<T1, T2>::iterator>>
-typename std::vector<T1, T2>::const_iterator f83(const It &it) {
-  return typename std::vector<T1, T2>::const_iterator(it);
-}
-
-template <typename It, typename T1 = ValueOf<It>,
-          typename T2 = AllocatorOf<It, std::allocator<T1>>,
-          typename = SameAs<It, typename std::vector<T1, T2>::iterator>>
-typename std::vector<T1, T2>::iterator f84(It it, std::size_t n) {
-  return it + n;
-}
-
-template <typename It, typename T1 = ValueOf<It>,
-          typename T2 = AllocatorOf<It, std::allocator<T1>>,
-          typename = SameAs<It, typename std::vector<T1, T2>::iterator>>
-bool f85(const It &it1, const It &it2) {
-  return it1 != it2;
-}
-
-template <typename It, typename T1 = ValueOf<It>,
-          typename T2 = AllocatorOf<It, std::allocator<T1>>,
-          typename = SameAs<It, typename std::vector<T1, T2>::iterator>>
-bool f86(const It &it1, const It &it2) {
-  return it1 == it2;
-}
-
-template <typename It, typename T1 = ValueOf<It>,
-          typename T2 = AllocatorOf<It, std::allocator<T1>>,
-          typename = SameAs<It, typename std::vector<T1, T2>::iterator>>
-typename std::vector<T1, T2>::iterator f87(It a0, int a1) {
-  return a0++;
-}
-
-template <typename It, typename T1 = ValueOf<It>,
-          typename T2 = AllocatorOf<It, std::allocator<T1>>,
-          typename = SameAs<It, typename std::vector<T1, T2>::iterator>>
-typename std::vector<T1, T2>::iterator::difference_type f88(const It &it1,
-                                                            const It &it2) {
-  return it1 - it2;
-}
-
-template <typename It, typename T1 = ValueOf<It>,
-          typename T2 = AllocatorOf<It, std::allocator<T1>>,
-          typename = SameAs<It, typename std::vector<T1, T2>::iterator>>
-typename std::vector<T1, T2>::iterator &f89(It &it) {
-  return ++it;
-}
-
-template <typename T1, typename T2 = std::allocator<T1>>
-std::vector<T1, T2> f90(const T1 *first, const T1 *last) {
-  return std::vector<T1, T2>(first, last);
-}
-
 template <typename T1, typename T2 = std::allocator<T1>>
 std::vector<T1, T2> f91(const std::initializer_list<T1> &a0) {
   return std::vector<T1, T2>(a0);
 }
 
 template <typename T1, typename T2 = std::allocator<T1>, typename T3>
-std::vector<T1, T2> f92(T3 *first, T3 *last) {
+std::vector<T1, T2> f92(T3 first, T3 last) {
   return std::vector<T1, T2>(first, last);
 }
 
 template <typename T1, typename T2 = std::allocator<T1>>
 const T1 *f93(const std::vector<T1, T2> &o) {
   return o.data();
-}
-
-template <typename It, typename T1 = ValueOf<It>,
-          typename T2 = AllocatorOf<It, std::allocator<T1>>,
-          typename = SameAs<It, typename std::vector<T1, T2>::const_iterator>>
-typename std::vector<T1, T2>::const_iterator f94(It first, It last) {
-  return std::max_element(first, last);
 }
 
 template <typename T1, typename T2 = std::allocator<T1>>
@@ -263,10 +176,10 @@ const T1 &f99(const std::vector<T1, T2> &o) {
   return o.back();
 }
 
-template <typename T1, typename T2 = std::allocator<T1>>
+template <typename T1, typename T2 = std::allocator<T1>, typename T3>
 typename std::vector<T1, T2>::iterator
 f101(std::vector<T1, T2> &o, typename std::vector<T1, T2>::const_iterator pos,
-     const T1 *first, const T1 *last) {
+     T3 first, T3 last) {
   return o.insert(pos, first, last);
 }
 
@@ -312,4 +225,18 @@ template <typename T1, typename T2 = std::allocator<T1>, typename... Args>
 auto f114(std::vector<T1, T2> &o, Init<T1, Args> &&...args)
     -> decltype(o.emplace_back(std::forward<Args>(args)...)) {
   return o.emplace_back(std::forward<Args>(args)...);
+}
+
+template <typename T1, typename T2 = std::allocator<T1>>
+typename std::vector<T1, T2>::iterator
+f115(std::vector<T1, T2> &o, typename std::vector<T1, T2>::const_iterator pos,
+     std::size_t n, const T1 &value) {
+  return o.insert(pos, n, value);
+}
+
+template <typename T1, typename T2 = std::allocator<T1>>
+typename std::vector<T1, T2>::iterator
+f116(std::vector<T1, T2> &o, typename std::vector<T1, T2>::const_iterator pos,
+     std::initializer_list<T1> l) {
+  return o.insert(pos, l);
 }

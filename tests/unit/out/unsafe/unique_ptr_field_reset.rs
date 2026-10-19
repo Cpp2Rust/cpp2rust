@@ -59,11 +59,33 @@ unsafe fn main_0() -> i32 {
             Some(Box::from_raw(_a0))
         }
     };
-    assert!((((*h.data.as_deref_mut().unwrap()).v) == (3)));
+    assert!(
+        (((*h
+            .data
+            .as_deref()
+            .map_or(::std::ptr::null_mut(), |v| v as *const Data as *mut Data))
+        .v) == (3))
+    );
     (unsafe { Holder::set(&mut h, (Box::leak(Box::new(Data { v: 4 })) as *mut Data)) });
-    assert!((((*(*hp).data.as_deref_mut().unwrap()).v) == (4)));
-    (*(*hp).data.as_deref_mut().unwrap()).v += (*hp).n;
-    assert!((((*h.data.as_deref_mut().unwrap()).v) == (5)));
+    assert!(
+        (((*(*hp)
+            .data
+            .as_deref()
+            .map_or(::std::ptr::null_mut(), |v| v as *const Data as *mut Data))
+        .v) == (4))
+    );
+    (*(*hp)
+        .data
+        .as_deref()
+        .map_or(::std::ptr::null_mut(), |v| v as *const Data as *mut Data))
+    .v += (*hp).n;
+    assert!(
+        (((*h
+            .data
+            .as_deref()
+            .map_or(::std::ptr::null_mut(), |v| v as *const Data as *mut Data))
+        .v) == (5))
+    );
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

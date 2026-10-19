@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(144)]
 pub struct Pointers {
     #[offset(0)]
@@ -17,10 +17,10 @@ pub struct Pointers {
     pub x2: Ptr<i32>,
     #[offset(16)]
     #[byte_size(40)]
-    pub x3: Value<Box<[Ptr<i32>]>>,
+    pub x3: Box<[Ptr<i32>]>,
     #[offset(56)]
     #[byte_size(80)]
-    pub x4: Value<Box<[Ptr<i32>]>>,
+    pub x4: Box<[Ptr<i32>]>,
     #[offset(136)]
     pub x5: i32,
 }
@@ -30,69 +30,61 @@ impl Default for Pointers {
             Pointers {
                 x1: Ptr::<i32>::null(),
                 x2: Ptr::<i32>::null(),
-                x3: Rc::new(RefCell::new(
-                    (0..5)
-                        .map(|_| Ptr::<i32>::null())
-                        .collect::<Box<[Ptr<i32>]>>(),
-                )),
-                x4: Rc::new(RefCell::new(
-                    (0..10)
-                        .map(|_| Ptr::<i32>::null())
-                        .collect::<Box<[Ptr<i32>]>>(),
-                )),
+                x3: (0..5)
+                    .map(|_| Ptr::<i32>::null())
+                    .collect::<Box<[Ptr<i32>]>>(),
+                x4: (0..10)
+                    .map(|_| Ptr::<i32>::null())
+                    .collect::<Box<[Ptr<i32>]>>(),
                 x5: 0_i32,
             }
         }
     }
 }
-#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(440)]
 pub struct SmallArrays {
     #[offset(0)]
     #[byte_size(128)]
-    pub a: Value<Box<[i32]>>,
+    pub a: Box<[i32]>,
     #[offset(128)]
     #[byte_size(8)]
     pub f: FnPtr<fn(i32) -> i32>,
     #[offset(136)]
     #[byte_size(16)]
-    pub fs: Value<Box<[FnPtr<fn(i32) -> i32>]>>,
+    pub fs: Box<[FnPtr<fn(i32) -> i32>]>,
     #[offset(152)]
     #[byte_size(288)]
-    pub p: Value<Box<[Pointers]>>,
+    pub p: Box<[Pointers]>,
 }
 impl Default for SmallArrays {
     fn default() -> Self {
         {
             SmallArrays {
-                a: Rc::new(RefCell::new((0..32).map(|_| 0_i32).collect::<Box<[i32]>>())),
+                a: (0..32).map(|_| 0_i32).collect::<Box<[i32]>>(),
                 f: FnPtr::<fn(i32) -> i32>::null(),
-                fs: Rc::new(RefCell::new(
-                    (0..2)
-                        .map(|_| FnPtr::<fn(i32) -> i32>::null())
-                        .collect::<Box<[FnPtr<fn(i32) -> i32>]>>(),
-                )),
-                p: Rc::new(RefCell::new(
-                    (0..2)
-                        .map(|_| <Pointers>::default())
-                        .collect::<Box<[Pointers]>>(),
-                )),
+                fs: (0..2)
+                    .map(|_| FnPtr::<fn(i32) -> i32>::null())
+                    .collect::<Box<[FnPtr<fn(i32) -> i32>]>>(),
+                p: (0..2)
+                    .map(|_| <Pointers>::default())
+                    .collect::<Box<[Pointers]>>(),
             }
         }
     }
 }
-#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(132)]
 pub struct BigArray {
     #[offset(0)]
     #[byte_size(132)]
-    pub a: Value<Box<[i32]>>,
+    pub a: Box<[i32]>,
 }
 impl Default for BigArray {
     fn default() -> Self {
         {
             BigArray {
-                a: Rc::new(RefCell::new((0..33).map(|_| 0_i32).collect::<Box<[i32]>>())),
+                a: (0..33).map(|_| 0_i32).collect::<Box<[i32]>>(),
             }
         }
     }

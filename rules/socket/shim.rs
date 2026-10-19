@@ -1,22 +1,20 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use crate::{ByteRepr, CChar, DeepClone, In6Addr, InAddr, Ptr, Record, Value};
-use std::cell::RefCell;
-use std::rc::Rc;
+use crate::{ByteRepr, CChar, In6Addr, InAddr, Ptr, Record};
 
 // The fields are at the offsets of the byte representation below.
-#[derive(DeepClone, Record, ByteRepr)]
+#[derive(Clone, Record, ByteRepr)]
 #[byte_size(16)]
 pub struct Sockaddr {
     #[offset(0)]
     pub sa_family: u16,
     #[offset(2)]
     #[byte_size(14)]
-    pub sa_data: Value<Box<[i8]>>,
+    pub sa_data: Box<[i8]>,
 }
 
-#[derive(DeepClone, Record, ByteRepr)]
+#[derive(Clone, Record, ByteRepr)]
 #[byte_size(16)]
 pub struct SockaddrIn {
     #[offset(0)]
@@ -27,7 +25,7 @@ pub struct SockaddrIn {
     pub sin_addr: InAddr,
     #[offset(8)]
     #[byte_size(8)]
-    pub sin_zero: Value<Box<[u8]>>,
+    pub sin_zero: Box<[u8]>,
 }
 
 #[derive(Clone, Default, Record, ByteRepr)]
@@ -45,24 +43,24 @@ pub struct SockaddrIn6 {
     pub sin6_scope_id: u32,
 }
 
-#[derive(DeepClone, Record, ByteRepr)]
+#[derive(Clone, Record, ByteRepr)]
 #[byte_size(110)]
 pub struct SockaddrUn {
     #[offset(0)]
     pub sun_family: u16,
     #[offset(2)]
     #[byte_size(108)]
-    pub sun_path: Value<Box<[i8]>>,
+    pub sun_path: Box<[i8]>,
 }
 
-#[derive(DeepClone, Record, ByteRepr)]
+#[derive(Clone, Record, ByteRepr)]
 #[byte_size(128)]
 pub struct SockaddrStorage {
     #[offset(0)]
     pub ss_family: u16,
     #[offset(2)]
     #[byte_size(126)]
-    pub __pad: Value<Box<[u8]>>,
+    pub __pad: Box<[u8]>,
 }
 
 impl SockaddrIn {
@@ -74,13 +72,11 @@ impl SockaddrIn {
             sin_addr: InAddr {
                 s_addr: l.sin_addr.s_addr,
             },
-            sin_zero: Rc::new(RefCell::new(
-                l.sin_zero
+            sin_zero: l.sin_zero
                     .iter()
                     .map(|&b| b as u8)
                     .collect::<Vec<u8>>()
                     .into_boxed_slice(),
-            )),
         }
     }
 
@@ -98,7 +94,7 @@ impl SockaddrIn {
     #[cfg(target_os = "linux")]
     pub fn to_libc(&self) -> ::libc::sockaddr_in {
         let mut sin_zero = [0u8; 8];
-        sin_zero.copy_from_slice(&self.sin_zero.borrow());
+        sin_zero.copy_from_slice(&self.sin_zero);
         ::libc::sockaddr_in {
             sin_family: self.sin_family,
             sin_port: self.sin_port,
@@ -112,7 +108,7 @@ impl SockaddrIn {
     #[cfg(target_os = "macos")]
     pub fn to_libc(&self) -> ::libc::sockaddr_in {
         let mut sin_zero = [0i8; 8];
-        for (dst, src) in sin_zero.iter_mut().zip(self.sin_zero.borrow().iter()) {
+        for (dst, src) in sin_zero.iter_mut().zip(self.sin_zero.iter()) {
             *dst = *src as i8;
         }
         ::libc::sockaddr_in {
@@ -135,31 +131,26 @@ impl SockaddrIn6 {
             sin6_port: l.sin6_port,
             sin6_flowinfo: l.sin6_flowinfo,
             sin6_addr: In6Addr {
-                s6_addr: Rc::new(RefCell::new(
-                    l.sin6_addr.s6_addr.to_vec().into_boxed_slice(),
-                )),
+                s6_addr: l.sin6_addr.s6_addr.to_vec().into_boxed_slice(),
             },
             sin6_scope_id: l.sin6_scope_id,
         }
     }
 
     pub fn from_ipv6(addr: &::std::net::Ipv6Addr, port: u16) -> Self {
-        let s = Self {
+        let mut s = Self {
             sin6_family: ::libc::AF_INET6 as u16,
             sin6_port: port.to_be(),
             ..Self::default()
         };
-        s.sin6_addr
-            .s6_addr
-            .borrow_mut()
-            .copy_from_slice(&addr.octets());
+        s.sin6_addr.s6_addr.copy_from_slice(&addr.octets());
         s
     }
 
     #[cfg(target_os = "linux")]
     pub fn to_libc(&self) -> ::libc::sockaddr_in6 {
         let mut s6_addr = [0u8; 16];
-        s6_addr.copy_from_slice(&self.sin6_addr.s6_addr.borrow());
+        s6_addr.copy_from_slice(&self.sin6_addr.s6_addr);
         ::libc::sockaddr_in6 {
             sin6_family: self.sin6_family,
             sin6_port: self.sin6_port,
@@ -172,7 +163,7 @@ impl SockaddrIn6 {
     #[cfg(target_os = "macos")]
     pub fn to_libc(&self) -> ::libc::sockaddr_in6 {
         let mut s6_addr = [0u8; 16];
-        s6_addr.copy_from_slice(&self.sin6_addr.s6_addr.borrow());
+        s6_addr.copy_from_slice(&self.sin6_addr.s6_addr);
         ::libc::sockaddr_in6 {
             sin6_len: ::std::mem::size_of::<::libc::sockaddr_in6>() as u8,
             sin6_family: self.sin6_family as u8,
@@ -188,7 +179,7 @@ impl Default for Sockaddr {
     fn default() -> Self {
         Self {
             sa_family: 0,
-            sa_data: Rc::new(RefCell::new(vec![0i8; 14].into_boxed_slice())),
+            sa_data: vec![0i8; 14].into_boxed_slice(),
         }
     }
 }
@@ -199,7 +190,7 @@ impl Default for SockaddrIn {
             sin_family: 0,
             sin_port: 0,
             sin_addr: InAddr::default(),
-            sin_zero: Rc::new(RefCell::new(vec![0u8; 8].into_boxed_slice())),
+            sin_zero: vec![0u8; 8].into_boxed_slice(),
         }
     }
 }
@@ -208,7 +199,7 @@ impl Default for SockaddrUn {
     fn default() -> Self {
         Self {
             sun_family: 0,
-            sun_path: Rc::new(RefCell::new(vec![0i8; 108].into_boxed_slice())),
+            sun_path: vec![0i8; 108].into_boxed_slice(),
         }
     }
 }
@@ -217,7 +208,7 @@ impl Default for SockaddrStorage {
     fn default() -> Self {
         Self {
             ss_family: 0,
-            __pad: Rc::new(RefCell::new(vec![0u8; 126].into_boxed_slice())),
+            __pad: vec![0u8; 126].into_boxed_slice(),
         }
     }
 }
@@ -242,7 +233,7 @@ impl Sockaddr {
             Some(Box::new(nix::sys::socket::SockaddrIn6::from(m.to_libc())))
         } else if family == ::libc::AF_UNIX as u16 {
             let m = addr.reinterpret_cast::<SockaddrUn>().read();
-            let path = m.sun_path.borrow();
+            let path = &m.sun_path;
             let end = path.iter().position(|&c| c == 0).unwrap_or(path.len());
             CChar::with_u8_slice(&path[..end], nix::sys::socket::UnixAddr::new)
                 .ok()

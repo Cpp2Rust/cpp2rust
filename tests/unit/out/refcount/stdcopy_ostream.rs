@@ -25,11 +25,13 @@ fn main_0() -> i32 {
                 .expect("Failed to open file"),
         ));
         {
-            (str.as_pointer() as Ptr<i8>).with_slice(
-                (str.as_pointer() as Ptr<i8>).to_last().get_offset()
-                    - (str.as_pointer() as Ptr<i8>).get_offset(),
-                |__s| CChar::with_u8_slice(__s, |__b| (*ofs.borrow_mut()).write_all(__b)),
-            );
+            let mut __bytes: Vec<u8> = Vec::new();
+            let mut __it = RandomAccessIterator::Vec((str.as_pointer() as Ptr<i8>));
+            while __it != RandomAccessIterator::Vec((str.as_pointer() as Ptr<i8>).to_last()) {
+                __bytes.push(__it.iter_deref().read() as u8);
+                __it.iter_inc();
+            }
+            (*ofs.borrow_mut()).write_all(&__bytes);
             (*ofs.borrow_mut()).try_clone().unwrap()
         };
     }

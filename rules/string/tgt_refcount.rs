@@ -9,10 +9,6 @@ fn t1() -> Vec<i8> {
     vec![0]
 }
 
-fn t2() -> Ptr<i8> {
-    Ptr::null()
-}
-
 fn f1(a0: Vec<i8>, a1: usize, a2: usize) -> Vec<i8> {
     let mut __tmp1 =
         a0[(a1) as usize..::std::cmp::min((a1 + a2) as usize, a0.len().saturating_sub(1))].to_vec();
@@ -62,8 +58,8 @@ fn f11(a0: Ptr<i8>) -> Ptr<i8> {
     a0
 }
 
-fn f12(a0: Ptr<i8>) -> Ptr<i8> {
-    a0
+fn f12(a0: Ptr<i8>) -> RandomAccessIterator<i8> {
+    RandomAccessIterator::Vec(a0)
 }
 
 fn f14(a0: Ptr<Vec<i8>>, a1: usize, a2: usize, a3: Ptr<i8>, a4: usize) -> Ptr<Vec<i8>> {
@@ -80,8 +76,8 @@ fn f14(a0: Ptr<Vec<i8>>, a1: usize, a2: usize, a3: Ptr<i8>, a4: usize) -> Ptr<Ve
     a0
 }
 
-fn f15(a0: Ptr<i8>) -> Ptr<i8> {
-    a0.to_last()
+fn f15(a0: Ptr<i8>) -> RandomAccessIterator<i8> {
+    RandomAccessIterator::Vec(a0.to_last())
 }
 
 fn f16(a0: Vec<i8>, a1: Ptr<i8>) -> usize {
@@ -104,10 +100,6 @@ fn f17(a0: Vec<i8>, a1: Ptr<i8>) -> Vec<i8> {
 
 fn f18(a0: Vec<i8>, a1: Ptr<i8>) -> bool {
     a1.with_c_str(|__s| a0[..a0.len().saturating_sub(1)] == *__s)
-}
-
-fn f20(a0: Ptr<i8>, a1: usize) -> Ptr<i8> {
-    a0.offset(a1 as isize)
 }
 
 // TODO: This should return a0
@@ -189,4 +181,8 @@ fn f29(a0: Ptr<Vec<i8>>, a1: Vec<i8>) {
 
 fn f30(a0: Ptr<Vec<i8>>, a1: &mut Vec<i8>) {
     a0.write(std::mem::take(&mut *a1))
+}
+
+fn f31(a0: Vec<i8>, a1: Ptr<i8>) -> bool {
+    a1.with_c_str(|__s| a0[..a0.len().saturating_sub(1)] != *__s)
 }

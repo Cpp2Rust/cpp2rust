@@ -14,7 +14,7 @@ pub struct Inner {
     #[offset(4)]
     pub b: i32,
 }
-#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(48)]
 pub struct Cookie {
     #[offset(0)]
@@ -30,7 +30,7 @@ pub struct Cookie {
     pub inner: Inner,
     #[offset(32)]
     #[byte_size(16)]
-    pub arr: Value<Box<[i32]>>,
+    pub arr: Box<[i32]>,
 }
 impl Default for Cookie {
     fn default() -> Self {
@@ -40,7 +40,7 @@ impl Default for Cookie {
                 data: Ptr::<i32>::null(),
                 in_: Ptr::<i32>::null(),
                 inner: <Inner>::default(),
-                arr: Rc::new(RefCell::new((0..4).map(|_| 0_i32).collect::<Box<[i32]>>())),
+                arr: (0..4).map(|_| 0_i32).collect::<Box<[i32]>>(),
             }
         }
     }
@@ -76,10 +76,8 @@ pub fn consume_3(cookie: Ptr<Cookie>) -> i32 {
     }
     c.x = sum;
     c.inner.a += { c.x };
-    elem!((c.arr.as_pointer() as Ptr::<i32>), 1).write({ c.inner.a });
-    let __rhs = ({ (elem!((c.arr.as_pointer() as Ptr::<i32>), 1).read()) } + {
-        ({ first_2((c.in_).clone()) })
-    });
+    c.arr[(1) as usize] = { c.inner.a };
+    let __rhs = ({ c.arr[(1) as usize] } + { ({ first_2((c.in_).clone()) }) });
     c.data.write(__rhs);
     ({
         let _p: Ptr<i32> = c.data.offset((1) as isize);

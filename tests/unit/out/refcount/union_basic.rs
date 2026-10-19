@@ -6,12 +6,12 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(VaArg, FnPtrArg, ByteRepr, DeepClone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, Clone)]
 #[byte_size(4)]
 pub struct basic {
     #[offset(0)]
     #[byte_size(4)]
-    __bytes: Value<Box<[u8]>>,
+    __bytes: Box<[u8]>,
 }
 impl basic {
     pub fn i(this: Ptr<Self>) -> Ptr<i32> {
@@ -24,31 +24,31 @@ impl basic {
 impl Default for basic {
     fn default() -> Self {
         basic {
-            __bytes: Rc::new(RefCell::new(Box::from([0u8; 4]))),
+            __bytes: Box::from([0u8; 4]),
         }
     }
 }
-#[derive(VaArg, FnPtrArg, ByteRepr, DeepClone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, Clone)]
 #[byte_size(1)]
 pub struct empty {
     #[offset(0)]
     #[byte_size(1)]
-    __bytes: Value<Box<[u8]>>,
+    __bytes: Box<[u8]>,
 }
 impl empty {}
 impl Default for empty {
     fn default() -> Self {
         empty {
-            __bytes: Rc::new(RefCell::new(Box::from([0u8; 1]))),
+            __bytes: Box::from([0u8; 1]),
         }
     }
 }
-#[derive(VaArg, FnPtrArg, ByteRepr, DeepClone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, Clone)]
 #[byte_size(8)]
 pub struct underscores {
     #[offset(0)]
     #[byte_size(8)]
-    __bytes: Value<Box<[u8]>>,
+    __bytes: Box<[u8]>,
 }
 impl underscores {
     pub fn __(this: Ptr<Self>) -> Ptr<i32> {
@@ -61,7 +61,7 @@ impl underscores {
 impl Default for underscores {
     fn default() -> Self {
         underscores {
-            __bytes: Rc::new(RefCell::new(Box::from([0u8; 8]))),
+            __bytes: Box::from([0u8; 8]),
         }
     }
 }
@@ -122,12 +122,12 @@ fn main_0() -> i32 {
     assert!(((__ + ___) == 3));
     return 0;
 }
-#[derive(VaArg, FnPtrArg, ByteRepr, DeepClone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, Clone)]
 #[byte_size(4)]
 pub struct anon_0 {
     #[offset(0)]
     #[byte_size(4)]
-    __bytes: Value<Box<[u8]>>,
+    __bytes: Box<[u8]>,
 }
 impl anon_0 {
     pub fn ai(this: Ptr<Self>) -> Ptr<i32> {
@@ -140,7 +140,7 @@ impl anon_0 {
 impl Default for anon_0 {
     fn default() -> Self {
         anon_0 {
-            __bytes: Rc::new(RefCell::new(Box::from([0u8; 4]))),
+            __bytes: Box::from([0u8; 4]),
         }
     }
 }

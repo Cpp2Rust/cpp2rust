@@ -267,11 +267,26 @@ fn main_0() -> i32 {
         }) == 7)
     );
     let xs: Value<Box<[X]>> = Rc::new(RefCell::new(Box::new([X { v: 3 }, X { v: 1 }, X { v: 2 }])));
-    (xs.as_pointer() as Ptr<X>).sort(
-        (xs.as_pointer() as Ptr<X>)
+    {
+        let __n = (xs.as_pointer() as Ptr<X>)
             .offset((3) as isize)
-            .get_offset(),
-    );
+            .iter_distance(&(xs.as_pointer() as Ptr<X>));
+        let mut __order: Vec<isize> = (0..__n).collect();
+        __order.sort_by(|&__x, &__y| {
+            (xs.as_pointer() as Ptr<X>).iter_at(__x).with(|__a| {
+                (xs.as_pointer() as Ptr<X>)
+                    .iter_at(__y)
+                    .with(|__b| __a.cmp(__b))
+            })
+        });
+        let __values: Vec<_> = __order
+            .iter()
+            .map(|&__i| (xs.as_pointer() as Ptr<X>).iter_at(__i).read())
+            .collect();
+        for (__i, __v) in (0..__n).zip(__values) {
+            (xs.as_pointer() as Ptr<X>).iter_at(__i).write(__v);
+        }
+    };
     assert!(
         (({ (*xs.borrow())[(0) as usize].v } == 1) && ({ (*xs.borrow())[(1) as usize].v } == 2))
             && ({ (*xs.borrow())[(2) as usize].v } == 3)
@@ -289,11 +304,26 @@ fn main_0() -> i32 {
         Mixed { v: 4 },
         Mixed { v: 5 },
     ])));
-    (ms.as_pointer() as Ptr<Mixed>).sort(
-        (ms.as_pointer() as Ptr<Mixed>)
+    {
+        let __n = (ms.as_pointer() as Ptr<Mixed>)
             .offset((3) as isize)
-            .get_offset(),
-    );
+            .iter_distance(&(ms.as_pointer() as Ptr<Mixed>));
+        let mut __order: Vec<isize> = (0..__n).collect();
+        __order.sort_by(|&__x, &__y| {
+            (ms.as_pointer() as Ptr<Mixed>).iter_at(__x).with(|__a| {
+                (ms.as_pointer() as Ptr<Mixed>)
+                    .iter_at(__y)
+                    .with(|__b| __a.cmp(__b))
+            })
+        });
+        let __values: Vec<_> = __order
+            .iter()
+            .map(|&__i| (ms.as_pointer() as Ptr<Mixed>).iter_at(__i).read())
+            .collect();
+        for (__i, __v) in (0..__n).zip(__values) {
+            (ms.as_pointer() as Ptr<Mixed>).iter_at(__i).write(__v);
+        }
+    };
     assert!(
         (({ (*ms.borrow())[(0) as usize].v } == 4) && ({ (*ms.borrow())[(1) as usize].v } == 5))
             && ({ (*ms.borrow())[(2) as usize].v } == 6)
@@ -342,11 +372,26 @@ fn main_0() -> i32 {
         Boolish { v: 1 },
         Boolish { v: 2 },
     ])));
-    (bs.as_pointer() as Ptr<Boolish>).sort(
-        (bs.as_pointer() as Ptr<Boolish>)
+    {
+        let __n = (bs.as_pointer() as Ptr<Boolish>)
             .offset((3) as isize)
-            .get_offset(),
-    );
+            .iter_distance(&(bs.as_pointer() as Ptr<Boolish>));
+        let mut __order: Vec<isize> = (0..__n).collect();
+        __order.sort_by(|&__x, &__y| {
+            (bs.as_pointer() as Ptr<Boolish>).iter_at(__x).with(|__a| {
+                (bs.as_pointer() as Ptr<Boolish>)
+                    .iter_at(__y)
+                    .with(|__b| __a.cmp(__b))
+            })
+        });
+        let __values: Vec<_> = __order
+            .iter()
+            .map(|&__i| (bs.as_pointer() as Ptr<Boolish>).iter_at(__i).read())
+            .collect();
+        for (__i, __v) in (0..__n).zip(__values) {
+            (bs.as_pointer() as Ptr<Boolish>).iter_at(__i).write(__v);
+        }
+    };
     assert!(
         (({ (*bs.borrow())[(0) as usize].v } == 1) && ({ (*bs.borrow())[(1) as usize].v } == 2))
             && ({ (*bs.borrow())[(2) as usize].v } == 3)
@@ -364,18 +409,13 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new(Box::new([RefInt { v: 1 }, RefInt { v: 2 }])));
     assert!(
         ({
-            let count = ((ris.as_pointer() as Ptr<RefInt>)
-                .offset((2) as isize)
-                .get_offset()
-                - (ris.as_pointer() as Ptr<RefInt>).get_offset()) as usize;
-            (ris.as_pointer() as Ptr<RefInt>).offset(
-                (ris.as_pointer() as Ptr<RefInt>)
-                    .clone()
-                    .into_iter()
-                    .take(count)
-                    .position(|value_0| value_0.read() == (*ri2.borrow()))
-                    .unwrap_or(count) as isize,
-            )
+            let mut __it = (ris.as_pointer() as Ptr<RefInt>);
+            while __it != (ris.as_pointer() as Ptr<RefInt>).offset((2) as isize)
+                && __it.iter_deref().with(|__v| *__v != (*ri2.borrow()))
+            {
+                __it.iter_inc();
+            }
+            __it
         } == (ris.as_pointer() as Ptr<RefInt>))
     );
     return 0;

@@ -41,16 +41,29 @@ fn main_0() -> i32 {
         let _p: Ptr<_> = Ptr::alloc(Data { v: 3 });
         (field_ptr!(hp, data) as Ptr<Option<Value<Data>>>).write(_p.to_owned_opt())
     };
-    assert!(({ (*{ (*h.borrow()).data.clone() }.as_ref().unwrap().borrow()).v } == 3));
+    assert!(
+        ({ (*h.borrow()).data.clone() }
+            .as_pointer()
+            .with(|__s| __s.v)
+            == 3)
+    );
     ({ HolderImpl::set(&h.as_pointer(), Ptr::alloc(Data { v: 4 })) });
-    assert!(({ (*hp.with(|__s| __s.data.clone()).as_ref().unwrap().borrow()).v } == 4));
+    assert!(
+        (hp.with(|__s| __s.data.clone())
+            .as_pointer()
+            .with(|__s| __s.v)
+            == 4)
+    );
     let __rhs = hp.with(|__s| __s.n);
-    (*hp.with(|__s| __s.data.clone())
-        .as_ref()
-        .unwrap()
-        .borrow_mut())
-    .v += __rhs;
-    assert!(({ (*{ (*h.borrow()).data.clone() }.as_ref().unwrap().borrow()).v } == 5));
+    {
+        field!(hp.with(|__s| __s.data.clone()).as_pointer(), v).with_mut(|__v| *__v = *__v + __rhs)
+    };
+    assert!(
+        ({ (*h.borrow()).data.clone() }
+            .as_pointer()
+            .with(|__s| __s.v)
+            == 5)
+    );
     return 0;
 }
 pub trait HolderImpl {
