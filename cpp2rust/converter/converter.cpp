@@ -739,12 +739,6 @@ bool Converter::TypeDerivesDefault(clang::QualType qual_type) {
     return false;
   }
 
-  // Types that need a custom array initializer (e.g., std::array, which is
-  // translated to Vec)
-  if (!GetArrayDefaultAsString(qual_type).empty()) {
-    return false;
-  }
-
   // libc types do not implement Default
   if (auto record = qual_type->getAsRecordDecl()) {
     if (ctx_.getSourceManager().isInSystemHeader(record->getLocation()) &&
@@ -3637,7 +3631,7 @@ bool Converter::VisitInitListExpr(clang::InitListExpr *expr) {
         StrCat("vec!");
         VisitInitListExpr(init);
       } else {
-        StrCat(GetArrayDefaultAsString(qual_type));
+        StrCat(GetDefaultAsString(qual_type));
       }
       SetFreshType(qual_type);
       return false;
