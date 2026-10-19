@@ -187,6 +187,9 @@ std::optional<ExprKey> getExprKey(clang::ASTContext &ctx,
       list && list->getType()->isRecordType()) {
     return getConstructorKey(getParent(list->getType()));
   }
+  if (llvm::isa<clang::CXXStdInitializerListExpr>(expr)) {
+    return getConstructorKey(getParent(expr->getType()));
+  }
   return std::nullopt;
 }
 

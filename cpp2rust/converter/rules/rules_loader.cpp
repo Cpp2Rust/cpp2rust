@@ -489,8 +489,8 @@ std::string ExprKey(clang::ASTContext &ctx, const clang::Expr *expr) {
   if (auto construct = llvm::dyn_cast<clang::CXXConstructExpr>(expr)) {
     return FunctionKey(construct->getConstructor());
   }
-  if (auto list = llvm::dyn_cast<clang::InitListExpr>(expr)) {
-    if (auto record = list->getType()->getAsRecordDecl();
+  if (llvm::isa<clang::InitListExpr, clang::CXXStdInitializerListExpr>(expr)) {
+    if (auto record = expr->getType()->getAsRecordDecl();
         record && !IsUserDefinedDecl(record)) {
       return ConstructorKey(ClassKey(record));
     }

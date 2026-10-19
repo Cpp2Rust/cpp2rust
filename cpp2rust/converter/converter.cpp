@@ -4273,11 +4273,11 @@ bool Converter::VisitClassTemplateDecl(clang::ClassTemplateDecl *decl) {
 
 bool Converter::VisitCXXStdInitializerListExpr(
     clang::CXXStdInitializerListExpr *expr) {
-  if (expr->getSubExpr()->getType()->isArrayType()) {
-    // Arrays become Vec's
-    StrCat("vec!");
-  }
-  Convert(expr->getSubExpr());
+  auto *backing = expr->getSubExpr();
+  auto str = GetMappedAsString(expr, &backing, 1);
+  ENSURE(!str.empty());
+  StrCat(str);
+  SetFreshType(expr->getType());
   return false;
 }
 

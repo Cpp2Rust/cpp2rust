@@ -97,6 +97,9 @@ ResolvedDecl getResolvedDecl(clang::ASTContext &ctx, const clang::Expr *expr,
       list && list->getType()->isRecordType()) {
     return AggregateUsage{*RuleKeys::GetTypeKey(list->getType())};
   }
+  if (llvm::isa<clang::CXXStdInitializerListExpr>(expr)) {
+    return AggregateUsage{*RuleKeys::GetTypeKey(expr->getType())};
+  }
   if (auto construct = llvm::dyn_cast<clang::CXXUnresolvedConstructExpr>(expr);
       construct && construct->isListInitialization()) {
     return AggregateUsage{*RuleKeys::GetTypeKey(construct->getTypeAsWritten())};
@@ -167,6 +170,8 @@ std::vector<clang::Expr *> getOperands(clang::ASTContext &ctx,
     operands.assign(construct->arg_begin(), construct->arg_end());
   } else if (auto list = llvm::dyn_cast<clang::InitListExpr>(expr)) {
     operands.assign(list->inits().begin(), list->inits().end());
+  } else if (auto list = llvm::dyn_cast<clang::CXXStdInitializerListExpr>(expr)) {
+    operands.push_back(list->getSubExpr()->IgnoreImplicit());
   } else if (auto member = llvm::dyn_cast<clang::MemberExpr>(expr)) {
     auto macro_base =
         RuleDecls::GetMacroMemberBase(ctx.getSourceManager(), member);
