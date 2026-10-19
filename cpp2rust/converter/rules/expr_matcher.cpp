@@ -16,6 +16,7 @@
 #include <llvm/ADT/SmallBitVector.h>
 
 #include <cassert>
+#include <compare>
 #include <optional>
 #include <string>
 #include <variant>
@@ -51,20 +52,20 @@ bool hasSameArgTypes(clang::ASTContext &ctx, const clang::Expr *use,
 struct MacroUsage {
   std::string name;
 
-  bool operator==(const MacroUsage &) const = default;
+  auto operator<=>(const MacroUsage &) const = default;
 };
 
 struct RewrittenOperatorUsage {
   const clang::Decl *decl;
   clang::BinaryOperatorKind op;
 
-  bool operator==(const RewrittenOperatorUsage &) const = default;
+  auto operator<=>(const RewrittenOperatorUsage &) const = default;
 };
 
 struct AggregateUsage {
   RuleKeys::TypeKey type;
 
-  bool operator==(const AggregateUsage &) const = default;
+  auto operator<=>(const AggregateUsage &) const = default;
 };
 
 using ResolvedDecl =
