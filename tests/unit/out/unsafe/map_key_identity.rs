@@ -118,8 +118,8 @@ unsafe fn main_0() -> i32 {
         }) as i32))
         != 0;
     let mut distinct_count: usize = 0_usize;
-    'loop_: for __begin1 in UnsafeMap::range(&distinct as *const UnsafeMap<Key, (Key, Mapped)>) {
-        let entry: *const (Key, Mapped) = &(*__begin1.iter_deref());
+    'loop_: for entry in IterRange::new(distinct.begin(), distinct.end()) {
+        let entry: *const (Key, Mapped) = &(*entry.iter_deref());
         if ((distinct_count) == (0_usize)) {
             ok = ((ok as i32)
                 & (((((*entry).0.order) == (1)) && (((*entry).1.value) == (11))) as i32))
@@ -179,10 +179,8 @@ unsafe fn main_0() -> i32 {
                 as i32))
             != 0;
         let mut equivalent_count: usize = 0_usize;
-        'loop_: for __begin2 in
-            UnsafeMap::range(&equivalent as *const UnsafeMap<Key, (Key, Mapped)>)
-        {
-            let entry: *const (Key, Mapped) = &(*__begin2.iter_deref());
+        'loop_: for entry in IterRange::new(equivalent.begin(), equivalent.end()) {
+            let entry: *const (Key, Mapped) = &(*entry.iter_deref());
             ok = ((ok as i32)
                 & (((((*entry).0.order) == (3)) && (((*entry).1.value) == (31))) as i32))
                 != 0;

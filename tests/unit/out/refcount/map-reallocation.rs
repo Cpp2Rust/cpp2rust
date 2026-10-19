@@ -128,10 +128,13 @@ fn main_0() -> i32 {
     assert!(((p.read()) == 57005));
     assert!(((*m.borrow()).len() == (((N + 1) as u32) as usize)));
     let mut prev: i32 = -1_i32;
-    'loop_: for __begin1 in Map::range(m.as_pointer()) {
-        let __begin1: Value<BidirectionalIterator<(Value<i32>, Value<i32>)>> =
-            Rc::new(RefCell::new(__begin1));
-        let pair: Ptr<(Value<i32>, Value<i32>)> = (*__begin1.borrow()).iter_deref();
+    'loop_: for pair in IterRange::new(
+        (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
+            .with(|__m: &Map<i32, (Value<i32>, Value<i32>)>| __m.begin()),
+        (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
+            .with(|__m: &Map<i32, (Value<i32>, Value<i32>)>| __m.end()),
+    ) {
+        let pair: Ptr<(Value<i32>, Value<i32>)> = pair.iter_deref();
         assert!(({ (*(*pair.upgrade().deref()).0.borrow()) } > { prev }));
         prev = (*(*pair.upgrade().deref()).0.borrow());
     }

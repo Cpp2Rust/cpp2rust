@@ -223,17 +223,6 @@ public:
 
   virtual bool VisitCXXForRangeStmt(clang::CXXForRangeStmt *stmt);
 
-  virtual bool VisitCXXForRangeStmtMap(clang::CXXForRangeStmt *stmt);
-
-  virtual bool VisitCXXForRangeStmtVector(clang::CXXForRangeStmt *stmt);
-
-  virtual bool VisitCXXForRangeStmtString(clang::CXXForRangeStmt *stmt);
-
-  bool VisitCXXForRangeStmtIndexBased(clang::CXXForRangeStmt *stmt,
-                                      const char *len_suffix);
-
-  void ConvertForRangeBody(clang::CXXForRangeStmt *stmt);
-
   virtual bool VisitBreakStmt(clang::BreakStmt *stmt);
 
   virtual bool VisitContinueStmt(clang::ContinueStmt *stmt);
@@ -749,9 +738,6 @@ protected:
 
   virtual void ConvertCast(clang::QualType qual_type,
                            int line = __builtin_LINE());
-
-  virtual void ConvertLoopVariable(clang::VarDecl *decl,
-                                   clang::Expr *range_init);
 
   virtual bool ConvertCXXOperatorCallExpr(clang::CXXOperatorCallExpr *expr);
 

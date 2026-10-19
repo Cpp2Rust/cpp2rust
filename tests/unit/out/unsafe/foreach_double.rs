@@ -27,31 +27,31 @@ unsafe fn main_0() -> i32 {
         v.push(__a1)
     };
     let mut square: i32 = 0;
-    'loop_: for e1 in 0..(v.len()) {
-        let mut e1 = v[e1].clone();
-        'loop_: for e2 in 0..(v.len()) {
-            let mut e2 = v[e2].clone();
+    'loop_: for e1 in IterRange::new(v.begin(), v.end()) {
+        let mut e1: i32 = (*e1.iter_deref());
+        'loop_: for e2 in IterRange::new(v.begin(), v.end()) {
+            let mut e2: i32 = (*e2.iter_deref());
             square += ((e1) * (e2));
         }
     }
-    'loop_: for e1 in 0..(v.len()) {
-        let mut e1 = v.as_mut_ptr().add(e1);
-        'loop_: for e2 in 0..(v.len()) {
-            let mut e2 = v.as_ptr().add(e2);
+    'loop_: for e1 in IterRange::new(v.begin(), v.end()) {
+        let e1: *mut i32 = &mut (*e1.iter_deref());
+        'loop_: for e2 in IterRange::new(v.begin(), v.end()) {
+            let e2: *const i32 = &(*e2.iter_deref());
             square += ((*e1) * (*e2));
         }
     }
-    'loop_: for e1 in 0..(v.len()) {
-        let mut e1 = v.as_ptr().add(e1);
-        'loop_: for e2 in 0..(v.len()) {
-            let mut e2 = v.as_mut_ptr().add(e2);
+    'loop_: for e1 in IterRange::new(v.begin(), v.end()) {
+        let e1: *const i32 = &(*e1.iter_deref());
+        'loop_: for e2 in IterRange::new(v.begin(), v.end()) {
+            let e2: *mut i32 = &mut (*e2.iter_deref());
             square += ((*e1) * (*e2));
         }
     }
-    'loop_: for e1 in 0..(v.len()) {
-        let mut e1 = v.as_mut_ptr().add(e1);
-        'loop_: for e2 in 0..(v.len()) {
-            let mut e2 = v.as_mut_ptr().add(e2);
+    'loop_: for e1 in IterRange::new(v.begin(), v.end()) {
+        let e1: *mut i32 = &mut (*e1.iter_deref());
+        'loop_: for e2 in IterRange::new(v.begin(), v.end()) {
+            let e2: *mut i32 = &mut (*e2.iter_deref());
             square += ((*e1) * (*e2));
         }
     }
@@ -71,10 +71,10 @@ unsafe fn main_0() -> i32 {
         let __a1 = std::mem::take(&mut v3);
         m.push(__a1)
     };
-    'loop_: for row in 0..(m.len()) {
-        let mut row = m.as_mut_ptr().add(row);
-        'loop_: for col in 0..((*row).len()) {
-            let mut col = (*row).as_mut_ptr().add(col);
+    'loop_: for row in IterRange::new(m.begin(), m.end()) {
+        let row: *mut Vec<i32> = &mut (*row.iter_deref());
+        'loop_: for col in IterRange::new((*row).begin(), (*row).end()) {
+            let col: *mut i32 = &mut (*col.iter_deref());
             square += (*col);
         }
     }

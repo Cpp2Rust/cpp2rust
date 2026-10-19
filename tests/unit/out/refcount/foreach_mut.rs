@@ -25,20 +25,34 @@ fn main_0() -> i32 {
         (*v1.borrow_mut()).push(__a1)
     };
     let mut sum: i32 = 0;
-    'loop_: for mut x in v1.as_pointer() as Ptr<i32> {
-        let mut x: i32 = x.read();
+    'loop_: for x in IterRange::new(
+        (v1.as_pointer() as Ptr<i32>).begin(),
+        (v1.as_pointer() as Ptr<i32>).end(),
+    ) {
+        let mut x: i32 = (x.iter_deref().read());
         sum += x.prefix_inc();
     }
-    'loop_: for x in v1.as_pointer() as Ptr<i32> {
-        let mut x: i32 = x.read();
+    'loop_: for x in IterRange::new(
+        (v1.as_pointer() as Ptr<i32>).begin(),
+        (v1.as_pointer() as Ptr<i32>).end(),
+    ) {
+        let mut x: i32 = (x.iter_deref().read());
         sum += x;
     }
-    'loop_: for mut x in v1.as_pointer() as Ptr<i32> {
+    'loop_: for x in IterRange::new(
+        (v1.as_pointer() as Ptr<i32>).begin(),
+        (v1.as_pointer() as Ptr<i32>).end(),
+    ) {
+        let x: Ptr<i32> = x.iter_deref();
         {
             x.with_mut(|__v| *__v = *__v + 10)
         };
     }
-    'loop_: for mut x in v1.as_pointer() as Ptr<i32> {
+    'loop_: for x in IterRange::new(
+        (v1.as_pointer() as Ptr<i32>).begin(),
+        (v1.as_pointer() as Ptr<i32>).end(),
+    ) {
+        let x: Ptr<i32> = x.iter_deref();
         sum += { (x.read()) };
     }
     let v2: Value<Vec<Ptr<i32>>> = Rc::new(RefCell::new(Vec::new()));
@@ -54,24 +68,36 @@ fn main_0() -> i32 {
         let __a1 = ((v1.as_pointer() as Ptr<i32>).offset(2_usize));
         (*v2.borrow_mut()).push(__a1)
     };
-    'loop_: for mut p in v2.as_pointer() as Ptr<Ptr<i32>> {
-        let mut p: Ptr<i32> = p.read();
+    'loop_: for p in IterRange::new(
+        (v2.as_pointer() as Ptr<Ptr<i32>>).begin(),
+        (v2.as_pointer() as Ptr<Ptr<i32>>).end(),
+    ) {
+        let mut p: Ptr<i32> = (p.iter_deref().read());
         {
             p.with_mut(|__v| *__v = *__v + 5)
         };
     }
-    'loop_: for p in v2.as_pointer() as Ptr<Ptr<i32>> {
-        let mut p: Ptr<i32> = p.read();
+    'loop_: for p in IterRange::new(
+        (v2.as_pointer() as Ptr<Ptr<i32>>).begin(),
+        (v2.as_pointer() as Ptr<Ptr<i32>>).end(),
+    ) {
+        let mut p: Ptr<i32> = (p.iter_deref().read());
         sum += { (p.read()) };
     }
-    'loop_: for mut p in v2.as_pointer() as Ptr<Ptr<i32>> {
-        let mut p: Ptr<i32> = p.read();
+    'loop_: for p in IterRange::new(
+        (v2.as_pointer() as Ptr<Ptr<i32>>).begin(),
+        (v2.as_pointer() as Ptr<Ptr<i32>>).end(),
+    ) {
+        let mut p: Ptr<i32> = (p.iter_deref().read());
         {
             p.with_mut(|__v| *__v = *__v + 5)
         };
     }
-    'loop_: for mut p in v2.as_pointer() as Ptr<Ptr<i32>> {
-        let mut p: Ptr<i32> = p.read();
+    'loop_: for p in IterRange::new(
+        (v2.as_pointer() as Ptr<Ptr<i32>>).begin(),
+        (v2.as_pointer() as Ptr<Ptr<i32>>).end(),
+    ) {
+        let mut p: Ptr<i32> = (p.iter_deref().read());
         sum += { (p.read()) };
     }
     assert!((sum == 168));

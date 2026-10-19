@@ -22,8 +22,11 @@ pub struct Pair {
 }
 pub fn total_2(v: Ptr<Vec<i32>>) -> i32 {
     let mut s: i32 = 0;
-    'loop_: for mut x in Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32> {
-        let mut x: i32 = x.read();
+    'loop_: for x in IterRange::new(
+        (Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>).begin(),
+        (Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>).end(),
+    ) {
+        let mut x: i32 = (x.iter_deref().read());
         s += x;
     }
     return s;

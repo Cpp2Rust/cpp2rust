@@ -28,6 +28,7 @@ public:
 private:
   clang::ASTContext &ctx_;
   std::unordered_set<const clang::VarDecl *> address_taken_;
+  std::unordered_set<const clang::VarDecl *> range_iterators_;
 };
 
 // The reads of the value of variables in a returned expression that are the

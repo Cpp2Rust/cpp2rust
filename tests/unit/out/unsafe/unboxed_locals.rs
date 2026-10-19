@@ -20,8 +20,8 @@ pub struct Pair {
 }
 pub unsafe fn total_2(v: *const Vec<i32>) -> i32 {
     let mut s: i32 = 0;
-    'loop_: for x in 0..((*v).len()) {
-        let mut x = (&(*v))[x].clone();
+    'loop_: for x in IterRange::new((*v).begin(), (*v).end()) {
+        let mut x: i32 = (*x.iter_deref());
         s += x;
     }
     return s;

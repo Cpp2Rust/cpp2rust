@@ -24,8 +24,8 @@ unsafe fn main_0() -> i32 {
         let __a1 = 1;
         s.v.push(__a1)
     };
-    'loop_: for e in 0..(s.v.len()) {
-        let mut e = s.v[e].clone();
+    'loop_: for e in IterRange::new(s.v.begin(), s.v.end()) {
+        let mut e: i32 = (*e.iter_deref());
         s.a.postfix_inc();
     }
     return 0;
