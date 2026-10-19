@@ -55,7 +55,7 @@ fn f92<T1: TryFrom<T2>, T2: Clone + ByteRepr, T3: CppInputIterator<T2>>(a0: T3, 
     let mut __v = Vec::new();
     let mut __it = a0;
     while __it != a1 {
-        __v.push(T1::try_from(__it.iter_deref().read()).ok().unwrap());
+        __v.push(<T1>::try_from(__it.iter_deref().read()).ok().unwrap());
         __it.iter_inc();
     }
     __v

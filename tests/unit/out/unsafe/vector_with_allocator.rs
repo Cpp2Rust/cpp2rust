@@ -259,7 +259,7 @@ unsafe fn main_0() -> i32 {
         let mut __v = Vec::new();
         let mut __it = src.as_mut_ptr();
         while __it != src.as_mut_ptr().offset((3) as isize) {
-            __v.push(u32::try_from((*__it.iter_deref()).clone()).ok().unwrap());
+            __v.push(<u32>::try_from((*__it.iter_deref()).clone()).ok().unwrap());
             __it.iter_inc();
         }
         __v
@@ -273,7 +273,7 @@ unsafe fn main_0() -> i32 {
         let mut __v = Vec::new();
         let mut __it = src.as_mut_ptr();
         while __it != src.as_mut_ptr().offset((3) as isize) {
-            __v.push(u64::try_from((*__it.iter_deref()).clone()).ok().unwrap());
+            __v.push(<u64>::try_from((*__it.iter_deref()).clone()).ok().unwrap());
             __it.iter_inc();
         }
         __v
@@ -287,7 +287,7 @@ unsafe fn main_0() -> i32 {
         let mut __v = Vec::new();
         let mut __it = src.as_mut_ptr();
         while __it != src.as_mut_ptr().offset((3) as isize) {
-            __v.push(i32::try_from((*__it.iter_deref()).clone()).ok().unwrap());
+            __v.push(<i32>::try_from((*__it.iter_deref()).clone()).ok().unwrap());
             __it.iter_inc();
         }
         __v
@@ -299,7 +299,7 @@ unsafe fn main_0() -> i32 {
         let mut __v = Vec::new();
         let mut __it = src1.as_ptr();
         while __it != src1.as_ptr().add(src1.len()) {
-            __v.push(u32::try_from((*__it.iter_deref()).clone()).ok().unwrap());
+            __v.push(<u32>::try_from((*__it.iter_deref()).clone()).ok().unwrap());
             __it.iter_inc();
         }
         __v
@@ -316,7 +316,7 @@ unsafe fn main_0() -> i32 {
         let mut __v = Vec::new();
         let mut __it = start;
         while __it != start.offset((len) as isize) {
-            __v.push(u8::try_from((*__it.iter_deref()).clone()).ok().unwrap());
+            __v.push(<u8>::try_from((*__it.iter_deref()).clone()).ok().unwrap());
             __it.iter_inc();
         }
         __v

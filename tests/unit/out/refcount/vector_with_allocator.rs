@@ -252,7 +252,7 @@ fn main_0() -> i32 {
         let mut __v = Vec::new();
         let mut __it = (src.as_pointer() as Ptr<u32>);
         while __it != (src.as_pointer() as Ptr<u32>).offset((3) as isize) {
-            __v.push(u32::try_from(__it.iter_deref().read()).ok().unwrap());
+            __v.push(<u32>::try_from(__it.iter_deref().read()).ok().unwrap());
             __it.iter_inc();
         }
         __v
@@ -263,7 +263,7 @@ fn main_0() -> i32 {
         let mut __v = Vec::new();
         let mut __it = (src.as_pointer() as Ptr<u32>);
         while __it != (src.as_pointer() as Ptr<u32>).offset((3) as isize) {
-            __v.push(u64::try_from(__it.iter_deref().read()).ok().unwrap());
+            __v.push(<u64>::try_from(__it.iter_deref().read()).ok().unwrap());
             __it.iter_inc();
         }
         __v
@@ -274,7 +274,7 @@ fn main_0() -> i32 {
         let mut __v = Vec::new();
         let mut __it = (src.as_pointer() as Ptr<u32>);
         while __it != (src.as_pointer() as Ptr<u32>).offset((3) as isize) {
-            __v.push(i32::try_from(__it.iter_deref().read()).ok().unwrap());
+            __v.push(<i32>::try_from(__it.iter_deref().read()).ok().unwrap());
             __it.iter_inc();
         }
         __v
@@ -286,7 +286,7 @@ fn main_0() -> i32 {
         let mut __v = Vec::new();
         let mut __it = (src1.as_pointer() as Ptr<u32>);
         while __it != (src1.as_pointer() as Ptr<u32>).to_end() {
-            __v.push(u32::try_from(__it.iter_deref().read()).ok().unwrap());
+            __v.push(<u32>::try_from(__it.iter_deref().read()).ok().unwrap());
             __it.iter_inc();
         }
         __v
@@ -301,7 +301,7 @@ fn main_0() -> i32 {
         let mut __v = Vec::new();
         let mut __it = (start).clone();
         while __it != start.offset((len) as isize) {
-            __v.push(u8::try_from(__it.iter_deref().read()).ok().unwrap());
+            __v.push(<u8>::try_from(__it.iter_deref().read()).ok().unwrap());
             __it.iter_inc();
         }
         __v
