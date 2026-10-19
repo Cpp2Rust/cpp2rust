@@ -22,14 +22,25 @@ pub unsafe fn fill_1(arr: *mut Option<Box<[*mut i32]>>, n1: *mut i32) {
         let _x2: *mut i32 = &mut n2;
         mkPair_0(_x1, _x2)
     });
-    (*arr).as_mut().unwrap()[(0_usize)] = (pair.x1);
-    (*arr).as_mut().unwrap()[(1_usize)] = (pair.x2);
+    (*(*arr)
+        .as_deref()
+        .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut *mut i32)
+        .add(0_usize)) = (pair.x1);
+    (*(*arr)
+        .as_deref()
+        .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut *mut i32)
+        .add(1_usize)) = (pair.x2);
 }
 pub unsafe fn any_2(arr: *mut Option<Box<[*mut i32]>>, n1: *mut i32) -> bool {
     let mut out: bool = false;
     let mut i: i32 = 0;
     'loop_: while ((i) < (*n1)) {
-        out = (out) || ((*(*arr).as_mut().unwrap()[(i as usize)]) == (0));
+        out = (out)
+            || ((*(*(*arr)
+                .as_deref()
+                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut *mut i32)
+                .add((i as usize))))
+                == (0));
         i.prefix_inc();
     }
     return out;

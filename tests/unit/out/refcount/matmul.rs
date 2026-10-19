@@ -18,7 +18,7 @@ pub fn matalloc_0(
     )));
     let mut i: i32 = 0;
     'loop_: while (i < n) {
-        ((m.as_ref().unwrap().as_pointer().offset((i as usize))).clone()
+        ((m.as_pointer() as Ptr<Option<Value<Box<[i32]>>>>).offset((i as usize) as isize)
             as Ptr<Option<Value<Box<[i32]>>>>)
             .write(
                 Some(Rc::new(RefCell::new(
@@ -30,10 +30,13 @@ pub fn matalloc_0(
             );
         let mut j: i32 = 0;
         'loop_: while (j < p) {
-            m.as_ref().unwrap().borrow()[(i as usize) as usize]
-                .as_ref()
-                .unwrap()
-                .borrow_mut()[(j as usize) as usize] = e;
+            ((*(m.as_pointer() as Ptr<Option<Value<Box<[i32]>>>>)
+                .offset((i as usize) as isize)
+                .upgrade()
+                .deref())
+            .as_pointer() as Ptr<i32>)
+                .offset((j as usize) as isize)
+                .write(e);
             j.prefix_inc();
         }
         i.prefix_inc();
@@ -56,20 +59,29 @@ pub fn matmul_1(
         'loop_: while (j < p2) {
             let mut k: i32 = 0;
             'loop_: while (k < p1) {
-                sum += (m1.as_ref().unwrap().borrow()[(i as usize) as usize]
-                    .as_ref()
-                    .unwrap()
-                    .borrow()[(k as usize) as usize]
-                    * m2.as_ref().unwrap().borrow()[(k as usize) as usize]
-                        .as_ref()
-                        .unwrap()
-                        .borrow()[(j as usize) as usize]);
+                sum += ((((*(m1.as_pointer() as Ptr<Option<Value<Box<[i32]>>>>)
+                    .offset((i as usize) as isize)
+                    .upgrade()
+                    .deref())
+                .as_pointer() as Ptr<i32>)
+                    .offset((k as usize) as isize)
+                    .read())
+                    * (((*(m2.as_pointer() as Ptr<Option<Value<Box<[i32]>>>>)
+                        .offset((k as usize) as isize)
+                        .upgrade()
+                        .deref())
+                    .as_pointer() as Ptr<i32>)
+                        .offset((j as usize) as isize)
+                        .read()));
                 k.prefix_inc();
             }
-            m3.as_ref().unwrap().borrow()[(i as usize) as usize]
-                .as_ref()
-                .unwrap()
-                .borrow_mut()[(j as usize) as usize] = sum;
+            ((*(m3.as_pointer() as Ptr<Option<Value<Box<[i32]>>>>)
+                .offset((i as usize) as isize)
+                .upgrade()
+                .deref())
+            .as_pointer() as Ptr<i32>)
+                .offset((j as usize) as isize)
+                .write(sum);
             j.prefix_inc();
         }
         i.prefix_inc();
@@ -97,10 +109,13 @@ fn main_0() -> i32 {
         matmul_1(_m1, _n1, _p1, _m2, _n2, _p2)
     });
     assert!(
-        (m3.as_ref().unwrap().borrow()[(0_usize) as usize]
-            .as_ref()
-            .unwrap()
-            .borrow()[(0_usize) as usize]
+        ((((*(m3.as_pointer() as Ptr<Option<Value<Box<[i32]>>>>)
+            .offset(0_usize as isize)
+            .upgrade()
+            .deref())
+        .as_pointer() as Ptr<i32>)
+            .offset(0_usize as isize)
+            .read())
             == 20)
     );
     return 0;

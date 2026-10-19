@@ -37,9 +37,8 @@ unsafe fn main_0() -> i32 {
                 .map_or(::std::ptr::null_mut(), |v| v as *mut i32))
             .is_null()
             {
-                (*(*(std::ptr::addr_of!(u).cast_mut()))
-                    .as_deref_mut()
-                    .unwrap())
+                (*u.as_deref()
+                    .map_or(::std::ptr::null_mut(), |v| v as *const i32 as *mut i32))
             } else {
                 0
             };

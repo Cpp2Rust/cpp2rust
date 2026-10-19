@@ -122,7 +122,7 @@ fn main_0() -> i32 {
     (&(*g.borrow_mut()));
     &(*g.borrow_mut());
     ({ unused_noncopyable_param_5(g.as_pointer()) });
-    assert!(((*{ (*g.borrow()).value.clone() }.as_ref().unwrap().borrow()) == 9));
+    assert!((({ (*g.borrow()).value.clone() }.as_pointer().read()) == 9));
     return 0;
 }
 pub trait NonCopyableImpl {

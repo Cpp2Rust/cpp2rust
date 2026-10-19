@@ -12,11 +12,17 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let mut p: Option<Value<i32>> = Some(Rc::new(RefCell::new(10)));
-    (*p.as_ref().unwrap().borrow_mut()) += 5;
-    (*p.as_ref().unwrap().borrow_mut()) -= 3;
-    (*p.as_ref().unwrap().borrow_mut()) *= 2;
+    {
+        p.as_pointer().with_mut(|__v| *__v = *__v + 5)
+    };
+    {
+        p.as_pointer().with_mut(|__v| *__v = *__v - 3)
+    };
+    {
+        p.as_pointer().with_mut(|__v| *__v = *__v * 2)
+    };
     let mut q: Option<Value<i32>> = Some(Rc::new(RefCell::new(1)));
-    let mut sum: i32 = ((*p.as_ref().unwrap().borrow()) + (*q.as_ref().unwrap().borrow()));
+    let mut sum: i32 = ((p.as_pointer().read()) + (q.as_pointer().read()));
     assert!((sum == 25));
     return 0;
 }

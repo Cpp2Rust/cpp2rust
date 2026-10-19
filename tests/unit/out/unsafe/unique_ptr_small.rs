@@ -19,7 +19,14 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut n: Option<Box<i32>> = Some(Box::new(10));
     (unsafe { change_0(&mut n) });
-    assert!(((*n.as_deref_mut().unwrap()) == (20)));
+    assert!(
+        ((*n.as_deref()
+            .map_or(::std::ptr::null_mut(), |v| v as *const i32 as *mut i32))
+            == (20))
+    );
+    let mut empty: Option<Box<i32>> = None;
+    assert!(empty.is_none());
+    assert!(n.is_some());
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

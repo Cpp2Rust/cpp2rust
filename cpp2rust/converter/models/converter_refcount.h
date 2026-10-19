@@ -285,8 +285,6 @@ public:
   void ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
                          std::string_view assign_operator) override;
 
-  void ConvertUniquePtrDeref(clang::CXXOperatorCallExpr *expr) override;
-
   bool ConvertCXXOperatorCallExpr(clang::CXXOperatorCallExpr *expr) override;
 
   void ConvertFunctionParameters(clang::FunctionDecl *decl) override;

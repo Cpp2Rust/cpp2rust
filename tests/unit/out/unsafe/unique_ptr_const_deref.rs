@@ -24,14 +24,16 @@ impl Holder {
     }
 }
 pub unsafe fn read_val_0(mut h: *const Holder) -> i32 {
-    return (*(*(std::ptr::addr_of!((*h).val).cast_mut()))
-        .as_deref_mut()
-        .unwrap());
+    return (*(*h)
+        .val
+        .as_deref()
+        .map_or(::std::ptr::null_mut(), |v| v as *const i32 as *mut i32));
 }
 pub unsafe fn write_val_1(mut h: *const Holder, mut v: i32) {
-    (*(*(std::ptr::addr_of!((*h).val).cast_mut()))
-        .as_deref_mut()
-        .unwrap()) = v;
+    (*(*h)
+        .val
+        .as_deref()
+        .map_or(::std::ptr::null_mut(), |v| v as *const i32 as *mut i32)) = v;
 }
 pub fn main() {
     unsafe {

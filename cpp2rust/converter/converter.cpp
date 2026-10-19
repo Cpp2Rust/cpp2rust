@@ -34,22 +34,6 @@ std::vector<std::string> Converter::global_inits_;
 Converter::RecordIndex Converter::record_decls_;
 std::map<std::string, Converter::DeferredBlock> Converter::virtual_methods_;
 
-void Converter::ConvertUniquePtrDeref(clang::CXXOperatorCallExpr *expr) {
-  bool is_star = expr->getOperator() == clang::OverloadedOperatorKind::OO_Star;
-  PushParen paren(*this, is_star);
-  if (is_star) {
-    StrCat(token::kStar);
-  }
-  if (expr->getArg(0)->IgnoreImplicit()->getType().isConstQualified()) {
-    StrCat("(*(std::ptr::addr_of!(");
-    Convert(expr->getArg(0));
-    StrCat(").cast_mut())).as_deref_mut().unwrap()");
-  } else {
-    Convert(expr->getArg(0));
-    StrCat(".as_deref_mut().unwrap()");
-  }
-}
-
 void Converter::EmitFilePreamble() {
   StrCat(R"(
 extern crate libc;
@@ -3345,9 +3329,7 @@ bool Converter::ConvertCXXOperatorCallExpr(clang::CXXOperatorCallExpr *expr) {
     break;
   case clang::OverloadedOperatorKind::OO_Star:
   case clang::OverloadedOperatorKind::OO_Arrow:
-    if (IsUniquePtr(expr->getArg(0)->getType())) {
-      ConvertUniquePtrDeref(expr);
-    } else if (expr->getOperator() == clang::OverloadedOperatorKind::OO_Star) {
+    if (expr->getOperator() == clang::OverloadedOperatorKind::OO_Star) {
       PushParen paren(*this);
       StrCat(token::kStar);
       Convert(expr->getArg(0));
@@ -3372,8 +3354,7 @@ bool Converter::ConvertCXXOperatorCallExpr(clang::CXXOperatorCallExpr *expr) {
     } else {
       base_vars = GetAllVars(base);
     }
-    if (!IsUniquePtr(base->getType()) &&
-        std::ranges::any_of(GetAllVars(idx), [&](const clang::ValueDecl *var) {
+    if (std::ranges::any_of(GetAllVars(idx), [&](const clang::ValueDecl *var) {
           return base_vars.contains(var);
         })) {
       std::string idx_str;
@@ -4539,8 +4520,7 @@ void Converter::ConvertUnsignedArithOperand(clang::Expr *expr,
 void Converter::ConvertEqualsNullPtr(clang::Expr *expr) {
   StrCat('(');
   Convert(expr);
-  if (IsUniquePtr(expr->getType()) ||
-      expr->getType()->isFunctionPointerType()) {
+  if (expr->getType()->isFunctionPointerType()) {
     StrCat(").is_none()");
   } else {
     StrCat(").is_null()");
@@ -4614,13 +4594,7 @@ void Converter::ConvertArraySubscript(clang::Expr *base, clang::Expr *idx,
       return;
     }
   }
-  if (IsUniquePtr(base->getType())) {
-    PushExplicitAutoref no_autoref(*this, std::nullopt);
-    Convert(base->IgnoreImplicit());
-    StrCat(".as_mut().unwrap()");
-  } else {
-    Convert(base->IgnoreImplicit());
-  }
+  Convert(base->IgnoreImplicit());
   PushExplicitAutoref no_autoref(*this, std::nullopt);
   PushBracket bracket(*this);
   {
