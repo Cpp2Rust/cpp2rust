@@ -1888,6 +1888,7 @@ bool ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
         PushConversionKind push(*this, ConversionKind::Unboxed);
         ConverterRefCount::VisitInitListExpr(init);
       } else {
+        PushConversionKind push(*this, ConversionKind::Unboxed);
         StrCat(GetDefaultAsString(qual_type));
       }
       computed_expr_type_ = ComputedExprType::FreshValue;
