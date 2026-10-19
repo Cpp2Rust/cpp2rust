@@ -89,11 +89,12 @@ static bool IsArrayFieldPtr(clang::ASTContext &ctx, const clang::Expr *expr) {
 // Whether `expr` is a field of an element of a std::vector, whose arrays and
 // vectors are accessed through the place of the element, which is never
 // reinterpreted memory.
-static bool IsFieldOfVectorElem(const clang::MemberExpr *expr) {
+static bool IsFieldOfVectorElem(clang::ASTContext &ctx,
+                                const clang::MemberExpr *expr) {
   auto *op = clang::dyn_cast<clang::CXXOperatorCallExpr>(
       expr->getBase()->IgnoreParenImpCasts());
   return !expr->isArrow() && op && op->getOperator() == clang::OO_Subscript &&
-         !IsUniquePtr(op->getArg(0)->getType());
+         !Mapper::Contains(ctx, op);
 }
 
 static bool IsPointerType(clang::ASTContext &ctx, clang::QualType type) {
@@ -175,8 +176,7 @@ bool ConverterRefCount::IsUnboxedPlace(const clang::Expr *expr) const {
   }
   if (auto *op = clang::dyn_cast<clang::CXXOperatorCallExpr>(expr)) {
     return op->getOperator() == clang::OO_Subscript &&
-           !IsUniquePtr(op->getArg(0)->getType()) &&
-           IsUnboxedPlace(op->getArg(0));
+           !Mapper::Contains(ctx_, op) && IsUnboxedPlace(op->getArg(0));
   }
   auto *ref = clang::dyn_cast<clang::DeclRefExpr>(expr);
   return ref && IsUnboxedVar(ref->getDecl());
@@ -2810,20 +2810,6 @@ void ConverterRefCount::ConvertGenericBinaryOperator(
   computed_expr_type_ = ComputedExprType::FreshValue;
 }
 
-void ConverterRefCount::ConvertUniquePtrDeref(
-    clang::CXXOperatorCallExpr *expr) {
-  if (isAddrOf()) {
-    StrCat(ConvertRValue(expr->getArg(0)), ".as_pointer()");
-    computed_expr_type_ = ComputedExprType::FreshPointer;
-  } else {
-    // The object is modified through its own Value.
-    StrCat(std::format("(*{}.as_ref().unwrap().borrow{}())",
-                       ConvertRValue(expr->getArg(0)),
-                       isRValue() ? "" : "_mut"));
-    SetValueFreshness(expr->getType());
-  }
-}
-
 bool ConverterRefCount::ConvertCXXOperatorCallExpr(
     clang::CXXOperatorCallExpr *expr) {
   switch (expr->getOperator()) {
@@ -2833,11 +2819,6 @@ bool ConverterRefCount::ConvertCXXOperatorCallExpr(
 
   case clang::OverloadedOperatorKind::OO_Arrow:
   case clang::OverloadedOperatorKind::OO_Star:
-    if (IsUniquePtr(expr->getArg(0)->getType())) {
-      ConvertUniquePtrDeref(expr);
-      break;
-    }
-
     if (isLValue()) {
       auto ptr = ToString(expr->getArg(0));
       pending_deref_.set(std::move(ptr), isFresh());
@@ -2859,24 +2840,6 @@ bool ConverterRefCount::ConvertCXXOperatorCallExpr(
     break;
 
   case clang::OverloadedOperatorKind::OO_Subscript: {
-    if (IsUniquePtr(expr->getArg(0)->getType())) {
-      StrCat(
-          std::format("{}.as_ref().unwrap()", ConvertRValue(expr->getArg(0))));
-      if (isAddrOf()) {
-        StrCat(std::format(".as_pointer().offset(({}))",
-                           ConvertRValue(expr->getArg(1))));
-      } else {
-        if (isRValue()) {
-          StrCat(".borrow()");
-        } else {
-          StrCat(".borrow_mut()");
-        }
-        StrCat(std::format("[({}) as usize]", ConvertRValue(expr->getArg(1))));
-      }
-      SetValueFreshness(expr->getType());
-      break;
-    }
-
     bool is_inner_boxed =
         IsBoxedType(ctx_, expr->getType().getNonReferenceType()) &&
         IsBoxedType(ctx_, expr->getArg(0)->getType().getNonReferenceType());
@@ -2994,7 +2957,7 @@ std::string ConverterRefCount::ConvertElemPlace(clang::Expr *container,
       !IsUnboxedPlace(member) &&
       Mapper::Map(ctx_, field->getType().getUnqualifiedType())
           .starts_with("Vec<")) {
-    if (IsFieldOfVectorElem(member)) {
+    if (IsFieldOfVectorElem(ctx_, member)) {
       return std::format("index!({}, {})", ConvertPlace(member),
                          ConvertSubscriptIndex(idx));
     }
@@ -3135,7 +3098,7 @@ void ConverterRefCount::ConvertPointerElem(clang::Expr *base,
   // An element of an array field is accessed in place, through the struct.
   if (IsArrayFieldPtr(ctx_, base)) {
     auto *member = clang::cast<clang::MemberExpr>(base->IgnoreParenImpCasts());
-    if (IsFieldOfVectorElem(member)) {
+    if (IsFieldOfVectorElem(ctx_, member)) {
       StrCat(std::format("index!({}, {})", ConvertPlace(member),
                          ConvertRValue(idx)));
       computed_expr_type_ = ComputedExprType::FreshPointer;

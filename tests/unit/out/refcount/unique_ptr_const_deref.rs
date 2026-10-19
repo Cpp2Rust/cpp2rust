@@ -21,10 +21,10 @@ impl Holder {
     }
 }
 pub fn read_val_0(mut h: Ptr<Holder>) -> i32 {
-    return (*h.with(|__s| __s.val.clone()).as_ref().unwrap().borrow());
+    return (h.with(|__s| __s.val.clone()).as_pointer().read());
 }
 pub fn write_val_1(mut h: Ptr<Holder>, mut v: i32) {
-    (*h.with(|__s| __s.val.clone()).as_ref().unwrap().borrow_mut()) = v;
+    h.with(|__s| __s.val.clone()).as_pointer().write(v);
 }
 pub fn main() {
     __cpp2rust_init_globals();

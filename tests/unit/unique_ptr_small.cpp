@@ -10,5 +10,8 @@ int main() {
   std::unique_ptr<int> n = std::make_unique<int>(10);
   change(n);
   assert(*n == 20);
+  std::unique_ptr<int> empty;
+  assert(empty == nullptr);
+  assert(n != nullptr);
   return 0;
 }

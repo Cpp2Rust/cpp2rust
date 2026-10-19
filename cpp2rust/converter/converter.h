@@ -753,8 +753,6 @@ protected:
   virtual void ConvertLoopVariable(clang::VarDecl *decl,
                                    clang::Expr *range_init);
 
-  virtual void ConvertUniquePtrDeref(clang::CXXOperatorCallExpr *expr);
-
   virtual bool ConvertCXXOperatorCallExpr(clang::CXXOperatorCallExpr *expr);
 
   std::string GetMappedAsString(clang::Expr *expr, clang::Expr **args = nullptr,
