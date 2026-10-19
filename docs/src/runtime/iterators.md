@@ -27,17 +27,9 @@ for x in v.as_pointer() as Ptr<i32> {
 }
 ```
 
-Two variants serve special cases. `StringIterator`, returned by
+One variant serves a special case. `StringIterator`, returned by
 `to_string_iterator`, stops before the trailing zero byte, so iterating a
-`std::string` visits its characters only. `PtrValueIter` yields copies of the
-elements instead of pointers to them; rule bodies use it to feed a range of C
-memory to Rust iterator adaptors:
-
-```rust
-// std::accumulate(first, last, init)
-let count = (last - first) as usize;
-PtrValueIter::new(&first, count).fold(init, |acc, x| acc + x)
-```
+`std::string` visits its characters only.
 
 ## Stable iterators
 
