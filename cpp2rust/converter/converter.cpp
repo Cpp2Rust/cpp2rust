@@ -723,9 +723,8 @@ bool Converter::TypeDerivesDefault(clang::QualType qual_type) {
     return false;
   }
 
-  // Types that need a custom array initializer (e.g., std::array, which is
-  // translated to Vec)
-  if (!GetArrayDefaultAsString(qual_type).empty()) {
+  auto *cxx_record = qual_type->getAsCXXRecordDecl();
+  if (IsStdDecl(cxx_record, "array") || IsStdDecl(cxx_record, "basic_string")) {
     return false;
   }
 
@@ -1373,6 +1372,9 @@ bool Converter::VisitDeclStmt(clang::DeclStmt *stmt) {
       hoisted_records_ += std::move(buf).str();
       continue;
     }
+    if (var && IsAliasOfInit(ctx_, var)) {
+      continue;
+    }
     if (var && var->isImplicit()) {
       VisitVarDecl(var);
     } else {
@@ -1488,112 +1490,25 @@ bool Converter::VisitForStmt(clang::ForStmt *stmt) {
   return false;
 }
 
-void Converter::ConvertLoopVariable(clang::VarDecl *decl,
-                                    clang::Expr *range_init) {
-  auto loop_var_type = decl->getType();
-  auto loop_var_name = GetNamedDeclAsString(decl);
-
-  if (loop_var_type->isReferenceType()) {
-    auto pointee_type = loop_var_type->getPointeeType();
-    Convert(range_init);
-    if (pointee_type.isConstQualified()) {
-      StrCat(std::format(".as_ptr().add({})", loop_var_name));
-    } else {
-      StrCat(std::format(".as_mut_ptr().add({})", loop_var_name));
-    }
-  } else {
-    {
-      PushExplicitAutoref autoref(*this, /*is_mut=*/false);
-      Convert(range_init);
-    }
-    StrCat(std::format("[{}]", loop_var_name));
-    StrCat(".clone()");
-  }
-}
-
-void Converter::ConvertForRangeBody(clang::CXXForRangeStmt *stmt) {
-  PushBreakTarget push(break_target_, BreakTarget::Loop);
-  curr_for_inc_.emplace_back(nullptr);
-  ConvertBodyStmts(stmt->getBody());
-  curr_for_inc_.pop_back();
-}
-
 bool Converter::VisitCXXForRangeStmt(clang::CXXForRangeStmt *stmt) {
-  auto range_init_type = stmt->getRangeInit()->getType();
-
-  if (!Mapper::Contains(ctx_, range_init_type.getUnqualifiedType())) {
-    // FIXME: improve error handling
-    log() << "for range stmts only for types in std namespace\n";
-  }
-
-  log() << "GetClassName: " << GetClassName(range_init_type) << '\n';
-
-  if (GetClassName(range_init_type) == "std::map") {
-    return VisitCXXForRangeStmtMap(stmt);
-  }
-  if (GetClassName(range_init_type) == "std::basic_string") {
-    return VisitCXXForRangeStmtString(stmt);
-  }
-  return VisitCXXForRangeStmtVector(stmt);
-}
-
-bool Converter::VisitCXXForRangeStmtMap(clang::CXXForRangeStmt *stmt) {
-  auto begin =
-      llvm::cast<clang::VarDecl>(stmt->getBeginStmt()->getSingleDecl());
-
+  PushBreakTarget push(break_target_, BreakTarget::Loop);
+  Convert(stmt->getInit());
+  Convert(stmt->getRangeStmt());
+  auto *begin =
+      clang::cast<clang::VarDecl>(stmt->getBeginStmt()->getSingleDecl());
+  auto *end = clang::cast<clang::VarDecl>(stmt->getEndStmt()->getSingleDecl());
+  begin->setDeclName(stmt->getLoopVariable()->getDeclName());
   StrCat("'loop_:");
-  auto map_type = Mapper::Map(*this, stmt->getRangeInit()->getType());
   StrCat(keyword::kFor, GetNamedDeclAsString(begin), keyword::kIn,
-         "UnsafeMap::range(&");
-  Convert(stmt->getRangeInit());
-  StrCat(std::format(" as *const {})", map_type));
+         "IterRange::new(", ConvertFreshRValue(begin->getInit()), token::kComma,
+         ConvertFreshRValue(end->getInit()), ')');
   {
     PushBrace brace(*this);
+    curr_for_inc_.emplace_back(nullptr);
     Convert(stmt->getLoopVarStmt());
-    ConvertForRangeBody(stmt);
+    ConvertBodyStmts(stmt->getBody());
+    curr_for_inc_.pop_back();
   }
-
-  return false;
-}
-
-bool Converter::VisitCXXForRangeStmtString(clang::CXXForRangeStmt *stmt) {
-  return VisitCXXForRangeStmtIndexBased(stmt, "len()-1");
-}
-
-bool Converter::VisitCXXForRangeStmtVector(clang::CXXForRangeStmt *stmt) {
-  return VisitCXXForRangeStmtIndexBased(stmt, "len()");
-}
-
-bool Converter::VisitCXXForRangeStmtIndexBased(clang::CXXForRangeStmt *stmt,
-                                               const char *len_suffix) {
-  auto *loop_var = stmt->getLoopVariable();
-  auto loop_var_name = GetNamedDeclAsString(loop_var);
-
-  StrCat("'loop_:");
-  StrCat(keyword::kFor, loop_var_name, keyword::kIn, "0..");
-  {
-    PushParen range(*this);
-    Convert(stmt->getRangeInit());
-    StrCat(token::kDot, len_suffix);
-  }
-  {
-    PushBrace body(*this);
-    StrCat(keyword::kLet);
-
-    auto loop_var_type = loop_var->getType();
-    if (!loop_var_type.isConstQualified()) {
-      StrCat(keyword_mut_);
-    }
-
-    StrCat(loop_var_name);
-    StrCat(token::kAssign);
-
-    ConvertLoopVariable(loop_var, stmt->getRangeInit());
-
-    StrCat(token::kSemiColon);
-    ConvertForRangeBody(stmt);
-  }
-
   return false;
 }
 
@@ -3269,6 +3184,11 @@ bool Converter::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
     Convert(init);
     return false;
   }
+  if (auto var = clang::dyn_cast<clang::VarDecl>(expr->getDecl());
+      var && IsAliasOfInit(ctx_, var)) {
+    Convert(var->getInit());
+    return false;
+  }
   ConvertDeclRefValue(expr, expr->getDecl());
   return false;
 }
@@ -3613,22 +3533,20 @@ bool Converter::VisitInitListExpr(clang::InitListExpr *expr) {
     }
   } else if (qual_type->isRecordType()) {
     const auto *record = qual_type->getAsRecordDecl();
-    if (record->getQualifiedNameAsString() == "std::array") {
-      if (auto init = clang::dyn_cast<clang::InitListExpr>(expr->getInit(0))) {
-        StrCat("vec!");
-        VisitInitListExpr(init);
-      } else {
-        StrCat(GetArrayDefaultAsString(qual_type));
-      }
-      SetFreshType(qual_type);
-      return false;
-    }
-
     if (syntactic->getNumInits() == 0) {
       StrCat(GetDefaultAsString(qual_type));
       SetFreshType(qual_type);
       return false;
     }
+
+    if (auto str =
+            GetMappedAsString(expr, expr->getInits(), expr->getNumInits());
+        !str.empty()) {
+      StrCat(str);
+      SetFreshType(qual_type);
+      return false;
+    }
+    assert(IsUserDefinedDecl(record) && "aggregate list without a rule");
 
     StrCat(GetUnsafeTypeAsString(qual_type));
     PushBrace brace(*this);
@@ -4258,11 +4176,11 @@ bool Converter::VisitClassTemplateDecl(clang::ClassTemplateDecl *decl) {
 
 bool Converter::VisitCXXStdInitializerListExpr(
     clang::CXXStdInitializerListExpr *expr) {
-  if (expr->getSubExpr()->getType()->isArrayType()) {
-    // Arrays become Vec's
-    StrCat("vec!");
-  }
-  Convert(expr->getSubExpr());
+  auto *backing = expr->getSubExpr();
+  auto str = GetMappedAsString(expr, &backing, 1);
+  ENSURE(!str.empty());
+  StrCat(str);
+  SetFreshType(expr->getType());
   return false;
 }
 
@@ -4282,33 +4200,6 @@ std::string Converter::GetArrayDefaultAsString(clang::QualType qual_type) {
   }
   if (clang::isa<clang::IncompleteArrayType>(qual_type)) {
     return "[]";
-  }
-  if (IsStdDecl(qual_type->getAsCXXRecordDecl(), "array")) {
-    assert(GetTemplateArgs(qual_type).has_value());
-    auto template_args = *GetTemplateArgs(qual_type);
-    assert(template_args.size() == 2);
-    auto array_size = template_args[1];
-    unsigned size = 0;
-    switch (array_size.getKind()) {
-    case clang::TemplateArgument::Expression: {
-      auto array_size_expr = array_size.getAsExpr();
-      assert(array_size_expr && !array_size_expr->isValueDependent());
-      clang::Expr::EvalResult result;
-      ENSURE(array_size_expr->EvaluateAsInt(result, ctx_));
-      size = result.Val.getInt().getZExtValue();
-      break;
-    }
-    case clang::TemplateArgument::Integral: {
-      size = array_size.getAsIntegral().getZExtValue();
-      break;
-    }
-    default:
-      assert(0 && "Unsupported array size kind");
-      break;
-    }
-    return std::format(
-        "std::array::from_fn::<_, {}, _>(|_| Default::default()).to_vec()",
-        size);
   }
   return {};
 }

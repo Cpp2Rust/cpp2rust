@@ -159,30 +159,34 @@ pub fn main() {
 fn main_0() -> i32 {
     let mut w: Wrapped_int_ = Wrapped_int_ { v: 2 };
     assert!((w.v == 2));
-    let lts: Value<Vec<Lt>> = Rc::new(RefCell::new(vec![Lt { v: 3 }, Lt { v: 1 }, Lt { v: 2 }]));
+    let lts: Value<Vec<Lt>> = Rc::new(RefCell::new(Vec::from([
+        Lt { v: 3 },
+        Lt { v: 1 },
+        Lt { v: 2 },
+    ])));
     {
-        let __n = RandomAccessIterator::Vec((lts.as_pointer() as Ptr<Lt>).to_end())
-            .iter_distance(&RandomAccessIterator::Vec((lts.as_pointer() as Ptr<Lt>)));
+        let __n = (lts.as_pointer() as Ptr<Lt>)
+            .end()
+            .iter_distance(&(lts.as_pointer() as Ptr<Lt>).begin());
         let mut __order: Vec<isize> = (0..__n).collect();
         __order.sort_by(|&__x, &__y| {
-            RandomAccessIterator::Vec((lts.as_pointer() as Ptr<Lt>))
+            (lts.as_pointer() as Ptr<Lt>)
+                .begin()
                 .iter_at(__x)
                 .with(|__a| {
-                    RandomAccessIterator::Vec((lts.as_pointer() as Ptr<Lt>))
+                    (lts.as_pointer() as Ptr<Lt>)
+                        .begin()
                         .iter_at(__y)
                         .with(|__b| __a.cmp(__b))
                 })
         });
         let __values: Vec<_> = __order
             .iter()
-            .map(|&__i| {
-                RandomAccessIterator::Vec((lts.as_pointer() as Ptr<Lt>))
-                    .iter_at(__i)
-                    .read()
-            })
+            .map(|&__i| (lts.as_pointer() as Ptr<Lt>).begin().iter_at(__i).read())
             .collect();
         for (__i, __v) in (0..__n).zip(__values) {
-            RandomAccessIterator::Vec((lts.as_pointer() as Ptr<Lt>))
+            (lts.as_pointer() as Ptr<Lt>)
+                .begin()
                 .iter_at(__i)
                 .write(__v);
         }
@@ -191,13 +195,17 @@ fn main_0() -> i32 {
         (({ (*lts.borrow())[0_usize].v } == 1) && ({ (*lts.borrow())[1_usize].v } == 2))
             && ({ (*lts.borrow())[2_usize].v } == 3)
     );
-    let eqs: Value<Vec<Eq>> = Rc::new(RefCell::new(vec![Eq { v: 1 }, Eq { v: 2 }, Eq { v: 3 }]));
+    let eqs: Value<Vec<Eq>> = Rc::new(RefCell::new(Vec::from([
+        Eq { v: 1 },
+        Eq { v: 2 },
+        Eq { v: 3 },
+    ])));
     let mut two: Eq = Eq { v: 2 };
     let mut nine: Eq = Eq { v: 9 };
     assert!(
         ({
-            let mut __it = RandomAccessIterator::Vec((eqs.as_pointer() as Ptr<Eq>));
-            while __it != RandomAccessIterator::Vec((eqs.as_pointer() as Ptr<Eq>).to_end())
+            let mut __it = (eqs.as_pointer() as Ptr<Eq>).begin();
+            while __it != (eqs.as_pointer() as Ptr<Eq>).end()
                 && __it.iter_deref().with(|__v| *__v != two)
             {
                 __it.iter_inc();
@@ -210,40 +218,43 @@ fn main_0() -> i32 {
     );
     assert!(
         {
-            let mut __it = RandomAccessIterator::Vec((eqs.as_pointer() as Ptr<Eq>));
-            while __it != RandomAccessIterator::Vec((eqs.as_pointer() as Ptr<Eq>).to_end())
+            let mut __it = (eqs.as_pointer() as Ptr<Eq>).begin();
+            while __it != (eqs.as_pointer() as Ptr<Eq>).end()
                 && __it.iter_deref().with(|__v| *__v != nine)
             {
                 __it.iter_inc();
             }
             __it
-        } == RandomAccessIterator::Vec((eqs.as_pointer() as Ptr<Eq>).to_end())
+        } == (eqs.as_pointer() as Ptr<Eq>).end()
     );
-    let cmps: Value<Vec<Cmp>> =
-        Rc::new(RefCell::new(vec![Cmp { v: 3 }, Cmp { v: 1 }, Cmp { v: 2 }]));
+    let cmps: Value<Vec<Cmp>> = Rc::new(RefCell::new(Vec::from([
+        Cmp { v: 3 },
+        Cmp { v: 1 },
+        Cmp { v: 2 },
+    ])));
     {
-        let __n = RandomAccessIterator::Vec((cmps.as_pointer() as Ptr<Cmp>).to_end())
-            .iter_distance(&RandomAccessIterator::Vec((cmps.as_pointer() as Ptr<Cmp>)));
+        let __n = (cmps.as_pointer() as Ptr<Cmp>)
+            .end()
+            .iter_distance(&(cmps.as_pointer() as Ptr<Cmp>).begin());
         let mut __order: Vec<isize> = (0..__n).collect();
         __order.sort_by(|&__x, &__y| {
-            RandomAccessIterator::Vec((cmps.as_pointer() as Ptr<Cmp>))
+            (cmps.as_pointer() as Ptr<Cmp>)
+                .begin()
                 .iter_at(__x)
                 .with(|__a| {
-                    RandomAccessIterator::Vec((cmps.as_pointer() as Ptr<Cmp>))
+                    (cmps.as_pointer() as Ptr<Cmp>)
+                        .begin()
                         .iter_at(__y)
                         .with(|__b| __a.cmp(__b))
                 })
         });
         let __values: Vec<_> = __order
             .iter()
-            .map(|&__i| {
-                RandomAccessIterator::Vec((cmps.as_pointer() as Ptr<Cmp>))
-                    .iter_at(__i)
-                    .read()
-            })
+            .map(|&__i| (cmps.as_pointer() as Ptr<Cmp>).begin().iter_at(__i).read())
             .collect();
         for (__i, __v) in (0..__n).zip(__values) {
-            RandomAccessIterator::Vec((cmps.as_pointer() as Ptr<Cmp>))
+            (cmps.as_pointer() as Ptr<Cmp>)
+                .begin()
                 .iter_at(__i)
                 .write(__v);
         }
@@ -252,8 +263,8 @@ fn main_0() -> i32 {
     let mut three: Cmp = Cmp { v: 3 };
     assert!(
         ({
-            let mut __it = RandomAccessIterator::Vec((cmps.as_pointer() as Ptr<Cmp>));
-            while __it != RandomAccessIterator::Vec((cmps.as_pointer() as Ptr<Cmp>).to_end())
+            let mut __it = (cmps.as_pointer() as Ptr<Cmp>).begin();
+            while __it != (cmps.as_pointer() as Ptr<Cmp>).end()
                 && __it.iter_deref().with(|__v| *__v != three)
             {
                 __it.iter_inc();
@@ -264,18 +275,19 @@ fn main_0() -> i32 {
         .with(|__s| __s.v)
             == 3)
     );
-    let frees: Value<Vec<Free>> = Rc::new(RefCell::new(vec![Free { v: 2 }, Free { v: 1 }]));
+    let frees: Value<Vec<Free>> = Rc::new(RefCell::new(Vec::from([Free { v: 2 }, Free { v: 1 }])));
     {
-        let __n = RandomAccessIterator::Vec((frees.as_pointer() as Ptr<Free>).to_end())
-            .iter_distance(&RandomAccessIterator::Vec(
-                (frees.as_pointer() as Ptr<Free>),
-            ));
+        let __n = (frees.as_pointer() as Ptr<Free>)
+            .end()
+            .iter_distance(&(frees.as_pointer() as Ptr<Free>).begin());
         let mut __order: Vec<isize> = (0..__n).collect();
         __order.sort_by(|&__x, &__y| {
-            RandomAccessIterator::Vec((frees.as_pointer() as Ptr<Free>))
+            (frees.as_pointer() as Ptr<Free>)
+                .begin()
                 .iter_at(__x)
                 .with(|__a| {
-                    RandomAccessIterator::Vec((frees.as_pointer() as Ptr<Free>))
+                    (frees.as_pointer() as Ptr<Free>)
+                        .begin()
                         .iter_at(__y)
                         .with(|__b| __a.cmp(__b))
                 })
@@ -283,13 +295,15 @@ fn main_0() -> i32 {
         let __values: Vec<_> = __order
             .iter()
             .map(|&__i| {
-                RandomAccessIterator::Vec((frees.as_pointer() as Ptr<Free>))
+                (frees.as_pointer() as Ptr<Free>)
+                    .begin()
                     .iter_at(__i)
                     .read()
             })
             .collect();
         for (__i, __v) in (0..__n).zip(__values) {
-            RandomAccessIterator::Vec((frees.as_pointer() as Ptr<Free>))
+            (frees.as_pointer() as Ptr<Free>)
+                .begin()
                 .iter_at(__i)
                 .write(__v);
         }
@@ -298,8 +312,8 @@ fn main_0() -> i32 {
     let mut ftwo: Free = Free { v: 2 };
     assert!(
         ({
-            let mut __it = RandomAccessIterator::Vec((frees.as_pointer() as Ptr<Free>));
-            while __it != RandomAccessIterator::Vec((frees.as_pointer() as Ptr<Free>).to_end())
+            let mut __it = (frees.as_pointer() as Ptr<Free>).begin();
+            while __it != (frees.as_pointer() as Ptr<Free>).end()
                 && __it.iter_deref().with(|__v| *__v != ftwo)
             {
                 __it.iter_inc();

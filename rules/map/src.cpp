@@ -98,3 +98,8 @@ std::size_t f28(std::map<T1, T2> &o,
                 const typename std::map<T1, T2>::key_type &key) {
   return o.erase(key);
 }
+
+template <typename T1, typename T2>
+typename std::map<T1, T2>::const_iterator f29(const std::map<T1, T2> &o) {
+  return o.begin();
+}

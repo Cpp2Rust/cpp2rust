@@ -11,7 +11,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let mut vec_: Vec<u8> = vec![195_u8, 167_u8];
+    let mut vec_: Vec<u8> = Vec::from([195_u8, 167_u8]);
     let mut i: i32 = 27;
     let str: Value<Vec<i8>> = Rc::new(RefCell::new({
         let mut __bytes = Ptr::<i8>::from_string_literal(b"bar.").to_c_bytes();

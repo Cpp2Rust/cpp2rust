@@ -34,56 +34,56 @@ fn main_0() -> i32 {
         };
     }
     let mut sum: f64 = 0_f64;
-    'loop_: for __begin1 in Map::range(m.as_pointer()) {
-        let __begin1: Value<BidirectionalIterator<(Value<i32>, Value<f64>)>> =
-            Rc::new(RefCell::new(__begin1));
-        let i: Ptr<(Value<i32>, Value<f64>)> = (*__begin1.borrow()).iter_deref();
+    'loop_: for i in IterRange::new(
+        (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<f64>)>>)
+            .with(|__m: &Map<i32, (Value<i32>, Value<f64>)>| __m.begin()),
+        (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<f64>)>>)
+            .with(|__m: &Map<i32, (Value<i32>, Value<f64>)>| __m.end()),
+    ) {
+        let i: Ptr<(Value<i32>, Value<f64>)> = i.iter_deref();
         sum += (*(*i.upgrade().deref()).1.borrow());
     }
-    'loop_: for __begin1 in Map::range(m.as_pointer()) {
-        let __begin1: Value<BidirectionalIterator<(Value<i32>, Value<f64>)>> =
-            Rc::new(RefCell::new(__begin1));
+    'loop_: for i in IterRange::new(
+        (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<f64>)>>)
+            .with(|__m: &Map<i32, (Value<i32>, Value<f64>)>| __m.begin()),
+        (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<f64>)>>)
+            .with(|__m: &Map<i32, (Value<i32>, Value<f64>)>| __m.end()),
+    ) {
         let i: Value<(Value<i32>, Value<f64>)> = Rc::new(RefCell::new((
             Rc::new(RefCell::new(
-                (*(*__begin1.borrow()).iter_deref().upgrade().deref())
-                    .0
-                    .borrow()
-                    .clone(),
+                (*i.iter_deref().upgrade().deref()).0.borrow().clone(),
             )),
             Rc::new(RefCell::new(
-                (*(*__begin1.borrow()).iter_deref().upgrade().deref())
-                    .1
-                    .borrow()
-                    .clone(),
+                (*i.iter_deref().upgrade().deref()).1.borrow().clone(),
             )),
         )));
         sum += ((*(*i.borrow()).0.borrow()) as f64);
     }
     assert!((sum == 7475_f64));
-    'loop_: for __begin1 in Map::range(m.as_pointer()) {
-        let __begin1: Value<BidirectionalIterator<(Value<i32>, Value<f64>)>> =
-            Rc::new(RefCell::new(__begin1));
+    'loop_: for i in IterRange::new(
+        (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<f64>)>>)
+            .with(|__m: &Map<i32, (Value<i32>, Value<f64>)>| __m.begin()),
+        (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<f64>)>>)
+            .with(|__m: &Map<i32, (Value<i32>, Value<f64>)>| __m.end()),
+    ) {
         let i: Value<(Value<i32>, Value<f64>)> = Rc::new(RefCell::new((
             Rc::new(RefCell::new(
-                (*(*__begin1.borrow()).iter_deref().upgrade().deref())
-                    .0
-                    .borrow()
-                    .clone(),
+                (*i.iter_deref().upgrade().deref()).0.borrow().clone(),
             )),
             Rc::new(RefCell::new(
-                (*(*__begin1.borrow()).iter_deref().upgrade().deref())
-                    .1
-                    .borrow()
-                    .clone(),
+                (*i.iter_deref().upgrade().deref()).1.borrow().clone(),
             )),
         )));
         (*(*i.borrow()).1.borrow_mut()) = (-1_i32 as f64);
         assert!(((*(*i.borrow()).1.borrow()) == (-1_i32 as f64)));
     }
-    'loop_: for __begin1 in Map::range(m.as_pointer()) {
-        let __begin1: Value<BidirectionalIterator<(Value<i32>, Value<f64>)>> =
-            Rc::new(RefCell::new(__begin1));
-        let i: Ptr<(Value<i32>, Value<f64>)> = (*__begin1.borrow()).iter_deref();
+    'loop_: for i in IterRange::new(
+        (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<f64>)>>)
+            .with(|__m: &Map<i32, (Value<i32>, Value<f64>)>| __m.begin()),
+        (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<f64>)>>)
+            .with(|__m: &Map<i32, (Value<i32>, Value<f64>)>| __m.end()),
+    ) {
+        let i: Ptr<(Value<i32>, Value<f64>)> = i.iter_deref();
         assert!(((*(*i.upgrade().deref()).1.borrow()) != (-1_i32 as f64)));
     }
     return 0;

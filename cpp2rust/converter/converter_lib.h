@@ -321,9 +321,9 @@ clang::Expr *BuildInitExpr(clang::Sema &sema, clang::QualType type,
                            llvm::ArrayRef<clang::Expr *> args,
                            clang::SourceLocation loc);
 
-std::string GetClassName(clang::QualType type);
-
 bool IsVaListType(clang::QualType type);
+
+bool IsAliasOfInit(clang::ASTContext &ctx, const clang::VarDecl *var);
 
 bool NeedsImplicitScalarCast(clang::ASTContext &ctx, clang::QualType from,
                              clang::QualType to);

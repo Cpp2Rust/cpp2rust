@@ -14,7 +14,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let v: Value<Vec<i32>> = Rc::new(RefCell::new(vec![1, 2]));
+    let v: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::from([1, 2])));
     let b: Ptr<i32> =
         ({ foo_0(RandomAccessIterator::Vec((v.as_pointer() as Ptr<i32>)).iter_deref()) });
     (*v.borrow_mut()).clear();

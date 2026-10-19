@@ -27,9 +27,6 @@ for x in v.as_pointer() as Ptr<i32> {
 }
 ```
 
-One variant serves a special case. `StringIterator`, returned by
-`to_string_iterator`, stops before the trailing zero byte, so iterating a
-`std::string` visits its characters only.
 
 ## Stable iterators
 

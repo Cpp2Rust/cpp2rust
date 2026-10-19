@@ -26,8 +26,8 @@ unsafe fn main_0() -> i32 {
         v.push(__a1)
     };
     let mut sum: i32 = 0;
-    'loop_: for elem in 0..(v.len()) {
-        let mut elem = v[elem].clone();
+    'loop_: for elem in IterRange::new(v.begin(), v.end()) {
+        let mut elem: i32 = (*elem.iter_deref());
         sum += elem;
     }
     assert!(((sum) == (3)));

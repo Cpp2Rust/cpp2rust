@@ -1920,10 +1920,10 @@ std::optional<clang::QualType> GetParamImplicitConvertTarget(clang::Expr *expr,
   return fn->getParamDecl(param_idx)->getType().getNonReferenceType();
 }
 
-std::string GetClassName(clang::QualType type) {
-  if (auto *record = type->getAsCXXRecordDecl())
-    return record->getQualifiedNameAsString();
-  return {};
+bool IsAliasOfInit(clang::ASTContext &ctx, const clang::VarDecl *var) {
+  auto *init = var->getInit();
+  return var->isImplicit() && var->getType()->isReferenceType() && init &&
+         init->isGLValue() && !init->HasSideEffects(ctx);
 }
 
 bool IsVaListType(clang::QualType type) {

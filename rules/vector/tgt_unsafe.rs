@@ -79,7 +79,7 @@ unsafe fn f71<T1>(a0: &mut Vec<T1>, a1: usize) {
 }
 
 unsafe fn f72<T1>(a0: &mut Vec<T1>) -> UnsafeRandomAccessIterator<T1> {
-    UnsafeRandomAccessIterator::Vec(a0.as_mut_ptr())
+    a0.begin()
 }
 
 unsafe fn f73<T1: Default>(a0: &mut Vec<T1>, a1: &mut T1) {
@@ -97,7 +97,7 @@ unsafe fn f75<T1>(a0: &mut Vec<T1>) {
 }
 
 unsafe fn f76<T1>(a0: &mut Vec<T1>) -> UnsafeRandomAccessIterator<T1> {
-    UnsafeRandomAccessIterator::Vec(a0.as_mut_ptr().add(a0.len()))
+    a0.end()
 }
 
 unsafe fn f77<T1>(a0: &mut Vec<T1>, a1: UnsafeRandomAccessIterator<T1>, a2: T1) -> UnsafeRandomAccessIterator<T1> {
@@ -140,11 +140,11 @@ unsafe fn f93<T1>(a0: &mut Vec<T1>) -> *const T1 {
 }
 
 unsafe fn f95<T1>(a0: Vec<T1>) -> UnsafeRandomAccessIterator<T1> {
-    UnsafeRandomAccessIterator::Vec(a0.as_ptr().cast_mut())
+    a0.begin()
 }
 
 unsafe fn f96<T1>(a0: Vec<T1>) -> UnsafeRandomAccessIterator<T1> {
-    UnsafeRandomAccessIterator::Vec(a0.as_ptr().add(a0.len()).cast_mut())
+    a0.end()
 }
 
 unsafe fn f97(a0: &mut Vec<bool>, a1: &mut Vec<bool>) {
@@ -190,7 +190,7 @@ unsafe fn f103<T1: Clone>(a0: &mut Vec<T1>, a1: &mut Vec<T1>) {
 }
 
 unsafe fn f104<T1>(a0: Vec<T1>) -> UnsafeRandomAccessIterator<T1> {
-    UnsafeRandomAccessIterator::Vec(a0.as_ptr().add(a0.len()).cast_mut())
+    a0.end()
 }
 
 unsafe fn f105<T1: Clone>(a0: &mut Vec<T1>, a1: Vec<T1>) {

@@ -48,12 +48,10 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut v: Vec<i32> = vec![1, 3, 0, 2, 8, 7];
+    let mut v: Vec<i32> = Vec::from([1, 3, 0, 2, 8, 7]);
     (unsafe {
-        let _first: UnsafeRandomAccessIterator<i32> =
-            UnsafeRandomAccessIterator::Vec(v.as_mut_ptr());
-        let _last: UnsafeRandomAccessIterator<i32> =
-            UnsafeRandomAccessIterator::Vec(v.as_mut_ptr().add(v.len()));
+        let _first: UnsafeRandomAccessIterator<i32> = v.begin();
+        let _last: UnsafeRandomAccessIterator<i32> = v.end();
         f1_0(_first, _last)
     });
     let mut a: [i32; 3] = [1, 2, 3];

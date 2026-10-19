@@ -137,40 +137,29 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut w: Wrapped_int_ = Wrapped_int_ { v: 2 };
     assert!(((w.v) == (2)));
-    let mut lts: Vec<Lt> = vec![Lt { v: 3 }, Lt { v: 1 }, Lt { v: 2 }];
+    let mut lts: Vec<Lt> = Vec::from([Lt { v: 3 }, Lt { v: 1 }, Lt { v: 2 }]);
     {
-        let __n = UnsafeRandomAccessIterator::Vec(lts.as_mut_ptr().add(lts.len()))
-            .iter_distance(&UnsafeRandomAccessIterator::Vec(lts.as_mut_ptr()));
+        let __n = lts.end().iter_distance(&lts.begin());
         let mut __order: Vec<isize> = (0..__n).collect();
-        __order.sort_by(|&__x, &__y| {
-            (*UnsafeRandomAccessIterator::Vec(lts.as_mut_ptr()).iter_at(__x))
-                .cmp(&*UnsafeRandomAccessIterator::Vec(lts.as_mut_ptr()).iter_at(__y))
-        });
+        __order.sort_by(|&__x, &__y| (*lts.begin().iter_at(__x)).cmp(&*lts.begin().iter_at(__y)));
         let __values: Vec<_> = __order
             .iter()
-            .map(|&__i| {
-                std::ptr::read(UnsafeRandomAccessIterator::Vec(lts.as_mut_ptr()).iter_at(__i))
-            })
+            .map(|&__i| std::ptr::read(lts.begin().iter_at(__i)))
             .collect();
         for (__i, __v) in (0..__n).zip(__values) {
-            std::ptr::write(
-                UnsafeRandomAccessIterator::Vec(lts.as_mut_ptr()).iter_at(__i),
-                __v,
-            );
+            std::ptr::write(lts.begin().iter_at(__i), __v);
         }
     };
     assert!(
         (((lts[(0_usize)].v) == (1)) && ((lts[(1_usize)].v) == (2))) && ((lts[(2_usize)].v) == (3))
     );
-    let mut eqs: Vec<Eq> = vec![Eq { v: 1 }, Eq { v: 2 }, Eq { v: 3 }];
+    let mut eqs: Vec<Eq> = Vec::from([Eq { v: 1 }, Eq { v: 2 }, Eq { v: 3 }]);
     let mut two: Eq = Eq { v: 2 };
     let mut nine: Eq = Eq { v: 9 };
     assert!(
         (((*{
-            let mut __it = UnsafeRandomAccessIterator::Vec(eqs.as_mut_ptr());
-            while __it != UnsafeRandomAccessIterator::Vec(eqs.as_mut_ptr().add(eqs.len()))
-                && *__it.iter_deref() != two
-            {
+            let mut __it = eqs.begin();
+            while __it != eqs.end() && *__it.iter_deref() != two {
                 __it.iter_inc();
             }
             __it
@@ -180,45 +169,32 @@ unsafe fn main_0() -> i32 {
     );
     assert!(
         {
-            let mut __it = UnsafeRandomAccessIterator::Vec(eqs.as_mut_ptr());
-            while __it != UnsafeRandomAccessIterator::Vec(eqs.as_mut_ptr().add(eqs.len()))
-                && *__it.iter_deref() != nine
-            {
+            let mut __it = eqs.begin();
+            while __it != eqs.end() && *__it.iter_deref() != nine {
                 __it.iter_inc();
             }
             __it
-        } == UnsafeRandomAccessIterator::Vec(eqs.as_mut_ptr().add(eqs.len()))
+        } == eqs.end()
     );
-    let mut cmps: Vec<Cmp> = vec![Cmp { v: 3 }, Cmp { v: 1 }, Cmp { v: 2 }];
+    let mut cmps: Vec<Cmp> = Vec::from([Cmp { v: 3 }, Cmp { v: 1 }, Cmp { v: 2 }]);
     {
-        let __n = UnsafeRandomAccessIterator::Vec(cmps.as_mut_ptr().add(cmps.len()))
-            .iter_distance(&UnsafeRandomAccessIterator::Vec(cmps.as_mut_ptr()));
+        let __n = cmps.end().iter_distance(&cmps.begin());
         let mut __order: Vec<isize> = (0..__n).collect();
-        __order.sort_by(|&__x, &__y| {
-            (*UnsafeRandomAccessIterator::Vec(cmps.as_mut_ptr()).iter_at(__x))
-                .cmp(&*UnsafeRandomAccessIterator::Vec(cmps.as_mut_ptr()).iter_at(__y))
-        });
+        __order.sort_by(|&__x, &__y| (*cmps.begin().iter_at(__x)).cmp(&*cmps.begin().iter_at(__y)));
         let __values: Vec<_> = __order
             .iter()
-            .map(|&__i| {
-                std::ptr::read(UnsafeRandomAccessIterator::Vec(cmps.as_mut_ptr()).iter_at(__i))
-            })
+            .map(|&__i| std::ptr::read(cmps.begin().iter_at(__i)))
             .collect();
         for (__i, __v) in (0..__n).zip(__values) {
-            std::ptr::write(
-                UnsafeRandomAccessIterator::Vec(cmps.as_mut_ptr()).iter_at(__i),
-                __v,
-            );
+            std::ptr::write(cmps.begin().iter_at(__i), __v);
         }
     };
     assert!(((cmps[(0_usize)].v) == (1)) && ((cmps[(2_usize)].v) == (3)));
     let mut three: Cmp = Cmp { v: 3 };
     assert!(
         (((*{
-            let mut __it = UnsafeRandomAccessIterator::Vec(cmps.as_mut_ptr());
-            while __it != UnsafeRandomAccessIterator::Vec(cmps.as_mut_ptr().add(cmps.len()))
-                && *__it.iter_deref() != three
-            {
+            let mut __it = cmps.begin();
+            while __it != cmps.end() && *__it.iter_deref() != three {
                 __it.iter_inc();
             }
             __it
@@ -226,36 +202,26 @@ unsafe fn main_0() -> i32 {
         .iter_deref())
         .v) == (3))
     );
-    let mut frees: Vec<Free> = vec![Free { v: 2 }, Free { v: 1 }];
+    let mut frees: Vec<Free> = Vec::from([Free { v: 2 }, Free { v: 1 }]);
     {
-        let __n = UnsafeRandomAccessIterator::Vec(frees.as_mut_ptr().add(frees.len()))
-            .iter_distance(&UnsafeRandomAccessIterator::Vec(frees.as_mut_ptr()));
+        let __n = frees.end().iter_distance(&frees.begin());
         let mut __order: Vec<isize> = (0..__n).collect();
-        __order.sort_by(|&__x, &__y| {
-            (*UnsafeRandomAccessIterator::Vec(frees.as_mut_ptr()).iter_at(__x))
-                .cmp(&*UnsafeRandomAccessIterator::Vec(frees.as_mut_ptr()).iter_at(__y))
-        });
+        __order
+            .sort_by(|&__x, &__y| (*frees.begin().iter_at(__x)).cmp(&*frees.begin().iter_at(__y)));
         let __values: Vec<_> = __order
             .iter()
-            .map(|&__i| {
-                std::ptr::read(UnsafeRandomAccessIterator::Vec(frees.as_mut_ptr()).iter_at(__i))
-            })
+            .map(|&__i| std::ptr::read(frees.begin().iter_at(__i)))
             .collect();
         for (__i, __v) in (0..__n).zip(__values) {
-            std::ptr::write(
-                UnsafeRandomAccessIterator::Vec(frees.as_mut_ptr()).iter_at(__i),
-                __v,
-            );
+            std::ptr::write(frees.begin().iter_at(__i), __v);
         }
     };
     assert!(((frees[(0_usize)].v) == (1)));
     let mut ftwo: Free = Free { v: 2 };
     assert!(
         (((*{
-            let mut __it = UnsafeRandomAccessIterator::Vec(frees.as_mut_ptr());
-            while __it != UnsafeRandomAccessIterator::Vec(frees.as_mut_ptr().add(frees.len()))
-                && *__it.iter_deref() != ftwo
-            {
+            let mut __it = frees.begin();
+            while __it != frees.end() && *__it.iter_deref() != ftwo {
                 __it.iter_inc();
             }
             __it

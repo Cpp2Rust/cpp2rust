@@ -48,8 +48,8 @@ pub fn lehmer_2(mut sigma: Ptr<u32>, mut len: u32, mut code: Ptr<u32>) {
     let mut i: u32 = 0_u32;
     'loop_: while (i < len) {
         let it: Value<RandomAccessIterator<u32>> = Rc::new(RefCell::new({
-            let mut __it = RandomAccessIterator::Vec((items.as_pointer() as Ptr<u32>));
-            while __it != RandomAccessIterator::Vec((items.as_pointer() as Ptr<u32>).to_end())
+            let mut __it = (items.as_pointer() as Ptr<u32>).begin();
+            while __it != (items.as_pointer() as Ptr<u32>).end()
                 && __it
                     .iter_deref()
                     .with(|__v| *__v != (elem!(sigma, i).read()))
@@ -58,29 +58,26 @@ pub fn lehmer_2(mut sigma: Ptr<u32>, mut len: u32, mut code: Ptr<u32>) {
             }
             __it
         }));
-        assert!(
-            (*it.borrow()) != RandomAccessIterator::Vec((items.as_pointer() as Ptr<u32>).to_end())
-        );
-        let __rhs = ((*it.borrow())
-            .iter_distance(&RandomAccessIterator::Vec((items.as_pointer() as Ptr<u32>)))
-            as u32);
+        assert!((*it.borrow()) != (items.as_pointer() as Ptr<u32>).end());
+        let __rhs =
+            ((*it.borrow()).iter_distance(&(items.as_pointer() as Ptr<u32>).begin()) as u32);
         elem!(code, i).write(__rhs);
         {
-            let __off = <RandomAccessIterator<u32>>::from((*it.borrow()).clone()).index();
-            (items.as_pointer() as Ptr<Vec<u32>>).with_mut(|__v: &mut Vec<u32>| __v.remove(__off));
-            RandomAccessIterator::Vec((items.as_pointer() as Ptr<Vec<u32>>).decay() + __off)
+            let idx = <RandomAccessIterator<u32>>::from((*it.borrow()).clone())
+                .vec_ptr()
+                .get_offset();
+            (items.as_pointer() as Ptr<Vec<u32>>).with_mut(|__v: &mut Vec<u32>| __v.remove(idx));
+            RandomAccessIterator::Vec((items.as_pointer() as Ptr<Vec<u32>>).decay())
         };
         i.prefix_inc();
     }
 }
 pub fn sum_3(v: Ptr<Vec<i32>>) -> i32 {
     let mut s: i32 = 0;
-    let it: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(RandomAccessIterator::Vec(
-        (Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>),
-    )));
-    'loop_: while (*it.borrow())
-        != RandomAccessIterator::Vec((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>).to_end())
-    {
+    let it: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(
+        (Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>).begin(),
+    ));
+    'loop_: while (*it.borrow()) != (Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>).end() {
         s += ((*it.borrow()).iter_deref().read());
         (*it.borrow_mut()).iter_inc();
     }
@@ -111,7 +108,7 @@ fn main_0() -> i32 {
             && ((*code.borrow())[(2) as usize] == 1_u32))
             && ((*code.borrow())[(3) as usize] == 0_u32)
     );
-    let v: Value<Vec<i32>> = Rc::new(RefCell::new(vec![1, 2, 3]));
+    let v: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::from([1, 2, 3])));
     assert!((({ sum_3(v.as_pointer(),) }) == 6));
     return 0;
 }

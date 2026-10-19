@@ -25,8 +25,11 @@ fn main_0() -> i32 {
         let __a1 = 1;
         (*s.borrow_mut()).v.push(__a1)
     };
-    'loop_: for mut e in field_ref!(s.as_pointer(), v).as_pointer() as Ptr<i32> {
-        let mut e: i32 = e.read();
+    'loop_: for e in IterRange::new(
+        (field_ref!(s.as_pointer(), v).as_pointer() as Ptr<i32>).begin(),
+        (field_ref!(s.as_pointer(), v).as_pointer() as Ptr<i32>).end(),
+    ) {
+        let mut e: i32 = (e.iter_deref().read());
         (*s.borrow_mut()).a.postfix_inc();
     }
     return 0;

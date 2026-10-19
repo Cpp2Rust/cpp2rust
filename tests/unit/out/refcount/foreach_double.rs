@@ -25,25 +25,55 @@ fn main_0() -> i32 {
         (*v.borrow_mut()).push(__a1)
     };
     let mut square: i32 = 0;
-    'loop_: for mut e1 in v.as_pointer() as Ptr<i32> {
-        let mut e1: i32 = e1.read();
-        'loop_: for mut e2 in v.as_pointer() as Ptr<i32> {
-            let mut e2: i32 = e2.read();
+    'loop_: for e1 in IterRange::new(
+        (v.as_pointer() as Ptr<i32>).begin(),
+        (v.as_pointer() as Ptr<i32>).end(),
+    ) {
+        let mut e1: i32 = (e1.iter_deref().read());
+        'loop_: for e2 in IterRange::new(
+            (v.as_pointer() as Ptr<i32>).begin(),
+            (v.as_pointer() as Ptr<i32>).end(),
+        ) {
+            let mut e2: i32 = (e2.iter_deref().read());
             square += (e1 * e2);
         }
     }
-    'loop_: for mut e1 in v.as_pointer() as Ptr<i32> {
-        'loop_: for mut e2 in v.as_pointer() as Ptr<i32> {
+    'loop_: for e1 in IterRange::new(
+        (v.as_pointer() as Ptr<i32>).begin(),
+        (v.as_pointer() as Ptr<i32>).end(),
+    ) {
+        let e1: Ptr<i32> = e1.iter_deref();
+        'loop_: for e2 in IterRange::new(
+            (v.as_pointer() as Ptr<i32>).begin(),
+            (v.as_pointer() as Ptr<i32>).end(),
+        ) {
+            let e2: Ptr<i32> = e2.iter_deref();
             square += { ({ (e1.read()) } * { (e2.read()) }) };
         }
     }
-    'loop_: for mut e1 in v.as_pointer() as Ptr<i32> {
-        'loop_: for mut e2 in v.as_pointer() as Ptr<i32> {
+    'loop_: for e1 in IterRange::new(
+        (v.as_pointer() as Ptr<i32>).begin(),
+        (v.as_pointer() as Ptr<i32>).end(),
+    ) {
+        let e1: Ptr<i32> = e1.iter_deref();
+        'loop_: for e2 in IterRange::new(
+            (v.as_pointer() as Ptr<i32>).begin(),
+            (v.as_pointer() as Ptr<i32>).end(),
+        ) {
+            let e2: Ptr<i32> = e2.iter_deref();
             square += { ({ (e1.read()) } * { (e2.read()) }) };
         }
     }
-    'loop_: for mut e1 in v.as_pointer() as Ptr<i32> {
-        'loop_: for mut e2 in v.as_pointer() as Ptr<i32> {
+    'loop_: for e1 in IterRange::new(
+        (v.as_pointer() as Ptr<i32>).begin(),
+        (v.as_pointer() as Ptr<i32>).end(),
+    ) {
+        let e1: Ptr<i32> = e1.iter_deref();
+        'loop_: for e2 in IterRange::new(
+            (v.as_pointer() as Ptr<i32>).begin(),
+            (v.as_pointer() as Ptr<i32>).end(),
+        ) {
+            let e2: Ptr<i32> = e2.iter_deref();
             square += { ({ (e1.read()) } * { (e2.read()) }) };
         }
     }
@@ -63,8 +93,16 @@ fn main_0() -> i32 {
         let __a1 = std::mem::take(&mut (*v3.borrow_mut()));
         (*m.borrow_mut()).push(__a1)
     };
-    'loop_: for mut row in m.as_pointer() as Ptr<Vec<i32>> {
-        'loop_: for mut col in Ptr::<Vec<i32>>::decay(&(row)) as Ptr<i32> {
+    'loop_: for row in IterRange::new(
+        (m.as_pointer() as Ptr<Vec<i32>>).begin(),
+        (m.as_pointer() as Ptr<Vec<i32>>).end(),
+    ) {
+        let row: Ptr<Vec<i32>> = row.iter_deref();
+        'loop_: for col in IterRange::new(
+            (Ptr::<Vec<i32>>::decay(&(row)) as Ptr<i32>).begin(),
+            (Ptr::<Vec<i32>>::decay(&(row)) as Ptr<i32>).end(),
+        ) {
+            let col: Ptr<i32> = col.iter_deref();
             square += { (col.read()) };
         }
     }

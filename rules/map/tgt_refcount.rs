@@ -113,3 +113,7 @@ fn f27<T1: Ord + Clone + 'static, T2: 'static>(
 fn f28<T1: Ord + 'static, T2: 'static>(a0: Ptr<Map<T1, (Value<T1>, Value<T2>)>>, a1: T1) -> usize {
     a0.with_mut(|__m: &mut Map<T1, (Value<T1>, Value<T2>)>| __m.erase_key(&a1))
 }
+
+fn f29<T1: 'static, T2: 'static>(a0: Ptr<Map<T1, (Value<T1>, Value<T2>)>>) -> BidirectionalIterator<(Value<T1>, Value<T2>)> {
+    a0.with(|__m: &Map<T1, (Value<T1>, Value<T2>)>| __m.begin())
+}

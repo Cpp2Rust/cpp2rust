@@ -12,7 +12,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let v1: Value<Vec<Vec<i32>>> = Rc::new(RefCell::new(Vec::new()));
-    let mut v2: Vec<i32> = vec![1];
+    let mut v2: Vec<i32> = Vec::from([1]);
     {
         let a0_clone = v2.clone();
         (*v1.borrow_mut()).push(a0_clone)

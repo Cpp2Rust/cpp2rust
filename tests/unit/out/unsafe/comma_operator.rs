@@ -62,7 +62,7 @@ unsafe fn main_0() -> i32 {
         assert!(((a) == (1)));
         assert!(((b) == (2)));
     }
-    let mut v1: Vec<i32> = vec![1, 2];
+    let mut v1: Vec<i32> = Vec::from([1, 2]);
     let mut v2: Vec<i32> = {
         a = 5;
         (v1).clone()

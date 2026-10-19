@@ -1882,18 +1882,6 @@ bool ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
 
   if (qual_type->isRecordType()) {
     const auto *record = qual_type->getAsRecordDecl();
-    if (record->getQualifiedNameAsString() == "std::array") {
-      if (auto init = clang::dyn_cast<clang::InitListExpr>(expr->getInit(0))) {
-        StrCat("vec!");
-        PushConversionKind push(*this, ConversionKind::Unboxed);
-        ConverterRefCount::VisitInitListExpr(init);
-      } else {
-        StrCat(GetArrayDefaultAsString(qual_type));
-      }
-      computed_expr_type_ = ComputedExprType::FreshValue;
-      return false;
-    }
-
     if (syntactic->getNumInits() == 0) {
       {
         PushConversionKind push(*this, ConversionKind::Unboxed);
@@ -1902,6 +1890,18 @@ bool ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
       computed_expr_type_ = ComputedExprType::FreshValue;
       return false;
     }
+
+    {
+      PushConversionKind push(*this, ConversionKind::Unboxed);
+      if (auto str =
+              GetMappedAsString(expr, expr->getInits(), expr->getNumInits());
+          !str.empty()) {
+        StrCat(str);
+        computed_expr_type_ = ComputedExprType::FreshValue;
+        return false;
+      }
+    }
+    assert(IsUserDefinedDecl(record) && "aggregate list without a rule");
 
     if (record->isUnion()) {
       auto *field = expr->getInitializedFieldInUnion();
@@ -2255,86 +2255,6 @@ bool ConverterRefCount::VisitCXXDeleteExpr(clang::CXXDeleteExpr *expr) {
     StrCat(std::format("__p.{}();", kDestructorName));
     StrCat("__p.delete();");
   }
-  return false;
-}
-
-void ConverterRefCount::EmitByValueShadow(const clang::VarDecl *loop_var,
-                                          std::string box_expr,
-                                          const std::string &type_override) {
-  auto type = loop_var->getType();
-  if (!type->isReferenceType()) {
-    bool unboxed = IsUnboxedVar(loop_var);
-    PushConversionKind push(*this, VarConversionKind(loop_var));
-    auto type_str = type_override.empty() ? ToString(type) : type_override;
-    StrCat(keyword::kLet, unboxed ? keyword::kMut : "",
-           GetNamedDeclAsString(loop_var), token::kColon, type_str,
-           token::kAssign);
-    StrCat(BoxValue(std::move(box_expr)), token::kSemiColon);
-  }
-}
-
-bool ConverterRefCount::VisitCXXForRangeStmtMap(clang::CXXForRangeStmt *stmt) {
-  auto begin =
-      llvm::cast<clang::VarDecl>(stmt->getBeginStmt()->getSingleDecl());
-  auto begin_name = GetNamedDeclAsString(begin);
-
-  StrCat("'loop_:");
-  StrCat(keyword::kFor, begin_name, keyword::kIn, "Map::range(",
-         ConvertObject(stmt->getRangeInit()), ')');
-  PushBrace brace(*this);
-
-  EmitByValueShadow(begin, std::string(begin_name));
-  Convert(stmt->getLoopVarStmt());
-
-  ConvertForRangeBody(stmt);
-
-  return false;
-}
-
-bool ConverterRefCount::VisitCXXForRangeStmtVector(
-    clang::CXXForRangeStmt *stmt) {
-  auto *loop_var = stmt->getLoopVariable();
-  auto loop_var_name = GetNamedDeclAsString(loop_var);
-
-  StrCat("'loop_:");
-  StrCat(keyword::kFor,
-         stmt->getLoopVariable()->getType().isConstQualified() ? "" : "mut",
-         loop_var_name, keyword::kIn,
-         ConvertObject(stmt->getRangeInit(), ObjectShape::Element));
-  StrCat(keyword::kAs, ConvertPtrType(stmt->getRangeInit()->getType()));
-
-  PushBrace brace(*this);
-
-  auto type = loop_var->getType();
-  bool copy = type.isPODType(ctx_) && !type->isRecordType();
-  EmitByValueShadow(loop_var, loop_var_name + GetPointerDerefSuffix(type) +
-                                  (copy ? "" : ".clone()"));
-
-  ConvertForRangeBody(stmt);
-
-  return false;
-}
-
-bool ConverterRefCount::VisitCXXForRangeStmtString(
-    clang::CXXForRangeStmt *stmt) {
-  auto *loop_var = stmt->getLoopVariable();
-  auto loop_var_name = GetNamedDeclAsString(loop_var);
-
-  StrCat("'loop_:");
-  StrCat(keyword::kFor,
-         stmt->getLoopVariable()->getType().isConstQualified() ? "" : "mut",
-         loop_var_name, keyword::kIn,
-         ConvertObject(stmt->getRangeInit(), ObjectShape::Element));
-  StrCat(".to_string_iterator() as StringIterator<",
-         ToString(loop_var->getType().getNonReferenceType()), '>');
-
-  PushBrace brace(*this);
-
-  EmitByValueShadow(loop_var, loop_var_name +
-                                  GetPointerDerefSuffix(loop_var->getType()) +
-                                  ".clone()");
-  ConvertForRangeBody(stmt);
-
   return false;
 }
 

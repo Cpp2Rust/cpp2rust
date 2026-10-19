@@ -229,10 +229,13 @@ fn main_0() -> i32 {
         ok = rhs_0
     };
     let mut distinct_count: usize = 0_usize;
-    'loop_: for __begin1 in Map::range(distinct.as_pointer()) {
-        let __begin1: Value<BidirectionalIterator<(Value<Key>, Value<Mapped>)>> =
-            Rc::new(RefCell::new(__begin1));
-        let entry: Ptr<(Value<Key>, Value<Mapped>)> = (*__begin1.borrow()).iter_deref();
+    'loop_: for entry in IterRange::new(
+        (distinct.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<Mapped>)>>)
+            .with(|__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.begin()),
+        (distinct.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<Mapped>)>>)
+            .with(|__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.end()),
+    ) {
+        let entry: Ptr<(Value<Key>, Value<Mapped>)> = entry.iter_deref();
         if (distinct_count == 0_usize) {
             ok = {
                 ((ok as i32)
@@ -373,10 +376,13 @@ fn main_0() -> i32 {
             ok = rhs_0
         };
         let mut equivalent_count: usize = 0_usize;
-        'loop_: for __begin2 in Map::range(equivalent.as_pointer()) {
-            let __begin2: Value<BidirectionalIterator<(Value<Key>, Value<Mapped>)>> =
-                Rc::new(RefCell::new(__begin2));
-            let entry: Ptr<(Value<Key>, Value<Mapped>)> = (*__begin2.borrow()).iter_deref();
+        'loop_: for entry in IterRange::new(
+            (equivalent.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<Mapped>)>>)
+                .with(|__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.begin()),
+            (equivalent.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<Mapped>)>>)
+                .with(|__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.end()),
+        ) {
+            let entry: Ptr<(Value<Key>, Value<Mapped>)> = entry.iter_deref();
             ok = {
                 ((ok as i32)
                     & ((({ (*(*entry.upgrade().deref()).0.borrow()).order } == 3)
