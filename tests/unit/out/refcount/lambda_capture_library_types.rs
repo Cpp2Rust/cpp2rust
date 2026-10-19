@@ -32,7 +32,7 @@ fn main_0() -> i32 {
         },
         || -> i32 {
             return if !((*u.borrow()).as_pointer()).is_null() {
-                (*(*u.borrow()).as_ref().unwrap().borrow())
+                ((*u.borrow()).as_pointer().read())
             } else {
                 0
             };

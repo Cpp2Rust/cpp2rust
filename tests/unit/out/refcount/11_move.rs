@@ -18,7 +18,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let n: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(10)))));
     ({ change_0(n.as_pointer()) });
-    assert!(((*(*n.borrow()).as_ref().unwrap().borrow()) == 20));
+    assert!((((*n.borrow()).as_pointer().read()) == 20));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

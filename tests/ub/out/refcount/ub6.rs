@@ -31,18 +31,22 @@ pub fn fill_1(arr: Ptr<Option<Value<Box<[Ptr<i32>]>>>>, n1: Ptr<i32>) {
             mkPair_0(_x1, _x2)
         }),
     ));
-    (*arr.upgrade().deref()).as_ref().unwrap().borrow_mut()[(0_usize) as usize] =
-        ({ (*pair.borrow()).x1.clone() }).clone();
-    (*arr.upgrade().deref()).as_ref().unwrap().borrow_mut()[(1_usize) as usize] =
-        ({ (*pair.borrow()).x2.clone() }).clone();
+    ((*arr.upgrade().deref()).as_pointer() as Ptr<Ptr<i32>>)
+        .offset(0_usize as isize)
+        .write(({ (*pair.borrow()).x1.clone() }).clone());
+    ((*arr.upgrade().deref()).as_pointer() as Ptr<Ptr<i32>>)
+        .offset(1_usize as isize)
+        .write(({ (*pair.borrow()).x2.clone() }).clone());
 }
 pub fn any_2(arr: Ptr<Option<Value<Box<[Ptr<i32>]>>>>, n1: Ptr<i32>) -> bool {
     let mut out: bool = false;
     let mut i: i32 = 0;
     'loop_: while ({ i } < { (n1.read()) }) {
         let __rhs = (out)
-            || (((*arr.upgrade().deref()).as_ref().unwrap().borrow()[(i as usize) as usize]
+            || (((((*arr.upgrade().deref()).as_pointer() as Ptr<Ptr<i32>>)
+                .offset((i as usize) as isize)
                 .read())
+            .read())
                 == 0);
         out = __rhs;
         i.prefix_inc();

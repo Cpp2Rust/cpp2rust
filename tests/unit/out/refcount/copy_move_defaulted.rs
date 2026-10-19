@@ -379,7 +379,7 @@ fn main_0() -> i32 {
     assert!(
         ((({ (*o2.borrow()).n } == 5) && ((*o2.borrow()).data.len() == 1_usize))
             && ((array_elem!(o2.as_pointer(), arr, 1).read()) == 6))
-            && ((*{ (*o2.borrow()).p.clone() }.as_ref().unwrap().borrow()) == 7)
+            && (({ (*o2.borrow()).p.clone() }.as_pointer().read()) == 7)
     );
     assert!(
         ((*o1.borrow()).data.is_empty()) && (({ (*o1.borrow()).p.clone() }.as_pointer()).is_null())
@@ -390,7 +390,7 @@ fn main_0() -> i32 {
         ((({ (*o3.borrow()).n } == 5)
             && ((vec_elem!(o3.as_pointer(), data, 0_usize).read()) == 5))
             && ((array_elem!(o3.as_pointer(), arr, 0).read()) == 5))
-            && ((*{ (*o3.borrow()).p.clone() }.as_ref().unwrap().borrow()) == 7)
+            && (({ (*o3.borrow()).p.clone() }.as_pointer().read()) == 7)
     );
     assert!(
         ((*o2.borrow()).data.is_empty()) && (({ (*o2.borrow()).p.clone() }.as_pointer()).is_null())
@@ -405,7 +405,7 @@ fn main_0() -> i32 {
     let _dtor_h2 = ScopedDestructor::new(&h2, |__p| __p.destructor());
     assert!(
         ((({ (*h2.borrow()).inner.x } == 4) && ({ (*h2.borrow()).e.v } == 4))
-            && ((*{ (*h2.borrow()).p.clone() }.as_ref().unwrap().borrow()) == 9))
+            && (({ (*h2.borrow()).p.clone() }.as_pointer().read()) == 9))
             && (({ (*h1.borrow()).p.clone() }.as_pointer()).is_null())
     );
     let h3: Value<Holder> = Rc::new(RefCell::new(Holder::new({ 1 })));
@@ -414,7 +414,7 @@ fn main_0() -> i32 {
     assert!(
         ((({ (*h3.borrow()).inner.x } == 4)
             && ((array_elem!(field_ptr!(h3.as_pointer(), e), arr, 1).read()) == 5))
-            && ((*{ (*h3.borrow()).p.clone() }.as_ref().unwrap().borrow()) == 9))
+            && (({ (*h3.borrow()).p.clone() }.as_pointer().read()) == 9))
             && (({ (*h2.borrow()).p.clone() }.as_pointer()).is_null())
     );
     return 0;

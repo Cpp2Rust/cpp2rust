@@ -23,10 +23,12 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let mut p: Option<Value<Point>> = Some(Rc::new(RefCell::new(Point { x: 3, y: 4 })));
-    (*p.as_ref().unwrap().borrow_mut()).x += 10;
-    let __rhs = ({ (*p.as_ref().unwrap().borrow()).x } + { (*p.as_ref().unwrap().borrow()).y });
-    (*p.as_ref().unwrap().borrow_mut()).y = __rhs;
-    let mut s: i32 = ({ sum_0((*p.as_ref().unwrap().borrow()).clone()) });
+    {
+        field!(p.as_pointer(), x).with_mut(|__v| *__v = *__v + 10)
+    };
+    let __rhs = (p.as_pointer().with(|__s| __s.x) + p.as_pointer().with(|__s| __s.y));
+    field!(p.as_pointer(), y).write(__rhs);
+    let mut s: i32 = ({ sum_0((*p.as_pointer().upgrade().deref()).clone()) });
     assert!((s == 30));
     return 0;
 }

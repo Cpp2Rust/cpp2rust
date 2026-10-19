@@ -39,13 +39,39 @@ unsafe fn main_0() -> i32 {
     let mut o: Option<Box<Outer>> = Some(Box::new(Outer {
         inner: Some(Box::new(Inner { x: 10, y: 20 })),
     }));
-    (*(*o.as_deref_mut().unwrap()).inner.as_deref_mut().unwrap()).x += 5;
-    let mut sum: i32 = (((*(*o.as_deref_mut().unwrap()).inner.as_deref_mut().unwrap()).x)
-        + ((*(*o.as_deref_mut().unwrap()).inner.as_deref_mut().unwrap()).y));
+    (*(*o
+        .as_deref()
+        .map_or(::std::ptr::null_mut(), |v| v as *const Outer as *mut Outer))
+    .inner
+    .as_deref()
+    .map_or(::std::ptr::null_mut(), |v| v as *const Inner as *mut Inner))
+    .x += 5;
+    let mut sum: i32 = (((*(*o
+        .as_deref()
+        .map_or(::std::ptr::null_mut(), |v| v as *const Outer as *mut Outer))
+    .inner
+    .as_deref()
+    .map_or(::std::ptr::null_mut(), |v| v as *const Inner as *mut Inner))
+    .x) + ((*(*o
+        .as_deref()
+        .map_or(::std::ptr::null_mut(), |v| v as *const Outer as *mut Outer))
+    .inner
+    .as_deref()
+    .map_or(::std::ptr::null_mut(), |v| v as *const Inner as *mut Inner))
+    .y));
     let mut a: Option<Box<i32>> = Some(Box::new(100));
     let mut b: Option<Box<i32>> = Some(Box::new(0));
-    (*b.as_deref_mut().unwrap()) = (*a.as_deref_mut().unwrap());
-    assert!((((sum) + (*b.as_deref_mut().unwrap())) == (135)));
+    (*b.as_deref()
+        .map_or(::std::ptr::null_mut(), |v| v as *const i32 as *mut i32)) = (*a
+        .as_deref()
+        .map_or(::std::ptr::null_mut(), |v| v as *const i32 as *mut i32));
+    assert!(
+        (((sum)
+            + (*b
+                .as_deref()
+                .map_or(::std::ptr::null_mut(), |v| v as *const i32 as *mut i32)))
+            == (135))
+    );
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

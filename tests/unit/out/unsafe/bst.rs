@@ -66,11 +66,41 @@ unsafe fn main_0() -> i32 {
         right: std::ptr::null_mut(),
         value: 4,
     }));
-    let mut ptr1: *mut node_t = (&mut (*tree.as_deref_mut().unwrap()) as *mut node_t);
-    ptr1 = (unsafe { insert_1(ptr1, (&mut (*n1.as_deref_mut().unwrap()) as *mut node_t)) });
-    ptr1 = (unsafe { insert_1(ptr1, (&mut (*n2.as_deref_mut().unwrap()) as *mut node_t)) });
-    ptr1 = (unsafe { insert_1(ptr1, (&mut (*n3.as_deref_mut().unwrap()) as *mut node_t)) });
-    ptr1 = (unsafe { insert_1(ptr1, (&mut (*n4.as_deref_mut().unwrap()) as *mut node_t)) });
+    let mut ptr1: *mut node_t = (&mut (*tree.as_deref().map_or(::std::ptr::null_mut(), |v| {
+        v as *const node_t as *mut node_t
+    })) as *mut node_t);
+    ptr1 = (unsafe {
+        insert_1(
+            ptr1,
+            (&mut (*n1.as_deref().map_or(::std::ptr::null_mut(), |v| {
+                v as *const node_t as *mut node_t
+            })) as *mut node_t),
+        )
+    });
+    ptr1 = (unsafe {
+        insert_1(
+            ptr1,
+            (&mut (*n2.as_deref().map_or(::std::ptr::null_mut(), |v| {
+                v as *const node_t as *mut node_t
+            })) as *mut node_t),
+        )
+    });
+    ptr1 = (unsafe {
+        insert_1(
+            ptr1,
+            (&mut (*n3.as_deref().map_or(::std::ptr::null_mut(), |v| {
+                v as *const node_t as *mut node_t
+            })) as *mut node_t),
+        )
+    });
+    ptr1 = (unsafe {
+        insert_1(
+            ptr1,
+            (&mut (*n4.as_deref().map_or(::std::ptr::null_mut(), |v| {
+                v as *const node_t as *mut node_t
+            })) as *mut node_t),
+        )
+    });
     assert!(
         (((((((*(unsafe { find_0(ptr1, 0,) })).value) == (0))
             && (((*(unsafe { find_0(ptr1, 1,) })).value) == (1)))
