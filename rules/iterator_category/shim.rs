@@ -451,3 +451,61 @@ random_access_iterator!(
     UnsafeCppRandomAccessIterator,
     std::ptr::null_mut()
 );
+
+pub struct IterRange<I, T> {
+    cur: I,
+    end: I,
+    elem: PhantomData<T>,
+}
+
+impl<I, T> IterRange<I, T> {
+    pub fn new(cur: I, end: I) -> Self {
+        Self {
+            cur,
+            end,
+            elem: PhantomData,
+        }
+    }
+}
+
+impl<I: CppInputIterator<T>, T> Iterator for IterRange<I, T> {
+    type Item = I;
+
+    fn next(&mut self) -> Option<I> {
+        if self.cur == self.end {
+            return None;
+        }
+        let it = self.cur.clone();
+        self.cur.iter_inc();
+        Some(it)
+    }
+}
+
+pub struct UnsafeIterRange<I, T> {
+    cur: I,
+    end: I,
+    elem: PhantomData<T>,
+}
+
+impl<I, T> UnsafeIterRange<I, T> {
+    pub fn new(cur: I, end: I) -> Self {
+        Self {
+            cur,
+            end,
+            elem: PhantomData,
+        }
+    }
+}
+
+impl<I: UnsafeCppInputIterator<T>, T> Iterator for UnsafeIterRange<I, T> {
+    type Item = I;
+
+    fn next(&mut self) -> Option<I> {
+        if self.cur == self.end {
+            return None;
+        }
+        let it = self.cur.clone();
+        self.cur.iter_inc();
+        Some(it)
+    }
+}

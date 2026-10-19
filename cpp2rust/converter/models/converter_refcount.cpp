@@ -158,7 +158,7 @@ bool ConverterRefCount::NeedsMut(const clang::VarDecl *decl,
 
 bool ConverterRefCount::IsUnboxedVar(const clang::ValueDecl *decl) const {
   auto *var = clang::dyn_cast<clang::VarDecl>(decl);
-  return var && !boxed_vars_->contains(var);
+  return var && (var->isImplicit() || !boxed_vars_->contains(var));
 }
 
 bool ConverterRefCount::IsUnboxedPlace(const clang::Expr *expr) const {

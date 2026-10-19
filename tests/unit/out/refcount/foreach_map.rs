@@ -34,64 +34,53 @@ fn main_0() -> i32 {
         };
     }
     let mut sum: f64 = 0_f64;
-    let __begin1: Value<BidirectionalIterator<(Value<i32>, Value<f64>)>> = Rc::new(RefCell::new(
+    'loop_: for __begin1 in IterRange::new(
         (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<f64>)>>)
             .with(|__m: &Map<i32, (Value<i32>, Value<f64>)>| __m.begin()),
-    ));
-    let __end1: Value<BidirectionalIterator<(Value<i32>, Value<f64>)>> = Rc::new(RefCell::new(
         (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<f64>)>>)
             .with(|__m: &Map<i32, (Value<i32>, Value<f64>)>| __m.end()),
-    ));
-    'loop_: while (*__begin1.borrow()) != (*__end1.borrow()) {
-        let i: Ptr<(Value<i32>, Value<f64>)> = (*__begin1.borrow()).iter_deref();
+    ) {
+        let i: Ptr<(Value<i32>, Value<f64>)> = __begin1.iter_deref();
         sum += (*(*i.upgrade().deref()).1.borrow());
-        (*__begin1.borrow_mut()).iter_inc();
     }
-    let __begin1: Value<BidirectionalIterator<(Value<i32>, Value<f64>)>> = Rc::new(RefCell::new(
+    'loop_: for __begin1 in IterRange::new(
         (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<f64>)>>)
             .with(|__m: &Map<i32, (Value<i32>, Value<f64>)>| __m.begin()),
-    ));
-    let __end1: Value<BidirectionalIterator<(Value<i32>, Value<f64>)>> = Rc::new(RefCell::new(
         (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<f64>)>>)
             .with(|__m: &Map<i32, (Value<i32>, Value<f64>)>| __m.end()),
-    ));
-    'loop_: while (*__begin1.borrow()) != (*__end1.borrow()) {
+    ) {
         let i: Value<(Value<i32>, Value<f64>)> = Rc::new(RefCell::new((
             Rc::new(RefCell::new(
-                (*(*__begin1.borrow()).iter_deref().upgrade().deref())
+                (*__begin1.iter_deref().upgrade().deref())
                     .0
                     .borrow()
                     .clone(),
             )),
             Rc::new(RefCell::new(
-                (*(*__begin1.borrow()).iter_deref().upgrade().deref())
+                (*__begin1.iter_deref().upgrade().deref())
                     .1
                     .borrow()
                     .clone(),
             )),
         )));
         sum += ((*(*i.borrow()).0.borrow()) as f64);
-        (*__begin1.borrow_mut()).iter_inc();
     }
     assert!((sum == 7475_f64));
-    let __begin1: Value<BidirectionalIterator<(Value<i32>, Value<f64>)>> = Rc::new(RefCell::new(
+    'loop_: for __begin1 in IterRange::new(
         (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<f64>)>>)
             .with(|__m: &Map<i32, (Value<i32>, Value<f64>)>| __m.begin()),
-    ));
-    let __end1: Value<BidirectionalIterator<(Value<i32>, Value<f64>)>> = Rc::new(RefCell::new(
         (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<f64>)>>)
             .with(|__m: &Map<i32, (Value<i32>, Value<f64>)>| __m.end()),
-    ));
-    'loop_: while (*__begin1.borrow()) != (*__end1.borrow()) {
+    ) {
         let i: Value<(Value<i32>, Value<f64>)> = Rc::new(RefCell::new((
             Rc::new(RefCell::new(
-                (*(*__begin1.borrow()).iter_deref().upgrade().deref())
+                (*__begin1.iter_deref().upgrade().deref())
                     .0
                     .borrow()
                     .clone(),
             )),
             Rc::new(RefCell::new(
-                (*(*__begin1.borrow()).iter_deref().upgrade().deref())
+                (*__begin1.iter_deref().upgrade().deref())
                     .1
                     .borrow()
                     .clone(),
@@ -99,20 +88,15 @@ fn main_0() -> i32 {
         )));
         (*(*i.borrow()).1.borrow_mut()) = (-1_i32 as f64);
         assert!(((*(*i.borrow()).1.borrow()) == (-1_i32 as f64)));
-        (*__begin1.borrow_mut()).iter_inc();
     }
-    let __begin1: Value<BidirectionalIterator<(Value<i32>, Value<f64>)>> = Rc::new(RefCell::new(
+    'loop_: for __begin1 in IterRange::new(
         (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<f64>)>>)
             .with(|__m: &Map<i32, (Value<i32>, Value<f64>)>| __m.begin()),
-    ));
-    let __end1: Value<BidirectionalIterator<(Value<i32>, Value<f64>)>> = Rc::new(RefCell::new(
         (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<f64>)>>)
             .with(|__m: &Map<i32, (Value<i32>, Value<f64>)>| __m.end()),
-    ));
-    'loop_: while (*__begin1.borrow()) != (*__end1.borrow()) {
-        let i: Ptr<(Value<i32>, Value<f64>)> = (*__begin1.borrow()).iter_deref();
+    ) {
+        let i: Ptr<(Value<i32>, Value<f64>)> = __begin1.iter_deref();
         assert!(((*(*i.upgrade().deref()).1.borrow()) != (-1_i32 as f64)));
-        (*__begin1.borrow_mut()).iter_inc();
     }
     return 0;
 }

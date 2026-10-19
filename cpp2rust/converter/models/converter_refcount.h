@@ -435,6 +435,8 @@ private:
   // Whether decl is a local variable or a parameter that is stored directly
   // instead of in a Value, as no pointer to it is ever made.
   bool IsUnboxedVar(const clang::ValueDecl *decl) const;
+
+  const char *IterRangeName() const override { return "IterRange"; }
   // Whether expr is an unboxed variable or a field of one, which is accessed
   // in place.
   bool IsUnboxedPlace(const clang::Expr *expr) const;

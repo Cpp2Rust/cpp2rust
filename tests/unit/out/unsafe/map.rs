@@ -191,14 +191,11 @@ unsafe fn main_0() -> i32 {
     }
     assert!(((m2.len()) == (indexes.len())));
     let mut last: i32 = -1_i32;
-    let mut __begin1: UnsafeBidirectionalIterator<(i32, bool)> = m2.begin();
-    let mut __end1: UnsafeBidirectionalIterator<(i32, bool)> = m2.end();
-    'loop_: while __begin1 != __end1 {
+    'loop_: for __begin1 in UnsafeIterRange::new(m2.begin(), m2.end()) {
         let pair: *mut (i32, bool) = &mut (*__begin1.iter_deref());
         assert!((((*pair).0) > (last)));
         assert!((((*pair).1 as i32) == (((*pair).0) % (2))));
         last = (*pair).0;
-        __begin1.iter_inc();
     }
     k = 0;
     let value_0: *const u32 = &raw const (*m.get(&(k as i16)).expect("out of range!")).1;

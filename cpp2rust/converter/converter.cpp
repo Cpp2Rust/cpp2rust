@@ -1495,19 +1495,19 @@ bool Converter::VisitCXXForRangeStmt(clang::CXXForRangeStmt *stmt) {
                                stmt->getRangeStmt()->getSingleDecl()))) {
     Convert(stmt->getRangeStmt());
   }
-  Convert(stmt->getBeginStmt());
-  Convert(stmt->getEndStmt());
+  auto *begin =
+      clang::cast<clang::VarDecl>(stmt->getBeginStmt()->getSingleDecl());
+  auto *end = clang::cast<clang::VarDecl>(stmt->getEndStmt()->getSingleDecl());
   StrCat("'loop_:");
-  StrCat(keyword::kWhile);
-  ConvertCondition(stmt->getCond());
+  StrCat(keyword::kFor, GetNamedDeclAsString(begin), keyword::kIn,
+         IterRangeName(), "::new(", ConvertFreshRValue(begin->getInit()),
+         token::kComma, ConvertFreshRValue(end->getInit()), ')');
   {
     PushBrace brace(*this);
-    curr_for_inc_.emplace_back(stmt->getInc());
+    curr_for_inc_.emplace_back(nullptr);
     Convert(stmt->getLoopVarStmt());
     ConvertBodyStmts(stmt->getBody());
     curr_for_inc_.pop_back();
-    Convert(stmt->getInc());
-    StrCat(token::kSemiColon);
   }
   return false;
 }

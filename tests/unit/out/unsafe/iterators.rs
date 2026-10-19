@@ -17,26 +17,17 @@ unsafe fn main_0() -> i32 {
         let s = c"hello".as_ptr();
         std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1).to_vec()
     };
-    let mut __begin1: *mut libc::c_char = x.as_mut_ptr();
-    let mut __end1: *mut libc::c_char = x.as_mut_ptr().add(x.len() - 1);
-    'loop_: while __begin1 != __end1 {
+    'loop_: for __begin1 in UnsafeIterRange::new(x.as_mut_ptr(), x.as_mut_ptr().add(x.len() - 1)) {
         let c: *mut libc::c_char = &mut (*__begin1.iter_deref());
         (*c).prefix_inc();
-        __begin1.iter_inc();
     }
-    let mut __begin1: *mut libc::c_char = x.as_mut_ptr();
-    let mut __end1: *mut libc::c_char = x.as_mut_ptr().add(x.len() - 1);
-    'loop_: while __begin1 != __end1 {
+    'loop_: for __begin1 in UnsafeIterRange::new(x.as_mut_ptr(), x.as_mut_ptr().add(x.len() - 1)) {
         let c: *mut libc::c_char = &mut (*__begin1.iter_deref());
         (unsafe { libc::printf(c"%c\n".as_ptr() as *const libc::c_char, ((*c) as i32)) });
-        __begin1.iter_inc();
     }
-    let mut __begin1: *mut libc::c_char = x.as_mut_ptr();
-    let mut __end1: *mut libc::c_char = x.as_mut_ptr().add(x.len() - 1);
-    'loop_: while __begin1 != __end1 {
+    'loop_: for __begin1 in UnsafeIterRange::new(x.as_mut_ptr(), x.as_mut_ptr().add(x.len() - 1)) {
         let mut c: libc::c_char = (*__begin1.iter_deref());
         (unsafe { libc::printf(c"%c\n".as_ptr() as *const libc::c_char, (c as i32)) });
-        __begin1.iter_inc();
     }
     let mut v: Vec<*mut i32> = Vec::new();
     {
@@ -47,14 +38,12 @@ unsafe fn main_0() -> i32 {
         let __a1 = (Box::leak(Box::new(3)) as *mut i32);
         v.push(__a1)
     };
-    let mut __begin1: UnsafeRandomAccessIterator<*mut i32> =
-        UnsafeRandomAccessIterator::Vec(v.as_mut_ptr());
-    let mut __end1: UnsafeRandomAccessIterator<*mut i32> =
-        UnsafeRandomAccessIterator::Vec(v.as_mut_ptr().add(v.len()));
-    'loop_: while __begin1 != __end1 {
+    'loop_: for __begin1 in UnsafeIterRange::new(
+        UnsafeRandomAccessIterator::Vec(v.as_mut_ptr()),
+        UnsafeRandomAccessIterator::Vec(v.as_mut_ptr().add(v.len())),
+    ) {
         let mut p: *mut i32 = (*__begin1.iter_deref());
         (unsafe { libc::printf(c"%d\n".as_ptr() as *const libc::c_char, (*p)) });
-        __begin1.iter_inc();
     }
     return 0;
 }

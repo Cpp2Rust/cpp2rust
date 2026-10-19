@@ -21,16 +21,12 @@ fn main_0() -> i32 {
         i.prefix_inc();
     }
     let mut sum: i32 = 0;
-    let __begin1: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(
+    'loop_: for __begin1 in IterRange::new(
         RandomAccessIterator::Vec((v.as_pointer() as Ptr<i32>)),
-    ));
-    let __end1: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(
         RandomAccessIterator::Vec((v.as_pointer() as Ptr<i32>).to_end()),
-    ));
-    'loop_: while (*__begin1.borrow()) != (*__end1.borrow()) {
-        let mut x: i32 = ((*__begin1.borrow()).iter_deref().read());
+    ) {
+        let mut x: i32 = (__begin1.iter_deref().read());
         sum += x;
-        (*__begin1.borrow_mut()).iter_inc();
     }
     assert!((sum == 45));
     return 0;

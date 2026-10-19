@@ -25,17 +25,14 @@ fn main_0() -> i32 {
         let __a1 = 1;
         (*s.borrow_mut()).v.push(__a1)
     };
-    let __begin1: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(
+    'loop_: for __begin1 in IterRange::new(
         RandomAccessIterator::Vec((field_ref!(s.as_pointer(), v).as_pointer() as Ptr<i32>)),
-    ));
-    let __end1: Value<RandomAccessIterator<i32>> =
-        Rc::new(RefCell::new(RandomAccessIterator::Vec(
+        RandomAccessIterator::Vec(
             (field_ref!(s.as_pointer(), v).as_pointer() as Ptr<i32>).to_end(),
-        )));
-    'loop_: while (*__begin1.borrow()) != (*__end1.borrow()) {
-        let mut e: i32 = ((*__begin1.borrow()).iter_deref().read());
+        ),
+    ) {
+        let mut e: i32 = (__begin1.iter_deref().read());
         (*s.borrow_mut()).a.postfix_inc();
-        (*__begin1.borrow_mut()).iter_inc();
     }
     return 0;
 }
