@@ -73,3 +73,27 @@ unsafe fn f14<T1>(a0: &mut Option<Box<T1>>, a1: &mut Option<Box<T1>>) {
 unsafe fn f15<T1>(a0: &mut Option<Box<[T1]>>, a1: &mut Option<Box<[T1]>>) {
     *a0 = a1.take()
 }
+
+unsafe fn f17<T1>(a0: &mut Option<Box<T1>>) -> *mut T1 {
+    a0.as_deref_mut()
+        .map_or(::std::ptr::null_mut(), |v| v as *mut T1)
+}
+
+unsafe fn f18<T1>(a0: &mut Option<Box<T1>>) -> *mut T1 {
+    a0.as_deref_mut()
+        .map_or(::std::ptr::null_mut(), |v| v as *mut T1)
+}
+
+unsafe fn f19<T1>(a0: &mut Option<Box<[T1]>>, a1: usize) -> *mut T1 {
+    a0.as_deref_mut()
+        .map_or(::std::ptr::null_mut(), |s| s.as_mut_ptr())
+        .add(a1)
+}
+
+unsafe fn f20<T1>(a0: &mut Option<Box<T1>>) -> bool {
+    a0.is_none()
+}
+
+unsafe fn f21<T1>(a0: &mut Option<Box<T1>>) -> bool {
+    a0.is_some()
+}

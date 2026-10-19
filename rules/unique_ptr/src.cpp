@@ -63,3 +63,24 @@ std::unique_ptr<T1[]> &f15(std::unique_ptr<T1[]> &dst,
                            std::unique_ptr<T1[]> &&src) {
   return dst = std::move(src);
 }
+
+template <typename T1> T1 &f17(const std::unique_ptr<T1> &o) { return *o; }
+
+template <typename T1> T1 *f18(const std::unique_ptr<T1> &o) {
+  return o.operator->();
+}
+
+template <typename T1>
+T1 &f19(const std::unique_ptr<T1[]> &o, std::size_t i) {
+  return o[i];
+}
+
+template <typename T1>
+bool f20(const std::unique_ptr<T1> &o, std::nullptr_t) {
+  return o == nullptr;
+}
+
+template <typename T1>
+bool f21(const std::unique_ptr<T1> &o, std::nullptr_t) {
+  return o != nullptr;
+}
