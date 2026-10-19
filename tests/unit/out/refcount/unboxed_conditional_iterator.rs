@@ -63,11 +63,9 @@ pub fn lehmer_2(mut sigma: Ptr<u32>, mut len: u32, mut code: Ptr<u32>) {
             ((*it.borrow()).iter_distance(&(items.as_pointer() as Ptr<u32>).begin()) as u32);
         elem!(code, i).write(__rhs);
         {
-            let idx = <RandomAccessIterator<u32>>::from((*it.borrow()).clone())
-                .vec_ptr()
-                .get_offset();
-            (items.as_pointer() as Ptr<Vec<u32>>).with_mut(|__v: &mut Vec<u32>| __v.remove(idx));
-            RandomAccessIterator::Vec((items.as_pointer() as Ptr<Vec<u32>>).decay())
+            let __off = <RandomAccessIterator<u32>>::from((*it.borrow()).clone()).index();
+            (items.as_pointer() as Ptr<Vec<u32>>).with_mut(|__v: &mut Vec<u32>| __v.remove(__off));
+            RandomAccessIterator::Vec((items.as_pointer() as Ptr<Vec<u32>>).decay() + __off)
         };
         i.prefix_inc();
     }

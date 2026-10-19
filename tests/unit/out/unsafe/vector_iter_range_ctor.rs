@@ -103,10 +103,8 @@ unsafe fn main_0() -> i32 {
     assert!(((v6[(0_usize)].0) == (1)) && ((v6[(0_usize)].1) == (10)));
     assert!(((v6[(2_usize)].0) == (3)) && ((v6[(2_usize)].1) == (30)));
     {
-        let __off = <UnsafeRandomAccessIterator<(i32, i32)>>::from(
-            UnsafeRandomAccessIterator::Vec(v6.as_mut_ptr()).iter_add(1_isize),
-        )
-        .iter_distance(&UnsafeRandomAccessIterator::Vec(v6.as_mut_ptr()))
+        let __off = <UnsafeRandomAccessIterator<(i32, i32)>>::from(v6.begin().iter_add(1_isize))
+            .iter_distance(&UnsafeRandomAccessIterator::Vec(v6.as_mut_ptr()))
             as usize;
         let mut __tmp = Vec::new();
         let mut __it = m.begin();

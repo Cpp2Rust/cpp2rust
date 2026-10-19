@@ -17,15 +17,24 @@ unsafe fn main_0() -> i32 {
         let s = c"hello".as_ptr();
         std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1).to_vec()
     };
-    'loop_: for c in IterRange::new(x.as_mut_ptr(), x.as_mut_ptr().add(x.len() - 1)) {
+    'loop_: for c in IterRange::new(
+        UnsafeRandomAccessIterator::Vec(x.as_mut_ptr()),
+        UnsafeRandomAccessIterator::Vec(x.as_mut_ptr().add(x.len() - 1)),
+    ) {
         let c: *mut libc::c_char = &mut (*c.iter_deref());
         (*c).prefix_inc();
     }
-    'loop_: for c in IterRange::new(x.as_mut_ptr(), x.as_mut_ptr().add(x.len() - 1)) {
+    'loop_: for c in IterRange::new(
+        UnsafeRandomAccessIterator::Vec(x.as_mut_ptr()),
+        UnsafeRandomAccessIterator::Vec(x.as_mut_ptr().add(x.len() - 1)),
+    ) {
         let c: *mut libc::c_char = &mut (*c.iter_deref());
         (unsafe { libc::printf(c"%c\n".as_ptr() as *const libc::c_char, ((*c) as i32)) });
     }
-    'loop_: for c in IterRange::new(x.as_mut_ptr(), x.as_mut_ptr().add(x.len() - 1)) {
+    'loop_: for c in IterRange::new(
+        UnsafeRandomAccessIterator::Vec(x.as_mut_ptr()),
+        UnsafeRandomAccessIterator::Vec(x.as_mut_ptr().add(x.len() - 1)),
+    ) {
         let mut c: libc::c_char = (*c.iter_deref());
         (unsafe { libc::printf(c"%c\n".as_ptr() as *const libc::c_char, (c as i32)) });
     }
