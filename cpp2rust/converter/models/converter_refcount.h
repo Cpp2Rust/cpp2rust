@@ -214,15 +214,6 @@ public:
 
   bool VisitCXXDeleteExpr(clang::CXXDeleteExpr *expr) override;
 
-  bool VisitCXXForRangeStmtMap(clang::CXXForRangeStmt *stmt) override;
-
-  bool VisitCXXForRangeStmtVector(clang::CXXForRangeStmt *stmt) override;
-
-  bool VisitCXXForRangeStmtString(clang::CXXForRangeStmt *stmt) override;
-
-  void EmitByValueShadow(const clang::VarDecl *loop_var, std::string box_expr,
-                         const std::string &type_override = "");
-
   std::string ConvertStream(clang::Expr *expr) override;
 
   bool VisitCXXConstructExpr(clang::CXXConstructExpr *expr) override;

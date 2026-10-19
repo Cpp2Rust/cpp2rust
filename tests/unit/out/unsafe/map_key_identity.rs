@@ -118,7 +118,9 @@ unsafe fn main_0() -> i32 {
         }) as i32))
         != 0;
     let mut distinct_count: usize = 0_usize;
-    'loop_: for __begin1 in UnsafeMap::range(&distinct as *const UnsafeMap<Key, (Key, Mapped)>) {
+    let mut __begin1: UnsafeBidirectionalIterator<(Key, Mapped)> = distinct.begin();
+    let mut __end1: UnsafeBidirectionalIterator<(Key, Mapped)> = distinct.end();
+    'loop_: while __begin1 != __end1 {
         let entry: *const (Key, Mapped) = &(*__begin1.iter_deref());
         if ((distinct_count) == (0_usize)) {
             ok = ((ok as i32)
@@ -130,6 +132,7 @@ unsafe fn main_0() -> i32 {
                 != 0;
         }
         distinct_count.prefix_inc();
+        __begin1.iter_inc();
     }
     ok = ((ok as i32) & (((distinct_count) == (2_usize)) as i32)) != 0;
     let equivalent_a: Key = Key {
@@ -179,14 +182,15 @@ unsafe fn main_0() -> i32 {
                 as i32))
             != 0;
         let mut equivalent_count: usize = 0_usize;
-        'loop_: for __begin2 in
-            UnsafeMap::range(&equivalent as *const UnsafeMap<Key, (Key, Mapped)>)
-        {
+        let mut __begin2: UnsafeBidirectionalIterator<(Key, Mapped)> = equivalent.begin();
+        let mut __end2: UnsafeBidirectionalIterator<(Key, Mapped)> = equivalent.end();
+        'loop_: while __begin2 != __end2 {
             let entry: *const (Key, Mapped) = &(*__begin2.iter_deref());
             ok = ((ok as i32)
                 & (((((*entry).0.order) == (3)) && (((*entry).1.value) == (31))) as i32))
                 != 0;
             equivalent_count.prefix_inc();
+            __begin2.iter_inc();
         }
         ok = ((ok as i32) & (((equivalent_count) == (1_usize)) as i32)) != 0;
     }

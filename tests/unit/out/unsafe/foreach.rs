@@ -23,9 +23,14 @@ unsafe fn main_0() -> i32 {
         i.prefix_inc();
     }
     let mut sum: i32 = 0;
-    'loop_: for x in 0..(v.len()) {
-        let mut x = v[x].clone();
+    let mut __begin1: UnsafeRandomAccessIterator<i32> =
+        UnsafeRandomAccessIterator::Vec(v.as_mut_ptr());
+    let mut __end1: UnsafeRandomAccessIterator<i32> =
+        UnsafeRandomAccessIterator::Vec(v.as_mut_ptr().add(v.len()));
+    'loop_: while __begin1 != __end1 {
+        let mut x: i32 = (*__begin1.iter_deref());
         sum += x;
+        __begin1.iter_inc();
     }
     assert!(((sum) == (45)));
     return 0;

@@ -25,23 +25,35 @@ unsafe fn main_0() -> i32 {
         };
     }
     let mut sum: f64 = 0_f64;
-    'loop_: for __begin1 in UnsafeMap::range(&m as *const UnsafeMap<i32, (i32, f64)>) {
+    let mut __begin1: UnsafeBidirectionalIterator<(i32, f64)> = m.begin();
+    let mut __end1: UnsafeBidirectionalIterator<(i32, f64)> = m.end();
+    'loop_: while __begin1 != __end1 {
         let i: *const (i32, f64) = &(*__begin1.iter_deref());
         sum += (*i).1;
+        __begin1.iter_inc();
     }
-    'loop_: for __begin1 in UnsafeMap::range(&m as *const UnsafeMap<i32, (i32, f64)>) {
+    let mut __begin1: UnsafeBidirectionalIterator<(i32, f64)> = m.begin();
+    let mut __end1: UnsafeBidirectionalIterator<(i32, f64)> = m.end();
+    'loop_: while __begin1 != __end1 {
         let mut i: (i32, f64) = (*__begin1.iter_deref()).clone();
         sum += (i.0 as f64);
+        __begin1.iter_inc();
     }
     assert!(((sum) == (7475_f64)));
-    'loop_: for __begin1 in UnsafeMap::range(&m as *const UnsafeMap<i32, (i32, f64)>) {
+    let mut __begin1: UnsafeBidirectionalIterator<(i32, f64)> = m.begin();
+    let mut __end1: UnsafeBidirectionalIterator<(i32, f64)> = m.end();
+    'loop_: while __begin1 != __end1 {
         let mut i: (i32, f64) = (*__begin1.iter_deref()).clone();
         i.1 = (-1_i32 as f64);
         assert!(((i.1) == (-1_i32 as f64)));
+        __begin1.iter_inc();
     }
-    'loop_: for __begin1 in UnsafeMap::range(&m as *const UnsafeMap<i32, (i32, f64)>) {
+    let mut __begin1: UnsafeBidirectionalIterator<(i32, f64)> = m.begin();
+    let mut __end1: UnsafeBidirectionalIterator<(i32, f64)> = m.end();
+    'loop_: while __begin1 != __end1 {
         let i: *const (i32, f64) = &(*__begin1.iter_deref());
         assert!((((*i).1) != (-1_i32 as f64)));
+        __begin1.iter_inc();
     }
     return 0;
 }

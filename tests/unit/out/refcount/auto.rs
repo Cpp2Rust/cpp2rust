@@ -24,9 +24,16 @@ fn main_0() -> i32 {
         (*v.borrow_mut()).push(__a1)
     };
     let mut sum: i32 = 0;
-    'loop_: for mut elem in v.as_pointer() as Ptr<i32> {
-        let mut elem: i32 = elem.read();
+    let __begin1: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(
+        RandomAccessIterator::Vec((v.as_pointer() as Ptr<i32>)),
+    ));
+    let __end1: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(
+        RandomAccessIterator::Vec((v.as_pointer() as Ptr<i32>).to_end()),
+    ));
+    'loop_: while (*__begin1.borrow()) != (*__end1.borrow()) {
+        let mut elem: i32 = ((*__begin1.borrow()).iter_deref().read());
         sum += elem;
+        (*__begin1.borrow_mut()).iter_inc();
     }
     assert!((sum == 3));
     return 0;

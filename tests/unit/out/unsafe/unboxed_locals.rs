@@ -20,9 +20,14 @@ pub struct Pair {
 }
 pub unsafe fn total_2(v: *const Vec<i32>) -> i32 {
     let mut s: i32 = 0;
-    'loop_: for x in 0..((*v).len()) {
-        let mut x = (&(*v))[x].clone();
+    let mut __begin1: UnsafeRandomAccessIterator<i32> =
+        UnsafeRandomAccessIterator::Vec((*v).as_ptr().cast_mut());
+    let mut __end1: UnsafeRandomAccessIterator<i32> =
+        UnsafeRandomAccessIterator::Vec((*v).as_ptr().add((*v).len()).cast_mut());
+    'loop_: while __begin1 != __end1 {
+        let mut x: i32 = (*__begin1.iter_deref());
         s += x;
+        __begin1.iter_inc();
     }
     return s;
 }

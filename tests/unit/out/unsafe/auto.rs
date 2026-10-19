@@ -26,9 +26,14 @@ unsafe fn main_0() -> i32 {
         v.push(__a1)
     };
     let mut sum: i32 = 0;
-    'loop_: for elem in 0..(v.len()) {
-        let mut elem = v[elem].clone();
+    let mut __begin1: UnsafeRandomAccessIterator<i32> =
+        UnsafeRandomAccessIterator::Vec(v.as_mut_ptr());
+    let mut __end1: UnsafeRandomAccessIterator<i32> =
+        UnsafeRandomAccessIterator::Vec(v.as_mut_ptr().add(v.len()));
+    'loop_: while __begin1 != __end1 {
+        let mut elem: i32 = (*__begin1.iter_deref());
         sum += elem;
+        __begin1.iter_inc();
     }
     assert!(((sum) == (3)));
     return 0;

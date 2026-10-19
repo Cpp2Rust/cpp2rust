@@ -29,26 +29,56 @@ unsafe fn main_0() -> i32 {
     v[(0_usize)][(0_usize)] = 1;
     v[(0_usize)][(1_usize)] = 5;
     v[(1_usize)][(0_usize)] = 6;
-    'loop_: for v2 in 0..(v.len()) {
-        let mut v2 = v.as_mut_ptr().add(v2);
-        'loop_: for i in 0..((*v2).len()) {
-            let mut i = (*v2).as_mut_ptr().add(i);
+    let mut __begin1: UnsafeRandomAccessIterator<Vec<i32>> =
+        UnsafeRandomAccessIterator::Vec(v.as_mut_ptr());
+    let mut __end1: UnsafeRandomAccessIterator<Vec<i32>> =
+        UnsafeRandomAccessIterator::Vec(v.as_mut_ptr().add(v.len()));
+    'loop_: while __begin1 != __end1 {
+        let v2: *mut Vec<i32> = &mut (*__begin1.iter_deref());
+        let mut __begin2: UnsafeRandomAccessIterator<i32> =
+            UnsafeRandomAccessIterator::Vec((*v2).as_mut_ptr());
+        let mut __end2: UnsafeRandomAccessIterator<i32> =
+            UnsafeRandomAccessIterator::Vec((*v2).as_mut_ptr().add((*v2).len()));
+        'loop_: while __begin2 != __end2 {
+            let i: *mut i32 = &mut (*__begin2.iter_deref());
             (*i).prefix_inc();
+            __begin2.iter_inc();
         }
+        __begin1.iter_inc();
     }
-    'loop_: for v2 in 0..(v.len()) {
-        let mut v2 = v.as_mut_ptr().add(v2);
-        'loop_: for i in 0..((*v2).len()) {
-            let mut i = (&(*v2))[i].clone();
+    let mut __begin1: UnsafeRandomAccessIterator<Vec<i32>> =
+        UnsafeRandomAccessIterator::Vec(v.as_mut_ptr());
+    let mut __end1: UnsafeRandomAccessIterator<Vec<i32>> =
+        UnsafeRandomAccessIterator::Vec(v.as_mut_ptr().add(v.len()));
+    'loop_: while __begin1 != __end1 {
+        let v2: *mut Vec<i32> = &mut (*__begin1.iter_deref());
+        let mut __begin2: UnsafeRandomAccessIterator<i32> =
+            UnsafeRandomAccessIterator::Vec((*v2).as_mut_ptr());
+        let mut __end2: UnsafeRandomAccessIterator<i32> =
+            UnsafeRandomAccessIterator::Vec((*v2).as_mut_ptr().add((*v2).len()));
+        'loop_: while __begin2 != __end2 {
+            let mut i: i32 = (*__begin2.iter_deref());
             (unsafe { libc::printf(c"%d\n".as_ptr() as *const libc::c_char, ((i) + (3))) });
+            __begin2.iter_inc();
         }
+        __begin1.iter_inc();
     }
-    'loop_: for v2 in 0..(v.len()) {
-        let mut v2 = v[v2].clone();
-        'loop_: for i in 0..(v2.len()) {
-            let mut i = v2[i].clone();
+    let mut __begin1: UnsafeRandomAccessIterator<Vec<i32>> =
+        UnsafeRandomAccessIterator::Vec(v.as_mut_ptr());
+    let mut __end1: UnsafeRandomAccessIterator<Vec<i32>> =
+        UnsafeRandomAccessIterator::Vec(v.as_mut_ptr().add(v.len()));
+    'loop_: while __begin1 != __end1 {
+        let mut v2: Vec<i32> = (*__begin1.iter_deref()).clone();
+        let mut __begin2: UnsafeRandomAccessIterator<i32> =
+            UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr());
+        let mut __end2: UnsafeRandomAccessIterator<i32> =
+            UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr().add(v2.len()));
+        'loop_: while __begin2 != __end2 {
+            let mut i: i32 = (*__begin2.iter_deref());
             (unsafe { libc::printf(c"%d\n".as_ptr() as *const libc::c_char, (i)) });
+            __begin2.iter_inc();
         }
+        __begin1.iter_inc();
     }
     return 0;
 }

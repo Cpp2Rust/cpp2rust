@@ -667,9 +667,15 @@ fn main_0() -> i32 {
     }
     assert!(((*m2.borrow()).len() == indexes.len()));
     let mut last: i32 = -1_i32;
-    'loop_: for __begin1 in Map::range(m2.as_pointer()) {
-        let __begin1: Value<BidirectionalIterator<(Value<i32>, Value<bool>)>> =
-            Rc::new(RefCell::new(__begin1));
+    let __begin1: Value<BidirectionalIterator<(Value<i32>, Value<bool>)>> = Rc::new(RefCell::new(
+        (m2.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<bool>)>>)
+            .with(|__m: &Map<i32, (Value<i32>, Value<bool>)>| __m.begin()),
+    ));
+    let __end1: Value<BidirectionalIterator<(Value<i32>, Value<bool>)>> = Rc::new(RefCell::new(
+        (m2.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<bool>)>>)
+            .with(|__m: &Map<i32, (Value<i32>, Value<bool>)>| __m.end()),
+    ));
+    'loop_: while (*__begin1.borrow()) != (*__end1.borrow()) {
         let pair: Ptr<(Value<i32>, Value<bool>)> = (*__begin1.borrow()).iter_deref();
         assert!(({ (*(*pair.upgrade().deref()).0.borrow()) } > { last }));
         assert!(
@@ -678,6 +684,7 @@ fn main_0() -> i32 {
             })
         );
         last = (*(*pair.upgrade().deref()).0.borrow());
+        (*__begin1.borrow_mut()).iter_inc();
     }
     k = 0;
     let value_0: Ptr<u32> = (*m.borrow())
