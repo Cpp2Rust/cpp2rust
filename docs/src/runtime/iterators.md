@@ -27,7 +27,6 @@ for x in v.as_pointer() as Ptr<i32> {
 }
 ```
 
-
 ## Stable iterators
 
 `std::map<K, V>` is translated as a `BTreeMap<K, Value<V>>`, which has no
