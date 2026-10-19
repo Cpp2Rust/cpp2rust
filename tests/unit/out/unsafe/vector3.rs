@@ -29,41 +29,23 @@ unsafe fn main_0() -> i32 {
     v[(0_usize)][(0_usize)] = 1;
     v[(0_usize)][(1_usize)] = 5;
     v[(1_usize)][(0_usize)] = 6;
-    'loop_: for v2 in UnsafeIterRange::new(
-        UnsafeRandomAccessIterator::Vec(v.as_mut_ptr()),
-        UnsafeRandomAccessIterator::Vec(v.as_mut_ptr().add(v.len())),
-    ) {
+    'loop_: for v2 in IterRange::new(v.begin(), v.end()) {
         let v2: *mut Vec<i32> = &mut (*v2.iter_deref());
-        'loop_: for i in UnsafeIterRange::new(
-            UnsafeRandomAccessIterator::Vec((*v2).as_mut_ptr()),
-            UnsafeRandomAccessIterator::Vec((*v2).as_mut_ptr().add((*v2).len())),
-        ) {
+        'loop_: for i in IterRange::new((*v2).begin(), (*v2).end()) {
             let i: *mut i32 = &mut (*i.iter_deref());
             (*i).prefix_inc();
         }
     }
-    'loop_: for v2 in UnsafeIterRange::new(
-        UnsafeRandomAccessIterator::Vec(v.as_mut_ptr()),
-        UnsafeRandomAccessIterator::Vec(v.as_mut_ptr().add(v.len())),
-    ) {
+    'loop_: for v2 in IterRange::new(v.begin(), v.end()) {
         let v2: *mut Vec<i32> = &mut (*v2.iter_deref());
-        'loop_: for i in UnsafeIterRange::new(
-            UnsafeRandomAccessIterator::Vec((*v2).as_mut_ptr()),
-            UnsafeRandomAccessIterator::Vec((*v2).as_mut_ptr().add((*v2).len())),
-        ) {
+        'loop_: for i in IterRange::new((*v2).begin(), (*v2).end()) {
             let mut i: i32 = (*i.iter_deref());
             (unsafe { libc::printf(c"%d\n".as_ptr() as *const libc::c_char, ((i) + (3))) });
         }
     }
-    'loop_: for v2 in UnsafeIterRange::new(
-        UnsafeRandomAccessIterator::Vec(v.as_mut_ptr()),
-        UnsafeRandomAccessIterator::Vec(v.as_mut_ptr().add(v.len())),
-    ) {
+    'loop_: for v2 in IterRange::new(v.begin(), v.end()) {
         let mut v2: Vec<i32> = (*v2.iter_deref()).clone();
-        'loop_: for i in UnsafeIterRange::new(
-            UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr()),
-            UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr().add(v2.len())),
-        ) {
+        'loop_: for i in IterRange::new(v2.begin(), v2.end()) {
             let mut i: i32 = (*i.iter_deref());
             (unsafe { libc::printf(c"%d\n".as_ptr() as *const libc::c_char, (i)) });
         }

@@ -1501,8 +1501,8 @@ bool Converter::VisitCXXForRangeStmt(clang::CXXForRangeStmt *stmt) {
   begin->setDeclName(stmt->getLoopVariable()->getDeclName());
   StrCat("'loop_:");
   StrCat(keyword::kFor, GetNamedDeclAsString(begin), keyword::kIn,
-         IterRangeName(), "::new(", ConvertFreshRValue(begin->getInit()),
-         token::kComma, ConvertFreshRValue(end->getInit()), ')');
+         "IterRange::new(", ConvertFreshRValue(begin->getInit()), token::kComma,
+         ConvertFreshRValue(end->getInit()), ')');
   {
     PushBrace brace(*this);
     curr_for_inc_.emplace_back(nullptr);

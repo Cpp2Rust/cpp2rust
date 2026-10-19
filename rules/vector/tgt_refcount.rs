@@ -32,11 +32,11 @@ fn f69<T1>(a0: Ptr<T1>) -> Ptr<T1> {
 }
 
 fn f72<T1>(a0: Ptr<T1>) -> RandomAccessIterator<T1> {
-    RandomAccessIterator::Vec(a0)
+    a0.begin()
 }
 
 fn f76<T1>(a0: Ptr<T1>) -> RandomAccessIterator<T1> {
-    RandomAccessIterator::Vec(a0.to_end())
+    a0.end()
 }
 
 fn f77<T1: ByteRepr>(a0: &mut Vec<T1>, a1: RandomAccessIterator<T1>, a2: T1) -> RandomAccessIterator<T1> {
@@ -68,11 +68,11 @@ fn f93<T1>(a0: Ptr<T1>) -> Ptr<T1> {
 }
 
 fn f95<T1>(a0: Ptr<T1>) -> RandomAccessIterator<T1> {
-    RandomAccessIterator::Vec(a0)
+    a0.begin()
 }
 
 fn f96<T1>(a0: Ptr<T1>) -> RandomAccessIterator<T1> {
-    RandomAccessIterator::Vec(a0.to_end())
+    a0.end()
 }
 
 fn f98<T1: ByteRepr>(a0: Ptr<Vec<T1>>, a1: usize) -> Ptr<Vec<T1>> {
@@ -107,7 +107,7 @@ fn f103<T1: ByteRepr + Clone>(a0: Ptr<Vec<T1>>, a1: &mut Vec<T1>) {
 }
 
 fn f104<T1>(a0: Ptr<T1>) -> RandomAccessIterator<T1> {
-    RandomAccessIterator::Vec(a0.to_end())
+    a0.end()
 }
 
 fn f105<T1: Clone + ByteRepr>(a0: Ptr<Vec<T1>>, a1: Vec<T1>) {

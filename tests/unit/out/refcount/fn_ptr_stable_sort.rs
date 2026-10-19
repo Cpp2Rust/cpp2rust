@@ -36,12 +36,13 @@ fn main_0() -> i32 {
         (*v.borrow_mut()).push(__a1)
     };
     {
-        let __n = RandomAccessIterator::Vec((v.as_pointer() as Ptr<Item>).to_end())
-            .iter_distance(&RandomAccessIterator::Vec((v.as_pointer() as Ptr<Item>)));
+        let __n = (v.as_pointer() as Ptr<Item>)
+            .end()
+            .iter_distance(&(v.as_pointer() as Ptr<Item>).begin());
         let mut __order: Vec<isize> = (0..__n).collect();
         __order.sort_by(|&__x, &__y| {
-            let __a = RandomAccessIterator::Vec((v.as_pointer() as Ptr<Item>)).iter_at(__x);
-            let __b = RandomAccessIterator::Vec((v.as_pointer() as Ptr<Item>)).iter_at(__y);
+            let __a = (v.as_pointer() as Ptr<Item>).begin().iter_at(__x);
+            let __b = (v.as_pointer() as Ptr<Item>).begin().iter_at(__y);
             if Compare_0.call(__a.clone(), __b.clone()) {
                 std::cmp::Ordering::Less
             } else if Compare_0.call(__b, __a) {
@@ -52,14 +53,11 @@ fn main_0() -> i32 {
         });
         let __values: Vec<_> = __order
             .iter()
-            .map(|&__i| {
-                RandomAccessIterator::Vec((v.as_pointer() as Ptr<Item>))
-                    .iter_at(__i)
-                    .read()
-            })
+            .map(|&__i| (v.as_pointer() as Ptr<Item>).begin().iter_at(__i).read())
             .collect();
         for (__i, __v) in (0..__n).zip(__values) {
-            RandomAccessIterator::Vec((v.as_pointer() as Ptr<Item>))
+            (v.as_pointer() as Ptr<Item>)
+                .begin()
                 .iter_at(__i)
                 .write(__v);
         }

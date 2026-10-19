@@ -118,7 +118,7 @@ unsafe fn main_0() -> i32 {
         }) as i32))
         != 0;
     let mut distinct_count: usize = 0_usize;
-    'loop_: for entry in UnsafeIterRange::new(distinct.begin(), distinct.end()) {
+    'loop_: for entry in IterRange::new(distinct.begin(), distinct.end()) {
         let entry: *const (Key, Mapped) = &(*entry.iter_deref());
         if ((distinct_count) == (0_usize)) {
             ok = ((ok as i32)
@@ -179,7 +179,7 @@ unsafe fn main_0() -> i32 {
                 as i32))
             != 0;
         let mut equivalent_count: usize = 0_usize;
-        'loop_: for entry in UnsafeIterRange::new(equivalent.begin(), equivalent.end()) {
+        'loop_: for entry in IterRange::new(equivalent.begin(), equivalent.end()) {
             let entry: *const (Key, Mapped) = &(*entry.iter_deref());
             ok = ((ok as i32)
                 & (((((*entry).0.order) == (3)) && (((*entry).1.value) == (31))) as i32))

@@ -191,7 +191,7 @@ unsafe fn main_0() -> i32 {
     }
     assert!(((m2.len()) == (indexes.len())));
     let mut last: i32 = -1_i32;
-    'loop_: for pair in UnsafeIterRange::new(m2.begin(), m2.end()) {
+    'loop_: for pair in IterRange::new(m2.begin(), m2.end()) {
         let pair: *mut (i32, bool) = &mut (*pair.iter_deref());
         assert!((((*pair).0) > (last)));
         assert!((((*pair).1 as i32) == (((*pair).0) % (2))));

@@ -24,12 +24,10 @@ fn main_0() -> i32 {
         let __a1 = 3;
         (*v.borrow_mut()).push(__a1)
     };
-    let v_begin: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(
-        RandomAccessIterator::Vec((v.as_pointer() as Ptr<i32>)),
-    ));
-    let v_end: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(RandomAccessIterator::Vec(
-        (v.as_pointer() as Ptr<i32>).to_end(),
-    )));
+    let v_begin: Value<RandomAccessIterator<i32>> =
+        Rc::new(RefCell::new((v.as_pointer() as Ptr<i32>).begin()));
+    let v_end: Value<RandomAccessIterator<i32>> =
+        Rc::new(RefCell::new((v.as_pointer() as Ptr<i32>).end()));
     let it: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new({
         let mut __it = (*v_begin.borrow()).clone();
         while __it != (*v_end.borrow()).clone() && __it.iter_deref().with(|__v| *__v != 2) {
@@ -37,8 +35,7 @@ fn main_0() -> i32 {
         }
         __it
     }));
-    let mut v_result_true: bool =
-        (*it.borrow()) != RandomAccessIterator::Vec((v.as_pointer() as Ptr<i32>).to_end());
+    let mut v_result_true: bool = (*it.borrow()) != (v.as_pointer() as Ptr<i32>).end();
     let m: Value<Map<i32, (Value<i32>, Value<f64>)>> = Rc::new(RefCell::new(Map::new()));
     (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<f64>)>>)
         .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<f64>)>| {
@@ -91,51 +88,48 @@ fn main_0() -> i32 {
     assert!(
         ((v_result_true) && (m_result_true))
             && ({
-                let mut __it = RandomAccessIterator::Vec((v.as_pointer() as Ptr<i32>));
-                while __it != RandomAccessIterator::Vec((v.as_pointer() as Ptr<i32>))
+                let mut __it = (v.as_pointer() as Ptr<i32>).begin();
+                while __it != (v.as_pointer() as Ptr<i32>).begin()
                     && __it.iter_deref().with(|__v| *__v != 2)
                 {
                     __it.iter_inc();
                 }
                 __it
-            } == RandomAccessIterator::Vec((v.as_pointer() as Ptr<i32>)))
+            } == (v.as_pointer() as Ptr<i32>).begin())
     );
     let w: Value<Vec<i32>> = Rc::new(RefCell::new(vec![1, 2, 3, 4, 5]));
     assert!(
         {
-            let mut __it =
-                RandomAccessIterator::Vec((w.as_pointer() as Ptr<i32>)).iter_add(2_isize);
-            while __it != RandomAccessIterator::Vec((w.as_pointer() as Ptr<i32>).to_end())
+            let mut __it = (w.as_pointer() as Ptr<i32>).begin().iter_add(2_isize);
+            while __it != (w.as_pointer() as Ptr<i32>).end()
                 && __it.iter_deref().with(|__v| *__v != 4)
             {
                 __it.iter_inc();
             }
             __it
-        } == RandomAccessIterator::Vec((w.as_pointer() as Ptr<i32>)).iter_add(3_isize)
+        } == (w.as_pointer() as Ptr<i32>).begin().iter_add(3_isize)
     );
     assert!(
         {
-            let mut __it =
-                RandomAccessIterator::Vec((w.as_pointer() as Ptr<i32>)).iter_add(2_isize);
-            while __it != RandomAccessIterator::Vec((w.as_pointer() as Ptr<i32>).to_end())
+            let mut __it = (w.as_pointer() as Ptr<i32>).begin().iter_add(2_isize);
+            while __it != (w.as_pointer() as Ptr<i32>).end()
                 && __it.iter_deref().with(|__v| *__v != 1)
             {
                 __it.iter_inc();
             }
             __it
-        } == RandomAccessIterator::Vec((w.as_pointer() as Ptr<i32>).to_end())
+        } == (w.as_pointer() as Ptr<i32>).end()
     );
     assert!(
         {
-            let mut __it =
-                RandomAccessIterator::Vec((w.as_pointer() as Ptr<i32>)).iter_add(2_isize);
-            while __it != RandomAccessIterator::Vec((w.as_pointer() as Ptr<i32>)).iter_add(4_isize)
+            let mut __it = (w.as_pointer() as Ptr<i32>).begin().iter_add(2_isize);
+            while __it != (w.as_pointer() as Ptr<i32>).begin().iter_add(4_isize)
                 && __it.iter_deref().with(|__v| *__v != 5)
             {
                 __it.iter_inc();
             }
             __it
-        } == RandomAccessIterator::Vec((w.as_pointer() as Ptr<i32>)).iter_add(4_isize)
+        } == (w.as_pointer() as Ptr<i32>).begin().iter_add(4_isize)
     );
     return 0;
 }

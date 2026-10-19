@@ -24,10 +24,7 @@ unsafe fn main_0() -> i32 {
         let __a1 = 1;
         s.v.push(__a1)
     };
-    'loop_: for e in UnsafeIterRange::new(
-        UnsafeRandomAccessIterator::Vec(s.v.as_mut_ptr()),
-        UnsafeRandomAccessIterator::Vec(s.v.as_mut_ptr().add(s.v.len())),
-    ) {
+    'loop_: for e in IterRange::new(s.v.begin(), s.v.end()) {
         let mut e: i32 = (*e.iter_deref());
         s.a.postfix_inc();
     }

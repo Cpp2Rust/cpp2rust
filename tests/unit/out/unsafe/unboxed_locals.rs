@@ -20,10 +20,7 @@ pub struct Pair {
 }
 pub unsafe fn total_2(v: *const Vec<i32>) -> i32 {
     let mut s: i32 = 0;
-    'loop_: for x in UnsafeIterRange::new(
-        UnsafeRandomAccessIterator::Vec((*v).as_ptr().cast_mut()),
-        UnsafeRandomAccessIterator::Vec((*v).as_ptr().add((*v).len()).cast_mut()),
-    ) {
+    'loop_: for x in IterRange::new((*v).begin(), (*v).end()) {
         let mut x: i32 = (*x.iter_deref());
         s += x;
     }

@@ -17,8 +17,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut v: Vec<i32> = vec![1, 2];
-    let b: *const i32 =
-        (unsafe { foo_0(&(*UnsafeRandomAccessIterator::Vec(v.as_mut_ptr()).iter_deref())) });
+    let b: *const i32 = (unsafe { foo_0(&(*v.begin().iter_deref())) });
     v.clear();
     return (*b);
 }

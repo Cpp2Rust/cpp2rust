@@ -452,23 +452,44 @@ random_access_iterator!(
     std::ptr::null_mut()
 );
 
-pub struct IterRange<I, T> {
-    cur: I,
-    end: I,
-    elem: PhantomData<T>,
+pub trait IterStep: Clone + PartialEq {
+    fn iter_step(&mut self);
 }
 
-impl<I, T> IterRange<I, T> {
-    pub fn new(cur: I, end: I) -> Self {
-        Self {
-            cur,
-            end,
-            elem: PhantomData,
+macro_rules! iter_step {
+    ($name:ty, $iter:ident) => {
+        impl<T> IterStep for $name {
+            fn iter_step(&mut self) {
+                $iter::<T>::iter_inc(self);
+            }
         }
+    };
+}
+
+iter_step!(Ptr<T>, CppIterator);
+iter_step!(*mut T, UnsafeCppIterator);
+iter_step!(*const T, UnsafeCppIterator);
+iter_step!(InputIterator<T>, CppIterator);
+iter_step!(ForwardIterator<T>, CppIterator);
+iter_step!(UnsafeInputIterator<T>, UnsafeCppIterator);
+iter_step!(UnsafeForwardIterator<T>, UnsafeCppIterator);
+iter_step!(BidirectionalIterator<T>, CppIterator);
+iter_step!(UnsafeBidirectionalIterator<T>, UnsafeCppIterator);
+iter_step!(RandomAccessIterator<T>, CppIterator);
+iter_step!(UnsafeRandomAccessIterator<T>, UnsafeCppIterator);
+
+pub struct IterRange<I> {
+    cur: I,
+    end: I,
+}
+
+impl<I: IterStep> IterRange<I> {
+    pub fn new(cur: I, end: I) -> Self {
+        Self { cur, end }
     }
 }
 
-impl<I: CppInputIterator<T>, T> Iterator for IterRange<I, T> {
+impl<I: IterStep> Iterator for IterRange<I> {
     type Item = I;
 
     fn next(&mut self) -> Option<I> {
@@ -476,36 +497,33 @@ impl<I: CppInputIterator<T>, T> Iterator for IterRange<I, T> {
             return None;
         }
         let it = self.cur.clone();
-        self.cur.iter_inc();
+        self.cur.iter_step();
         Some(it)
     }
 }
 
-pub struct UnsafeIterRange<I, T> {
-    cur: I,
-    end: I,
-    elem: PhantomData<T>,
+pub trait CppRange {
+    type Iter;
+    fn begin(&self) -> Self::Iter;
+    fn end(&self) -> Self::Iter;
 }
 
-impl<I, T> UnsafeIterRange<I, T> {
-    pub fn new(cur: I, end: I) -> Self {
-        Self {
-            cur,
-            end,
-            elem: PhantomData,
-        }
+impl<T> CppRange for Vec<T> {
+    type Iter = UnsafeRandomAccessIterator<T>;
+    fn begin(&self) -> Self::Iter {
+        UnsafeRandomAccessIterator::Vec(self.as_ptr().cast_mut())
+    }
+    fn end(&self) -> Self::Iter {
+        UnsafeRandomAccessIterator::Vec(self.as_ptr().wrapping_add(self.len()).cast_mut())
     }
 }
 
-impl<I: UnsafeCppInputIterator<T>, T> Iterator for UnsafeIterRange<I, T> {
-    type Item = I;
-
-    fn next(&mut self) -> Option<I> {
-        if self.cur == self.end {
-            return None;
-        }
-        let it = self.cur.clone();
-        self.cur.iter_inc();
-        Some(it)
+impl<T> CppRange for Ptr<T> {
+    type Iter = RandomAccessIterator<T>;
+    fn begin(&self) -> Self::Iter {
+        RandomAccessIterator::Vec(self.clone())
+    }
+    fn end(&self) -> Self::Iter {
+        RandomAccessIterator::Vec(self.to_end())
     }
 }

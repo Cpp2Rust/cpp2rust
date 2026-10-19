@@ -223,8 +223,6 @@ public:
 
   virtual bool VisitCXXForRangeStmt(clang::CXXForRangeStmt *stmt);
 
-  virtual const char *IterRangeName() const { return "UnsafeIterRange"; }
-
   virtual bool VisitBreakStmt(clang::BreakStmt *stmt);
 
   virtual bool VisitContinueStmt(clang::ContinueStmt *stmt);

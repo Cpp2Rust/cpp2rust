@@ -58,7 +58,7 @@ unsafe fn main_0() -> i32 {
     assert!(((*p) == (57005)));
     assert!(((m.len()) == ((((N) + (1)) as u32) as usize)));
     let mut prev: i32 = -1_i32;
-    'loop_: for pair in UnsafeIterRange::new(m.begin(), m.end()) {
+    'loop_: for pair in IterRange::new(m.begin(), m.end()) {
         let pair: *mut (i32, i32) = &mut (*pair.iter_deref());
         assert!((((*pair).0) > (prev)));
         prev = (*pair).0;

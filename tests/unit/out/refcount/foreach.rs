@@ -22,8 +22,8 @@ fn main_0() -> i32 {
     }
     let mut sum: i32 = 0;
     'loop_: for x in IterRange::new(
-        RandomAccessIterator::Vec((v.as_pointer() as Ptr<i32>)),
-        RandomAccessIterator::Vec((v.as_pointer() as Ptr<i32>).to_end()),
+        (v.as_pointer() as Ptr<i32>).begin(),
+        (v.as_pointer() as Ptr<i32>).end(),
     ) {
         let mut x: i32 = (x.iter_deref().read());
         sum += x;

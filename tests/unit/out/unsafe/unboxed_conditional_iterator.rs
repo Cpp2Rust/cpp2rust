@@ -44,17 +44,14 @@ pub unsafe fn lehmer_2(mut sigma: *const u32, mut len: u32, mut code: *mut u32) 
     let mut i: u32 = 0_u32;
     'loop_: while ((i) < (len)) {
         let mut it: UnsafeRandomAccessIterator<u32> = {
-            let mut __it = UnsafeRandomAccessIterator::Vec(items.as_mut_ptr());
-            while __it != UnsafeRandomAccessIterator::Vec(items.as_mut_ptr().add(items.len()))
-                && *__it.iter_deref() != (*sigma.offset((i) as isize))
-            {
+            let mut __it = items.begin();
+            while __it != items.end() && *__it.iter_deref() != (*sigma.offset((i) as isize)) {
                 __it.iter_inc();
             }
             __it
         };
-        assert!(it != UnsafeRandomAccessIterator::Vec(items.as_mut_ptr().add(items.len())));
-        (*code.offset((i) as isize)) =
-            (it.iter_distance(&UnsafeRandomAccessIterator::Vec(items.as_mut_ptr())) as u32);
+        assert!(it != items.end());
+        (*code.offset((i) as isize)) = (it.iter_distance(&items.begin()) as u32);
         {
             let pos = <UnsafeRandomAccessIterator<u32>>::from((it).clone())
                 .vec_ptr()
@@ -67,9 +64,8 @@ pub unsafe fn lehmer_2(mut sigma: *const u32, mut len: u32, mut code: *mut u32) 
 }
 pub unsafe fn sum_3(v: *mut Vec<i32>) -> i32 {
     let mut s: i32 = 0;
-    let mut it: UnsafeRandomAccessIterator<i32> =
-        UnsafeRandomAccessIterator::Vec((*v).as_mut_ptr());
-    'loop_: while it != UnsafeRandomAccessIterator::Vec((*v).as_mut_ptr().add((*v).len())) {
+    let mut it: UnsafeRandomAccessIterator<i32> = (*v).begin();
+    'loop_: while it != (*v).end() {
         s += (*it.iter_deref());
         it.iter_inc();
     }

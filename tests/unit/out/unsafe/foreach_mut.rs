@@ -27,31 +27,19 @@ unsafe fn main_0() -> i32 {
         v1.push(__a1)
     };
     let mut sum: i32 = 0;
-    'loop_: for x in UnsafeIterRange::new(
-        UnsafeRandomAccessIterator::Vec(v1.as_mut_ptr()),
-        UnsafeRandomAccessIterator::Vec(v1.as_mut_ptr().add(v1.len())),
-    ) {
+    'loop_: for x in IterRange::new(v1.begin(), v1.end()) {
         let mut x: i32 = (*x.iter_deref());
         sum += x.prefix_inc();
     }
-    'loop_: for x in UnsafeIterRange::new(
-        UnsafeRandomAccessIterator::Vec(v1.as_mut_ptr()),
-        UnsafeRandomAccessIterator::Vec(v1.as_mut_ptr().add(v1.len())),
-    ) {
+    'loop_: for x in IterRange::new(v1.begin(), v1.end()) {
         let x: i32 = (*x.iter_deref());
         sum += x;
     }
-    'loop_: for x in UnsafeIterRange::new(
-        UnsafeRandomAccessIterator::Vec(v1.as_mut_ptr()),
-        UnsafeRandomAccessIterator::Vec(v1.as_mut_ptr().add(v1.len())),
-    ) {
+    'loop_: for x in IterRange::new(v1.begin(), v1.end()) {
         let x: *mut i32 = &mut (*x.iter_deref());
         (*x) += 10;
     }
-    'loop_: for x in UnsafeIterRange::new(
-        UnsafeRandomAccessIterator::Vec(v1.as_mut_ptr()),
-        UnsafeRandomAccessIterator::Vec(v1.as_mut_ptr().add(v1.len())),
-    ) {
+    'loop_: for x in IterRange::new(v1.begin(), v1.end()) {
         let x: *const i32 = &(*x.iter_deref());
         sum += (*x);
     }
@@ -68,31 +56,19 @@ unsafe fn main_0() -> i32 {
         let __a1 = (&mut v1[(2_usize)] as *mut i32);
         v2.push(__a1)
     };
-    'loop_: for p in UnsafeIterRange::new(
-        UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr()),
-        UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr().add(v2.len())),
-    ) {
+    'loop_: for p in IterRange::new(v2.begin(), v2.end()) {
         let mut p: *mut i32 = (*p.iter_deref());
         (*p) += 5;
     }
-    'loop_: for p in UnsafeIterRange::new(
-        UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr()),
-        UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr().add(v2.len())),
-    ) {
+    'loop_: for p in IterRange::new(v2.begin(), v2.end()) {
         let p: *mut i32 = (*p.iter_deref());
         sum += (*p);
     }
-    'loop_: for p in UnsafeIterRange::new(
-        UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr()),
-        UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr().add(v2.len())),
-    ) {
+    'loop_: for p in IterRange::new(v2.begin(), v2.end()) {
         let mut p: *mut i32 = (*p.iter_deref());
         (*p) += 5;
     }
-    'loop_: for p in UnsafeIterRange::new(
-        UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr()),
-        UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr().add(v2.len())),
-    ) {
+    'loop_: for p in IterRange::new(v2.begin(), v2.end()) {
         let mut p: *const i32 = (*p.iter_deref()).cast_const();
         sum += (*p);
     }

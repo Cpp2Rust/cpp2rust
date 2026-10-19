@@ -26,22 +26,22 @@ fn main_0() -> i32 {
     };
     let mut sum: i32 = 0;
     'loop_: for x in IterRange::new(
-        RandomAccessIterator::Vec((v1.as_pointer() as Ptr<i32>)),
-        RandomAccessIterator::Vec((v1.as_pointer() as Ptr<i32>).to_end()),
+        (v1.as_pointer() as Ptr<i32>).begin(),
+        (v1.as_pointer() as Ptr<i32>).end(),
     ) {
         let mut x: i32 = (x.iter_deref().read());
         sum += x.prefix_inc();
     }
     'loop_: for x in IterRange::new(
-        RandomAccessIterator::Vec((v1.as_pointer() as Ptr<i32>)),
-        RandomAccessIterator::Vec((v1.as_pointer() as Ptr<i32>).to_end()),
+        (v1.as_pointer() as Ptr<i32>).begin(),
+        (v1.as_pointer() as Ptr<i32>).end(),
     ) {
         let mut x: i32 = (x.iter_deref().read());
         sum += x;
     }
     'loop_: for x in IterRange::new(
-        RandomAccessIterator::Vec((v1.as_pointer() as Ptr<i32>)),
-        RandomAccessIterator::Vec((v1.as_pointer() as Ptr<i32>).to_end()),
+        (v1.as_pointer() as Ptr<i32>).begin(),
+        (v1.as_pointer() as Ptr<i32>).end(),
     ) {
         let x: Ptr<i32> = x.iter_deref();
         {
@@ -49,8 +49,8 @@ fn main_0() -> i32 {
         };
     }
     'loop_: for x in IterRange::new(
-        RandomAccessIterator::Vec((v1.as_pointer() as Ptr<i32>)),
-        RandomAccessIterator::Vec((v1.as_pointer() as Ptr<i32>).to_end()),
+        (v1.as_pointer() as Ptr<i32>).begin(),
+        (v1.as_pointer() as Ptr<i32>).end(),
     ) {
         let x: Ptr<i32> = x.iter_deref();
         sum += { (x.read()) };
@@ -69,8 +69,8 @@ fn main_0() -> i32 {
         (*v2.borrow_mut()).push(__a1)
     };
     'loop_: for p in IterRange::new(
-        RandomAccessIterator::Vec((v2.as_pointer() as Ptr<Ptr<i32>>)),
-        RandomAccessIterator::Vec((v2.as_pointer() as Ptr<Ptr<i32>>).to_end()),
+        (v2.as_pointer() as Ptr<Ptr<i32>>).begin(),
+        (v2.as_pointer() as Ptr<Ptr<i32>>).end(),
     ) {
         let mut p: Ptr<i32> = (p.iter_deref().read());
         {
@@ -78,15 +78,15 @@ fn main_0() -> i32 {
         };
     }
     'loop_: for p in IterRange::new(
-        RandomAccessIterator::Vec((v2.as_pointer() as Ptr<Ptr<i32>>)),
-        RandomAccessIterator::Vec((v2.as_pointer() as Ptr<Ptr<i32>>).to_end()),
+        (v2.as_pointer() as Ptr<Ptr<i32>>).begin(),
+        (v2.as_pointer() as Ptr<Ptr<i32>>).end(),
     ) {
         let mut p: Ptr<i32> = (p.iter_deref().read());
         sum += { (p.read()) };
     }
     'loop_: for p in IterRange::new(
-        RandomAccessIterator::Vec((v2.as_pointer() as Ptr<Ptr<i32>>)),
-        RandomAccessIterator::Vec((v2.as_pointer() as Ptr<Ptr<i32>>).to_end()),
+        (v2.as_pointer() as Ptr<Ptr<i32>>).begin(),
+        (v2.as_pointer() as Ptr<Ptr<i32>>).end(),
     ) {
         let mut p: Ptr<i32> = (p.iter_deref().read());
         {
@@ -94,8 +94,8 @@ fn main_0() -> i32 {
         };
     }
     'loop_: for p in IterRange::new(
-        RandomAccessIterator::Vec((v2.as_pointer() as Ptr<Ptr<i32>>)),
-        RandomAccessIterator::Vec((v2.as_pointer() as Ptr<Ptr<i32>>).to_end()),
+        (v2.as_pointer() as Ptr<Ptr<i32>>).begin(),
+        (v2.as_pointer() as Ptr<Ptr<i32>>).end(),
     ) {
         let mut p: Ptr<i32> = (p.iter_deref().read());
         sum += { (p.read()) };

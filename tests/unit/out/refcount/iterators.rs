@@ -47,8 +47,8 @@ fn main_0() -> i32 {
         (*v.borrow_mut()).push(__a1)
     };
     'loop_: for p in IterRange::new(
-        RandomAccessIterator::Vec((v.as_pointer() as Ptr<Ptr<i32>>)),
-        RandomAccessIterator::Vec((v.as_pointer() as Ptr<Ptr<i32>>).to_end()),
+        (v.as_pointer() as Ptr<Ptr<i32>>).begin(),
+        (v.as_pointer() as Ptr<Ptr<i32>>).end(),
     ) {
         let mut p: Ptr<i32> = (p.iter_deref().read());
         println!("{}", (p.read()));

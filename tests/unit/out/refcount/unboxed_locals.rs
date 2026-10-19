@@ -23,8 +23,8 @@ pub struct Pair {
 pub fn total_2(v: Ptr<Vec<i32>>) -> i32 {
     let mut s: i32 = 0;
     'loop_: for x in IterRange::new(
-        RandomAccessIterator::Vec((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>)),
-        RandomAccessIterator::Vec((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>).to_end()),
+        (Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>).begin(),
+        (Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>).end(),
     ) {
         let mut x: i32 = (x.iter_deref().read());
         s += x;
