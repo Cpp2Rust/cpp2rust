@@ -213,3 +213,15 @@ unsafe fn f114<T1>(a0: &mut Vec<T1>, init: T1) {
     let __init = init;
     a0.push(__init)
 }
+
+unsafe fn f115<T1: Clone>(a0: &mut Vec<T1>, a1: UnsafeRandomAccessIterator<T1>, a2: usize, a3: T1) -> UnsafeRandomAccessIterator<T1> {
+    let __off = a1.vec_ptr().offset_from(a0.as_ptr()) as usize;
+    a0.splice(__off..__off, std::iter::repeat_n(a3, a2));
+    UnsafeRandomAccessIterator::Vec(a0.as_mut_ptr().add(__off))
+}
+
+unsafe fn f116<T1>(a0: &mut Vec<T1>, a1: UnsafeRandomAccessIterator<T1>, a2: Vec<T1>) -> UnsafeRandomAccessIterator<T1> {
+    let __off = a1.vec_ptr().offset_from(a0.as_ptr()) as usize;
+    a0.splice(__off..__off, a2);
+    UnsafeRandomAccessIterator::Vec(a0.as_mut_ptr().add(__off))
+}

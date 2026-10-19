@@ -81,6 +81,109 @@ unsafe fn main_0() -> i32 {
     assert!(((v2[(0_usize)]) == (100)));
     assert!(((v2[(1_usize)]) == (2)));
     assert!(((v2[(2_usize)]) == (3)));
+    let mut x: i32 = 7;
+    {
+        let pos = <UnsafeRandomAccessIterator<i32>>::from(
+            UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr()).iter_add(1_isize),
+        )
+        .vec_ptr()
+        .offset_from(v2.as_ptr()) as usize;
+        v2.insert(pos, x);
+        <UnsafeRandomAccessIterator<i32>>::from(
+            UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr()).iter_add(1_isize),
+        )
+    };
+    assert!(((v2.len()) == (4_usize)));
+    assert!(((v2[(0_usize)]) == (100)));
+    assert!(((v2[(1_usize)]) == (7)));
+    assert!(((v2[(2_usize)]) == (2)));
+    {
+        let __off = <UnsafeRandomAccessIterator<i32>>::from(UnsafeRandomAccessIterator::Vec(
+            v2.as_mut_ptr().add(v2.len()),
+        ))
+        .vec_ptr()
+        .offset_from(v2.as_ptr()) as usize;
+        v2.splice(__off..__off, std::iter::repeat_n(9, 2_usize));
+        UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr().add(__off))
+    };
+    assert!(((v2.len()) == (6_usize)));
+    assert!(((v2[(4_usize)]) == (9)));
+    assert!(((v2[(5_usize)]) == (9)));
+    {
+        let __off = <UnsafeRandomAccessIterator<i32>>::from(
+            UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr()).iter_add(2_isize),
+        )
+        .vec_ptr()
+        .offset_from(v2.as_ptr()) as usize;
+        v2.splice(__off..__off, vec![11, 12, 13]);
+        UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr().add(__off))
+    };
+    assert!(((v2.len()) == (9_usize)));
+    assert!(((v2[(1_usize)]) == (7)));
+    assert!(((v2[(2_usize)]) == (11)));
+    assert!(((v2[(3_usize)]) == (12)));
+    assert!(((v2[(4_usize)]) == (13)));
+    assert!(((v2[(5_usize)]) == (2)));
+    assert!(((v2[(8_usize)]) == (9)));
+    let mut src: Vec<i32> = vec![21, 22];
+    {
+        let __off = <UnsafeRandomAccessIterator<i32>>::from(UnsafeRandomAccessIterator::Vec(
+            v2.as_mut_ptr(),
+        ))
+        .vec_ptr()
+        .offset_from(v2.as_ptr()) as usize;
+        let mut __tmp = Vec::new();
+        let mut __it = UnsafeRandomAccessIterator::Vec(src.as_mut_ptr());
+        while __it != UnsafeRandomAccessIterator::Vec(src.as_mut_ptr().add(src.len())) {
+            __tmp.push((*__it.iter_deref()).clone());
+            __it.iter_inc();
+        }
+        v2.splice(__off..__off, __tmp);
+        UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr().add(__off))
+    };
+    assert!(((v2.len()) == (11_usize)));
+    assert!(((v2[(0_usize)]) == (21)));
+    assert!(((v2[(1_usize)]) == (22)));
+    assert!(((v2[(2_usize)]) == (100)));
+    {
+        let pos = <UnsafeRandomAccessIterator<i32>>::from(UnsafeRandomAccessIterator::Vec(
+            v2.as_mut_ptr(),
+        ))
+        .vec_ptr()
+        .offset_from(v2.as_ptr()) as usize;
+        v2.remove(pos);
+        <UnsafeRandomAccessIterator<i32>>::from(UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr()))
+    };
+    {
+        let pos = <UnsafeRandomAccessIterator<i32>>::from(UnsafeRandomAccessIterator::Vec(
+            v2.as_mut_ptr(),
+        ))
+        .vec_ptr()
+        .offset_from(v2.as_ptr()) as usize;
+        v2.remove(pos);
+        <UnsafeRandomAccessIterator<i32>>::from(UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr()))
+    };
+    let mut i: i32 = 0;
+    'loop_: while ((i) < (4)) {
+        {
+            let pos = <UnsafeRandomAccessIterator<i32>>::from(
+                UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr()).iter_add(1_isize),
+            )
+            .vec_ptr()
+            .offset_from(v2.as_ptr()) as usize;
+            v2.remove(pos);
+            <UnsafeRandomAccessIterator<i32>>::from(
+                UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr()).iter_add(1_isize),
+            )
+        };
+        i.prefix_inc();
+    }
+    v2.pop();
+    v2.pop();
+    assert!(((v2.len()) == (3_usize)));
+    assert!(((v2[(0_usize)]) == (100)));
+    assert!(((v2[(1_usize)]) == (2)));
+    assert!(((v2[(2_usize)]) == (3)));
     let mut s2: usize = v2.len();
     let mut v3: Vec<i32> = vec![1; 100_usize as usize];
     assert!(((v3.len()) == (100_usize)));

@@ -226,3 +226,17 @@ auto f114(std::vector<T1, T2> &o, Init<T1, Args> &&...args)
     -> decltype(o.emplace_back(std::forward<Args>(args)...)) {
   return o.emplace_back(std::forward<Args>(args)...);
 }
+
+template <typename T1, typename T2 = std::allocator<T1>>
+typename std::vector<T1, T2>::iterator
+f115(std::vector<T1, T2> &o, typename std::vector<T1, T2>::const_iterator pos,
+     std::size_t n, const T1 &value) {
+  return o.insert(pos, n, value);
+}
+
+template <typename T1, typename T2 = std::allocator<T1>>
+typename std::vector<T1, T2>::iterator
+f116(std::vector<T1, T2> &o, typename std::vector<T1, T2>::const_iterator pos,
+     std::initializer_list<T1> l) {
+  return o.insert(pos, l);
+}

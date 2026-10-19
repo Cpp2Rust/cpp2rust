@@ -115,3 +115,15 @@ fn f104<T1>(a0: Ptr<T1>) -> RandomAccessIterator<T1> {
 fn f105<T1: Clone + ByteRepr>(a0: Ptr<Vec<T1>>, a1: Vec<T1>) {
     a0.write(a1)
 }
+
+fn f115<T1: Clone + ByteRepr>(a0: &mut Vec<T1>, a1: RandomAccessIterator<T1>, a2: usize, a3: T1) -> RandomAccessIterator<T1> {
+    let __off = a1.vec_ptr().get_offset();
+    a0.splice(__off..__off, std::iter::repeat_n(a3, a2));
+    a1
+}
+
+fn f116<T1: ByteRepr>(a0: &mut Vec<T1>, a1: RandomAccessIterator<T1>, a2: Vec<T1>) -> RandomAccessIterator<T1> {
+    let __off = a1.vec_ptr().get_offset();
+    a0.splice(__off..__off, a2);
+    a1
+}
