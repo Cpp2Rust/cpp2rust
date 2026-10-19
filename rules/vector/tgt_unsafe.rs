@@ -121,19 +121,18 @@ unsafe fn f80<T1: Clone>(a0: &mut Vec<T1>, a1: T1) {
     a0.push(a0_clone)
 }
 
-unsafe fn f90<T1: Clone>(a0: *const T1, a1: *const T1) -> Vec<T1> {
-    core::slice::from_raw_parts(a0, (a1).offset_from(a0) as usize).to_vec()
-}
-
 unsafe fn f91<T1>(a0: Vec<T1>) -> Vec<T1> {
     a0
 }
 
-unsafe fn f92<T1: TryFrom<T2>, T2: Clone>(a0: *mut T2, a1: *mut T2) -> Vec<T1> {
-    core::slice::from_raw_parts(a0, (a1).offset_from(a0) as usize)
-        .iter()
-        .map(|x| T1::try_from(x.clone()).ok().unwrap())
-        .collect()
+unsafe fn f92<T1: TryFrom<T2>, T2: Clone, T3: UnsafeCppInputIterator<T2>>(a0: T3, a1: T3) -> Vec<T1> {
+    let mut __v = Vec::new();
+    let mut __it = a0;
+    while __it != a1 {
+        __v.push(T1::try_from((*__it.iter_deref()).clone()).ok().unwrap());
+        __it.iter_inc();
+    }
+    __v
 }
 
 unsafe fn f93<T1>(a0: &mut Vec<T1>) -> *const T1 {
@@ -164,18 +163,20 @@ unsafe fn f99<T1>(a0: &Vec<T1>) -> &T1 {
     ((a0).last().unwrap())
 }
 
-unsafe fn f101<T1: Clone>(
+unsafe fn f101<T1: Clone, T3: UnsafeCppInputIterator<T1>>(
     a0: &mut Vec<T1>,
     a1: UnsafeRandomAccessIterator<T1>,
-    a2: *const T1,
-    a3: *const T1,
+    a2: T3,
+    a3: T3,
 ) -> UnsafeRandomAccessIterator<T1> {
     let __off = a1.vec_ptr().offset_from(a0.as_ptr()) as usize;
-    let count = a3.offset_from(a2) as usize;
-    a0.splice(
-        __off..__off,
-        std::slice::from_raw_parts(a2, count).iter().cloned(),
-    );
+    let mut __tmp = Vec::new();
+    let mut __it = a2;
+    while __it != a3 {
+        __tmp.push((*__it.iter_deref()).clone());
+        __it.iter_inc();
+    }
+    a0.splice(__off..__off, __tmp);
     UnsafeRandomAccessIterator::Vec(a0.as_mut_ptr().add(__off))
 }
 

@@ -137,17 +137,12 @@ void f80(std::vector<T1, T2> &o, const T1 &value) {
 }
 
 template <typename T1, typename T2 = std::allocator<T1>>
-std::vector<T1, T2> f90(const T1 *first, const T1 *last) {
-  return std::vector<T1, T2>(first, last);
-}
-
-template <typename T1, typename T2 = std::allocator<T1>>
 std::vector<T1, T2> f91(const std::initializer_list<T1> &a0) {
   return std::vector<T1, T2>(a0);
 }
 
 template <typename T1, typename T2 = std::allocator<T1>, typename T3>
-std::vector<T1, T2> f92(T3 *first, T3 *last) {
+std::vector<T1, T2> f92(T3 first, T3 last) {
   return std::vector<T1, T2>(first, last);
 }
 
@@ -181,10 +176,10 @@ const T1 &f99(const std::vector<T1, T2> &o) {
   return o.back();
 }
 
-template <typename T1, typename T2 = std::allocator<T1>>
+template <typename T1, typename T2 = std::allocator<T1>, typename T3>
 typename std::vector<T1, T2>::iterator
 f101(std::vector<T1, T2> &o, typename std::vector<T1, T2>::const_iterator pos,
-     const T1 *first, const T1 *last) {
+     T3 first, T3 last) {
   return o.insert(pos, first, last);
 }
 

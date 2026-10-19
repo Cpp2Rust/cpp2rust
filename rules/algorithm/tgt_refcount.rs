@@ -122,10 +122,14 @@ fn f12<T1: CppInputIterator<T2>, T2: Clone + ByteRepr>(a0: T1, a1: T1, a2: T2) {
     }
 }
 
-fn f13(a0: Ptr<i8>, a1: Ptr<i8>, a2: &mut ::std::fs::File) -> ::std::fs::File {
-    a0.with_slice(a1.get_offset() - a0.get_offset(), |__s| {
-        CChar::with_u8_slice(__s, |__b| a2.write_all(__b))
-    });
+fn f13<T1: CppInputIterator<i8>>(a0: T1, a1: T1, a2: &mut ::std::fs::File) -> ::std::fs::File {
+    let mut __bytes: Vec<u8> = Vec::new();
+    let mut __it = a0;
+    while __it != a1 {
+        __bytes.push(__it.iter_deref().read() as u8);
+        __it.iter_inc();
+    }
+    a2.write_all(&__bytes);
     a2.try_clone().unwrap()
 }
 
