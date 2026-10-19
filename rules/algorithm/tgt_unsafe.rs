@@ -112,15 +112,18 @@ unsafe fn f12<T1: UnsafeCppInputIterator<T2>, T2: Clone>(a0: T1, a1: T1, a2: T2)
     }
 }
 
-unsafe fn f13(
-    a0: *const libc::c_char,
-    a1: *const libc::c_char,
+unsafe fn f13<T1: UnsafeCppInputIterator<libc::c_char>>(
+    a0: T1,
+    a1: T1,
     a2: &mut ::std::fs::File,
 ) -> ::std::fs::File {
-    let __start = a0 as *const u8;
-    let __end = a1 as *const u8;
-    let __len = __end.offset_from(__start) as usize;
-    a2.write_all(::std::slice::from_raw_parts(__start, __len));
+    let mut __bytes: Vec<u8> = Vec::new();
+    let mut __it = a0;
+    while __it != a1 {
+        __bytes.push(*__it.iter_deref() as u8);
+        __it.iter_inc();
+    }
+    a2.write_all(&__bytes);
     a2.try_clone().unwrap()
 }
 

@@ -1229,43 +1229,6 @@ impl<T> Iterator for Ptr<T> {
     }
 }
 
-// Ptr iterator that yields values instead of pointers.
-// It's more efficient and it's useful to implement idiomatic iterator patterns
-pub struct PtrValueIter<T> {
-    ptr: Ptr<T>,
-    n: usize,
-}
-
-impl<T> PtrValueIter<T> {
-    pub fn new(ptr: &Ptr<T>, n: usize) -> Self {
-        Self {
-            ptr: ptr.clone(),
-            n,
-        }
-    }
-}
-
-impl<T: Clone + ByteRepr> Iterator for PtrValueIter<T> {
-    type Item = T;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        if self.n > 0 {
-            let value = self.ptr.read();
-            self.ptr += 1;
-            self.n -= 1;
-            Some(value)
-        } else {
-            None
-        }
-    }
-
-    fn size_hint(&self) -> (usize, Option<usize>) {
-        (self.n, Some(self.n))
-    }
-}
-
-impl<T: Clone + ByteRepr> ExactSizeIterator for PtrValueIter<T> {}
-
 impl<T> Sub for Ptr<T> {
     type Output = isize;
     fn sub(self, other: Self) -> Self::Output {

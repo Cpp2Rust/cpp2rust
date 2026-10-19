@@ -40,9 +40,8 @@ void f12(T1 first, T1 last, const T2 &value) {
   return std::fill(first, last, value);
 }
 
-std::ostream_iterator<char> f13(std::string::iterator a0,
-                                std::string::iterator a1,
-                                std::ostream_iterator<char> a2) {
+template <typename T1>
+std::ostream_iterator<char> f13(T1 a0, T1 a1, std::ostream_iterator<char> a2) {
   return std::copy(a0, a1, a2);
 }
 

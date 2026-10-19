@@ -48,13 +48,13 @@ pub fn push_local_from_field_1(mut jpg: Ptr<JPEGData>, mut cond: bool) {
     }
     {
         let __a1 = {
-            let __count = (head.as_pointer() as Ptr<u8>)
-                .offset((3) as isize)
-                .get_offset()
-                - (head.as_pointer() as Ptr<u8>).get_offset();
-            PtrValueIter::new(&(head.as_pointer() as Ptr<u8>), __count)
-                .map(|item| u8::try_from(item).ok().unwrap())
-                .collect::<Vec<_>>()
+            let mut __v = Vec::new();
+            let mut __it = (head.as_pointer() as Ptr<u8>);
+            while __it != (head.as_pointer() as Ptr<u8>).offset((3) as isize) {
+                __v.push(<u8>::try_from(__it.iter_deref().read()).ok().unwrap());
+                __it.iter_inc();
+            }
+            __v
         };
         dest.with_mut(|__v: &mut Vec<Vec<u8>>| __v.push(__a1))
     };
@@ -79,13 +79,13 @@ pub fn emplace_local_from_field_4(mut jpg: Ptr<JPEGData>, mut cond: bool) {
     }
     {
         let __init = {
-            let __count = (head.as_pointer() as Ptr<u8>)
-                .offset((3) as isize)
-                .get_offset()
-                - (head.as_pointer() as Ptr<u8>).get_offset();
-            PtrValueIter::new(&(head.as_pointer() as Ptr<u8>), __count)
-                .map(|item| u8::try_from(item).ok().unwrap())
-                .collect::<Vec<_>>()
+            let mut __v = Vec::new();
+            let mut __it = (head.as_pointer() as Ptr<u8>);
+            while __it != (head.as_pointer() as Ptr<u8>).offset((3) as isize) {
+                __v.push(<u8>::try_from(__it.iter_deref().read()).ok().unwrap());
+                __it.iter_inc();
+            }
+            __v
         };
         dest.with_mut(|__v: &mut Vec<Vec<u8>>| __v.push(__init))
     };
