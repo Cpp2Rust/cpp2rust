@@ -161,7 +161,7 @@ impl<K: Ord, T> Map<K, T> {
 
     pub fn get_or_insert_with(&mut self, key: K, value: impl FnOnce() -> T) -> Value<T> {
         let prev = match self.nodes.range(..=&key).next_back() {
-            Some((k, node)) if *k == key => {
+            Some((k, node)) if k.cmp(&key) == std::cmp::Ordering::Equal => {
                 return node
                     .borrow()
                     .value
@@ -376,7 +376,7 @@ impl<K: Ord, T> UnsafeMap<K, T> {
         let prev = match self.nodes.range(..=&key).next_back() {
             Some((k, node)) => {
                 let node = &**node as *const UnsafeMapNode<T> as *mut UnsafeMapNode<T>;
-                if *k == key {
+                if k.cmp(&key) == std::cmp::Ordering::Equal {
                     return UnsafeMapNode::value(node);
                 }
                 node
