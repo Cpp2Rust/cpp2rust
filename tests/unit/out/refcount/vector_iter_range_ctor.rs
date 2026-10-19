@@ -143,8 +143,9 @@ fn main_0() -> i32 {
             RandomAccessIterator::Vec((v6.as_pointer() as Ptr<(Value<i32>, Value<i32>)>))
                 .iter_add(1_isize),
         )
-        .ptr()
-        .get_offset();
+        .iter_distance(&RandomAccessIterator::Vec(
+            (v6.as_pointer() as Ptr<Vec<(Value<i32>, Value<i32>)>>).decay(),
+        )) as usize;
         let mut temp_vec: Vec<(Value<i32>, Value<i32>)> = Vec::new();
         let mut __it = (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
             .with(|__m: &Map<i32, (Value<i32>, Value<i32>)>| __m.begin());

@@ -100,13 +100,14 @@ fn main_0() -> i32 {
     };
     assert!(((*v2.borrow()).len() == 3_usize));
     {
-        let idx = <RandomAccessIterator<i32>>::from(RandomAccessIterator::Vec(
+        let __off = <RandomAccessIterator<i32>>::from(RandomAccessIterator::Vec(
             (v2.as_pointer() as Ptr<i32>),
         ))
-        .ptr()
-        .get_offset();
-        (v2.as_pointer() as Ptr<Vec<i32>>).with_mut(|__v: &mut Vec<i32>| __v.remove(idx));
-        RandomAccessIterator::Vec((v2.as_pointer() as Ptr<Vec<i32>>).decay())
+        .iter_distance(&RandomAccessIterator::Vec(
+            (v2.as_pointer() as Ptr<Vec<i32>>).decay(),
+        )) as usize;
+        (v2.as_pointer() as Ptr<Vec<i32>>).with_mut(|__v: &mut Vec<i32>| __v.remove(__off));
+        RandomAccessIterator::Vec((v2.as_pointer() as Ptr<Vec<i32>>).decay() + __off)
     };
     assert!(((*v2.borrow()).len() == 2_usize));
     assert!(({ (*v2.borrow())[0_usize] } == 2));
@@ -115,8 +116,7 @@ fn main_0() -> i32 {
         let __off = <RandomAccessIterator<i32>>::from(RandomAccessIterator::Vec(
             (v2.as_pointer() as Ptr<i32>),
         ))
-        .ptr()
-        .get_offset();
+        .index();
         (*v2.borrow_mut()).insert(__off, 100);
         <RandomAccessIterator<i32>>::from(RandomAccessIterator::Vec((v2.as_pointer() as Ptr<i32>)))
     };

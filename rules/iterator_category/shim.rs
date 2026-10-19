@@ -338,14 +338,6 @@ macro_rules! random_access_iterator {
             Vec($ptr),
         }
 
-        impl<T> $name<T> {
-            pub fn ptr(&self) -> $ptr {
-                match self {
-                    Self::Vec(p) => p.clone(),
-                }
-            }
-        }
-
         impl<T> Default for $name<T> {
             fn default() -> Self {
                 Self::Vec($null)
@@ -354,7 +346,9 @@ macro_rules! random_access_iterator {
 
         impl<T> Clone for $name<T> {
             fn clone(&self) -> Self {
-                Self::Vec(self.ptr())
+                match self {
+                    Self::Vec(p) => Self::Vec(p.clone()),
+                }
             }
         }
 
@@ -441,6 +435,14 @@ random_access_iterator!(
     CppRandomAccessIterator,
     Ptr::null()
 );
+
+impl<T> RandomAccessIterator<T> {
+    pub fn index(&self) -> usize {
+        match self {
+            Self::Vec(p) => p.get_offset(),
+        }
+    }
+}
 
 random_access_iterator!(
     UnsafeRandomAccessIterator,
