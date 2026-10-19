@@ -95,8 +95,17 @@ class AddressTakenVisitor
     : public clang::RecursiveASTVisitor<AddressTakenVisitor> {
 public:
   AddressTakenVisitor(clang::ASTContext &ctx,
-                      std::unordered_set<const clang::VarDecl *> &vars)
-      : ctx_(ctx), address_taken_(vars) {}
+                      std::unordered_set<const clang::VarDecl *> &vars,
+                      std::unordered_set<const clang::VarDecl *> &iterators)
+      : ctx_(ctx), address_taken_(vars), range_iterators_(iterators) {}
+
+  bool VisitCXXForRangeStmt(clang::CXXForRangeStmt *stmt) {
+    if (auto *begin = stmt->getBeginStmt()) {
+      range_iterators_.insert(
+          clang::cast<clang::VarDecl>(begin->getSingleDecl()));
+    }
+    return true;
+  }
 
   bool shouldVisitTemplateInstantiations() const { return true; }
 
@@ -249,18 +258,20 @@ private:
 
   clang::ASTContext &ctx_;
   std::unordered_set<const clang::VarDecl *> &address_taken_;
+  std::unordered_set<const clang::VarDecl *> &range_iterators_;
   // The references to variables that only access their value.
   std::unordered_set<const clang::DeclRefExpr *> value_uses_;
 };
 } // namespace
 
 BoxedVars::BoxedVars(clang::ASTContext &ctx) : ctx_(ctx) {
-  AddressTakenVisitor(ctx, address_taken_)
+  AddressTakenVisitor(ctx, address_taken_, range_iterators_)
       .TraverseDecl(ctx.getTranslationUnitDecl());
 }
 
 bool BoxedVars::contains(const clang::VarDecl *decl) const {
-  return !CanUnbox(ctx_, decl) || address_taken_.contains(decl);
+  return !range_iterators_.contains(decl) &&
+         (!CanUnbox(ctx_, decl) || address_taken_.contains(decl));
 }
 
 namespace {
