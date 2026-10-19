@@ -1882,19 +1882,6 @@ bool ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
 
   if (qual_type->isRecordType()) {
     const auto *record = qual_type->getAsRecordDecl();
-    if (record->getQualifiedNameAsString() == "std::array") {
-      if (auto init = clang::dyn_cast<clang::InitListExpr>(expr->getInit(0))) {
-        StrCat("vec!");
-        PushConversionKind push(*this, ConversionKind::Unboxed);
-        ConverterRefCount::VisitInitListExpr(init);
-      } else {
-        PushConversionKind push(*this, ConversionKind::Unboxed);
-        StrCat(GetDefaultAsString(qual_type));
-      }
-      computed_expr_type_ = ComputedExprType::FreshValue;
-      return false;
-    }
-
     if (syntactic->getNumInits() == 0) {
       {
         PushConversionKind push(*this, ConversionKind::Unboxed);
@@ -1902,6 +1889,17 @@ bool ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
       }
       computed_expr_type_ = ComputedExprType::FreshValue;
       return false;
+    }
+
+    {
+      PushConversionKind push(*this, ConversionKind::Unboxed);
+      if (auto str =
+              GetMappedAsString(expr, expr->getInits(), expr->getNumInits());
+          !str.empty()) {
+        StrCat(str);
+        computed_expr_type_ = ComputedExprType::FreshValue;
+        return false;
+      }
     }
 
     if (record->isUnion()) {

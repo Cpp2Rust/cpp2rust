@@ -489,6 +489,13 @@ std::string ExprKey(clang::ASTContext &ctx, const clang::Expr *expr) {
   if (auto construct = llvm::dyn_cast<clang::CXXConstructExpr>(expr)) {
     return FunctionKey(construct->getConstructor());
   }
+  if (auto list = llvm::dyn_cast<clang::InitListExpr>(expr)) {
+    if (auto record = list->getType()->getAsRecordDecl();
+        record && !IsUserDefinedDecl(record)) {
+      return ConstructorKey(ClassKey(record));
+    }
+    return {};
+  }
   if (auto member = llvm::dyn_cast<clang::MemberExpr>(expr)) {
     if (RuleDecls::GetMacroMemberBase(ctx.getSourceManager(), member)) {
       return clang::Lexer::getImmediateMacroName(member->getMemberLoc(),

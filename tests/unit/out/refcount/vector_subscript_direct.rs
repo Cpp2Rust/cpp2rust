@@ -181,7 +181,7 @@ fn main_0() -> i32 {
             .read())
                 == 8)
     );
-    let a: Value<Vec<i32>> = Rc::new(RefCell::new(vec![4, 5, 6]));
+    let a: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::from([4, 5, 6])));
     let __rhs = ({ (*a.borrow())[0_usize] } + { (*a.borrow())[2_usize] });
     (*a.borrow_mut())[1_usize] = __rhs;
     assert!(({ (*a.borrow())[1_usize] } == 10));

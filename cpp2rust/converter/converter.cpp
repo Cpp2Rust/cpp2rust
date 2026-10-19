@@ -3626,19 +3626,16 @@ bool Converter::VisitInitListExpr(clang::InitListExpr *expr) {
     }
   } else if (qual_type->isRecordType()) {
     const auto *record = qual_type->getAsRecordDecl();
-    if (record->getQualifiedNameAsString() == "std::array") {
-      if (auto init = clang::dyn_cast<clang::InitListExpr>(expr->getInit(0))) {
-        StrCat("vec!");
-        VisitInitListExpr(init);
-      } else {
-        StrCat(GetDefaultAsString(qual_type));
-      }
+    if (syntactic->getNumInits() == 0) {
+      StrCat(GetDefaultAsString(qual_type));
       SetFreshType(qual_type);
       return false;
     }
 
-    if (syntactic->getNumInits() == 0) {
-      StrCat(GetDefaultAsString(qual_type));
+    if (auto str =
+            GetMappedAsString(expr, expr->getInits(), expr->getNumInits());
+        !str.empty()) {
+      StrCat(str);
       SetFreshType(qual_type);
       return false;
     }

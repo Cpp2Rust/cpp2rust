@@ -38,3 +38,7 @@ unsafe fn f6<T1: Clone>(a0: Vec<T1>) -> Vec<T1> {
 unsafe fn f7<T1: Clone>(a0: &mut Vec<T1>, a1: Vec<T1>) {
     *a0 = a1.clone()
 }
+
+unsafe fn f8<T1, const T2: usize>(a0: [T1; T2]) -> Vec<T1> {
+    Vec::from(a0)
+}

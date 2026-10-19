@@ -22,6 +22,7 @@
 #include <vector>
 
 #include "converter/rules/decls.h"
+#include "converter/rules/rule_keys.h"
 
 namespace cpp2rust::AstMatcher {
 
@@ -60,8 +61,15 @@ struct RewrittenOperatorUsage {
   bool operator==(const RewrittenOperatorUsage &) const = default;
 };
 
-using ResolvedDecl = std::variant<std::monostate, const clang::Decl *,
-                                  MacroUsage, RewrittenOperatorUsage>;
+struct AggregateUsage {
+  RuleKeys::TypeKey type;
+
+  bool operator==(const AggregateUsage &) const = default;
+};
+
+using ResolvedDecl =
+    std::variant<std::monostate, const clang::Decl *, MacroUsage,
+                 RewrittenOperatorUsage, AggregateUsage>;
 
 ResolvedDecl getResolvedDecl(clang::ASTContext &ctx, const clang::Expr *expr,
                              bool must_resolve) {
@@ -84,6 +92,14 @@ ResolvedDecl getResolvedDecl(clang::ASTContext &ctx, const clang::Expr *expr,
   }
   if (auto cast = llvm::dyn_cast<clang::ExplicitCastExpr>(expr)) {
     return getResolvedDecl(ctx, cast->getSubExpr(), must_resolve);
+  }
+  if (auto list = llvm::dyn_cast<clang::InitListExpr>(expr);
+      list && list->getType()->isRecordType()) {
+    return AggregateUsage{*RuleKeys::GetTypeKey(list->getType())};
+  }
+  if (auto construct = llvm::dyn_cast<clang::CXXUnresolvedConstructExpr>(expr);
+      construct && construct->isListInitialization()) {
+    return AggregateUsage{*RuleKeys::GetTypeKey(construct->getTypeAsWritten())};
   }
   if (auto call = llvm::dyn_cast<clang::CallExpr>(expr)) {
     if (auto callee = call->getDirectCallee()) {
@@ -149,6 +165,8 @@ std::vector<clang::Expr *> getOperands(clang::ASTContext &ctx,
     operands.insert(operands.end(), call->arg_begin(), call->arg_end());
   } else if (auto construct = llvm::dyn_cast<clang::CXXConstructExpr>(expr)) {
     operands.assign(construct->arg_begin(), construct->arg_end());
+  } else if (auto list = llvm::dyn_cast<clang::InitListExpr>(expr)) {
+    operands.assign(list->inits().begin(), list->inits().end());
   } else if (auto member = llvm::dyn_cast<clang::MemberExpr>(expr)) {
     auto macro_base =
         RuleDecls::GetMacroMemberBase(ctx.getSourceManager(), member);
@@ -320,6 +338,17 @@ MatchResult matchTemplate(clang::Sema &sema, const clang::Expr *use,
   auto explicit_args = getResultArgs(sema, rule, use);
   auto specialization =
       deduce(sema, rule, explicit_args, getOperands(ctx, use));
+  if (!specialization) {
+    return std::nullopt;
+  }
+  if (std::holds_alternative<AggregateUsage>(usage_decl)) {
+    auto returned = RuleDecls::GetReturned(rule->getTemplatedDecl());
+    if (getResolvedDecl(ctx, returned, /*must_resolve=*/false) != usage_decl) {
+      return std::nullopt;
+    }
+    checkCallable(sema, use, rule->getTemplatedDecl());
+    return specialization->getTemplateSpecializationArgs()->asArray();
+  }
   auto returned =
       substituteSpecializationInRuleTmpl(sema, rule, specialization);
   if (!returned ||
