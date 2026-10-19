@@ -1,16 +1,14 @@
 #include <cassert>
 #include <map>
 
-struct S {
-  std::map<int, int> m;
-};
+typedef std::map<int, int> S;
 
 int main() {
   S a;
-  a.m[1] = 10;
+  a[1] = 10;
   S b = a;
-  b.m[1] = 20;
-  assert(a.m[1] == 10);
+  b[1] = 20;
+  assert(a[1] == 10);
   std::map<int, int> x;
   x[2] = 3;
   std::map<int, int> y = x;

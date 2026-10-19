@@ -6,20 +6,13 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
-#[byte_size(48)]
-pub struct S {
-    #[offset(0)]
-    #[byte_size(48)]
-    pub m: Map<i32, (Value<i32>, Value<i32>)>,
-}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let a: Value<S> = Rc::new(RefCell::new(<S>::default()));
-    (field_ptr!(a.as_pointer(), m) as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
+    let a: Value<Map<i32, (Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
+    (a.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
         .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<i32>)>| {
             __m.get_or_insert_with(1.clone(), || {
                 (
@@ -32,8 +25,8 @@ fn main_0() -> i32 {
             .as_pointer()
         })
         .write(10);
-    let b: Value<S> = Rc::new(RefCell::new((*a.borrow()).clone()));
-    (field_ptr!(b.as_pointer(), m) as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
+    let b: Value<Map<i32, (Value<i32>, Value<i32>)>> = Rc::new(RefCell::new((*a.borrow()).clone()));
+    (b.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
         .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<i32>)>| {
             __m.get_or_insert_with(1.clone(), || {
                 (
@@ -47,7 +40,7 @@ fn main_0() -> i32 {
         })
         .write(20);
     assert!(
-        (((field_ptr!(a.as_pointer(), m) as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
+        (((a.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
             .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<i32>)>| {
                 __m.get_or_insert_with(1.clone(), || {
                     (
