@@ -137,7 +137,7 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut w: Wrapped_int_ = Wrapped_int_ { v: 2 };
     assert!(((w.v) == (2)));
-    let mut lts: Vec<Lt> = vec![Lt { v: 3 }, Lt { v: 1 }, Lt { v: 2 }];
+    let mut lts: Vec<Lt> = Vec::from([Lt { v: 3 }, Lt { v: 1 }, Lt { v: 2 }]);
     {
         let __n = lts.end().iter_distance(&lts.begin());
         let mut __order: Vec<isize> = (0..__n).collect();
@@ -153,7 +153,7 @@ unsafe fn main_0() -> i32 {
     assert!(
         (((lts[(0_usize)].v) == (1)) && ((lts[(1_usize)].v) == (2))) && ((lts[(2_usize)].v) == (3))
     );
-    let mut eqs: Vec<Eq> = vec![Eq { v: 1 }, Eq { v: 2 }, Eq { v: 3 }];
+    let mut eqs: Vec<Eq> = Vec::from([Eq { v: 1 }, Eq { v: 2 }, Eq { v: 3 }]);
     let mut two: Eq = Eq { v: 2 };
     let mut nine: Eq = Eq { v: 9 };
     assert!(
@@ -176,7 +176,7 @@ unsafe fn main_0() -> i32 {
             __it
         } == eqs.end()
     );
-    let mut cmps: Vec<Cmp> = vec![Cmp { v: 3 }, Cmp { v: 1 }, Cmp { v: 2 }];
+    let mut cmps: Vec<Cmp> = Vec::from([Cmp { v: 3 }, Cmp { v: 1 }, Cmp { v: 2 }]);
     {
         let __n = cmps.end().iter_distance(&cmps.begin());
         let mut __order: Vec<isize> = (0..__n).collect();
@@ -202,7 +202,7 @@ unsafe fn main_0() -> i32 {
         .iter_deref())
         .v) == (3))
     );
-    let mut frees: Vec<Free> = vec![Free { v: 2 }, Free { v: 1 }];
+    let mut frees: Vec<Free> = Vec::from([Free { v: 2 }, Free { v: 1 }]);
     {
         let __n = frees.end().iter_distance(&frees.begin());
         let mut __order: Vec<isize> = (0..__n).collect();

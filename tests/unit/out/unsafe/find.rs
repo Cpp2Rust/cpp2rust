@@ -53,7 +53,7 @@ unsafe fn main_0() -> i32 {
                 __it
             } == v.begin())
     );
-    let mut w: Vec<i32> = vec![1, 2, 3, 4, 5];
+    let mut w: Vec<i32> = Vec::from([1, 2, 3, 4, 5]);
     assert!(
         {
             let mut __it = w.begin().iter_add(2_isize);

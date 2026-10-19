@@ -183,6 +183,13 @@ std::optional<ExprKey> getExprKey(clang::ASTContext &ctx,
   if (llvm::isa<clang::ArraySubscriptExpr>(expr)) {
     return getOperatorKey(ctx, clang::OO_Subscript);
   }
+  if (auto list = llvm::dyn_cast<clang::InitListExpr>(expr);
+      list && list->getType()->isRecordType()) {
+    return getConstructorKey(getParent(list->getType()));
+  }
+  if (llvm::isa<clang::CXXStdInitializerListExpr>(expr)) {
+    return getConstructorKey(getParent(expr->getType()));
+  }
   return std::nullopt;
 }
 

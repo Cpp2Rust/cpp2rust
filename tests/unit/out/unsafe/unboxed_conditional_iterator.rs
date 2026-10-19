@@ -91,7 +91,7 @@ unsafe fn main_0() -> i32 {
             && ((code[(2) as usize]) == (1_u32)))
             && ((code[(3) as usize]) == (0_u32))
     );
-    let mut v: Vec<i32> = vec![1, 2, 3];
+    let mut v: Vec<i32> = Vec::from([1, 2, 3]);
     assert!(((unsafe { sum_3(&mut v,) }) == (6)));
     return 0;
 }

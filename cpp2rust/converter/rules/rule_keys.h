@@ -10,6 +10,7 @@
 #include <clang/AST/Type.h>
 #include <llvm/ADT/Hashing.h>
 
+#include <compare>
 #include <optional>
 #include <variant>
 #include <vector>
@@ -26,7 +27,7 @@ struct Member {
 struct Constructor {
   const clang::Decl *parent;
 
-  bool operator==(const Constructor &) const = default;
+  auto operator<=>(const Constructor &) const = default;
 };
 
 struct Unqualified {

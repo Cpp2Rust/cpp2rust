@@ -91,6 +91,15 @@ DeduceFromType(clang::Sema &sema, clang::TemplateParameterList *params,
       trial.failed()) {
     return std::nullopt;
   }
+  for (unsigned i = 0; i < deduced.size(); ++i) {
+    auto nttp =
+        llvm::dyn_cast<clang::NonTypeTemplateParmDecl>(params->getParam(i));
+    if (nttp && !nttp->getType()->isDependentType() &&
+        deduced[i].getKind() == clang::TemplateArgument::Integral) {
+      deduced[i] = clang::TemplateArgument(
+          sema.Context, deduced[i].getAsIntegral(), nttp->getType());
+    }
+  }
   return std::vector<clang::TemplateArgument>(deduced.begin(), deduced.end());
 }
 

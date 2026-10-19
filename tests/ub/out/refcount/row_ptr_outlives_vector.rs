@@ -7,7 +7,10 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn second_row_0() -> Ptr<i32> {
-    let rows: Value<Vec<Vec<i32>>> = Rc::new(RefCell::new(vec![vec![1, 2, 3], vec![4, 5, 6]]));
+    let rows: Value<Vec<Vec<i32>>> = Rc::new(RefCell::new(Vec::from([
+        Vec::from([1, 2, 3]),
+        Vec::from([4, 5, 6]),
+    ])));
     return ((rows.as_pointer() as Ptr<Vec<i32>>)
         .offset(1_usize)
         .as_pointer() as Ptr<i32>);

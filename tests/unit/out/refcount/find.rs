@@ -97,7 +97,7 @@ fn main_0() -> i32 {
                 __it
             } == (v.as_pointer() as Ptr<i32>).begin())
     );
-    let w: Value<Vec<i32>> = Rc::new(RefCell::new(vec![1, 2, 3, 4, 5]));
+    let w: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::from([1, 2, 3, 4, 5])));
     assert!(
         {
             let mut __it = (w.as_pointer() as Ptr<i32>).begin().iter_add(2_isize);

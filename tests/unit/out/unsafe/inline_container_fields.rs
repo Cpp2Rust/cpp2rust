@@ -28,7 +28,7 @@ impl Default for State {
             State {
                 count: 0_i32,
                 grid: [[0_i32; 3]; 2],
-                arr: std::array::from_fn::<_, 3, _>(|_| Default::default()).to_vec(),
+                arr: std::array::from_fn::<_, 3_usize, _>(|_| <i32>::default()).to_vec(),
                 elems: Default::default(),
                 rows: Default::default(),
             }
@@ -72,7 +72,7 @@ pub unsafe fn fill_1(mut s: *mut State) {
         i.prefix_inc();
     }
     {
-        let __a1 = vec![1, 2, 3];
+        let __a1 = Vec::from([1, 2, 3]);
         (*s).rows.push(__a1)
     };
 }

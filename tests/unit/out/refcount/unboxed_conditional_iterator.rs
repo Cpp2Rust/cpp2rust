@@ -108,7 +108,7 @@ fn main_0() -> i32 {
             && ((*code.borrow())[(2) as usize] == 1_u32))
             && ((*code.borrow())[(3) as usize] == 0_u32)
     );
-    let v: Value<Vec<i32>> = Rc::new(RefCell::new(vec![1, 2, 3]));
+    let v: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::from([1, 2, 3])));
     assert!((({ sum_3(v.as_pointer(),) }) == 6));
     return 0;
 }
