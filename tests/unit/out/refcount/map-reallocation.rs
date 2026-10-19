@@ -128,13 +128,13 @@ fn main_0() -> i32 {
     assert!(((p.read()) == 57005));
     assert!(((*m.borrow()).len() == (((N + 1) as u32) as usize)));
     let mut prev: i32 = -1_i32;
-    'loop_: for __begin1 in IterRange::new(
+    'loop_: for pair in IterRange::new(
         (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
             .with(|__m: &Map<i32, (Value<i32>, Value<i32>)>| __m.begin()),
         (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
             .with(|__m: &Map<i32, (Value<i32>, Value<i32>)>| __m.end()),
     ) {
-        let pair: Ptr<(Value<i32>, Value<i32>)> = __begin1.iter_deref();
+        let pair: Ptr<(Value<i32>, Value<i32>)> = pair.iter_deref();
         assert!(({ (*(*pair.upgrade().deref()).0.borrow()) } > { prev }));
         prev = (*(*pair.upgrade().deref()).0.borrow());
     }

@@ -27,32 +27,32 @@ unsafe fn main_0() -> i32 {
         v1.push(__a1)
     };
     let mut sum: i32 = 0;
-    'loop_: for __begin1 in UnsafeIterRange::new(
+    'loop_: for x in UnsafeIterRange::new(
         UnsafeRandomAccessIterator::Vec(v1.as_mut_ptr()),
         UnsafeRandomAccessIterator::Vec(v1.as_mut_ptr().add(v1.len())),
     ) {
-        let mut x: i32 = (*__begin1.iter_deref());
+        let mut x: i32 = (*x.iter_deref());
         sum += x.prefix_inc();
     }
-    'loop_: for __begin1 in UnsafeIterRange::new(
+    'loop_: for x in UnsafeIterRange::new(
         UnsafeRandomAccessIterator::Vec(v1.as_mut_ptr()),
         UnsafeRandomAccessIterator::Vec(v1.as_mut_ptr().add(v1.len())),
     ) {
-        let x: i32 = (*__begin1.iter_deref());
+        let x: i32 = (*x.iter_deref());
         sum += x;
     }
-    'loop_: for __begin1 in UnsafeIterRange::new(
+    'loop_: for x in UnsafeIterRange::new(
         UnsafeRandomAccessIterator::Vec(v1.as_mut_ptr()),
         UnsafeRandomAccessIterator::Vec(v1.as_mut_ptr().add(v1.len())),
     ) {
-        let x: *mut i32 = &mut (*__begin1.iter_deref());
+        let x: *mut i32 = &mut (*x.iter_deref());
         (*x) += 10;
     }
-    'loop_: for __begin1 in UnsafeIterRange::new(
+    'loop_: for x in UnsafeIterRange::new(
         UnsafeRandomAccessIterator::Vec(v1.as_mut_ptr()),
         UnsafeRandomAccessIterator::Vec(v1.as_mut_ptr().add(v1.len())),
     ) {
-        let x: *const i32 = &(*__begin1.iter_deref());
+        let x: *const i32 = &(*x.iter_deref());
         sum += (*x);
     }
     let mut v2: Vec<*mut i32> = Vec::new();
@@ -68,32 +68,32 @@ unsafe fn main_0() -> i32 {
         let __a1 = (&mut v1[(2_usize)] as *mut i32);
         v2.push(__a1)
     };
-    'loop_: for __begin1 in UnsafeIterRange::new(
+    'loop_: for p in UnsafeIterRange::new(
         UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr()),
         UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr().add(v2.len())),
     ) {
-        let mut p: *mut i32 = (*__begin1.iter_deref());
+        let mut p: *mut i32 = (*p.iter_deref());
         (*p) += 5;
     }
-    'loop_: for __begin1 in UnsafeIterRange::new(
+    'loop_: for p in UnsafeIterRange::new(
         UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr()),
         UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr().add(v2.len())),
     ) {
-        let p: *mut i32 = (*__begin1.iter_deref());
+        let p: *mut i32 = (*p.iter_deref());
         sum += (*p);
     }
-    'loop_: for __begin1 in UnsafeIterRange::new(
+    'loop_: for p in UnsafeIterRange::new(
         UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr()),
         UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr().add(v2.len())),
     ) {
-        let mut p: *mut i32 = (*__begin1.iter_deref());
+        let mut p: *mut i32 = (*p.iter_deref());
         (*p) += 5;
     }
-    'loop_: for __begin1 in UnsafeIterRange::new(
+    'loop_: for p in UnsafeIterRange::new(
         UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr()),
         UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr().add(v2.len())),
     ) {
-        let mut p: *const i32 = (*__begin1.iter_deref()).cast_const();
+        let mut p: *const i32 = (*p.iter_deref()).cast_const();
         sum += (*p);
     }
     assert!(((sum) == (168)));

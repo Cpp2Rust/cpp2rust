@@ -229,13 +229,13 @@ fn main_0() -> i32 {
         ok = rhs_0
     };
     let mut distinct_count: usize = 0_usize;
-    'loop_: for __begin1 in IterRange::new(
+    'loop_: for entry in IterRange::new(
         (distinct.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<Mapped>)>>)
             .with(|__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.begin()),
         (distinct.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<Mapped>)>>)
             .with(|__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.end()),
     ) {
-        let entry: Ptr<(Value<Key>, Value<Mapped>)> = __begin1.iter_deref();
+        let entry: Ptr<(Value<Key>, Value<Mapped>)> = entry.iter_deref();
         if (distinct_count == 0_usize) {
             ok = {
                 ((ok as i32)
@@ -376,13 +376,13 @@ fn main_0() -> i32 {
             ok = rhs_0
         };
         let mut equivalent_count: usize = 0_usize;
-        'loop_: for __begin2 in IterRange::new(
+        'loop_: for entry in IterRange::new(
             (equivalent.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<Mapped>)>>)
                 .with(|__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.begin()),
             (equivalent.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<Mapped>)>>)
                 .with(|__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.end()),
         ) {
-            let entry: Ptr<(Value<Key>, Value<Mapped>)> = __begin2.iter_deref();
+            let entry: Ptr<(Value<Key>, Value<Mapped>)> = entry.iter_deref();
             ok = {
                 ((ok as i32)
                     & ((({ (*(*entry.upgrade().deref()).0.borrow()).order } == 3)

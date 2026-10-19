@@ -1498,6 +1498,7 @@ bool Converter::VisitCXXForRangeStmt(clang::CXXForRangeStmt *stmt) {
   auto *begin =
       clang::cast<clang::VarDecl>(stmt->getBeginStmt()->getSingleDecl());
   auto *end = clang::cast<clang::VarDecl>(stmt->getEndStmt()->getSingleDecl());
+  begin->setDeclName(stmt->getLoopVariable()->getDeclName());
   StrCat("'loop_:");
   StrCat(keyword::kFor, GetNamedDeclAsString(begin), keyword::kIn,
          IterRangeName(), "::new(", ConvertFreshRValue(begin->getInit()),

@@ -25,13 +25,13 @@ fn main_0() -> i32 {
         let __a1 = 1;
         (*s.borrow_mut()).v.push(__a1)
     };
-    'loop_: for __begin1 in IterRange::new(
+    'loop_: for e in IterRange::new(
         RandomAccessIterator::Vec((field_ref!(s.as_pointer(), v).as_pointer() as Ptr<i32>)),
         RandomAccessIterator::Vec(
             (field_ref!(s.as_pointer(), v).as_pointer() as Ptr<i32>).to_end(),
         ),
     ) {
-        let mut e: i32 = (__begin1.iter_deref().read());
+        let mut e: i32 = (e.iter_deref().read());
         (*s.borrow_mut()).a.postfix_inc();
     }
     return 0;
