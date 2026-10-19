@@ -739,6 +739,11 @@ bool Converter::TypeDerivesDefault(clang::QualType qual_type) {
     return false;
   }
 
+  auto *cxx_record = qual_type->getAsCXXRecordDecl();
+  if (IsStdDecl(cxx_record, "array") || IsStdDecl(cxx_record, "basic_string")) {
+    return false;
+  }
+
   // libc types do not implement Default
   if (auto record = qual_type->getAsRecordDecl()) {
     if (ctx_.getSourceManager().isInSystemHeader(record->getLocation()) &&
