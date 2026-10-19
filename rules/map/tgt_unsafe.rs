@@ -85,3 +85,7 @@ unsafe fn f27<T1: Ord + Clone, T2>(
 unsafe fn f28<T1: Ord, T2>(a0: &mut UnsafeMap<T1, (T1, T2)>, a1: T1) -> usize {
     a0.erase_key(&a1)
 }
+
+unsafe fn f29<T1, T2>(a0: UnsafeMap<T1, (T1, T2)>) -> UnsafeBidirectionalIterator<(T1, T2)> {
+    a0.begin()
+}
