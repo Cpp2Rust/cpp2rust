@@ -159,7 +159,11 @@ pub fn main() {
 fn main_0() -> i32 {
     let mut w: Wrapped_int_ = Wrapped_int_ { v: 2 };
     assert!((w.v == 2));
-    let lts: Value<Vec<Lt>> = Rc::new(RefCell::new(vec![Lt { v: 3 }, Lt { v: 1 }, Lt { v: 2 }]));
+    let lts: Value<Vec<Lt>> = Rc::new(RefCell::new(Vec::from([
+        Lt { v: 3 },
+        Lt { v: 1 },
+        Lt { v: 2 },
+    ])));
     {
         let __n = RandomAccessIterator::Vec((lts.as_pointer() as Ptr<Lt>).to_end())
             .iter_distance(&RandomAccessIterator::Vec((lts.as_pointer() as Ptr<Lt>)));
@@ -191,7 +195,11 @@ fn main_0() -> i32 {
         (({ (*lts.borrow())[0_usize].v } == 1) && ({ (*lts.borrow())[1_usize].v } == 2))
             && ({ (*lts.borrow())[2_usize].v } == 3)
     );
-    let eqs: Value<Vec<Eq>> = Rc::new(RefCell::new(vec![Eq { v: 1 }, Eq { v: 2 }, Eq { v: 3 }]));
+    let eqs: Value<Vec<Eq>> = Rc::new(RefCell::new(Vec::from([
+        Eq { v: 1 },
+        Eq { v: 2 },
+        Eq { v: 3 },
+    ])));
     let mut two: Eq = Eq { v: 2 };
     let mut nine: Eq = Eq { v: 9 };
     assert!(
@@ -219,8 +227,11 @@ fn main_0() -> i32 {
             __it
         } == RandomAccessIterator::Vec((eqs.as_pointer() as Ptr<Eq>).to_end())
     );
-    let cmps: Value<Vec<Cmp>> =
-        Rc::new(RefCell::new(vec![Cmp { v: 3 }, Cmp { v: 1 }, Cmp { v: 2 }]));
+    let cmps: Value<Vec<Cmp>> = Rc::new(RefCell::new(Vec::from([
+        Cmp { v: 3 },
+        Cmp { v: 1 },
+        Cmp { v: 2 },
+    ])));
     {
         let __n = RandomAccessIterator::Vec((cmps.as_pointer() as Ptr<Cmp>).to_end())
             .iter_distance(&RandomAccessIterator::Vec((cmps.as_pointer() as Ptr<Cmp>)));
@@ -264,7 +275,7 @@ fn main_0() -> i32 {
         .with(|__s| __s.v)
             == 3)
     );
-    let frees: Value<Vec<Free>> = Rc::new(RefCell::new(vec![Free { v: 2 }, Free { v: 1 }]));
+    let frees: Value<Vec<Free>> = Rc::new(RefCell::new(Vec::from([Free { v: 2 }, Free { v: 1 }])));
     {
         let __n = RandomAccessIterator::Vec((frees.as_pointer() as Ptr<Free>).to_end())
             .iter_distance(&RandomAccessIterator::Vec(

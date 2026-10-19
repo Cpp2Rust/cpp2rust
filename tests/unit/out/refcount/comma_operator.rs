@@ -62,7 +62,7 @@ fn main_0() -> i32 {
         assert!((a == 1));
         assert!((b == 2));
     }
-    let v1: Value<Vec<i32>> = Rc::new(RefCell::new(vec![1, 2]));
+    let v1: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::from([1, 2])));
     let mut v2: Vec<i32> = {
         a = 5;
         (*v1.borrow()).clone()

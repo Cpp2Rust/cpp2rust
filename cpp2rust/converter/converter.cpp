@@ -723,9 +723,8 @@ bool Converter::TypeDerivesDefault(clang::QualType qual_type) {
     return false;
   }
 
-  // Types that need a custom array initializer (e.g., std::array, which is
-  // translated to Vec)
-  if (!GetArrayDefaultAsString(qual_type).empty()) {
+  auto *cxx_record = qual_type->getAsCXXRecordDecl();
+  if (IsStdDecl(cxx_record, "array") || IsStdDecl(cxx_record, "basic_string")) {
     return false;
   }
 
@@ -3613,22 +3612,20 @@ bool Converter::VisitInitListExpr(clang::InitListExpr *expr) {
     }
   } else if (qual_type->isRecordType()) {
     const auto *record = qual_type->getAsRecordDecl();
-    if (record->getQualifiedNameAsString() == "std::array") {
-      if (auto init = clang::dyn_cast<clang::InitListExpr>(expr->getInit(0))) {
-        StrCat("vec!");
-        VisitInitListExpr(init);
-      } else {
-        StrCat(GetArrayDefaultAsString(qual_type));
-      }
-      SetFreshType(qual_type);
-      return false;
-    }
-
     if (syntactic->getNumInits() == 0) {
       StrCat(GetDefaultAsString(qual_type));
       SetFreshType(qual_type);
       return false;
     }
+
+    if (auto str =
+            GetMappedAsString(expr, expr->getInits(), expr->getNumInits());
+        !str.empty()) {
+      StrCat(str);
+      SetFreshType(qual_type);
+      return false;
+    }
+    assert(IsUserDefinedDecl(record) && "aggregate list without a rule");
 
     StrCat(GetUnsafeTypeAsString(qual_type));
     PushBrace brace(*this);
@@ -4258,11 +4255,11 @@ bool Converter::VisitClassTemplateDecl(clang::ClassTemplateDecl *decl) {
 
 bool Converter::VisitCXXStdInitializerListExpr(
     clang::CXXStdInitializerListExpr *expr) {
-  if (expr->getSubExpr()->getType()->isArrayType()) {
-    // Arrays become Vec's
-    StrCat("vec!");
-  }
-  Convert(expr->getSubExpr());
+  auto *backing = expr->getSubExpr();
+  auto str = GetMappedAsString(expr, &backing, 1);
+  ENSURE(!str.empty());
+  StrCat(str);
+  SetFreshType(expr->getType());
   return false;
 }
 
@@ -4282,33 +4279,6 @@ std::string Converter::GetArrayDefaultAsString(clang::QualType qual_type) {
   }
   if (clang::isa<clang::IncompleteArrayType>(qual_type)) {
     return "[]";
-  }
-  if (IsStdDecl(qual_type->getAsCXXRecordDecl(), "array")) {
-    assert(GetTemplateArgs(qual_type).has_value());
-    auto template_args = *GetTemplateArgs(qual_type);
-    assert(template_args.size() == 2);
-    auto array_size = template_args[1];
-    unsigned size = 0;
-    switch (array_size.getKind()) {
-    case clang::TemplateArgument::Expression: {
-      auto array_size_expr = array_size.getAsExpr();
-      assert(array_size_expr && !array_size_expr->isValueDependent());
-      clang::Expr::EvalResult result;
-      ENSURE(array_size_expr->EvaluateAsInt(result, ctx_));
-      size = result.Val.getInt().getZExtValue();
-      break;
-    }
-    case clang::TemplateArgument::Integral: {
-      size = array_size.getAsIntegral().getZExtValue();
-      break;
-    }
-    default:
-      assert(0 && "Unsupported array size kind");
-      break;
-    }
-    return std::format(
-        "std::array::from_fn::<_, {}, _>(|_| Default::default()).to_vec()",
-        size);
   }
   return {};
 }

@@ -46,7 +46,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut v: Vec<i32> = vec![1, 2, 3];
+    let mut v: Vec<i32> = Vec::from([1, 2, 3]);
     v[(0_usize)] = 10;
     assert!(((v[(0_usize)]) == (10)));
     v[(1_usize)] += 5;
@@ -113,7 +113,7 @@ unsafe fn main_0() -> i32 {
     grid[(0_usize)][(1_usize)] = grid[(1_usize)][(2_usize)];
     grid[(1_usize)][(0_usize)] += grid[(0_usize)][(1_usize)];
     assert!(((grid[(0_usize)][(1_usize)]) == (8)) && ((grid[(1_usize)][(0_usize)]) == (8)));
-    let mut a: Vec<i32> = vec![4, 5, 6];
+    let mut a: Vec<i32> = Vec::from([4, 5, 6]);
     a[(1_usize)] = ((a[(0_usize)]) + (a[(2_usize)]));
     assert!(((a[(1_usize)]) == (10)));
     return 0;

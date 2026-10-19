@@ -55,7 +55,7 @@ impl Default for State {
                 grid: (0..2)
                     .map(|_| (0..3).map(|_| 0_i32).collect::<Box<[i32]>>())
                     .collect::<Box<[Box<[i32]>]>>(),
-                arr: std::array::from_fn::<_, 3, _>(|_| Default::default()).to_vec(),
+                arr: std::array::from_fn::<_, 3_usize, _>(|_| <i32>::default()).to_vec(),
                 elems: Default::default(),
                 rows: Default::default(),
             }
@@ -100,7 +100,7 @@ pub fn fill_1(mut s: Ptr<State>) {
         i.prefix_inc();
     }
     {
-        let __a1 = vec![1, 2, 3];
+        let __a1 = Vec::from([1, 2, 3]);
         field!(s, rows).with_mut(|__v: &mut Vec<Vec<i32>>| __v.push(__a1))
     };
 }
