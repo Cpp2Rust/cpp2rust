@@ -46,7 +46,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut v: Vec<i32> = vec![1, 2, 3];
+    let mut v: Vec<i32> = Vec::from([1, 2, 3]);
     v[(0_usize)] = 10;
     assert!(((v[(0_usize)]) == (10)));
     v[(1_usize)] += 5;

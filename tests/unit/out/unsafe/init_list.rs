@@ -48,8 +48,8 @@ unsafe fn main_0() -> i32 {
     let mut carr1: [i32; 2] = [1, 2];
     let mut carr2: [i32; 3] = [1, 0_i32, 0_i32];
     let mut arr: Vec<i32> = Vec::from([1, 2, 3]);
-    let mut vec_: Vec<i32> = vec![1, 2, 3];
-    (unsafe { f_0(vec![1, 2, 3, 4]) });
+    let mut vec_: Vec<i32> = Vec::from([1, 2, 3]);
+    (unsafe { f_0(Vec::from([1, 2, 3, 4])) });
     let mut p: Pair = Pair { a: 1, b: 2 };
     let mut h: Holder = <Holder>::default();
     (unsafe { Holder::operator_assign_1(&mut h, &mut p) });

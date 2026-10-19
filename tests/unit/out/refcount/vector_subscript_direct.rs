@@ -45,7 +45,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let v: Value<Vec<i32>> = Rc::new(RefCell::new(vec![1, 2, 3]));
+    let v: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::from([1, 2, 3])));
     (*v.borrow_mut())[0_usize] = 10;
     assert!(({ (*v.borrow())[0_usize] } == 10));
     (*v.borrow_mut())[1_usize] += 5;

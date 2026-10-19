@@ -13,7 +13,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut v: Vec<i32> = vec![1, 2];
+    let mut v: Vec<i32> = Vec::from([1, 2]);
     let mut f: FnPtr<fn() -> i32> = lambda_unsafe!(
         {
             let v: Vec<i32> = v.clone();

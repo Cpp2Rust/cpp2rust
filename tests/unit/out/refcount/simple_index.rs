@@ -11,7 +11,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let v: Value<Vec<bool>> = Rc::new(RefCell::new(vec![true]));
+    let v: Value<Vec<bool>> = Rc::new(RefCell::new(Vec::from([true])));
     assert!(((*v.borrow())[0_usize] as bool));
     return 0;
 }

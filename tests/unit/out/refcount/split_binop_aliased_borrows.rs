@@ -11,7 +11,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let v: Value<Vec<i32>> = Rc::new(RefCell::new(vec![1, 2]));
+    let v: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::from([1, 2])));
     let p: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(RandomAccessIterator::Vec(
         (v.as_pointer() as Ptr<i32>),
     )));
