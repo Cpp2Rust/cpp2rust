@@ -33,22 +33,28 @@ unsafe fn main_0() -> i32 {
             second: 6,
         },
     ];
-    'loop_: for __decomp_0 in 0..(arr.len()) {
-        let mut __decomp_0 = arr.as_mut_ptr().add(__decomp_0);
+    'loop_: for __decomp_0 in
+        IterRange::new(arr.as_mut_ptr(), arr.as_mut_ptr().offset((3_i64) as isize))
+    {
+        let __decomp_0: *mut Pair = &mut (*__decomp_0);
         (*__decomp_0).first += (*__decomp_0).second;
     }
     assert!(((arr[(0) as usize].first) == (3)));
     assert!(((arr[(2) as usize].first) == (11)));
-    'loop_: for __decomp_1 in 0..(arr.len()) {
-        let mut __decomp_1 = arr[__decomp_1].clone();
+    'loop_: for __decomp_1 in
+        IterRange::new(arr.as_mut_ptr(), arr.as_mut_ptr().offset((3_i64) as isize))
+    {
+        let mut __decomp_1: Pair = (*__decomp_1);
         __decomp_1.first = 0;
         __decomp_1.second = 0;
     }
     assert!(((arr[(1) as usize].first) == (7)));
     assert!(((arr[(1) as usize].second) == (4)));
     let mut sum: i32 = 0;
-    'loop_: for __decomp_2 in 0..(arr.len()) {
-        let mut __decomp_2 = arr.as_ptr().add(__decomp_2);
+    'loop_: for __decomp_2 in
+        IterRange::new(arr.as_mut_ptr(), arr.as_mut_ptr().offset((3_i64) as isize))
+    {
+        let __decomp_2: *const Pair = &(*__decomp_2);
         sum += (((*__decomp_2).first) * ((*__decomp_2).second));
     }
     assert!(((sum) == ((((3) * (2)) + ((7) * (4))) + ((11) * (6)))));
