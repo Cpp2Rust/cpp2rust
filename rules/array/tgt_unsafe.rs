@@ -3,8 +3,8 @@
 
 use libcc2rs::*;
 
-fn t1<T1>() -> Vec<T1> {
-    Default::default()
+fn t1<T1: Default + Clone, const T2: usize>() -> Vec<T1> {
+    std::array::from_fn::<_, T2, _>(|_| <T1>::default()).to_vec()
 }
 
 fn t2() -> usize {
