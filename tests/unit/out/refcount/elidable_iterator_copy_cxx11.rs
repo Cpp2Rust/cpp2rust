@@ -39,11 +39,10 @@ fn main_0() -> i32 {
         for __i in (1..__n).rev() {
             let __j =
                 (std::hash::BuildHasher::hash_one(&__random, __i) % (__i + 1) as u64) as isize;
-            let __x = v.as_pointer().decay().begin().iter_at(__i);
-            let __y = v.as_pointer().decay().begin().iter_at(__j);
-            let __tmp = __x.read();
-            __x.write(__y.read());
-            __y.write(__tmp);
+            cpp_swap!(
+                v.as_pointer().decay().begin().iter_at(__i),
+                v.as_pointer().decay().begin().iter_at(__j)
+            );
         }
     };
     {
@@ -62,13 +61,7 @@ fn main_0() -> i32 {
                     .with(|__b| __a.cmp(__b))
             })
         });
-        let __values: Vec<_> = __order
-            .iter()
-            .map(|&__i| v.as_pointer().decay().begin().iter_at(__i).read())
-            .collect();
-        for (__i, __v) in (0..__n).zip(__values) {
-            v.as_pointer().decay().begin().iter_at(__i).write(__v);
-        }
+        reorder(__order, |__i| v.as_pointer().decay().begin().iter_at(__i));
     };
     assert!(({ (*v.borrow())[0_usize] } == 4) && ({ (*v.borrow())[1_usize] } == 7));
     return 0;

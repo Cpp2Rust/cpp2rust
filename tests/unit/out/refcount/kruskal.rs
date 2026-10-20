@@ -146,7 +146,7 @@ pub fn quicksort_1(arr: Ptr<Option<Value<Box<[Edge]>>>>, mut start: i32, mut end
         quicksort_1(_arr, _start, _end)
     });
 }
-#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, Default)]
+#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(24)]
 pub struct DisjointSet {
     #[offset(0)]
@@ -167,7 +167,7 @@ impl DisjointSet {
         }
     }
 }
-#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, Default)]
+#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(16)]
 pub struct Graph {
     #[offset(0)]

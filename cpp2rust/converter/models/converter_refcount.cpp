@@ -2514,6 +2514,14 @@ ConverterRefCount::GetStructAttributes(const clang::RecordDecl *decl) {
     attrs.emplace_back("MoveCtor");
   }
 
+  if (HasCopyAssignOperator(decl)) {
+    attrs.emplace_back("CopyAssign");
+  }
+
+  if (HasMoveAssignOperator(decl)) {
+    attrs.emplace_back("MoveAssign");
+  }
+
   if (auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
       cxx && RecordNeedsDestruction(cxx)) {
     attrs.emplace_back("Destructor");

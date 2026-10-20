@@ -81,8 +81,8 @@ unsafe fn f8<T1: UnsafeCppInputIterator<T2>, T2: PartialOrd>(a0: T1, a1: T1) -> 
     __best
 }
 
-unsafe fn f9<T1>(a0: &mut T1, a1: &mut T1) {
-    std::mem::swap(&mut *a0, &mut *a1)
+unsafe fn f9<T1>(a0: *mut T1, a1: *mut T1) {
+    cpp_swap_unsafe!(a0, a1)
 }
 
 unsafe fn f10<T1: UnsafeCppInputIterator<T2>, T2: PartialEq + Clone>(a0: T1, a1: T1) -> T1 {
@@ -163,6 +163,6 @@ unsafe fn f18<T1: UnsafeCppRandomAccessIterator<T2>, T2>(a0: T1, a1: T1) {
     let __n = a1.iter_distance(&a0);
     for __i in (1..__n).rev() {
         let __j = libc::rand() as isize % (__i + 1);
-        std::ptr::swap(a0.iter_at(__i), a0.iter_at(__j));
+        cpp_swap_unsafe!(a0.iter_at(__i), a0.iter_at(__j));
     }
 }

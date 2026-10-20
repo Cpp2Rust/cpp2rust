@@ -12,7 +12,7 @@ pub struct Data {
     #[offset(0)]
     pub v: i32,
 }
-#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, Default)]
+#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(16)]
 pub struct Holder {
     #[offset(0)]

@@ -31,7 +31,7 @@ int f13(long long a, long long b, long long *r) {
 void f11(void) { return __builtin_ia32_pause(); }
 #endif
 
-void *f14(void *dst, const void *src, size_t n) {
+void *f14(void *dst, const void *src, __SIZE_TYPE__ n) {
   return __builtin_memcpy(dst, src, n);
 }
 

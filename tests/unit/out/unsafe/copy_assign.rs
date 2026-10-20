@@ -8,7 +8,7 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub static mut assigns_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(VaArg, FnPtrArg, CopyAssignUnsafe, Default)]
 pub struct Partial {
     pub v: i32,
     pub keep: i32,
@@ -64,7 +64,7 @@ impl Default for NonConstAssign {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, CopyAssignUnsafe)]
 pub struct RefQualified {
     pub mark: i32,
 }
@@ -84,10 +84,78 @@ impl Default for RefQualified {
     }
 }
 #[repr(C)]
-#[derive(Clone, VaArg, FnPtrArg, Default)]
+#[derive(Clone, VaArg, FnPtrArg, CopyAssignUnsafe, Default)]
 pub struct Holder {
     pub p: Partial,
     pub arr: [Partial; 2],
+}
+impl Holder {
+    pub unsafe fn copy_assign(&mut self, _a0: *const Holder) -> *mut Holder {
+        (unsafe {
+            let _o: *const Partial = &(*_a0).p;
+            Partial::copy_assign(&mut self.p, _o)
+        });
+        let mut __i0: usize = 0_usize;
+        'loop_: while ((__i0) != (2_usize)) {
+            (unsafe {
+                let _o: *const Partial = &(*_a0).arr[(__i0)];
+                Partial::copy_assign(&mut self.arr[(__i0)], _o)
+            });
+            __i0.prefix_inc();
+        }
+        return &mut (*(self as *mut Holder));
+    }
+}
+pub static mut copies_1: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
+#[repr(C)]
+#[derive(VaArg, FnPtrArg, CopyAssignUnsafe, Default)]
+pub struct CopyCounted {
+    pub v: i32,
+}
+impl CopyCounted {
+    pub unsafe fn new(mut v: i32) -> Self {
+        let mut this = Self { v: v };
+        this
+    }
+    pub unsafe fn copy_from(o: *const CopyCounted) -> Self {
+        let mut this = Self { v: (*o).v };
+        (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_1)).prefix_inc();
+        this
+    }
+    pub unsafe fn copy_assign(&mut self, _a0: *const CopyCounted) -> *mut CopyCounted {
+        self.v = (*_a0).v;
+        return &mut (*(self as *mut CopyCounted));
+    }
+}
+impl Clone for CopyCounted {
+    fn clone(&self) -> Self {
+        unsafe { CopyCounted::copy_from(self as *const CopyCounted) }
+    }
+}
+#[repr(C)]
+#[derive(Clone, VaArg, FnPtrArg, CopyAssignUnsafe, Default)]
+pub struct HasCopyCounted {
+    pub c: CopyCounted,
+    pub arr: [CopyCounted; 2],
+}
+impl HasCopyCounted {
+    pub unsafe fn copy_assign(&mut self, _a0: *const HasCopyCounted) -> *mut HasCopyCounted {
+        (unsafe {
+            let _arg0: *const CopyCounted = &(*_a0).c;
+            CopyCounted::copy_assign(&mut self.c, _arg0)
+        });
+        {
+            if 8_usize != 0 {
+                ::std::ptr::copy_nonoverlapping(
+                    ((&(*_a0).arr as *const [CopyCounted; 2]) as *const ::libc::c_void),
+                    ((&mut self.arr as *mut [CopyCounted; 2]) as *mut ::libc::c_void),
+                    8_usize as usize,
+                )
+            }
+            ((&mut self.arr as *mut [CopyCounted; 2]) as *mut ::libc::c_void)
+        };
+        return &mut (*(self as *mut HasCopyCounted));
+    }
 }
 pub fn main() {
     unsafe {
@@ -150,8 +218,35 @@ unsafe fn main_0() -> i32 {
     let mut r1: RefQualified = RefQualified::new();
     (unsafe { RefQualified::copy_assign(&mut r1, &r) });
     assert!(((r1.mark) == (1)));
+    let mut h2: Holder = Holder {
+        p: Partial::new({ 7 }, { 70 }),
+        arr: [Partial::new({ 8 }, { 80 }), Partial::new({ 9 }, { 90 })],
+    };
+    (unsafe { Holder::copy_assign(&mut h2, &h) });
+    assert!(((h2.p.v) == (2)) && ((h2.p.keep) == (70)));
+    assert!(((h2.arr[(1) as usize].v) == (2)) && ((h2.arr[(1) as usize].keep) == (90)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut assigns_0)) == (11)));
+    let mut cc1: CopyCounted = CopyCounted::new({ 1 });
+    let mut cc2: CopyCounted = CopyCounted::new({ 2 });
+    (unsafe { CopyCounted::copy_assign(&mut cc1, &cc2) });
+    assert!(((cc1.v) == (2)));
+    let mut hc1: HasCopyCounted = HasCopyCounted {
+        c: CopyCounted::new({ 1 }),
+        arr: [CopyCounted::new({ 2 }), CopyCounted::new({ 3 })],
+    };
+    let mut hc2: HasCopyCounted = HasCopyCounted {
+        c: CopyCounted::new({ 4 }),
+        arr: [CopyCounted::new({ 5 }), CopyCounted::new({ 6 })],
+    };
+    (unsafe { HasCopyCounted::copy_assign(&mut hc1, &hc2) });
+    assert!(
+        (((hc1.c.v) == (4)) && ((hc1.arr[(0) as usize].v) == (5)))
+            && ((hc1.arr[(1) as usize].v) == (6))
+    );
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_1)) == (0)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
     std::cell::LazyCell::force(&*&raw const assigns_0);
+    std::cell::LazyCell::force(&*&raw const copies_1);
 }

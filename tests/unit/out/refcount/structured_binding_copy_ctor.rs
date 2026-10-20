@@ -9,7 +9,7 @@ use std::rc::{Rc, Weak};
 thread_local!(
     pub static copies_0: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, CopyAssign, Default)]
 #[byte_size(8)]
 pub struct Counted {
     #[offset(0)]
@@ -64,6 +64,16 @@ fn main_0() -> i32 {
     assert!(({ (*__decomp_5.borrow()).x } == 5));
     assert!(({ (*__decomp_5.borrow()).y } == 6));
     return 0;
+}
+pub trait CountedImpl {
+    fn copy_assign(&self, _a0: Ptr<Counted>) -> Ptr<Counted>;
+}
+impl CountedImpl for Ptr<Counted> {
+    fn copy_assign(&self, _a0: Ptr<Counted>) -> Ptr<Counted> {
+        field!((*self), x).write({ _a0.with(|__s| __s.x) });
+        field!((*self), y).write({ _a0.with(|__s| __s.y) });
+        return (*self).clone();
+    }
 }
 pub fn __cpp2rust_init_globals() {
     let _ = copies_0.with(|_| ());

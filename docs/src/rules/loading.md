@@ -90,6 +90,8 @@ When a rule matches, the converter walks its body fragments and emits:
     converter dereferences it; this only happens for receivers, not for ordinary
     arguments.
 - `generic` fragments as the Rust mapping of the bound C++ type,
+- `ref_expr` fragments as the prefix followed by the lvalue, or as the lvalue
+  alone where the result is dereferenced,
 - `va_args` fragments as the converted variadic tail,
 - `init` fragments as the value built from the call's trailing arguments,
 - `method_call` fragments as receiver followed by body, possibly rewritten (see

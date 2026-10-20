@@ -44,6 +44,20 @@ struct Holder {
   Partial arr[2];
 };
 
+static int copies = 0;
+
+// The copy assignment is implicit, and does not copy construct.
+struct CopyCounted {
+  int v;
+  CopyCounted(int v) : v(v) {}
+  CopyCounted(const CopyCounted &o) : v(o.v) { ++copies; }
+};
+
+struct HasCopyCounted {
+  CopyCounted c;
+  CopyCounted arr[2];
+};
+
 int main() {
   Partial a(1, 100), b(2, 200), c(3, 300);
   a = b;
@@ -86,5 +100,20 @@ int main() {
   RefQualified r, r1;
   r1 = r;
   assert(r1.mark == 1);
+
+  Holder h2{Partial(7, 70), {Partial(8, 80), Partial(9, 90)}};
+  h2 = h;
+  assert(h2.p.v == 2 && h2.p.keep == 70);
+  assert(h2.arr[1].v == 2 && h2.arr[1].keep == 90);
+  assert(assigns == 11);
+
+  CopyCounted cc1(1), cc2(2);
+  cc1 = cc2;
+  assert(cc1.v == 2);
+  HasCopyCounted hc1{CopyCounted(1), {CopyCounted(2), CopyCounted(3)}};
+  HasCopyCounted hc2{CopyCounted(4), {CopyCounted(5), CopyCounted(6)}};
+  hc1 = hc2;
+  assert(hc1.c.v == 4 && hc1.arr[0].v == 5 && hc1.arr[1].v == 6);
+  assert(copies == 0);
   return 0;
 }

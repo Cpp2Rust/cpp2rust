@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(FnPtrArg, MoveCtorUnsafe, Default)]
+#[derive(FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
 pub struct MoveOnly {
     pub v: i32,
 }

@@ -3,6 +3,7 @@
 
 use proc_macro::TokenStream;
 
+mod assign;
 mod byte_repr;
 mod destructor;
 mod fn_ptr_arg;
@@ -163,6 +164,38 @@ pub fn derive_move_ctor(input: TokenStream) -> TokenStream {
 #[proc_macro_derive(MoveCtorUnsafe)]
 pub fn derive_move_ctor_unsafe(input: TokenStream) -> TokenStream {
     move_ctor::expand(input, true)
+}
+
+//     #[derive(CopyAssign, MoveAssign)]
+//     pub struct S { ... }
+//     impl SImpl for Ptr<S> {
+//         fn copy_assign(&self, o: Ptr<S>) -> Ptr<S> { ... }
+//         fn move_assign(&self, o: Ptr<S>) -> Ptr<S> { ... }
+//     }
+//
+// Implements libcc2rs::CopyAssign and MoveAssign for S with its copy and move
+// assignment operators, such that std::swap assigns the values of type S
+// with them, as C++ does. CopyAssignUnsafe and MoveAssignUnsafe are the same
+// for the unsafe model, whose copy_assign and move_assign are methods of S.
+
+#[proc_macro_derive(CopyAssign)]
+pub fn derive_copy_assign(input: TokenStream) -> TokenStream {
+    assign::expand(input, "copy", false)
+}
+
+#[proc_macro_derive(CopyAssignUnsafe)]
+pub fn derive_copy_assign_unsafe(input: TokenStream) -> TokenStream {
+    assign::expand(input, "copy", true)
+}
+
+#[proc_macro_derive(MoveAssign)]
+pub fn derive_move_assign(input: TokenStream) -> TokenStream {
+    assign::expand(input, "move", false)
+}
+
+#[proc_macro_derive(MoveAssignUnsafe)]
+pub fn derive_move_assign_unsafe(input: TokenStream) -> TokenStream {
+    assign::expand(input, "move", true)
 }
 
 //     #[derive(Destructor)]

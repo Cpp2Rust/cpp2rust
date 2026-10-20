@@ -26,6 +26,7 @@ use std::rc::Rc;
 use crate::fn_ptr::{FnPtr, FnSig};
 use crate::rc::{AsPointer, Ptr, Value};
 use crate::reinterpret::ByteRepr;
+use crate::{Map, UnsafeMap};
 
 // The C++ move constructor of a type, in the refcount model, for the types
 // whose move isn't a copy. Records implement it with #[derive(MoveCtor)].
@@ -39,6 +40,36 @@ pub trait MoveCtorUnsafe: Sized {
     /// # Safety
     /// `src` must point to a live value.
     unsafe fn move_ctor(src: *mut Self) -> Self;
+}
+
+// The C++ copy assignment operator of a type, in the refcount model, for the
+// types whose copy assignment isn't an assignment of a clone. Records
+// implement it with #[derive(CopyAssign)].
+pub trait CopyAssign: Sized {
+    fn copy_assign(dst: &Ptr<Self>, src: Ptr<Self>);
+}
+
+// The C++ copy assignment operator of a type, in the unsafe model. Records
+// implement it with #[derive(CopyAssignUnsafe)].
+pub trait CopyAssignUnsafe: Sized {
+    /// # Safety
+    /// `dst` and `src` must point to live values.
+    unsafe fn copy_assign(dst: *mut Self, src: *const Self);
+}
+
+// The C++ move assignment operator of a type, in the refcount model, for the
+// types whose move assignment isn't an assignment of a moved value. Records
+// implement it with #[derive(MoveAssign)].
+pub trait MoveAssign: Sized {
+    fn move_assign(dst: &Ptr<Self>, src: Ptr<Self>);
+}
+
+// The C++ move assignment operator of a type, in the unsafe model. Records
+// implement it with #[derive(MoveAssignUnsafe)].
+pub trait MoveAssignUnsafe: Sized {
+    /// # Safety
+    /// `dst` and `src` must point to live values.
+    unsafe fn move_assign(dst: *mut Self, src: *mut Self);
 }
 
 impl<T: FnSig> MoveCtor for FnPtr<T> {
@@ -76,6 +107,8 @@ macro_rules! impl_move_ctor_by_take {
 impl_move_ctor_by_take!(
     <T> Vec<T>,
     <K, V> BTreeMap<K, V>,
+    <K, T> Map<K, T>,
+    <K, T> UnsafeMap<K, T>,
 );
 
 // unique_ptr.

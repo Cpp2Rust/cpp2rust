@@ -23,7 +23,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut m: UnsafeMap<i32, (i32, i32)> = UnsafeMap::new();
-    (*&mut (*m.get_or_insert_with(0.clone(), || (0, <i32>::default()))).1) = 1;
+    (*m.get_or_insert_with(0.clone(), || (0, <i32>::default()))).1 = 1;
     let mut end: UnsafeBidirectionalIterator<(i32, i32)> = m.end();
     let mut it0: UnsafeBidirectionalIterator<(i32, i32)> = m.find(&0);
     let mut const_it: UnsafeBidirectionalIterator<(i32, i32)> =

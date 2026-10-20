@@ -9,8 +9,8 @@ use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
 use crate::ir::{
-    Access, BodyFragment, FileIr, FnIr, MethodCallInner, Model, PlaceholderInner, RuleIr, RulesIR,
-    TypeInfo, TypeIr,
+    Access, BodyFragment, FileIr, FnIr, MethodCallInner, Model, PlaceholderInner, RefExprInner,
+    RuleIr, RulesIR, TypeInfo, TypeIr,
 };
 
 /// Classify a type AST node as refcount pointer (`Ptr<T>`), unsafe pointer
@@ -492,6 +492,30 @@ impl<'a> FnIrBuilder<'a> {
             return Vec::new();
         };
         let stmt_list = body.stmt_list().unwrap();
+
+        if stmt_list.statements().next().is_none()
+            && let Some(ast::Expr::RefExpr(ref_expr)) = stmt_list.tail_expr()
+        {
+            let mut prefix = String::from("&");
+            if ref_expr.raw_token().is_some() {
+                prefix.push_str("raw ");
+            }
+            if ref_expr.mut_token().is_some() {
+                prefix.push_str("mut");
+            } else if ref_expr.const_token().is_some() {
+                prefix.push_str("const");
+            }
+            let mut inner_ctx = FragmentCtx::new(self, params, generic_names);
+            inner_ctx.visit(ra_ap_syntax::NodeOrToken::Node(
+                ref_expr.expr().unwrap().syntax().clone(),
+            ));
+            return vec![BodyFragment::RefExpr {
+                ref_expr: RefExprInner {
+                    prefix: prefix.trim_end().to_string(),
+                    inner: inner_ctx.finish(),
+                },
+            }];
+        }
 
         let mut ctx = FragmentCtx::new(self, params, generic_names);
         for child in stmt_list.syntax().children_with_tokens() {

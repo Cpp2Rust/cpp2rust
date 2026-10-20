@@ -84,9 +84,9 @@ unsafe fn main_0() -> i32 {
         }) as i32))
         != 0;
     let mut distinct: UnsafeMap<Key, (Key, Mapped)> = UnsafeMap::new();
-    let a: *mut Mapped = &mut (*&mut (*distinct
+    let a: *mut Mapped = &mut (*distinct
         .get_or_insert_with(distinct_a.clone(), || (distinct_a, <Mapped>::default())))
-    .1);
+    .1;
     (*a).value = 11;
     let mut a_it: UnsafeBidirectionalIterator<(Key, Mapped)> = distinct.find(&distinct_a);
     let mut a_value: *mut Mapped = (&mut (*a_it.iter_deref()).1 as *mut Mapped);
@@ -94,9 +94,9 @@ unsafe fn main_0() -> i32 {
         & (((*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0)) == (1))
             as i32))
         != 0;
-    let b: *mut Mapped = &mut (*&mut (*distinct
+    let b: *mut Mapped = &mut (*distinct
         .get_or_insert_with(distinct_b.clone(), || (distinct_b, <Mapped>::default())))
-    .1);
+    .1;
     (*b).value = 22;
     let mut b_it: UnsafeBidirectionalIterator<(Key, Mapped)> = distinct.find(&distinct_b);
     ok = ((ok as i32)
@@ -149,9 +149,9 @@ unsafe fn main_0() -> i32 {
     let mut equivalent: UnsafeMap<Key, (Key, Mapped)> = UnsafeMap::new();
     let before_equivalent: i32 =
         (*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0));
-    let first: *mut Mapped = &mut (*&mut (*equivalent
+    let first: *mut Mapped = &mut (*equivalent
         .get_or_insert_with(equivalent_a.clone(), || (equivalent_a, <Mapped>::default())))
-    .1);
+    .1;
     (*first).value = 31;
     let mut first_it: UnsafeBidirectionalIterator<(Key, Mapped)> = equivalent.find(&equivalent_a);
     let mut first_value: *mut Mapped = (&mut (*first_it.iter_deref()).1 as *mut Mapped);
@@ -159,9 +159,9 @@ unsafe fn main_0() -> i32 {
         & (((*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0))
             == ((before_equivalent) + (1))) as i32))
         != 0;
-    let second: *mut Mapped = &mut (*&mut (*equivalent
+    let second: *mut Mapped = &mut (*equivalent
         .get_or_insert_with(equivalent_b.clone(), || (equivalent_b, <Mapped>::default())))
-    .1);
+    .1;
     let reused: bool = ((*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0))
         == ((before_equivalent) + (1)));
     ok = ((ok as i32) & (reused as i32)) != 0;
@@ -198,9 +198,9 @@ unsafe fn main_0() -> i32 {
         order: 4,
         identity: 10,
     };
-    let later: *mut Mapped = &mut (*&mut (*equivalent
+    let later: *mut Mapped = &mut (*equivalent
         .get_or_insert_with(later_key.clone(), || (later_key, <Mapped>::default())))
-    .1);
+    .1;
     (*later).value = 41;
     ok = ((ok as i32)
         & (((*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0))
@@ -229,9 +229,9 @@ unsafe fn main_0() -> i32 {
     let before_matching: i32 =
         (*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0));
     let mut matching: UnsafeMap<Key, (Key, Mapped)> = UnsafeMap::new();
-    let matched: *mut Mapped = &mut (*&mut (*matching
+    let matched: *mut Mapped = &mut (*matching
         .get_or_insert_with(matching_a.clone(), || (matching_a, <Mapped>::default())))
-    .1);
+    .1;
     (*matched).value = 51;
     let mut matched_it: UnsafeBidirectionalIterator<(Key, Mapped)> = matching.find(&matching_a);
     let mut matched_value: *mut Mapped = (&mut (*matched_it.iter_deref()).1 as *mut Mapped);
@@ -239,9 +239,9 @@ unsafe fn main_0() -> i32 {
         & (((*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0))
             == ((before_matching) + (1))) as i32))
         != 0;
-    let matched_again: *mut Mapped = &mut (*&mut (*matching
+    let matched_again: *mut Mapped = &mut (*matching
         .get_or_insert_with(matching_b.clone(), || (matching_b, <Mapped>::default())))
-    .1);
+    .1;
     ok = ((ok as i32)
         & (((*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0))
             == ((before_matching) + (1))) as i32))
@@ -253,9 +253,9 @@ unsafe fn main_0() -> i32 {
         & (((&mut (*matched_it.iter_deref()).1 as *mut Mapped) == (matched_value)) as i32))
         != 0;
     ok = ((ok as i32) & ((((*matched_it.iter_deref()).1.value) == (51)) as i32)) != 0;
-    let other: *mut Mapped = &mut (*&mut (*matching
+    let other: *mut Mapped = &mut (*matching
         .get_or_insert_with(matching_c.clone(), || (matching_c, <Mapped>::default())))
-    .1);
+    .1;
     (*other).value = 61;
     ok = ((ok as i32)
         & (((*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0))
