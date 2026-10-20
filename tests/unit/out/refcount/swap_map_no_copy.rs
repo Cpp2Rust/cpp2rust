@@ -212,16 +212,6 @@ impl Owner {
         }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
-#[byte_size(96)]
-pub struct Maps {
-    #[offset(0)]
-    #[byte_size(48)]
-    pub m1: Map<i32, (Value<i32>, Value<Tracked>)>,
-    #[offset(48)]
-    #[byte_size(48)]
-    pub m2: Map<i32, (Value<i32>, Value<Tracked>)>,
-}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
@@ -557,11 +547,16 @@ fn main_0() -> i32 {
                 == 2)
     );
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
-    let maps: Value<Maps> = Rc::new(RefCell::new(<Maps>::default()));
+    let maps: Value<Box<[Map<i32, (Value<i32>, Value<Tracked>)>]>> = Rc::new(RefCell::new(
+        (0..2)
+            .map(|_| Map::new())
+            .collect::<Box<[Map<i32, (Value<i32>, Value<Tracked>)>]>>(),
+    ));
     ({
         let _o: Value<Tracked> = Rc::new(RefCell::new(Tracked::new_2({ 1 })));
         TrackedImpl::move_assign(
-            &(field_ptr!(maps.as_pointer(), m1) as Ptr<Map<i32, (Value<i32>, Value<Tracked>)>>)
+            &((maps.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<Tracked>)>>).offset(0)
+                as Ptr<Map<i32, (Value<i32>, Value<Tracked>)>>)
                 .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<Tracked>)>| {
                     __m.get_or_insert_with(1.clone(), || {
                         (
@@ -579,7 +574,8 @@ fn main_0() -> i32 {
     ({
         let _o: Value<Tracked> = Rc::new(RefCell::new(Tracked::new_2({ 2 })));
         TrackedImpl::move_assign(
-            &(field_ptr!(maps.as_pointer(), m2) as Ptr<Map<i32, (Value<i32>, Value<Tracked>)>>)
+            &((maps.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<Tracked>)>>).offset(1)
+                as Ptr<Map<i32, (Value<i32>, Value<Tracked>)>>)
                 .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<Tracked>)>| {
                     __m.get_or_insert_with(2.clone(), || {
                         (
@@ -595,12 +591,13 @@ fn main_0() -> i32 {
         )
     });
     cpp_swap!(
-        field_ptr!(maps.as_pointer(), m1),
-        field_ptr!(maps.as_pointer(), m2)
+        (maps.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<Tracked>)>>).offset(0),
+        (maps.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<Tracked>)>>).offset(1)
     );
     assert!(
-        ((*maps.borrow()).m1.len() == 1_usize)
-            && ((field_ptr!(maps.as_pointer(), m1) as Ptr<Map<i32, (Value<i32>, Value<Tracked>)>>)
+        ((*maps.borrow())[(0) as usize].len() == 1_usize)
+            && (((maps.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<Tracked>)>>).offset(0)
+                as Ptr<Map<i32, (Value<i32>, Value<Tracked>)>>)
                 .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<Tracked>)>| {
                     __m.get_or_insert_with(2.clone(), || {
                         (
@@ -616,8 +613,9 @@ fn main_0() -> i32 {
                 == 2)
     );
     assert!(
-        ((*maps.borrow()).m2.len() == 1_usize)
-            && ((field_ptr!(maps.as_pointer(), m2) as Ptr<Map<i32, (Value<i32>, Value<Tracked>)>>)
+        ((*maps.borrow())[(1) as usize].len() == 1_usize)
+            && (((maps.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<Tracked>)>>).offset(1)
+                as Ptr<Map<i32, (Value<i32>, Value<Tracked>)>>)
                 .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<Tracked>)>| {
                     __m.get_or_insert_with(1.clone(), || {
                         (
