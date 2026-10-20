@@ -49,7 +49,7 @@ fn main_0() -> i32 {
     assert!(((index!(p, 1_usize).read()) == 30));
     assert!((b == 40));
     assert!(((vec_elem!((hp), v, 1_usize).read()) == 60));
-    ({ write_through_0(((Ptr::<Vec<i32>>::decay(&(p)) as Ptr<i32>).offset(0_usize as isize))) });
+    ({ write_through_0((p.decay().offset(0_usize as isize))) });
     assert!(((index!(p, 0_usize).read()) == 42));
     return 0;
 }

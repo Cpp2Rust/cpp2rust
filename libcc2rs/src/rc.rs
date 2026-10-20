@@ -1402,27 +1402,10 @@ impl<T> AsPointer<T> for Option<Rc<RefCell<Box<[T]>>>> {
     }
 }
 
-impl<T> AsPointer<T> for Rc<RefCell<Vec<T>>> {
-    #[inline]
-    fn as_pointer(&self) -> Ptr<T> {
-        Ptr {
-            offset: 0,
-            kind: PtrKind::StackVec(Rc::downgrade(self)),
-        }
-    }
-}
-
 impl<T> AsPointer<Vec<T>> for Ptr<Vec<T>> {
     #[inline]
     fn as_pointer(&self) -> Ptr<Vec<T>> {
         self.clone()
-    }
-}
-
-impl<T: 'static> AsPointer<T> for Ptr<Vec<T>> {
-    #[inline]
-    fn as_pointer(&self) -> Ptr<T> {
-        self.decay()
     }
 }
 
@@ -1440,10 +1423,12 @@ impl<T: 'static> Ptr<Vec<T>> {
                 kind: PtrKind::HeapVec(weak.clone()),
             },
             // The elements of a field are reached through the struct.
-            PtrKind::Field(root, _, FieldShape::Single) => Ptr {
-                offset: 0,
-                kind: PtrKind::Field(root.clone(), field_offset(self.offset), FieldShape::Vec),
-            },
+            PtrKind::Field(root, _, FieldShape::Single) if u32::try_from(self.offset).is_ok() => {
+                Ptr {
+                    offset: 0,
+                    kind: PtrKind::Field(root.clone(), self.offset as u32, FieldShape::Vec),
+                }
+            }
             PtrKind::StackVec(_)
             | PtrKind::HeapVec(_)
             | PtrKind::StackArray(_)
@@ -1671,7 +1656,7 @@ mod tests {
         assert_eq!(pp.borrow().read(), 3);
         pp_ptr.read().write(7);
         assert_eq!(a.borrow()[2], 7);
-        pp_ptr.write(v.as_pointer().offset(1));
+        pp_ptr.write(v.as_pointer().decay().offset(1));
         pp_ptr.read().write(8);
         assert_eq!(*v.borrow(), vec![4, 8]);
     }

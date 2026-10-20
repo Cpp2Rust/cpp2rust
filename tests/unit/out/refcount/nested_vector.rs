@@ -18,7 +18,10 @@ fn main_0() -> i32 {
         (*v1.borrow_mut()).push(a0_clone)
     };
     assert!(
-        (((Ptr::<Vec<i32>>::decay(&((v1.as_pointer() as Ptr<Vec<i32>>).to_last())) as Ptr<i32>)
+        ((v1.as_pointer()
+            .decay()
+            .to_last()
+            .decay()
             .offset(0_usize as isize)
             .read())
             == 1)

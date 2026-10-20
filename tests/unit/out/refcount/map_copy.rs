@@ -12,7 +12,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let a: Value<Map<i32, (Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
-    (a.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
+    a.as_pointer()
         .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<i32>)>| {
             __m.get_or_insert_with(1.clone(), || {
                 (
@@ -26,7 +26,7 @@ fn main_0() -> i32 {
         })
         .write(10);
     let b: Value<Map<i32, (Value<i32>, Value<i32>)>> = Rc::new(RefCell::new((*a.borrow()).clone()));
-    (b.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
+    b.as_pointer()
         .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<i32>)>| {
             __m.get_or_insert_with(1.clone(), || {
                 (
@@ -40,7 +40,7 @@ fn main_0() -> i32 {
         })
         .write(20);
     assert!(
-        (((a.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
+        ((a.as_pointer()
             .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<i32>)>| {
                 __m.get_or_insert_with(1.clone(), || {
                     (
@@ -56,7 +56,7 @@ fn main_0() -> i32 {
             == 10)
     );
     let x: Value<Map<i32, (Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
-    (x.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
+    x.as_pointer()
         .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<i32>)>| {
             __m.get_or_insert_with(2.clone(), || {
                 (
@@ -70,7 +70,7 @@ fn main_0() -> i32 {
         })
         .write(3);
     let y: Value<Map<i32, (Value<i32>, Value<i32>)>> = Rc::new(RefCell::new((*x.borrow()).clone()));
-    (y.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
+    y.as_pointer()
         .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<i32>)>| {
             __m.get_or_insert_with(2.clone(), || {
                 (
@@ -84,7 +84,7 @@ fn main_0() -> i32 {
         })
         .write(4);
     assert!(
-        (((x.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
+        ((x.as_pointer()
             .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<i32>)>| {
                 __m.get_or_insert_with(2.clone(), || {
                     (

@@ -73,7 +73,7 @@ fn main_0() -> i32 {
     assert!((v5.len() == 5_usize));
     assert!(((v5[0_usize] as i32) == 10) && ((v5[4_usize] as i32) == 50));
     let m: Value<Map<i32, (Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
-    (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
+    m.as_pointer()
         .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<i32>)>| {
             __m.get_or_insert_with(1.clone(), || {
                 (
@@ -86,7 +86,7 @@ fn main_0() -> i32 {
             .as_pointer()
         })
         .write(10);
-    (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
+    m.as_pointer()
         .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<i32>)>| {
             __m.get_or_insert_with(2.clone(), || {
                 (
@@ -99,7 +99,7 @@ fn main_0() -> i32 {
             .as_pointer()
         })
         .write(20);
-    (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
+    m.as_pointer()
         .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<i32>)>| {
             __m.get_or_insert_with(3.clone(), || {
                 (
@@ -114,10 +114,11 @@ fn main_0() -> i32 {
         .write(30);
     let v6: Value<Vec<(Value<i32>, Value<i32>)>> = Rc::new(RefCell::new({
         let mut __v = Vec::new();
-        let mut __it = (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
+        let mut __it = m
+            .as_pointer()
             .with(|__m: &Map<i32, (Value<i32>, Value<i32>)>| __m.begin());
         while __it
-            != (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
+            != m.as_pointer()
                 .with(|__m: &Map<i32, (Value<i32>, Value<i32>)>| __m.end())
         {
             __v.push(
@@ -140,29 +141,25 @@ fn main_0() -> i32 {
     );
     {
         let start_idx = <RandomAccessIterator<(Value<i32>, Value<i32>)>>::from(
-            (v6.as_pointer() as Ptr<(Value<i32>, Value<i32>)>)
-                .begin()
-                .iter_add(1_isize),
+            v6.as_pointer().decay().begin().iter_add(1_isize),
         )
         .index();
         let mut temp_vec: Vec<(Value<i32>, Value<i32>)> = Vec::new();
-        let mut __it = (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
+        let mut __it = m
+            .as_pointer()
             .with(|__m: &Map<i32, (Value<i32>, Value<i32>)>| __m.begin());
         while __it
-            != (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
+            != m.as_pointer()
                 .with(|__m: &Map<i32, (Value<i32>, Value<i32>)>| __m.end())
         {
             temp_vec.push(__it.iter_deref().read());
             __it.iter_inc();
         }
-        (v6.as_pointer() as Ptr<Vec<(Value<i32>, Value<i32>)>>).with_mut(
-            |v: &mut Vec<(Value<i32>, Value<i32>)>| {
+        v6.as_pointer()
+            .with_mut(|v: &mut Vec<(Value<i32>, Value<i32>)>| {
                 v.splice(start_idx..start_idx, temp_vec);
-            },
-        );
-        RandomAccessIterator::Vec(
-            (v6.as_pointer() as Ptr<Vec<(Value<i32>, Value<i32>)>>).decay() + start_idx,
-        )
+            });
+        RandomAccessIterator::Vec(v6.as_pointer().decay() + start_idx)
     };
     assert!(((*v6.borrow()).len() == 6_usize));
     assert!(

@@ -45,12 +45,12 @@ fn f4(a0: Ptr<Vec<i8>>, a1: Ptr<i8>, a2: usize) -> Ptr<Vec<i8>> {
     a0
 }
 
-fn f5(a0: Ptr<i8>) -> Ptr<i8> {
-    a0
+fn f5(a0: Ptr<Vec<i8>>) -> Ptr<i8> {
+    a0.decay()
 }
 
-fn f6(a0: Ptr<i8>) -> Ptr<i8> {
-    a0
+fn f6(a0: Ptr<Vec<i8>>) -> Ptr<i8> {
+    a0.decay()
 }
 
 fn f7(a0: Ptr<i8>, a1: usize) -> Vec<i8> {
@@ -66,12 +66,12 @@ fn f10(a0: Ptr<i8>) -> Vec<i8> {
     __bytes
 }
 
-fn f11(a0: Ptr<i8>) -> Ptr<i8> {
-    a0
+fn f11(a0: Ptr<Vec<i8>>) -> Ptr<i8> {
+    a0.decay()
 }
 
-fn f12(a0: Ptr<i8>) -> RandomAccessIterator<i8> {
-    RandomAccessIterator::Vec(a0)
+fn f12(a0: Ptr<Vec<i8>>) -> RandomAccessIterator<i8> {
+    RandomAccessIterator::Vec(a0.decay())
 }
 
 fn f14(a0: Ptr<Vec<i8>>, a1: usize, a2: usize, a3: Ptr<i8>, a4: usize) -> Ptr<Vec<i8>> {
@@ -88,8 +88,8 @@ fn f14(a0: Ptr<Vec<i8>>, a1: usize, a2: usize, a3: Ptr<i8>, a4: usize) -> Ptr<Ve
     a0
 }
 
-fn f15(a0: Ptr<i8>) -> RandomAccessIterator<i8> {
-    RandomAccessIterator::Vec(a0.to_last())
+fn f15(a0: Ptr<Vec<i8>>) -> RandomAccessIterator<i8> {
+    RandomAccessIterator::Vec(a0.decay().to_last())
 }
 
 fn f16(a0: Vec<i8>, a1: Ptr<i8>) -> usize {

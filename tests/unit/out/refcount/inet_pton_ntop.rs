@@ -14,16 +14,16 @@ pub fn test_s6_addr_access_0() {
     let addr: Value<libcc2rs::In6Addr> = Rc::new(RefCell::new(Default::default()));
     let mut ap: Ptr<libcc2rs::In6Addr> = (addr.as_pointer());
     {
-        ((In6Addr::s6_addr((addr.as_pointer() as Ptr<In6Addr>)) as Ptr<u8>) as Ptr<u8>)
+        ((In6Addr::s6_addr(addr.as_pointer()) as Ptr<u8>) as Ptr<u8>)
             .to_any()
             .memcpy(
                 &((loopback.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
                 16_usize as usize,
             );
-        ((In6Addr::s6_addr((addr.as_pointer() as Ptr<In6Addr>)) as Ptr<u8>) as Ptr<u8>).to_any()
+        ((In6Addr::s6_addr(addr.as_pointer()) as Ptr<u8>) as Ptr<u8>).to_any()
     };
     assert!(
-        (((((In6Addr::s6_addr(((ap).clone() as Ptr<In6Addr>)) as Ptr::<u8>) as Ptr<u8>)
+        (((((In6Addr::s6_addr((ap).clone()) as Ptr::<u8>) as Ptr<u8>)
             .to_any()
             .memcmp(
                 &((loopback.as_pointer() as Ptr::<u8>) as Ptr<u8>).to_any(),
@@ -32,93 +32,50 @@ pub fn test_s6_addr_access_0() {
             == 0) as i32)
             != 0)
     );
-    elem!(
-        (In6Addr::s6_addr((addr.as_pointer() as Ptr<In6Addr>)) as Ptr::<u8>),
-        0
-    )
-    .write(32_u8);
-    elem!(
-        (In6Addr::s6_addr(((ap).clone() as Ptr<In6Addr>)) as Ptr::<u8>),
-        1
-    )
-    .write(1_u8);
+    elem!((In6Addr::s6_addr(addr.as_pointer()) as Ptr::<u8>), 0).write(32_u8);
+    elem!((In6Addr::s6_addr((ap).clone()) as Ptr::<u8>), 1).write(1_u8);
     assert!(
-        ((((((((elem!(
-            (In6Addr::s6_addr((addr.as_pointer() as Ptr<In6Addr>)) as Ptr::<u8>),
-            0
-        )
-        .read()) as i32)
-            == 32) as i32)
+        ((((((((elem!((In6Addr::s6_addr(addr.as_pointer()) as Ptr::<u8>), 0).read()) as i32) == 32)
+            as i32)
             != 0)
-            && (((((elem!(
-                (In6Addr::s6_addr(((ap).clone() as Ptr<In6Addr>)) as Ptr::<u8>),
-                1
-            )
-            .read()) as i32)
-                == 1) as i32)
+            && (((((elem!((In6Addr::s6_addr((ap).clone()) as Ptr::<u8>), 1).read()) as i32) == 1)
+                as i32)
                 != 0)) as i32)
             != 0)
     );
-    elem!(
-        (In6Addr::s6_addr((addr.as_pointer() as Ptr<In6Addr>)) as Ptr::<u8>),
-        15
-    )
-    .write({
-        (((elem!(
-            (In6Addr::s6_addr((addr.as_pointer() as Ptr<In6Addr>)) as Ptr::<u8>),
-            15
-        )
-        .read()) as i32)
-            + 4) as u8
+    elem!((In6Addr::s6_addr(addr.as_pointer()) as Ptr::<u8>), 15).write({
+        (((elem!((In6Addr::s6_addr(addr.as_pointer()) as Ptr::<u8>), 15).read()) as i32) + 4) as u8
     });
-    elem!(
-        (In6Addr::s6_addr(((ap).clone() as Ptr<In6Addr>)) as Ptr::<u8>),
-        15
-    )
-    .with_mut(|__v| __v.postfix_inc());
+    elem!((In6Addr::s6_addr((ap).clone()) as Ptr::<u8>), 15).with_mut(|__v| __v.postfix_inc());
     assert!(
-        (((((elem!(
-            (In6Addr::s6_addr((addr.as_pointer() as Ptr<In6Addr>)) as Ptr::<u8>),
-            15
-        )
-        .read()) as i32)
-            == 6) as i32)
+        (((((elem!((In6Addr::s6_addr(addr.as_pointer()) as Ptr::<u8>), 15).read()) as i32) == 6)
+            as i32)
             != 0)
     );
-    let mut bytes: Ptr<u8> = (In6Addr::s6_addr((addr.as_pointer() as Ptr<In6Addr>)) as Ptr<u8>);
+    let mut bytes: Ptr<u8> = (In6Addr::s6_addr(addr.as_pointer()) as Ptr<u8>);
     elem!(bytes, 2).write(7_u8);
     assert!(
-        (((((elem!(
-            (In6Addr::s6_addr(((ap).clone() as Ptr<In6Addr>)) as Ptr::<u8>),
-            2
-        )
-        .read()) as i32)
-            == 7) as i32)
+        (((((elem!((In6Addr::s6_addr((ap).clone()) as Ptr::<u8>), 2).read()) as i32) == 7) as i32)
             != 0)
     );
-    let mut fourth: Ptr<u8> =
-        ((In6Addr::s6_addr(((ap).clone() as Ptr<In6Addr>)) as Ptr<u8>).offset((3) as isize));
+    let mut fourth: Ptr<u8> = ((In6Addr::s6_addr((ap).clone()) as Ptr<u8>).offset((3) as isize));
     fourth.write(8_u8);
     assert!(
-        (((((elem!(
-            (In6Addr::s6_addr((addr.as_pointer() as Ptr<In6Addr>)) as Ptr::<u8>),
-            3
-        )
-        .read()) as i32)
-            == 8) as i32)
+        (((((elem!((In6Addr::s6_addr(addr.as_pointer()) as Ptr::<u8>), 3).read()) as i32) == 8)
+            as i32)
             != 0)
     );
     {
-        ((In6Addr::s6_addr(((ap).clone() as Ptr<In6Addr>)) as Ptr<u8>) as Ptr<u8>)
+        ((In6Addr::s6_addr((ap).clone()) as Ptr<u8>) as Ptr<u8>)
             .to_any()
             .memcpy(
                 &((loopback.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
                 16_usize as usize,
             );
-        ((In6Addr::s6_addr(((ap).clone() as Ptr<In6Addr>)) as Ptr<u8>) as Ptr<u8>).to_any()
+        ((In6Addr::s6_addr((ap).clone()) as Ptr<u8>) as Ptr<u8>).to_any()
     };
     assert!(
-        (((((In6Addr::s6_addr((addr.as_pointer() as Ptr<In6Addr>)) as Ptr::<u8>) as Ptr<u8>)
+        (((((In6Addr::s6_addr(addr.as_pointer()) as Ptr::<u8>) as Ptr<u8>)
             .to_any()
             .memcmp(
                 &((loopback.as_pointer() as Ptr::<u8>) as Ptr<u8>).to_any(),
@@ -355,8 +312,7 @@ fn main_0() -> i32 {
                 };
                 match __text {
                     Some(__s)
-                        if (__s.len() as u32)
-                            < (::std::mem::size_of::<[i8; 64]>() as libc::socklen_t) =>
+                        if (__s.len() as u32) < (::std::mem::size_of::<[i8; 64]>() as u32) =>
                     {
                         let __n = __s.len();
                         (text.as_pointer() as Ptr<i8>).write_c_bytes(__s.as_bytes());
@@ -413,8 +369,7 @@ fn main_0() -> i32 {
                 };
                 match __text {
                     Some(__s)
-                        if (__s.len() as u32)
-                            < (::std::mem::size_of::<[i8; 64]>() as libc::socklen_t) =>
+                        if (__s.len() as u32) < (::std::mem::size_of::<[i8; 64]>() as u32) =>
                     {
                         let __n = __s.len();
                         (text.as_pointer() as Ptr<i8>).write_c_bytes(__s.as_bytes());
@@ -464,7 +419,7 @@ fn main_0() -> i32 {
                 None
             };
             match __text {
-                Some(__s) if (__s.len() as u32) < (4 as libc::socklen_t) => {
+                Some(__s) if (__s.len() as u32) < 4_u32 => {
                     let __n = __s.len();
                     (text.as_pointer() as Ptr<i8>).write_c_bytes(__s.as_bytes());
                     elem!((text.as_pointer() as Ptr::<i8>), __n).write(0);

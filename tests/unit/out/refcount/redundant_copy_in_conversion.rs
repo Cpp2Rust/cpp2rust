@@ -25,7 +25,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let m: Value<Map<i32, (Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
-    (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
+    m.as_pointer()
         .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<i32>)>| {
             __m.get_or_insert_with(0.clone(), || {
                 (
@@ -39,11 +39,11 @@ fn main_0() -> i32 {
         })
         .write(1);
     let end: Value<BidirectionalIterator<(Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(
-        (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
+        m.as_pointer()
             .with(|__m: &Map<i32, (Value<i32>, Value<i32>)>| __m.end()),
     ));
     let it0: Value<BidirectionalIterator<(Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(
-        (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
+        m.as_pointer()
             .with(|__m: &Map<i32, (Value<i32>, Value<i32>)>| __m.find(&0)),
     ));
     let const_it: Value<BidirectionalIterator<(Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(

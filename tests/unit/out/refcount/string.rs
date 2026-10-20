@@ -37,7 +37,7 @@ fn main_0() -> i32 {
         !(Ptr::<i8>::from_string_literal(b"hello")
             .with_c_str(|__s| (*s1.borrow())[..(*s1.borrow()).len().saturating_sub(1)] != *__s))
     );
-    let mut p1: Ptr<i8> = (s1.as_pointer() as Ptr<i8>);
+    let mut p1: Ptr<i8> = s1.as_pointer().decay();
     assert!((((elem!(p1, 0).read()) as i32) == (('h' as i8) as i32)));
     assert!((((elem!(p1, 1).read()) as i32) == (('e' as i8) as i32)));
     assert!((((elem!(p1, 2).read()) as i32) == (('l' as i8) as i32)));
@@ -50,7 +50,7 @@ fn main_0() -> i32 {
             .chain(std::iter::once(0))
             .collect(),
     ));
-    let mut p2: Ptr<i8> = (s2.as_pointer() as Ptr<i8>);
+    let mut p2: Ptr<i8> = s2.as_pointer().decay();
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < ((*s2.borrow()).len() - 1)) {
         assert!(
@@ -85,7 +85,7 @@ fn main_0() -> i32 {
     }));
     assert!((((*s3.borrow()).len() - 1) == 5_usize));
     assert!((((*s3.borrow()).len() - 1) == ((*s3.borrow()).len() - 1)));
-    let mut p3: Ptr<i8> = (s3.as_pointer() as Ptr<i8>);
+    let mut p3: Ptr<i8> = s3.as_pointer().decay();
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < ((*s3.borrow()).len() - 1)) {
         assert!(
@@ -112,7 +112,7 @@ fn main_0() -> i32 {
     }));
     assert!((((*s4.borrow()).len() - 1) == 3_usize));
     assert!((((*s4.borrow()).len() - 1) == ((*s4.borrow()).len() - 1)));
-    let mut p4: Ptr<i8> = (s4.as_pointer() as Ptr<i8>);
+    let mut p4: Ptr<i8> = s4.as_pointer().decay();
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < ((*s4.borrow()).len() - 1)) {
         assert!(
@@ -129,7 +129,7 @@ fn main_0() -> i32 {
     }));
     assert!((((*s5.borrow()).len() - 1) == 12_usize));
     assert!((((*s5.borrow()).len() - 1) == ((*s5.borrow()).len() - 1)));
-    let mut p5: Ptr<i8> = (s5.as_pointer() as Ptr<i8>);
+    let mut p5: Ptr<i8> = s5.as_pointer().decay();
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < ((*s5.borrow()).len() - 1)) {
         assert!(
@@ -260,55 +260,55 @@ fn main_0() -> i32 {
     assert!(((substr_2[5_usize] as i32) == (('f' as i8) as i32)));
     assert!(((substr_2[6_usize] as i32) == (('o' as i8) as i32)));
     assert!(((substr_2[7_usize] as i32) == (('o' as i8) as i32)));
-    let mut pos: u64 = (Ptr::<i8>::from_string_literal(b"b").with_c_str(|__lookup| {
+    let mut pos: usize = Ptr::<i8>::from_string_literal(b"b").with_c_str(|__lookup| {
         result
             .iter()
             .take(result.len().saturating_sub(1))
             .rposition(|&x| __lookup.contains(&x))
             .unwrap_or(usize::MAX)
-    }) as u64);
-    assert!((pos == 0_u64));
-    pos = (Ptr::<i8>::from_string_literal(b"f").with_c_str(|__lookup| {
+    });
+    assert!((pos == 0_usize));
+    pos = Ptr::<i8>::from_string_literal(b"f").with_c_str(|__lookup| {
         result
             .iter()
             .take(result.len().saturating_sub(1))
             .rposition(|&x| __lookup.contains(&x))
             .unwrap_or(usize::MAX)
-    }) as u64);
-    assert!((pos == 5_u64));
-    pos = (Ptr::<i8>::from_string_literal(b"o").with_c_str(|__lookup| {
+    });
+    assert!((pos == 5_usize));
+    pos = Ptr::<i8>::from_string_literal(b"o").with_c_str(|__lookup| {
         result
             .iter()
             .take(result.len().saturating_sub(1))
             .rposition(|&x| __lookup.contains(&x))
             .unwrap_or(usize::MAX)
-    }) as u64);
-    assert!((pos == 7_u64));
-    pos = (Ptr::<i8>::from_string_literal(b"x").with_c_str(|__lookup| {
+    });
+    assert!((pos == 7_usize));
+    pos = Ptr::<i8>::from_string_literal(b"x").with_c_str(|__lookup| {
         result
             .iter()
             .take(result.len().saturating_sub(1))
             .rposition(|&x| __lookup.contains(&x))
             .unwrap_or(usize::MAX)
-    }) as u64);
-    assert!((pos == (-1_i64 as u64)));
+    });
+    assert!((pos == ((-1_i64 as u64) as usize)));
     let string_to_cast: Value<Vec<i8>> = Rc::new(RefCell::new({
         let mut __bytes = Ptr::<i8>::from_string_literal(b"cast").to_c_bytes();
         __bytes.push(0);
         __bytes
     }));
     let mut output_data: Ptr<u8> =
-        ((string_to_cast.as_pointer() as Ptr<i8>).offset(0_usize)).reinterpret_cast::<u8>();
+        (string_to_cast.as_pointer().decay().offset(0_usize)).reinterpret_cast::<u8>();
     assert!((((output_data.read()) as i32) == (('c' as i8) as i32)));
     assert!((((elem!(output_data, 1).read()) as i32) == (('a' as i8) as i32)));
     assert!((((elem!(output_data, 2).read()) as i32) == (('s' as i8) as i32)));
     assert!((((elem!(output_data, 3).read()) as i32) == (('t' as i8) as i32)));
-    let mut t0: u64 = (((*s1.borrow()).len() - 1) as u64);
-    let mut t1: u64 = (t0).wrapping_add(((p1.read()) as u64));
-    let mut t2: u64 = ((t1 as usize).wrapping_add(((*s2.borrow()).len() - 1)) as u64);
-    let mut t3: u64 = ((t2 as usize).wrapping_add(((*s3.borrow()).len() - 1)) as u64);
-    let mut t4: u64 = ((t3 as usize).wrapping_add(((*s4.borrow()).len() - 1)) as u64);
-    assert!(((t4 as usize).wrapping_add(((*s5.borrow()).len() - 1)) == 139_usize));
+    let mut t0: usize = ((*s1.borrow()).len() - 1);
+    let mut t1: usize = (t0).wrapping_add(((p1.read()) as usize));
+    let mut t2: usize = (t1).wrapping_add(((*s2.borrow()).len() - 1));
+    let mut t3: usize = (t2).wrapping_add(((*s3.borrow()).len() - 1));
+    let mut t4: usize = (t3).wrapping_add(((*s4.borrow()).len() - 1));
+    assert!(((t4).wrapping_add(((*s5.borrow()).len() - 1)) == 139_usize));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

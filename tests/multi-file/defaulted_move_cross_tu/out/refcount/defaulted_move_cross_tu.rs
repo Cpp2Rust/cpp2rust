@@ -70,7 +70,8 @@ pub trait SImpl {
 }
 impl SImpl for Ptr<S> {
     fn move_assign(&self, _a0: Ptr<S>) -> Ptr<S> {
-        (field_ref!((*self), v).as_pointer() as Ptr<Vec<i32>>)
+        field_ref!((*self), v)
+            .as_pointer()
             .write(field!(_a0, v).with_mut(std::mem::take));
         {
             ((array_field_ptr!((*self), n)) as Ptr<i32>)
