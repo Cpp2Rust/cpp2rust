@@ -35,8 +35,8 @@ fn main_0() -> i32 {
     };
     assert!((v1.len() == 100_usize));
     assert!((v1[99_usize] == 0));
-    v1[0_usize] = 40;
-    v1[99_usize] = 50;
+    v1[0_usize] = (40 as i32);
+    v1[99_usize] = (50 as i32);
     assert!((v1[0_usize] == 40));
     assert!((v1[99_usize] == 50));
     let v2: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
@@ -252,7 +252,7 @@ fn main_0() -> i32 {
     assert!((v4.as_pointer().decay().to_last().read()).is_null());
     assert!((v5.as_pointer().decay().to_last().read()).is_null());
     assert!(((v6.as_pointer().decay().to_last().read()) == 2_f64));
-    let ref0: Ptr<f64> = v6.as_pointer().decay().to_last();
+    let ref0: Ptr<f64> = (v6.as_pointer().decay().to_last()).reinterpret_cast::<f64>();
     ref0.write(5_f64);
     assert!(((v6.as_pointer().decay().to_last().read()) == 5_f64));
     let mut x0: f64 = (v6.as_pointer().decay().to_last().read());
@@ -274,10 +274,11 @@ fn main_0() -> i32 {
             .read())
             == 5_f64)
     );
-    let ref1: Ptr<f64> = v6
+    let ref1: Ptr<f64> = (v6
         .as_pointer()
         .decay()
-        .offset((s2).wrapping_sub(1_usize) as isize);
+        .offset((s2).wrapping_sub(1_usize) as isize))
+    .reinterpret_cast::<f64>();
     {
         ref1.with_mut(|__v| *__v = *__v + 1.5_f64)
     };

@@ -19,7 +19,7 @@ impl MyContainer_int_ {
         return self.vec_.len();
     }
     pub unsafe fn back_4(&mut self) -> *mut i32 {
-        return ((self.vec_).last_mut().unwrap());
+        return (((self.vec_).last_mut().unwrap()) as *mut i32).cast::<i32>();
     }
     pub unsafe fn pop_back(&mut self) {
         self.vec_.pop();
@@ -45,7 +45,7 @@ impl MyContainer_char_ {
         return self.vec_.len();
     }
     pub unsafe fn back_4(&mut self) -> *mut libc::c_char {
-        return ((self.vec_).last_mut().unwrap());
+        return (((self.vec_).last_mut().unwrap()) as *mut libc::c_char).cast::<libc::c_char>();
     }
     pub unsafe fn pop_back(&mut self) {
         self.vec_.pop();
@@ -71,7 +71,7 @@ impl MyContainer_float_ {
         return self.vec_.len();
     }
     pub unsafe fn back_4(&mut self) -> *mut f32 {
-        return ((self.vec_).last_mut().unwrap());
+        return (((self.vec_).last_mut().unwrap()) as *mut f32).cast::<f32>();
     }
     pub unsafe fn pop_back(&mut self) {
         self.vec_.pop();

@@ -651,9 +651,9 @@ fn main_0() -> i32 {
         let __rhs = ((i).wrapping_rem(2_u32) != 0);
         m2.as_pointer()
             .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<bool>)>| {
-                __m.get_or_insert_with(indexes[(i as usize)].clone(), || {
+                __m.get_or_insert_with((indexes[(i as usize)] as i32).clone(), || {
                     (
-                        Rc::new(RefCell::new(indexes[(i as usize)])),
+                        Rc::new(RefCell::new((indexes[(i as usize)] as i32))),
                         Rc::new(RefCell::new(<bool>::default())),
                     )
                 })

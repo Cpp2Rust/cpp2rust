@@ -41,7 +41,7 @@ pub fn lehmer_2(mut sigma: Ptr<u32>, mut len: u32, mut code: Ptr<u32>) {
     ));
     let mut i: u32 = 0_u32;
     'loop_: while (i < len) {
-        let __rhs = i;
+        let __rhs = (i as u32);
         (*items.borrow_mut())[(i as usize)] = __rhs;
         i.prefix_inc();
     }

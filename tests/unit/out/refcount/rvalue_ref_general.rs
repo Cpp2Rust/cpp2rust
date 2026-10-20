@@ -12,7 +12,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let i1: Value<i32> = Rc::new(RefCell::new(3));
-    let mut i2: i32 = (*i1.borrow());
+    let mut i2: i32 = ((*i1.borrow()) as i32);
     assert!(((*i1.borrow()) == 3));
     assert!((i2 == 3));
     let __tmp_0: Value<i32> = Rc::new(RefCell::new(40));
@@ -31,7 +31,7 @@ fn main_0() -> i32 {
     assert!(({ (i6.read()) } == { (i3.read()) }));
     assert!(({ (i7.read()) } == { (i4.read()) }));
     let i8: Value<i32> = Rc::new(RefCell::new(3));
-    let i9: Ptr<i32> = i8.as_pointer();
+    let i9: Ptr<i32> = (i8.as_pointer()).reinterpret_cast::<i32>();
     assert!(((i9.read()) == 3));
     let mut p1: Ptr<i32> = (i1.as_pointer());
     let mut p2: Ptr<i32> = (i3).clone();

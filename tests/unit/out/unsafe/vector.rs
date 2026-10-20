@@ -29,15 +29,15 @@ unsafe fn main_0() -> i32 {
     assert!(!(v1.is_empty()));
     v1.pop();
     assert!(v1.is_empty());
-    let mut s1: u64 = (v1.len() as u64);
+    let mut s1: usize = v1.len();
     {
         let __a0 = 100_usize as usize;
         v1.resize_with(__a0, || <i32>::default())
     };
     assert!(((v1.len()) == (100_usize)));
     assert!(((v1[(99_usize)]) == (0)));
-    v1[(0_usize)] = 40;
-    v1[(99_usize)] = 50;
+    v1[(0_usize)] = (40 as i32);
+    v1[(99_usize)] = (50 as i32);
     assert!(((v1[(0_usize)]) == (40)));
     assert!(((v1[(99_usize)]) == (50)));
     let mut v2: Vec<i32> = Vec::new();
@@ -162,7 +162,7 @@ unsafe fn main_0() -> i32 {
     assert!(((v2[(0_usize)]) == (100)));
     assert!(((v2[(1_usize)]) == (2)));
     assert!(((v2[(2_usize)]) == (3)));
-    let mut s2: u64 = (v2.len() as u64);
+    let mut s2: usize = v2.len();
     let mut v3: Vec<i32> = vec![1; 100_usize as usize];
     assert!(((v3.len()) == (100_usize)));
     let mut i: i32 = 0;
@@ -188,10 +188,10 @@ unsafe fn main_0() -> i32 {
         assert!((v5[(i as usize)]).is_null());
         i.prefix_inc();
     }
-    let mut v6: Vec<f64> = vec![2_f64; (s2 as usize) as usize];
-    assert!(((v6.len()) == (s2 as usize)));
+    let mut v6: Vec<f64> = vec![2_f64; s2 as usize];
+    assert!(((v6.len()) == (s2)));
     let mut i: u32 = 0_u32;
-    'loop_: while ((i as u64) < (s2)) {
+    'loop_: while ((i as usize) < (s2)) {
         assert!(((v6[(i as usize)]) == (2_f64)));
         i.prefix_inc();
     }
@@ -249,7 +249,7 @@ unsafe fn main_0() -> i32 {
     assert!((*((v4).last_mut().unwrap())).is_null());
     assert!((*((v5).last_mut().unwrap())).is_null());
     assert!(((*((v6).last_mut().unwrap())) == (2_f64)));
-    let ref0: *mut f64 = ((v6).last_mut().unwrap());
+    let ref0: *mut f64 = (((v6).last_mut().unwrap()) as *mut f64).cast::<f64>();
     (*ref0) = 5_f64;
     assert!(((*((v6).last_mut().unwrap())) == (5_f64)));
     let mut x0: f64 = (*((v6).last_mut().unwrap()));
@@ -258,18 +258,19 @@ unsafe fn main_0() -> i32 {
     assert!(((*((v6).last_mut().unwrap())) == (5_f64)));
     let mut idx: i32 = 0;
     assert!(((*(&mut (v6)[(idx as usize) as usize] as *mut f64)) == (2_f64)));
-    assert!(((*(&mut (v6)[(s2).wrapping_sub(1_u64) as usize] as *mut f64)) == (5_f64)));
-    let ref1: *mut f64 = (&mut (v6)[(s2).wrapping_sub(1_u64) as usize] as *mut f64);
+    assert!(((*(&mut (v6)[(s2).wrapping_sub(1_usize) as usize] as *mut f64)) == (5_f64)));
+    let ref1: *mut f64 =
+        ((&mut (v6)[(s2).wrapping_sub(1_usize) as usize] as *mut f64) as *mut f64).cast::<f64>();
     (*ref1) += 1.5_f64;
-    assert!(((*(&mut (v6)[(s2).wrapping_sub(1_u64) as usize] as *mut f64)) == (6.5_f64)));
-    let mut x1: f64 = (*(&mut (v6)[(s2).wrapping_sub(1_u64) as usize] as *mut f64));
+    assert!(((*(&mut (v6)[(s2).wrapping_sub(1_usize) as usize] as *mut f64)) == (6.5_f64)));
+    let mut x1: f64 = (*(&mut (v6)[(s2).wrapping_sub(1_usize) as usize] as *mut f64));
     assert!(((x1) == (6.5_f64)));
     x1 -= 1.5_f64;
-    assert!(((*(&mut (v6)[(s2).wrapping_sub(1_u64) as usize] as *mut f64)) == (6.5_f64)));
+    assert!(((*(&mut (v6)[(s2).wrapping_sub(1_usize) as usize] as *mut f64)) == (6.5_f64)));
     assert!(
         ((((s1).wrapping_add(s2))
-            .wrapping_add(((*(&mut (v2)[0_usize as usize] as *mut i32)) as u64)))
-            == (103_u64))
+            .wrapping_add(((*(&mut (v2)[0_usize as usize] as *mut i32)) as usize)))
+            == (103_usize))
     );
     let mut a: S = S { x: 1 };
     let mut pa: *mut S = (&mut a as *mut S);

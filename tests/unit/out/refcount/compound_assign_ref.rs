@@ -17,7 +17,9 @@ fn main_0() -> i32 {
         (*v.borrow_mut()).push(__a1)
     };
     {
-        v.as_pointer().decay().with_mut(|__v| *__v = *__v + 5)
+        v.as_pointer()
+            .decay()
+            .with_mut(|__v| *__v = *__v + (5 as i32))
     };
     assert!(((v.as_pointer().decay().read()) == 15));
     return 0;

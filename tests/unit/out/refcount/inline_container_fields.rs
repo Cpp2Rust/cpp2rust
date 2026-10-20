@@ -128,7 +128,8 @@ fn main_0() -> i32 {
         .decay()
         .offset(2_usize));
     let mut h: Ptr<i32> = (array_field_ptr!(e, hist) as Ptr<i32>);
-    let mut c: Ptr<i16> = (field_ref!(e, coeffs).as_pointer().decay().offset(1_usize));
+    let mut c: Ptr<i16> =
+        (field_ref!(e, coeffs).as_pointer().decay().offset(1_usize)).reinterpret_cast::<i16>();
     let mut id: Ptr<i32> = (field_ptr!(
         field_ref!(s.as_pointer(), elems)
             .as_pointer()
@@ -184,18 +185,43 @@ fn main_0() -> i32 {
         .as_pointer()
         .decay()
         .offset(0_usize)
-        .decay()
-        .offset(0_usize));
+        .offset(0_usize))
+    .reinterpret_cast::<i32>();
     elem!(row, 2).write(9);
-    assert!(((index!(vec_elem!(s.as_pointer(), rows, 0_usize), 2_usize).read()) == 9));
+    assert!(
+        ((elem!(
+            field_ref!(s.as_pointer(), rows)
+                .as_pointer()
+                .decay()
+                .offset(0_usize),
+            2_usize
+        )
+        .read())
+            == 9)
+    );
     let t: Value<State> = Rc::new(RefCell::new((*s.borrow()).clone()));
     index!(field!(vec_elem!(t.as_pointer(), elems, 2_usize), hist), 0).write(100);
     (*t.borrow_mut()).grid[(0) as usize][(0) as usize] = 100;
-    index!(vec_elem!(t.as_pointer(), rows, 0_usize), 0_usize).write(100);
+    elem!(
+        field_ref!(t.as_pointer(), rows)
+            .as_pointer()
+            .decay()
+            .offset(0_usize),
+        0_usize
+    )
+    .write((100 as i32));
     assert!(
         (((index!(field!(vec_elem!(s.as_pointer(), elems, 2_usize), hist), 0).read()) == 0)
             && ((*s.borrow()).grid[(0) as usize][(0) as usize] == 0))
-            && ((index!(vec_elem!(s.as_pointer(), rows, 0_usize), 0_usize).read()) == 1)
+            && ((elem!(
+                field_ref!(s.as_pointer(), rows)
+                    .as_pointer()
+                    .decay()
+                    .offset(0_usize),
+                0_usize
+            )
+            .read())
+                == 1)
     );
     assert!(
         (((index!(

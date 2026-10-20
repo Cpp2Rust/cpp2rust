@@ -61,8 +61,8 @@ fn main_0() -> i32 {
     }
     assert!((((*s2.borrow()).len() - 1) == 10_usize));
     assert!((((*s2.borrow()).len() - 1) == ((*s2.borrow()).len() - 1)));
-    (*s2.borrow_mut())[0_usize] = ('b' as i8);
-    (*s2.borrow_mut())[1_usize] = ('c' as i8);
+    (*s2.borrow_mut())[0_usize] = (('b' as i8) as i8);
+    (*s2.borrow_mut())[1_usize] = (('c' as i8) as i8);
     assert!((({ (*s2.borrow())[0_usize] } as i32) == (('b' as i8) as i32)));
     assert!((({ (*s2.borrow())[1_usize] } as i32) == (('c' as i8) as i32)));
     let mut i: u32 = 2_u32;
@@ -185,8 +185,8 @@ fn main_0() -> i32 {
     assert!(((string[2_usize] as i32) == (('r' as i8) as i32)));
     assert!(((string[3_usize] as i32) == 0));
     assert!(((string[4_usize] as i32) == 0));
-    string[3_usize] = ('a' as i8);
-    string[4_usize] = ('b' as i8);
+    string[3_usize] = (('a' as i8) as i8);
+    string[4_usize] = (('b' as i8) as i8);
     assert!(((string[3_usize] as i32) == (('a' as i8) as i32)));
     assert!(((string[4_usize] as i32) == (('b' as i8) as i32)));
     string[3_usize] = 0_i8;

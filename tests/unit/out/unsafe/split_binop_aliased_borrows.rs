@@ -16,7 +16,7 @@ unsafe fn main_0() -> i32 {
     let mut v: Vec<i32> = Vec::from([1, 2]);
     let mut p: UnsafeRandomAccessIterator<i32> = v.begin();
     let r: *const i32 = &v[(1_usize)];
-    (*p.iter_deref()) = (*r);
+    (*p.iter_deref()) = ((*r) as i32);
     assert!(((v[(0_usize)]) == (2)));
     return 0;
 }

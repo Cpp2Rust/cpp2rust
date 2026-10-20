@@ -219,9 +219,9 @@ unsafe fn main_0() -> i32 {
         .chain(std::iter::once(0))
         .collect();
     let mut s2: Vec<libc::c_char> = s1.clone();
-    s2[(0_usize)] = ('b' as libc::c_char);
-    s2[(1_usize)] = ('b' as libc::c_char);
-    s2[(2_usize)] = ('b' as libc::c_char);
+    s2[(0_usize)] = (('b' as libc::c_char) as libc::c_char);
+    s2[(1_usize)] = (('b' as libc::c_char) as libc::c_char);
+    s2[(2_usize)] = (('b' as libc::c_char) as libc::c_char);
     assert!(((s2[(0_usize)] as i32) == (('b' as libc::c_char) as i32)));
     assert!(((s2[(1_usize)] as i32) == (('b' as libc::c_char) as i32)));
     assert!(((s2[(2_usize)] as i32) == (('b' as libc::c_char) as i32)));

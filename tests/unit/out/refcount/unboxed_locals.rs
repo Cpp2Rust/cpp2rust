@@ -136,7 +136,7 @@ fn main_0() -> i32 {
         let a0_clone = four.clone();
         vec_.push(a0_clone)
     };
-    let __rhs = (vec_[3_usize] + 1);
+    let __rhs = (((vec_[3_usize] as i32) + 1) as i32);
     vec_[0_usize] = __rhs;
     vec_[1_usize].postfix_inc();
     assert!(((vec_.len() == 4_usize) && (vec_[0_usize] == 5)) && (vec_[1_usize] == 2));
@@ -154,7 +154,12 @@ fn main_0() -> i32 {
     let by_ref: Value<Vec<i32>> = Rc::new(RefCell::new(vec![3; 2_usize as usize]));
     assert!((({ total_2(by_ref.as_pointer(),) }) == 6));
     let elem_ptr: Value<Vec<i32>> = Rc::new(RefCell::new(vec![0; 2_usize as usize]));
-    ({ set_0((elem_ptr.as_pointer().decay().offset(1_usize)), 7) });
+    ({
+        set_0(
+            (elem_ptr.as_pointer().decay().offset(1_usize)).reinterpret_cast::<i32>(),
+            7,
+        )
+    });
     assert!(({ (*elem_ptr.borrow())[1_usize] } == 7));
     let data: Value<Vec<i32>> = Rc::new(RefCell::new(vec![0; 2_usize as usize]));
     ({ set_0(data.as_pointer().decay(), 8) });

@@ -183,7 +183,7 @@ unsafe fn main_0() -> i32 {
     }
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < (indexes.len())) {
-        (*&mut (*m2.get_or_insert_with(indexes[(i as usize)].clone(), || {
+        (*&mut (*m2.get_or_insert_with((indexes[(i as usize)] as i32).clone(), || {
             (indexes[(i as usize)], <bool>::default())
         }))
         .1) = ((i).wrapping_rem(2_u32) != 0);

@@ -92,7 +92,8 @@ unsafe fn main_0() -> i32 {
     assert!(((s.arr[(1_usize)]) == (7)));
     let mut e: *mut Elem = (&mut s.elems[(2_usize)] as *mut Elem);
     let mut h: *mut i32 = (*e).hist.as_mut_ptr();
-    let mut c: *mut i16 = (&mut (&mut (*e)).coeffs[(1_usize)] as *mut i16);
+    let mut c: *mut i16 =
+        ((&mut (&mut (*e)).coeffs[(1_usize)] as *mut i16) as *mut i16).cast::<i16>();
     let mut id: *mut i32 = (&mut s.elems[(1_usize)].id as *mut i32);
     let mut k: i32 = 0;
     'loop_: while ((k) < (4)) {
@@ -111,13 +112,14 @@ unsafe fn main_0() -> i32 {
             && ((h.offset((3) as isize))
                 == (&mut s.elems[(2_usize)].hist[(3) as usize] as *mut i32))
     );
-    let mut row: *mut i32 = (&mut s.rows[(0_usize)][(0_usize)] as *mut i32);
+    let mut row: *mut i32 =
+        ((&mut s.rows[(0_usize)][(0_usize)] as *mut i32) as *mut i32).cast::<i32>();
     (*row.offset((2) as isize)) = 9;
     assert!(((s.rows[(0_usize)][(2_usize)]) == (9)));
     let mut t: State = s.clone();
     t.elems[(2_usize)].hist[(0) as usize] = 100;
     t.grid[(0) as usize][(0) as usize] = 100;
-    t.rows[(0_usize)][(0_usize)] = 100;
+    t.rows[(0_usize)][(0_usize)] = (100 as i32);
     assert!(
         (((s.elems[(2_usize)].hist[(0) as usize]) == (0))
             && ((s.grid[(0) as usize][(0) as usize]) == (0)))

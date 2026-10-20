@@ -340,14 +340,7 @@ fn main_0() -> i32 {
     );
     assert!(
         (((*r.borrow()).rows.len() == 1_usize)
-            && ((*field_ref!(r.as_pointer(), rows)
-                .as_pointer()
-                .decay()
-                .offset(0_usize)
-                .upgrade()
-                .deref())
-            .len()
-                == 3_usize))
+            && ((*vec_elem!(r.as_pointer(), rows, 0_usize).upgrade().deref()).len() == 3_usize))
             && ((*q.borrow()).rows.is_empty())
     );
     let bufs: Value<Vec<Buffer>> = Rc::new(RefCell::new(Vec::new()));

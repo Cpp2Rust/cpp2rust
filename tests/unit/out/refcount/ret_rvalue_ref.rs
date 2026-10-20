@@ -17,7 +17,7 @@ fn main_0() -> i32 {
     let __tmp_0: Value<i32> = Rc::new(RefCell::new(5));
     let i2: Ptr<i32> = __tmp_0.as_pointer();
     assert!(((i2.read()) == 5));
-    let mut i3: i32 = ({ foo_0((i2).clone()) });
+    let mut i3: i32 = ({ foo_0((i2).reinterpret_cast::<i32>()) });
     assert!((i3 == 5));
     assert!(
         (({

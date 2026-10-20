@@ -93,7 +93,7 @@ unsafe fn main_0() -> i32 {
     } else {
         (&mut (*((v[(0_usize)]).first_mut().unwrap()))[(1_usize)][0_usize as usize]
             as *mut libc::c_char)
-    }) = ('B' as libc::c_char);
+    }) = (('B' as libc::c_char) as libc::c_char);
     assert!(
         ((*((v[(0_usize)]).first_mut().unwrap()))[(0_usize)] == {
             let s = c"a".as_ptr();

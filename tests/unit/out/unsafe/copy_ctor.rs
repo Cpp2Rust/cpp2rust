@@ -95,7 +95,7 @@ pub struct Box_int_ {
 }
 impl Box_int_ {
     pub unsafe fn new(mut v: i32) -> Self {
-        let mut this = Self { val: v };
+        let mut this = Self { val: (v as i32) };
         this
     }
     pub unsafe fn copy_from(o: *const Box_int_) -> Self {

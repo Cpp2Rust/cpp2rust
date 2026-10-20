@@ -69,8 +69,8 @@ unsafe fn main_0() -> i32 {
     }
     assert!(((s2.len() - 1) == (10_usize)));
     assert!(((s2.len() - 1) == (s2.len() - 1)));
-    s2[(0_usize)] = ('b' as libc::c_char);
-    s2[(1_usize)] = ('c' as libc::c_char);
+    s2[(0_usize)] = (('b' as libc::c_char) as libc::c_char);
+    s2[(1_usize)] = (('c' as libc::c_char) as libc::c_char);
     assert!(((s2[(0_usize)] as i32) == (('b' as libc::c_char) as i32)));
     assert!(((s2[(1_usize)] as i32) == (('c' as libc::c_char) as i32)));
     let mut i: u32 = 2_u32;
@@ -196,8 +196,8 @@ unsafe fn main_0() -> i32 {
     assert!(((string[(2_usize)] as i32) == (('r' as libc::c_char) as i32)));
     assert!(((string[(3_usize)] as i32) == (0)));
     assert!(((string[(4_usize)] as i32) == (0)));
-    string[(3_usize)] = ('a' as libc::c_char);
-    string[(4_usize)] = ('b' as libc::c_char);
+    string[(3_usize)] = (('a' as libc::c_char) as libc::c_char);
+    string[(4_usize)] = (('b' as libc::c_char) as libc::c_char);
     assert!(((string[(3_usize)] as i32) == (('a' as libc::c_char) as i32)));
     assert!(((string[(4_usize)] as i32) == (('b' as libc::c_char) as i32)));
     string[(3_usize)] = (0 as libc::c_char);
@@ -272,7 +272,7 @@ unsafe fn main_0() -> i32 {
     assert!(((substr_2[(5_usize)] as i32) == (('f' as libc::c_char) as i32)));
     assert!(((substr_2[(6_usize)] as i32) == (('o' as libc::c_char) as i32)));
     assert!(((substr_2[(7_usize)] as i32) == (('o' as libc::c_char) as i32)));
-    let mut pos: u64 = (match result.iter().rposition(|&c| {
+    let mut pos: usize = match result.iter().rposition(|&c| {
         ::std::ffi::CStr::from_ptr(c"b".as_ptr())
             .to_str()
             .unwrap()
@@ -280,9 +280,9 @@ unsafe fn main_0() -> i32 {
     }) {
         Some(idx) => idx,
         None => usize::MAX,
-    } as u64);
-    assert!(((pos) == (0_u64)));
-    pos = (match result.iter().rposition(|&c| {
+    };
+    assert!(((pos) == (0_usize)));
+    pos = match result.iter().rposition(|&c| {
         ::std::ffi::CStr::from_ptr(c"f".as_ptr())
             .to_str()
             .unwrap()
@@ -290,9 +290,9 @@ unsafe fn main_0() -> i32 {
     }) {
         Some(idx) => idx,
         None => usize::MAX,
-    } as u64);
-    assert!(((pos) == (5_u64)));
-    pos = (match result.iter().rposition(|&c| {
+    };
+    assert!(((pos) == (5_usize)));
+    pos = match result.iter().rposition(|&c| {
         ::std::ffi::CStr::from_ptr(c"o".as_ptr())
             .to_str()
             .unwrap()
@@ -300,9 +300,9 @@ unsafe fn main_0() -> i32 {
     }) {
         Some(idx) => idx,
         None => usize::MAX,
-    } as u64);
-    assert!(((pos) == (7_u64)));
-    pos = (match result.iter().rposition(|&c| {
+    };
+    assert!(((pos) == (7_usize)));
+    pos = match result.iter().rposition(|&c| {
         ::std::ffi::CStr::from_ptr(c"x".as_ptr())
             .to_str()
             .unwrap()
@@ -310,8 +310,8 @@ unsafe fn main_0() -> i32 {
     }) {
         Some(idx) => idx,
         None => usize::MAX,
-    } as u64);
-    assert!(((pos) == (-1_i64 as u64)));
+    };
+    assert!(((pos) == ((-1_i64 as u64) as usize)));
     let mut string_to_cast: Vec<libc::c_char> = {
         let s = c"cast".as_ptr();
         std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1).to_vec()
@@ -322,12 +322,12 @@ unsafe fn main_0() -> i32 {
     assert!((((*output_data.offset((1) as isize)) as i32) == (('a' as libc::c_char) as i32)));
     assert!((((*output_data.offset((2) as isize)) as i32) == (('s' as libc::c_char) as i32)));
     assert!((((*output_data.offset((3) as isize)) as i32) == (('t' as libc::c_char) as i32)));
-    let mut t0: u64 = ((s1.len() - 1) as u64);
-    let mut t1: u64 = (t0).wrapping_add(((*p1) as u64));
-    let mut t2: u64 = ((t1 as usize).wrapping_add((s2.len() - 1)) as u64);
-    let mut t3: u64 = ((t2 as usize).wrapping_add((s3.len() - 1)) as u64);
-    let mut t4: u64 = ((t3 as usize).wrapping_add((s4.len() - 1)) as u64);
-    assert!((((t4 as usize).wrapping_add((s5.len() - 1))) == (139_usize)));
+    let mut t0: usize = (s1.len() - 1);
+    let mut t1: usize = (t0).wrapping_add(((*p1) as usize));
+    let mut t2: usize = (t1).wrapping_add((s2.len() - 1));
+    let mut t3: usize = (t2).wrapping_add((s3.len() - 1));
+    let mut t4: usize = (t3).wrapping_add((s4.len() - 1));
+    assert!((((t4).wrapping_add((s5.len() - 1))) == (139_usize)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}
