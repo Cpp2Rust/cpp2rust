@@ -180,6 +180,7 @@ impl<K, T> Map<K, T> {
 }
 
 type Entry<K, V> = (Value<K>, Value<V>);
+type EntryNode<K, V> = Value<MapNode<Entry<K, V>>>;
 
 impl<K: Ord, V> Map<K, Entry<K, V>> {
     fn link_after(
@@ -201,10 +202,7 @@ impl<K: Ord, V> Map<K, Entry<K, V>> {
     }
 
     // The node with the given key, or else the node after which it goes.
-    fn search(
-        &self,
-        key: &K,
-    ) -> Result<Value<MapNode<Entry<K, V>>>, Value<MapNode<Entry<K, V>>>> {
+    fn search(&self, key: &K) -> Result<EntryNode<K, V>, EntryNode<K, V>> {
         let key: &dyn MapKey<K> = key;
         match self
             .nodes
@@ -469,6 +467,8 @@ impl<K, T> UnsafeMap<K, T> {
     }
 }
 
+type UnsafeEntryNode<K, V> = *mut UnsafeMapNode<(K, V)>;
+
 impl<K: Ord, V> UnsafeMap<K, (K, V)> {
     fn link_after(
         &mut self,
@@ -492,7 +492,7 @@ impl<K: Ord, V> UnsafeMap<K, (K, V)> {
     }
 
     // The node with the given key, or else the node after which it goes.
-    fn search(&self, key: &K) -> Result<*mut UnsafeMapNode<(K, V)>, *mut UnsafeMapNode<(K, V)>> {
+    fn search(&self, key: &K) -> Result<UnsafeEntryNode<K, V>, UnsafeEntryNode<K, V>> {
         let key = UnsafeMapKey(key);
         match self.nodes.range(..=&key).next_back() {
             Some((k, node)) => {
