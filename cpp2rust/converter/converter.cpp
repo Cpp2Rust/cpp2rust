@@ -760,13 +760,13 @@ bool Converter::IsPassThroughRule(clang::Expr *expr) const {
              rule->body[0]);
 }
 
-bool Converter::RecordDerivesCopy(const clang::RecordDecl *decl) {
+bool Converter::RecordDerivesCopy(clang::QualType type) {
+  auto decl = type->getAsRecordDecl();
   if (auto cxx = llvm::dyn_cast<clang::CXXRecordDecl>(decl);
       cxx && cxx->isLambda()) {
     return false;
   }
-  if (auto rule =
-          RuleRegistry::Search(ctx_, ctx_.getCanonicalTagType(decl)).first) {
+  if (auto rule = RuleRegistry::Search(ctx_, type).first) {
     auto &derives = rule->type_info.derives;
     return std::find(derives.begin(), derives.end(), "Copy") != derives.end();
   }
@@ -794,8 +794,8 @@ bool Converter::RecordHasCopyableFields(const clang::RecordDecl *decl) {
     }
 
     // Look recursively into fields that are RecordDecl
-    if (auto field_record = f->getType()->getAsRecordDecl()) {
-      if (!RecordDerivesCopy(field_record)) {
+    if (f->getType()->getAsRecordDecl()) {
+      if (!RecordDerivesCopy(f->getType())) {
         return false;
       }
     }
@@ -4213,8 +4213,8 @@ std::string Converter::GetArrayDefaultAsString(clang::QualType qual_type) {
     auto size_as_string = GetNumAsString(array_type->getSize());
     auto element_type = array_type->getElementType();
     auto element_type_as_string = GetDefaultAsString(element_type);
-    if (auto *rec = element_type->getAsRecordDecl()) {
-      if (!RecordDerivesCopy(rec)) {
+    if (element_type->getAsRecordDecl()) {
+      if (!RecordDerivesCopy(element_type)) {
         return std::format("std::array::from_fn::<_, {}, _>(|_| {})",
                            size_as_string.c_str(), element_type_as_string);
       }

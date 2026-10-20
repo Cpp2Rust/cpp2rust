@@ -365,8 +365,8 @@ public:
     if (ty->isBuiltinType() || ty->isEnumeralType()) {
       return true;
     }
-    if (auto *record = ty->getAsRecordDecl()) {
-      return RecordDerivesCopy(record);
+    if (ty->getAsRecordDecl()) {
+      return RecordDerivesCopy(ty);
     }
     return false;
   }
@@ -791,7 +791,7 @@ protected:
 
   virtual bool TypeDerivesDefault(clang::QualType qual_type);
 
-  bool RecordDerivesCopy(const clang::RecordDecl *decl);
+  bool RecordDerivesCopy(clang::QualType type);
 
   bool IsPassThroughRule(clang::Expr *expr) const;
 
