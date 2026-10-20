@@ -140,7 +140,8 @@ fn main_0() -> i32 {
     );
     {
         let start_idx = <RandomAccessIterator<(Value<i32>, Value<i32>)>>::from(
-            (v6.as_pointer() as Ptr<(Value<i32>, Value<i32>)>)
+            (v6.as_pointer() as Ptr<Vec<(Value<i32>, Value<i32>)>>)
+                .decay()
                 .begin()
                 .iter_add(1_isize),
         )

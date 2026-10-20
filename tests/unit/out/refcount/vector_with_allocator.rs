@@ -47,10 +47,10 @@ pub fn fn_1(v: Ptr<Vec<i32>>, v3: Vec<i32>) {
     .write(7);
     index!(v4, 1_usize).write(13);
     assert!((x == 6));
-    assert!((((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>).read()) == 4));
+    assert!(((((v).clone() as Ptr<Vec<i32>>).decay().read()) == 4));
     assert!(((index!(v, 1_usize).read()) == 5));
     assert!(((index!(v, 2_usize).read()) == 6));
-    assert!((((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>).to_last().read()) == 20));
+    assert!(((((v).clone() as Ptr<Vec<i32>>).decay().to_last().read()) == 20));
     assert!(({ (*v3.borrow())[0_usize] } == 7));
     assert!(({ (*v3.borrow())[1_usize] } == 13));
     {
@@ -101,7 +101,8 @@ fn main_0() -> i32 {
     assert!(((*v2.borrow()).len() == 3_usize));
     {
         let __off =
-            <RandomAccessIterator<i32>>::from((v2.as_pointer() as Ptr<i32>).begin()).index();
+            <RandomAccessIterator<i32>>::from((v2.as_pointer() as Ptr<Vec<i32>>).decay().begin())
+                .index();
         (v2.as_pointer() as Ptr<Vec<i32>>).with_mut(|__v: &mut Vec<i32>| __v.remove(__off));
         RandomAccessIterator::Vec((v2.as_pointer() as Ptr<Vec<i32>>).decay() + __off)
     };
@@ -110,9 +111,10 @@ fn main_0() -> i32 {
     assert!(({ (*v2.borrow())[1_usize] } == 3));
     {
         let __off =
-            <RandomAccessIterator<i32>>::from((v2.as_pointer() as Ptr<i32>).begin()).index();
+            <RandomAccessIterator<i32>>::from((v2.as_pointer() as Ptr<Vec<i32>>).decay().begin())
+                .index();
         (*v2.borrow_mut()).insert(__off, 100);
-        <RandomAccessIterator<i32>>::from((v2.as_pointer() as Ptr<i32>).begin())
+        <RandomAccessIterator<i32>>::from((v2.as_pointer() as Ptr<Vec<i32>>).decay().begin())
     };
     ({ copy_0((*v2.borrow()).clone()) });
     assert!(((*v2.borrow()).len() == 3_usize));
@@ -134,9 +136,9 @@ fn main_0() -> i32 {
         assert!(({ (*v6.borrow())[(i as usize)] } == 2_f64));
         i.prefix_inc();
     }
-    let mut p1: Ptr<f64> = (v6.as_pointer() as Ptr<f64>);
+    let mut p1: Ptr<f64> = (v6.as_pointer() as Ptr<Vec<f64>>).decay();
     assert!(((p1.read()) == 2_f64));
-    let mut p2: Ptr<i32> = (v3.as_pointer() as Ptr<i32>);
+    let mut p2: Ptr<i32> = (v3.as_pointer() as Ptr<Vec<i32>>).decay();
     assert!(((p2.read()) == 1));
     assert!(({ (*v3.borrow())[0_usize] } == 1));
     assert!(({ (*v3.borrow())[1_usize] } == 1));
@@ -174,46 +176,53 @@ fn main_0() -> i32 {
     };
     assert!(((*v3.borrow()).capacity() == 201_usize));
     assert!(((*v3.borrow()).len() == 100_usize));
-    assert!((((v2.as_pointer() as Ptr<i32>).to_last().read()) == 3));
-    assert!((((v3.as_pointer() as Ptr<i32>).to_last().read()) == 1));
-    assert!((((v6.as_pointer() as Ptr<f64>).to_last().read()) == 2_f64));
-    let ref0: Ptr<f64> = (v6.as_pointer() as Ptr<f64>).to_last();
+    assert!((((v2.as_pointer() as Ptr<Vec<i32>>).decay().to_last().read()) == 3));
+    assert!((((v3.as_pointer() as Ptr<Vec<i32>>).decay().to_last().read()) == 1));
+    assert!((((v6.as_pointer() as Ptr<Vec<f64>>).decay().to_last().read()) == 2_f64));
+    let ref0: Ptr<f64> = (v6.as_pointer() as Ptr<Vec<f64>>).decay().to_last();
     ref0.write(5_f64);
-    assert!((((v6.as_pointer() as Ptr<f64>).to_last().read()) == 5_f64));
-    let mut x0: f64 = ((v6.as_pointer() as Ptr<f64>).to_last().read());
+    assert!((((v6.as_pointer() as Ptr<Vec<f64>>).decay().to_last().read()) == 5_f64));
+    let mut x0: f64 = ((v6.as_pointer() as Ptr<Vec<f64>>).decay().to_last().read());
     assert!((x0 == 5_f64));
     x0 = 6_f64;
-    assert!((((v6.as_pointer() as Ptr<f64>).to_last().read()) == 5_f64));
+    assert!((((v6.as_pointer() as Ptr<Vec<f64>>).decay().to_last().read()) == 5_f64));
     let mut idx: i32 = 0;
     assert!(
-        (((v6.as_pointer() as Ptr<f64>)
+        (((v6.as_pointer() as Ptr<Vec<f64>>)
+            .decay()
             .offset((idx as usize) as isize)
             .read())
             == 2_f64)
     );
     assert!(
-        (((v6.as_pointer() as Ptr<f64>)
+        (((v6.as_pointer() as Ptr<Vec<f64>>)
+            .decay()
             .offset((s2).wrapping_sub(1_usize) as isize)
             .read())
             == 5_f64)
     );
-    let ref1: Ptr<f64> = (v6.as_pointer() as Ptr<f64>).offset((s2).wrapping_sub(1_usize) as isize);
+    let ref1: Ptr<f64> = (v6.as_pointer() as Ptr<Vec<f64>>)
+        .decay()
+        .offset((s2).wrapping_sub(1_usize) as isize);
     {
         ref1.with_mut(|__v| *__v = *__v + 1.5_f64)
     };
     assert!(
-        (((v6.as_pointer() as Ptr<f64>)
+        (((v6.as_pointer() as Ptr<Vec<f64>>)
+            .decay()
             .offset((s2).wrapping_sub(1_usize) as isize)
             .read())
             == 6.5_f64)
     );
-    let mut x1: f64 = ((v6.as_pointer() as Ptr<f64>)
+    let mut x1: f64 = ((v6.as_pointer() as Ptr<Vec<f64>>)
+        .decay()
         .offset((s2).wrapping_sub(1_usize) as isize)
         .read());
     assert!((x1 == 6.5_f64));
     x1 -= 1.5_f64;
     assert!(
-        (((v6.as_pointer() as Ptr<f64>)
+        (((v6.as_pointer() as Ptr<Vec<f64>>)
+            .decay()
             .offset((s2).wrapping_sub(1_usize) as isize)
             .read())
             == 6.5_f64)
@@ -304,7 +313,8 @@ fn main_0() -> i32 {
     assert!(((v13[0_usize] as i32) == 10) && ((v13[4_usize] as i32) == 50));
     assert!(
         (((s1).wrapping_add(s2)).wrapping_add(
-            (((v2.as_pointer() as Ptr<i32>)
+            (((v2.as_pointer() as Ptr<Vec<i32>>)
+                .decay()
                 .offset(0_usize as isize)
                 .read()) as usize)
         ) == 103_usize)

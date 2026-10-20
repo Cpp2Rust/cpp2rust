@@ -41,10 +41,10 @@ pub fn fn_0(v: Ptr<Vec<i32>>, v3: Vec<i32>) {
     (v2.as_pointer() as Ptr<Vec<i32>>).write((*v.upgrade().deref()).clone());
     index!(v4, 1_usize).write(13);
     assert!((x == 6));
-    assert!((((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>).read()) == 4));
+    assert!(((((v).clone() as Ptr<Vec<i32>>).decay().read()) == 4));
     assert!(((index!(v, 1_usize).read()) == 5));
     assert!(((index!(v, 2_usize).read()) == 6));
-    assert!((((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>).to_last().read()) == 20));
+    assert!(((((v).clone() as Ptr<Vec<i32>>).decay().to_last().read()) == 20));
     assert!(({ (*v2.borrow())[0_usize] } == 4));
     assert!(({ (*v2.borrow())[1_usize] } == 5));
     assert!(({ (*v2.borrow())[2_usize] } == 6));

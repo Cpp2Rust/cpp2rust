@@ -59,7 +59,7 @@ fn main_0() -> i32 {
         __bytes.push(0);
         __bytes
     }));
-    println!("{}", (s.as_pointer() as Ptr<i8>));
+    println!("{}", (s.as_pointer() as Ptr<Vec<i8>>).decay());
     println!(
         "{}",
         (Rc::new(RefCell::new(
@@ -71,12 +71,10 @@ fn main_0() -> i32 {
                 })
             })
         ))
-        .as_pointer() as Ptr<i8>)
+        .as_pointer() as Ptr<Vec<i8>>)
+            .decay()
     );
-    println!(
-        "{}",
-        (Ptr::<Vec<i8>>::decay(&({ fn2_1(s.as_pointer(),) })) as Ptr<i8>)
-    );
+    println!("{}", (({ fn2_1(s.as_pointer(),) }) as Ptr<Vec<i8>>).decay());
     ({
         log_to_2(
             libcc2rs::c_stdout(),

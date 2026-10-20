@@ -99,7 +99,8 @@ pub fn nested_emplace_move_5(mut bw: Ptr<Writer>) {
 }
 pub fn self_ref_push_6(mut comps: Ptr<Vec<Chunk>>) {
     {
-        let a0_clone = (*(Ptr::<Vec<Chunk>>::decay(&(comps)) as Ptr<Chunk>)
+        let a0_clone = (*((comps).clone() as Ptr<Vec<Chunk>>)
+            .decay()
             .upgrade()
             .deref())
         .clone();
@@ -264,15 +265,23 @@ fn main_0() -> i32 {
     let queue: Value<Vec<Pair>> = Rc::new(RefCell::new(Vec::new()));
     ({ emplace_deque_8((queue.as_pointer())) });
     assert!(
-        ((queue.as_pointer() as Ptr<Pair>).with(|__s| __s.first) == 6)
-            && ((queue.as_pointer() as Ptr<Pair>).with(|__s| __s.second) == 14)
+        ((queue.as_pointer() as Ptr<Vec<Pair>>)
+            .decay()
+            .with(|__s| __s.first)
+            == 6)
+            && ((queue.as_pointer() as Ptr<Vec<Pair>>)
+                .decay()
+                .with(|__s| __s.second)
+                == 14)
     );
     assert!(
-        ((queue.as_pointer() as Ptr<Pair>)
+        ((queue.as_pointer() as Ptr<Vec<Pair>>)
+            .decay()
             .to_last()
             .with(|__s| __s.first)
             == -1_i32)
-            && ((queue.as_pointer() as Ptr<Pair>)
+            && ((queue.as_pointer() as Ptr<Vec<Pair>>)
+                .decay()
                 .to_last()
                 .with(|__s| __s.second)
                 == -1_i32)

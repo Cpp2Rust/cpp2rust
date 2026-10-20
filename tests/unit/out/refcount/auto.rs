@@ -25,8 +25,8 @@ fn main_0() -> i32 {
     };
     let mut sum: i32 = 0;
     'loop_: for elem in IterRange::new(
-        (v.as_pointer() as Ptr<i32>).begin(),
-        (v.as_pointer() as Ptr<i32>).end(),
+        (v.as_pointer() as Ptr<Vec<i32>>).decay().begin(),
+        (v.as_pointer() as Ptr<Vec<i32>>).decay().end(),
     ) {
         let mut elem: i32 = (elem.iter_deref().read());
         sum += elem;

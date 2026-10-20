@@ -26,8 +26,10 @@ fn main_0() -> i32 {
         ));
         {
             let mut __bytes: Vec<u8> = Vec::new();
-            let mut __it = RandomAccessIterator::Vec((str.as_pointer() as Ptr<i8>));
-            while __it != RandomAccessIterator::Vec((str.as_pointer() as Ptr<i8>).to_last()) {
+            let mut __it = RandomAccessIterator::Vec((str.as_pointer() as Ptr<Vec<i8>>).decay());
+            while __it
+                != RandomAccessIterator::Vec((str.as_pointer() as Ptr<Vec<i8>>).decay().to_last())
+            {
                 __bytes.push(__it.iter_deref().read() as u8);
                 __it.iter_inc();
             }

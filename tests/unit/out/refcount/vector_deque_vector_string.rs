@@ -57,9 +57,10 @@ fn main_0() -> i32 {
     {
         let __a1 = {
             let mut r = (*((Ptr::<Vec<Vec<i8>>>::decay(
-                &((v.as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
+                &(((v.as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
                     .offset(0_usize)
-                    .as_pointer() as Ptr<Vec<Vec<i8>>>),
+                    .as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
+                    .decay()),
             ) as Ptr<Vec<i8>>)
                 .offset(1_usize)
                 .as_pointer() as Ptr<Vec<i8>>)
@@ -73,14 +74,16 @@ fn main_0() -> i32 {
         };
         ((v.as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
             .offset(1_usize)
-            .as_pointer() as Ptr<Vec<Vec<i8>>>)
+            .as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
+            .decay()
             .to_last()
             .with_mut(|__v: &mut Vec<Vec<i8>>| __v.push(__a1))
     };
     assert!(
         ((*((v.as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
             .offset(0_usize)
-            .as_pointer() as Ptr<Vec<Vec<i8>>>)
+            .as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
+            .decay()
             .upgrade()
             .deref())
         .len()
@@ -89,24 +92,27 @@ fn main_0() -> i32 {
     assert!(
         ((*((v.as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
             .offset(1_usize)
-            .as_pointer() as Ptr<Vec<Vec<i8>>>)
+            .as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
+            .decay()
             .upgrade()
             .deref())
         .len()
             == 3_usize)
             && (Ptr::<i8>::from_string_literal(b"def").with_c_str(|__s| {
                 (*((Ptr::<Vec<Vec<i8>>>::decay(
-                    &((v.as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
+                    &(((v.as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
                         .offset(1_usize)
-                        .as_pointer() as Ptr<Vec<Vec<i8>>>),
+                        .as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
+                        .decay()),
                 ) as Ptr<Vec<i8>>)
                     .offset(2_usize)
                     .as_pointer() as Ptr<Vec<i8>>)
                     .upgrade()
                     .deref())[..(*((Ptr::<Vec<Vec<i8>>>::decay(
-                    &((v.as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
+                    &(((v.as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
                         .offset(1_usize)
-                        .as_pointer() as Ptr<Vec<Vec<i8>>>),
+                        .as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
+                        .decay()),
                 ) as Ptr<Vec<i8>>)
                     .offset(2_usize)
                     .as_pointer() as Ptr<Vec<i8>>)
@@ -121,7 +127,8 @@ fn main_0() -> i32 {
         (*((Ptr::<Vec<Vec<i8>>>::decay(
             &(((v.as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
                 .offset(1_usize)
-                .as_pointer() as Ptr<Vec<Vec<i8>>>)
+                .as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
+                .decay()
                 .to_last()),
         ) as Ptr<Vec<i8>>)
             .offset(0_usize)
@@ -130,7 +137,8 @@ fn main_0() -> i32 {
             .deref())[..(*((Ptr::<Vec<Vec<i8>>>::decay(
             &(((v.as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
                 .offset(1_usize)
-                .as_pointer() as Ptr<Vec<Vec<i8>>>)
+                .as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
+                .decay()
                 .to_last()),
         ) as Ptr<Vec<i8>>)
             .offset(0_usize)
@@ -143,9 +151,10 @@ fn main_0() -> i32 {
     }));
     let copy: Value<Vec<Vec<Vec<Vec<i8>>>>> = Rc::new(RefCell::new((*v.borrow()).clone()));
     ((Ptr::<Vec<Vec<i8>>>::decay(
-        &((copy.as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
+        &(((copy.as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
             .offset(0_usize)
-            .as_pointer() as Ptr<Vec<Vec<i8>>>),
+            .as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
+            .decay()),
     ) as Ptr<Vec<i8>>)
         .offset(0_usize)
         .as_pointer() as Ptr<Vec<i8>>)
@@ -156,9 +165,10 @@ fn main_0() -> i32 {
         });
     if 0_usize as usize
         >= (*((Ptr::<Vec<Vec<i8>>>::decay(
-            &((v.as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
+            &(((v.as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
                 .offset(0_usize)
-                .as_pointer() as Ptr<Vec<Vec<i8>>>),
+                .as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
+                .decay()),
         ) as Ptr<Vec<i8>>)
             .offset(1_usize)
             .as_pointer() as Ptr<Vec<i8>>)
@@ -170,9 +180,10 @@ fn main_0() -> i32 {
         panic!("out of bounds access")
     } else {
         ((Ptr::<Vec<Vec<i8>>>::decay(
-            &((v.as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
+            &(((v.as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
                 .offset(0_usize)
-                .as_pointer() as Ptr<Vec<Vec<i8>>>),
+                .as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
+                .decay()),
         ) as Ptr<Vec<i8>>)
             .offset(1_usize)
             .as_pointer() as Ptr<Vec<i8>>)
@@ -182,18 +193,20 @@ fn main_0() -> i32 {
     .write(('B' as i8));
     assert!(
         (Ptr::<i8>::from_string_literal(b"a").with_c_str(|__s| (*((Ptr::<Vec<Vec<i8>>>::decay(
-            &((v.as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
+            &(((v.as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
                 .offset(0_usize)
-                .as_pointer() as Ptr<Vec<Vec<i8>>>)
+                .as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
+                .decay())
         ) as Ptr<Vec<i8>>)
             .offset(0_usize)
             .as_pointer()
             as Ptr<Vec<i8>>)
             .upgrade()
             .deref())[..(*((Ptr::<Vec<Vec<i8>>>::decay(
-            &((v.as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
+            &(((v.as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
                 .offset(0_usize)
-                .as_pointer() as Ptr<Vec<Vec<i8>>>)
+                .as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
+                .decay())
         ) as Ptr<Vec<i8>>)
             .offset(0_usize)
             .as_pointer() as Ptr<Vec<i8>>)
@@ -204,17 +217,19 @@ fn main_0() -> i32 {
             == *__s))
             && (Ptr::<i8>::from_string_literal(b"z").with_c_str(|__s| {
                 (*((Ptr::<Vec<Vec<i8>>>::decay(
-                    &((copy.as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
+                    &(((copy.as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
                         .offset(0_usize)
-                        .as_pointer() as Ptr<Vec<Vec<i8>>>),
+                        .as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
+                        .decay()),
                 ) as Ptr<Vec<i8>>)
                     .offset(0_usize)
                     .as_pointer() as Ptr<Vec<i8>>)
                     .upgrade()
                     .deref())[..(*((Ptr::<Vec<Vec<i8>>>::decay(
-                    &((copy.as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
+                    &(((copy.as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
                         .offset(0_usize)
-                        .as_pointer() as Ptr<Vec<Vec<i8>>>),
+                        .as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
+                        .decay()),
                 ) as Ptr<Vec<i8>>)
                     .offset(0_usize)
                     .as_pointer() as Ptr<Vec<i8>>)
@@ -227,18 +242,20 @@ fn main_0() -> i32 {
     );
     assert!(
         (Ptr::<i8>::from_string_literal(b"Bc").with_c_str(|__s| (*((Ptr::<Vec<Vec<i8>>>::decay(
-            &((v.as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
+            &(((v.as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
                 .offset(0_usize)
-                .as_pointer() as Ptr<Vec<Vec<i8>>>)
+                .as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
+                .decay())
         ) as Ptr<Vec<i8>>)
             .offset(1_usize)
             .as_pointer()
             as Ptr<Vec<i8>>)
             .upgrade()
             .deref())[..(*((Ptr::<Vec<Vec<i8>>>::decay(
-            &((v.as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
+            &(((v.as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
                 .offset(0_usize)
-                .as_pointer() as Ptr<Vec<Vec<i8>>>)
+                .as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
+                .decay())
         ) as Ptr<Vec<i8>>)
             .offset(1_usize)
             .as_pointer() as Ptr<Vec<i8>>)
@@ -249,17 +266,19 @@ fn main_0() -> i32 {
             == *__s))
             && (Ptr::<i8>::from_string_literal(b"bc").with_c_str(|__s| {
                 (*((Ptr::<Vec<Vec<i8>>>::decay(
-                    &((copy.as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
+                    &(((copy.as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
                         .offset(0_usize)
-                        .as_pointer() as Ptr<Vec<Vec<i8>>>),
+                        .as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
+                        .decay()),
                 ) as Ptr<Vec<i8>>)
                     .offset(1_usize)
                     .as_pointer() as Ptr<Vec<i8>>)
                     .upgrade()
                     .deref())[..(*((Ptr::<Vec<Vec<i8>>>::decay(
-                    &((copy.as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
+                    &(((copy.as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
                         .offset(0_usize)
-                        .as_pointer() as Ptr<Vec<Vec<i8>>>),
+                        .as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
+                        .decay()),
                 ) as Ptr<Vec<i8>>)
                     .offset(1_usize)
                     .as_pointer() as Ptr<Vec<i8>>)
@@ -274,17 +293,19 @@ fn main_0() -> i32 {
         .with_mut(|__v: &mut Vec<Vec<Vec<i8>>>| __v.remove(0));
     assert!(Ptr::<i8>::from_string_literal(b"bcx").with_c_str(|__s| {
         (*((Ptr::<Vec<Vec<i8>>>::decay(
-            &((v.as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
+            &(((v.as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
                 .offset(1_usize)
-                .as_pointer() as Ptr<Vec<Vec<i8>>>),
+                .as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
+                .decay()),
         ) as Ptr<Vec<i8>>)
             .offset(0_usize)
             .as_pointer() as Ptr<Vec<i8>>)
             .upgrade()
             .deref())[..(*((Ptr::<Vec<Vec<i8>>>::decay(
-            &((v.as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
+            &(((v.as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
                 .offset(1_usize)
-                .as_pointer() as Ptr<Vec<Vec<i8>>>),
+                .as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
+                .decay()),
         ) as Ptr<Vec<i8>>)
             .offset(0_usize)
             .as_pointer() as Ptr<Vec<i8>>)
@@ -297,7 +318,8 @@ fn main_0() -> i32 {
     assert!(
         ((*((copy.as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
             .offset(1_usize)
-            .as_pointer() as Ptr<Vec<Vec<i8>>>)
+            .as_pointer() as Ptr<Vec<Vec<Vec<i8>>>>)
+            .decay()
             .upgrade()
             .deref())
         .len()

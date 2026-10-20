@@ -16,7 +16,9 @@ fn main_0() -> i32 {
         __bytes.push(0);
         __bytes
     }));
-    let mut bytes: Ptr<u8> = (s.as_pointer() as Ptr<i8>).reinterpret_cast::<u8>();
+    let mut bytes: Ptr<u8> = (s.as_pointer() as Ptr<Vec<i8>>)
+        .decay()
+        .reinterpret_cast::<u8>();
     assert!((((elem!(bytes, 0).read()) as i32) == (('A' as i8) as i32)));
     assert!((((elem!(bytes, 1).read()) as i32) == (('B' as i8) as i32)));
     assert!((((elem!(bytes, 2).read()) as i32) == (('C' as i8) as i32)));

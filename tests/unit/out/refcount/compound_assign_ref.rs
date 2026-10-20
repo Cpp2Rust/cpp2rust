@@ -17,9 +17,11 @@ fn main_0() -> i32 {
         (*v.borrow_mut()).push(__a1)
     };
     {
-        (v.as_pointer() as Ptr<i32>).with_mut(|__v| *__v = *__v + 5)
+        (v.as_pointer() as Ptr<Vec<i32>>)
+            .decay()
+            .with_mut(|__v| *__v = *__v + 5)
     };
-    assert!((((v.as_pointer() as Ptr<i32>).read()) == 15));
+    assert!((((v.as_pointer() as Ptr<Vec<i32>>).decay().read()) == 15));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

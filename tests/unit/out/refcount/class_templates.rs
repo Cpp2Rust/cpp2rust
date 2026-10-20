@@ -231,7 +231,9 @@ impl MyContainer_char_Impl for Ptr<MyContainer_char_> {
         return (*(*self).upgrade().deref()).vec_.len();
     }
     fn back_4(&self) -> Ptr<i8> {
-        return (field_ref!((*self), vec_).as_pointer() as Ptr<i8>).to_last();
+        return (field_ref!((*self), vec_).as_pointer() as Ptr<Vec<i8>>)
+            .decay()
+            .to_last();
     }
     fn pop_back(&self) {
         field!((*self), vec_).with_mut(|__v: &mut Vec<i8>| __v.pop());
@@ -262,7 +264,9 @@ impl MyContainer_float_Impl for Ptr<MyContainer_float_> {
         return (*(*self).upgrade().deref()).vec_.len();
     }
     fn back_4(&self) -> Ptr<f32> {
-        return (field_ref!((*self), vec_).as_pointer() as Ptr<f32>).to_last();
+        return (field_ref!((*self), vec_).as_pointer() as Ptr<Vec<f32>>)
+            .decay()
+            .to_last();
     }
     fn pop_back(&self) {
         field!((*self), vec_).with_mut(|__v: &mut Vec<f32>| __v.pop());
@@ -293,7 +297,9 @@ impl MyContainer_int_Impl for Ptr<MyContainer_int_> {
         return (*(*self).upgrade().deref()).vec_.len();
     }
     fn back_4(&self) -> Ptr<i32> {
-        return (field_ref!((*self), vec_).as_pointer() as Ptr<i32>).to_last();
+        return (field_ref!((*self), vec_).as_pointer() as Ptr<Vec<i32>>)
+            .decay()
+            .to_last();
     }
     fn pop_back(&self) {
         field!((*self), vec_).with_mut(|__v: &mut Vec<i32>| __v.pop());

@@ -13,7 +13,8 @@ pub fn second_row_0() -> Ptr<i32> {
     ])));
     return ((rows.as_pointer() as Ptr<Vec<i32>>)
         .offset(1_usize)
-        .as_pointer() as Ptr<i32>);
+        .as_pointer() as Ptr<Vec<i32>>)
+        .decay();
 }
 pub fn main() {
     __cpp2rust_init_globals();
