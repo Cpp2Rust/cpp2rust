@@ -49,14 +49,8 @@ std::string InstantiateTemplate(Converter &converter, const clang::Expr *expr,
 }
 
 std::string Map(clang::ASTContext &ctx, clang::QualType qual_type) {
-  auto [rule, subs] = RuleRegistry::Search(ctx, qual_type);
-  if (!rule) {
-    return {};
-  }
-  if (rule->generic) {
-    return Map(ctx, subs.at(rule->generic - 1).getAsType());
-  }
-  return rule->type_info.type;
+  auto rule = RuleRegistry::Search(ctx, qual_type).first;
+  return rule ? rule->type_info.type : std::string();
 }
 
 std::string Map(Converter &converter, clang::QualType qual_type) {
@@ -71,13 +65,7 @@ std::string Map(Converter &converter, clang::QualType qual_type) {
 std::string MapInitializer(Converter &converter, clang::QualType qual_type) {
   auto [rule, subs] =
       RuleRegistry::Search(converter.GetASTContext(), qual_type);
-  if (!rule) {
-    return {};
-  }
-  if (rule->generic) {
-    return MapInitializer(converter, subs.at(rule->generic - 1).getAsType());
-  }
-  if (!rule->initializer.empty()) {
+  if (rule && !rule->initializer.empty()) {
     return Matcher::InstantiateTgt(converter, subs, rule->initializer);
   }
   return {};

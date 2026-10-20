@@ -406,6 +406,9 @@ Matcher::Match<TranslationRule::TypeRule> Search(clang::ASTContext &ctx,
   if (!match.rule_decl) {
     return {};
   }
+  if (auto generic = match.rule_decl->rule.generic) {
+    return Search(ctx, match.match.args.at(generic - 1).getAsType());
+  }
   return {&match.rule_decl->rule,
           getBindings(match.rule_decl->decl, match.match.args)};
 }
