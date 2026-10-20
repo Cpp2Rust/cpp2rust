@@ -13,10 +13,7 @@ fn f1<T1: CppRandomAccessIterator<T2>, T2: Ord + Clone + ByteRepr>(a0: T1, a1: T
         a0.iter_at(__x)
             .with(|__a| a0.iter_at(__y).with(|__b| __a.cmp(__b)))
     });
-    let __values: Vec<_> = __order.iter().map(|&__i| a0.iter_at(__i).read()).collect();
-    for (__i, __v) in (0..__n).zip(__values) {
-        a0.iter_at(__i).write(__v);
-    }
+    reorder(__order, |__i| a0.iter_at(__i));
 }
 
 fn f2<
@@ -64,10 +61,7 @@ where
             std::cmp::Ordering::Equal
         }
     });
-    let __values: Vec<_> = __order.iter().map(|&__i| a0.iter_at(__i).read()).collect();
-    for (__i, __v) in (0..__n).zip(__values) {
-        a0.iter_at(__i).write(__v);
-    }
+    reorder(__order, |__i| a0.iter_at(__i));
 }
 
 fn f8<T1: CppInputIterator<T2>, T2: PartialOrd + ByteRepr>(a0: T1, a1: T1) -> T1 {
@@ -89,9 +83,7 @@ fn f8<T1: CppInputIterator<T2>, T2: PartialOrd + ByteRepr>(a0: T1, a1: T1) -> T1
 }
 
 fn f9<T1: Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>) {
-    let tmp = a0.read();
-    a0.write(a1.read());
-    a1.write(tmp);
+    cpp_swap!(a0, a1)
 }
 
 fn f10<T1: CppInputIterator<T2>, T2: PartialEq + Clone + ByteRepr>(a0: T1, a1: T1) -> T1 {
@@ -137,8 +129,21 @@ fn f14<T1: Ord + Clone + ByteRepr, T2>(a0: Ptr<T1>, a1: Ptr<T1>, a2: T2)
 where
     T2: Callable2<T1, T1, bool>,
 {
-    let fun = |x: Ptr<T1>, y: Ptr<T1>| a2.call((x.read()).clone(), (y.read()).clone());
-    a0.sort_with_cmp(a1.get_offset(), fun)
+    let __cmp = a2;
+    let __n = a1.iter_distance(&a0);
+    let mut __order: Vec<isize> = (0..__n).collect();
+    __order.sort_by(|&__x, &__y| {
+        let __a = a0.iter_at(__x);
+        let __b = a0.iter_at(__y);
+        if __cmp.call(__a.read(), __b.read()) {
+            std::cmp::Ordering::Less
+        } else if __cmp.call(__b.read(), __a.read()) {
+            std::cmp::Ordering::Greater
+        } else {
+            std::cmp::Ordering::Equal
+        }
+    });
+    reorder(__order, |__i| a0.iter_at(__i));
 }
 
 fn f16<T1: PartialOrd + Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>) -> Ptr<T1> {
@@ -154,10 +159,6 @@ fn f18<T1: CppRandomAccessIterator<T2>, T2: Clone + ByteRepr>(a0: T1, a1: T1) {
     let __random = std::hash::RandomState::new();
     for __i in (1..__n).rev() {
         let __j = (std::hash::BuildHasher::hash_one(&__random, __i) % (__i + 1) as u64) as isize;
-        let __x = a0.iter_at(__i);
-        let __y = a0.iter_at(__j);
-        let __tmp = __x.read();
-        __x.write(__y.read());
-        __y.write(__tmp);
+        cpp_swap!(a0.iter_at(__i), a0.iter_at(__j));
     }
 }

@@ -40,7 +40,7 @@ pub unsafe fn Swap_0(a: *mut MinHeapNode, b: *mut MinHeapNode) {
     };
 }
 #[repr(C)]
-#[derive(FnPtrArg, MoveCtorUnsafe, Default)]
+#[derive(FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
 pub struct MinHeap {
     pub size: i32,
     pub capacity: i32,

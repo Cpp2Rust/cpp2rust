@@ -22,13 +22,7 @@ pub fn f1_0(first: RandomAccessIterator<i32>, last: RandomAccessIterator<i32>) {
                     .with(|__b| __a.cmp(__b))
             })
         });
-        let __values: Vec<_> = __order
-            .iter()
-            .map(|&__i| (*first.borrow()).clone().iter_at(__i).read())
-            .collect();
-        for (__i, __v) in (0..__n).zip(__values) {
-            (*first.borrow()).clone().iter_at(__i).write(__v);
-        }
+        reorder(__order, |__i| (*first.borrow()).clone().iter_at(__i));
     };
     return;
 }
@@ -41,13 +35,7 @@ pub fn f1_1(mut first: Ptr<i32>, mut last: Ptr<i32>) {
                 .iter_at(__x)
                 .with(|__a| first.iter_at(__y).with(|__b| __a.cmp(__b)))
         });
-        let __values: Vec<_> = __order
-            .iter()
-            .map(|&__i| first.iter_at(__i).read())
-            .collect();
-        for (__i, __v) in (0..__n).zip(__values) {
-            first.iter_at(__i).write(__v);
-        }
+        reorder(__order, |__i| first.iter_at(__i));
     };
     return;
 }

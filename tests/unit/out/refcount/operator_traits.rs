@@ -180,16 +180,9 @@ fn main_0() -> i32 {
                         .with(|__b| __a.cmp(__b))
                 })
         });
-        let __values: Vec<_> = __order
-            .iter()
-            .map(|&__i| (lts.as_pointer() as Ptr<Lt>).begin().iter_at(__i).read())
-            .collect();
-        for (__i, __v) in (0..__n).zip(__values) {
-            (lts.as_pointer() as Ptr<Lt>)
-                .begin()
-                .iter_at(__i)
-                .write(__v);
-        }
+        reorder(__order, |__i| {
+            (lts.as_pointer() as Ptr<Lt>).begin().iter_at(__i)
+        });
     };
     assert!(
         (({ (*lts.borrow())[0_usize].v } == 1) && ({ (*lts.borrow())[1_usize].v } == 2))
@@ -248,16 +241,9 @@ fn main_0() -> i32 {
                         .with(|__b| __a.cmp(__b))
                 })
         });
-        let __values: Vec<_> = __order
-            .iter()
-            .map(|&__i| (cmps.as_pointer() as Ptr<Cmp>).begin().iter_at(__i).read())
-            .collect();
-        for (__i, __v) in (0..__n).zip(__values) {
-            (cmps.as_pointer() as Ptr<Cmp>)
-                .begin()
-                .iter_at(__i)
-                .write(__v);
-        }
+        reorder(__order, |__i| {
+            (cmps.as_pointer() as Ptr<Cmp>).begin().iter_at(__i)
+        });
     };
     assert!(({ (*cmps.borrow())[0_usize].v } == 1) && ({ (*cmps.borrow())[2_usize].v } == 3));
     let mut three: Cmp = Cmp { v: 3 };
@@ -292,21 +278,9 @@ fn main_0() -> i32 {
                         .with(|__b| __a.cmp(__b))
                 })
         });
-        let __values: Vec<_> = __order
-            .iter()
-            .map(|&__i| {
-                (frees.as_pointer() as Ptr<Free>)
-                    .begin()
-                    .iter_at(__i)
-                    .read()
-            })
-            .collect();
-        for (__i, __v) in (0..__n).zip(__values) {
-            (frees.as_pointer() as Ptr<Free>)
-                .begin()
-                .iter_at(__i)
-                .write(__v);
-        }
+        reorder(__order, |__i| {
+            (frees.as_pointer() as Ptr<Free>).begin().iter_at(__i)
+        });
     };
     assert!(({ (*frees.borrow())[0_usize].v } == 1));
     let mut ftwo: Free = Free { v: 2 };

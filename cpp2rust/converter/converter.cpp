@@ -793,8 +793,9 @@ bool Converter::RecordHasCopyableFields(const clang::RecordDecl *decl) {
       }
     }
 
-    // Look recursively into fields that are RecordDecl
-    if (auto field_record = f->getType()->getAsRecordDecl()) {
+    // Look recursively into fields that are RecordDecl, or arrays of them
+    if (auto field_record =
+            ctx_.getBaseElementType(f->getType())->getAsRecordDecl()) {
       if (!RecordDerivesCopy(field_record)) {
         return false;
       }
@@ -3411,7 +3412,8 @@ bool Converter::VisitMemberExpr(clang::MemberExpr *expr) {
     if (is_reference_type || RuleRegistry::ReturnsPointer(ctx_, expr)) {
       computed_expr_type_ = ComputedExprType::Pointer;
     } else {
-      StrCat(token::kRef);
+      StrCat(token::kRef,
+             expr->getType().isConstQualified() ? "" : keyword_mut_);
       computed_expr_type_ = ComputedExprType::FreshPointer;
     }
     StrCat(str);
@@ -4363,6 +4365,14 @@ Converter::GetStructAttributes(const clang::RecordDecl *decl) {
 
   if (HasMoveFromConstructor(decl)) {
     struct_attrs.emplace_back("MoveCtorUnsafe");
+  }
+
+  if (HasCopyAssignOperator(decl)) {
+    struct_attrs.emplace_back("CopyAssignUnsafe");
+  }
+
+  if (HasMoveAssignOperator(decl)) {
+    struct_attrs.emplace_back("MoveAssignUnsafe");
   }
 
   if (auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
