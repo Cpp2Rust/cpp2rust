@@ -132,16 +132,19 @@ pub fn test_st_mtime_access_2() {
     assert!(
         ((((field_ptr!((st.as_pointer() as Ptr<Stat>), st_mtime).read()) == 9_i64) as i32) != 0)
     );
-    let mut mtime: Ptr<i64> = (field_ptr!((st.as_pointer() as Ptr<Stat>), st_mtime));
-    mtime.write(10_i64);
+    let mut mtime: Ptr<::libc::time_t> =
+        (field_ptr!((st.as_pointer() as Ptr<Stat>), st_mtime)).reinterpret_cast::<::libc::time_t>();
+    mtime.write((10 as ::libc::time_t));
     assert!(
         ((((field_ptr!((st.as_pointer() as Ptr<Stat>), st_mtime).read()) == 10_i64) as i32) != 0)
     );
-    let mut mtime_via_ptr: Ptr<i64> = (field_ptr!(((sp).clone() as Ptr<Stat>), st_mtime));
-    mtime_via_ptr.write(11_i64);
-    assert!(((((mtime.read()) == 11_i64) as i32) != 0));
-    let mut copy: i64 = (field_ptr!(((sp).clone() as Ptr<Stat>), st_mtime).read());
-    assert!((((copy == 11_i64) as i32) != 0));
+    let mut mtime_via_ptr: Ptr<::libc::time_t> =
+        (field_ptr!(((sp).clone() as Ptr<Stat>), st_mtime)).reinterpret_cast::<::libc::time_t>();
+    mtime_via_ptr.write((11 as ::libc::time_t));
+    assert!(((((mtime.read()) == (11 as ::libc::time_t)) as i32) != 0));
+    let mut copy: ::libc::time_t =
+        ((field_ptr!(((sp).clone() as Ptr<Stat>), st_mtime).read()) as ::libc::time_t);
+    assert!((((copy == (11 as ::libc::time_t)) as i32) != 0));
 }
 pub fn main() {
     __cpp2rust_init_globals();

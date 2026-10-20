@@ -13,7 +13,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let mut fd: i32 = 0;
     let ssloc: Value<libcc2rs::SockaddrStorage> = Rc::new(RefCell::new(Default::default()));
-    let slen: Value<u32> = Rc::new(RefCell::new((128usize as u32)));
+    let slen: Value<libc::socklen_t> = Rc::new(RefCell::new((128usize as libc::socklen_t)));
     assert!(
         (((match nix::sys::socket::getsockname::<nix::sys::socket::SockaddrStorage>(fd) {
             Ok(__ss) => {
@@ -32,7 +32,7 @@ fn main_0() -> i32 {
             != 0)
     );
     let sin: Value<libcc2rs::SockaddrIn> = Rc::new(RefCell::new(Default::default()));
-    let inlen: Value<u32> = Rc::new(RefCell::new((16usize as u32)));
+    let inlen: Value<libc::socklen_t> = Rc::new(RefCell::new((16usize as libc::socklen_t)));
     assert!(
         (((match nix::sys::socket::getsockname::<nix::sys::socket::SockaddrStorage>(fd) {
             Ok(__ss) => {

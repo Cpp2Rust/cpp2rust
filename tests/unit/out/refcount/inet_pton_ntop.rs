@@ -355,7 +355,8 @@ fn main_0() -> i32 {
                 };
                 match __text {
                     Some(__s)
-                        if (__s.len() as u32) < (::std::mem::size_of::<[i8; 64]>() as u32) =>
+                        if (__s.len() as u32)
+                            < (::std::mem::size_of::<[i8; 64]>() as libc::socklen_t) =>
                     {
                         let __n = __s.len();
                         (text.as_pointer() as Ptr<i8>).write_c_bytes(__s.as_bytes());
@@ -412,7 +413,8 @@ fn main_0() -> i32 {
                 };
                 match __text {
                     Some(__s)
-                        if (__s.len() as u32) < (::std::mem::size_of::<[i8; 64]>() as u32) =>
+                        if (__s.len() as u32)
+                            < (::std::mem::size_of::<[i8; 64]>() as libc::socklen_t) =>
                     {
                         let __n = __s.len();
                         (text.as_pointer() as Ptr<i8>).write_c_bytes(__s.as_bytes());
@@ -462,7 +464,7 @@ fn main_0() -> i32 {
                 None
             };
             match __text {
-                Some(__s) if (__s.len() as u32) < 4_u32 => {
+                Some(__s) if (__s.len() as u32) < (4 as libc::socklen_t) => {
                     let __n = __s.len();
                     (text.as_pointer() as Ptr<i8>).write_c_bytes(__s.as_bytes());
                     elem!((text.as_pointer() as Ptr::<i8>), __n).write(0);

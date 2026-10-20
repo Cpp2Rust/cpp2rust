@@ -13,9 +13,11 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut a: UnsafeMap<i32, (i32, i32)> = UnsafeMap::new();
+    let mut a: std_map_int__int__std_less_int___std_allocator_std_pair_const_int__int___ =
+        UnsafeMap::new();
     (*&mut (*a.get_or_insert_with(1.clone(), || (1, <i32>::default()))).1) = 10;
-    let mut b: UnsafeMap<i32, (i32, i32)> = a.clone();
+    let mut b: std_map_int__int__std_less_int___std_allocator_std_pair_const_int__int___ =
+        a.clone();
     (*&mut (*b.get_or_insert_with(1.clone(), || (1, <i32>::default()))).1) = 20;
     assert!(((*&mut (*a.get_or_insert_with(1.clone(), || (1, <i32>::default()))).1) == (10)));
     let mut x: UnsafeMap<i32, (i32, i32)> = UnsafeMap::new();

@@ -7,18 +7,18 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn test_time_0() {
-    let mut t1: i64 = libc::time(std::ptr::null_mut());
-    let mut t2: i64 = 0_i64;
-    let mut t3: i64 = libc::time((&mut t2 as *mut i64));
-    assert!(((((t1) > (1500000000_i64)) as i32) != 0));
+    let mut t1: ::libc::time_t = libc::time(std::ptr::null_mut());
+    let mut t2: ::libc::time_t = 0 as ::libc::time_t;
+    let mut t3: ::libc::time_t = libc::time((&mut t2 as *mut ::libc::time_t));
+    assert!(((((t1) > (1500000000 as ::libc::time_t)) as i32) != 0));
     assert!(((((t2) == (t3)) as i32) != 0));
     assert!(((((t3) >= (t1)) as i32) != 0));
 }
-pub unsafe fn print_tm_1(mut t: i64) {
+pub unsafe fn print_tm_1(mut t: ::libc::time_t) {
     let mut tm: ::libc::tm = unsafe { std::mem::zeroed() };
     assert!(
         (((!((libc::gmtime_r(
-            (&mut t as *mut i64).cast_const(),
+            (&mut t as *mut ::libc::time_t).cast_const(),
             (&mut tm as *mut ::libc::tm)
         ))
         .is_null())) as i32)
@@ -45,22 +45,22 @@ pub unsafe fn print_tm_1(mut t: i64) {
     });
 }
 pub unsafe fn test_gmtime_r_2() {
-    (unsafe { print_tm_1(0_i64) });
-    (unsafe { print_tm_1(1_i64) });
-    (unsafe { print_tm_1(86399_i64) });
-    (unsafe { print_tm_1(86400_i64) });
-    (unsafe { print_tm_1(951782400_i64) });
-    (unsafe { print_tm_1(951868799_i64) });
-    (unsafe { print_tm_1(1704067199_i64) });
-    (unsafe { print_tm_1(1704067200_i64) });
-    (unsafe { print_tm_1(1721126096_i64) });
-    (unsafe { print_tm_1(4102444800_i64) });
+    (unsafe { print_tm_1(0 as ::libc::time_t) });
+    (unsafe { print_tm_1((1 as ::libc::time_t)) });
+    (unsafe { print_tm_1((86399 as ::libc::time_t)) });
+    (unsafe { print_tm_1((86400 as ::libc::time_t)) });
+    (unsafe { print_tm_1((951782400 as ::libc::time_t)) });
+    (unsafe { print_tm_1((951868799 as ::libc::time_t)) });
+    (unsafe { print_tm_1((1704067199 as ::libc::time_t)) });
+    (unsafe { print_tm_1((1704067200 as ::libc::time_t)) });
+    (unsafe { print_tm_1((1721126096 as ::libc::time_t)) });
+    (unsafe { print_tm_1((4102444800_i64 as ::libc::time_t)) });
 }
-pub unsafe fn print_local_tm_3(mut t: i64) {
+pub unsafe fn print_local_tm_3(mut t: ::libc::time_t) {
     let mut tm: ::libc::tm = unsafe { std::mem::zeroed() };
     assert!(
         (((!((libc::localtime_r(
-            (&mut t as *mut i64).cast_const(),
+            (&mut t as *mut ::libc::time_t).cast_const(),
             (&mut tm as *mut ::libc::tm)
         ))
         .is_null())) as i32)
@@ -87,18 +87,18 @@ pub unsafe fn print_local_tm_3(mut t: i64) {
     });
 }
 pub unsafe fn test_localtime_r_4() {
-    (unsafe { print_local_tm_3(0_i64) });
-    (unsafe { print_local_tm_3(951782400_i64) });
-    (unsafe { print_local_tm_3(1704067199_i64) });
-    (unsafe { print_local_tm_3(1721126096_i64) });
-    (unsafe { print_local_tm_3(1735689600_i64) });
+    (unsafe { print_local_tm_3(0 as ::libc::time_t) });
+    (unsafe { print_local_tm_3((951782400 as ::libc::time_t)) });
+    (unsafe { print_local_tm_3((1704067199 as ::libc::time_t)) });
+    (unsafe { print_local_tm_3((1721126096 as ::libc::time_t)) });
+    (unsafe { print_local_tm_3((1735689600 as ::libc::time_t)) });
 }
 pub unsafe fn test_strftime_5() {
-    let mut t: i64 = 1721126096_i64;
+    let mut t: ::libc::time_t = (1721126096 as ::libc::time_t);
     let mut tm: ::libc::tm = unsafe { std::mem::zeroed() };
     assert!(
         (((!((libc::gmtime_r(
-            (&mut t as *mut i64).cast_const(),
+            (&mut t as *mut ::libc::time_t).cast_const(),
             (&mut tm as *mut ::libc::tm)
         ))
         .is_null())) as i32)

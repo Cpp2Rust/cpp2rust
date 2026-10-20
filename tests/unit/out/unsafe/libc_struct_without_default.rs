@@ -51,8 +51,8 @@ unsafe fn main_0() -> i32 {
     assert!(((p.events as i32) == (0)));
     assert!(((p.revents as i32) == (2)));
     let mut ia: ::libc::in_addr = unsafe { std::mem::zeroed() };
-    ia.s_addr = 1_u32;
-    assert!(((ia.s_addr) == (1_u32)));
+    ia.s_addr = (1 as ::libc::in_addr_t);
+    assert!(((ia.s_addr) == (1 as ::libc::in_addr_t)));
     let mut t: ::libc::tm = unsafe { std::mem::zeroed() };
     t.tm_year = 124;
     t.tm_mon = 5;

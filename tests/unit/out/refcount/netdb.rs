@@ -10,7 +10,7 @@ pub fn test_ipv4_literal_0() {
     let hints: Value<libcc2rs::Addrinfo> = Rc::new(RefCell::new(Default::default()));
     (*hints.borrow_mut()).ai_flags = 0;
     (*hints.borrow_mut()).ai_protocol = 0;
-    (*hints.borrow_mut()).ai_addrlen = 0_u32;
+    (*hints.borrow_mut()).ai_addrlen = 0 as libc::socklen_t;
     (*hints.borrow_mut()).ai_addr = Ptr::<libcc2rs::Sockaddr>::null();
     (*hints.borrow_mut()).ai_canonname = Ptr::<i8>::null();
     (*hints.borrow_mut()).ai_next = Ptr::<libcc2rs::Addrinfo>::null();
@@ -122,10 +122,13 @@ pub fn test_ipv4_literal_0() {
         ((8080 % 256) as u8),
     ])));
     assert!(
-        (((((field_ptr!(sin, sin_port)) as Ptr<u16>).to_any().memcmp(
-            &((port_be.as_pointer() as Ptr::<u8>) as Ptr<u8>).to_any(),
-            2_usize
-        ) == 0) as i32)
+        (((((field_ptr!(sin, sin_port)) as Ptr<::libc::in_port_t>)
+            .to_any()
+            .memcmp(
+                &((port_be.as_pointer() as Ptr::<u8>) as Ptr<u8>).to_any(),
+                2_usize
+            )
+            == 0) as i32)
             != 0)
     );
     let addr_be: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([127_u8, 0_u8, 0_u8, 1_u8])));
@@ -157,7 +160,7 @@ pub fn test_ipv6_literal_1() {
     let hints: Value<libcc2rs::Addrinfo> = Rc::new(RefCell::new(Default::default()));
     (*hints.borrow_mut()).ai_flags = 0;
     (*hints.borrow_mut()).ai_protocol = 0;
-    (*hints.borrow_mut()).ai_addrlen = 0_u32;
+    (*hints.borrow_mut()).ai_addrlen = 0 as libc::socklen_t;
     (*hints.borrow_mut()).ai_addr = Ptr::<libcc2rs::Sockaddr>::null();
     (*hints.borrow_mut()).ai_canonname = Ptr::<i8>::null();
     (*hints.borrow_mut()).ai_next = Ptr::<libcc2rs::Addrinfo>::null();
@@ -268,10 +271,13 @@ pub fn test_ipv6_literal_1() {
         ((443 % 256) as u8),
     ])));
     assert!(
-        (((((field_ptr!(sin6, sin6_port)) as Ptr<u16>).to_any().memcmp(
-            &((port_be.as_pointer() as Ptr::<u8>) as Ptr<u8>).to_any(),
-            2_usize
-        ) == 0) as i32)
+        (((((field_ptr!(sin6, sin6_port)) as Ptr<::libc::in_port_t>)
+            .to_any()
+            .memcmp(
+                &((port_be.as_pointer() as Ptr::<u8>) as Ptr<u8>).to_any(),
+                2_usize
+            )
+            == 0) as i32)
             != 0)
     );
     let addr_be: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([

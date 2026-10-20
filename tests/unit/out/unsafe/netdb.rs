@@ -10,7 +10,7 @@ pub unsafe fn test_ipv4_literal_0() {
     let mut hints: ::libc::addrinfo = unsafe { std::mem::zeroed() };
     hints.ai_flags = 0;
     hints.ai_protocol = 0;
-    hints.ai_addrlen = 0_u32;
+    hints.ai_addrlen = 0 as libc::socklen_t;
     hints.ai_addr = std::ptr::null_mut();
     hints.ai_canonname = std::ptr::null_mut();
     hints.ai_next = std::ptr::null_mut();
@@ -40,7 +40,8 @@ pub unsafe fn test_ipv4_literal_0() {
     assert!(
         (((({
             let sa = core::slice::from_raw_parts(
-                ((&mut (*sin).sin_port as *mut u16) as *const ::libc::c_void) as *const u8,
+                ((&mut (*sin).sin_port as *mut ::libc::in_port_t) as *const ::libc::c_void)
+                    as *const u8,
                 2_usize as usize,
             );
             let sb = core::slice::from_raw_parts(
@@ -87,7 +88,7 @@ pub unsafe fn test_ipv6_literal_1() {
     let mut hints: ::libc::addrinfo = unsafe { std::mem::zeroed() };
     hints.ai_flags = 0;
     hints.ai_protocol = 0;
-    hints.ai_addrlen = 0_u32;
+    hints.ai_addrlen = 0 as libc::socklen_t;
     hints.ai_addr = std::ptr::null_mut();
     hints.ai_canonname = std::ptr::null_mut();
     hints.ai_next = std::ptr::null_mut();
@@ -117,7 +118,8 @@ pub unsafe fn test_ipv6_literal_1() {
     assert!(
         (((({
             let sa = core::slice::from_raw_parts(
-                ((&mut (*sin6).sin6_port as *mut u16) as *const ::libc::c_void) as *const u8,
+                ((&mut (*sin6).sin6_port as *mut ::libc::in_port_t) as *const ::libc::c_void)
+                    as *const u8,
                 2_usize as usize,
             );
             let sb = core::slice::from_raw_parts(
