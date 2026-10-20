@@ -4,3 +4,7 @@
 fn t1<T1>() -> T1 {
     unimplemented!()
 }
+
+fn t2<T1>() -> T1 {
+    unimplemented!()
+}

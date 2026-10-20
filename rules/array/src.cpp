@@ -12,6 +12,9 @@ template <typename T1, std::size_t T2>
 using t3 = typename std::array<T1, T2>::value_type;
 
 template <typename T1, std::size_t T2>
+using t4 = typename std::array<T1, T2>::pointer;
+
+template <typename T1, std::size_t T2>
 const T1 *f1(const std::array<T1, T2> &o) {
   return o.data();
 }

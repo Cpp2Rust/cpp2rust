@@ -15,6 +15,10 @@ fn t3<T1>() -> T1 {
     unimplemented!()
 }
 
+fn t4<T1>() -> *mut T1 {
+    ::std::ptr::null_mut()
+}
+
 unsafe fn f1<T1>(a0: Vec<T1>) -> *const T1 {
     a0.as_ptr()
 }
