@@ -1402,27 +1402,10 @@ impl<T> AsPointer<T> for Option<Rc<RefCell<Box<[T]>>>> {
     }
 }
 
-impl<T> AsPointer<T> for Rc<RefCell<Vec<T>>> {
-    #[inline]
-    fn as_pointer(&self) -> Ptr<T> {
-        Ptr {
-            offset: 0,
-            kind: PtrKind::StackVec(Rc::downgrade(self)),
-        }
-    }
-}
-
 impl<T> AsPointer<Vec<T>> for Ptr<Vec<T>> {
     #[inline]
     fn as_pointer(&self) -> Ptr<Vec<T>> {
         self.clone()
-    }
-}
-
-impl<T: 'static> AsPointer<T> for Ptr<Vec<T>> {
-    #[inline]
-    fn as_pointer(&self) -> Ptr<T> {
-        self.decay()
     }
 }
 

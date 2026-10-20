@@ -442,27 +442,6 @@ where
     }
 }
 
-impl<S, T, G, M> AsPointer<T> for FieldRef<S, Vec<T>, G, M>
-where
-    S: Record,
-    T: ByteRepr,
-    G: Fn(&S) -> &Vec<T> + Copy + 'static,
-    M: Fn(&mut S) -> &mut Vec<T> + Copy + 'static,
-{
-    #[inline]
-    fn as_pointer(&self) -> Ptr<T> {
-        match &self.base.kind {
-            PtrKind::Field(_, _, FieldShape::Single) => self
-                .base
-                .field_ptr(self.get, self.get_mut, self.offset)
-                .decay(),
-            _ => self
-                .base
-                .elems_of(self.get, self.get_mut, (self.offset)(&S::OFFSETS), false),
-        }
-    }
-}
-
 // The sequence that `get` gives in the struct that `base` points to, which is
 // reached through `base`: a field, as a sequence of one element, or the
 // elements of an array or vector field. It is the parent of the pointers into
