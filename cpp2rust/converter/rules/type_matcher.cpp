@@ -46,10 +46,11 @@ completeArgs(clang::Sema &sema, const clang::TypeAliasTemplateDecl *tmpl,
                                               info.CanonicalConverted.end());
 }
 
-clang::QualType peelUsing(clang::QualType type) {
-  while (auto using_type =
-             llvm::dyn_cast<clang::UsingType>(type.getTypePtr())) {
-    type = using_type->desugar();
+clang::QualType peelSugar(clang::ASTContext &ctx, clang::QualType type) {
+  while (!llvm::isa<clang::TypedefType, clang::PredefinedSugarType>(
+             type.getTypePtr()) &&
+         type != type.getSingleStepDesugaredType(ctx)) {
+    type = type.getSingleStepDesugaredType(ctx);
   }
   return type;
 }
@@ -102,7 +103,7 @@ bool isSameSugar(const clang::Type *a, const clang::Type *b) {
 std::optional<TypeMatch> MatchType(clang::Sema &sema, clang::QualType use,
                                    const clang::NamedDecl *rule) {
   auto &ctx = sema.Context;
-  auto spelled = peelUsing(use).getUnqualifiedType();
+  auto spelled = peelSugar(ctx, use).getUnqualifiedType();
   auto tmpl = llvm::dyn_cast<clang::TypeAliasTemplateDecl>(rule);
   auto alias = tmpl ? tmpl->getTemplatedDecl()
                     : llvm::cast<clang::TypedefNameDecl>(rule);
@@ -151,23 +152,25 @@ std::optional<TypeMatch> MatchType(clang::Sema &sema, clang::QualType use,
   return std::nullopt;
 }
 
-clang::QualType SkipInternalTypedefs(clang::QualType use) {
+clang::QualType SkipInternalTypedefs(clang::ASTContext &ctx,
+                                     clang::QualType use) {
   auto cvr = use.getLocalCVRQualifiers();
-  auto type = peelUsing(use);
+  auto type = peelSugar(ctx, use);
   while (auto typedef_type =
              llvm::dyn_cast<clang::TypedefType>(type.getTypePtr())) {
     auto decl = typedef_type->getDecl();
     if (!isInternal(decl) && !IsUserDefinedDecl(decl)) {
       break;
     }
-    type = peelUsing(typedef_type->desugar());
+    type = peelSugar(ctx, typedef_type->desugar());
     cvr |= type.getLocalCVRQualifiers();
   }
   return type.withCVRQualifiers(cvr);
 }
 
-const clang::TypedefNameDecl *SpelledTypedef(clang::QualType use) {
-  auto sugar = getSugar(peelUsing(use));
+const clang::TypedefNameDecl *SpelledTypedef(clang::ASTContext &ctx,
+                                             clang::QualType use) {
+  auto sugar = getSugar(peelSugar(ctx, use));
   auto typedef_type = llvm::dyn_cast_or_null<clang::TypedefType>(sugar);
   return typedef_type ? typedef_type->getDecl() : nullptr;
 }

@@ -19,9 +19,11 @@ struct TypeMatch {
 std::optional<TypeMatch> MatchType(clang::Sema &sema, clang::QualType use,
                                    const clang::NamedDecl *rule);
 
-clang::QualType SkipInternalTypedefs(clang::QualType use);
+clang::QualType SkipInternalTypedefs(clang::ASTContext &ctx,
+                                     clang::QualType use);
 
-const clang::TypedefNameDecl *SpelledTypedef(clang::QualType use);
+const clang::TypedefNameDecl *SpelledTypedef(clang::ASTContext &ctx,
+                                             clang::QualType use);
 
 const clang::NamedDecl *MoreSpecializedType(clang::Sema &sema,
                                             const clang::NamedDecl *a,

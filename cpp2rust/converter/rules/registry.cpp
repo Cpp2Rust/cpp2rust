@@ -270,7 +270,7 @@ struct TypeRuleMatch {
 
 TypeRuleMatch findType(clang::QualType use) {
   TypeRuleMatch best;
-  use = AstMatcher::SkipInternalTypedefs(use);
+  use = AstMatcher::SkipInternalTypedefs(sema_->Context, use);
   if (auto tag = use->getAsTagDecl();
       tag &&
       (IsUserDefinedDecl(tag) || tag->hasAttr<clang::TransparentUnionAttr>())) {
@@ -304,8 +304,8 @@ TypeRuleMatch findType(clang::QualType use) {
     consider(key);
   }
   if (!best.rule_decl) {
-    auto spelled = AstMatcher::SpelledTypedef(use);
-    if (spelled && !IsUserDefinedDecl(spelled) && !use->isReferenceType()) {
+    auto spelled = AstMatcher::SpelledTypedef(sema_->Context, use);
+    if (spelled && !IsUserDefinedDecl(spelled)) {
       use.dump(llvm::errs(), sema_->Context);
       llvm::report_fatal_error("typedef has no type rule");
     }
