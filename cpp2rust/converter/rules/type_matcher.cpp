@@ -10,6 +10,7 @@
 #include <optional>
 #include <vector>
 
+#include "converter/converter_lib.h"
 #include "converter/rules/decls.h"
 
 namespace cpp2rust::AstMatcher {
@@ -155,7 +156,8 @@ clang::QualType SkipInternalTypedefs(clang::QualType use) {
   auto type = peelUsing(use);
   while (auto typedef_type =
              llvm::dyn_cast<clang::TypedefType>(type.getTypePtr())) {
-    if (!isInternal(typedef_type->getDecl())) {
+    auto decl = typedef_type->getDecl();
+    if (!isInternal(decl) && !IsUserDefinedDecl(decl)) {
       break;
     }
     type = peelUsing(typedef_type->desugar());
