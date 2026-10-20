@@ -148,23 +148,23 @@ fn main_0() -> i32 {
         (*vec_.borrow_mut()).push(__init)
     };
     {
-        let __n = (vec_.as_pointer() as Ptr<Tracked>)
+        let __n = vec_
+            .as_pointer()
+            .decay()
             .end()
-            .iter_distance(&(vec_.as_pointer() as Ptr<Tracked>).begin());
+            .iter_distance(&vec_.as_pointer().decay().begin());
         let mut __order: Vec<isize> = (0..__n).collect();
         __order.sort_by(|&__x, &__y| {
-            (vec_.as_pointer() as Ptr<Tracked>)
-                .begin()
-                .iter_at(__x)
-                .with(|__a| {
-                    (vec_.as_pointer() as Ptr<Tracked>)
-                        .begin()
-                        .iter_at(__y)
-                        .with(|__b| __a.cmp(__b))
-                })
+            vec_.as_pointer().decay().begin().iter_at(__x).with(|__a| {
+                vec_.as_pointer()
+                    .decay()
+                    .begin()
+                    .iter_at(__y)
+                    .with(|__b| __a.cmp(__b))
+            })
         });
         reorder(__order, |__i| {
-            (vec_.as_pointer() as Ptr<Tracked>).begin().iter_at(__i)
+            vec_.as_pointer().decay().begin().iter_at(__i)
         });
     };
     assert!(
@@ -174,13 +174,15 @@ fn main_0() -> i32 {
     );
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
     {
-        let __n = (vec_.as_pointer() as Ptr<Tracked>)
+        let __n = vec_
+            .as_pointer()
+            .decay()
             .end()
-            .iter_distance(&(vec_.as_pointer() as Ptr<Tracked>).begin());
+            .iter_distance(&vec_.as_pointer().decay().begin());
         let mut __order: Vec<isize> = (0..__n).collect();
         __order.sort_by(|&__x, &__y| {
-            let __a = (vec_.as_pointer() as Ptr<Tracked>).begin().iter_at(__x);
-            let __b = (vec_.as_pointer() as Ptr<Tracked>).begin().iter_at(__y);
+            let __a = vec_.as_pointer().decay().begin().iter_at(__x);
+            let __b = vec_.as_pointer().decay().begin().iter_at(__y);
             if greater_2.call(__a.clone(), __b.clone()) {
                 std::cmp::Ordering::Less
             } else if greater_2.call(__b, __a) {
@@ -190,19 +192,21 @@ fn main_0() -> i32 {
             }
         });
         reorder(__order, |__i| {
-            (vec_.as_pointer() as Ptr<Tracked>).begin().iter_at(__i)
+            vec_.as_pointer().decay().begin().iter_at(__i)
         });
     };
     assert!(({ (*vec_.borrow())[0_usize].v } == 8) && ({ (*vec_.borrow())[3_usize].v } == 1));
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
     {
-        let __n = (vec_.as_pointer() as Ptr<Tracked>)
+        let __n = vec_
+            .as_pointer()
+            .decay()
             .end()
-            .iter_distance(&(vec_.as_pointer() as Ptr<Tracked>).begin());
+            .iter_distance(&vec_.as_pointer().decay().begin());
         let mut __order: Vec<isize> = (0..__n).collect();
         __order.sort_by(|&__x, &__y| {
-            let __a = (vec_.as_pointer() as Ptr<Tracked>).begin().iter_at(__x);
-            let __b = (vec_.as_pointer() as Ptr<Tracked>).begin().iter_at(__y);
+            let __a = vec_.as_pointer().decay().begin().iter_at(__x);
+            let __b = vec_.as_pointer().decay().begin().iter_at(__y);
             if FnPtr::<fn(Ptr<Tracked>, Ptr<Tracked>) -> bool>::new(
                 |a: Ptr<Tracked>, b: Ptr<Tracked>| -> bool {
                     {
@@ -228,24 +232,28 @@ fn main_0() -> i32 {
             }
         });
         reorder(__order, |__i| {
-            (vec_.as_pointer() as Ptr<Tracked>).begin().iter_at(__i)
+            vec_.as_pointer().decay().begin().iter_at(__i)
         });
     };
     assert!(({ (*vec_.borrow())[0_usize].v } == 1) && ({ (*vec_.borrow())[3_usize].v } == 8));
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
     {
-        let __n = (vec_.as_pointer() as Ptr<Tracked>).end().iter_distance(
-            &(vec_.as_pointer() as Ptr<Tracked>)
-                .begin()
-                .iter_add(1_isize),
-        );
+        let __n = vec_
+            .as_pointer()
+            .decay()
+            .end()
+            .iter_distance(&vec_.as_pointer().decay().begin().iter_add(1_isize));
         let mut __order: Vec<isize> = (0..__n).collect();
         __order.sort_by(|&__x, &__y| {
-            let __a = (vec_.as_pointer() as Ptr<Tracked>)
+            let __a = vec_
+                .as_pointer()
+                .decay()
                 .begin()
                 .iter_add(1_isize)
                 .iter_at(__x);
-            let __b = (vec_.as_pointer() as Ptr<Tracked>)
+            let __b = vec_
+                .as_pointer()
+                .decay()
                 .begin()
                 .iter_add(1_isize)
                 .iter_at(__y);
@@ -258,7 +266,8 @@ fn main_0() -> i32 {
             }
         });
         reorder(__order, |__i| {
-            (vec_.as_pointer() as Ptr<Tracked>)
+            vec_.as_pointer()
+                .decay()
                 .begin()
                 .iter_add(1_isize)
                 .iter_at(__i)

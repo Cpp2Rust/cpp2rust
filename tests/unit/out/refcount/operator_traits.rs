@@ -165,24 +165,22 @@ fn main_0() -> i32 {
         Lt { v: 2 },
     ])));
     {
-        let __n = (lts.as_pointer() as Ptr<Lt>)
+        let __n = lts
+            .as_pointer()
+            .decay()
             .end()
-            .iter_distance(&(lts.as_pointer() as Ptr<Lt>).begin());
+            .iter_distance(&lts.as_pointer().decay().begin());
         let mut __order: Vec<isize> = (0..__n).collect();
         __order.sort_by(|&__x, &__y| {
-            (lts.as_pointer() as Ptr<Lt>)
-                .begin()
-                .iter_at(__x)
-                .with(|__a| {
-                    (lts.as_pointer() as Ptr<Lt>)
-                        .begin()
-                        .iter_at(__y)
-                        .with(|__b| __a.cmp(__b))
-                })
+            lts.as_pointer().decay().begin().iter_at(__x).with(|__a| {
+                lts.as_pointer()
+                    .decay()
+                    .begin()
+                    .iter_at(__y)
+                    .with(|__b| __a.cmp(__b))
+            })
         });
-        reorder(__order, |__i| {
-            (lts.as_pointer() as Ptr<Lt>).begin().iter_at(__i)
-        });
+        reorder(__order, |__i| lts.as_pointer().decay().begin().iter_at(__i));
     };
     assert!(
         (({ (*lts.borrow())[0_usize].v } == 1) && ({ (*lts.borrow())[1_usize].v } == 2))
@@ -197,8 +195,8 @@ fn main_0() -> i32 {
     let mut nine: Eq = Eq { v: 9 };
     assert!(
         ({
-            let mut __it = (eqs.as_pointer() as Ptr<Eq>).begin();
-            while __it != (eqs.as_pointer() as Ptr<Eq>).end()
+            let mut __it = eqs.as_pointer().decay().begin();
+            while __it != eqs.as_pointer().decay().end()
                 && __it.iter_deref().with(|__v| *__v != two)
             {
                 __it.iter_inc();
@@ -211,14 +209,14 @@ fn main_0() -> i32 {
     );
     assert!(
         {
-            let mut __it = (eqs.as_pointer() as Ptr<Eq>).begin();
-            while __it != (eqs.as_pointer() as Ptr<Eq>).end()
+            let mut __it = eqs.as_pointer().decay().begin();
+            while __it != eqs.as_pointer().decay().end()
                 && __it.iter_deref().with(|__v| *__v != nine)
             {
                 __it.iter_inc();
             }
             __it
-        } == (eqs.as_pointer() as Ptr<Eq>).end()
+        } == eqs.as_pointer().decay().end()
     );
     let cmps: Value<Vec<Cmp>> = Rc::new(RefCell::new(Vec::from([
         Cmp { v: 3 },
@@ -226,31 +224,31 @@ fn main_0() -> i32 {
         Cmp { v: 2 },
     ])));
     {
-        let __n = (cmps.as_pointer() as Ptr<Cmp>)
+        let __n = cmps
+            .as_pointer()
+            .decay()
             .end()
-            .iter_distance(&(cmps.as_pointer() as Ptr<Cmp>).begin());
+            .iter_distance(&cmps.as_pointer().decay().begin());
         let mut __order: Vec<isize> = (0..__n).collect();
         __order.sort_by(|&__x, &__y| {
-            (cmps.as_pointer() as Ptr<Cmp>)
-                .begin()
-                .iter_at(__x)
-                .with(|__a| {
-                    (cmps.as_pointer() as Ptr<Cmp>)
-                        .begin()
-                        .iter_at(__y)
-                        .with(|__b| __a.cmp(__b))
-                })
+            cmps.as_pointer().decay().begin().iter_at(__x).with(|__a| {
+                cmps.as_pointer()
+                    .decay()
+                    .begin()
+                    .iter_at(__y)
+                    .with(|__b| __a.cmp(__b))
+            })
         });
         reorder(__order, |__i| {
-            (cmps.as_pointer() as Ptr<Cmp>).begin().iter_at(__i)
+            cmps.as_pointer().decay().begin().iter_at(__i)
         });
     };
     assert!(({ (*cmps.borrow())[0_usize].v } == 1) && ({ (*cmps.borrow())[2_usize].v } == 3));
     let mut three: Cmp = Cmp { v: 3 };
     assert!(
         ({
-            let mut __it = (cmps.as_pointer() as Ptr<Cmp>).begin();
-            while __it != (cmps.as_pointer() as Ptr<Cmp>).end()
+            let mut __it = cmps.as_pointer().decay().begin();
+            while __it != cmps.as_pointer().decay().end()
                 && __it.iter_deref().with(|__v| *__v != three)
             {
                 __it.iter_inc();
@@ -263,31 +261,32 @@ fn main_0() -> i32 {
     );
     let frees: Value<Vec<Free>> = Rc::new(RefCell::new(Vec::from([Free { v: 2 }, Free { v: 1 }])));
     {
-        let __n = (frees.as_pointer() as Ptr<Free>)
+        let __n = frees
+            .as_pointer()
+            .decay()
             .end()
-            .iter_distance(&(frees.as_pointer() as Ptr<Free>).begin());
+            .iter_distance(&frees.as_pointer().decay().begin());
         let mut __order: Vec<isize> = (0..__n).collect();
         __order.sort_by(|&__x, &__y| {
-            (frees.as_pointer() as Ptr<Free>)
-                .begin()
-                .iter_at(__x)
-                .with(|__a| {
-                    (frees.as_pointer() as Ptr<Free>)
-                        .begin()
-                        .iter_at(__y)
-                        .with(|__b| __a.cmp(__b))
-                })
+            frees.as_pointer().decay().begin().iter_at(__x).with(|__a| {
+                frees
+                    .as_pointer()
+                    .decay()
+                    .begin()
+                    .iter_at(__y)
+                    .with(|__b| __a.cmp(__b))
+            })
         });
         reorder(__order, |__i| {
-            (frees.as_pointer() as Ptr<Free>).begin().iter_at(__i)
+            frees.as_pointer().decay().begin().iter_at(__i)
         });
     };
     assert!(({ (*frees.borrow())[0_usize].v } == 1));
     let mut ftwo: Free = Free { v: 2 };
     assert!(
         ({
-            let mut __it = (frees.as_pointer() as Ptr<Free>).begin();
-            while __it != (frees.as_pointer() as Ptr<Free>).end()
+            let mut __it = frees.as_pointer().decay().begin();
+            while __it != frees.as_pointer().decay().end()
                 && __it.iter_deref().with(|__v| *__v != ftwo)
             {
                 __it.iter_inc();
@@ -299,7 +298,7 @@ fn main_0() -> i32 {
             == 2)
     );
     let m: Value<Map<Lt, (Value<Lt>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
-    (m.as_pointer() as Ptr<Map<Lt, (Value<Lt>, Value<i32>)>>)
+    m.as_pointer()
         .with_mut(|__m: &mut Map<Lt, (Value<Lt>, Value<i32>)>| {
             __m.get_or_insert_with(Lt { v: 2 }.clone(), || {
                 (
@@ -312,7 +311,7 @@ fn main_0() -> i32 {
             .as_pointer()
         })
         .write(20);
-    (m.as_pointer() as Ptr<Map<Lt, (Value<Lt>, Value<i32>)>>)
+    m.as_pointer()
         .with_mut(|__m: &mut Map<Lt, (Value<Lt>, Value<i32>)>| {
             __m.get_or_insert_with(Lt { v: 1 }.clone(), || {
                 (
@@ -326,7 +325,8 @@ fn main_0() -> i32 {
         })
         .write(10);
     assert!(
-        ((*(*(m.as_pointer() as Ptr<Map<Lt, (Value<Lt>, Value<i32>)>>)
+        ((*(*m
+            .as_pointer()
             .with(|__m: &Map<Lt, (Value<Lt>, Value<i32>)>| __m.begin())
             .iter_deref()
             .upgrade()
@@ -336,7 +336,7 @@ fn main_0() -> i32 {
             == 10)
     );
     assert!(
-        (((m.as_pointer() as Ptr<Map<Lt, (Value<Lt>, Value<i32>)>>)
+        ((m.as_pointer()
             .with_mut(|__m: &mut Map<Lt, (Value<Lt>, Value<i32>)>| {
                 __m.get_or_insert_with(Lt { v: 2 }.clone(), || {
                     (
