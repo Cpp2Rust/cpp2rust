@@ -4,6 +4,7 @@
 #include "converter/models/boxed_vars.h"
 
 #include <clang/AST/RecursiveASTVisitor.h>
+#include <clang/Basic/SourceManager.h>
 
 #include <algorithm>
 #include <unordered_map>
@@ -109,6 +110,14 @@ public:
   }
 
   bool shouldVisitTemplateInstantiations() const { return true; }
+
+  bool TraverseDecl(clang::Decl *decl) {
+    if (decl && !llvm::isa<clang::TranslationUnitDecl>(decl) &&
+        ctx_.getSourceManager().isInSystemHeader(decl->getLocation())) {
+      return true;
+    }
+    return RecursiveASTVisitor::TraverseDecl(decl);
+  }
 
   // Only the semantic form of an initializer list is converted, in which the
   // values of variables are read through lvalue-to-rvalue conversions.
