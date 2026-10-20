@@ -392,6 +392,18 @@ std::string ConverterRefCount::ConvertObject(clang::Expr *expr,
   return str;
 }
 
+std::string ConverterRefCount::AsPointerMethod(clang::QualType type) const {
+  return isObject() && WantsElementPtr() &&
+                 type.getNonReferenceType()->isRecordType()
+             ? ".as_pointer().decay()"
+             : ".as_pointer()";
+}
+
+std::string ConverterRefCount::ConvertPointerReceiver(clang::Expr *arg,
+                                                      std::string_view) {
+  return ConvertFreshObject(arg);
+}
+
 std::string ConverterRefCount::ConvertFreshObject(clang::Expr *expr) {
   auto str = ConvertObject(expr);
   if (isFresh()) {
@@ -1047,11 +1059,12 @@ void ConverterRefCount::ConvertDeclRefValue(clang::Expr *expr,
 
   if (isAddrOf()) {
     if (is_global_value) {
-      StrCat(std::format("{}.with(|v| v.as_pointer())", std::move(str)));
+      StrCat(std::format("{}.with(|v| v{})", std::move(str),
+                         AsPointerMethod(decl_t)));
     } else if (is_global_ptr) {
       StrCat(str);
     } else {
-      StrCat(str, ".as_pointer()");
+      StrCat(str, AsPointerMethod(decl_t));
     }
     computed_expr_type_ = ComputedExprType::FreshPointer;
     return;
@@ -1328,7 +1341,7 @@ bool ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
 
   if (isAddrOf() && !ty->isReferenceType() && !IsPointerType(ctx_, ty)) {
     PushConversionKind push(*this, ConversionKind::FullRefCount);
-    StrCat(BoxValue(std::move(str)), ".as_pointer()");
+    StrCat(BoxValue(std::move(str)), AsPointerMethod(ty));
     return false;
   }
 
@@ -2065,7 +2078,7 @@ bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
     if (member->getType()->isReferenceType()) {
       computed_expr_type_ = ComputedExprType::Pointer;
     } else {
-      StrCat(".as_pointer()");
+      StrCat(AsPointerMethod(member->getType()));
       computed_expr_type_ = ComputedExprType::FreshPointer;
     }
     return false;
@@ -2100,8 +2113,8 @@ void ConverterRefCount::ConvertInlineField(clang::MemberExpr *expr) {
       StrCat(std::format("array_field_ptr!({}, {})", ConvertRecordPtr(expr),
                          name));
     } else if (IsBoxedType(ctx_, type)) {
-      StrCat(std::format("field_ref!({}, {}).as_pointer()",
-                         ConvertRecordPtr(expr), name));
+      StrCat(std::format("field_ref!({}, {}){}", ConvertRecordPtr(expr), name,
+                         AsPointerMethod(type)));
     } else {
       StrCat(std::format("field_ptr!({}, {})", ConvertRecordPtr(expr), name));
     }
@@ -2804,25 +2817,17 @@ bool ConverterRefCount::ConvertCXXOperatorCallExpr(
         StrCat(GetPointerDerefPrefix(expr->getType()));
       }
 
-      if (is_inner_boxed && !isObject()) {
-        StrCat('(');
-      }
-
       PushConversionKind push(*this, ConversionKind::Unboxed);
       if (deref && !is_inner_boxed) {
         StrCat(ConvertElemPlace(expr->getArg(0), expr->getArg(1)));
       } else {
-        StrCat(std::format("({} as {}).offset({})",
+        StrCat(std::format("{}.offset({})",
                            ConvertObject(expr->getArg(0), ObjectShape::Element),
-                           ConvertPtrType(expr->getArg(0)->getType()),
                            ConvertSubscriptIndex(expr->getArg(1))));
       }
 
       if (is_inner_boxed) {
-        StrCat(".as_pointer()");
-        if (!isObject()) {
-          StrCat(std::format("as Ptr<{}>)", ToString(expr->getType())));
-        }
+        StrCat(".decay()");
       }
 
       if (isAddrOf()) {
@@ -2881,10 +2886,9 @@ std::string ConverterRefCount::ConvertElemPlace(clang::Expr *container,
       return std::format("index!({}, {})", place, ConvertSubscriptIndex(idx));
     }
   }
-  auto ptr =
-      std::format("({} as {})", ConvertObject(container, ObjectShape::Element),
-                  ConvertPtrType(container->getType()));
-  return std::format("elem!({}, {})", ptr, ConvertSubscriptIndex(idx));
+  return std::format("elem!({}, {})",
+                     ConvertObject(container, ObjectShape::Element),
+                     ConvertSubscriptIndex(idx));
 }
 
 void ConverterRefCount::ConvertFunctionParameters(clang::FunctionDecl *decl) {
@@ -3384,7 +3388,8 @@ void ConverterRefCount::SetUFCSReceiver(clang::Expr *base, bool is_arrow,
       !IsReferenceType(base->IgnoreImplicit())) {
     PushConversionKind push(*this, ConversionKind::FullRefCount);
     ufcs_receiver_ =
-        token::kRef + BoxValue(ConvertRValue(base)) + ".as_pointer()";
+        token::kRef + BoxValue(ConvertRValue(base)) +
+        AsPointerMethod(base->getType());
     return;
   }
   ufcs_receiver_ = token::kRef + (base_is_pointer ? ConvertRValue(base)

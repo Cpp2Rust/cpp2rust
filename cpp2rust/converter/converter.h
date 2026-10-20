@@ -1077,6 +1077,9 @@ protected:
   ConvertFreshPointer(clang::Expr *expr,
                       std::optional<clang::QualType> implicit_convert_to = {});
   virtual std::string ConvertFreshObject(clang::Expr *expr);
+
+  virtual std::string ConvertPointerReceiver(clang::Expr *arg,
+                                             std::string_view param_type);
   std::string
   ConvertPointer(clang::Expr *expr,
                  std::optional<clang::QualType> implicit_convert_to = {},
