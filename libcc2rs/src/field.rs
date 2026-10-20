@@ -568,7 +568,7 @@ macro_rules! array_field_ptr {
 
 // Field `field` of the struct that a Ptr or a Value holds, to make a pointer
 // to with as_pointer(), e.g., `field_ref!(p, v).as_pointer()` for a vector
-// field `v`, which gives a pointer to the vector or to its first element.
+// field `v`, which gives a pointer to the vector.
 #[macro_export]
 macro_rules! field_ref {
     ($base:expr, $field:ident) => {{
@@ -1006,7 +1006,8 @@ impl<S: Record, T: ByteRepr> VecElem<'_, S, T> {
         let elems: Ptr<T> = self
             .base
             .field_ref(self.get, self.get_mut, self.offset)
-            .as_pointer();
+            .as_pointer()
+            .decay();
         elems.offset(self.idx).upgrade()
     }
 }
@@ -1561,10 +1562,11 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "too large for a pointer to its elements")]
     fn far_vector_field_ptr() {
-        let far: Ptr<Far> = field_ptr!(holds_far(), far);
-        let _: Ptr<i32> = field_ref!(far, v).as_pointer();
+        let holder = holds_far();
+        let far: Ptr<Far> = field_ptr!(holder, far);
+        let v: Ptr<i32> = field_ref!(far, v).as_pointer().decay();
+        assert_eq!(v.offset(1).read(), 6);
     }
 
     #[test]
@@ -1574,7 +1576,7 @@ mod tests {
         let s: Value<Far> = Rc::new(RefCell::new(holds_far().borrow().far.clone()));
         let arr: Ptr<i32> = array_field_ptr!(s, arr);
         assert_eq!(arr.offset(2).read(), 3);
-        let v: Ptr<i32> = field_ref!(s, v).as_pointer();
+        let v: Ptr<i32> = field_ref!(s, v).as_pointer().decay();
         assert_eq!(v.offset(1).read(), 6);
     }
 
@@ -1623,7 +1625,7 @@ mod tests {
         assert_ne!(a.offset(1), b);
         assert_eq!(b.offset(-2), a);
         // The elements of a vector are not in the struct.
-        let v: Ptr<i32> = field_ref!(s, v).as_pointer();
+        let v: Ptr<i32> = field_ref!(s, v).as_pointer().decay();
         assert_ne!(v.offset(6), field_ptr!(s, c));
     }
 
