@@ -141,12 +141,19 @@ impl Clone for Box_int_ {
         Box_int_::copy_from(__src.as_pointer())
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, Default)]
 #[byte_size(4)]
 pub struct Owner {
     #[offset(0)]
     #[byte_size(4)]
     pub box_: Box_int_,
+}
+impl Owner {
+    pub fn move_from(_a0: Ptr<Owner>) -> Self {
+        Self {
+            box_: Box_int_::move_from({ field_ptr!(_a0, box_) }),
+        }
+    }
 }
 #[derive(Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
@@ -255,7 +262,7 @@ fn main_0() -> i32 {
     let o: Value<Owner> = Rc::new(RefCell::new(Owner {
         box_: Box_int_::new({ 3 }),
     }));
-    let mut o2: Owner = (*o.borrow()).clone();
+    let mut o2: Owner = Owner::move_from({ o.as_pointer() });
     assert!((o2.box_.val == 3));
     let ol1: Value<OutOfLine> = Rc::new(RefCell::new(OutOfLine::new({ 5 })));
     let mut ol2: OutOfLine = OutOfLine::copy_from({ ol1.as_pointer() });

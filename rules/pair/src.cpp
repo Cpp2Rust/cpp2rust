@@ -64,3 +64,11 @@ template <typename T1, typename T2> const T1 &f19(const std::pair<T1, T2> &a0) {
 template <typename T1, typename T2> const T2 &f20(const std::pair<T1, T2> &a0) {
   return std::get<1>(a0);
 }
+
+template <typename T1, typename T2> T1 &&f21(std::pair<T1, T2> &&a0) {
+  return std::get<0>(std::move(a0));
+}
+
+template <typename T1, typename T2> T2 &&f22(std::pair<T1, T2> &&a0) {
+  return std::get<1>(std::move(a0));
+}

@@ -653,6 +653,15 @@ bool Converter::VisitVarDecl(clang::VarDecl *decl) {
   }
   EmitScopedDestructor(decl);
 
+  if (auto *decomp = clang::dyn_cast<clang::DecompositionDecl>(decl)) {
+    for (auto *binding : decomp->bindings()) {
+      if (auto *holding = binding->getHoldingVar()) {
+        StrCat(token::kSemiColon);
+        VisitVarDecl(holding);
+      }
+    }
+  }
+
   return false;
 }
 
@@ -1497,7 +1506,11 @@ bool Converter::VisitCXXForRangeStmt(clang::CXXForRangeStmt *stmt) {
   auto *begin =
       clang::cast<clang::VarDecl>(stmt->getBeginStmt()->getSingleDecl());
   auto *end = clang::cast<clang::VarDecl>(stmt->getEndStmt()->getSingleDecl());
-  begin->setDeclName(stmt->getLoopVariable()->getDeclName());
+  begin->setDeclName(
+      clang::isa<clang::DecompositionDecl>(stmt->getLoopVariable())
+          ? clang::DeclarationName(
+                &ctx_.Idents.get(GetNamedDeclAsString(stmt->getLoopVariable())))
+          : stmt->getLoopVariable()->getDeclName());
   StrCat("'loop_:");
   StrCat(keyword::kFor, GetNamedDeclAsString(begin), keyword::kIn,
          "IterRange::new(", ConvertFreshRValue(begin->getInit()), token::kComma,
@@ -2943,6 +2956,10 @@ bool Converter::IsReferenceType(const clang::Expr *expr) const {
            GetReturnTypeOfFunction(call)->isReferenceType();
   }
   if (const auto *decl_ref = clang::dyn_cast<clang::DeclRefExpr>(e)) {
+    if (auto *var = clang::dyn_cast<clang::VarDecl>(decl_ref->getDecl());
+        var && IsAliasOfInit(ctx_, var)) {
+      return IsReferenceType(var->getInit());
+    }
     return GetDeclRefType(curr_function_, decl_ref, decl_ref->getDecl())
         ->isReferenceType();
   }
@@ -3180,10 +3197,17 @@ bool Converter::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
     computed_expr_type_ = ComputedExprType::FreshValue;
     return false;
   }
+
   if (auto init = AsLambdaUncapturedConstant(curr_function_, expr)) {
     Convert(init);
     return false;
   }
+
+  if (auto *binding = clang::dyn_cast<clang::BindingDecl>(expr->getDecl())) {
+    Convert(binding->getBinding());
+    return false;
+  }
+
   if (auto var = clang::dyn_cast<clang::VarDecl>(expr->getDecl());
       var && IsAliasOfInit(ctx_, var)) {
     Convert(var->getInit());
