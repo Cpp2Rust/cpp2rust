@@ -799,9 +799,9 @@ bool Converter::RecordHasCopyableFields(const clang::RecordDecl *decl) {
     }
 
     // Look recursively into fields that are RecordDecl, or arrays of them
-    if (auto field_record =
-            ctx_.getBaseElementType(f->getType())->getAsRecordDecl()) {
-      if (!RecordDerivesCopy(field_record)) {
+    if (auto field_type = ctx_.getBaseElementType(f->getType());
+        field_type->getAsRecordDecl()) {
+      if (!RecordDerivesCopy(field_type)) {
         return false;
       }
     }
