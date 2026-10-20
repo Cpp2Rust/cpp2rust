@@ -3387,9 +3387,8 @@ void ConverterRefCount::SetUFCSReceiver(clang::Expr *base, bool is_arrow,
   if (IsTemporaryObject(base) && base->getType()->isRecordType() &&
       !IsReferenceType(base->IgnoreImplicit())) {
     PushConversionKind push(*this, ConversionKind::FullRefCount);
-    ufcs_receiver_ =
-        token::kRef + BoxValue(ConvertRValue(base)) +
-        AsPointerMethod(base->getType());
+    ufcs_receiver_ = token::kRef + BoxValue(ConvertRValue(base)) +
+                     AsPointerMethod(base->getType());
     return;
   }
   ufcs_receiver_ = token::kRef + (base_is_pointer ? ConvertRValue(base)
