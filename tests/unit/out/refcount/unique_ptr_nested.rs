@@ -14,7 +14,7 @@ pub struct Inner {
     #[offset(4)]
     pub y: i32,
 }
-#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, Default)]
+#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(8)]
 pub struct Outer {
     #[offset(0)]

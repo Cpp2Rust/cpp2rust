@@ -67,7 +67,7 @@ impl Default for Implicit {
         }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(4)]
 pub struct DefaultCopyUserMove {
     #[offset(0)]
@@ -85,7 +85,7 @@ impl DefaultCopyUserMove {
         __this
     }
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, Default)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, CopyAssign, MoveAssign, Default)]
 #[byte_size(4)]
 pub struct UserCopyDefaultMove {
     #[offset(0)]
@@ -113,7 +113,7 @@ impl Clone for UserCopyDefaultMove {
         UserCopyDefaultMove::copy_from(__src.as_pointer())
     }
 }
-#[derive(Record, ByteRepr, FnPtrArg, MoveCtor)]
+#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, MoveAssign)]
 #[byte_size(64)]
 pub struct Buffer {
     #[offset(0)]
@@ -166,7 +166,7 @@ impl Default for Buffer {
         }
     }
 }
-#[derive(Record, ByteRepr, FnPtrArg, MoveCtor)]
+#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, MoveAssign)]
 #[byte_size(48)]
 pub struct Owner {
     #[offset(0)]
@@ -205,7 +205,7 @@ impl Default for Owner {
         }
     }
 }
-#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, Destructor, Default)]
+#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, MoveAssign, Destructor, Default)]
 #[byte_size(32)]
 pub struct Holder {
     #[offset(0)]

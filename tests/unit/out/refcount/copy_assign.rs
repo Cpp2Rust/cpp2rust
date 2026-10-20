@@ -9,7 +9,7 @@ use std::rc::{Rc, Weak};
 thread_local!(
     pub static assigns_0: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, CopyAssign, Default)]
 #[byte_size(8)]
 pub struct Partial {
     #[offset(0)]
@@ -53,7 +53,7 @@ impl Default for NonConstAssign {
         { NonConstAssign::new() }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CopyAssign)]
 #[byte_size(4)]
 pub struct RefQualified {
     #[offset(0)]
@@ -69,7 +69,7 @@ impl Default for RefQualified {
         { RefQualified::new() }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CopyAssign)]
 #[byte_size(24)]
 pub struct Holder {
     #[offset(0)]
@@ -87,6 +87,55 @@ impl Default for Holder {
                 arr: (0..2)
                     .map(|_| <Partial>::default())
                     .collect::<Box<[Partial]>>(),
+            }
+        }
+    }
+}
+thread_local!(
+    pub static copies_1: Value<i32> = Rc::new(RefCell::new(0));
+);
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, CopyAssign, Default)]
+#[byte_size(4)]
+pub struct CopyCounted {
+    #[offset(0)]
+    pub v: i32,
+}
+impl CopyCounted {
+    pub fn new(mut v: i32) -> Self {
+        Self { v: v }
+    }
+    pub fn copy_from(o: Ptr<CopyCounted>) -> Self {
+        let __this: CopyCounted = Self {
+            v: o.with(|__s| __s.v),
+        };
+        (*copies_1.with(Value::clone).borrow_mut()).prefix_inc();
+        __this
+    }
+}
+impl Clone for CopyCounted {
+    fn clone(&self) -> Self {
+        let __src: Value<CopyCounted> = Rc::new(RefCell::new(CopyCounted { v: self.v.clone() }));
+        CopyCounted::copy_from(__src.as_pointer())
+    }
+}
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CopyAssign)]
+#[byte_size(12)]
+pub struct HasCopyCounted {
+    #[offset(0)]
+    #[byte_size(4)]
+    pub c: CopyCounted,
+    #[offset(4)]
+    #[byte_size(8)]
+    pub arr: Box<[CopyCounted]>,
+}
+impl Default for HasCopyCounted {
+    fn default() -> Self {
+        {
+            HasCopyCounted {
+                c: <CopyCounted>::default(),
+                arr: (0..2)
+                    .map(|_| <CopyCounted>::default())
+                    .collect::<Box<[CopyCounted]>>(),
             }
         }
     }
@@ -163,7 +212,91 @@ fn main_0() -> i32 {
     let r1: Value<RefQualified> = Rc::new(RefCell::new(RefQualified::new()));
     ({ RefQualifiedImpl::copy_assign(&r1.as_pointer(), r.as_pointer()) });
     assert!(({ (*r1.borrow()).mark } == 1));
+    let h2: Value<Holder> = Rc::new(RefCell::new(Holder {
+        p: Partial::new({ 7 }, { 70 }),
+        arr: Box::new([Partial::new({ 8 }, { 80 }), Partial::new({ 9 }, { 90 })]),
+    }));
+    ({ HolderImpl::copy_assign(&h2.as_pointer(), h.as_pointer()) });
+    assert!(({ (*h2.borrow()).p.v } == 2) && ({ (*h2.borrow()).p.keep } == 70));
+    assert!(
+        (array_elem!(h2.as_pointer(), arr, 1).with(|__s| __s.v) == 2)
+            && (array_elem!(h2.as_pointer(), arr, 1).with(|__s| __s.keep) == 90)
+    );
+    assert!((assigns_0.with(|rc| *rc.borrow()) == 11));
+    let cc1: Value<CopyCounted> = Rc::new(RefCell::new(CopyCounted::new({ 1 })));
+    let cc2: Value<CopyCounted> = Rc::new(RefCell::new(CopyCounted::new({ 2 })));
+    ({ CopyCountedImpl::copy_assign(&cc1.as_pointer(), cc2.as_pointer()) });
+    assert!(({ (*cc1.borrow()).v } == 2));
+    let hc1: Value<HasCopyCounted> = Rc::new(RefCell::new(HasCopyCounted {
+        c: CopyCounted::new({ 1 }),
+        arr: Box::new([CopyCounted::new({ 2 }), CopyCounted::new({ 3 })]),
+    }));
+    let hc2: Value<HasCopyCounted> = Rc::new(RefCell::new(HasCopyCounted {
+        c: CopyCounted::new({ 4 }),
+        arr: Box::new([CopyCounted::new({ 5 }), CopyCounted::new({ 6 })]),
+    }));
+    ({ HasCopyCountedImpl::copy_assign(&hc1.as_pointer(), hc2.as_pointer()) });
+    assert!(
+        (({ (*hc1.borrow()).c.v } == 4)
+            && (array_elem!(hc1.as_pointer(), arr, 0).with(|__s| __s.v) == 5))
+            && (array_elem!(hc1.as_pointer(), arr, 1).with(|__s| __s.v) == 6)
+    );
+    assert!((copies_1.with(|rc| *rc.borrow()) == 0));
     return 0;
+}
+pub trait CopyCountedImpl {
+    fn copy_assign(&self, _a0: Ptr<CopyCounted>) -> Ptr<CopyCounted>;
+}
+impl CopyCountedImpl for Ptr<CopyCounted> {
+    fn copy_assign(&self, _a0: Ptr<CopyCounted>) -> Ptr<CopyCounted> {
+        field!((*self), v).write({ _a0.with(|__s| __s.v) });
+        return (*self).clone();
+    }
+}
+pub trait HasCopyCountedImpl {
+    fn copy_assign(&self, _a0: Ptr<HasCopyCounted>) -> Ptr<HasCopyCounted>;
+}
+impl HasCopyCountedImpl for Ptr<HasCopyCounted> {
+    fn copy_assign(&self, _a0: Ptr<HasCopyCounted>) -> Ptr<HasCopyCounted> {
+        ({
+            let _arg0: Ptr<CopyCounted> = field_ptr!(_a0, c);
+            CopyCountedImpl::copy_assign(&field_ptr!((*self), c), _arg0)
+        });
+        {
+            ((array_field_ptr!((*self), arr)) as Ptr<CopyCounted>)
+                .to_any()
+                .memcpy(
+                    &((array_field_ptr!(_a0, arr)) as Ptr<CopyCounted>).to_any(),
+                    8_usize as usize,
+                );
+            ((array_field_ptr!((*self), arr)) as Ptr<CopyCounted>).to_any()
+        };
+        return (*self).clone();
+    }
+}
+pub trait HolderImpl {
+    fn copy_assign(&self, _a0: Ptr<Holder>) -> Ptr<Holder>;
+}
+impl HolderImpl for Ptr<Holder> {
+    fn copy_assign(&self, _a0: Ptr<Holder>) -> Ptr<Holder> {
+        ({
+            let _o: Ptr<Partial> = field_ptr!(_a0, p);
+            PartialImpl::copy_assign(&field_ptr!((*self), p), _o)
+        });
+        let mut __i0: usize = 0_usize;
+        'loop_: while (__i0 != 2_usize) {
+            ({
+                let _o: Ptr<Partial> =
+                    (array_field_ptr!(_a0, arr) as Ptr<Partial>).offset((__i0) as isize);
+                PartialImpl::copy_assign(
+                    &(array_field_ptr!((*self), arr) as Ptr<Partial>).offset((__i0) as isize),
+                    _o,
+                )
+            });
+            __i0.prefix_inc();
+        }
+        return (*self).clone();
+    }
 }
 pub trait NonConstAssignImpl {
     fn operator_assign_2(&self, o: Ptr<NonConstAssign>) -> Ptr<NonConstAssign>;
@@ -203,4 +336,5 @@ impl RefQualifiedImpl for Ptr<RefQualified> {
 }
 pub fn __cpp2rust_init_globals() {
     let _ = assigns_0.with(|_| ());
+    let _ = copies_1.with(|_| ());
 }

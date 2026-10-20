@@ -100,6 +100,16 @@ bool HasMoveFromConstructor(const clang::RecordDecl *decl);
 
 bool IsConvertibleMoveAssignment(const clang::CXXMethodDecl *method);
 
+bool IsConvertibleCopyAssignment(const clang::CXXMethodDecl *method);
+
+// Whether decl has a copy assignment operator converted to a copy_assign
+// method.
+bool HasCopyAssignOperator(const clang::RecordDecl *decl);
+
+// Whether decl has a move assignment operator converted to a move_assign
+// method.
+bool HasMoveAssignOperator(const clang::RecordDecl *decl);
+
 bool IsConvertibleImplicitMember(const clang::CXXMethodDecl *method);
 
 clang::CXXConstructorDecl *

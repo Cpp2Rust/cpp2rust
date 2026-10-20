@@ -2520,6 +2520,14 @@ ConverterRefCount::GetStructAttributes(const clang::RecordDecl *decl) {
     attrs.emplace_back("MoveCtor");
   }
 
+  if (HasCopyAssignOperator(decl)) {
+    attrs.emplace_back("CopyAssign");
+  }
+
+  if (HasMoveAssignOperator(decl)) {
+    attrs.emplace_back("MoveAssign");
+  }
+
   if (auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
       cxx && RecordNeedsDestruction(cxx)) {
     attrs.emplace_back("Destructor");
@@ -2837,7 +2845,10 @@ bool ConverterRefCount::ConvertCXXOperatorCallExpr(
                            ConvertSubscriptIndex(expr->getArg(1))));
       }
 
-      if (is_inner_boxed) {
+      // The pointer to the element is already a pointer to the whole inner
+      // container, which as_pointer can't tell from a pointer to its first
+      // element without a type.
+      if (is_inner_boxed && (!isObject() || WantsElementPtr())) {
         StrCat(".as_pointer()");
         if (!isObject()) {
           StrCat(std::format("as Ptr<{}>)", ToString(expr->getType())));

@@ -175,7 +175,7 @@ pub unsafe fn quicksort_1(arr: *mut Option<Box<[Edge]>>, mut start: i32, mut end
     });
 }
 #[repr(C)]
-#[derive(FnPtrArg, MoveCtorUnsafe, Default)]
+#[derive(FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
 pub struct DisjointSet {
     pub rank: Option<Box<[i32]>>,
     pub parent: Option<Box<[i32]>>,
@@ -297,7 +297,7 @@ impl DisjointSet {
     }
 }
 #[repr(C)]
-#[derive(FnPtrArg, MoveCtorUnsafe, Default)]
+#[derive(FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
 pub struct Graph {
     pub edges: Option<Box<[Edge]>>,
     pub V: i32,

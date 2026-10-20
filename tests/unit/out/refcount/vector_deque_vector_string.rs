@@ -147,8 +147,7 @@ fn main_0() -> i32 {
             .offset(0_usize)
             .as_pointer() as Ptr<Vec<Vec<i8>>>),
     ) as Ptr<Vec<i8>>)
-        .offset(0_usize)
-        .as_pointer() as Ptr<Vec<i8>>)
+        .offset(0_usize) as Ptr<Vec<i8>>)
         .write({
             let mut __bytes = Ptr::<i8>::from_string_literal(b"z").to_c_bytes();
             __bytes.push(0);
@@ -160,8 +159,7 @@ fn main_0() -> i32 {
                 .offset(0_usize)
                 .as_pointer() as Ptr<Vec<Vec<i8>>>),
         ) as Ptr<Vec<i8>>)
-            .offset(1_usize)
-            .as_pointer() as Ptr<Vec<i8>>)
+            .offset(1_usize) as Ptr<Vec<i8>>)
             .upgrade()
             .deref())
         .len()
@@ -174,8 +172,7 @@ fn main_0() -> i32 {
                 .offset(0_usize)
                 .as_pointer() as Ptr<Vec<Vec<i8>>>),
         ) as Ptr<Vec<i8>>)
-            .offset(1_usize)
-            .as_pointer() as Ptr<Vec<i8>>)
+            .offset(1_usize) as Ptr<Vec<i8>>)
             .decay()
             .offset(0_usize as isize)
     }
