@@ -523,8 +523,7 @@ std::string TypeKey(clang::QualType type) {
           llvm::dyn_cast<clang::TypeOfExprType>(type.getTypePtr())) {
     type = typeof_type->getUnderlyingExpr()->getType();
   }
-  if (auto alias = type->getAs<clang::TypedefType>();
-      alias && type.getCanonicalType()->isBuiltinType()) {
+  if (auto alias = type->getAs<clang::TypedefType>()) {
     return DeclKey(alias->getDecl());
   }
   if (auto sugar = type->getAs<clang::PredefinedSugarType>()) {
