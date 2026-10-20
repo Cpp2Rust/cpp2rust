@@ -23,7 +23,7 @@
 //
 // The types without any of those special members are only copied by C++, and
 // so their values (or bytes, if reinterpreted) are swapped instead, without a
-// temporary, as `(&&&&&Trivial(..)).is_trivial()` tells. The other steps are
+// temporary, as `(&&&&&Trivial(..)).trivial()` tells. The other steps are
 // still compiled for them, and are unreachable if they can't be copied.
 
 #![allow(private_bounds, clippy::missing_safety_doc)]
@@ -49,7 +49,7 @@ macro_rules! cpp_swap {
         };
         let __a = $a;
         let __b = $b;
-        if (&&&&&$crate::__swap::Trivial(&__a)).is_trivial() {
+        if (&&&&&$crate::__swap::Trivial(&__a)).trivial() {
             __a.swap_with(&__b, (&&$crate::__swap::Take(&__a)).take());
         } else {
             let __tmp = $crate::__swap::temporary((&&&$crate::__swap::Construct(&__a)).construct());
@@ -73,7 +73,7 @@ macro_rules! cpp_swap_unsafe {
         };
         let __a: *mut _ = $a;
         let __b: *mut _ = $b;
-        if (&&&&&$crate::__swap::TrivialUnsafe(&__a)).is_trivial() {
+        if (&&&&&$crate::__swap::TrivialUnsafe(&__a)).trivial() {
             ::std::ptr::swap(__a, __b);
         } else {
             let mut __tmp = (&&&$crate::__swap::ConstructUnsafe(__a)).construct();
@@ -91,22 +91,22 @@ macro_rules! trivial {
         pub struct $wrapper<'a, T>(pub &'a $ptr);
         $(
             pub trait $tr {
-                fn is_trivial(self) -> bool;
+                fn trivial(self) -> bool;
             }
 
             impl<T: $bound> $tr for $recv {
-                fn is_trivial(self) -> bool {
+                fn trivial(self) -> bool {
                     false
                 }
             }
         )*
 
         pub trait $none {
-            fn is_trivial(self) -> bool;
+            fn trivial(self) -> bool;
         }
 
         impl<T> $none for &$wrapper<'_, T> {
-            fn is_trivial(self) -> bool {
+            fn trivial(self) -> bool {
                 true
             }
         }

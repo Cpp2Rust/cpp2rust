@@ -39,7 +39,7 @@ fn main_0() -> i32 {
     let mut hp: Ptr<Holder> = (h.as_pointer());
     {
         let _p: Ptr<_> = Ptr::alloc(Data { v: 3 });
-        field_ptr!(hp, data).write(_p.to_owned_opt())
+        (field_ptr!(hp, data) as Ptr<Option<Value<Data>>>).write(_p.to_owned_opt())
     };
     assert!(
         ({ (*h.borrow()).data.clone() }
@@ -74,11 +74,11 @@ impl HolderImpl for Ptr<Holder> {
     fn set(&self, mut p: Ptr<Data>) {
         {
             let _p: Ptr<_> = (p).clone();
-            field_ptr!((*self), data).write(_p.to_owned_opt())
+            (field_ptr!((*self), data) as Ptr<Option<Value<Data>>>).write(_p.to_owned_opt())
         };
     }
     fn move_assign(&self, _a0: Ptr<Holder>) -> Ptr<Holder> {
-        field_ptr!((*self), data)
+        (field_ptr!((*self), data) as Ptr<Option<Value<Data>>>)
             .write(field!(_a0, data).with_mut(|__v: &mut Option<Value<Data>>| __v.take()));
         field!((*self), n).write({ { (*_a0.upgrade().deref()).n } });
         return (*self).clone();

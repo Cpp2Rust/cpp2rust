@@ -130,7 +130,7 @@ pub trait NonCopyableImpl {
 }
 impl NonCopyableImpl for Ptr<NonCopyable> {
     fn move_assign(&self, _a0: Ptr<NonCopyable>) -> Ptr<NonCopyable> {
-        field_ptr!((*self), value)
+        (field_ptr!((*self), value) as Ptr<Option<Value<i32>>>)
             .write(field!(_a0, value).with_mut(|__v: &mut Option<Value<i32>>| __v.take()));
         return (*self).clone();
     }

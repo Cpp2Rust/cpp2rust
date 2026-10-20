@@ -46,8 +46,8 @@ pub fn main() {
 fn main_0() -> i32 {
     let v: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::from([1, 3, 0, 2, 8, 7])));
     ({
-        let _first: RandomAccessIterator<i32> = v.as_pointer().decay().begin();
-        let _last: RandomAccessIterator<i32> = v.as_pointer().decay().end();
+        let _first: RandomAccessIterator<i32> = (v.as_pointer() as Ptr<i32>).begin();
+        let _last: RandomAccessIterator<i32> = (v.as_pointer() as Ptr<i32>).end();
         f1_0(_first, _last)
     });
     let a: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2, 3])));

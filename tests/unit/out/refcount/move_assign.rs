@@ -89,7 +89,12 @@ fn main_0() -> i32 {
         (*vec_.borrow_mut()).push(__a1)
     };
     let d: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::new({ 8 })));
-    ({ MoveOnlyImpl::move_assign(&vec_.as_pointer().decay().offset(0_usize), d.as_pointer()) });
+    ({
+        MoveOnlyImpl::move_assign(
+            &(vec_.as_pointer() as Ptr<MoveOnly>).offset(0_usize),
+            d.as_pointer(),
+        )
+    });
     assert!(({ (*vec_.borrow())[0_usize].v } == 8));
     assert!(({ (*d.borrow()).v } == 0));
     let m: Value<ConstMoveAssign> = Rc::new(RefCell::new(ConstMoveAssign::new()));
