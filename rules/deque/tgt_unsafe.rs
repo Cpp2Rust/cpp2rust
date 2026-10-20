@@ -13,6 +13,10 @@ fn t2() -> usize {
     0_usize
 }
 
+fn t3<T1>() -> T1 {
+    unimplemented!()
+}
+
 unsafe fn f1<T1>(a0: &mut Vec<T1>) -> *const T1 {
     (a0.last_mut().unwrap())
 }
