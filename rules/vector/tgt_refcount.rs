@@ -15,28 +15,28 @@ fn f60<T1: ByteRepr>(a0: Ptr<Vec<T1>>, a1: RandomAccessIterator<T1>) -> RandomAc
     RandomAccessIterator::Vec(a0.decay() + __off)
 }
 
-fn f65<T1>(a0: Ptr<T1>) -> Ptr<T1> {
-    a0
+fn f65<T1: 'static>(a0: Ptr<Vec<T1>>) -> Ptr<T1> {
+    a0.decay()
 }
 
-fn f66<T1>(a0: Ptr<T1>, a1: usize) -> Ptr<T1> {
-    a0.offset(a1 as isize)
+fn f66<T1: 'static>(a0: Ptr<Vec<T1>>, a1: usize) -> Ptr<T1> {
+    a0.decay().offset(a1 as isize)
 }
 
-fn f68<T1>(a0: Ptr<T1>) -> Ptr<T1> {
-    a0
+fn f68<T1: 'static>(a0: Ptr<Vec<T1>>) -> Ptr<T1> {
+    a0.decay()
 }
 
-fn f69<T1>(a0: Ptr<T1>) -> Ptr<T1> {
-    a0.to_last()
+fn f69<T1: 'static>(a0: Ptr<Vec<T1>>) -> Ptr<T1> {
+    a0.decay().to_last()
 }
 
-fn f72<T1>(a0: Ptr<T1>) -> RandomAccessIterator<T1> {
-    a0.begin()
+fn f72<T1: 'static>(a0: Ptr<Vec<T1>>) -> RandomAccessIterator<T1> {
+    a0.decay().begin()
 }
 
-fn f76<T1>(a0: Ptr<T1>) -> RandomAccessIterator<T1> {
-    a0.end()
+fn f76<T1: 'static>(a0: Ptr<Vec<T1>>) -> RandomAccessIterator<T1> {
+    a0.decay().end()
 }
 
 fn f77<T1: ByteRepr>(a0: &mut Vec<T1>, a1: RandomAccessIterator<T1>, a2: T1) -> RandomAccessIterator<T1> {
@@ -61,16 +61,16 @@ fn f92<T1: TryFrom<T2>, T2: Clone + ByteRepr, T3: CppInputIterator<T2>>(a0: T3, 
     __v
 }
 
-fn f93<T1>(a0: Ptr<T1>) -> Ptr<T1> {
-    a0
+fn f93<T1: 'static>(a0: Ptr<Vec<T1>>) -> Ptr<T1> {
+    a0.decay()
 }
 
-fn f95<T1>(a0: Ptr<T1>) -> RandomAccessIterator<T1> {
-    a0.begin()
+fn f95<T1: 'static>(a0: Ptr<Vec<T1>>) -> RandomAccessIterator<T1> {
+    a0.decay().begin()
 }
 
-fn f96<T1>(a0: Ptr<T1>) -> RandomAccessIterator<T1> {
-    a0.end()
+fn f96<T1: 'static>(a0: Ptr<Vec<T1>>) -> RandomAccessIterator<T1> {
+    a0.decay().end()
 }
 
 fn f98<T1: ByteRepr>(a0: Ptr<Vec<T1>>, a1: usize) -> Ptr<Vec<T1>> {
@@ -81,8 +81,8 @@ fn f98<T1: ByteRepr>(a0: Ptr<Vec<T1>>, a1: usize) -> Ptr<Vec<T1>> {
     }
 }
 
-fn f99<T1>(a0: Ptr<T1>) -> Ptr<T1> {
-    a0.to_last()
+fn f99<T1: 'static>(a0: Ptr<Vec<T1>>) -> Ptr<T1> {
+    a0.decay().to_last()
 }
 
 fn f101<T1: Clone + ByteRepr, T2, T3: CppInputIterator<T1>>(
@@ -108,8 +108,8 @@ fn f103<T1: ByteRepr + Clone>(a0: Ptr<Vec<T1>>, a1: &mut Vec<T1>) {
     a0.write(std::mem::take(&mut *a1))
 }
 
-fn f104<T1>(a0: Ptr<T1>) -> RandomAccessIterator<T1> {
-    a0.end()
+fn f104<T1: 'static>(a0: Ptr<Vec<T1>>) -> RandomAccessIterator<T1> {
+    a0.decay().end()
 }
 
 fn f105<T1: Clone + ByteRepr>(a0: Ptr<Vec<T1>>, a1: Vec<T1>) {

@@ -393,9 +393,7 @@ private:
   enum class ObjectShape { Whole, Element };
   std::string ConvertObject(clang::Expr *expr,
                             ObjectShape shape = ObjectShape::Whole);
-  std::string
-  ConvertFreshObject(clang::Expr *expr,
-                     std::string_view target_ptr_type = {}) override;
+  std::string ConvertFreshObject(clang::Expr *expr) override;
   bool WantsElementPtr() const { return object_shape_ == ObjectShape::Element; }
   std::string
   ConvertFresh(clang::Expr *expr,

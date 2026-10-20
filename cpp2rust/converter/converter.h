@@ -1076,10 +1076,7 @@ protected:
   virtual std::string
   ConvertFreshPointer(clang::Expr *expr,
                       std::optional<clang::QualType> implicit_convert_to = {});
-  // target_ptr_type, when known (e.g. a translation rule's parameter type),
-  // is the Rust pointer type the result will be used as.
-  virtual std::string ConvertFreshObject(clang::Expr *expr,
-                                         std::string_view target_ptr_type = {});
+  virtual std::string ConvertFreshObject(clang::Expr *expr);
   std::string
   ConvertPointer(clang::Expr *expr,
                  std::optional<clang::QualType> implicit_convert_to = {},

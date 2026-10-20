@@ -392,27 +392,8 @@ std::string ConverterRefCount::ConvertObject(clang::Expr *expr,
   return str;
 }
 
-std::string
-ConverterRefCount::ConvertFreshObject(clang::Expr *expr,
-                                      std::string_view target_ptr_type) {
-  auto shape = ObjectShape::Whole;
-  if (!target_ptr_type.empty()) {
-    auto type = expr->getType().getNonReferenceType();
-    auto pointee = type->isPointerType() ? type->getPointeeType() : type;
-    if (IsBoxedType(ctx_, pointee) || pointee->isArrayType()) {
-      auto normalize = [](std::string s) {
-        std::erase(s, ' ');
-        for (size_t pos; (pos = s.find("::<")) != std::string::npos;)
-          s.erase(pos, 2);
-        return s;
-      };
-      if (normalize(std::string(target_ptr_type)) ==
-          normalize(ConvertPtrType(pointee))) {
-        shape = ObjectShape::Element;
-      }
-    }
-  }
-  auto str = ConvertObject(expr, shape);
+std::string ConverterRefCount::ConvertFreshObject(clang::Expr *expr) {
+  auto str = ConvertObject(expr);
   if (isFresh()) {
     return str;
   }
