@@ -109,26 +109,26 @@ pub fn test_st_mtime_access_2() {
     let mut sp: Ptr<libcc2rs::Stat> = (st.as_pointer());
     field_ptr!(st.as_pointer(), st_mtime).write(5_i64);
     assert!(((((field_ptr!(st.as_pointer(), st_mtime).read()) == 5_i64) as i32) != 0));
-    field_ptr!((sp).clone(), st_mtime).write(6_i64);
-    assert!(((((field_ptr!((sp).clone(), st_mtime).read()) == 6_i64) as i32) != 0));
+    field_ptr!(sp, st_mtime).write(6_i64);
+    assert!(((((field_ptr!(sp, st_mtime).read()) == 6_i64) as i32) != 0));
     {
         field_ptr!(st.as_pointer(), st_mtime).with_mut(|__v| *__v = *__v + 2_i64)
     };
     assert!(((((field_ptr!(st.as_pointer(), st_mtime).read()) == 8_i64) as i32) != 0));
     {
-        field_ptr!((sp).clone(), st_mtime).with_mut(|__v| *__v = *__v - 1_i64)
+        field_ptr!(sp, st_mtime).with_mut(|__v| *__v = *__v - 1_i64)
     };
-    assert!(((((field_ptr!((sp).clone(), st_mtime).read()) == 7_i64) as i32) != 0));
+    assert!(((((field_ptr!(sp, st_mtime).read()) == 7_i64) as i32) != 0));
     field_ptr!(st.as_pointer(), st_mtime).with_mut(|__v| __v.postfix_inc());
-    field_ptr!((sp).clone(), st_mtime).with_mut(|__v| __v.prefix_inc());
+    field_ptr!(sp, st_mtime).with_mut(|__v| __v.prefix_inc());
     assert!(((((field_ptr!(st.as_pointer(), st_mtime).read()) == 9_i64) as i32) != 0));
     let mut mtime: Ptr<i64> = (field_ptr!(st.as_pointer(), st_mtime));
     mtime.write(10_i64);
     assert!(((((field_ptr!(st.as_pointer(), st_mtime).read()) == 10_i64) as i32) != 0));
-    let mut mtime_via_ptr: Ptr<i64> = (field_ptr!((sp).clone(), st_mtime));
+    let mut mtime_via_ptr: Ptr<i64> = (field_ptr!(sp, st_mtime));
     mtime_via_ptr.write(11_i64);
     assert!(((((mtime.read()) == 11_i64) as i32) != 0));
-    let mut copy: i64 = (field_ptr!((sp).clone(), st_mtime).read());
+    let mut copy: i64 = (field_ptr!(sp, st_mtime).read());
     assert!((((copy == 11_i64) as i32) != 0));
 }
 pub fn main() {

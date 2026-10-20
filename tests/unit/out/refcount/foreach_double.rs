@@ -80,9 +80,7 @@ fn main_0() -> i32 {
     'loop_: for row in IterRange::new(m.as_pointer().decay().begin(), m.as_pointer().decay().end())
     {
         let row: Ptr<Vec<i32>> = row.iter_deref();
-        'loop_: for col in
-            IterRange::new((row).clone().decay().begin(), (row).clone().decay().end())
-        {
+        'loop_: for col in IterRange::new(row.decay().begin(), row.decay().end()) {
             let col: Ptr<i32> = col.iter_deref();
             square += { (col.read()) };
         }

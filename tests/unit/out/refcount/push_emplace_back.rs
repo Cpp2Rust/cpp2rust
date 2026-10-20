@@ -99,7 +99,7 @@ pub fn nested_emplace_move_5(mut bw: Ptr<Writer>) {
 }
 pub fn self_ref_push_6(mut comps: Ptr<Vec<Chunk>>) {
     {
-        let a0_clone = (*(comps).clone().decay().upgrade().deref()).clone();
+        let a0_clone = (*comps.decay().upgrade().deref()).clone();
         comps.with_mut(|__v: &mut Vec<Chunk>| __v.push(a0_clone))
     };
 }

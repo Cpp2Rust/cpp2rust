@@ -73,8 +73,8 @@ pub fn lehmer_2(mut sigma: Ptr<u32>, mut len: u32, mut code: Ptr<u32>) {
 }
 pub fn sum_3(v: Ptr<Vec<i32>>) -> i32 {
     let mut s: i32 = 0;
-    let it: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new((v).clone().decay().begin()));
-    'loop_: while (*it.borrow()) != (v).clone().decay().end() {
+    let it: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(v.decay().begin()));
+    'loop_: while (*it.borrow()) != v.decay().end() {
         s += ((*it.borrow()).iter_deref().read());
         (*it.borrow_mut()).iter_inc();
     }

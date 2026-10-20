@@ -31,14 +31,14 @@ fn main_0() -> i32 {
     index!(elem!(v.as_pointer().decay(), 1_usize), 0_usize).write(6);
     'loop_: for v2 in IterRange::new(v.as_pointer().decay().begin(), v.as_pointer().decay().end()) {
         let v2: Ptr<Vec<i32>> = v2.iter_deref();
-        'loop_: for i in IterRange::new((v2).clone().decay().begin(), (v2).clone().decay().end()) {
+        'loop_: for i in IterRange::new(v2.decay().begin(), v2.decay().end()) {
             let i: Ptr<i32> = i.iter_deref();
             i.with_mut(|__v| __v.prefix_inc());
         }
     }
     'loop_: for v2 in IterRange::new(v.as_pointer().decay().begin(), v.as_pointer().decay().end()) {
         let v2: Ptr<Vec<i32>> = v2.iter_deref();
-        'loop_: for i in IterRange::new((v2).clone().decay().begin(), (v2).clone().decay().end()) {
+        'loop_: for i in IterRange::new(v2.decay().begin(), v2.decay().end()) {
             let mut i: i32 = (i.iter_deref().read());
             println!("{}", (i + 3));
         }

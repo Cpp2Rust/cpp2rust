@@ -5130,6 +5130,9 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
 
   if (ph_ctx.needs_pointer_receiver()) {
     auto param_type = Mapper::GetParamType(*this, expr, ph_ctx.arg_idx);
+    bool borrowed = ph_ctx.access == TranslationRule::Access::kBorrow ||
+                    ph_ctx.access == TranslationRule::Access::kBorrowMut;
+    PushExprKind push(*this, borrowed ? ExprKind::Object : ExprKind::XValue);
     return ConvertPointerReceiver(arg, param_type);
   }
 

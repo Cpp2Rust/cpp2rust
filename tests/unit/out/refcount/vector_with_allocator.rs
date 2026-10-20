@@ -47,10 +47,10 @@ pub fn fn_1(v: Ptr<Vec<i32>>, v3: Vec<i32>) {
     .write(7);
     index!(v4, 1_usize).write(13);
     assert!((x == 6));
-    assert!((((v).clone().decay().read()) == 4));
+    assert!(((v.decay().read()) == 4));
     assert!(((index!(v, 1_usize).read()) == 5));
     assert!(((index!(v, 2_usize).read()) == 6));
-    assert!((((v).clone().decay().to_last().read()) == 20));
+    assert!(((v.decay().to_last().read()) == 20));
     assert!(({ (*v3.borrow())[0_usize] } == 7));
     assert!(({ (*v3.borrow())[1_usize] } == 13));
     {

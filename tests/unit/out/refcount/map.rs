@@ -423,10 +423,7 @@ fn main_0() -> i32 {
             != m.as_pointer()
                 .with(|__m: &Map<i16, (Value<i16>, Value<u32>)>| __m.end())
     );
-    (r).clone()
-        .with_mut(|__m: &mut Map<i16, (Value<i16>, Value<u32>)>| {
-            __m.erase(&(*it4.borrow()).clone())
-        });
+    r.with_mut(|__m: &mut Map<i16, (Value<i16>, Value<u32>)>| __m.erase(&(*it4.borrow()).clone()));
     assert!(((*r.upgrade().deref()).len() == 3_usize));
     assert!(
         m.as_pointer()

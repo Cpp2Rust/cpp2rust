@@ -401,7 +401,7 @@ std::string ConverterRefCount::AsPointerMethod(clang::QualType type) const {
 
 std::string ConverterRefCount::ConvertPointerReceiver(clang::Expr *arg,
                                                       std::string_view) {
-  return ConvertFreshObject(arg);
+  return isObject() ? ConvertObject(arg) : ConvertFreshObject(arg);
 }
 
 std::string ConverterRefCount::ConvertFreshObject(clang::Expr *expr) {
