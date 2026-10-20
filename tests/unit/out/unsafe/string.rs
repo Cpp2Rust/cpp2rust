@@ -69,8 +69,8 @@ unsafe fn main_0() -> i32 {
     }
     assert!(((s2.len() - 1) == (10_usize)));
     assert!(((s2.len() - 1) == (s2.len() - 1)));
-    s2[(0_usize)] = (('b' as libc::c_char) as libc::c_char);
-    s2[(1_usize)] = (('c' as libc::c_char) as libc::c_char);
+    s2[(0_usize)] = ('b' as libc::c_char);
+    s2[(1_usize)] = ('c' as libc::c_char);
     assert!(((s2[(0_usize)] as i32) == (('b' as libc::c_char) as i32)));
     assert!(((s2[(1_usize)] as i32) == (('c' as libc::c_char) as i32)));
     let mut i: u32 = 2_u32;
@@ -196,8 +196,8 @@ unsafe fn main_0() -> i32 {
     assert!(((string[(2_usize)] as i32) == (('r' as libc::c_char) as i32)));
     assert!(((string[(3_usize)] as i32) == (0)));
     assert!(((string[(4_usize)] as i32) == (0)));
-    string[(3_usize)] = (('a' as libc::c_char) as libc::c_char);
-    string[(4_usize)] = (('b' as libc::c_char) as libc::c_char);
+    string[(3_usize)] = ('a' as libc::c_char);
+    string[(4_usize)] = ('b' as libc::c_char);
     assert!(((string[(3_usize)] as i32) == (('a' as libc::c_char) as i32)));
     assert!(((string[(4_usize)] as i32) == (('b' as libc::c_char) as i32)));
     string[(3_usize)] = (0 as libc::c_char);

@@ -67,14 +67,14 @@ pub unsafe fn fn_1(v: *mut Vec<i32>, mut v3: Vec<i32>) {
         let __a1 = 3;
         v2.push(__a1)
     };
-    x = ((&mut (*v))[(2_usize)] as i32);
-    v2[(0_usize)] = (1 as i32);
+    x = (&mut (*v))[(2_usize)];
+    v2[(0_usize)] = 1;
     (&mut (*if true {
         (&mut v3 as *mut Vec<i32>)
     } else {
         (v)
-    }))[(0_usize)] = (7 as i32);
-    (&mut (*v4))[(1_usize)] = (13 as i32);
+    }))[(0_usize)] = 7;
+    (&mut (*v4))[(1_usize)] = 13;
     assert!(((x) == (6)));
     assert!(((*((*v).first_mut().unwrap())) == (4)));
     assert!((((&mut (*v))[(1_usize)]) == (5)));
@@ -111,8 +111,8 @@ unsafe fn main_0() -> i32 {
     };
     assert!(((v1.len()) == (100_usize)));
     assert!(((v1[(99_usize)]) == (0)));
-    v1[(0_usize)] = (40 as i32);
-    v1[(99_usize)] = (50 as i32);
+    v1[(0_usize)] = 40;
+    v1[(99_usize)] = 50;
     assert!(((v1[(0_usize)]) == (40)));
     assert!(((v1[(99_usize)]) == (50)));
     let mut v2: Vec<i32> = Vec::new();
@@ -210,7 +210,7 @@ unsafe fn main_0() -> i32 {
     assert!(((*((v2).last_mut().unwrap())) == (3)));
     assert!(((*((v3).last_mut().unwrap())) == (1)));
     assert!(((*((v6).last_mut().unwrap())) == (2_f64)));
-    let ref0: *mut f64 = (((v6).last_mut().unwrap()) as *mut f64).cast::<f64>();
+    let ref0: *mut f64 = ((v6).last_mut().unwrap());
     (*ref0) = 5_f64;
     assert!(((*((v6).last_mut().unwrap())) == (5_f64)));
     let mut x0: f64 = (*((v6).last_mut().unwrap()));
@@ -220,8 +220,7 @@ unsafe fn main_0() -> i32 {
     let mut idx: i32 = 0;
     assert!(((*(&mut (v6)[(idx as usize) as usize] as *mut f64)) == (2_f64)));
     assert!(((*(&mut (v6)[(s2).wrapping_sub(1_usize) as usize] as *mut f64)) == (5_f64)));
-    let ref1: *mut f64 =
-        ((&mut (v6)[(s2).wrapping_sub(1_usize) as usize] as *mut f64) as *mut f64).cast::<f64>();
+    let ref1: *mut f64 = (&mut (v6)[(s2).wrapping_sub(1_usize) as usize] as *mut f64);
     (*ref1) += 1.5_f64;
     assert!(((*(&mut (v6)[(s2).wrapping_sub(1_usize) as usize] as *mut f64)) == (6.5_f64)));
     let mut x1: f64 = (*(&mut (v6)[(s2).wrapping_sub(1_usize) as usize] as *mut f64));

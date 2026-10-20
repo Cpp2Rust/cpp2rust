@@ -220,7 +220,7 @@ unsafe fn main_0() -> i32 {
                     libc::AF_INET,
                     (four.as_mut_ptr() as *const ::libc::c_void),
                     text.as_mut_ptr(),
-                    (::std::mem::size_of::<[libc::c_char; 64]>() as u32),
+                    (::std::mem::size_of::<[libc::c_char; 64]>() as libc::socklen_t),
                 )
             },
             (c"10.0.0.1".as_ptr().cast_mut()).cast_const()
@@ -247,7 +247,7 @@ unsafe fn main_0() -> i32 {
                     libc::AF_INET6,
                     (sixteen.as_mut_ptr() as *const ::libc::c_void),
                     text.as_mut_ptr(),
-                    (::std::mem::size_of::<[libc::c_char; 64]>() as u32),
+                    (::std::mem::size_of::<[libc::c_char; 64]>() as libc::socklen_t),
                 )
             },
             (c"::1".as_ptr().cast_mut()).cast_const()
@@ -268,7 +268,7 @@ unsafe fn main_0() -> i32 {
                 libc::AF_INET,
                 (four.as_mut_ptr() as *const ::libc::c_void),
                 text.as_mut_ptr(),
-                4_u32,
+                (4 as libc::socklen_t),
             )
         })
         .is_null()) as i32)

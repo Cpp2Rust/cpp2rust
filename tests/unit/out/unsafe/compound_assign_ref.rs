@@ -18,7 +18,7 @@ unsafe fn main_0() -> i32 {
         let __a1 = 10;
         v.push(__a1)
     };
-    (*((v).first_mut().unwrap())) += (5 as i32);
+    (*((v).first_mut().unwrap())) += 5;
     assert!(((*((v).first_mut().unwrap())) == (15)));
     return 0;
 }

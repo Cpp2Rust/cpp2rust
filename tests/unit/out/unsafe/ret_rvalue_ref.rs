@@ -19,7 +19,7 @@ unsafe fn main_0() -> i32 {
     let mut __tmp_0: i32 = 5;
     let i2: *mut i32 = &mut __tmp_0;
     assert!(((*i2) == (5)));
-    let mut i3: i32 = (unsafe { foo_0((i2 as *mut i32).cast::<i32>()) });
+    let mut i3: i32 = (unsafe { foo_0(i2) });
     assert!(((i3) == (5)));
     assert!(
         ((unsafe {

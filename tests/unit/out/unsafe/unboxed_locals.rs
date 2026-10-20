@@ -140,7 +140,7 @@ unsafe fn main_0() -> i32 {
         let a0_clone = four.clone();
         vec_.push(a0_clone)
     };
-    vec_[(0_usize)] = (((vec_[(3_usize)] as i32) + (1)) as i32);
+    vec_[(0_usize)] = ((vec_[(3_usize)]) + (1));
     vec_[(1_usize)].postfix_inc();
     assert!(
         (((vec_.len()) == (4_usize)) && ((vec_[(0_usize)]) == (5))) && ((vec_[(1_usize)]) == (2))
@@ -158,12 +158,7 @@ unsafe fn main_0() -> i32 {
     let mut by_ref: Vec<i32> = vec![3; 2_usize as usize];
     assert!(((unsafe { total_2(&by_ref,) }) == (6)));
     let mut elem_ptr: Vec<i32> = vec![0; 2_usize as usize];
-    (unsafe {
-        set_0(
-            ((&mut elem_ptr[(1_usize)] as *mut i32) as *mut i32).cast::<i32>(),
-            7,
-        )
-    });
+    (unsafe { set_0((&mut elem_ptr[(1_usize)] as *mut i32), 7) });
     assert!(((elem_ptr[(1_usize)]) == (7)));
     let mut data: Vec<i32> = vec![0; 2_usize as usize];
     (unsafe { set_0(data.as_mut_ptr(), 8) });

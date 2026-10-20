@@ -26,15 +26,15 @@ pub unsafe fn fn_0(v: *mut Vec<i32>, mut v3: Vec<i32>) {
         let __a1 = 3;
         v2.push(__a1)
     };
-    x = ((&mut (*v))[(2_usize)] as i32);
-    v2[(0_usize)] = (1 as i32);
+    x = (&mut (*v))[(2_usize)];
+    v2[(0_usize)] = 1;
     (&mut (*if true {
         (&mut v3 as *mut Vec<i32>)
     } else {
         (v)
-    }))[(0_usize)] = (7 as i32);
+    }))[(0_usize)] = 7;
     v2 = (*v).clone();
-    (&mut (*v4))[(1_usize)] = (13 as i32);
+    (&mut (*v4))[(1_usize)] = 13;
     assert!(((x) == (6)));
     assert!(((*((*v).first_mut().unwrap())) == (4)));
     assert!((((&mut (*v))[(1_usize)]) == (5)));

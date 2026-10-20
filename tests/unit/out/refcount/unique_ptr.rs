@@ -32,18 +32,17 @@ pub fn DoStuffWithSafePointer_0(safe_ptr: Ptr<Option<Value<SafePointer>>>) {
     let x1: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(0)))));
     let x2: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(0)))));
     (*x2.borrow()).as_pointer().write(1);
-    (x1.as_pointer() as Ptr<Option<Value<i32>>>).write((*x2.borrow_mut()).take());
+    x1.as_pointer().write((*x2.borrow_mut()).take());
     let mut raw_ptr1: Ptr<i32> = ((*x1.borrow()).as_pointer());
     raw_ptr1.with_mut(|__v| __v.prefix_inc());
-    (field_ptr!(((*safe_ptr.upgrade().deref()).as_pointer()), ptr) as Ptr<Option<Value<i32>>>)
-        .write((*x1.borrow_mut()).take());
+    field_ptr!(((*safe_ptr.upgrade().deref()).as_pointer()), ptr).write((*x1.borrow_mut()).take());
     ({ SafePointerImpl::inc(&((*safe_ptr.upgrade().deref()).as_pointer())) });
     ({ SafePointerImpl::inc(&((*safe_ptr.upgrade().deref()).as_pointer())) });
     let x3: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(10)))));
     let x4: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(20)))));
     let __rhs = (((*x3.borrow()).as_pointer().read()) + ((*x4.borrow()).as_pointer().read()));
     (*x3.borrow()).as_pointer().write(__rhs);
-    (x4.as_pointer() as Ptr<Option<Value<i32>>>).write((*x3.borrow_mut()).take());
+    x4.as_pointer().write((*x3.borrow_mut()).take());
     let mut raw_ptr2: Ptr<i32> = ((*x4.borrow()).as_pointer());
     {
         raw_ptr2.with_mut(|__v| *__v = *__v + 1)
@@ -91,7 +90,7 @@ pub fn RndStuff_2() {
             .write(1);
         i.prefix_inc();
     }
-    (x2.as_pointer() as Ptr<Option<Value<Box<[i32]>>>>).write(
+    x2.as_pointer().write(
         Ptr::alloc_array((0..200_usize).map(|_| 0_i32).collect::<Box<[i32]>>()).to_owned_opt(),
     );
     let mut i: i32 = 0;
@@ -134,7 +133,7 @@ pub fn RndStuff_2() {
         assert!((elem!(p3_0, i).with(|__s| __s.y) == 12));
         i.prefix_inc();
     }
-    (x3.as_pointer() as Ptr<Option<Value<Box<[Pair]>>>>).write(
+    x3.as_pointer().write(
         Ptr::alloc_array(
             (0..50_usize)
                 .map(|_| <Pair>::default())
@@ -210,7 +209,7 @@ impl SafePointerImpl for Ptr<SafePointer> {
             .with_mut(|__v| __v.prefix_inc());
     }
     fn move_assign(&self, _a0: Ptr<SafePointer>) -> Ptr<SafePointer> {
-        (field_ptr!((*self), ptr) as Ptr<Option<Value<i32>>>)
+        field_ptr!((*self), ptr)
             .write(field!(_a0, ptr).with_mut(|__v: &mut Option<Value<i32>>| __v.take()));
         return (*self).clone();
     }

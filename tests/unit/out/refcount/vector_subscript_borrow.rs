@@ -11,7 +11,7 @@ thread_local!(
 );
 pub fn bump_1(mut v: Ptr<Vec<i32>>, mut x: i32) -> i32 {
     {
-        let __rhs = (x as i32);
+        let __rhs = x;
         index!(v, 0_usize).with_mut(|__v| *__v = *__v + __rhs)
     };
     return (*next_0.with(Value::clone).borrow_mut()).postfix_inc();
@@ -27,7 +27,7 @@ fn main_0() -> i32 {
         .collect::<Vec<_>>();
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < items.len()) {
-        let __rhs = ((i).wrapping_mul(2_u32) as u32);
+        let __rhs = (i).wrapping_mul(2_u32);
         items[(i as usize)] = __rhs;
         i.prefix_inc();
     }
@@ -41,27 +41,27 @@ fn main_0() -> i32 {
         v.as_pointer().decay(),
         ({ (*v.borrow())[0_usize] } as usize)
     )
-    .write((3 as i32));
-    let __rhs = ((({ (*v.borrow())[1_usize] } as i32) + 4) as i32);
+    .write(3);
+    let __rhs = ({ (*v.borrow())[1_usize] } + 4);
     elem!(
         v.as_pointer().decay(),
         ({ (*v.borrow())[1_usize] } as usize)
     )
     .write(__rhs);
     assert!(({ (*v.borrow())[1_usize] } == 3) && ({ (*v.borrow())[3_usize] } == 7));
-    let mut p: Ptr<i32> = (v.as_pointer().decay().offset(0_usize)).reinterpret_cast::<i32>();
-    elem!(v.as_pointer().decay(), ((p.read()) as usize)).write((9 as i32));
+    let mut p: Ptr<i32> = (v.as_pointer().decay().offset(0_usize));
+    elem!(v.as_pointer().decay(), ((p.read()) as usize)).write(9);
     assert!(({ (*v.borrow())[1_usize] } == 9));
     elem!(
         v.as_pointer().decay(),
         (({ bump_1((v.as_pointer()), 10,) }) as usize)
     )
-    .write((2 as i32));
+    .write(2);
     assert!(({ (*v.borrow())[0_usize] } == 2));
     assert!(
         (({
             let _v: Ptr<Vec<i32>> = (v.as_pointer());
-            let _x: i32 = ({ (*v.borrow())[2_usize] } as i32);
+            let _x: i32 = { (*v.borrow())[2_usize] };
             bump_1(_v, _x)
         }) == 1)
             && ({ (*v.borrow())[0_usize] } == 3)

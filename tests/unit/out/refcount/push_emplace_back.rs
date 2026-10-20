@@ -179,49 +179,28 @@ fn main_0() -> i32 {
     let vecs: Value<Vec<Vec<u8>>> = Rc::new(RefCell::new(Vec::new()));
     ({ push_param_0((vecs.as_pointer())) });
     assert!(((*vecs.borrow()).len() == 1_usize));
-    assert!((*vecs.borrow())[0_usize].is_empty());
+    assert!((*vecs.as_pointer().decay().offset(0_usize).upgrade().deref()).is_empty());
     let jpg: Value<JPEGData> = Rc::new(RefCell::new(<JPEGData>::default()));
     ({ push_local_from_field_1((jpg.as_pointer()), true) });
     assert!(((*jpg.borrow()).com_data.len() == 1_usize));
     assert!(
-        ((*vec_elem!(jpg.as_pointer(), com_data, 0_usize)
+        ((*field_ref!(jpg.as_pointer(), com_data)
+            .as_pointer()
+            .decay()
+            .offset(0_usize)
             .upgrade()
             .deref())
         .len()
             == 3_usize)
     );
     assert!(
-        (((elem!(
-            field_ref!(jpg.as_pointer(), com_data)
-                .as_pointer()
-                .decay()
-                .offset(0_usize),
-            0_usize
-        )
-        .read()) as i32)
-            == 1)
+        (((index!(vec_elem!(jpg.as_pointer(), com_data, 0_usize), 0_usize).read()) as i32) == 1)
     );
     assert!(
-        (((elem!(
-            field_ref!(jpg.as_pointer(), com_data)
-                .as_pointer()
-                .decay()
-                .offset(0_usize),
-            1_usize
-        )
-        .read()) as i32)
-            == 2)
+        (((index!(vec_elem!(jpg.as_pointer(), com_data, 0_usize), 1_usize).read()) as i32) == 2)
     );
     assert!(
-        (((elem!(
-            field_ref!(jpg.as_pointer(), com_data)
-                .as_pointer()
-                .decay()
-                .offset(0_usize),
-            2_usize
-        )
-        .read()) as i32)
-            == 3)
+        (((index!(vec_elem!(jpg.as_pointer(), com_data, 0_usize), 2_usize).read()) as i32) == 3)
     );
     assert!((*jpg.borrow()).app_data.is_empty());
     let chunks: Value<Vec<Chunk>> = Rc::new(RefCell::new(Vec::new()));
@@ -236,33 +215,20 @@ fn main_0() -> i32 {
     ({ emplace_local_from_field_4((jpg.as_pointer()), false) });
     assert!(((*jpg.borrow()).app_data.len() == 1_usize));
     assert!(
-        ((*vec_elem!(jpg.as_pointer(), app_data, 0_usize)
+        ((*field_ref!(jpg.as_pointer(), app_data)
+            .as_pointer()
+            .decay()
+            .offset(0_usize)
             .upgrade()
             .deref())
         .len()
             == 3_usize)
     );
     assert!(
-        (((elem!(
-            field_ref!(jpg.as_pointer(), app_data)
-                .as_pointer()
-                .decay()
-                .offset(0_usize),
-            0_usize
-        )
-        .read()) as i32)
-            == 1)
+        (((index!(vec_elem!(jpg.as_pointer(), app_data, 0_usize), 0_usize).read()) as i32) == 1)
     );
     assert!(
-        (((elem!(
-            field_ref!(jpg.as_pointer(), app_data)
-                .as_pointer()
-                .decay()
-                .offset(0_usize),
-            2_usize
-        )
-        .read()) as i32)
-            == 3)
+        (((index!(vec_elem!(jpg.as_pointer(), app_data, 0_usize), 2_usize).read()) as i32) == 3)
     );
     assert!(((*jpg.borrow()).com_data.len() == 1_usize));
     (*w.borrow_mut()).chunk.data = 99;
