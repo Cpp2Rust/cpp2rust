@@ -42,6 +42,9 @@ const clang::Decl *getParent(clang::QualType type) {
           llvm::dyn_cast<clang::ClassTemplateSpecializationDecl>(record)) {
     return spec->getSpecializedTemplate()->getCanonicalDecl();
   }
+  if (auto tmpl = record->getDescribedClassTemplate()) {
+    return tmpl->getCanonicalDecl();
+  }
   return record->getCanonicalDecl();
 }
 
@@ -277,21 +280,17 @@ std::vector<TypeKey> GetTypeKeys(clang::ASTContext &ctx, clang::QualType use) {
       record && !use->isDependentType() && !IsUserDefinedDecl(record)) {
     keys.push_back(kAnyClass);
   }
-  for (auto type = use;; type = type.getSingleStepDesugaredType(ctx)) {
-    if (auto typedef_type =
-            llvm::dyn_cast<clang::TypedefType>(type.getTypePtr())) {
-      if (auto owner = llvm::dyn_cast<clang::CXXRecordDecl>(
-              typedef_type->getDecl()->getDeclContext())) {
-        auto key = GetTypeKey(ctx.getCanonicalTagType(owner));
-        if (key && !llvm::is_contained(keys, *key)) {
-          keys.push_back(*key);
-        }
+  if (auto typedef_type =
+          llvm::dyn_cast<clang::TypedefType>(use.getTypePtr())) {
+    if (auto owner = llvm::dyn_cast<clang::CXXRecordDecl>(
+            typedef_type->getDecl()->getDeclContext())) {
+      auto key = GetTypeKey(ctx.getCanonicalTagType(owner));
+      if (key && !llvm::is_contained(keys, *key)) {
+        keys.push_back(*key);
       }
     }
-    if (type.getSingleStepDesugaredType(ctx) == type) {
-      return keys;
-    }
   }
+  return keys;
 }
 
 std::optional<ExprKey> GetDeclKey(const clang::NamedDecl *decl) {

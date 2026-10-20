@@ -3,6 +3,7 @@
 
 #include "converter/rules/registry.h"
 
+#include <clang/AST/Attr.h>
 #include <clang/AST/DeclCXX.h>
 #include <clang/AST/DeclTemplate.h>
 #include <clang/Basic/SourceManager.h>
@@ -269,6 +270,12 @@ struct TypeRuleMatch {
 
 TypeRuleMatch findType(clang::QualType use) {
   TypeRuleMatch best;
+  use = AstMatcher::SkipInternalTypedefs(use);
+  if (auto tag = use->getAsTagDecl();
+      tag &&
+      (IsUserDefinedDecl(tag) || tag->hasAttr<clang::TransparentUnionAttr>())) {
+    return best;
+  }
   auto consider = [&](const RuleKeys::TypeKey &key) {
     auto [begin, end] = types_.equal_range(key);
     for (auto it = begin; it != end; ++it) {
@@ -277,22 +284,17 @@ TypeRuleMatch findType(clang::QualType use) {
         continue;
       }
       if (best.rule_decl) {
-        if (match->depth > best.match.depth) {
-          continue;
+        auto better = AstMatcher::MoreSpecializedType(*sema_, it->second.decl,
+                                                      best.rule_decl->decl);
+        if (!better) {
+          use.dump(llvm::errs(), sema_->Context);
+          it->second.decl->dump(llvm::errs());
+          best.rule_decl->decl->dump(llvm::errs());
+          llvm::report_fatal_error(
+              "type matches several rules, none more specialized");
         }
-        if (match->depth == best.match.depth) {
-          auto better = AstMatcher::MoreSpecializedType(*sema_, it->second.decl,
-                                                        best.rule_decl->decl);
-          if (!better) {
-            use.dump(llvm::errs(), sema_->Context);
-            it->second.decl->dump(llvm::errs());
-            best.rule_decl->decl->dump(llvm::errs());
-            llvm::report_fatal_error(
-                "type matches several rules, none more specialized");
-          }
-          if (better != it->second.decl) {
-            continue;
-          }
+        if (better != it->second.decl) {
+          continue;
         }
       }
       best = {&it->second, *std::move(match)};
@@ -300,6 +302,13 @@ TypeRuleMatch findType(clang::QualType use) {
   };
   for (auto key : RuleKeys::GetTypeKeys(sema_->Context, use)) {
     consider(key);
+  }
+  if (!best.rule_decl) {
+    auto spelled = AstMatcher::SpelledTypedef(use);
+    if (spelled && !IsUserDefinedDecl(spelled)) {
+      use.dump(llvm::errs(), sema_->Context);
+      llvm::report_fatal_error("typedef has no type rule");
+    }
   }
   return best;
 }

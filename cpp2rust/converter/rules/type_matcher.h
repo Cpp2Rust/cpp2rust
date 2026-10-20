@@ -12,15 +12,16 @@
 #include <vector>
 
 namespace cpp2rust::AstMatcher {
-inline constexpr unsigned kCanonicalDepth = -1u;
-
 struct TypeMatch {
   std::vector<clang::TemplateArgument> args;
-  unsigned depth;
 };
 
 std::optional<TypeMatch> MatchType(clang::Sema &sema, clang::QualType use,
                                    const clang::NamedDecl *rule);
+
+clang::QualType SkipInternalTypedefs(clang::QualType use);
+
+const clang::TypedefNameDecl *SpelledTypedef(clang::QualType use);
 
 const clang::NamedDecl *MoreSpecializedType(clang::Sema &sema,
                                             const clang::NamedDecl *a,
