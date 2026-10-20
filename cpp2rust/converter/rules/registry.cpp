@@ -95,6 +95,10 @@ void collectGenerics(const std::vector<TranslationRule::BodyFragment> &body,
                    &fragment)) {
       collectGenerics((*call)->receiver, used);
       collectGenerics((*call)->body, used);
+    } else if (auto ref_expr = std::get_if<
+                   std::unique_ptr<TranslationRule::RefExprFragment>>(
+                   &fragment)) {
+      collectGenerics((*ref_expr)->inner, used);
     }
   }
 }
