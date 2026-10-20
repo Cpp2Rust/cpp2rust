@@ -17,6 +17,14 @@ fn t3<T1>() -> T1 {
     unimplemented!()
 }
 
+fn t4<T1>() -> *mut T1 {
+    ::std::ptr::null_mut()
+}
+
+fn t5<T1>() -> *const T1 {
+    ::std::ptr::null()
+}
+
 unsafe fn f1<T1>(a0: &mut Vec<T1>) -> *const T1 {
     (a0.last_mut().unwrap())
 }
