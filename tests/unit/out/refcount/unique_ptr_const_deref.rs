@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, Default)]
+#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(8)]
 pub struct Holder {
     #[offset(0)]
@@ -32,7 +32,8 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let h: Value<Holder> = Rc::new(RefCell::new(<Holder>::default()));
-    field_ptr!(h.as_pointer(), val).write(Some(Rc::new(RefCell::new(10))).take());
+    (field_ptr!(h.as_pointer(), val) as Ptr<Option<Value<i32>>>)
+        .write(Some(Rc::new(RefCell::new(10))).take());
     ({ write_val_1((h.as_pointer()), 42) });
     assert!((({ read_val_0((h.as_pointer()),) }) == 42));
     return 0;
@@ -42,7 +43,7 @@ pub trait HolderImpl {
 }
 impl HolderImpl for Ptr<Holder> {
     fn move_assign(&self, _a0: Ptr<Holder>) -> Ptr<Holder> {
-        field_ptr!((*self), val)
+        (field_ptr!((*self), val) as Ptr<Option<Value<i32>>>)
             .write(field!(_a0, val).with_mut(|__v: &mut Option<Value<i32>>| __v.take()));
         return (*self).clone();
     }

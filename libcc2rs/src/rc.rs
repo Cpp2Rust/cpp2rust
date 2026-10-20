@@ -1096,6 +1096,107 @@ impl<T: Clone + ByteRepr> Ptr<T> {
     }
 }
 
+impl<T: ByteRepr> Ptr<T> {
+    // Swaps the values that the pointers point to, as std::swap, which moves
+    // them instead of copying them, so no copy constructors are run. The
+    // values of reinterpret casts only exist as bytes, so their bytes are
+    // swapped. Two values in the same allocation can't be borrowed at once,
+    // and so, unless they are elements of the same array, they are swapped
+    // through a temporary that `take` moves the value of self into.
+    pub fn swap_with(&self, other: &Self, take: impl FnOnce(&Self) -> T) {
+        if matches!(self.kind, PtrKind::Reinterpreted(_))
+            || matches!(other.kind, PtrKind::Reinterpreted(_))
+        {
+            self.swap_bytes(other);
+        } else if self == other {
+        } else if root_address(&self.slice_root()) == root_address(&other.slice_root()) {
+            self.swap_in_root(other, take);
+        } else {
+            self.with_mut(|a| other.with_mut(|b| std::mem::swap(a, b)));
+        }
+    }
+
+    fn swap_bytes(&self, other: &Self) {
+        let (a, a_offset) = self.original_alloc().unwrap_or_else(|| null_deref());
+        let (b, b_offset) = other.original_alloc().unwrap_or_else(|| null_deref());
+        let len = T::byte_size();
+        with_scratch(2 * len, |buf: &mut [u8]| {
+            let (x, y) = buf.split_at_mut(len);
+            a.read_bytes(a_offset, x);
+            b.read_bytes(b_offset, y);
+            a.write_bytes(a_offset, y);
+            b.write_bytes(b_offset, x);
+        });
+    }
+
+    #[inline(never)]
+    fn swap_in_root(&self, other: &Self, take: impl FnOnce(&Self) -> T) {
+        match (&self.kind, &other.kind) {
+            (
+                PtrKind::StackArray(a) | PtrKind::HeapArray(a),
+                PtrKind::StackArray(_) | PtrKind::HeapArray(_),
+            ) => {
+                let rc = a.upgrade().unwrap_or_else(|| dangling());
+                rc.borrow_mut().swap(self.offset, other.offset);
+            }
+            (
+                PtrKind::StackVec(a) | PtrKind::HeapVec(a),
+                PtrKind::StackVec(_) | PtrKind::HeapVec(_),
+            ) => {
+                let rc = a.upgrade().unwrap_or_else(|| dangling());
+                rc.borrow_mut().swap(self.offset, other.offset);
+            }
+            _ => match (self.elem_parent(), other.elem_parent()) {
+                (Some(a), Some(b)) if a.address() == b.address() => {
+                    let root = a.root();
+                    a.borrow_slice_mut(&root).swap(self.offset, other.offset);
+                }
+                _ => {
+                    let mut tmp = take(self);
+                    other.with_mut(|b| std::mem::swap(b, &mut tmp));
+                    self.with_mut(|a| std::mem::swap(a, &mut tmp));
+                }
+            },
+        }
+    }
+
+    // The array or vector that the pointer points into, if it points to an
+    // element of a nested container or of an array or vector field.
+    fn elem_parent(&self) -> Option<Rc<dyn SliceParent<T>>> {
+        match &self.kind {
+            PtrKind::Nested(parent) => Some(parent.clone()),
+            PtrKind::Field(_, _, FieldShape::Array | FieldShape::Vec) => {
+                Some(self.field_elem_parent())
+            }
+            _ => None,
+        }
+    }
+}
+
+// The address of the RefCell that holds an allocation.
+fn root_address(root: &SliceRoot) -> *const () {
+    match root {
+        SliceRoot::Alloc(rc) => Rc::as_ptr(rc) as *const (),
+        SliceRoot::Field(rc) => Rc::as_ptr(rc) as *const (),
+    }
+}
+
+// Moves the element at(order[i]) to at(i), for every i, as std::sort does
+// once it knows the order. The elements are swapped, which moves them instead
+// of copying them.
+pub fn reorder<T: Clone + ByteRepr>(mut order: Vec<isize>, at: impl Fn(isize) -> Ptr<T>) {
+    for i in 0..order.len() {
+        let mut cur = i;
+        while order[cur] as usize != i {
+            let next = order[cur] as usize;
+            at(cur as isize).swap_with(&at(next as isize), Ptr::read);
+            order[cur] = cur as isize;
+            cur = next;
+        }
+        order[cur] = cur as isize;
+    }
+}
+
 impl<T: std::io::Write + ByteRepr> Ptr<T> {
     pub fn write_fmt(&self, args: std::fmt::Arguments<'_>) -> std::io::Result<()> {
         self.with_mut(|inner| inner.write_fmt(args))
@@ -1131,64 +1232,6 @@ impl<T: std::cmp::Ord + 'static> Ptr<T> {
             PtrKind::StackArray(ref weak) | PtrKind::HeapArray(ref weak) => {
                 let strong = weak.upgrade().expect("ub: dangling pointer");
                 (*strong.borrow_mut())[self.get_offset()..last].sort();
-            }
-            PtrKind::Reinterpreted(_) => {
-                panic!("sorting not supported for reinterpreted pointers")
-            }
-        }
-    }
-}
-
-impl<T: Clone + 'static> Ptr<T> {
-    pub fn sort_with_cmp<F>(&self, last: usize, mut cmp: F)
-    where
-        F: FnMut(Ptr<T>, Ptr<T>) -> bool,
-    {
-        fn sort<T: Clone, F: FnMut(Ptr<T>, Ptr<T>) -> bool>(
-            slice: &mut [T],
-            offset: usize,
-            last: usize,
-            cmp: &mut F,
-        ) {
-            slice[offset..last].sort_by(|a, b| {
-                let val_a = Rc::new(RefCell::new(a.clone()));
-                let val_b = Rc::new(RefCell::new(b.clone()));
-                if cmp(val_a.as_pointer(), val_b.as_pointer()) {
-                    std::cmp::Ordering::Less
-                } else if cmp(val_b.as_pointer(), val_a.as_pointer()) {
-                    std::cmp::Ordering::Greater
-                } else {
-                    std::cmp::Ordering::Equal
-                }
-            });
-        }
-        match self.kind {
-            PtrKind::Null => panic!("ub: dereference of null pointer"),
-            PtrKind::StackSingle(_)
-            | PtrKind::HeapSingle(_)
-            | PtrKind::Field(_, _, FieldShape::Single) => {
-                panic!("only vecs and arrays can be sorted")
-            }
-            PtrKind::StackVec(ref weak) | PtrKind::HeapVec(ref weak) => {
-                let strong = weak.upgrade().expect("ub: dangling pointer");
-                let mut borrow = strong.borrow_mut();
-                sort(&mut borrow, self.get_offset(), last, &mut cmp);
-            }
-            PtrKind::Nested(ref parent) => {
-                let root = parent.root();
-                let mut borrow = parent.borrow_slice_mut(&root);
-                sort(&mut borrow, self.get_offset(), last, &mut cmp);
-            }
-            PtrKind::Field(..) => {
-                let parent = self.field_elem_parent();
-                let root = parent.root();
-                let mut borrow = parent.borrow_slice_mut(&root);
-                sort(&mut borrow, self.get_offset(), last, &mut cmp);
-            }
-            PtrKind::StackArray(ref weak) | PtrKind::HeapArray(ref weak) => {
-                let strong = weak.upgrade().expect("ub: dangling pointer");
-                let mut borrow = strong.borrow_mut();
-                sort(&mut borrow, self.get_offset(), last, &mut cmp);
             }
             PtrKind::Reinterpreted(_) => {
                 panic!("sorting not supported for reinterpreted pointers")

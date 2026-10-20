@@ -169,22 +169,23 @@ unsafe fn main_0() -> i32 {
     let mut map1: UnsafeMap<i32, (i32, i32)> = UnsafeMap::new();
     let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {
-        (*&mut (*map1.get_or_insert_with(i.clone(), || (i, <i32>::default()))).1) = i;
+        (*map1.get_or_insert_with(i.clone(), || (i, <i32>::default()))).1 = i;
         i.prefix_inc();
     }
     let mut map2: UnsafeMap<i32, (i32, i32)> = map1.clone();
     let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {
-        assert!(((*&mut (*map2.get_or_insert_with(i.clone(), || (i, <i32>::default()))).1) == (i)));
-        (*&mut (*map2.get_or_insert_with(i.clone(), || (i, <i32>::default()))).1).prefix_inc();
+        assert!((((*map2.get_or_insert_with(i.clone(), || (i, <i32>::default()))).1) == (i)));
+        (*map2.get_or_insert_with(i.clone(), || (i, <i32>::default())))
+            .1
+            .prefix_inc();
         i.prefix_inc();
     }
     let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {
-        assert!(((*&mut (*map1.get_or_insert_with(i.clone(), || (i, <i32>::default()))).1) == (i)));
+        assert!((((*map1.get_or_insert_with(i.clone(), || (i, <i32>::default()))).1) == (i)));
         assert!(
-            ((*&mut (*map2.get_or_insert_with(i.clone(), || (i, <i32>::default()))).1)
-                == ((i) + (1)))
+            (((*map2.get_or_insert_with(i.clone(), || (i, <i32>::default()))).1) == ((i) + (1)))
         );
         i.prefix_inc();
     }
@@ -219,9 +220,9 @@ unsafe fn main_0() -> i32 {
         .chain(std::iter::once(0))
         .collect();
     let mut s2: Vec<libc::c_char> = s1.clone();
-    s2[(0_usize)] = (('b' as libc::c_char) as libc::c_char);
-    s2[(1_usize)] = (('b' as libc::c_char) as libc::c_char);
-    s2[(2_usize)] = (('b' as libc::c_char) as libc::c_char);
+    s2[(0_usize)] = ('b' as libc::c_char);
+    s2[(1_usize)] = ('b' as libc::c_char);
+    s2[(2_usize)] = ('b' as libc::c_char);
     assert!(((s2[(0_usize)] as i32) == (('b' as libc::c_char) as i32)));
     assert!(((s2[(1_usize)] as i32) == (('b' as libc::c_char) as i32)));
     assert!(((s2[(2_usize)] as i32) == (('b' as libc::c_char) as i32)));

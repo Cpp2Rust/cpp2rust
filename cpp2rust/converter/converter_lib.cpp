@@ -541,11 +541,61 @@ bool IsConvertibleMoveAssignment(const clang::CXXMethodDecl *method) {
          HasFieldWithMoveAssign(parent);
 }
 
+static bool IsTranslatedCopyAssignment(const clang::CXXMethodDecl *method) {
+  if (!method->isCopyAssignmentOperator() || method->isDeleted() ||
+      method->isVirtual()) {
+    return false;
+  }
+  return (method->isUserProvided() && IsUserDefinedDecl(method) &&
+          method->hasBody()) ||
+         IsConvertibleCopyAssignment(method);
+}
+
+bool HasCopyAssignOperator(const clang::RecordDecl *decl) {
+  auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
+  return cxx && llvm::any_of(cxx->methods(), [](auto *method) {
+           return IsTranslatedCopyAssignment(method) &&
+                  CanUseCopyOrMoveName(method, "copy_assign");
+         });
+}
+
+bool HasMoveAssignOperator(const clang::RecordDecl *decl) {
+  auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
+  return cxx && llvm::any_of(cxx->methods(), [](auto *method) {
+           return IsConvertibleMoveAssignment(method) && !method->isVirtual() &&
+                  CanUseCopyOrMoveName(method, "move_assign");
+         });
+}
+
+// Whether a defaulted copy assignment of decl isn't an assignment of a clone
+// of the source, which runs the copy constructors of the record and of its
+// fields: when the record has a copy constructor, or a field (or element of
+// an array field) has a copy assignment operator.
+static bool NeedsDefaultedCopyAssignment(const clang::CXXRecordDecl *decl) {
+  return GetUserDefinedCopyConstructor(decl) ||
+         llvm::any_of(decl->fields(), [](const clang::FieldDecl *field) {
+           auto *record =
+               field->getType()->getBaseElementTypeUnsafe()->getAsRecordDecl();
+           return record && HasCopyAssignOperator(record);
+         });
+}
+
+bool IsConvertibleCopyAssignment(const clang::CXXMethodDecl *method) {
+  auto *parent = method->getParent();
+  if (!method->isCopyAssignmentOperator() || method->isUserProvided() ||
+      method->isDeleted() || !method->hasBody() ||
+      !IsConvertibleImplicitMemberParent(parent)) {
+    return false;
+  }
+  return NeedsDefaultedCopyAssignment(parent);
+}
+
 bool IsConvertibleImplicitMember(const clang::CXXMethodDecl *method) {
   if (auto *ctor = clang::dyn_cast<clang::CXXConstructorDecl>(method)) {
     return IsConvertibleMoveConstructor(ctor);
   }
-  return IsConvertibleMoveAssignment(method);
+  return IsConvertibleMoveAssignment(method) ||
+         IsConvertibleCopyAssignment(method);
 }
 
 bool IsDefaultedMoveConstructor(const clang::CXXConstructorDecl *ctor) {
@@ -1271,7 +1321,7 @@ bool IsImplicitAssignmentCall(const clang::CallExpr *expr) {
   if (method->isUserProvided() && IsUserDefinedDecl(method)) {
     return false;
   }
-  return !IsConvertibleMoveAssignment(method);
+  return !IsConvertibleImplicitMember(method);
 }
 
 const clang::CXXRecordDecl *AsLambdaClass(clang::QualType type) {
@@ -1429,7 +1479,7 @@ bool IsUserOperatorCall(const clang::CXXOperatorCallExpr *expr) {
     return IsUserDefinedDecl(owner);
   }
   if (const auto *method = clang::dyn_cast<clang::CXXMethodDecl>(callee);
-      method && IsConvertibleMoveAssignment(method)) {
+      method && IsConvertibleImplicitMember(method)) {
     return true;
   }
   if (!callee->isUserProvided() || !IsUserDefinedDecl(callee)) {
@@ -1561,6 +1611,11 @@ void DefineImplicitMembers(clang::Sema &sema, clang::CXXRecordDecl *decl) {
         !method->doesThisDeclarationHaveABody() && !method->isDeleted() &&
         !HasDefaultedCopyAssignment(decl)) {
       sema.DefineImplicitMoveAssignment(decl->getLocation(), method);
+    }
+    if (method->isCopyAssignmentOperator() && !method->isUserProvided() &&
+        !method->doesThisDeclarationHaveABody() && !method->isDeleted() &&
+        NeedsDefaultedCopyAssignment(decl)) {
+      sema.DefineImplicitCopyAssignment(decl->getLocation(), method);
     }
   }
   auto define_defaulted_comparison = [&](clang::FunctionDecl *fn) {

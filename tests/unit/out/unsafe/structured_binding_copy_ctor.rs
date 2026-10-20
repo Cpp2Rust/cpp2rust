@@ -8,7 +8,7 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub static mut copies_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(VaArg, FnPtrArg, CopyAssignUnsafe, Default)]
 pub struct Counted {
     pub x: i32,
     pub y: i32,
@@ -25,6 +25,11 @@ impl Counted {
         };
         (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)).prefix_inc();
         this
+    }
+    pub unsafe fn copy_assign(&mut self, _a0: *const Counted) -> *mut Counted {
+        self.x = (*_a0).x;
+        self.y = (*_a0).y;
+        return &mut (*(self as *mut Counted));
     }
 }
 impl Clone for Counted {

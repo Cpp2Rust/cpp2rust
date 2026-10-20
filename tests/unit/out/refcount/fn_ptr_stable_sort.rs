@@ -36,15 +36,13 @@ fn main_0() -> i32 {
         (*v.borrow_mut()).push(__a1)
     };
     {
-        let __n = v
-            .as_pointer()
-            .decay()
+        let __n = (v.as_pointer() as Ptr<Item>)
             .end()
-            .iter_distance(&v.as_pointer().decay().begin());
+            .iter_distance(&(v.as_pointer() as Ptr<Item>).begin());
         let mut __order: Vec<isize> = (0..__n).collect();
         __order.sort_by(|&__x, &__y| {
-            let __a = v.as_pointer().decay().begin().iter_at(__x);
-            let __b = v.as_pointer().decay().begin().iter_at(__y);
+            let __a = (v.as_pointer() as Ptr<Item>).begin().iter_at(__x);
+            let __b = (v.as_pointer() as Ptr<Item>).begin().iter_at(__y);
             if Compare_0.call(__a.clone(), __b.clone()) {
                 std::cmp::Ordering::Less
             } else if Compare_0.call(__b, __a) {
@@ -53,13 +51,9 @@ fn main_0() -> i32 {
                 std::cmp::Ordering::Equal
             }
         });
-        let __values: Vec<_> = __order
-            .iter()
-            .map(|&__i| v.as_pointer().decay().begin().iter_at(__i).read())
-            .collect();
-        for (__i, __v) in (0..__n).zip(__values) {
-            v.as_pointer().decay().begin().iter_at(__i).write(__v);
-        }
+        reorder(__order, |__i| {
+            (v.as_pointer() as Ptr<Item>).begin().iter_at(__i)
+        });
     };
     assert!(({ (*v.borrow())[0_usize].key } == 1));
     assert!(({ (*v.borrow())[1_usize].key } == 2));

@@ -9,7 +9,7 @@ use std::rc::{Rc, Weak};
 thread_local!(
     pub static copies_0: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, CopyAssign, Default)]
 #[byte_size(4)]
 pub struct Counted {
     #[offset(0)]
@@ -33,7 +33,7 @@ impl Clone for Counted {
         Counted::copy_from(__src.as_pointer())
     }
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, CopyAssign)]
 #[byte_size(4)]
 pub struct NonConst {
     #[offset(0)]
@@ -67,7 +67,7 @@ impl Default for NonConst {
         { NonConst::new() }
     }
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, CopyAssign, Default)]
 #[byte_size(4)]
 pub struct Ignored {
     #[offset(0)]
@@ -89,7 +89,7 @@ impl Clone for Ignored {
         Ignored::copy_from(__src.as_pointer())
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CopyAssign)]
 #[byte_size(12)]
 pub struct Holder {
     #[offset(0)]
@@ -120,9 +120,7 @@ pub struct Box_int_ {
 impl Box_int_ {
     pub fn new(v: i32) -> Self {
         let v: Value<i32> = Rc::new(RefCell::new(v));
-        Self {
-            val: ((*v.borrow()) as i32),
-        }
+        Self { val: (*v.borrow()) }
     }
     pub fn copy_from(o: Ptr<Box_int_>) -> Self {
         Self {
@@ -157,7 +155,7 @@ impl Owner {
         }
     }
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, CopyAssign, Default)]
 #[byte_size(4)]
 pub struct OutOfLine {
     #[offset(0)]
@@ -182,7 +180,7 @@ impl Clone for OutOfLine {
     }
 }
 impl OutOfLine {}
-#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, CopyAssign)]
 #[byte_size(4)]
 pub struct Tracked {
     #[offset(0)]
@@ -285,6 +283,63 @@ fn main_0() -> i32 {
     ({ touch_1((ct.as_pointer())) });
     assert!(({ (*ct.borrow()).copied_from } == 2));
     return 0;
+}
+pub trait CountedImpl {
+    fn copy_assign(&self, _a0: Ptr<Counted>) -> Ptr<Counted>;
+}
+impl CountedImpl for Ptr<Counted> {
+    fn copy_assign(&self, _a0: Ptr<Counted>) -> Ptr<Counted> {
+        field!((*self), v).write({ _a0.with(|__s| __s.v) });
+        return (*self).clone();
+    }
+}
+pub trait HolderImpl {
+    fn copy_assign(&self, _a0: Ptr<Holder>) -> Ptr<Holder>;
+}
+impl HolderImpl for Ptr<Holder> {
+    fn copy_assign(&self, _a0: Ptr<Holder>) -> Ptr<Holder> {
+        ({
+            let _arg0: Ptr<Counted> = field_ptr!(_a0, c);
+            CountedImpl::copy_assign(&field_ptr!((*self), c), _arg0)
+        });
+        {
+            ((array_field_ptr!((*self), arr)) as Ptr<Counted>)
+                .to_any()
+                .memcpy(
+                    &((array_field_ptr!(_a0, arr)) as Ptr<Counted>).to_any(),
+                    8_usize as usize,
+                );
+            ((array_field_ptr!((*self), arr)) as Ptr<Counted>).to_any()
+        };
+        return (*self).clone();
+    }
+}
+pub trait IgnoredImpl {
+    fn copy_assign(&self, _a0: Ptr<Ignored>) -> Ptr<Ignored>;
+}
+impl IgnoredImpl for Ptr<Ignored> {
+    fn copy_assign(&self, _a0: Ptr<Ignored>) -> Ptr<Ignored> {
+        field!((*self), v).write({ _a0.with(|__s| __s.v) });
+        return (*self).clone();
+    }
+}
+pub trait NonConstImpl {
+    fn copy_assign(&self, _a0: Ptr<NonConst>) -> Ptr<NonConst>;
+}
+impl NonConstImpl for Ptr<NonConst> {
+    fn copy_assign(&self, _a0: Ptr<NonConst>) -> Ptr<NonConst> {
+        field!((*self), mark).write({ _a0.with(|__s| __s.mark) });
+        return (*self).clone();
+    }
+}
+pub trait OutOfLineImpl {
+    fn copy_assign(&self, _a0: Ptr<OutOfLine>) -> Ptr<OutOfLine>;
+}
+impl OutOfLineImpl for Ptr<OutOfLine> {
+    fn copy_assign(&self, _a0: Ptr<OutOfLine>) -> Ptr<OutOfLine> {
+        field!((*self), v).write({ _a0.with(|__s| __s.v) });
+        return (*self).clone();
+    }
 }
 pub trait TrackedImpl {
     fn copy_assign(&self, o: Ptr<Tracked>) -> Ptr<Tracked>;

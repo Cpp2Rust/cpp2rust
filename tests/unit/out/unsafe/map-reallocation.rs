@@ -16,7 +16,7 @@ unsafe fn main_0() -> i32 {
     let N: i32 = 10000;
     let sentinel: i32 = ((N) / (2));
     let mut m: UnsafeMap<i32, (i32, i32)> = UnsafeMap::new();
-    (*&mut (*m.get_or_insert_with(sentinel.clone(), || (sentinel, <i32>::default()))).1) = sentinel;
+    (*m.get_or_insert_with(sentinel.clone(), || (sentinel, <i32>::default()))).1 = sentinel;
     let mut it: UnsafeBidirectionalIterator<(i32, i32)> = m.find(&sentinel);
     let mut p: *mut i32 = (&mut (*it.iter_deref()).1 as *mut i32);
     assert!(
@@ -29,12 +29,12 @@ unsafe fn main_0() -> i32 {
     );
     let mut i: i32 = 0;
     'loop_: while ((i) < (sentinel)) {
-        (*&mut (*m.get_or_insert_with(i.clone(), || (i, <i32>::default()))).1) = i;
+        (*m.get_or_insert_with(i.clone(), || (i, <i32>::default()))).1 = i;
         i.prefix_inc();
     }
     let mut i: i32 = ((sentinel) + (1));
     'loop_: while ((i) <= (N)) {
-        (*&mut (*m.get_or_insert_with(i.clone(), || (i, <i32>::default()))).1) = i;
+        (*m.get_or_insert_with(i.clone(), || (i, <i32>::default()))).1 = i;
         i.prefix_inc();
     }
     assert!(
@@ -52,8 +52,7 @@ unsafe fn main_0() -> i32 {
     );
     (*it.iter_deref()).1 = 57005;
     assert!(
-        ((*&mut (*m.get_or_insert_with(sentinel.clone(), || (sentinel, <i32>::default()))).1)
-            == (57005))
+        (((*m.get_or_insert_with(sentinel.clone(), || (sentinel, <i32>::default()))).1) == (57005))
     );
     assert!(((*p) == (57005)));
     assert!(((m.len()) == ((((N) + (1)) as u32) as usize)));

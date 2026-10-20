@@ -146,7 +146,7 @@ pub fn quicksort_1(arr: Ptr<Option<Value<Box<[Edge]>>>>, mut start: i32, mut end
         quicksort_1(_arr, _start, _end)
     });
 }
-#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, Default)]
+#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(24)]
 pub struct DisjointSet {
     #[offset(0)]
@@ -167,7 +167,7 @@ impl DisjointSet {
         }
     }
 }
-#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, Default)]
+#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(16)]
 pub struct Graph {
     #[offset(0)]
@@ -364,9 +364,9 @@ impl DisjointSetImpl for Ptr<DisjointSet> {
         }
     }
     fn move_assign(&self, _a0: Ptr<DisjointSet>) -> Ptr<DisjointSet> {
-        field_ptr!((*self), rank)
+        (field_ptr!((*self), rank) as Ptr<Option<Value<Box<[i32]>>>>)
             .write(field!(_a0, rank).with_mut(|__v: &mut Option<Value<Box<[i32]>>>| __v.take()));
-        field_ptr!((*self), parent)
+        (field_ptr!((*self), parent) as Ptr<Option<Value<Box<[i32]>>>>)
             .write(field!(_a0, parent).with_mut(|__v: &mut Option<Value<Box<[i32]>>>| __v.take()));
         field!((*self), n).write({ { (*_a0.upgrade().deref()).n } });
         return (*self).clone();
@@ -377,7 +377,7 @@ pub trait GraphImpl {
 }
 impl GraphImpl for Ptr<Graph> {
     fn move_assign(&self, _a0: Ptr<Graph>) -> Ptr<Graph> {
-        field_ptr!((*self), edges)
+        (field_ptr!((*self), edges) as Ptr<Option<Value<Box<[Edge]>>>>)
             .write(field!(_a0, edges).with_mut(|__v: &mut Option<Value<Box<[Edge]>>>| __v.take()));
         field!((*self), V).write({ { (*_a0.upgrade().deref()).V } });
         field!((*self), E).write({ { (*_a0.upgrade().deref()).E } });

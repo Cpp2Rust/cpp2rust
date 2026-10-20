@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(FnPtrArg, MoveCtorUnsafe, Default)]
+#[derive(FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
 pub struct SafePointer {
     pub ptr: Option<Box<i32>>,
 }
@@ -120,7 +120,7 @@ pub unsafe fn DoStuffWithSafePointer_0(safe_ptr: *mut Option<Box<SafePointer>>) 
             .y));
 }
 pub unsafe fn Consume_1(mut safe_ptr: Option<Box<SafePointer>>) -> i32 {
-    let mut x: std_unique_ptr_SafePointer__std_default_delete_SafePointer__ = safe_ptr.take();
+    let mut x: Option<Box<SafePointer>> = safe_ptr.take();
     let mut p: Option<Box<Pair>> = Some(Box::from_raw(
         (Box::leak(Box::new(<Pair>::default())) as *mut Pair),
     ));

@@ -35,7 +35,7 @@ unsafe fn main_0() -> i32 {
         let __n = v.end().iter_distance(&v.begin());
         for __i in (1..__n).rev() {
             let __j = libc::rand() as isize % (__i + 1);
-            std::ptr::swap(v.begin().iter_at(__i), v.begin().iter_at(__j));
+            cpp_swap_unsafe!(v.begin().iter_at(__i), v.begin().iter_at(__j));
         }
     };
     {

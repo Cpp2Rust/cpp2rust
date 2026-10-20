@@ -279,13 +279,7 @@ fn main_0() -> i32 {
                     .with(|__b| __a.cmp(__b))
             })
         });
-        let __values: Vec<_> = __order
-            .iter()
-            .map(|&__i| (xs.as_pointer() as Ptr<X>).iter_at(__i).read())
-            .collect();
-        for (__i, __v) in (0..__n).zip(__values) {
-            (xs.as_pointer() as Ptr<X>).iter_at(__i).write(__v);
-        }
+        reorder(__order, |__i| (xs.as_pointer() as Ptr<X>).iter_at(__i));
     };
     assert!(
         (({ (*xs.borrow())[(0) as usize].v } == 1) && ({ (*xs.borrow())[(1) as usize].v } == 2))
@@ -316,13 +310,7 @@ fn main_0() -> i32 {
                     .with(|__b| __a.cmp(__b))
             })
         });
-        let __values: Vec<_> = __order
-            .iter()
-            .map(|&__i| (ms.as_pointer() as Ptr<Mixed>).iter_at(__i).read())
-            .collect();
-        for (__i, __v) in (0..__n).zip(__values) {
-            (ms.as_pointer() as Ptr<Mixed>).iter_at(__i).write(__v);
-        }
+        reorder(__order, |__i| (ms.as_pointer() as Ptr<Mixed>).iter_at(__i));
     };
     assert!(
         (({ (*ms.borrow())[(0) as usize].v } == 4) && ({ (*ms.borrow())[(1) as usize].v } == 5))
@@ -384,13 +372,9 @@ fn main_0() -> i32 {
                     .with(|__b| __a.cmp(__b))
             })
         });
-        let __values: Vec<_> = __order
-            .iter()
-            .map(|&__i| (bs.as_pointer() as Ptr<Boolish>).iter_at(__i).read())
-            .collect();
-        for (__i, __v) in (0..__n).zip(__values) {
-            (bs.as_pointer() as Ptr<Boolish>).iter_at(__i).write(__v);
-        }
+        reorder(__order, |__i| {
+            (bs.as_pointer() as Ptr<Boolish>).iter_at(__i)
+        });
     };
     assert!(
         (({ (*bs.borrow())[(0) as usize].v } == 1) && ({ (*bs.borrow())[(1) as usize].v } == 2))

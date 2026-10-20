@@ -32,7 +32,7 @@ pub struct Holder {
     pub field: i32,
 }
 #[repr(C)]
-#[derive(FnPtrArg, MoveCtorUnsafe, Default)]
+#[derive(FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
 pub struct NonCopyable {
     pub value: Option<Box<i32>>,
 }

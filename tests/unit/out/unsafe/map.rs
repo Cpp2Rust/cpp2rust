@@ -20,51 +20,27 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut m: UnsafeMap<i16, (i16, u32)> = UnsafeMap::new();
-    (*&mut (*m.get_or_insert_with(0_i16.clone(), || (0_i16, <u32>::default()))).1) = 1_u32;
-    (*&mut (*m.get_or_insert_with(1_i16.clone(), || (1_i16, <u32>::default()))).1) = 2_u32;
-    (*&mut (*m.get_or_insert_with(2_i16.clone(), || (2_i16, <u32>::default()))).1) = 3_u32;
+    (*m.get_or_insert_with(0_i16.clone(), || (0_i16, <u32>::default()))).1 = 1_u32;
+    (*m.get_or_insert_with(1_i16.clone(), || (1_i16, <u32>::default()))).1 = 2_u32;
+    (*m.get_or_insert_with(2_i16.clone(), || (2_i16, <u32>::default()))).1 = 3_u32;
     assert!(((m.len()) == (3_usize)));
-    assert!(
-        ((*&mut (*m.get_or_insert_with(0_i16.clone(), || (0_i16, <u32>::default()))).1) == (1_u32))
-    );
-    assert!(
-        ((*&mut (*m.get_or_insert_with(1_i16.clone(), || (1_i16, <u32>::default()))).1) == (2_u32))
-    );
-    assert!(
-        ((*&mut (*m.get_or_insert_with(2_i16.clone(), || (2_i16, <u32>::default()))).1) == (3_u32))
-    );
+    assert!((((*m.get_or_insert_with(0_i16.clone(), || (0_i16, <u32>::default()))).1) == (1_u32)));
+    assert!((((*m.get_or_insert_with(1_i16.clone(), || (1_i16, <u32>::default()))).1) == (2_u32)));
+    assert!((((*m.get_or_insert_with(2_i16.clone(), || (2_i16, <u32>::default()))).1) == (3_u32)));
     let mut x: i32 = 4;
-    (*&mut (*m.get_or_insert_with(1_i16.clone(), || (1_i16, <u32>::default()))).1) = (x as u32);
+    (*m.get_or_insert_with(1_i16.clone(), || (1_i16, <u32>::default()))).1 = (x as u32);
     assert!(((m.len()) == (3_usize)));
-    assert!(
-        ((*&mut (*m.get_or_insert_with(0_i16.clone(), || (0_i16, <u32>::default()))).1) == (1_u32))
-    );
-    assert!(
-        ((*&mut (*m.get_or_insert_with(1_i16.clone(), || (1_i16, <u32>::default()))).1) == (4_u32))
-    );
-    assert!(
-        ((*&mut (*m.get_or_insert_with(2_i16.clone(), || (2_i16, <u32>::default()))).1) == (3_u32))
-    );
-    (unsafe {
-        foo_0((*&mut (*m.get_or_insert_with(0_i16.clone(), || (0_i16, <u32>::default()))).1))
-    });
-    assert!(
-        ((*&mut (*m.get_or_insert_with(0_i16.clone(), || (0_i16, <u32>::default()))).1) == (1_u32))
-    );
-    (unsafe {
-        bar_1(&mut (*&mut (*m.get_or_insert_with(2_i16.clone(), || (2_i16, <u32>::default()))).1))
-    });
-    assert!(
-        ((*&mut (*m.get_or_insert_with(2_i16.clone(), || (2_i16, <u32>::default()))).1) == (4_u32))
-    );
-    (*&mut (*m.get_or_insert_with(0_i16.clone(), || (0_i16, <u32>::default()))).1) =
-        (*&mut (*m.get_or_insert_with(0_i16.clone(), || (0_i16, <u32>::default()))).1)
-            .wrapping_add(
-                (*&mut (*m.get_or_insert_with(2_i16.clone(), || (2_i16, <u32>::default()))).1),
-            );
-    assert!(
-        ((*&mut (*m.get_or_insert_with(0_i16.clone(), || (0_i16, <u32>::default()))).1) == (5_u32))
-    );
+    assert!((((*m.get_or_insert_with(0_i16.clone(), || (0_i16, <u32>::default()))).1) == (1_u32)));
+    assert!((((*m.get_or_insert_with(1_i16.clone(), || (1_i16, <u32>::default()))).1) == (4_u32)));
+    assert!((((*m.get_or_insert_with(2_i16.clone(), || (2_i16, <u32>::default()))).1) == (3_u32)));
+    (unsafe { foo_0((*m.get_or_insert_with(0_i16.clone(), || (0_i16, <u32>::default()))).1) });
+    assert!((((*m.get_or_insert_with(0_i16.clone(), || (0_i16, <u32>::default()))).1) == (1_u32)));
+    (unsafe { bar_1(&mut (*m.get_or_insert_with(2_i16.clone(), || (2_i16, <u32>::default()))).1) });
+    assert!((((*m.get_or_insert_with(2_i16.clone(), || (2_i16, <u32>::default()))).1) == (4_u32)));
+    (*m.get_or_insert_with(0_i16.clone(), || (0_i16, <u32>::default()))).1 =
+        ((*m.get_or_insert_with(0_i16.clone(), || (0_i16, <u32>::default()))).1)
+            .wrapping_add((*m.get_or_insert_with(2_i16.clone(), || (2_i16, <u32>::default()))).1);
+    assert!((((*m.get_or_insert_with(0_i16.clone(), || (0_i16, <u32>::default()))).1) == (5_u32)));
     let mut end: UnsafeBidirectionalIterator<(i16, u32)> = m.end();
     let mut it: UnsafeBidirectionalIterator<(i16, u32)> = m.find(&1_i16);
     let mut const_it: UnsafeBidirectionalIterator<(i16, u32)> =
@@ -94,20 +70,16 @@ unsafe fn main_0() -> i32 {
         (*const_it.iter_deref()).1
     };
     assert!(((x4) == (0_u32)));
-    (*&mut (*m.get_or_insert_with(4_i16.clone(), || (4_i16, <u32>::default()))).1) = 5_u32;
+    (*m.get_or_insert_with(4_i16.clone(), || (4_i16, <u32>::default()))).1 = 5_u32;
     let mut it4: UnsafeBidirectionalIterator<(i16, u32)> = m.find(&4_i16);
     let mut p: *mut u32 = (&mut (*it4.iter_deref()).1 as *mut u32);
     let mut x5: u32 = (*p);
-    assert!(
-        ((*&mut (*m.get_or_insert_with(4_i16.clone(), || (4_i16, <u32>::default()))).1) == (5_u32))
-    );
+    assert!((((*m.get_or_insert_with(4_i16.clone(), || (4_i16, <u32>::default()))).1) == (5_u32)));
     assert!((((*it4.iter_deref()).1) == (5_u32)));
     assert!(((*p) == (5_u32)));
     assert!(((x5) == (5_u32)));
     (*p).prefix_inc();
-    assert!(
-        ((*&mut (*m.get_or_insert_with(4_i16.clone(), || (4_i16, <u32>::default()))).1) == (6_u32))
-    );
+    assert!((((*m.get_or_insert_with(4_i16.clone(), || (4_i16, <u32>::default()))).1) == (6_u32)));
     assert!((((*it4.iter_deref()).1) == (6_u32)));
     assert!(((*p) == (6_u32)));
     assert!(((x5) == (5_u32)));
@@ -120,9 +92,9 @@ unsafe fn main_0() -> i32 {
     (*r).erase(&(it4).clone());
     assert!((((*r).len()) == (3_usize)));
     assert!(m.find(&4_i16) == m.end());
-    (*&mut (*m.get_or_insert_with(7_i16.clone(), || (7_i16, <u32>::default()))).1) = 7_u32;
-    (*&mut (*m.get_or_insert_with(8_i16.clone(), || (8_i16, <u32>::default()))).1) = 8_u32;
-    (*&mut (*m.get_or_insert_with(9_i16.clone(), || (9_i16, <u32>::default()))).1) = 9_u32;
+    (*m.get_or_insert_with(7_i16.clone(), || (7_i16, <u32>::default()))).1 = 7_u32;
+    (*m.get_or_insert_with(8_i16.clone(), || (8_i16, <u32>::default()))).1 = 8_u32;
+    (*m.get_or_insert_with(9_i16.clone(), || (9_i16, <u32>::default()))).1 = 9_u32;
     assert!((((*r).len()) == (6_usize)));
     assert!(((m.erase_key(&10_i16)) == (0_usize)));
     let mut key9: i32 = 9;
@@ -140,20 +112,19 @@ unsafe fn main_0() -> i32 {
     assert!(((other_map.len()) == (0_usize)));
     let mut key0: (i32, i64) = (1.into(), 1.into());
     let mut value: f64 = 2_f64;
-    (*&mut (*other_map.get_or_insert_with(key0.clone(), || (key0, <f64>::default()))).1) = value;
-    value = (*&mut (*other_map.get_or_insert_with(key0.clone(), || (key0, <f64>::default()))).1);
+    (*other_map.get_or_insert_with(key0.clone(), || (key0, <f64>::default()))).1 = value;
+    value = (*other_map.get_or_insert_with(key0.clone(), || (key0, <f64>::default()))).1;
     assert!(((other_map.len()) == (1_usize)));
     assert!(
-        ((*&mut (*other_map.get_or_insert_with(key0.clone(), || (key0, <f64>::default()))).1)
-            == (value))
+        (((*other_map.get_or_insert_with(key0.clone(), || (key0, <f64>::default()))).1) == (value))
     );
     assert!(((m.len()) == (3_usize)));
     let mut k: i32 = 0;
-    assert!(((*&raw const (*m.get(&(k as i16)).expect("out of range!")).1) == (5_u32)));
+    assert!((((*m.get(&(k as i16)).expect("out of range!")).1) == (5_u32)));
     k.prefix_inc();
-    assert!(((*&raw const (*m.get(&(k as i16)).expect("out of range!")).1) == (4_u32)));
+    assert!((((*m.get(&(k as i16)).expect("out of range!")).1) == (4_u32)));
     k.prefix_inc();
-    assert!(((*&raw const (*m.get(&(k as i16)).expect("out of range!")).1) == (4_u32)));
+    assert!((((*m.get(&(k as i16)).expect("out of range!")).1) == (4_u32)));
     let mut m2: UnsafeMap<i32, (i32, bool)> = UnsafeMap::new();
     assert!(((m2.len()) == (0_usize)));
     let mut indexes: Vec<i32> = Vec::new();
@@ -183,10 +154,10 @@ unsafe fn main_0() -> i32 {
     }
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < (indexes.len())) {
-        (*&mut (*m2.get_or_insert_with((indexes[(i as usize)] as i32).clone(), || {
+        (*m2.get_or_insert_with(indexes[(i as usize)].clone(), || {
             (indexes[(i as usize)], <bool>::default())
         }))
-        .1) = ((i).wrapping_rem(2_u32) != 0);
+        .1 = ((i).wrapping_rem(2_u32) != 0);
         i.prefix_inc();
     }
     assert!(((m2.len()) == (indexes.len())));

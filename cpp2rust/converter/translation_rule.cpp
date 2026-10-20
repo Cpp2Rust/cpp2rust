@@ -72,6 +72,15 @@ MethodCallFragment ParseMethodCallFragmentJSON(const llvm::json::Object &obj) {
   return mc;
 }
 
+RefExprFragment ParseRefExprFragmentJSON(const llvm::json::Object &obj) {
+  RefExprFragment re;
+  re.prefix = obj.getString("prefix").value_or("").str();
+  if (auto *inner = obj.getArray("inner")) {
+    re.inner = ParseBodyFragmentsJSON(*inner);
+  }
+  return re;
+}
+
 std::vector<BodyFragment> ParseBodyFragmentsJSON(const llvm::json::Array &arr) {
   std::vector<BodyFragment> result;
   for (auto &frag : arr) {
@@ -87,6 +96,9 @@ std::vector<BodyFragment> ParseBodyFragmentsJSON(const llvm::json::Array &arr) {
     } else if (auto *mc = frag_obj->getObject("method_call")) {
       result.push_back(std::make_unique<MethodCallFragment>(
           ParseMethodCallFragmentJSON(*mc)));
+    } else if (auto *re = frag_obj->getObject("ref_expr")) {
+      result.push_back(
+          std::make_unique<RefExprFragment>(ParseRefExprFragmentJSON(*re)));
     } else if (frag_obj->get("va_args")) {
       result.push_back(VaArgsFragment{});
     } else if (frag_obj->get("init")) {
@@ -110,6 +122,8 @@ void BodyFragmentDump(const BodyFragment &frag) {
   } else if (auto *mc =
                  std::get_if<std::unique_ptr<MethodCallFragment>>(&frag)) {
     (*mc)->dump();
+  } else if (auto *re = std::get_if<std::unique_ptr<RefExprFragment>>(&frag)) {
+    (*re)->dump();
   }
 }
 
@@ -117,6 +131,9 @@ bool HasInitFragment(const std::vector<BodyFragment> &body) {
   return std::any_of(body.begin(), body.end(), [](const BodyFragment &frag) {
     if (auto *mc = std::get_if<std::unique_ptr<MethodCallFragment>>(&frag)) {
       return HasInitFragment((*mc)->receiver) || HasInitFragment((*mc)->body);
+    }
+    if (auto *re = std::get_if<std::unique_ptr<RefExprFragment>>(&frag)) {
+      return HasInitFragment((*re)->inner);
     }
     return std::holds_alternative<InitFragment>(frag);
   });
@@ -195,6 +212,21 @@ void ExprRule::dump() const {
 }
 
 bool ExprRule::usesInit() const { return HasInitFragment(body); }
+
+const std::vector<BodyFragment> *ExprRule::refExprOperand() const {
+  if (body.size() != 1) {
+    return nullptr;
+  }
+  auto *re = std::get_if<std::unique_ptr<RefExprFragment>>(&body[0]);
+  return re ? &(*re)->inner : nullptr;
+}
+
+void RefExprFragment::dump() const {
+  log() << "  ref_expr: " << prefix << '\n';
+  for (auto &frag : inner) {
+    BodyFragmentDump(frag);
+  }
+}
 
 void GenericFragment::dump() const { log() << "  generic: " << n << '\n'; }
 

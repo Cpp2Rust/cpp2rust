@@ -35,7 +35,7 @@ pub struct Holder {
     #[offset(0)]
     pub field: i32,
 }
-#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, Default)]
+#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(8)]
 pub struct NonCopyable {
     #[offset(0)]
@@ -130,7 +130,7 @@ pub trait NonCopyableImpl {
 }
 impl NonCopyableImpl for Ptr<NonCopyable> {
     fn move_assign(&self, _a0: Ptr<NonCopyable>) -> Ptr<NonCopyable> {
-        field_ptr!((*self), value)
+        (field_ptr!((*self), value) as Ptr<Option<Value<i32>>>)
             .write(field!(_a0, value).with_mut(|__v: &mut Option<Value<i32>>| __v.take()));
         return (*self).clone();
     }

@@ -109,6 +109,7 @@ impl FnIr {
                 BodyFragment::MethodCall { method_call } => {
                     check(&method_call.receiver) || check(&method_call.body)
                 }
+                BodyFragment::RefExpr { ref_expr } => check(&ref_expr.inner),
                 _ => false,
             })
         }
@@ -163,6 +164,9 @@ pub enum BodyFragment {
     MethodCall {
         method_call: MethodCallInner,
     },
+    RefExpr {
+        ref_expr: RefExprInner,
+    },
     VaArgs {
         va_args: std::marker::PhantomData<()>,
     },
@@ -193,6 +197,12 @@ pub struct PlaceholderInner {
 pub struct MethodCallInner {
     pub receiver: Vec<BodyFragment>,
     pub body: Vec<BodyFragment>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RefExprInner {
+    pub prefix: String,
+    pub inner: Vec<BodyFragment>,
 }
 
 // For convenience: match on fragment kind
@@ -237,6 +247,11 @@ fn resolve_nth_unknown(
                         return true;
                     }
                     if resolve(&mut method_call.body, param, nth, count, patch) {
+                        return true;
+                    }
+                }
+                BodyFragment::RefExpr { ref_expr } => {
+                    if resolve(&mut ref_expr.inner, param, nth, count, patch) {
                         return true;
                     }
                 }
