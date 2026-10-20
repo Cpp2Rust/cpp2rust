@@ -5,6 +5,14 @@ use libcc2rs::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
+fn t13<T1>() -> Ptr<T1> {
+    Ptr::null()
+}
+
+fn t14<T1>() -> Ptr<T1> {
+    Ptr::null()
+}
+
 fn f40<T1>(a0: Ptr<T1>) -> Ptr<T1> {
     a0.to_end()
 }
