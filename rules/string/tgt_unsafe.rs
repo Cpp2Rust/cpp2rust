@@ -11,6 +11,14 @@ fn t4() -> Vec<libc::c_char> {
     vec![0]
 }
 
+fn t5() -> *mut libc::c_char {
+    ::std::ptr::null_mut()
+}
+
+fn t6() -> *const libc::c_char {
+    ::std::ptr::null()
+}
+
 fn t3() -> usize {
     0_usize
 }

@@ -8,6 +8,8 @@
 using t1 = std::string;
 using t4 = std::basic_string<char>;
 typedef std::string::size_type t3;
+using t5 = std::string::reference;
+using t6 = std::string::const_reference;
 
 std::string f1(const std::string &s, std::size_t pos, std::size_t count) {
   return s.substr(pos, count);
