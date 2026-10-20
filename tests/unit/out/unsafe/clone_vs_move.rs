@@ -169,22 +169,23 @@ unsafe fn main_0() -> i32 {
     let mut map1: UnsafeMap<i32, (i32, i32)> = UnsafeMap::new();
     let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {
-        (*&mut (*map1.get_or_insert_with(i.clone(), || (i, <i32>::default()))).1) = i;
+        (*map1.get_or_insert_with(i.clone(), || (i, <i32>::default()))).1 = i;
         i.prefix_inc();
     }
     let mut map2: UnsafeMap<i32, (i32, i32)> = map1.clone();
     let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {
-        assert!(((*&mut (*map2.get_or_insert_with(i.clone(), || (i, <i32>::default()))).1) == (i)));
-        (*&mut (*map2.get_or_insert_with(i.clone(), || (i, <i32>::default()))).1).prefix_inc();
+        assert!((((*map2.get_or_insert_with(i.clone(), || (i, <i32>::default()))).1) == (i)));
+        (*map2.get_or_insert_with(i.clone(), || (i, <i32>::default())))
+            .1
+            .prefix_inc();
         i.prefix_inc();
     }
     let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {
-        assert!(((*&mut (*map1.get_or_insert_with(i.clone(), || (i, <i32>::default()))).1) == (i)));
+        assert!((((*map1.get_or_insert_with(i.clone(), || (i, <i32>::default()))).1) == (i)));
         assert!(
-            ((*&mut (*map2.get_or_insert_with(i.clone(), || (i, <i32>::default()))).1)
-                == ((i) + (1)))
+            (((*map2.get_or_insert_with(i.clone(), || (i, <i32>::default()))).1) == ((i) + (1)))
         );
         i.prefix_inc();
     }

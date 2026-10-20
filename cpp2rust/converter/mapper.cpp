@@ -27,6 +27,11 @@ bool Contains(clang::ASTContext &ctx, const clang::Expr *expr) {
   return RuleRegistry::Search(ctx, expr).first != nullptr;
 }
 
+bool IsRefExpr(clang::ASTContext &ctx, const clang::Expr *expr) {
+  const auto *rule = RuleRegistry::GetExprRule(ctx, expr);
+  return rule && rule->refExprOperand();
+}
+
 std::string MapFunctionName(clang::ASTContext &ctx,
                             const clang::FunctionDecl *decl) {
   assert(decl);

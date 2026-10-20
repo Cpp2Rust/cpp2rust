@@ -1765,6 +1765,7 @@ void Converter::ConvertPrintf(clang::CallExpr *expr) {
 }
 
 void Converter::ConvertVariadicArg(clang::Expr *arg) {
+  PushExprKind push(*this, ExprKind::RValue);
   if (arg->getType()->isFunctionPointerType()) {
     Convert(arg);
     StrCat(".map_or(::std::ptr::null_mut(), |f| f as *mut ::libc::c_void)");
@@ -1832,19 +1833,16 @@ bool Converter::VisitCallExpr(clang::CallExpr *expr) {
       return false;
     }
 
-    auto **args = expr->getArgs();
-    auto num_args = expr->getNumArgs();
-    auto ctx = CollectRefBindingTempArgs(expr);
-    std::string str;
-    {
-      PushExprKind push(*this, ExprKind::RValue);
-      str = GetMappedAsString(expr, args, num_args, &ctx);
-    };
-
     bool deref_ref = (IsReferenceType(expr) ||
                       GetReturnTypeOfFunction(expr)->isReferenceType()) &&
                      !isAddrOf() && !isVoid();
-    if (deref_ref) {
+
+    auto **args = expr->getArgs();
+    auto num_args = expr->getNumArgs();
+    auto ctx = CollectRefBindingTempArgs(expr);
+    auto str = GetMappedAsString(expr, args, num_args, &ctx);
+
+    if (deref_ref && !Mapper::IsRefExpr(ctx_, expr)) {
       str = "( * " + std::move(str) + " )";
     }
 
@@ -3152,7 +3150,8 @@ std::string Converter::ConvertDeclRef(clang::Expr *expr,
 
   if (ShouldReplaceWithMappedBody(decl)) {
     if (auto str = GetMappedAsString(expr); !str.empty()) {
-      if (RuleRegistry::ReturnsReference(expr) && !isAddrOf()) {
+      if (RuleRegistry::ReturnsReference(expr) && !isAddrOf() &&
+          !Mapper::IsRefExpr(ctx_, expr)) {
         return std::format("({}{})", GetPointerDerefPrefix(expr->getType()),
                            str);
       }
@@ -3409,7 +3408,7 @@ bool Converter::VisitMemberExpr(clang::MemberExpr *expr) {
       is_reference_type |= method->getReturnType()->isReferenceType();
     }
 
-    if (is_reference_type) {
+    if (is_reference_type || RuleRegistry::ReturnsPointer(ctx_, expr)) {
       computed_expr_type_ = ComputedExprType::Pointer;
     } else {
       StrCat(token::kRef);
@@ -3462,7 +3461,8 @@ void Converter::SetUFCSReceiver(clang::Expr *base, bool is_arrow,
 
 void Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
   if (auto mapped = GetMappedAsString(expr); !mapped.empty()) {
-    if (RuleRegistry::ReturnsPointer(ctx_, expr)) {
+    if (RuleRegistry::ReturnsPointer(ctx_, expr) && !isAddrOf() &&
+        !Mapper::IsRefExpr(ctx_, expr)) {
       PushParen paren(*this);
       StrCat(token::kStar, mapped);
     } else {
@@ -5203,7 +5203,10 @@ std::string Converter::GetMappedAsString(clang::Expr *expr, clang::Expr **args,
     return {};
 
   auto saved_borrows = std::exchange(mut_borrows_, {});
-  auto result = ConvertIRFragment(tgt_ir->body, expr, args, num_args, ctx);
+  auto *operand = tgt_ir->refExprOperand();
+  bool lvalue = operand && !isAddrOf();
+  auto result = ConvertIRFragment(lvalue ? *operand : tgt_ir->body, expr, args,
+                                  num_args, ctx);
   if (tgt_ir->multi_statement) {
     result = '{' + result + '}';
   }
@@ -5257,6 +5260,10 @@ std::string Converter::ConvertIRFragment(
     } else if (auto *mc =
                    std::get_if<std::unique_ptr<MethodCallFragment>>(&frag)) {
       result += ConvertMappedMethodCall(expr, **mc, args, num_args, ctx);
+    } else if (auto *re =
+                   std::get_if<std::unique_ptr<RefExprFragment>>(&frag)) {
+      result += (*re)->prefix + ' ' +
+                ConvertIRFragment((*re)->inner, expr, args, num_args, ctx);
     }
   }
 
@@ -5292,6 +5299,7 @@ Converter::ConvertInitFragment(clang::Expr *expr,
   auto type = RuleRegistry::GetInitType(expr);
 
   Buffer buf(*this);
+  PushExprKind push(*this, ExprKind::RValue);
   ConvertConstructFromArgs(
       type, llvm::ArrayRef(all_args).drop_front(tgt_ir->params.size()),
       expr->getExprLoc());

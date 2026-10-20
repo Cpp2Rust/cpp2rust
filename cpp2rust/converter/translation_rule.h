@@ -49,16 +49,25 @@ struct InitFragment {
 };
 
 struct MethodCallFragment; // forward declaration
+struct RefExprFragment;
 
 using BodyFragment = std::variant<TextFragment, PlaceholderFragment,
                                   GenericFragment, VaArgsFragment, InitFragment,
-                                  std::unique_ptr<MethodCallFragment>>;
+                                  std::unique_ptr<MethodCallFragment>,
+                                  std::unique_ptr<RefExprFragment>>;
 
 struct MethodCallFragment {
   std::vector<BodyFragment> receiver;
   std::vector<BodyFragment> body;
 
   const PlaceholderFragment *getReceiverPlaceholder() const;
+  void dump() const;
+};
+
+struct RefExprFragment {
+  std::string prefix;
+  std::vector<BodyFragment> inner;
+
   void dump() const;
 };
 
@@ -83,6 +92,7 @@ struct ExprRule {
 
   void dump() const;
   bool usesInit() const;
+  const std::vector<BodyFragment> *refExprOperand() const;
 };
 
 struct TypeRule {
