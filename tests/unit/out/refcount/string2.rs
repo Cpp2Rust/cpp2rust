@@ -17,15 +17,13 @@ fn main_0() -> i32 {
         __bytes
     }));
     (*arr.borrow_mut())[1_usize] = ('b' as i8);
-    let mut p: Ptr<i8> = (arr.as_pointer() as Ptr<Vec<i8>>)
-        .decay()
-        .offset((1) as isize);
+    let mut p: Ptr<i8> = arr.as_pointer().decay().offset((1) as isize);
     assert!((((p.read()) as i32) == (('b' as i8) as i32)));
     assert!(
         Ptr::<i8>::from_string_literal(b"fbo")
             .with_c_str(|__s| (*arr.borrow())[..(*arr.borrow()).len().saturating_sub(1)] == *__s)
     );
-    let mut names: [Ptr<i8>; 1] = [(arr.as_pointer() as Ptr<Vec<i8>>).decay()];
+    let mut names: [Ptr<i8>; 1] = [arr.as_pointer().decay()];
     let mut copy: Vec<i8> = {
         let mut __bytes = names[(0) as usize].to_c_bytes();
         __bytes.push(0);

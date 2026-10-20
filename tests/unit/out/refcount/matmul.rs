@@ -18,8 +18,8 @@ pub fn matalloc_0(
     )));
     let mut i: i32 = 0;
     'loop_: while (i < n) {
-        ((m.as_pointer() as Ptr<Option<Value<Box<[i32]>>>>).offset((i as usize) as isize)
-            as Ptr<Option<Value<Box<[i32]>>>>)
+        (m.as_pointer() as Ptr<Option<Value<Box<[i32]>>>>)
+            .offset((i as usize) as isize)
             .write(
                 Some(Rc::new(RefCell::new(
                     (0..(p as usize))

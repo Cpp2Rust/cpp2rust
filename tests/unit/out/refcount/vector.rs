@@ -55,21 +55,18 @@ fn main_0() -> i32 {
     };
     assert!(((*v2.borrow()).len() == 3_usize));
     {
-        let __off =
-            <RandomAccessIterator<i32>>::from((v2.as_pointer() as Ptr<Vec<i32>>).decay().begin())
-                .index();
-        (v2.as_pointer() as Ptr<Vec<i32>>).with_mut(|__v: &mut Vec<i32>| __v.remove(__off));
-        RandomAccessIterator::Vec((v2.as_pointer() as Ptr<Vec<i32>>).decay() + __off)
+        let __off = <RandomAccessIterator<i32>>::from(v2.as_pointer().decay().begin()).index();
+        v2.as_pointer()
+            .with_mut(|__v: &mut Vec<i32>| __v.remove(__off));
+        RandomAccessIterator::Vec(v2.as_pointer().decay() + __off)
     };
     assert!(((*v2.borrow()).len() == 2_usize));
     assert!(({ (*v2.borrow())[0_usize] } == 2));
     assert!(({ (*v2.borrow())[1_usize] } == 3));
     {
-        let __off =
-            <RandomAccessIterator<i32>>::from((v2.as_pointer() as Ptr<Vec<i32>>).decay().begin())
-                .index();
+        let __off = <RandomAccessIterator<i32>>::from(v2.as_pointer().decay().begin()).index();
         (*v2.borrow_mut()).insert(__off, 100);
-        <RandomAccessIterator<i32>>::from((v2.as_pointer() as Ptr<Vec<i32>>).decay().begin())
+        <RandomAccessIterator<i32>>::from(v2.as_pointer().decay().begin())
     };
     ({ copy_0((*v2.borrow()).clone()) });
     assert!(((*v2.borrow()).len() == 3_usize));
@@ -78,50 +75,30 @@ fn main_0() -> i32 {
     assert!(({ (*v2.borrow())[2_usize] } == 3));
     let mut x: i32 = 7;
     {
-        let __off = <RandomAccessIterator<i32>>::from(
-            (v2.as_pointer() as Ptr<Vec<i32>>)
-                .decay()
-                .begin()
-                .iter_add(1_isize),
-        )
-        .index();
+        let __off =
+            <RandomAccessIterator<i32>>::from(v2.as_pointer().decay().begin().iter_add(1_isize))
+                .index();
         (*v2.borrow_mut()).insert(__off, x);
-        <RandomAccessIterator<i32>>::from(
-            (v2.as_pointer() as Ptr<Vec<i32>>)
-                .decay()
-                .begin()
-                .iter_add(1_isize),
-        )
+        <RandomAccessIterator<i32>>::from(v2.as_pointer().decay().begin().iter_add(1_isize))
     };
     assert!(((*v2.borrow()).len() == 4_usize));
     assert!(({ (*v2.borrow())[0_usize] } == 100));
     assert!(({ (*v2.borrow())[1_usize] } == 7));
     assert!(({ (*v2.borrow())[2_usize] } == 2));
     {
-        let __off =
-            <RandomAccessIterator<i32>>::from((v2.as_pointer() as Ptr<Vec<i32>>).decay().end())
-                .index();
+        let __off = <RandomAccessIterator<i32>>::from(v2.as_pointer().decay().end()).index();
         (*v2.borrow_mut()).splice(__off..__off, std::iter::repeat_n(9, 2_usize));
-        <RandomAccessIterator<i32>>::from((v2.as_pointer() as Ptr<Vec<i32>>).decay().end())
+        <RandomAccessIterator<i32>>::from(v2.as_pointer().decay().end())
     };
     assert!(((*v2.borrow()).len() == 6_usize));
     assert!(({ (*v2.borrow())[4_usize] } == 9));
     assert!(({ (*v2.borrow())[5_usize] } == 9));
     {
-        let __off = <RandomAccessIterator<i32>>::from(
-            (v2.as_pointer() as Ptr<Vec<i32>>)
-                .decay()
-                .begin()
-                .iter_add(2_isize),
-        )
-        .index();
+        let __off =
+            <RandomAccessIterator<i32>>::from(v2.as_pointer().decay().begin().iter_add(2_isize))
+                .index();
         (*v2.borrow_mut()).splice(__off..__off, Vec::from([11, 12, 13]));
-        <RandomAccessIterator<i32>>::from(
-            (v2.as_pointer() as Ptr<Vec<i32>>)
-                .decay()
-                .begin()
-                .iter_add(2_isize),
-        )
+        <RandomAccessIterator<i32>>::from(v2.as_pointer().decay().begin().iter_add(2_isize))
     };
     assert!(((*v2.borrow()).len() == 9_usize));
     assert!(({ (*v2.borrow())[1_usize] } == 7));
@@ -132,50 +109,44 @@ fn main_0() -> i32 {
     assert!(({ (*v2.borrow())[8_usize] } == 9));
     let src: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::from([21, 22])));
     {
-        let start_idx =
-            <RandomAccessIterator<i32>>::from((v2.as_pointer() as Ptr<Vec<i32>>).decay().begin())
-                .index();
+        let start_idx = <RandomAccessIterator<i32>>::from(v2.as_pointer().decay().begin()).index();
         let mut temp_vec: Vec<i32> = Vec::new();
-        let mut __it = (src.as_pointer() as Ptr<Vec<i32>>).decay().begin();
-        while __it != (src.as_pointer() as Ptr<Vec<i32>>).decay().end() {
+        let mut __it = src.as_pointer().decay().begin();
+        while __it != src.as_pointer().decay().end() {
             temp_vec.push(__it.iter_deref().read());
             __it.iter_inc();
         }
-        (v2.as_pointer() as Ptr<Vec<i32>>).with_mut(|v: &mut Vec<i32>| {
+        v2.as_pointer().with_mut(|v: &mut Vec<i32>| {
             v.splice(start_idx..start_idx, temp_vec);
         });
-        RandomAccessIterator::Vec((v2.as_pointer() as Ptr<Vec<i32>>).decay() + start_idx)
+        RandomAccessIterator::Vec(v2.as_pointer().decay() + start_idx)
     };
     assert!(((*v2.borrow()).len() == 11_usize));
     assert!(({ (*v2.borrow())[0_usize] } == 21));
     assert!(({ (*v2.borrow())[1_usize] } == 22));
     assert!(({ (*v2.borrow())[2_usize] } == 100));
     {
-        let __off =
-            <RandomAccessIterator<i32>>::from((v2.as_pointer() as Ptr<Vec<i32>>).decay().begin())
-                .index();
-        (v2.as_pointer() as Ptr<Vec<i32>>).with_mut(|__v: &mut Vec<i32>| __v.remove(__off));
-        RandomAccessIterator::Vec((v2.as_pointer() as Ptr<Vec<i32>>).decay() + __off)
+        let __off = <RandomAccessIterator<i32>>::from(v2.as_pointer().decay().begin()).index();
+        v2.as_pointer()
+            .with_mut(|__v: &mut Vec<i32>| __v.remove(__off));
+        RandomAccessIterator::Vec(v2.as_pointer().decay() + __off)
     };
     {
-        let __off =
-            <RandomAccessIterator<i32>>::from((v2.as_pointer() as Ptr<Vec<i32>>).decay().begin())
-                .index();
-        (v2.as_pointer() as Ptr<Vec<i32>>).with_mut(|__v: &mut Vec<i32>| __v.remove(__off));
-        RandomAccessIterator::Vec((v2.as_pointer() as Ptr<Vec<i32>>).decay() + __off)
+        let __off = <RandomAccessIterator<i32>>::from(v2.as_pointer().decay().begin()).index();
+        v2.as_pointer()
+            .with_mut(|__v: &mut Vec<i32>| __v.remove(__off));
+        RandomAccessIterator::Vec(v2.as_pointer().decay() + __off)
     };
     let mut i: i32 = 0;
     'loop_: while (i < 4) {
         {
             let __off = <RandomAccessIterator<i32>>::from(
-                (v2.as_pointer() as Ptr<Vec<i32>>)
-                    .decay()
-                    .begin()
-                    .iter_add(1_isize),
+                v2.as_pointer().decay().begin().iter_add(1_isize),
             )
             .index();
-            (v2.as_pointer() as Ptr<Vec<i32>>).with_mut(|__v: &mut Vec<i32>| __v.remove(__off));
-            RandomAccessIterator::Vec((v2.as_pointer() as Ptr<Vec<i32>>).decay() + __off)
+            v2.as_pointer()
+                .with_mut(|__v: &mut Vec<i32>| __v.remove(__off));
+            RandomAccessIterator::Vec(v2.as_pointer().decay() + __off)
         };
         i.prefix_inc();
     }
@@ -236,9 +207,9 @@ fn main_0() -> i32 {
         );
         i.prefix_inc();
     }
-    let mut p1: Ptr<f64> = (v6.as_pointer() as Ptr<Vec<f64>>).decay();
+    let mut p1: Ptr<f64> = v6.as_pointer().decay();
     assert!(((p1.read()) == 2_f64));
-    let mut p2: Ptr<i32> = (v3.as_pointer() as Ptr<Vec<i32>>).decay();
+    let mut p2: Ptr<i32> = v3.as_pointer().decay();
     assert!(((p2.read()) == 1));
     assert!(({ (*v3.borrow())[0_usize] } == 1));
     assert!(({ (*v3.borrow())[1_usize] } == 1));
@@ -276,78 +247,65 @@ fn main_0() -> i32 {
     };
     assert!(((*v3.borrow()).capacity() == 201_usize));
     assert!(((*v3.borrow()).len() == 100_usize));
-    assert!((((v2.as_pointer() as Ptr<Vec<i32>>).decay().to_last().read()) == 3));
-    assert!((((v3.as_pointer() as Ptr<Vec<i32>>).decay().to_last().read()) == 1));
-    assert!(
-        ((v4.as_pointer() as Ptr<Vec<Ptr<i32>>>)
-            .decay()
-            .to_last()
-            .read())
-        .is_null()
-    );
-    assert!(
-        ((v5.as_pointer() as Ptr<Vec<Ptr<i32>>>)
-            .decay()
-            .to_last()
-            .read())
-        .is_null()
-    );
-    assert!((((v6.as_pointer() as Ptr<Vec<f64>>).decay().to_last().read()) == 2_f64));
-    let ref0: Ptr<f64> = (v6.as_pointer() as Ptr<Vec<f64>>).decay().to_last();
+    assert!(((v2.as_pointer().decay().to_last().read()) == 3));
+    assert!(((v3.as_pointer().decay().to_last().read()) == 1));
+    assert!((v4.as_pointer().decay().to_last().read()).is_null());
+    assert!((v5.as_pointer().decay().to_last().read()).is_null());
+    assert!(((v6.as_pointer().decay().to_last().read()) == 2_f64));
+    let ref0: Ptr<f64> = v6.as_pointer().decay().to_last();
     ref0.write(5_f64);
-    assert!((((v6.as_pointer() as Ptr<Vec<f64>>).decay().to_last().read()) == 5_f64));
-    let mut x0: f64 = ((v6.as_pointer() as Ptr<Vec<f64>>).decay().to_last().read());
+    assert!(((v6.as_pointer().decay().to_last().read()) == 5_f64));
+    let mut x0: f64 = (v6.as_pointer().decay().to_last().read());
     assert!((x0 == 5_f64));
     x0 = 6_f64;
-    assert!((((v6.as_pointer() as Ptr<Vec<f64>>).decay().to_last().read()) == 5_f64));
+    assert!(((v6.as_pointer().decay().to_last().read()) == 5_f64));
     let mut idx: i32 = 0;
     assert!(
-        (((v6.as_pointer() as Ptr<Vec<f64>>)
+        ((v6.as_pointer()
             .decay()
             .offset((idx as usize) as isize)
             .read())
             == 2_f64)
     );
     assert!(
-        (((v6.as_pointer() as Ptr<Vec<f64>>)
+        ((v6.as_pointer()
             .decay()
             .offset((s2).wrapping_sub(1_usize) as isize)
             .read())
             == 5_f64)
     );
-    let ref1: Ptr<f64> = (v6.as_pointer() as Ptr<Vec<f64>>)
+    let ref1: Ptr<f64> = v6
+        .as_pointer()
         .decay()
         .offset((s2).wrapping_sub(1_usize) as isize);
     {
         ref1.with_mut(|__v| *__v = *__v + 1.5_f64)
     };
     assert!(
-        (((v6.as_pointer() as Ptr<Vec<f64>>)
+        ((v6.as_pointer()
             .decay()
             .offset((s2).wrapping_sub(1_usize) as isize)
             .read())
             == 6.5_f64)
     );
-    let mut x1: f64 = ((v6.as_pointer() as Ptr<Vec<f64>>)
+    let mut x1: f64 = (v6
+        .as_pointer()
         .decay()
         .offset((s2).wrapping_sub(1_usize) as isize)
         .read());
     assert!((x1 == 6.5_f64));
     x1 -= 1.5_f64;
     assert!(
-        (((v6.as_pointer() as Ptr<Vec<f64>>)
+        ((v6.as_pointer()
             .decay()
             .offset((s2).wrapping_sub(1_usize) as isize)
             .read())
             == 6.5_f64)
     );
     assert!(
-        (((s1).wrapping_add(s2)).wrapping_add(
-            (((v2.as_pointer() as Ptr<Vec<i32>>)
-                .decay()
-                .offset(0_usize as isize)
-                .read()) as usize)
-        ) == 103_usize)
+        (((s1).wrapping_add(s2))
+            .wrapping_add(((v2.as_pointer().decay().offset(0_usize as isize).read()) as usize))
+            == 103_usize)
     );
     let a: Value<S> = Rc::new(RefCell::new(S { x: 1 }));
     let pa: Value<Ptr<S>> = Rc::new(RefCell::new((a.as_pointer())));

@@ -99,11 +99,7 @@ pub fn nested_emplace_move_5(mut bw: Ptr<Writer>) {
 }
 pub fn self_ref_push_6(mut comps: Ptr<Vec<Chunk>>) {
     {
-        let a0_clone = (*((comps).clone() as Ptr<Vec<Chunk>>)
-            .decay()
-            .upgrade()
-            .deref())
-        .clone();
+        let a0_clone = (*(comps).clone().decay().upgrade().deref()).clone();
         comps.with_mut(|__v: &mut Vec<Chunk>| __v.push(a0_clone))
     };
 }
@@ -184,9 +180,7 @@ fn main_0() -> i32 {
     ({ push_param_0((vecs.as_pointer())) });
     assert!(((*vecs.borrow()).len() == 1_usize));
     assert!(
-        (*((vecs.as_pointer() as Ptr<Vec<u8>>)
-            .offset(0_usize)
-            .as_pointer() as Ptr<Vec<u8>>)
+        (*(vecs.as_pointer().decay().offset(0_usize).as_pointer() as Ptr<Vec<u8>>)
             .upgrade()
             .deref())
         .is_empty()
@@ -195,7 +189,9 @@ fn main_0() -> i32 {
     ({ push_local_from_field_1((jpg.as_pointer()), true) });
     assert!(((*jpg.borrow()).com_data.len() == 1_usize));
     assert!(
-        ((*((field_ref!(jpg.as_pointer(), com_data).as_pointer() as Ptr<Vec<u8>>)
+        ((*(field_ref!(jpg.as_pointer(), com_data)
+            .as_pointer()
+            .decay()
             .offset(0_usize)
             .as_pointer() as Ptr<Vec<u8>>)
             .upgrade()
@@ -225,7 +221,9 @@ fn main_0() -> i32 {
     ({ emplace_local_from_field_4((jpg.as_pointer()), false) });
     assert!(((*jpg.borrow()).app_data.len() == 1_usize));
     assert!(
-        ((*((field_ref!(jpg.as_pointer(), app_data).as_pointer() as Ptr<Vec<u8>>)
+        ((*(field_ref!(jpg.as_pointer(), app_data)
+            .as_pointer()
+            .decay()
             .offset(0_usize)
             .as_pointer() as Ptr<Vec<u8>>)
             .upgrade()
@@ -265,26 +263,12 @@ fn main_0() -> i32 {
     let queue: Value<Vec<Pair>> = Rc::new(RefCell::new(Vec::new()));
     ({ emplace_deque_8((queue.as_pointer())) });
     assert!(
-        ((queue.as_pointer() as Ptr<Vec<Pair>>)
-            .decay()
-            .with(|__s| __s.first)
-            == 6)
-            && ((queue.as_pointer() as Ptr<Vec<Pair>>)
-                .decay()
-                .with(|__s| __s.second)
-                == 14)
+        (queue.as_pointer().decay().with(|__s| __s.first) == 6)
+            && (queue.as_pointer().decay().with(|__s| __s.second) == 14)
     );
     assert!(
-        ((queue.as_pointer() as Ptr<Vec<Pair>>)
-            .decay()
-            .to_last()
-            .with(|__s| __s.first)
-            == -1_i32)
-            && ((queue.as_pointer() as Ptr<Vec<Pair>>)
-                .decay()
-                .to_last()
-                .with(|__s| __s.second)
-                == -1_i32)
+        (queue.as_pointer().decay().to_last().with(|__s| __s.first) == -1_i32)
+            && (queue.as_pointer().decay().to_last().with(|__s| __s.second) == -1_i32)
     );
     let values: Value<Vec<i64>> = Rc::new(RefCell::new(Vec::new()));
     ({ emplace_scalar_9((values.as_pointer()), 7) });

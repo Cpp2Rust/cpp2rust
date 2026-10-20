@@ -11,9 +11,11 @@ pub fn second_row_0() -> Ptr<i32> {
         Vec::from([1, 2, 3]),
         Vec::from([4, 5, 6]),
     ])));
-    return ((rows.as_pointer() as Ptr<Vec<i32>>)
+    return rows
+        .as_pointer()
+        .decay()
         .offset(1_usize)
-        .as_pointer() as Ptr<Vec<i32>>)
+        .as_pointer()
         .decay();
 }
 pub fn main() {
