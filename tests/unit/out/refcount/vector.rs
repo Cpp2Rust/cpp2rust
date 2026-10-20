@@ -28,7 +28,7 @@ fn main_0() -> i32 {
     assert!(!(v1.is_empty()));
     v1.pop();
     assert!(v1.is_empty());
-    let mut s1: usize = v1.len();
+    let mut s1: u64 = (v1.len() as u64);
     {
         let __a0 = 100_usize as usize;
         v1.resize_with(__a0, || <i32>::default())
@@ -159,7 +159,7 @@ fn main_0() -> i32 {
     assert!(({ (*v2.borrow())[0_usize] } == 100));
     assert!(({ (*v2.borrow())[1_usize] } == 2));
     assert!(({ (*v2.borrow())[2_usize] } == 3));
-    let mut s2: usize = (*v2.borrow()).len();
+    let mut s2: u64 = ((*v2.borrow()).len() as u64);
     let v3: Value<Vec<i32>> = Rc::new(RefCell::new(vec![1; 100_usize as usize]));
     assert!(((*v3.borrow()).len() == 100_usize));
     let mut i: i32 = 0;
@@ -189,10 +189,10 @@ fn main_0() -> i32 {
         assert!(((*v5.borrow())[(i as usize)]).is_null());
         i.prefix_inc();
     }
-    let v6: Value<Vec<f64>> = Rc::new(RefCell::new(vec![2_f64; s2 as usize]));
-    assert!(((*v6.borrow()).len() == s2));
+    let v6: Value<Vec<f64>> = Rc::new(RefCell::new(vec![2_f64; (s2 as usize) as usize]));
+    assert!(((*v6.borrow()).len() == (s2 as usize)));
     let mut i: u32 = 0_u32;
-    'loop_: while ((i as usize) < s2) {
+    'loop_: while ((i as u64) < s2) {
         assert!(({ (*v6.borrow())[(i as usize)] } == 2_f64));
         i.prefix_inc();
     }
@@ -271,28 +271,29 @@ fn main_0() -> i32 {
     );
     assert!(
         (((v6.as_pointer() as Ptr<f64>)
-            .offset((s2).wrapping_sub(1_usize) as isize)
+            .offset(((s2).wrapping_sub(1_u64) as usize) as isize)
             .read())
             == 5_f64)
     );
-    let ref1: Ptr<f64> = (v6.as_pointer() as Ptr<f64>).offset((s2).wrapping_sub(1_usize) as isize);
+    let ref1: Ptr<f64> =
+        (v6.as_pointer() as Ptr<f64>).offset(((s2).wrapping_sub(1_u64) as usize) as isize);
     {
         ref1.with_mut(|__v| *__v = *__v + 1.5_f64)
     };
     assert!(
         (((v6.as_pointer() as Ptr<f64>)
-            .offset((s2).wrapping_sub(1_usize) as isize)
+            .offset(((s2).wrapping_sub(1_u64) as usize) as isize)
             .read())
             == 6.5_f64)
     );
     let mut x1: f64 = ((v6.as_pointer() as Ptr<f64>)
-        .offset((s2).wrapping_sub(1_usize) as isize)
+        .offset(((s2).wrapping_sub(1_u64) as usize) as isize)
         .read());
     assert!((x1 == 6.5_f64));
     x1 -= 1.5_f64;
     assert!(
         (((v6.as_pointer() as Ptr<f64>)
-            .offset((s2).wrapping_sub(1_usize) as isize)
+            .offset(((s2).wrapping_sub(1_u64) as usize) as isize)
             .read())
             == 6.5_f64)
     );
@@ -300,8 +301,8 @@ fn main_0() -> i32 {
         (((s1).wrapping_add(s2)).wrapping_add(
             (((v2.as_pointer() as Ptr<i32>)
                 .offset(0_usize as isize)
-                .read()) as usize)
-        ) == 103_usize)
+                .read()) as u64)
+        ) == 103_u64)
     );
     let a: Value<S> = Rc::new(RefCell::new(S { x: 1 }));
     let pa: Value<Ptr<S>> = Rc::new(RefCell::new((a.as_pointer())));

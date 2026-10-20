@@ -55,8 +55,8 @@ fn main_0() -> i32 {
     assert!((({ (*p.borrow()).events } as i32) == 0));
     assert!((({ (*p.borrow()).revents } as i32) == 2));
     let ia: Value<libcc2rs::InAddr> = Rc::new(RefCell::new(Default::default()));
-    (*ia.borrow_mut()).s_addr = 1_u32;
-    assert!(({ (*ia.borrow()).s_addr } == 1_u32));
+    (*ia.borrow_mut()).s_addr = (1 as ::libc::in_addr_t);
+    assert!(({ (*ia.borrow()).s_addr } == (1 as ::libc::in_addr_t)));
     let t: Value<libcc2rs::Tm> = Rc::new(RefCell::new(Default::default()));
     (*t.borrow_mut()).tm_year = 124;
     (*t.borrow_mut()).tm_mon = 5;

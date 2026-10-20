@@ -12,7 +12,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let v: Value<Vec<bool>> = Rc::new(RefCell::new(Vec::from([true])));
-    assert!(((*v.borrow())[0_usize] as bool));
+    assert!(({ (*v.borrow())[0_usize] } as bool));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}
