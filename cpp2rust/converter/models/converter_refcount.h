@@ -396,6 +396,9 @@ private:
   std::string
   ConvertFreshObject(clang::Expr *expr,
                      std::string_view target_ptr_type = {}) override;
+  std::string ConvertTemporaryPointer(
+      clang::Expr *expr,
+      std::optional<clang::QualType> implicit_convert_to) override;
   bool WantsElementPtr() const { return object_shape_ == ObjectShape::Element; }
   std::string
   ConvertFresh(clang::Expr *expr,

@@ -1080,6 +1080,11 @@ protected:
   // is the Rust pointer type the result will be used as.
   virtual std::string ConvertFreshObject(clang::Expr *expr,
                                          std::string_view target_ptr_type = {});
+  // A pointer to a new temporary with the value of the prvalue expr, which
+  // lives until the end of the statement.
+  virtual std::string
+  ConvertTemporaryPointer(clang::Expr *expr,
+                          std::optional<clang::QualType> implicit_convert_to);
   std::string
   ConvertPointer(clang::Expr *expr,
                  std::optional<clang::QualType> implicit_convert_to = {},

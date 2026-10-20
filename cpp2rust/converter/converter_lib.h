@@ -318,6 +318,9 @@ bool ArgsMayAlias(const clang::Expr *a, const clang::Expr *b);
 
 bool HasReceiver(clang::Expr *expr);
 
+std::optional<clang::QualType> GetParamType(clang::Expr *expr,
+                                            unsigned arg_idx);
+
 std::optional<clang::QualType> GetParamImplicitConvertTarget(clang::Expr *expr,
                                                              unsigned arg_idx);
 

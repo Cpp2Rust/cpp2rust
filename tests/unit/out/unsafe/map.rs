@@ -20,27 +20,27 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut m: UnsafeMap<i16, (i16, u32)> = UnsafeMap::new();
-    (*m.get_or_insert_with(0_i16.clone(), || (0_i16, <u32>::default()))).1 = 1_u32;
-    (*m.get_or_insert_with(1_i16.clone(), || (1_i16, <u32>::default()))).1 = 2_u32;
-    (*m.get_or_insert_with(2_i16.clone(), || (2_i16, <u32>::default()))).1 = 3_u32;
+    (*m.subscript_move(&mut 0_i16, |__k| cpp_move_unsafe!(__k))) = 1_u32;
+    (*m.subscript_move(&mut 1_i16, |__k| cpp_move_unsafe!(__k))) = 2_u32;
+    (*m.subscript_move(&mut 2_i16, |__k| cpp_move_unsafe!(__k))) = 3_u32;
     assert!(((m.len()) == (3_usize)));
-    assert!((((*m.get_or_insert_with(0_i16.clone(), || (0_i16, <u32>::default()))).1) == (1_u32)));
-    assert!((((*m.get_or_insert_with(1_i16.clone(), || (1_i16, <u32>::default()))).1) == (2_u32)));
-    assert!((((*m.get_or_insert_with(2_i16.clone(), || (2_i16, <u32>::default()))).1) == (3_u32)));
+    assert!(((*m.subscript_move(&mut 0_i16, |__k| cpp_move_unsafe!(__k))) == (1_u32)));
+    assert!(((*m.subscript_move(&mut 1_i16, |__k| cpp_move_unsafe!(__k))) == (2_u32)));
+    assert!(((*m.subscript_move(&mut 2_i16, |__k| cpp_move_unsafe!(__k))) == (3_u32)));
     let mut x: i32 = 4;
-    (*m.get_or_insert_with(1_i16.clone(), || (1_i16, <u32>::default()))).1 = (x as u32);
+    (*m.subscript_move(&mut 1_i16, |__k| cpp_move_unsafe!(__k))) = (x as u32);
     assert!(((m.len()) == (3_usize)));
-    assert!((((*m.get_or_insert_with(0_i16.clone(), || (0_i16, <u32>::default()))).1) == (1_u32)));
-    assert!((((*m.get_or_insert_with(1_i16.clone(), || (1_i16, <u32>::default()))).1) == (4_u32)));
-    assert!((((*m.get_or_insert_with(2_i16.clone(), || (2_i16, <u32>::default()))).1) == (3_u32)));
-    (unsafe { foo_0((*m.get_or_insert_with(0_i16.clone(), || (0_i16, <u32>::default()))).1) });
-    assert!((((*m.get_or_insert_with(0_i16.clone(), || (0_i16, <u32>::default()))).1) == (1_u32)));
-    (unsafe { bar_1(&mut (*m.get_or_insert_with(2_i16.clone(), || (2_i16, <u32>::default()))).1) });
-    assert!((((*m.get_or_insert_with(2_i16.clone(), || (2_i16, <u32>::default()))).1) == (4_u32)));
-    (*m.get_or_insert_with(0_i16.clone(), || (0_i16, <u32>::default()))).1 =
-        ((*m.get_or_insert_with(0_i16.clone(), || (0_i16, <u32>::default()))).1)
-            .wrapping_add((*m.get_or_insert_with(2_i16.clone(), || (2_i16, <u32>::default()))).1);
-    assert!((((*m.get_or_insert_with(0_i16.clone(), || (0_i16, <u32>::default()))).1) == (5_u32)));
+    assert!(((*m.subscript_move(&mut 0_i16, |__k| cpp_move_unsafe!(__k))) == (1_u32)));
+    assert!(((*m.subscript_move(&mut 1_i16, |__k| cpp_move_unsafe!(__k))) == (4_u32)));
+    assert!(((*m.subscript_move(&mut 2_i16, |__k| cpp_move_unsafe!(__k))) == (3_u32)));
+    (unsafe { foo_0((*m.subscript_move(&mut 0_i16, |__k| cpp_move_unsafe!(__k)))) });
+    assert!(((*m.subscript_move(&mut 0_i16, |__k| cpp_move_unsafe!(__k))) == (1_u32)));
+    (unsafe { bar_1(&mut (*m.subscript_move(&mut 2_i16, |__k| cpp_move_unsafe!(__k)))) });
+    assert!(((*m.subscript_move(&mut 2_i16, |__k| cpp_move_unsafe!(__k))) == (4_u32)));
+    (*m.subscript_move(&mut 0_i16, |__k| cpp_move_unsafe!(__k))) = (*m
+        .subscript_move(&mut 0_i16, |__k| cpp_move_unsafe!(__k)))
+    .wrapping_add((*m.subscript_move(&mut 2_i16, |__k| cpp_move_unsafe!(__k))));
+    assert!(((*m.subscript_move(&mut 0_i16, |__k| cpp_move_unsafe!(__k))) == (5_u32)));
     let mut end: UnsafeBidirectionalIterator<(i16, u32)> = m.end();
     let mut it: UnsafeBidirectionalIterator<(i16, u32)> = m.find(&1_i16);
     let mut const_it: UnsafeBidirectionalIterator<(i16, u32)> =
@@ -70,16 +70,16 @@ unsafe fn main_0() -> i32 {
         (*const_it.iter_deref()).1
     };
     assert!(((x4) == (0_u32)));
-    (*m.get_or_insert_with(4_i16.clone(), || (4_i16, <u32>::default()))).1 = 5_u32;
+    (*m.subscript_move(&mut 4_i16, |__k| cpp_move_unsafe!(__k))) = 5_u32;
     let mut it4: UnsafeBidirectionalIterator<(i16, u32)> = m.find(&4_i16);
     let mut p: *mut u32 = (&mut (*it4.iter_deref()).1 as *mut u32);
     let mut x5: u32 = (*p);
-    assert!((((*m.get_or_insert_with(4_i16.clone(), || (4_i16, <u32>::default()))).1) == (5_u32)));
+    assert!(((*m.subscript_move(&mut 4_i16, |__k| cpp_move_unsafe!(__k))) == (5_u32)));
     assert!((((*it4.iter_deref()).1) == (5_u32)));
     assert!(((*p) == (5_u32)));
     assert!(((x5) == (5_u32)));
     (*p).prefix_inc();
-    assert!((((*m.get_or_insert_with(4_i16.clone(), || (4_i16, <u32>::default()))).1) == (6_u32)));
+    assert!(((*m.subscript_move(&mut 4_i16, |__k| cpp_move_unsafe!(__k))) == (6_u32)));
     assert!((((*it4.iter_deref()).1) == (6_u32)));
     assert!(((*p) == (6_u32)));
     assert!(((x5) == (5_u32)));
@@ -92,9 +92,9 @@ unsafe fn main_0() -> i32 {
     (*r).erase(&(it4).clone());
     assert!((((*r).len()) == (3_usize)));
     assert!(m.find(&4_i16) == m.end());
-    (*m.get_or_insert_with(7_i16.clone(), || (7_i16, <u32>::default()))).1 = 7_u32;
-    (*m.get_or_insert_with(8_i16.clone(), || (8_i16, <u32>::default()))).1 = 8_u32;
-    (*m.get_or_insert_with(9_i16.clone(), || (9_i16, <u32>::default()))).1 = 9_u32;
+    (*m.subscript_move(&mut 7_i16, |__k| cpp_move_unsafe!(__k))) = 7_u32;
+    (*m.subscript_move(&mut 8_i16, |__k| cpp_move_unsafe!(__k))) = 8_u32;
+    (*m.subscript_move(&mut 9_i16, |__k| cpp_move_unsafe!(__k))) = 9_u32;
     assert!((((*r).len()) == (6_usize)));
     assert!(((m.erase_key(&10_i16)) == (0_usize)));
     let mut key9: i32 = 9;
@@ -112,12 +112,10 @@ unsafe fn main_0() -> i32 {
     assert!(((other_map.len()) == (0_usize)));
     let mut key0: (i32, i64) = (1.into(), 1.into());
     let mut value: f64 = 2_f64;
-    (*other_map.get_or_insert_with(key0.clone(), || (key0, <f64>::default()))).1 = value;
-    value = (*other_map.get_or_insert_with(key0.clone(), || (key0, <f64>::default()))).1;
+    (*other_map.subscript(&key0)) = value;
+    value = (*other_map.subscript(&key0));
     assert!(((other_map.len()) == (1_usize)));
-    assert!(
-        (((*other_map.get_or_insert_with(key0.clone(), || (key0, <f64>::default()))).1) == (value))
-    );
+    assert!(((*other_map.subscript(&key0)) == (value)));
     assert!(((m.len()) == (3_usize)));
     let mut k: i32 = 0;
     assert!((((*m.get(&(k as i16)).expect("out of range!")).1) == (5_u32)));
@@ -154,10 +152,7 @@ unsafe fn main_0() -> i32 {
     }
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < (indexes.len())) {
-        (*m2.get_or_insert_with(indexes[(i as usize)].clone(), || {
-            (indexes[(i as usize)], <bool>::default())
-        }))
-        .1 = ((i).wrapping_rem(2_u32) != 0);
+        (*m2.subscript(&indexes[(i as usize)])) = ((i).wrapping_rem(2_u32) != 0);
         i.prefix_inc();
     }
     assert!(((m2.len()) == (indexes.len())));

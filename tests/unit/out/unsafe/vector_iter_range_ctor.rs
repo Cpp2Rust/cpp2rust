@@ -83,9 +83,9 @@ unsafe fn main_0() -> i32 {
     assert!(((v5.len()) == (5_usize)));
     assert!(((v5[(0_usize)] as i32) == (10)) && ((v5[(4_usize)] as i32) == (50)));
     let mut m: UnsafeMap<i32, (i32, i32)> = UnsafeMap::new();
-    (*m.get_or_insert_with(1.clone(), || (1, <i32>::default()))).1 = 10;
-    (*m.get_or_insert_with(2.clone(), || (2, <i32>::default()))).1 = 20;
-    (*m.get_or_insert_with(3.clone(), || (3, <i32>::default()))).1 = 30;
+    (*m.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k))) = 10;
+    (*m.subscript_move(&mut 2, |__k| cpp_move_unsafe!(__k))) = 20;
+    (*m.subscript_move(&mut 3, |__k| cpp_move_unsafe!(__k))) = 30;
     let mut v6: Vec<(i32, i32)> = {
         let mut __v = Vec::new();
         let mut __it = m.begin();

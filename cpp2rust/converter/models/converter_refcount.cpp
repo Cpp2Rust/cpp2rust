@@ -420,6 +420,12 @@ ConverterRefCount::ConvertFreshObject(clang::Expr *expr,
   return std::format("({}).clone()", std::move(str));
 }
 
+std::string ConverterRefCount::ConvertTemporaryPointer(
+    clang::Expr *expr, std::optional<clang::QualType> implicit_convert_to) {
+  return std::format("Rc::new(RefCell::new({})).as_pointer()",
+                     ConvertFreshRValue(expr, implicit_convert_to));
+}
+
 std::string ConverterRefCount::ConvertFresh(
     clang::Expr *expr, std::optional<clang::QualType> implicit_convert_to) {
   auto str = ToString(expr, implicit_convert_to);

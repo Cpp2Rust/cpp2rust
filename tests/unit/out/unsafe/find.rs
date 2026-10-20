@@ -37,9 +37,9 @@ unsafe fn main_0() -> i32 {
     };
     let mut v_result_true: bool = it != v.end();
     let mut m: UnsafeMap<i32, (i32, f64)> = UnsafeMap::new();
-    (*m.get_or_insert_with(1.clone(), || (1, <f64>::default()))).1 = 1_f64;
-    (*m.get_or_insert_with(2.clone(), || (2, <f64>::default()))).1 = 2_f64;
-    (*m.get_or_insert_with(3.clone(), || (3, <f64>::default()))).1 = 3_f64;
+    (*m.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k))) = 1_f64;
+    (*m.subscript_move(&mut 2, |__k| cpp_move_unsafe!(__k))) = 2_f64;
+    (*m.subscript_move(&mut 3, |__k| cpp_move_unsafe!(__k))) = 3_f64;
     let mut m_begin: UnsafeBidirectionalIterator<(i32, f64)> = m.begin();
     let mut m_end: UnsafeBidirectionalIterator<(i32, f64)> = m.end();
     let mut m_result_true: bool = m_begin != m_end;

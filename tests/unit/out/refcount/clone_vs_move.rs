@@ -259,19 +259,11 @@ fn main_0() -> i32 {
     let mut i: i32 = 0;
     'loop_: while (i < N) {
         let __rhs = i;
-        (map1.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
-            .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<i32>)>| {
-                __m.get_or_insert_with(i.clone(), || {
-                    (
-                        Rc::new(RefCell::new(i)),
-                        Rc::new(RefCell::new(<i32>::default())),
-                    )
-                })
-                .borrow()
-                .1
-                .as_pointer()
-            })
-            .write(__rhs);
+        Map::subscript(
+            (map1.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>),
+            &i,
+        )
+        .write(__rhs);
         i.prefix_inc();
     }
     let map2: Value<Map<i32, (Value<i32>, Value<i32>)>> =
@@ -279,68 +271,36 @@ fn main_0() -> i32 {
     let mut i: i32 = 0;
     'loop_: while (i < N) {
         assert!(
-            (((map2.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
-                .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<i32>)>| {
-                    __m.get_or_insert_with(i.clone(), || {
-                        (
-                            Rc::new(RefCell::new(i)),
-                            Rc::new(RefCell::new(<i32>::default())),
-                        )
-                    })
-                    .borrow()
-                    .1
-                    .as_pointer()
-                })
-                .read())
+            ((Map::subscript(
+                (map2.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>),
+                &i
+            )
+            .read())
                 == i)
         );
-        (map2.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
-            .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<i32>)>| {
-                __m.get_or_insert_with(i.clone(), || {
-                    (
-                        Rc::new(RefCell::new(i)),
-                        Rc::new(RefCell::new(<i32>::default())),
-                    )
-                })
-                .borrow()
-                .1
-                .as_pointer()
-            })
-            .with_mut(|__v| __v.prefix_inc());
+        Map::subscript(
+            (map2.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>),
+            &i,
+        )
+        .with_mut(|__v| __v.prefix_inc());
         i.prefix_inc();
     }
     let mut i: i32 = 0;
     'loop_: while (i < N) {
         assert!(
-            (((map1.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
-                .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<i32>)>| {
-                    __m.get_or_insert_with(i.clone(), || {
-                        (
-                            Rc::new(RefCell::new(i)),
-                            Rc::new(RefCell::new(<i32>::default())),
-                        )
-                    })
-                    .borrow()
-                    .1
-                    .as_pointer()
-                })
-                .read())
+            ((Map::subscript(
+                (map1.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>),
+                &i
+            )
+            .read())
                 == i)
         );
         assert!(
-            (((map2.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
-                .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<i32>)>| {
-                    __m.get_or_insert_with(i.clone(), || {
-                        (
-                            Rc::new(RefCell::new(i)),
-                            Rc::new(RefCell::new(<i32>::default())),
-                        )
-                    })
-                    .borrow()
-                    .1
-                    .as_pointer()
-                })
-                .read())
+            ((Map::subscript(
+                (map2.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>),
+                &i
+            )
+            .read())
                 == (i + 1))
         );
         i.prefix_inc();

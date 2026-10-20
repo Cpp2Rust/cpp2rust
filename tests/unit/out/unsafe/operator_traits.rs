@@ -230,13 +230,10 @@ unsafe fn main_0() -> i32 {
         .v) == (2))
     );
     let mut m: UnsafeMap<Lt, (Lt, i32)> = UnsafeMap::new();
-    (*m.get_or_insert_with(Lt { v: 2 }.clone(), || (Lt { v: 2 }, <i32>::default()))).1 = 20;
-    (*m.get_or_insert_with(Lt { v: 1 }.clone(), || (Lt { v: 1 }, <i32>::default()))).1 = 10;
+    (*m.subscript_move(&mut Lt { v: 2 }, |__k| cpp_move_unsafe!(__k))) = 20;
+    (*m.subscript_move(&mut Lt { v: 1 }, |__k| cpp_move_unsafe!(__k))) = 10;
     assert!((((*m.begin().iter_deref()).1) == (10)));
-    assert!(
-        (((*m.get_or_insert_with(Lt { v: 2 }.clone(), || (Lt { v: 2 }, <i32>::default()))).1)
-            == (20))
-    );
+    assert!(((*m.subscript_move(&mut Lt { v: 2 }, |__k| cpp_move_unsafe!(__k))) == (20)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}
