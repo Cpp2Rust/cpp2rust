@@ -179,21 +179,15 @@ fn main_0() -> i32 {
     let vecs: Value<Vec<Vec<u8>>> = Rc::new(RefCell::new(Vec::new()));
     ({ push_param_0((vecs.as_pointer())) });
     assert!(((*vecs.borrow()).len() == 1_usize));
-    assert!(
-        (*(vecs.as_pointer().decay().offset(0_usize).as_pointer() as Ptr<Vec<u8>>)
-            .upgrade()
-            .deref())
-        .is_empty()
-    );
+    assert!((*vecs.as_pointer().decay().offset(0_usize).upgrade().deref()).is_empty());
     let jpg: Value<JPEGData> = Rc::new(RefCell::new(<JPEGData>::default()));
     ({ push_local_from_field_1((jpg.as_pointer()), true) });
     assert!(((*jpg.borrow()).com_data.len() == 1_usize));
     assert!(
-        ((*(field_ref!(jpg.as_pointer(), com_data)
+        ((*field_ref!(jpg.as_pointer(), com_data)
             .as_pointer()
             .decay()
             .offset(0_usize)
-            .as_pointer() as Ptr<Vec<u8>>)
             .upgrade()
             .deref())
         .len()
@@ -221,11 +215,10 @@ fn main_0() -> i32 {
     ({ emplace_local_from_field_4((jpg.as_pointer()), false) });
     assert!(((*jpg.borrow()).app_data.len() == 1_usize));
     assert!(
-        ((*(field_ref!(jpg.as_pointer(), app_data)
+        ((*field_ref!(jpg.as_pointer(), app_data)
             .as_pointer()
             .decay()
             .offset(0_usize)
-            .as_pointer() as Ptr<Vec<u8>>)
             .upgrade()
             .deref())
         .len()

@@ -184,7 +184,7 @@ fn main_0() -> i32 {
         .as_pointer()
         .decay()
         .offset(0_usize)
-        .as_pointer()
+        .decay()
         .offset(0_usize));
     elem!(row, 2).write(9);
     assert!(((index!(vec_elem!(s.as_pointer(), rows, 0_usize), 2_usize).read()) == 9));

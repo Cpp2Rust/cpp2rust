@@ -161,14 +161,20 @@ fn main_0() -> i32 {
     let mut i: i32 = 0;
     'loop_: while (i < N) {
         assert!(
-            ((*(m1.as_pointer().decay().offset((i as usize)).as_pointer() as Ptr<Vec<i32>>)
+            ((*m1
+                .as_pointer()
+                .decay()
+                .offset((i as usize))
                 .upgrade()
                 .deref())
             .len()
                 == 10_usize)
         );
         assert!(
-            ((*(m2.as_pointer().decay().offset((i as usize)).as_pointer() as Ptr<Vec<i32>>)
+            ((*m2
+                .as_pointer()
+                .decay()
+                .offset((i as usize))
                 .upgrade()
                 .deref())
             .len()
@@ -199,14 +205,20 @@ fn main_0() -> i32 {
     let mut i: i32 = 0;
     'loop_: while (i < N) {
         assert!(
-            ((*(m1.as_pointer().decay().offset((i as usize)).as_pointer() as Ptr<Vec<i32>>)
+            ((*m1
+                .as_pointer()
+                .decay()
+                .offset((i as usize))
                 .upgrade()
                 .deref())
             .len()
                 == 10_usize)
         );
         assert!(
-            ((*(m2.as_pointer().decay().offset((i as usize)).as_pointer() as Ptr<Vec<i32>>)
+            ((*m2
+                .as_pointer()
+                .decay()
+                .offset((i as usize))
                 .upgrade()
                 .deref())
             .len()

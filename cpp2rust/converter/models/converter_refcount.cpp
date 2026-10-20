@@ -2826,7 +2826,7 @@ bool ConverterRefCount::ConvertCXXOperatorCallExpr(
                            ConvertSubscriptIndex(expr->getArg(1))));
       }
 
-      if (is_inner_boxed) {
+      if (is_inner_boxed && isObject() && WantsElementPtr()) {
         StrCat(".decay()");
       }
 

@@ -340,11 +340,10 @@ fn main_0() -> i32 {
     );
     assert!(
         (((*r.borrow()).rows.len() == 1_usize)
-            && ((*(field_ref!(r.as_pointer(), rows)
+            && ((*field_ref!(r.as_pointer(), rows)
                 .as_pointer()
                 .decay()
                 .offset(0_usize)
-                .as_pointer() as Ptr<Vec<i32>>)
                 .upgrade()
                 .deref())
             .len()
