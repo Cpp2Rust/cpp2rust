@@ -9,6 +9,10 @@ fn t2() -> ::libc::dirent {
     unsafe { std::mem::zeroed() }
 }
 
+fn t3() -> ::libc::DIR {
+    unimplemented!()
+}
+
 unsafe fn f1(a0: *const libc::c_char) -> *mut ::libc::DIR {
     libc::opendir(a0)
 }

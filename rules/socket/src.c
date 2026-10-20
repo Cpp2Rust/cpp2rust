@@ -7,6 +7,8 @@
 typedef struct sockaddr t1;
 typedef struct sockaddr_storage t2;
 typedef struct sockaddr_un t3;
+typedef socklen_t t4;
+typedef sa_family_t t5;
 
 int f1(void) { return MSG_NOSIGNAL; }
 

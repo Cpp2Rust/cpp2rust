@@ -10,6 +10,14 @@ fn t3() -> libc::sockaddr_un {
     unsafe { std::mem::zeroed() }
 }
 
+fn t4() -> libc::socklen_t {
+    0 as libc::socklen_t
+}
+
+fn t5() -> libc::sa_family_t {
+    0 as libc::sa_family_t
+}
+
 unsafe fn f1() -> i32 {
     libc::MSG_NOSIGNAL
 }

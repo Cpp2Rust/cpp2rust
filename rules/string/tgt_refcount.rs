@@ -9,6 +9,10 @@ fn t1() -> Vec<i8> {
     vec![0]
 }
 
+fn t4() -> Vec<i8> {
+    vec![0]
+}
+
 fn f1(a0: Vec<i8>, a1: usize, a2: usize) -> Vec<i8> {
     let mut __tmp1 =
         a0[(a1) as usize..::std::cmp::min((a1 + a2) as usize, a0.len().saturating_sub(1))].to_vec();

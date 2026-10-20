@@ -5,6 +5,10 @@ fn t1() -> *mut ::libc::FILE {
     std::ptr::null_mut()
 }
 
+fn t2() -> ::libc::FILE {
+    unimplemented!()
+}
+
 unsafe fn f1(a0: *const libc::c_char, a1: *const libc::c_char) -> *mut ::libc::FILE {
     libc::fopen(a0, a1)
 }

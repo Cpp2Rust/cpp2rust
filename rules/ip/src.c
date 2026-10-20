@@ -5,6 +5,8 @@ typedef struct sockaddr_in t1;
 typedef struct in_addr t2;
 typedef struct sockaddr_in6 t3;
 typedef struct in6_addr t4;
+typedef in_addr_t t5;
+typedef in_port_t t6;
 
 int f1(void) { return IPPROTO_TCP; }
 

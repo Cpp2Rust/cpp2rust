@@ -14,6 +14,14 @@ fn t4() -> ::libc::in6_addr {
     unsafe { std::mem::zeroed() }
 }
 
+fn t5() -> ::libc::in_addr_t {
+    0 as ::libc::in_addr_t
+}
+
+fn t6() -> ::libc::in_port_t {
+    0 as ::libc::in_port_t
+}
+
 unsafe fn f1() -> i32 {
     libc::IPPROTO_TCP
 }

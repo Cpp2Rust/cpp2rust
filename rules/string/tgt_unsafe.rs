@@ -7,6 +7,10 @@ fn t1() -> Vec<libc::c_char> {
     vec![0]
 }
 
+fn t4() -> Vec<libc::c_char> {
+    vec![0]
+}
+
 fn t3() -> usize {
     0_usize
 }

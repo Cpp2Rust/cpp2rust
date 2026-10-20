@@ -16,6 +16,14 @@ using t5 = std::vector<T1, T2>;
 template <typename T1, typename T2 = std::allocator<T1>>
 using t9 = typename std::vector<T1, T2>::size_type;
 
+template <typename T1, typename T2 = std::allocator<T1>>
+using t10 = typename std::vector<T1, T2>::value_type;
+
+template <typename T1>
+using t11 = typename std::vector<std::vector<T1>>::value_type;
+
+using t12 = std::vector<bool>::reference;
+
 std::vector<bool> f38(std::size_t n, const bool &value) {
   return std::vector<bool>(n, value);
 }

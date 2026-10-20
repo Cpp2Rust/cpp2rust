@@ -11,6 +11,14 @@ fn t4() -> usize {
     0_usize
 }
 
+fn t5<T1>() -> T1 {
+    unimplemented!()
+}
+
+fn t6<T1, T2>() -> T2 {
+    unimplemented!()
+}
+
 unsafe fn f1<T1: Ord + Clone, T2: Default>(a0: &mut UnsafeMap<T1, (T1, T2)>, a1: T1) -> &mut T2 {
     &mut (*a0.get_or_insert_with(a1.clone(), || (a1, <T2>::default()))).1
 }
