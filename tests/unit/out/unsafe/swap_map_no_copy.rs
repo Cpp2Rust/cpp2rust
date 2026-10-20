@@ -271,12 +271,6 @@ impl Owner {
         return &mut (*(self as *mut Owner));
     }
 }
-#[repr(C)]
-#[derive(Clone, VaArg, FnPtrArg, Default)]
-pub struct Maps {
-    pub m1: UnsafeMap<i32, (i32, Tracked)>,
-    pub m2: UnsafeMap<i32, (i32, Tracked)>,
-}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -425,40 +419,35 @@ unsafe fn main_0() -> i32 {
     cpp_swap_unsafe!(&mut grid[(0_usize)], &mut grid[(1_usize)]);
     assert!(((grid[(0_usize)].len()) == (1_usize)) && ((grid[(0_usize)][(0_usize)].v) == (2)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
-    let mut maps: Maps = <Maps>::default();
+    let mut maps: [UnsafeMap<i32, (i32, Tracked)>; 2] =
+        std::array::from_fn::<_, 2, _>(|_| UnsafeMap::new());
     (unsafe {
         let mut _o: Tracked = Tracked::new_2({ 1 });
         Tracked::move_assign(
-            &mut (*maps
-                .m1
-                .get_or_insert_with(1.clone(), || (1, <Tracked>::default())))
-            .1,
+            &mut (*maps[(0) as usize].get_or_insert_with(1.clone(), || (1, <Tracked>::default())))
+                .1,
             &mut _o,
         )
     });
     (unsafe {
         let mut _o: Tracked = Tracked::new_2({ 2 });
         Tracked::move_assign(
-            &mut (*maps
-                .m2
-                .get_or_insert_with(2.clone(), || (2, <Tracked>::default())))
-            .1,
+            &mut (*maps[(1) as usize].get_or_insert_with(2.clone(), || (2, <Tracked>::default())))
+                .1,
             &mut _o,
         )
     });
-    cpp_swap_unsafe!(&mut maps.m1, &mut maps.m2);
+    cpp_swap_unsafe!(&mut maps[(0) as usize], &mut maps[(1) as usize]);
     assert!(
-        ((maps.m1.len()) == (1_usize))
-            && (((*maps
-                .m1
+        ((maps[(0) as usize].len()) == (1_usize))
+            && (((*maps[(0) as usize]
                 .get_or_insert_with(2.clone(), || (2, <Tracked>::default())))
             .1
             .v) == (2))
     );
     assert!(
-        ((maps.m2.len()) == (1_usize))
-            && (((*maps
-                .m2
+        ((maps[(1) as usize].len()) == (1_usize))
+            && (((*maps[(1) as usize]
                 .get_or_insert_with(1.clone(), || (1, <Tracked>::default())))
             .1
             .v) == (1))
