@@ -8,3 +8,7 @@ fn t1<T1>() -> T1 {
 fn t2<T1>() -> T1 {
     unimplemented!()
 }
+
+fn t3<T1>() -> *mut T1 {
+    ::std::ptr::null_mut()
+}
