@@ -3857,7 +3857,8 @@ bool Converter::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
     return false;
   }
 
-  if (ctor->isDefaultConstructor() && !ctor->isUserProvided()) {
+  if (ctor->isDefaultConstructor() &&
+      !(ctor->isUserProvided() && IsUserDefinedDecl(ctor))) {
     auto ty = expr->getType();
     StrCat(GetDefaultAsString(ty));
     SetFreshType(expr->getType());
