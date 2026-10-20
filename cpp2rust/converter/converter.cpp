@@ -3411,8 +3411,7 @@ bool Converter::VisitMemberExpr(clang::MemberExpr *expr) {
     if (is_reference_type || RuleRegistry::ReturnsPointer(ctx_, expr)) {
       computed_expr_type_ = ComputedExprType::Pointer;
     } else {
-      StrCat(token::kRef,
-             expr->getType().isConstQualified() ? "" : keyword_mut_);
+      StrCat(token::kRef);
       computed_expr_type_ = ComputedExprType::FreshPointer;
     }
     StrCat(str);
