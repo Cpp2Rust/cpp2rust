@@ -305,7 +305,7 @@ TypeRuleMatch findType(clang::QualType use) {
   }
   if (!best.rule_decl) {
     auto spelled = AstMatcher::SpelledTypedef(use);
-    if (spelled && !IsUserDefinedDecl(spelled)) {
+    if (spelled && !IsUserDefinedDecl(spelled) && !use->isReferenceType()) {
       use.dump(llvm::errs(), sema_->Context);
       llvm::report_fatal_error("typedef has no type rule");
     }
