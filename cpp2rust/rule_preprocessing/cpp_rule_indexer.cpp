@@ -215,6 +215,9 @@ std::string ExprKey(clang::ASTContext &ctx, const clang::Decl *rule) {
 
 std::string TypeKey(const clang::TypedefNameDecl *rule) {
   auto type = rule->getUnderlyingType();
+  if (!type->isDependentType() && type->getAs<clang::TypedefType>()) {
+    return RulesLoader::TypeKey(type);
+  }
   while (type->isPointerType() || type->isReferenceType()) {
     type = type->getPointeeType();
   }
