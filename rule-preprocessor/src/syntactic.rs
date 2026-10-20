@@ -595,8 +595,22 @@ impl<'a> TypeIrBuilder<'a> {
             .tail_expr()
             .expect("Type rules must yield an initializer");
 
+        let ty_text = ty.syntax().text().to_string();
+        let generic = self
+            .fn_item
+            .generic_param_list()
+            .into_iter()
+            .flat_map(|gpl| gpl.generic_params())
+            .filter_map(|param| match param {
+                ast::GenericParam::TypeParam(tp) => tp.name(),
+                _ => None,
+            })
+            .find(|name| name.text() == ty_text)
+            .map(|name| name.text()[1..].parse().expect("generic name is T<n>"));
+
         TypeIr {
             init: init.syntax().text().to_string(),
+            generic,
             type_info: TypeInfo {
                 ty: ty.syntax().text().to_string(),
                 is_refcount_pointer,

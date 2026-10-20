@@ -268,6 +268,8 @@ TypeRule ParseTypeRuleJSON(const llvm::json::Object &obj) {
   TypeRule rule;
   if (auto init = obj.getString("init"))
     rule.initializer = init->str();
+  if (auto generic = obj.getInteger("generic"))
+    rule.generic = *generic;
   rule.type_info = ParseTypeInfoJSON(obj);
   return rule;
 }
