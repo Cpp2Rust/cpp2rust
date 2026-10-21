@@ -27,10 +27,6 @@ fn t7() -> libc::c_char {
     0 as libc::c_char
 }
 
-fn t8() -> Vec<libc::c_char> {
-    vec![0]
-}
-
 unsafe fn f1(a0: Vec<libc::c_char>, a1: usize, a2: usize) -> Vec<libc::c_char> {
     let mut __tmp1 = a0[(a1) as usize..::std::cmp::min((a1 + a2) as usize, a0.len() - 1)].to_vec();
     __tmp1.push(0);
