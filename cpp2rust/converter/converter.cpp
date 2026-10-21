@@ -2741,7 +2741,8 @@ bool Converter::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
   case clang::Stmt::CXXReinterpretCastExprClass:
   case clang::Stmt::CXXStaticCastExprClass:
   case clang::Stmt::CStyleCastExprClass:
-    if (expr->getType() == sub_expr->getType()) {
+    if (expr->getType() == sub_expr->getType() ||
+        (expr->getCastKind() == clang::CK_NoOp && type->isRecordType())) {
       return Convert(sub_expr);
     }
     if (type->isFunctionPointerType() ||
