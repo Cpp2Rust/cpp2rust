@@ -245,6 +245,22 @@ unsafe fn main_0() -> i32 {
     let mut safe_ptr: Option<Box<SafePointer>> = Some(Box::new(SafePointer { ptr: x.take() }));
     (unsafe { DoStuffWithSafePointer_0(&mut safe_ptr) });
     assert!(((unsafe { Consume_1(safe_ptr.take(),) }) == (60)));
+    let mut p: Option<Box<i32>> = Some(Box::from_raw((Box::leak(Box::new(1)) as *mut i32)));
+    {
+        let _a0: *mut i32 = (Box::leak(Box::new(2)) as *mut i32);
+        p = if _a0.is_null() {
+            None
+        } else {
+            Some(Box::from_raw(_a0))
+        }
+    };
+    assert!(
+        ((*p.as_deref()
+            .map_or(::std::ptr::null_mut(), |v| v as *const i32 as *mut i32))
+            == (2))
+    );
+    p = None;
+    assert!(p.is_none());
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

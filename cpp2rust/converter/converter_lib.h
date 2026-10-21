@@ -72,8 +72,6 @@ bool RustSizeDivergesFromC(clang::QualType qt);
 
 bool IsMutatingCall(const clang::CallExpr *expr);
 
-bool IsOverloadedFunction(const clang::FunctionDecl *decl);
-
 // The method of a prefix or postfix increment or decrement, or nullptr if
 // opcode is neither.
 const char *GetIncDecMethod(clang::UnaryOperatorKind opcode);
@@ -183,8 +181,6 @@ bool HasUsableDefaultArg(const clang::ParmVarDecl *param);
 const clang::MaterializeTemporaryExpr *
 GetDefaultArgTemporary(const clang::ParmVarDecl *param);
 
-std::string GetMainFileName(const clang::ASTContext &ctx);
-
 std::string GetFileName(const clang::Decl *decl);
 
 unsigned GetLineNumber(const clang::Decl *decl);
@@ -229,8 +225,8 @@ std::string GetFunctionBaseName(const clang::FunctionDecl *decl);
 
 void ToIdentifier(std::string &name);
 
-std::string GetConversionName(const clang::CXXConversionDecl *decl,
-                              const std::string &rust_type);
+// Whether record has a method with the given identifier.
+bool HasMethodNamed(const clang::CXXRecordDecl *record, llvm::StringRef name);
 
 bool IsImplicitAssignmentCall(const clang::CallExpr *expr);
 bool IsUserOperatorCall(const clang::CXXOperatorCallExpr *expr);
@@ -296,22 +292,6 @@ clang::CXXConstructExpr *MakeConstructExpr(clang::ASTContext &ctx,
 
 std::optional<clang::ArrayRef<clang::TemplateArgument>>
 GetTemplateArgs(clang::QualType qual_type, clang::Expr *expr = nullptr);
-
-template <class UnaryFunction>
-void ForEachTemplateArgument(
-    clang::ArrayRef<clang::TemplateArgument> template_arguments,
-    UnaryFunction unary_function) {
-  for (auto template_argument : template_arguments) {
-    switch (template_argument.getKind()) {
-    case clang::TemplateArgument::ArgKind::Type:
-      unary_function(template_argument.getAsType());
-      break;
-    default:
-      // FIXME: improve logging
-      log() << "unsupported template argument kind\n";
-    }
-  }
-}
 
 clang::Expr *GetCallObject(clang::CallExpr *expr);
 

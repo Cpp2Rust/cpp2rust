@@ -343,13 +343,6 @@ Matcher::Bindings getBindings(const clang::NamedDecl *rule,
   return bindings;
 }
 
-const TranslationRule::TypeInfo &
-GetParamInfo(clang::ASTContext &ctx, const clang::Expr *expr, unsigned index) {
-  auto rule = Search(ctx, expr).first;
-  assert(rule && "expression must have a translation rule");
-  return rule->params.at(index);
-}
-
 } // namespace
 
 void Load(clang::Sema &sema, Model model) {
@@ -460,7 +453,9 @@ bool ReturnsReference(const clang::Expr *expr) {
 
 bool ParamIsPointer(clang::ASTContext &ctx, const clang::Expr *expr,
                     unsigned index) {
-  return GetParamInfo(ctx, expr, index).is_pointer();
+  auto rule = Search(ctx, expr).first;
+  assert(rule && "expression must have a translation rule");
+  return rule->params.at(index).is_pointer();
 }
 
 bool IsLibcPassthrough(clang::ASTContext &ctx, const clang::Expr *expr) {
