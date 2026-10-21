@@ -202,3 +202,12 @@ fn f30(a0: Ptr<Vec<i8>>, a1: &mut Vec<i8>) {
 fn f31(a0: Vec<i8>, a1: Ptr<i8>) -> bool {
     a1.with_c_str(|__s| a0[..a0.len().saturating_sub(1)] != *__s)
 }
+
+fn f32(a0: Vec<i8>, a1: Ptr<i8>, a2: usize) -> usize {
+    let __hay = &a0[..a0.len().saturating_sub(1)];
+    a1.with_c_str(|__needle| {
+        (a2..=__hay.len().saturating_sub(__needle.len()))
+            .find(|&__i| __hay[__i..].starts_with(__needle))
+            .unwrap_or(usize::MAX)
+    })
+}

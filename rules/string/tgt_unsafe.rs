@@ -202,3 +202,11 @@ unsafe fn f31(a0: Vec<libc::c_char>, a1: *const libc::c_char) -> bool {
         std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1).to_vec()
     }
 }
+
+unsafe fn f32(a0: Vec<libc::c_char>, a1: *const libc::c_char, a2: usize) -> usize {
+    let __hay = &a0[..a0.len() - 1];
+    let __needle = ::std::slice::from_raw_parts(a1, libc::strlen(a1));
+    (a2..=__hay.len().saturating_sub(__needle.len()))
+        .find(|&__i| __hay[__i..].starts_with(__needle))
+        .unwrap_or(usize::MAX)
+}

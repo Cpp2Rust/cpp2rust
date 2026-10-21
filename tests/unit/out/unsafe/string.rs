@@ -312,6 +312,30 @@ unsafe fn main_0() -> i32 {
         None => usize::MAX,
     };
     assert!(((pos) == ((-1_i64 as u64) as usize)));
+    pos = {
+        let __hay = &result[..result.len() - 1];
+        let __needle = ::std::slice::from_raw_parts(c"f".as_ptr(), libc::strlen(c"f".as_ptr()));
+        (0_usize..=__hay.len().saturating_sub(__needle.len()))
+            .find(|&__i| __hay[__i..].starts_with(__needle))
+            .unwrap_or(usize::MAX)
+    };
+    assert!(((pos) == (5_usize)));
+    pos = {
+        let __hay = &result[..result.len() - 1];
+        let __needle = ::std::slice::from_raw_parts(c"oo".as_ptr(), libc::strlen(c"oo".as_ptr()));
+        (0_usize..=__hay.len().saturating_sub(__needle.len()))
+            .find(|&__i| __hay[__i..].starts_with(__needle))
+            .unwrap_or(usize::MAX)
+    };
+    assert!(((pos) == (6_usize)));
+    pos = {
+        let __hay = &result[..result.len() - 1];
+        let __needle = ::std::slice::from_raw_parts(c"x".as_ptr(), libc::strlen(c"x".as_ptr()));
+        (0_usize..=__hay.len().saturating_sub(__needle.len()))
+            .find(|&__i| __hay[__i..].starts_with(__needle))
+            .unwrap_or(usize::MAX)
+    };
+    assert!(((pos) == ((-1_i64 as u64) as usize)));
     let mut string_to_cast: Vec<libc::c_char> = {
         let s = c"cast".as_ptr();
         std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1).to_vec()
