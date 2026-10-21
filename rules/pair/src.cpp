@@ -78,3 +78,5 @@ template <typename T1, typename T2> T1 &&f21(std::pair<T1, T2> &&a0) {
 template <typename T1, typename T2> T2 &&f22(std::pair<T1, T2> &&a0) {
   return std::get<1>(std::move(a0));
 }
+
+template <typename T1, typename T2> std::pair<T1, T2> f23() { return {}; }

@@ -342,6 +342,28 @@ MatchResult matchFunction(clang::Sema &sema, const clang::Expr *use,
   return llvm::ArrayRef<clang::TemplateArgument>();
 }
 
+bool constructsReturnType(const clang::Expr *returned, clang::QualType ret,
+                          const ResolvedDecl &usage_decl) {
+  auto list =
+      llvm::dyn_cast<clang::InitListExpr>(RuleDecls::SkipImplicit(returned));
+  if (!list || list->getType()->isRecordType()) {
+    return false;
+  }
+  auto record = ret->getAsCXXRecordDecl();
+  if (!record) {
+    return false;
+  }
+  if (auto decl = std::get_if<const clang::Decl *>(&usage_decl)) {
+    auto ctor = llvm::dyn_cast<clang::CXXConstructorDecl>(*decl);
+    return ctor && ctor->getParent()->getCanonicalDecl() ==
+                       record->getCanonicalDecl();
+  }
+  if (auto aggregate = std::get_if<AggregateUsage>(&usage_decl)) {
+    return RuleKeys::GetTypeKey(ret) == aggregate->type;
+  }
+  return false;
+}
+
 MatchResult matchTemplate(clang::Sema &sema, const clang::Expr *use,
                           const ResolvedDecl &usage_decl,
                           clang::FunctionTemplateDecl *rule) {
@@ -355,7 +377,9 @@ MatchResult matchTemplate(clang::Sema &sema, const clang::Expr *use,
   }
   if (std::holds_alternative<AggregateUsage>(usage_decl)) {
     auto returned = RuleDecls::GetReturned(rule->getTemplatedDecl());
-    if (getResolvedDecl(ctx, returned, /*must_resolve=*/false) != usage_decl) {
+    if (getResolvedDecl(ctx, returned, /*must_resolve=*/false) != usage_decl &&
+        !constructsReturnType(returned, specialization->getReturnType(),
+                              usage_decl)) {
       return std::nullopt;
     }
     checkCallable(sema, use, rule->getTemplatedDecl());
@@ -363,8 +387,15 @@ MatchResult matchTemplate(clang::Sema &sema, const clang::Expr *use,
   }
   auto returned =
       substituteSpecializationInRuleTmpl(sema, rule, specialization);
-  if (!returned ||
-      getResolvedDecl(ctx, returned, /*must_resolve=*/true) != usage_decl) {
+  if (!returned) {
+    return std::nullopt;
+  }
+  if (constructsReturnType(returned, specialization->getReturnType(),
+                           usage_decl)) {
+    checkCallable(sema, use, rule->getTemplatedDecl());
+    return specialization->getTemplateSpecializationArgs()->asArray();
+  }
+  if (getResolvedDecl(ctx, returned, /*must_resolve=*/true) != usage_decl) {
     return std::nullopt;
   }
   checkCallable(sema, use, rule->getTemplatedDecl());

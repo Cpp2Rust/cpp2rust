@@ -231,6 +231,9 @@ std::vector<ExprKey> GetExprKeys(clang::ASTContext &ctx,
     return keys;
   }
   auto key = getExprKey(ctx, returned);
+  if (!key && llvm::isa<clang::InitListExpr>(returned)) {
+    key = getConstructorKey(getParent(rule->getAsFunction()->getReturnType()));
+  }
   assert(key && "expression rule has no key");
   return {*key};
 }

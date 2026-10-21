@@ -92,3 +92,10 @@ fn f21<T1, T2>(a0: (Value<T1>, Value<T2>)) -> Ptr<T1> {
 fn f22<T1, T2>(a0: (Value<T1>, Value<T2>)) -> Ptr<T2> {
     a0.1.as_pointer()
 }
+
+fn f23<T1: Default, T2: Default>() -> (Value<T1>, Value<T2>) {
+    (
+        Rc::new(RefCell::new(T1::default())),
+        Rc::new(RefCell::new(T2::default())),
+    )
+}
