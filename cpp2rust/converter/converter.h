@@ -166,8 +166,6 @@ public:
 
   virtual void ConvertGlobalVarDecl(clang::VarDecl *decl);
 
-  void ConvertVaListVarDecl(clang::VarDecl *decl);
-
   virtual bool ConvertVarDeclSkipInit(clang::VarDecl *decl);
 
   bool VisitRecordDecl(clang::RecordDecl *decl);
@@ -198,6 +196,8 @@ public:
 
   std::string GetMethodName(const clang::CXXMethodDecl *decl);
 
+  std::string GetConversionName(const clang::CXXConversionDecl *decl) const;
+
   virtual std::string GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl);
 
   std::string GetCtorName(clang::CXXConstructorDecl *decl);
@@ -225,7 +225,8 @@ public:
   virtual bool ThisIsRustPtr() const { return false; }
 
   virtual void ConvertCXXConstructorBody(clang::CXXConstructorDecl *decl);
-  void EmitConstructorFieldInits(clang::CXXConstructorDecl *decl);
+  // The object that decl constructs, before its body runs.
+  void EmitConstructorInit(clang::CXXConstructorDecl *decl);
 
   virtual bool VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl);
 
@@ -285,7 +286,7 @@ public:
 
     const std::string &GetOrMaterialize(
         unsigned argument_num,
-        std::function<std::pair<std::string, std::string>(clang::QualType)>
+        llvm::function_ref<std::pair<std::string, std::string>(clang::QualType)>
             materialize_fn);
 
     // str, preceded by the bindings of the temporaries that it refers to.
@@ -388,6 +389,10 @@ public:
 
   void EmitArgList(const CallInfo &info);
 
+  // The variadic arguments, each followed by a comma, converted to VaArg if
+  // into_va_arg.
+  void EmitVariadicArgs(llvm::ArrayRef<clang::Expr *> args, bool into_va_arg);
+
   void EmitCall(CallInfo &&info);
 
   void ConvertGenericCallExpr(clang::CallExpr *expr);
@@ -431,8 +436,6 @@ public:
   virtual void ConvertVAArgCall(clang::CallExpr *expr);
 
   virtual void ConvertVariadicArg(clang::Expr *arg);
-
-  void DefineImplicitMembers(clang::CXXRecordDecl *decl);
 
   bool VisitCallExpr(clang::CallExpr *expr);
 
@@ -602,8 +605,6 @@ public:
   VisitCXXStdInitializerListExpr(clang::CXXStdInitializerListExpr *expr);
 
 protected:
-  const clang::Expr *GetParentExpr(const clang::Expr *expr);
-
 #define StrCat(...) _StrCat(__FUNCTION__, __LINE__, __VA_ARGS__)
 
   inline bool is_empty(char c) { return false; }
@@ -681,7 +682,6 @@ protected:
   }
 
   virtual bool Convert(clang::QualType qual_type);
-  virtual bool ConvertMappedType(clang::QualType qual_type);
 
   virtual std::string ConvertPointeeType(clang::QualType ptr_type);
 
@@ -741,8 +741,6 @@ protected:
 
   void ConvertParamList(llvm::ArrayRef<clang::ParmVarDecl *> params,
                         bool is_variadic);
-
-  virtual void ConvertFunctionQualifiers(clang::FunctionDecl *decl);
 
   virtual void ConvertFunctionReturnType(clang::FunctionDecl *decl);
 

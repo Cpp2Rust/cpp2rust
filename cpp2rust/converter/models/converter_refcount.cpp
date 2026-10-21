@@ -210,27 +210,17 @@ ConverterRefCount::VarConversionKind(const clang::VarDecl *decl) const {
 }
 
 std::string ConverterRefCount::BoxType(std::string &&str) const {
-  switch (getConversionKind()) {
-  case ConversionKind::Unboxed:
-  case ConversionKind::Pointee:
-  case ConversionKind::Ptr:
+  if (getConversionKind() != ConversionKind::FullRefCount) {
     return std::move(str);
-  case ConversionKind::FullRefCount:
-    return std::format("Value<{}>", std::move(str));
   }
-  std::unreachable();
+  return std::format("Value<{}>", std::move(str));
 }
 
 std::string ConverterRefCount::BoxValue(std::string &&str) const {
-  switch (getConversionKind()) {
-  case ConversionKind::Unboxed:
-  case ConversionKind::Pointee:
-  case ConversionKind::Ptr:
+  if (getConversionKind() != ConversionKind::FullRefCount) {
     return std::move(str);
-  case ConversionKind::FullRefCount:
-    return std::format("Rc::new(RefCell::new({}))", std::move(str));
   }
-  std::unreachable();
+  return std::format("Rc::new(RefCell::new({}))", std::move(str));
 }
 
 std::string
@@ -308,11 +298,6 @@ bool ConverterRefCount::VisitPointerType(clang::PointerType *type) {
     return false;
   }
 
-  if (IsVaListType(clang::QualType(type, 0))) {
-    StrCat("Ptr<VaArg>");
-    return false;
-  }
-
   if (type->isVoidPointerType()) {
     StrCat("AnyPtr");
     return false;
@@ -366,10 +351,6 @@ bool ConverterRefCount::VisitConstantArrayType(clang::ConstantArrayType *type) {
   }
   }
   return false;
-}
-
-std::string ConverterRefCount::ConvertFreshLValue(clang::Expr *expr) {
-  return MakeFresh(ConvertLValue(expr));
 }
 
 std::string ConverterRefCount::ConvertObject(clang::Expr *expr,
@@ -584,10 +565,9 @@ bool ConverterRefCount::VisitArraySubscriptExpr(
   } else {
     if (!base->IgnoreCasts()->getType()->isArrayType()) {
       if (isLValue()) {
-        pending_deref_.assert_consumed();
-        Buffer buf(*this);
-        ConvertArraySubscript(base, expr->getIdx(), expr->getType());
-        pending_deref_.set_unchecked(std::move(buf).str(), isFresh());
+        CapturePendingDeref([&] {
+          ConvertArraySubscript(base, expr->getIdx(), expr->getType());
+        });
         return false;
       }
       PushDeref deref(*this, expr->getType());
@@ -596,14 +576,6 @@ bool ConverterRefCount::VisitArraySubscriptExpr(
       ConvertArraySubscript(base, expr->getIdx(), expr->getType());
     }
   }
-  return false;
-}
-
-bool ConverterRefCount::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
-  if (decl_ids_.count(GetID(decl))) {
-    return false;
-  }
-  Converter::VisitCXXRecordDecl(decl);
   return false;
 }
 
@@ -748,11 +720,11 @@ void ConverterRefCount::EmitRustUnion(clang::RecordDecl *decl) {
     PushBrace impl_brace(*this);
     for (auto *field : decl->fields()) {
       PushConversionKind push(*this, ConversionKind::Unboxed);
-      auto ty =
-          field->getType()->isArrayType()
-              ? ToString(
-                    field->getType()->getAsArrayTypeUnsafe()->getElementType())
-              : ToString(field->getType());
+      auto type = field->getType();
+      if (type->isArrayType()) {
+        type = type->getAsArrayTypeUnsafe()->getElementType();
+      }
+      auto ty = ToString(type);
       StrCat(std::format(
           "pub fn {}(this: Ptr<Self>) -> Ptr<{}> {{ this.reinterpret_cast() }}",
           GetNamedDeclAsString(field), ty));
@@ -807,10 +779,6 @@ void ConverterRefCount::EmitFunctionPreamble(clang::FunctionDecl *decl) {
   }
   for (auto *param : DefinitionParameters(decl)) {
     auto name = GetNamedDeclAsString(param);
-    // Unnamed parameters are never used.
-    if (name == "_") {
-      continue;
-    }
     if (param->getType()->isReferenceType()) {
       if (!HasUsableDefaultArg(param)) {
         continue;
@@ -1310,12 +1278,6 @@ bool ConverterRefCount::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     return false;
   }
 
-  if (auto *unary = clang::dyn_cast<clang::UnaryOperator>(sub_expr);
-      expr->getCastKind() == clang::CastKind::CK_LValueToRValue && unary &&
-      (unary->isPostfix() || unary->isPrefix())) {
-    return Convert(sub_expr);
-  }
-
   if (expr->getCastKind() == clang::CastKind::CK_BitCast) {
     if (expr->getType()->isVoidPointerType()) {
       if (sub_expr->getType()->isVoidPointerType()) {
@@ -1342,7 +1304,6 @@ bool ConverterRefCount::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     } else if (sub_expr->getType()->isVoidPointerType() &&
                expr->getType()->isPointerType()) {
       Convert(sub_expr);
-      PushConversionKind push(*this, ConversionKind::Unboxed);
       EmitFresh(std::format(".reinterpret_cast::<{}>()",
                             ConvertPointeeType(expr->getType())));
     } else {
@@ -1372,12 +1333,7 @@ bool ConverterRefCount::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
       return false;
     }
     if (IsStringLiteralExpr(sub_expr)) {
-      auto code_unit = ToStringBase(
-          ctx_.getAsArrayType(
-                  sub_expr->IgnoreParens()->IgnoreImplicit()->getType())
-              ->getElementType());
-      EmitFresh(std::format("Ptr::<{}>::from_string_literal({})", code_unit,
-                            ToString(sub_expr->IgnoreParens())));
+      EmitFresh(ConvertStringLiteralPtr(sub_expr));
       return false;
     } else {
       // we need to write (var.as_pointer as Ptr<T>) because Rust isn't
@@ -1482,17 +1438,17 @@ bool ConverterRefCount::ConvertFunctionPointerCast(
   if (!from_fn && !to_fn) {
     return false;
   }
+  auto *target_proto =
+      to_fn
+          ? expr->getType()->getPointeeType()->getAs<clang::FunctionProtoType>()
+          : nullptr;
   if (from_fn && to_fn) {
-    auto target_proto =
-        expr->getType()->getPointeeType()->getAs<clang::FunctionProtoType>();
     StrCat(std::format("{}.cast::<{}>()", ToString(expr->getSubExpr()),
                        ConvertFunctionPointerType(target_proto)));
   } else if (from_fn) {
     Convert(expr->getSubExpr());
     StrCat(".to_any()");
   } else {
-    auto target_proto =
-        expr->getType()->getPointeeType()->getAs<clang::FunctionProtoType>();
     StrCat(std::format("{}.cast_fn::<{}>().expect(\"ub:wrong fn type\")",
                        ToString(expr->getSubExpr()),
                        ConvertFunctionPointerType(target_proto)));
@@ -1503,11 +1459,7 @@ bool ConverterRefCount::ConvertFunctionPointerCast(
 
 bool ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
   if (expr->getTypeAsWritten()->isVoidType()) {
-    StrCat(token::kRef);
-    PushParen paren(*this);
-    PushExprKind push(*this, ExprKind::Void);
-    Convert(expr->getSubExpr());
-    return false;
+    return Converter::VisitExplicitCastExpr(expr);
   }
   if (expr->getCastKind() == clang::CK_NullToPointer) {
     PushConversionKind push(*this, ConversionKind::Unboxed);
@@ -1548,7 +1500,6 @@ bool ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
     } else if (expr->getSubExpr()->getType()->isVoidPointerType() &&
                expr->getType()->isPointerType()) {
       Convert(expr->getSubExpr());
-      PushConversionKind push(*this, ConversionKind::Unboxed);
       EmitFresh(std::format(".reinterpret_cast::<{}>()",
                             ConvertPointeeType(expr->getType())));
       return false;
@@ -2184,17 +2135,14 @@ std::string ConverterRefCount::GetDefaultAsString(clang::QualType qual_type) {
   }
 
   if (IsVaListType(qual_type)) {
-    MarkFresh();
     return BoxValue("Ptr::<VaArg>::default()");
   }
 
   if (auto arr = GetArrayDefaultAsString(qual_type); !arr.empty()) {
-    MarkFresh();
     return BoxValue(std::move(arr));
   }
 
   if (auto init = Mapper::MapInitializer(*this, qual_type); !init.empty()) {
-    MarkFresh();
     return BoxValue(std::move(init));
   }
 
@@ -2211,7 +2159,6 @@ std::string ConverterRefCount::GetDefaultAsString(clang::QualType qual_type) {
     PushConversionKind push(*this, ConversionKind::Unboxed);
     ret = std::format("Ptr::<{}>::null()", ConvertPointeeType(qual_type));
   }
-  MarkFresh();
   return BoxValue(std::move(ret));
 }
 
@@ -2290,15 +2237,9 @@ std::string ConverterRefCount::ConvertVarInitValue(clang::QualType qual_type,
     if (llvm::isa<clang::MaterializeTemporaryExpr>(expr->IgnoreImpCasts())) {
       return EmitMaterializedTempBinding(qual_type, expr);
     }
-    if (qual_type.getNonReferenceType()->isArrayType()) {
-      if (IsStringLiteralExpr(expr)) {
-        auto code_unit = ToStringBase(
-            ctx_.getAsArrayType(
-                    expr->IgnoreParens()->IgnoreImplicit()->getType())
-                ->getElementType());
-        return std::format("Ptr::<{}>::from_string_literal({})", code_unit,
-                           ToString(expr->IgnoreParens()->IgnoreImplicit()));
-      }
+    if (qual_type.getNonReferenceType()->isArrayType() &&
+        IsStringLiteralExpr(expr)) {
+      return ConvertStringLiteralPtr(expr);
     }
     return ConvertFreshPointer(expr, qual_type);
   }
@@ -2527,13 +2468,8 @@ bool ConverterRefCount::ConvertCXXOperatorCallExpr(
     if (expr->getType()->isRecordType() && isRValue() && !is_inner_boxed &&
         (record_ptr_ || expr == copied_expr_)) {
       PushConversionKind push(*this, ConversionKind::Unboxed);
-      auto place = ConvertElemPlace(expr->getArg(0), expr->getArg(1));
-      if (record_ptr_) {
-        StrCat(DerefPtrExpr(place, expr->getType()));
-      } else {
-        StrCat(place, ".read()");
-        MarkFresh();
-      }
+      EmitRecordElemRead(ConvertElemPlace(expr->getArg(0), expr->getArg(1)),
+                         expr->getType());
       break;
     }
 
@@ -2562,6 +2498,24 @@ bool ConverterRefCount::ConvertCXXOperatorCallExpr(
     return Converter::ConvertCXXOperatorCallExpr(expr);
   }
   return false;
+}
+
+void ConverterRefCount::EmitRecordElemRead(std::string_view place,
+                                           clang::QualType type) {
+  if (record_ptr_) {
+    StrCat(DerefPtrExpr(place, type));
+  } else {
+    StrCat(place, ".read()");
+    MarkFresh();
+  }
+}
+
+void ConverterRefCount::CapturePendingDeref(
+    llvm::function_ref<void()> convert) {
+  pending_deref_.assert_consumed();
+  Buffer buf(*this);
+  convert();
+  pending_deref_.set_unchecked(std::move(buf).str(), isFresh());
 }
 
 std::string ConverterRefCount::ConvertPlace(clang::Expr *expr) {
@@ -2621,6 +2575,14 @@ void ConverterRefCount::ConvertFunctionParameters(clang::FunctionDecl *decl) {
   }
 }
 
+std::string ConverterRefCount::ConvertStringLiteralPtr(clang::Expr *expr) {
+  auto *literal = expr->IgnoreParens()->IgnoreImplicit();
+  auto code_unit =
+      ToStringBase(ctx_.getAsArrayType(literal->getType())->getElementType());
+  return std::format("Ptr::<{}>::from_string_literal({})", code_unit,
+                     ToString(literal));
+}
+
 std::string ConverterRefCount::ConvertSubscriptIndex(clang::Expr *idx) {
   auto str = ConvertRValue(idx);
   if (idx->getType()->isEnumeralType()) {
@@ -2663,13 +2625,7 @@ void ConverterRefCount::ConvertArraySubscript(clang::Expr *base,
     {
       PushParen paren(*this, is_inner_boxed);
       if (IsStringLiteralExpr(base)) {
-        auto code_unit = ToStringBase(
-            ctx_.getAsArrayType(
-                    base->IgnoreParens()->IgnoreImplicit()->getType())
-                ->getElementType());
-        StrCat(std::format("Ptr::<{}>::from_string_literal({}).offset({})",
-                           code_unit,
-                           ToString(base->IgnoreParens()->IgnoreImplicit()),
+        StrCat(std::format("{}.offset({})", ConvertStringLiteralPtr(base),
                            ConvertSubscriptIndex(idx)));
       } else {
         StrCat(std::format("({} as {}).offset({})",
@@ -2743,10 +2699,7 @@ void ConverterRefCount::ConvertPointerSubscript(
   auto *idx = expr->getIdx();
 
   if (isLValue()) {
-    pending_deref_.assert_consumed();
-    Buffer buf(*this);
-    ConvertPointerElem(base, idx);
-    pending_deref_.set_unchecked(std::move(buf).str(), isFresh());
+    CapturePendingDeref([&] { ConvertPointerElem(base, idx); });
     return;
   }
 
@@ -2760,12 +2713,7 @@ void ConverterRefCount::ConvertPointerSubscript(
       ConvertPointerElem(base, idx);
       place = std::move(buf).str();
     }
-    if (record_ptr_) {
-      StrCat(DerefPtrExpr(place, expr->getType()));
-    } else {
-      StrCat(place, ".read()");
-      MarkFresh();
-    }
+    EmitRecordElemRead(place, expr->getType());
     return;
   }
 
@@ -2965,12 +2913,11 @@ std::string ConverterRefCount::ConvertBorrowMut(clang::Expr *arg) {
 
 std::string ConverterRefCount::ConvertTake(clang::Expr *arg) {
   auto lvalue = ConvertLValue(arg);
+  MarkFresh();
   // An object reached through a pointer is taken through it.
   if (!pending_deref_.empty()) {
-    MarkFresh();
     return std::format("{}.with_mut(std::mem::take)", pending_deref_.take());
   }
-  MarkFresh();
   return std::format("std::mem::take(&mut {})", std::move(lvalue));
 }
 
@@ -3212,13 +3159,7 @@ void ConverterRefCount::ConvertCXXConstructorBody(
   std::string init;
   {
     Buffer buf(*this);
-    if (decl->isDelegatingConstructor()) {
-      Convert((*decl->init_begin())->getInit());
-    } else {
-      StrCat("Self");
-      PushBrace this_init(*this);
-      EmitConstructorFieldInits(decl);
-    }
+    EmitConstructorInit(decl);
     init = std::move(buf).str();
   }
   std::string body;

@@ -32,6 +32,9 @@ fn main_0() -> i32 {
         b1
     };
     assert!((b1 == ((4) as u8)));
+    let mut ishift: i32 = 1;
+    let mut shl2: u8 = b1 << ishift;
+    assert!((shl2 == ((8) as u8)));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

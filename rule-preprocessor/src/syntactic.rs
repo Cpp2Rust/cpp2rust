@@ -383,11 +383,10 @@ impl<'a> FnIrBuilder<'a> {
             for pred in wc.predicates() {
                 let Some(ty) = pred.ty() else { continue };
                 let name = ty.syntax().text().to_string();
-                let bounds = extract_bounds(pred.type_bound_list());
-                generics
-                    .entry(name)
-                    .and_modify(|existing| existing.extend(bounds.clone()))
-                    .or_insert(bounds);
+                let Some(existing) = generics.get_mut(&name) else {
+                    continue;
+                };
+                existing.extend(extract_bounds(pred.type_bound_list()));
             }
         }
 

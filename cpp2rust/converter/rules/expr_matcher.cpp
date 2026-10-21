@@ -429,6 +429,17 @@ const clang::NamedDecl *MoreSpecialized(clang::Sema &sema,
                                         const clang::NamedDecl *b) {
   auto a_function = a->getAsFunction();
   auto b_function = b->getAsFunction();
+  // A rule that takes default arguments of the use matches it only because of
+  // them, as C++ would not call it with the arguments that are written.
+  if (a_function && b_function) {
+    auto a_operands =
+        getOperands(sema.Context, use, a_function->getNumParams()).size();
+    auto b_operands =
+        getOperands(sema.Context, use, b_function->getNumParams()).size();
+    if (a_operands != b_operands) {
+      return a_operands < b_operands ? a : b;
+    }
+  }
   auto a_tmpl =
       a_function ? a_function->getDescribedFunctionTemplate() : nullptr;
   auto b_tmpl =

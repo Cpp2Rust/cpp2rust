@@ -180,6 +180,14 @@ fn main_0() -> i32 {
         })))));
     ({ DoStuffWithSafePointer_0(safe_ptr.as_pointer()) });
     assert!((({ Consume_1((*safe_ptr.borrow_mut()).take(),) }) == 60));
+    let p: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Ptr::alloc(1).to_owned_opt()));
+    {
+        let _p: Ptr<_> = Ptr::alloc(2);
+        p.as_pointer().write(_p.to_owned_opt())
+    };
+    assert!((((*p.borrow()).as_pointer().read()) == 2));
+    p.as_pointer().write(None);
+    assert!((*p.borrow()).is_none());
     return 0;
 }
 pub trait PairImpl {

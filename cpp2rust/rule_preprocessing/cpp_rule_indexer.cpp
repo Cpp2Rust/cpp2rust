@@ -49,6 +49,9 @@ std::string ClassOf(clang::QualType type) {
       return ClassOf(clang::QualType(qualifier.getAsType(), 0));
     }
   }
+  if (auto tag = type->getAsTagDecl()) {
+    return RulesLoader::ClassKey(tag);
+  }
   return {};
 }
 
