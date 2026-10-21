@@ -442,27 +442,6 @@ where
     }
 }
 
-impl<S, T, G, M> AsPointer<T> for FieldRef<S, Vec<T>, G, M>
-where
-    S: Record,
-    T: ByteRepr,
-    G: Fn(&S) -> &Vec<T> + Copy + 'static,
-    M: Fn(&mut S) -> &mut Vec<T> + Copy + 'static,
-{
-    #[inline]
-    fn as_pointer(&self) -> Ptr<T> {
-        match &self.base.kind {
-            PtrKind::Field(_, _, FieldShape::Single) => self
-                .base
-                .field_ptr(self.get, self.get_mut, self.offset)
-                .decay(),
-            _ => self
-                .base
-                .elems_of(self.get, self.get_mut, (self.offset)(&S::OFFSETS), false),
-        }
-    }
-}
-
 // The sequence that `get` gives in the struct that `base` points to, which is
 // reached through `base`: a field, as a sequence of one element, or the
 // elements of an array or vector field. It is the parent of the pointers into
@@ -589,7 +568,7 @@ macro_rules! array_field_ptr {
 
 // Field `field` of the struct that a Ptr or a Value holds, to make a pointer
 // to with as_pointer(), e.g., `field_ref!(p, v).as_pointer()` for a vector
-// field `v`, which gives a pointer to the vector or to its first element.
+// field `v`, which gives a pointer to the vector.
 #[macro_export]
 macro_rules! field_ref {
     ($base:expr, $field:ident) => {{
@@ -1027,7 +1006,8 @@ impl<S: Record, T: ByteRepr> VecElem<'_, S, T> {
         let elems: Ptr<T> = self
             .base
             .field_ref(self.get, self.get_mut, self.offset)
-            .as_pointer();
+            .as_pointer()
+            .decay();
         elems.offset(self.idx).upgrade()
     }
 }
@@ -1585,7 +1565,7 @@ mod tests {
     #[should_panic(expected = "too large for a pointer to its elements")]
     fn far_vector_field_ptr() {
         let far: Ptr<Far> = field_ptr!(holds_far(), far);
-        let _: Ptr<i32> = field_ref!(far, v).as_pointer();
+        let _: Ptr<i32> = field_ref!(far, v).as_pointer().decay();
     }
 
     #[test]
@@ -1595,8 +1575,6 @@ mod tests {
         let s: Value<Far> = Rc::new(RefCell::new(holds_far().borrow().far.clone()));
         let arr: Ptr<i32> = array_field_ptr!(s, arr);
         assert_eq!(arr.offset(2).read(), 3);
-        let v: Ptr<i32> = field_ref!(s, v).as_pointer();
-        assert_eq!(v.offset(1).read(), 6);
     }
 
     #[derive(Clone, Default, Record, ByteRepr)]
@@ -1644,7 +1622,7 @@ mod tests {
         assert_ne!(a.offset(1), b);
         assert_eq!(b.offset(-2), a);
         // The elements of a vector are not in the struct.
-        let v: Ptr<i32> = field_ref!(s, v).as_pointer();
+        let v: Ptr<i32> = field_ref!(s, v).as_pointer().decay();
         assert_ne!(v.offset(6), field_ptr!(s, c));
     }
 

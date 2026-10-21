@@ -124,28 +124,22 @@ fn main_0() -> i32 {
         ok = rhs_0
     };
     let distinct: Value<Map<Key, (Value<Key>, Value<Mapped>)>> = Rc::new(RefCell::new(Map::new()));
-    let a: Ptr<Mapped> = Map::subscript(
-        (distinct.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<Mapped>)>>),
-        &(*distinct_a.borrow()),
-    );
+    let a: Ptr<Mapped> = Map::subscript(distinct.as_pointer(), &(*distinct_a.borrow()));
     field!(a, value).write(11);
-    let a_it: Value<BidirectionalIterator<(Value<Key>, Value<Mapped>)>> = Rc::new(RefCell::new(
-        (distinct.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<Mapped>)>>)
-            .with(|__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.find(&(*distinct_a.borrow()))),
-    ));
+    let a_it: Value<BidirectionalIterator<(Value<Key>, Value<Mapped>)>> =
+        Rc::new(RefCell::new(distinct.as_pointer().with(
+            |__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.find(&(*distinct_a.borrow())),
+        )));
     let mut a_value: Ptr<Mapped> = ((*(*a_it.borrow()).iter_deref().upgrade().deref())
         .1
         .as_pointer());
     ok = { ((ok as i32) & ((default_constructions_0.with(|rc| *rc.borrow()) == 1) as i32)) != 0 };
-    let b: Ptr<Mapped> = Map::subscript(
-        (distinct.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<Mapped>)>>),
-        &(*distinct_b.borrow()),
-    );
+    let b: Ptr<Mapped> = Map::subscript(distinct.as_pointer(), &(*distinct_b.borrow()));
     field!(b, value).write(22);
-    let b_it: Value<BidirectionalIterator<(Value<Key>, Value<Mapped>)>> = Rc::new(RefCell::new(
-        (distinct.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<Mapped>)>>)
-            .with(|__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.find(&(*distinct_b.borrow()))),
-    ));
+    let b_it: Value<BidirectionalIterator<(Value<Key>, Value<Mapped>)>> =
+        Rc::new(RefCell::new(distinct.as_pointer().with(
+            |__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.find(&(*distinct_b.borrow())),
+        )));
     ok = { ((ok as i32) & ((default_constructions_0.with(|rc| *rc.borrow()) == 2) as i32)) != 0 };
     {
         let rhs_0 = ((ok as i32) & (((*distinct.borrow()).len() == 2_usize) as i32)) != 0;
@@ -160,25 +154,30 @@ fn main_0() -> i32 {
     {
         let rhs_0 = ((ok as i32)
             & (((*a_it.borrow())
-                == (distinct.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<Mapped>)>>).with(
-                    |__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.find(&(*distinct_a.borrow())),
-                )) as i32))
+                == distinct
+                    .as_pointer()
+                    .with(|__m: &Map<Key, (Value<Key>, Value<Mapped>)>| {
+                        __m.find(&(*distinct_a.borrow()))
+                    })) as i32))
             != 0;
         ok = rhs_0
     };
     {
         let rhs_0 = ((ok as i32)
             & (((*b_it.borrow())
-                == (distinct.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<Mapped>)>>).with(
-                    |__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.find(&(*distinct_b.borrow())),
-                )) as i32))
+                == distinct
+                    .as_pointer()
+                    .with(|__m: &Map<Key, (Value<Key>, Value<Mapped>)>| {
+                        __m.find(&(*distinct_b.borrow()))
+                    })) as i32))
             != 0;
         ok = rhs_0
     };
     {
         let rhs_0 = ((ok as i32)
             & (((*b_it.borrow())
-                != (distinct.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<Mapped>)>>)
+                != distinct
+                    .as_pointer()
                     .with(|__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.end()))
                 as i32))
             != 0;
@@ -214,9 +213,11 @@ fn main_0() -> i32 {
     };
     let mut distinct_count: usize = 0_usize;
     'loop_: for entry in IterRange::new(
-        (distinct.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<Mapped>)>>)
+        distinct
+            .as_pointer()
             .with(|__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.begin()),
-        (distinct.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<Mapped>)>>)
+        distinct
+            .as_pointer()
             .with(|__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.end()),
     ) {
         let entry: Ptr<(Value<Key>, Value<Mapped>)> = entry.iter_deref();
@@ -260,17 +261,12 @@ fn main_0() -> i32 {
     let equivalent: Value<Map<Key, (Value<Key>, Value<Mapped>)>> =
         Rc::new(RefCell::new(Map::new()));
     let mut before_equivalent: i32 = default_constructions_0.with(|rc| *rc.borrow());
-    let first: Ptr<Mapped> = Map::subscript(
-        (equivalent.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<Mapped>)>>),
-        &(*equivalent_a.borrow()),
-    );
+    let first: Ptr<Mapped> = Map::subscript(equivalent.as_pointer(), &(*equivalent_a.borrow()));
     field!(first, value).write(31);
     let first_it: Value<BidirectionalIterator<(Value<Key>, Value<Mapped>)>> =
-        Rc::new(RefCell::new(
-            (equivalent.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<Mapped>)>>).with(
-                |__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.find(&(*equivalent_a.borrow())),
-            ),
-        ));
+        Rc::new(RefCell::new(equivalent.as_pointer().with(
+            |__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.find(&(*equivalent_a.borrow())),
+        )));
     let mut first_value: Ptr<Mapped> = ((*(*first_it.borrow()).iter_deref().upgrade().deref())
         .1
         .as_pointer());
@@ -279,10 +275,7 @@ fn main_0() -> i32 {
             & ((default_constructions_0.with(|rc| *rc.borrow()) == (before_equivalent + 1)) as i32))
             != 0
     };
-    let second: Ptr<Mapped> = Map::subscript(
-        (equivalent.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<Mapped>)>>),
-        &(*equivalent_b.borrow()),
-    );
+    let second: Ptr<Mapped> = Map::subscript(equivalent.as_pointer(), &(*equivalent_b.borrow()));
     let mut reused: bool =
         (default_constructions_0.with(|rc| *rc.borrow()) == (before_equivalent + 1));
     ok = { ((ok as i32) & (reused as i32)) != 0 };
@@ -294,7 +287,8 @@ fn main_0() -> i32 {
         {
             let rhs_0 = ((ok as i32)
                 & (((*first_it.borrow())
-                    != (equivalent.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<Mapped>)>>)
+                    != equivalent
+                        .as_pointer()
                         .with(|__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.end()))
                     as i32))
                 != 0;
@@ -304,20 +298,22 @@ fn main_0() -> i32 {
         {
             let rhs_0 = ((ok as i32)
                 & (((*first_it.borrow())
-                    == (equivalent.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<Mapped>)>>)
-                        .with(|__m: &Map<Key, (Value<Key>, Value<Mapped>)>| {
+                    == equivalent.as_pointer().with(
+                        |__m: &Map<Key, (Value<Key>, Value<Mapped>)>| {
                             __m.find(&(*equivalent_a.borrow()))
-                        })) as i32))
+                        },
+                    )) as i32))
                 != 0;
             ok = rhs_0
         };
         {
             let rhs_0 = ((ok as i32)
                 & (((*first_it.borrow())
-                    == (equivalent.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<Mapped>)>>)
-                        .with(|__m: &Map<Key, (Value<Key>, Value<Mapped>)>| {
+                    == equivalent.as_pointer().with(
+                        |__m: &Map<Key, (Value<Key>, Value<Mapped>)>| {
                             __m.find(&(*equivalent_b.borrow()))
-                        })) as i32))
+                        },
+                    )) as i32))
                 != 0;
             ok = rhs_0
         };
@@ -343,9 +339,11 @@ fn main_0() -> i32 {
         };
         let mut equivalent_count: usize = 0_usize;
         'loop_: for entry in IterRange::new(
-            (equivalent.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<Mapped>)>>)
+            equivalent
+                .as_pointer()
                 .with(|__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.begin()),
-            (equivalent.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<Mapped>)>>)
+            equivalent
+                .as_pointer()
                 .with(|__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.end()),
         ) {
             let entry: Ptr<(Value<Key>, Value<Mapped>)> = entry.iter_deref();
@@ -373,10 +371,7 @@ fn main_0() -> i32 {
         order: 4,
         identity: 10,
     };
-    let later: Ptr<Mapped> = Map::subscript(
-        (equivalent.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<Mapped>)>>),
-        &later_key,
-    );
+    let later: Ptr<Mapped> = Map::subscript(equivalent.as_pointer(), &later_key);
     field!(later, value).write(41);
     ok = {
         ((ok as i32)
@@ -391,10 +386,11 @@ fn main_0() -> i32 {
         {
             let rhs_0 = ((ok as i32)
                 & (((*first_it.borrow())
-                    == (equivalent.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<Mapped>)>>)
-                        .with(|__m: &Map<Key, (Value<Key>, Value<Mapped>)>| {
+                    == equivalent.as_pointer().with(
+                        |__m: &Map<Key, (Value<Key>, Value<Mapped>)>| {
                             __m.find(&(*equivalent_a.borrow()))
-                        })) as i32))
+                        },
+                    )) as i32))
                 != 0;
             ok = rhs_0
         };
@@ -432,16 +428,12 @@ fn main_0() -> i32 {
     };
     let mut before_matching: i32 = default_constructions_0.with(|rc| *rc.borrow());
     let matching: Value<Map<Key, (Value<Key>, Value<Mapped>)>> = Rc::new(RefCell::new(Map::new()));
-    let matched: Ptr<Mapped> = Map::subscript(
-        (matching.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<Mapped>)>>),
-        &matching_a,
-    );
+    let matched: Ptr<Mapped> = Map::subscript(matching.as_pointer(), &matching_a);
     field!(matched, value).write(51);
     let matched_it: Value<BidirectionalIterator<(Value<Key>, Value<Mapped>)>> =
-        Rc::new(RefCell::new(
-            (matching.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<Mapped>)>>)
-                .with(|__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.find(&matching_a)),
-        ));
+        Rc::new(RefCell::new(matching.as_pointer().with(
+            |__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.find(&matching_a),
+        )));
     let mut matched_value: Ptr<Mapped> = ((*(*matched_it.borrow()).iter_deref().upgrade().deref())
         .1
         .as_pointer());
@@ -450,10 +442,7 @@ fn main_0() -> i32 {
             & ((default_constructions_0.with(|rc| *rc.borrow()) == (before_matching + 1)) as i32))
             != 0
     };
-    let matched_again: Ptr<Mapped> = Map::subscript(
-        (matching.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<Mapped>)>>),
-        &matching_b,
-    );
+    let matched_again: Ptr<Mapped> = Map::subscript(matching.as_pointer(), &matching_b);
     ok = {
         ((ok as i32)
             & ((default_constructions_0.with(|rc| *rc.borrow()) == (before_matching + 1)) as i32))
@@ -467,7 +456,8 @@ fn main_0() -> i32 {
     {
         let rhs_0 = ((ok as i32)
             & (((*matched_it.borrow())
-                == (matching.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<Mapped>)>>)
+                == matching
+                    .as_pointer()
                     .with(|__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.find(&matching_b)))
                 as i32))
             != 0;
@@ -492,10 +482,7 @@ fn main_0() -> i32 {
             != 0;
         ok = rhs_0
     };
-    let other: Ptr<Mapped> = Map::subscript(
-        (matching.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<Mapped>)>>),
-        &matching_c,
-    );
+    let other: Ptr<Mapped> = Map::subscript(matching.as_pointer(), &matching_c);
     field!(other, value).write(61);
     ok = {
         ((ok as i32)
@@ -509,7 +496,8 @@ fn main_0() -> i32 {
     {
         let rhs_0 = ((ok as i32)
             & (((*matched_it.borrow())
-                == (matching.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<Mapped>)>>)
+                == matching
+                    .as_pointer()
                     .with(|__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.find(&matching_a)))
                 as i32))
             != 0;

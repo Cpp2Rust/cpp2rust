@@ -20,7 +20,7 @@ fn main_0() -> i32 {
         let __a1 = 134678021_u32;
         (*vec_.borrow_mut()).push(__a1)
     };
-    let mut bytes: Ptr<u8> = (vec_.as_pointer() as Ptr<u32>).reinterpret_cast::<u8>();
+    let mut bytes: Ptr<u8> = vec_.as_pointer().decay().reinterpret_cast::<u8>();
     assert!((((elem!(bytes, 0).read()) as i32) == 1));
     assert!((((elem!(bytes, 1).read()) as i32) == 2));
     assert!((((elem!(bytes, 2).read()) as i32) == 3));

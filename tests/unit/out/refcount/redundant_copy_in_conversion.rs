@@ -26,17 +26,17 @@ pub fn main() {
 fn main_0() -> i32 {
     let m: Value<Map<i32, (Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
     Map::subscript_move(
-        (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>),
+        m.as_pointer(),
         Rc::new(RefCell::new(0)).as_pointer(),
         |__k| cpp_move!(__k),
     )
     .write(1);
     let end: Value<BidirectionalIterator<(Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(
-        (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
+        m.as_pointer()
             .with(|__m: &Map<i32, (Value<i32>, Value<i32>)>| __m.end()),
     ));
     let it0: Value<BidirectionalIterator<(Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(
-        (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
+        m.as_pointer()
             .with(|__m: &Map<i32, (Value<i32>, Value<i32>)>| __m.find(&0)),
     ));
     let const_it: Value<BidirectionalIterator<(Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(

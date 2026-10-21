@@ -59,10 +59,10 @@ fn main_0() -> i32 {
         __bytes.push(0);
         __bytes
     }));
-    println!("{}", (s.as_pointer() as Ptr<i8>));
+    println!("{}", s.as_pointer().decay());
     println!(
         "{}",
-        (Rc::new(RefCell::new(
+        Rc::new(RefCell::new(
             ({
                 fn_0({
                     let mut __bytes = Ptr::<i8>::from_string_literal(b"foo").to_c_bytes();
@@ -71,12 +71,10 @@ fn main_0() -> i32 {
                 })
             })
         ))
-        .as_pointer() as Ptr<i8>)
+        .as_pointer()
+        .decay()
     );
-    println!(
-        "{}",
-        (Ptr::<Vec<i8>>::decay(&({ fn2_1(s.as_pointer(),) })) as Ptr<i8>)
-    );
+    println!("{}", ({ fn2_1(s.as_pointer(),) }).decay());
     ({
         log_to_2(
             libcc2rs::c_stdout(),

@@ -357,7 +357,7 @@ mod tests {
     #[test]
     fn stops_at_first_nul_in_vec() {
         let v = std::rc::Rc::new(RefCell::new(EMBEDDED_NUL.to_vec()));
-        check(&v.as_pointer());
+        check(&v.as_pointer().decay());
     }
 
     #[test]

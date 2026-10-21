@@ -24,10 +24,8 @@ fn main_0() -> i32 {
         (*v.borrow_mut()).push(__a1)
     };
     let mut sum: i32 = 0;
-    'loop_: for elem in IterRange::new(
-        (v.as_pointer() as Ptr<i32>).begin(),
-        (v.as_pointer() as Ptr<i32>).end(),
-    ) {
+    'loop_: for elem in IterRange::new(v.as_pointer().decay().begin(), v.as_pointer().decay().end())
+    {
         let mut elem: i32 = (elem.iter_deref().read());
         sum += elem;
     }

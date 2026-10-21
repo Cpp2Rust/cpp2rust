@@ -19,7 +19,7 @@ pub fn All_0(arr: Ptr<Option<Value<Box<[i32]>>>>, mut N: i32, mut element: i32) 
             .write(element);
         i.prefix_inc();
     }
-    ((arr).clone() as Ptr<Option<Value<Box<[i32]>>>>).write((*all.borrow_mut()).take());
+    arr.write((*all.borrow_mut()).take());
 }
 pub fn Consume_1(mut arr: Option<Value<Box<[i32]>>>, mut N: i32) -> i32 {
     let mut sum: i32 = 0;

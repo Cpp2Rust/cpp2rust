@@ -13,21 +13,21 @@ pub fn main() {
 fn main_0() -> i32 {
     let a: Value<Map<i32, (Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
     Map::subscript_move(
-        (a.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>),
+        a.as_pointer(),
         Rc::new(RefCell::new(1)).as_pointer(),
         |__k| cpp_move!(__k),
     )
     .write(10);
     let b: Value<Map<i32, (Value<i32>, Value<i32>)>> = Rc::new(RefCell::new((*a.borrow()).clone()));
     Map::subscript_move(
-        (b.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>),
+        b.as_pointer(),
         Rc::new(RefCell::new(1)).as_pointer(),
         |__k| cpp_move!(__k),
     )
     .write(20);
     assert!(
         ((Map::subscript_move(
-            (a.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>),
+            a.as_pointer(),
             Rc::new(RefCell::new(1)).as_pointer(),
             |__k| cpp_move!(__k)
         )
@@ -36,21 +36,21 @@ fn main_0() -> i32 {
     );
     let x: Value<Map<i32, (Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
     Map::subscript_move(
-        (x.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>),
+        x.as_pointer(),
         Rc::new(RefCell::new(2)).as_pointer(),
         |__k| cpp_move!(__k),
     )
     .write(3);
     let y: Value<Map<i32, (Value<i32>, Value<i32>)>> = Rc::new(RefCell::new((*x.borrow()).clone()));
     Map::subscript_move(
-        (y.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>),
+        y.as_pointer(),
         Rc::new(RefCell::new(2)).as_pointer(),
         |__k| cpp_move!(__k),
     )
     .write(4);
     assert!(
         ((Map::subscript_move(
-            (x.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>),
+            x.as_pointer(),
             Rc::new(RefCell::new(2)).as_pointer(),
             |__k| cpp_move!(__k)
         )

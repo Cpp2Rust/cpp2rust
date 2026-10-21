@@ -5,6 +5,12 @@
 
 #undef errno
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 int *cpp2rust_errno(void);
+#ifdef __cplusplus
+}
+#endif
 
 #define errno (*cpp2rust_errno())
