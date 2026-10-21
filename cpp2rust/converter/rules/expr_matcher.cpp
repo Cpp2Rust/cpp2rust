@@ -143,7 +143,8 @@ clang::Expr *getObject(clang::ASTContext &ctx, clang::Expr *object) {
 }
 
 std::vector<clang::Expr *> getOperands(clang::ASTContext &ctx,
-                                       const clang::Expr *use) {
+                                       const clang::Expr *use,
+                                       unsigned arity = 0) {
   auto expr = const_cast<clang::Expr *>(RuleDecls::SkipImplicit(use));
   while (auto cast = llvm::dyn_cast<clang::ExplicitCastExpr>(expr)) {
     expr =
@@ -182,7 +183,7 @@ std::vector<clang::Expr *> getOperands(clang::ASTContext &ctx,
             ->IgnoreParenImpCasts();
     operands.push_back(getObject(ctx, base));
   }
-  while (!operands.empty() &&
+  while (operands.size() > arity &&
          llvm::isa<clang::CXXDefaultArgExpr>(operands.back())) {
     operands.pop_back();
   }
@@ -298,7 +299,7 @@ void checkCallable(clang::Sema &sema, const clang::Expr *use,
   }
   RuleDecls::Trial trial(sema);
   auto loc = use->getBeginLoc();
-  auto operands = getOperands(sema.Context, use);
+  auto operands = getOperands(sema.Context, use, rule->getNumParams());
   clang::OverloadCandidateSet set(loc, clang::OverloadCandidateSet::CSK_Normal);
   auto found = clang::DeclAccessPair::make(rule, clang::AS_public);
   if (auto tmpl = rule->getDescribedFunctionTemplate()) {
@@ -347,7 +348,8 @@ MatchResult matchTemplate(clang::Sema &sema, const clang::Expr *use,
   auto &ctx = sema.Context;
   auto explicit_args = getResultArgs(sema, rule, use);
   auto specialization =
-      deduce(sema, rule, explicit_args, getOperands(ctx, use));
+      deduce(sema, rule, explicit_args,
+             getOperands(ctx, use, rule->getTemplatedDecl()->getNumParams()));
   if (!specialization) {
     return std::nullopt;
   }

@@ -125,6 +125,12 @@ int main() {
   assert(pos == 7);
   pos = result.find_last_of("x");
   assert(pos == -1ul);
+  pos = result.find("f");
+  assert(pos == 5);
+  pos = result.find("oo");
+  assert(pos == 6);
+  pos = result.find("x");
+  assert(pos == -1ul);
   std::string string_to_cast = "cast";
   [[maybe_unused]] std::uint8_t *output_data =
       reinterpret_cast<std::uint8_t *>(&string_to_cast[0]);
