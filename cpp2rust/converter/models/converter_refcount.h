@@ -155,7 +155,11 @@ public:
   bool VisitStmtExpr(clang::StmtExpr *expr) override;
   bool VisitReturnStmt(clang::ReturnStmt *stmt) override;
 
-  bool VisitInitListExpr(clang::InitListExpr *expr) override;
+  void ConvertScalarInitList(clang::InitListExpr *expr) override;
+  void ConvertRecordInitList(clang::InitListExpr *expr, bool is_empty) override;
+  void ConvertUnionInitList(clang::InitListExpr *expr,
+                            const clang::FieldDecl *field) override;
+  void ConvertArrayInitList(clang::InitListExpr *expr) override;
 
   bool VisitCXXStdInitializerListExpr(
       clang::CXXStdInitializerListExpr *expr) override;

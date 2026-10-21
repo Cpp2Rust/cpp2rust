@@ -391,7 +391,8 @@ bool IsOverloadedFunction(const clang::FunctionDecl *decl) {
   return !lookup_result.isSingleResult();
 }
 
-void ForEachTemplateInstantiatedMethod(
+// Calls fn on the defined instantiations of the method templates of decl.
+static void ForEachTemplateInstantiation(
     const clang::CXXRecordDecl *decl,
     llvm::function_ref<void(clang::CXXMethodDecl *)> fn) {
   for (auto d : decl->decls()) {
@@ -399,13 +400,22 @@ void ForEachTemplateInstantiatedMethod(
             llvm::dyn_cast<clang::FunctionTemplateDecl>(d)) {
       for (auto s : function_template_decl->specializations()) {
         if (auto m = clang::dyn_cast<clang::CXXMethodDecl>(s);
-            m && !clang::isa<clang::CXXConstructorDecl>(m) &&
-            m->getDefinition()) {
+            m && m->getDefinition()) {
           fn(m);
         }
       }
     }
   }
+}
+
+void ForEachTemplateInstantiatedMethod(
+    const clang::CXXRecordDecl *decl,
+    llvm::function_ref<void(clang::CXXMethodDecl *)> fn) {
+  ForEachTemplateInstantiation(decl, [&](clang::CXXMethodDecl *method) {
+    if (!clang::isa<clang::CXXConstructorDecl>(method)) {
+      fn(method);
+    }
+  });
 }
 
 void ForEachMethod(const clang::CXXRecordDecl *decl,
@@ -788,18 +798,11 @@ bool IsInitExprOfStringLiteral(const clang::InitListExpr *expr) {
 std::vector<clang::CXXConstructorDecl *>
 GetTemplateInstantiatedCtors(clang::CXXRecordDecl *decl) {
   std::vector<clang::CXXConstructorDecl *> out;
-  for (auto d : decl->decls()) {
-    if (auto function_template_decl =
-            llvm::dyn_cast<clang::FunctionTemplateDecl>(d)) {
-      for (auto s : function_template_decl->specializations()) {
-        if (auto c = clang::dyn_cast<clang::CXXConstructorDecl>(s)) {
-          if (c->getDefinition()) {
-            out.push_back(c);
-          }
-        }
-      }
+  ForEachTemplateInstantiation(decl, [&](clang::CXXMethodDecl *method) {
+    if (auto *ctor = clang::dyn_cast<clang::CXXConstructorDecl>(method)) {
+      out.push_back(ctor);
     }
-  }
+  });
   return out;
 }
 

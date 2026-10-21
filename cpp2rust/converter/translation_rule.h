@@ -4,6 +4,7 @@
 // Distributed under the MIT license that can be found in the LICENSE file.
 
 #include <clang/AST/Expr.h>
+#include <llvm/ADT/STLFunctionalExtras.h>
 #include <llvm/Support/JSON.h>
 
 #include <filesystem>
@@ -70,6 +71,10 @@ struct RefExprFragment {
 
   void dump() const;
 };
+
+// Whether pred holds for a fragment of body, or for one nested in them.
+bool AnyFragment(const std::vector<BodyFragment> &body,
+                 llvm::function_ref<bool(const BodyFragment &)> pred);
 
 struct TypeInfo {
   std::vector<std::string> derives;

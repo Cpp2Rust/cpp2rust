@@ -109,37 +109,35 @@ std::vector<BodyFragment> ParseBodyFragmentsJSON(const llvm::json::Array &arr) {
 }
 
 void BodyFragmentDump(const BodyFragment &frag) {
-  if (auto *t = std::get_if<TextFragment>(&frag)) {
-    t->dump();
-  } else if (auto *p = std::get_if<PlaceholderFragment>(&frag)) {
-    p->dump();
-  } else if (auto *g = std::get_if<GenericFragment>(&frag)) {
-    g->dump();
-  } else if (auto *v = std::get_if<VaArgsFragment>(&frag)) {
-    v->dump();
-  } else if (auto *i = std::get_if<InitFragment>(&frag)) {
-    i->dump();
-  } else if (auto *mc =
-                 std::get_if<std::unique_ptr<MethodCallFragment>>(&frag)) {
-    (*mc)->dump();
-  } else if (auto *re = std::get_if<std::unique_ptr<RefExprFragment>>(&frag)) {
-    (*re)->dump();
-  }
-}
-
-bool HasInitFragment(const std::vector<BodyFragment> &body) {
-  return std::any_of(body.begin(), body.end(), [](const BodyFragment &frag) {
-    if (auto *mc = std::get_if<std::unique_ptr<MethodCallFragment>>(&frag)) {
-      return HasInitFragment((*mc)->receiver) || HasInitFragment((*mc)->body);
-    }
-    if (auto *re = std::get_if<std::unique_ptr<RefExprFragment>>(&frag)) {
-      return HasInitFragment((*re)->inner);
-    }
-    return std::holds_alternative<InitFragment>(frag);
-  });
+  std::visit(
+      [](const auto &f) {
+        if constexpr (requires { f->dump(); }) {
+          f->dump();
+        } else {
+          f.dump();
+        }
+      },
+      frag);
 }
 
 } // namespace
+
+bool AnyFragment(const std::vector<BodyFragment> &body,
+                 llvm::function_ref<bool(const BodyFragment &)> pred) {
+  return std::any_of(body.begin(), body.end(), [&](const BodyFragment &frag) {
+    if (pred(frag)) {
+      return true;
+    }
+    if (auto *mc = std::get_if<std::unique_ptr<MethodCallFragment>>(&frag)) {
+      return AnyFragment((*mc)->receiver, pred) ||
+             AnyFragment((*mc)->body, pred);
+    }
+    if (auto *re = std::get_if<std::unique_ptr<RefExprFragment>>(&frag)) {
+      return AnyFragment((*re)->inner, pred);
+    }
+    return false;
+  });
+}
 
 void TextFragment::dump() const { log() << "  text: \"" << text << "\"\n"; }
 
@@ -211,7 +209,11 @@ void ExprRule::dump() const {
   }
 }
 
-bool ExprRule::usesInit() const { return HasInitFragment(body); }
+bool ExprRule::usesInit() const {
+  return AnyFragment(body, [](const BodyFragment &frag) {
+    return std::holds_alternative<InitFragment>(frag);
+  });
+}
 
 const std::vector<BodyFragment> *ExprRule::refExprOperand() const {
   if (body.size() != 1) {

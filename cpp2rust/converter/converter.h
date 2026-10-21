@@ -131,6 +131,12 @@ public:
 
   virtual void EmitFunctionPreamble(clang::FunctionDecl *decl);
 
+  // Declares the storage of the temporary temp that the default argument of
+  // param is bound to, and returns its name.
+  std::string
+  EmitDefaultArgStorage(const clang::ParmVarDecl *param,
+                        const clang::MaterializeTemporaryExpr *temp);
+
   virtual void ConvertFunctionBody(clang::FunctionDecl *decl);
 
   void ConvertGotoBlock(clang::CompoundStmt *body);
@@ -381,6 +387,9 @@ public:
   ConvertLambdaToFunctionPointer(clang::Expr *lambda,
                                  const clang::CXXConversionDecl *conversion);
 
+  void EmitLambdaFunctionPointer(const clang::CXXRecordDecl *lambda,
+                                 clang::CXXMethodDecl *call_operator);
+
   virtual void
   ConvertFunctionToFunctionPointer(const clang::FunctionDecl *fn_decl);
 
@@ -458,6 +467,10 @@ public:
 
   virtual void ConvertBinaryOperator(clang::BinaryOperator *expr);
 
+  // The value that the compound assignment expr assigns to its left operand,
+  // whose type differs from the computation type.
+  std::string ConvertCompoundAssignValue(clang::CompoundAssignOperator *expr);
+
   virtual bool ConvertIncAndDec(clang::UnaryOperator *expr);
 
   virtual bool VisitUnaryOperator(clang::UnaryOperator *expr);
@@ -487,6 +500,12 @@ public:
   virtual bool VisitCXXThisExpr(clang::CXXThisExpr *expr);
 
   virtual bool VisitInitListExpr(clang::InitListExpr *expr);
+  virtual void ConvertScalarInitList(clang::InitListExpr *expr);
+  // is_empty: whether the list, as written, has no initializers.
+  virtual void ConvertRecordInitList(clang::InitListExpr *expr, bool is_empty);
+  virtual void ConvertUnionInitList(clang::InitListExpr *expr,
+                                    const clang::FieldDecl *field);
+  virtual void ConvertArrayInitList(clang::InitListExpr *expr);
   bool VisitOpaqueValueExpr(clang::OpaqueValueExpr *expr);
   bool VisitArrayInitIndexExpr(clang::ArrayInitIndexExpr *expr);
   virtual bool VisitArrayInitLoopExpr(clang::ArrayInitLoopExpr *expr);
@@ -1037,28 +1056,28 @@ protected:
     }
   };
 
+  // Whether the converted expression evaluates to a new value, which can be
+  // moved, rather than to an existing one, which must be copied.
   enum class ComputedExprType : uint8_t {
-    Value,
-    FreshValue,
-    Pointer,
-    FreshPointer,
+    Fresh,
+    NotFresh,
     Unknown,
     Pending,
   };
   ComputedExprType computed_expr_type_ = ComputedExprType::Unknown;
 
   bool isFresh() const {
-    assert(computed_expr_type_ != ComputedExprType::Unknown);
-    assert(computed_expr_type_ != ComputedExprType::Pending);
-    return computed_expr_type_ == ComputedExprType::FreshValue ||
-           computed_expr_type_ == ComputedExprType::FreshPointer;
+    return computed_expr_type_ == ComputedExprType::Fresh;
   }
 
-  void SetFresh();
+  void MarkFresh() { computed_expr_type_ = ComputedExprType::Fresh; }
+  void MarkNotFresh() { computed_expr_type_ = ComputedExprType::NotFresh; }
+  // Emits str, which evaluates to a new value.
+  void EmitFresh(std::string_view str);
   // str, cloned unless the expression it was converted from is fresh.
   std::string MakeFresh(std::string str);
+  // A read of a value of the given type is fresh if the value is copied.
   void SetValueFreshness(clang::QualType type);
-  void SetFreshType(clang::QualType type);
 
   std::string ConvertLValue(clang::Expr *expr);
   std::string
