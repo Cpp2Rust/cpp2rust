@@ -17,10 +17,6 @@ fn t4() -> ::libc::time_t {
     0 as ::libc::time_t
 }
 
-fn t5() -> ::libc::time_t {
-    0 as ::libc::time_t
-}
-
 unsafe fn f1(a0: *mut ::libc::time_t) -> ::libc::time_t {
     libc::time(a0)
 }

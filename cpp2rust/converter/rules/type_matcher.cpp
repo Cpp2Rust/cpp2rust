@@ -55,30 +55,6 @@ clang::QualType peelSugar(clang::ASTContext &ctx, clang::QualType type) {
   return type;
 }
 
-bool isInternal(const clang::NamedDecl *decl) {
-  if (decl->getAccess() == clang::AS_private ||
-      decl->getAccess() == clang::AS_protected) {
-    return true;
-  }
-  auto &opts = decl->getASTContext().getLangOpts();
-  if (decl->isReserved(opts) != clang::ReservedIdentifierStatus::NotReserved) {
-    return true;
-  }
-  for (auto context = decl->getDeclContext(); context;
-       context = context->getParent()) {
-    if (context->isInlineNamespace()) {
-      continue;
-    }
-    auto named = llvm::dyn_cast<clang::NamedDecl>(context);
-    if (named && named->getIdentifier() &&
-        named->isReserved(opts) !=
-            clang::ReservedIdentifierStatus::NotReserved) {
-      return true;
-    }
-  }
-  return false;
-}
-
 const clang::Type *getSugar(clang::QualType type) {
   if (auto typeof_type =
           llvm::dyn_cast<clang::TypeOfExprType>(type.getTypePtr())) {
@@ -163,7 +139,7 @@ clang::QualType SkipInternalTypedefs(clang::ASTContext &ctx,
   while (auto typedef_type =
              llvm::dyn_cast<clang::TypedefType>(type.getTypePtr())) {
     auto decl = typedef_type->getDecl();
-    if (!isInternal(decl) && !IsUserDefinedDecl(decl)) {
+    if (!RuleDecls::IsInternal(decl) && !IsUserDefinedDecl(decl)) {
       break;
     }
     type = peelSugar(ctx, typedef_type->desugar());

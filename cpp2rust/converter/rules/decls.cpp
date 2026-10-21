@@ -103,4 +103,28 @@ DeduceFromType(clang::Sema &sema, clang::TemplateParameterList *params,
   return std::vector<clang::TemplateArgument>(deduced.begin(), deduced.end());
 }
 
+bool IsInternal(const clang::NamedDecl *decl) {
+  if (decl->getAccess() == clang::AS_private ||
+      decl->getAccess() == clang::AS_protected) {
+    return true;
+  }
+  auto &opts = decl->getASTContext().getLangOpts();
+  if (decl->isReserved(opts) != clang::ReservedIdentifierStatus::NotReserved) {
+    return true;
+  }
+  for (auto context = decl->getDeclContext(); context;
+       context = context->getParent()) {
+    if (context->isInlineNamespace()) {
+      continue;
+    }
+    auto named = llvm::dyn_cast<clang::NamedDecl>(context);
+    if (named && named->getIdentifier() &&
+        named->isReserved(opts) !=
+            clang::ReservedIdentifierStatus::NotReserved) {
+      return true;
+    }
+  }
+  return false;
+}
+
 } // namespace cpp2rust::RuleDecls

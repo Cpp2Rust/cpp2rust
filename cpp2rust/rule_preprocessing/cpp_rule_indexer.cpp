@@ -27,6 +27,7 @@
 
 #include "compat/platform_flags.h"
 #include "converter/rules/rules_loader.h"
+#include "converter/rules/decls.h"
 
 namespace fs = std::filesystem;
 
@@ -230,6 +231,28 @@ std::string TypeKey(const clang::TypedefNameDecl *rule) {
   return ClassOf(type);
 }
 
+const clang::TypedefNameDecl *InternalTypedefOf(const clang::Decl *rule) {
+  auto alias = llvm::dyn_cast<clang::TypedefNameDecl>(rule);
+  if (!alias) {
+    return nullptr;
+  }
+  auto pattern = alias->getUnderlyingType()->getAs<clang::TypedefType>();
+  if (!pattern || RuleDecls::IsInternal(pattern->getDecl()) ||
+      !pattern->getDecl()->getDeclContext()->getRedeclContext()->isFileContext()) {
+    return nullptr;
+  }
+  auto internal =
+      pattern->getDecl()->getUnderlyingType()->getAs<clang::TypedefType>();
+  if (!internal || !RuleDecls::IsInternal(internal->getDecl()) ||
+      !internal->getDecl()
+           ->getDeclContext()
+           ->getRedeclContext()
+           ->isTranslationUnit()) {
+    return nullptr;
+  }
+  return internal->getDecl();
+}
+
 void AddRule(llvm::json::Object &rules, std::string key,
              llvm::json::Value rule) {
   auto &slot = rules[llvm::json::ObjectKey(std::move(key))];
@@ -285,6 +308,14 @@ void IndexRuleFile(clang::ASTContext &ctx, const std::string &dir_name,
       rule["requires"] = llvm::json::Array(required);
     }
     AddRule(rules, key, std::move(rule));
+    if (auto internal = InternalTypedefOf(decl)) {
+      AddRule(rules, RulesLoader::DeclKey(internal),
+              llvm::json::Object{
+                  {"dir", dir_name},
+                  {"name", name},
+                  {"text", std::format("typedef {} {};\n",
+                                       internal->getName().str(), name)}});
+    }
   }
 }
 

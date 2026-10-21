@@ -46,4 +46,6 @@ std::optional<std::vector<clang::TemplateArgument>>
 DeduceFromType(clang::Sema &sema, clang::TemplateParameterList *params,
                clang::QualType pattern, clang::QualType actual);
 
+bool IsInternal(const clang::NamedDecl *decl);
+
 } // namespace cpp2rust::RuleDecls
