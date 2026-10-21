@@ -50,5 +50,5 @@ fn f4(a0: &mut u8, a1: u32) -> u8 {
 }
 
 fn f5<T1: Into<i64>>(a0: u8, a1: T1) -> u8 {
-    a0 << a1.into()
+    a0 << Into::<i64>::into(a1)
 }
