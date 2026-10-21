@@ -159,6 +159,7 @@ private:
     AddKey(TypeKey(type));
     if (const auto *alias =
             llvm::dyn_cast<clang::TypedefType>(type.getTypePtr())) {
+      AddKey(DeclKey(alias->getDecl()));
       if (const auto *record = llvm::dyn_cast<clang::RecordDecl>(
               alias->getDecl()->getDeclContext())) {
         AddKey(ClassKey(record));
