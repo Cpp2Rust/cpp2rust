@@ -7,8 +7,6 @@
 
 using t1 = std::filesystem::path;
 
-typedef std::filesystem::path::string_type t2;
-
 std::filesystem::path f1(const char *a0) { return std::filesystem::path(a0); }
 
 std::string f2(const std::filesystem::path &a0) {
