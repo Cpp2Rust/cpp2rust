@@ -22,7 +22,7 @@ unsafe fn main_0() -> i32 {
     let a: i32 = 1;
     let mut p: *const i32 = (&a as *const i32);
     let mut q: *mut i32 =
-        (((((p) as *const ::libc::c_void) as u64) as *mut ::libc::c_void) as *mut i32);
+        (((((p) as *const ::libc::c_void) as usize) as *mut ::libc::c_void) as *mut i32);
     assert!(((p) == ((q).cast_const())));
     let mut v: i32 = 1;
     let cr: *const i32 = &v;

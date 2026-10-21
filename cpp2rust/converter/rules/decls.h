@@ -46,4 +46,16 @@ std::optional<std::vector<clang::TemplateArgument>>
 DeduceFromType(clang::Sema &sema, clang::TemplateParameterList *params,
                clang::QualType pattern, clang::QualType actual);
 
+bool IsInternal(const clang::NamedDecl *decl);
+
+clang::QualType PeelSugar(clang::ASTContext &ctx, clang::QualType type);
+
+const clang::Type *GetSugar(clang::QualType type);
+
+clang::QualType SkipInternalTypedefs(clang::ASTContext &ctx,
+                                     clang::QualType use);
+
+const clang::TypedefNameDecl *SpelledTypedef(clang::ASTContext &ctx,
+                                             clang::QualType use);
+
 } // namespace cpp2rust::RuleDecls

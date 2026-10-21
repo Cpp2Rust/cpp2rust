@@ -7,8 +7,24 @@ fn t1() -> Vec<libc::c_char> {
     vec![0]
 }
 
+fn t4() -> Vec<libc::c_char> {
+    vec![0]
+}
+
+fn t5() -> *mut libc::c_char {
+    ::std::ptr::null_mut()
+}
+
+fn t6() -> *const libc::c_char {
+    ::std::ptr::null()
+}
+
 fn t3() -> usize {
     0_usize
+}
+
+fn t7() -> libc::c_char {
+    0 as libc::c_char
 }
 
 unsafe fn f1(a0: Vec<libc::c_char>, a1: usize, a2: usize) -> Vec<libc::c_char> {

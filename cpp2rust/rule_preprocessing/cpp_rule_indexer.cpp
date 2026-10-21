@@ -218,6 +218,9 @@ std::string TypeKey(const clang::TypedefNameDecl *rule) {
   if (auto key = RulesLoader::TypeKey(type); !key.empty()) {
     return key;
   }
+  if (!type->isDependentType() && type->getAs<clang::TypedefType>()) {
+    return RulesLoader::TypeKey(type);
+  }
   while (type->isPointerType() || type->isReferenceType()) {
     type = type->getPointeeType();
   }

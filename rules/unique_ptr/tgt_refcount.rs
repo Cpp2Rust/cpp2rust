@@ -13,6 +13,14 @@ fn t2<T1>() -> Option<Value<Box<[T1]>>> {
     None
 }
 
+fn t3<T1>() -> Ptr<T1> {
+    Ptr::null()
+}
+
+fn t4<T1>() -> Ptr<T1> {
+    Ptr::null()
+}
+
 fn f1<T1: Default>(a0: usize) -> Option<Value<Box<[T1]>>> {
     Some(Rc::new(RefCell::new(
         (0..a0).map(|_| <T1>::default()).collect::<Box<[_]>>(),

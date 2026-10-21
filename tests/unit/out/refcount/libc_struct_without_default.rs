@@ -55,8 +55,8 @@ fn main_0() -> i32 {
     assert!((({ (*p.borrow()).events } as i32) == 0));
     assert!((({ (*p.borrow()).revents } as i32) == 2));
     let ia: Value<libcc2rs::InAddr> = Rc::new(RefCell::new(Default::default()));
-    (*ia.borrow_mut()).s_addr = 1_u32;
-    assert!(({ (*ia.borrow()).s_addr } == 1_u32));
+    (*ia.borrow_mut()).s_addr = (1 as ::libc::in_addr_t);
+    assert!(({ (*ia.borrow()).s_addr } == (1 as ::libc::in_addr_t)));
     let t: Value<libcc2rs::Tm> = Rc::new(RefCell::new(Default::default()));
     (*t.borrow_mut()).tm_year = 124;
     (*t.borrow_mut()).tm_mon = 5;
@@ -65,8 +65,8 @@ fn main_0() -> i32 {
     assert!(({ (*t.borrow()).tm_mon } == 5));
     assert!(({ (*t.borrow()).tm_mday } == 15));
     let st: Value<libcc2rs::Stat> = Rc::new(RefCell::new(Default::default()));
-    (*st.borrow_mut()).st_size = 1024_i64;
-    assert!(({ (*st.borrow()).st_size } == 1024_i64));
+    (*st.borrow_mut()).st_size = (1024 as ::libc::off_t);
+    assert!(({ (*st.borrow()).st_size } == (1024 as ::libc::off_t)));
     let ud: Value<UserDefined> = Rc::new(RefCell::new(<UserDefined>::default()));
     assert!(((vec_elem!(ud.as_pointer(), a, 0_usize).read()) == 0));
     assert!(((*ud.borrow()).v.len() == 0_usize));

@@ -97,6 +97,7 @@ struct ExprRule {
 
 struct TypeRule {
   std::string initializer; // Rust initializer expression
+  unsigned generic = 0;
   TypeInfo type_info;
 
   void dump() const;

@@ -3,7 +3,7 @@
 
 #include <cstddef>
 
-typedef decltype(nullptr) t0;
+typedef std::nullptr_t t0;
 
 typedef bool t10;
 typedef char16_t t80;

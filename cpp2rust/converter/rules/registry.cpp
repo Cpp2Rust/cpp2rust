@@ -3,6 +3,7 @@
 
 #include "converter/rules/registry.h"
 
+#include <clang/AST/Attr.h>
 #include <clang/AST/DeclCXX.h>
 #include <clang/AST/DeclTemplate.h>
 #include <clang/Basic/SourceManager.h>
@@ -273,22 +274,23 @@ struct TypeRuleMatch {
 
 TypeRuleMatch findType(clang::QualType use) {
   TypeRuleMatch best;
-  auto consider = [&](const RuleKeys::TypeKey &key) {
-    auto [begin, end] = types_.equal_range(key);
-    for (auto it = begin; it != end; ++it) {
-      auto match = AstMatcher::MatchType(*sema_, use, it->second.decl);
-      if (!match) {
-        continue;
-      }
-      if (best.rule_decl) {
-        if (match->depth > best.match.depth) {
+  auto &ctx = sema_->Context;
+  auto consider = [&](clang::QualType type, bool templates) {
+    for (auto key : RuleKeys::GetTypeKeys(ctx, type)) {
+      auto [begin, end] = types_.equal_range(key);
+      for (auto it = begin; it != end; ++it) {
+        if (!templates && llvm::isa<clang::TemplateDecl>(it->second.decl)) {
           continue;
         }
-        if (match->depth == best.match.depth) {
+        auto match = AstMatcher::MatchType(*sema_, type, it->second.decl);
+        if (!match) {
+          continue;
+        }
+        if (best.rule_decl) {
           auto better = AstMatcher::MoreSpecializedType(*sema_, it->second.decl,
                                                         best.rule_decl->decl);
           if (!better) {
-            use.dump(llvm::errs(), sema_->Context);
+            type.dump(llvm::errs(), ctx);
             it->second.decl->dump(llvm::errs());
             best.rule_decl->decl->dump(llvm::errs());
             llvm::report_fatal_error(
@@ -298,12 +300,31 @@ TypeRuleMatch findType(clang::QualType use) {
             continue;
           }
         }
+        best = {&it->second, *std::move(match)};
       }
-      best = {&it->second, *std::move(match)};
     }
   };
-  for (auto key : RuleKeys::GetTypeKeys(sema_->Context, use)) {
-    consider(key);
+  auto skipped = RuleDecls::SkipInternalTypedefs(ctx, use);
+  if (RuleDecls::SpelledTypedef(ctx, skipped) !=
+      RuleDecls::SpelledTypedef(ctx, use)) {
+    consider(use, /*templates=*/false);
+    if (best.rule_decl) {
+      return best;
+    }
+  }
+  use = skipped;
+  if (auto tag = use->getAsTagDecl();
+      tag &&
+      (IsUserDefinedDecl(tag) || tag->hasAttr<clang::TransparentUnionAttr>())) {
+    return best;
+  }
+  consider(use, /*templates=*/true);
+  if (!best.rule_decl) {
+    auto spelled = RuleDecls::SpelledTypedef(ctx, use);
+    if (spelled && !IsUserDefinedDecl(spelled)) {
+      use.dump(llvm::errs(), ctx);
+      llvm::report_fatal_error("typedef has no type rule");
+    }
   }
   return best;
 }
@@ -401,8 +422,11 @@ Matcher::Match<TranslationRule::TypeRule> Search(clang::ASTContext &ctx,
   if (!match.rule_decl) {
     return {};
   }
-  return {&match.rule_decl->rule,
-          getBindings(match.rule_decl->decl, match.match.args)};
+  auto bindings = getBindings(match.rule_decl->decl, match.match.args);
+  if (auto generic = match.rule_decl->rule.generic) {
+    return Search(ctx, bindings.at(generic - 1).getAsType());
+  }
+  return {&match.rule_decl->rule, std::move(bindings)};
 }
 
 const TranslationRule::ExprRule *GetExprRule(clang::ASTContext &ctx,

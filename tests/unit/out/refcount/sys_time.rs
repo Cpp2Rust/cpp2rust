@@ -7,8 +7,8 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn test_time_0() {
-    let mut t1: i64 = {
-        let __out = Ptr::<i64>::null();
+    let mut t1: ::libc::time_t = {
+        let __out = Ptr::<::libc::time_t>::null();
         match nix::time::clock_gettime(nix::time::ClockId::CLOCK_REALTIME) {
             Ok(__ts) => {
                 let __s = __ts.tv_sec();
@@ -23,8 +23,8 @@ pub fn test_time_0() {
             }
         }
     };
-    let t2: Value<i64> = Rc::new(RefCell::new(0_i64));
-    let mut t3: i64 = {
+    let t2: Value<::libc::time_t> = Rc::new(RefCell::new((0 as ::libc::time_t)));
+    let mut t3: ::libc::time_t = {
         let __out = (t2.as_pointer());
         match nix::time::clock_gettime(nix::time::ClockId::CLOCK_REALTIME) {
             Ok(__ts) => {
@@ -40,12 +40,12 @@ pub fn test_time_0() {
             }
         }
     };
-    assert!((((t1 > 1500000000_i64) as i32) != 0));
+    assert!((((t1 > (1500000000 as ::libc::time_t)) as i32) != 0));
     assert!(((((*t2.borrow()) == t3) as i32) != 0));
     assert!((((t3 >= t1) as i32) != 0));
 }
-pub fn print_tm_1(t: i64) {
-    let t: Value<i64> = Rc::new(RefCell::new(t));
+pub fn print_tm_1(t: ::libc::time_t) {
+    let t: Value<::libc::time_t> = Rc::new(RefCell::new(t));
     let tm: Value<libcc2rs::Tm> = Rc::new(RefCell::new(Default::default()));
     assert!(
         (((!(({
@@ -81,19 +81,19 @@ pub fn print_tm_1(t: i64) {
     );
 }
 pub fn test_gmtime_r_2() {
-    ({ print_tm_1(0_i64) });
-    ({ print_tm_1(1_i64) });
-    ({ print_tm_1(86399_i64) });
-    ({ print_tm_1(86400_i64) });
-    ({ print_tm_1(951782400_i64) });
-    ({ print_tm_1(951868799_i64) });
-    ({ print_tm_1(1704067199_i64) });
-    ({ print_tm_1(1704067200_i64) });
-    ({ print_tm_1(1721126096_i64) });
-    ({ print_tm_1(4102444800_i64) });
+    ({ print_tm_1((0 as ::libc::time_t)) });
+    ({ print_tm_1((1 as ::libc::time_t)) });
+    ({ print_tm_1((86399 as ::libc::time_t)) });
+    ({ print_tm_1((86400 as ::libc::time_t)) });
+    ({ print_tm_1((951782400 as ::libc::time_t)) });
+    ({ print_tm_1((951868799 as ::libc::time_t)) });
+    ({ print_tm_1((1704067199 as ::libc::time_t)) });
+    ({ print_tm_1((1704067200 as ::libc::time_t)) });
+    ({ print_tm_1((1721126096 as ::libc::time_t)) });
+    ({ print_tm_1((4102444800_i64 as ::libc::time_t)) });
 }
-pub fn print_local_tm_3(t: i64) {
-    let t: Value<i64> = Rc::new(RefCell::new(t));
+pub fn print_local_tm_3(t: ::libc::time_t) {
+    let t: Value<::libc::time_t> = Rc::new(RefCell::new(t));
     let tm: Value<libcc2rs::Tm> = Rc::new(RefCell::new(Default::default()));
     assert!(
         (((!(({
@@ -135,14 +135,14 @@ pub fn print_local_tm_3(t: i64) {
     );
 }
 pub fn test_localtime_r_4() {
-    ({ print_local_tm_3(0_i64) });
-    ({ print_local_tm_3(951782400_i64) });
-    ({ print_local_tm_3(1704067199_i64) });
-    ({ print_local_tm_3(1721126096_i64) });
-    ({ print_local_tm_3(1735689600_i64) });
+    ({ print_local_tm_3((0 as ::libc::time_t)) });
+    ({ print_local_tm_3((951782400 as ::libc::time_t)) });
+    ({ print_local_tm_3((1704067199 as ::libc::time_t)) });
+    ({ print_local_tm_3((1721126096 as ::libc::time_t)) });
+    ({ print_local_tm_3((1735689600 as ::libc::time_t)) });
 }
 pub fn test_strftime_5() {
-    let t: Value<i64> = Rc::new(RefCell::new(1721126096_i64));
+    let t: Value<::libc::time_t> = Rc::new(RefCell::new((1721126096 as ::libc::time_t)));
     let tm: Value<libcc2rs::Tm> = Rc::new(RefCell::new(Default::default()));
     assert!(
         (((!(({

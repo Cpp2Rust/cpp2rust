@@ -5,6 +5,14 @@ use libcc2rs::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
+fn t4<T1>() -> Ptr<T1> {
+    Ptr::null()
+}
+
+fn t5<T1>() -> Ptr<T1> {
+    Ptr::null()
+}
+
 fn f1<T1: 'static>(a0: Ptr<Vec<T1>>) -> Ptr<T1> {
     a0.decay()
 }

@@ -13,6 +13,8 @@
 #include <optional>
 #include <vector>
 
+#include "converter/converter_lib.h"
+
 namespace cpp2rust::RuleDecls {
 
 const clang::Expr *SkipImplicit(const clang::Expr *expr) {
@@ -101,6 +103,74 @@ DeduceFromType(clang::Sema &sema, clang::TemplateParameterList *params,
     }
   }
   return std::vector<clang::TemplateArgument>(deduced.begin(), deduced.end());
+}
+
+bool IsInternal(const clang::NamedDecl *decl) {
+  if (decl->getAccess() == clang::AS_private ||
+      decl->getAccess() == clang::AS_protected) {
+    return true;
+  }
+  auto &opts = decl->getASTContext().getLangOpts();
+  if (decl->isReserved(opts) != clang::ReservedIdentifierStatus::NotReserved) {
+    return true;
+  }
+  for (auto context = decl->getDeclContext(); context;
+       context = context->getParent()) {
+    if (context->isInlineNamespace()) {
+      continue;
+    }
+    auto named = llvm::dyn_cast<clang::NamedDecl>(context);
+    if (named && named->getIdentifier() &&
+        named->isReserved(opts) !=
+            clang::ReservedIdentifierStatus::NotReserved) {
+      return true;
+    }
+  }
+  return false;
+}
+
+clang::QualType PeelSugar(clang::ASTContext &ctx, clang::QualType type) {
+  while (!llvm::isa<clang::TypedefType, clang::PredefinedSugarType>(
+             type.getTypePtr()) &&
+         type != type.getSingleStepDesugaredType(ctx)) {
+    type = type.getSingleStepDesugaredType(ctx);
+  }
+  return type;
+}
+
+const clang::Type *GetSugar(clang::QualType type) {
+  if (auto typeof_type =
+          llvm::dyn_cast<clang::TypeOfExprType>(type.getTypePtr())) {
+    type = typeof_type->getUnderlyingExpr()->getType();
+  }
+  if (llvm::isa<clang::TypedefType, clang::PredefinedSugarType>(
+          type.getTypePtr())) {
+    return type.getTypePtr();
+  }
+  return nullptr;
+}
+
+clang::QualType SkipInternalTypedefs(clang::ASTContext &ctx,
+                                     clang::QualType use) {
+  auto cvr = use.getLocalCVRQualifiers();
+  auto type = PeelSugar(ctx, use);
+  while (auto typedef_type =
+             llvm::dyn_cast<clang::TypedefType>(type.getTypePtr())) {
+    auto decl = typedef_type->getDecl();
+    if (!IsInternal(decl) && !IsUserDefinedDecl(decl)) {
+      break;
+    }
+    type = PeelSugar(ctx, typedef_type->desugar());
+    cvr |= type.getLocalCVRQualifiers();
+  }
+  return type.withCVRQualifiers(cvr);
+}
+
+const clang::TypedefNameDecl *SpelledTypedef(clang::ASTContext &ctx,
+                                             clang::QualType use) {
+  auto sugar = GetSugar(PeelSugar(ctx, use));
+  auto typedef_type = llvm::dyn_cast_or_null<clang::TypedefType>(sugar);
+  return typedef_type ? typedef_type->getDecl() : nullptr;
 }
 
 } // namespace cpp2rust::RuleDecls

@@ -22,7 +22,7 @@ unsafe fn main_0() -> i32 {
             libc::SOL_SOCKET,
             libc::SO_KEEPALIVE,
             ((&mut on as *mut i32) as *const ::libc::c_void),
-            (::std::mem::size_of::<i32>() as u32)
+            (::std::mem::size_of::<i32>() as libc::socklen_t)
         )) == (0)) as i32)
             != 0)
     );
@@ -32,19 +32,19 @@ unsafe fn main_0() -> i32 {
             libc::IPPROTO_TCP,
             libc::TCP_NODELAY,
             ((&mut on as *mut i32) as *const ::libc::c_void),
-            (::std::mem::size_of::<i32>() as u32)
+            (::std::mem::size_of::<i32>() as libc::socklen_t)
         )) == (0)) as i32)
             != 0)
     );
     let mut err: i32 = -1_i32;
-    let mut len: u32 = (::std::mem::size_of::<i32>() as u32);
+    let mut len: libc::socklen_t = (::std::mem::size_of::<i32>() as libc::socklen_t);
     assert!(
         ((((libc::getsockopt(
             s,
             libc::SOL_SOCKET,
             libc::SO_ERROR,
             ((&mut err as *mut i32) as *mut ::libc::c_void),
-            (&mut len as *mut u32)
+            (&mut len as *mut libc::socklen_t)
         )) == (0)) as i32)
             != 0)
     );

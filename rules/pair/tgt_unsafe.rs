@@ -5,6 +5,14 @@ fn t1<T1: Default, T2: Default>() -> (T1, T2) {
     <(T1, T2)>::default()
 }
 
+fn t2<T1>() -> T1 {
+    unimplemented!()
+}
+
+fn t3<T1, T2>() -> T2 {
+    unimplemented!()
+}
+
 unsafe fn f2<T1: Clone, T2: Clone>(a0: (T1, T2)) -> (T1, T2) {
     a0.clone()
 }

@@ -274,6 +274,14 @@ bool IsUserDefinedDecl(const clang::Decl *decl) {
                })) {
       return false;
     }
+  } else if (auto tag = llvm::dyn_cast<clang::TagDecl>(decl)) {
+    if (auto definition = tag->getDefinition()) {
+      decl = definition;
+    } else if (llvm::any_of(tag->redecls(), [&](auto redecl) {
+                 return src_mgr.isInSystemHeader(redecl->getLocation());
+               })) {
+      return false;
+    }
   }
   auto src_loc = decl->getLocation();
   if (auto *spec =

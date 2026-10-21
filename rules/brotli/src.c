@@ -9,6 +9,8 @@ typedef BrotliEncoderMode t2;
 typedef struct BrotliDecoderStateStruct *t3;
 typedef const struct BrotliDecoderStateStruct *t4;
 typedef BrotliDecoderErrorCode t5;
+typedef BrotliDecoderState t6;
+typedef struct BrotliDecoderStateStruct t7;
 
 BrotliEncoderMode f1(void) { return BROTLI_MODE_FONT; }
 

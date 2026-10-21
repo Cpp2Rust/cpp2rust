@@ -11,6 +11,26 @@ fn t9() -> usize {
     0_usize
 }
 
+fn t10<T1>() -> T1 {
+    unimplemented!()
+}
+
+fn t11<T1>() -> Vec<T1> {
+    Vec::new()
+}
+
+fn t12() -> bool {
+    false
+}
+
+fn t13<T1>() -> *mut T1 {
+    ::std::ptr::null_mut()
+}
+
+fn t14<T1>() -> *const T1 {
+    ::std::ptr::null()
+}
+
 unsafe fn f38(a0: usize, a1: bool) -> Vec<bool> {
     (0..(a0) as usize).map(|_| a1).collect::<Vec<bool>>()
 }

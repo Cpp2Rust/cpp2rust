@@ -61,7 +61,9 @@ fn main_0() -> i32 {
             != 0)
     );
     let err: Value<i32> = Rc::new(RefCell::new(-1_i32));
-    let len: Value<u32> = Rc::new(RefCell::new((::std::mem::size_of::<i32>() as u32)));
+    let len: Value<libc::socklen_t> = Rc::new(RefCell::new(
+        (::std::mem::size_of::<i32>() as libc::socklen_t),
+    ));
     assert!(
         (((match (libc::SOL_SOCKET, libc::SO_ERROR) {
             (::libc::SOL_SOCKET, ::libc::SO_ERROR) => {

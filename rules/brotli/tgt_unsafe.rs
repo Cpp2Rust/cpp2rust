@@ -21,6 +21,14 @@ fn t5() -> ::brotli_sys::BrotliDecoderErrorCode {
     ::brotli_sys::BROTLI_DECODER_NO_ERROR
 }
 
+fn t6() -> ::brotli_sys::BrotliDecoderState {
+    unimplemented!()
+}
+
+fn t7() -> ::brotli_sys::BrotliDecoderState {
+    unimplemented!()
+}
+
 unsafe fn f1() -> ::brotli_sys::BrotliEncoderMode {
     ::brotli_sys::BROTLI_MODE_FONT
 }

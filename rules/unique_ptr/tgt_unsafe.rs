@@ -9,6 +9,14 @@ fn t2<T1>() -> Option<Box<[T1]>> {
     None
 }
 
+fn t3<T1>() -> *mut T1 {
+    ::std::ptr::null_mut()
+}
+
+fn t4<T1>() -> *mut T1 {
+    ::std::ptr::null_mut()
+}
+
 unsafe fn f1<T1: Default>(a0: usize) -> Option<Box<[T1]>> {
     Some((0..a0).map(|_| <T1>::default()).collect::<Box<[_]>>())
 }

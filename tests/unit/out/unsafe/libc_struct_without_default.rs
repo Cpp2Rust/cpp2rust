@@ -51,8 +51,8 @@ unsafe fn main_0() -> i32 {
     assert!(((p.events as i32) == (0)));
     assert!(((p.revents as i32) == (2)));
     let mut ia: ::libc::in_addr = unsafe { std::mem::zeroed() };
-    ia.s_addr = 1_u32;
-    assert!(((ia.s_addr) == (1_u32)));
+    ia.s_addr = (1 as ::libc::in_addr_t);
+    assert!(((ia.s_addr) == (1 as ::libc::in_addr_t)));
     let mut t: ::libc::tm = unsafe { std::mem::zeroed() };
     t.tm_year = 124;
     t.tm_mon = 5;
@@ -61,8 +61,8 @@ unsafe fn main_0() -> i32 {
     assert!(((t.tm_mon) == (5)));
     assert!(((t.tm_mday) == (15)));
     let mut st: ::libc::stat = unsafe { std::mem::zeroed() };
-    st.st_size = 1024_i64;
-    assert!(((st.st_size) == (1024_i64)));
+    st.st_size = (1024 as ::libc::off_t);
+    assert!(((st.st_size) == (1024 as ::libc::off_t)));
     let mut ud: UserDefined = <UserDefined>::default();
     assert!(((ud.a[(0_usize)]) == (0)));
     assert!(((ud.v.len()) == (0_usize)));

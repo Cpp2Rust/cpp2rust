@@ -13,6 +13,10 @@ fn t3() -> ::std::fs::File {
     ::std::fs::File::open("").unwrap()
 }
 
+fn t4() -> ::std::fs::File {
+    ::std::fs::File::open("").unwrap()
+}
+
 unsafe fn f1(a0: *const libc::c_char) -> ::std::fs::File {
     ::std::fs::File::create(::std::ffi::CStr::from_ptr(a0).to_str().unwrap()).unwrap()
 }

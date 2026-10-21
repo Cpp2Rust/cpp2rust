@@ -10,6 +10,12 @@ template <typename T1> using t1 = std::deque<T1>;
 
 template <typename T1> using t2 = typename std::deque<T1>::size_type;
 
+template <typename T1> using t3 = typename std::deque<T1>::value_type;
+
+template <typename T1> using t4 = typename std::deque<T1>::reference;
+
+template <typename T1> using t5 = typename std::deque<T1>::const_reference;
+
 template <typename T1> T1 &f1(std::deque<T1> &o) { return o.back(); }
 
 template <typename T1> T1 &f2(std::deque<T1> &o) { return o.front(); }

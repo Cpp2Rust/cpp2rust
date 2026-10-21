@@ -8,6 +8,8 @@
 
 template <typename T1> using t1 = std::unique_ptr<T1>;
 template <typename T1> using t2 = std::unique_ptr<T1[]>;
+template <typename T1> using t3 = typename std::unique_ptr<T1>::pointer;
+template <typename T1> using t4 = typename std::unique_ptr<T1[]>::pointer;
 
 template <typename T1> T1 *f2(const std::unique_ptr<T1> &o) { return o.get(); }
 

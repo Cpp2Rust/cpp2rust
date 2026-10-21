@@ -260,6 +260,9 @@ private:
   }
 
   void AddressTaken(const clang::ValueDecl *decl) {
+    if (!IsUserDefinedDecl(decl)) {
+      return;
+    }
     if (auto *var = clang::dyn_cast<clang::VarDecl>(decl);
         var && CanUnbox(ctx_, var)) {
       address_taken_.insert(var);

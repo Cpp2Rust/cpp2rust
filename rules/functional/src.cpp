@@ -5,6 +5,8 @@
 
 template <typename T1> using t1 = std::reference_wrapper<T1>;
 
+template <typename T1> using t2 = typename std::reference_wrapper<T1>::type;
+
 template <typename T1> std::reference_wrapper<T1> f1(T1 &a0) {
   return std::reference_wrapper<T1>(a0);
 }

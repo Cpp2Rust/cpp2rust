@@ -5,6 +5,10 @@ fn t1() -> Vec<libc::c_char> {
     vec![0]
 }
 
+fn t2() -> Vec<libc::c_char> {
+    vec![0]
+}
+
 unsafe fn f1(a0: *const libc::c_char) -> Vec<libc::c_char> {
     let mut __v = ::std::ffi::CStr::from_ptr(a0)
         .to_bytes()
