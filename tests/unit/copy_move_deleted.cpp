@@ -1,5 +1,6 @@
 #include <cassert>
 #include <utility>
+#include <vector>
 
 struct NoCopy {
   int v;
@@ -43,6 +44,10 @@ struct Container {
   int tag;
 };
 
+struct VecHolder {
+  std::vector<NoCopy> items;
+};
+
 static void bump(NoCopy *p) { p->v++; }
 static void bump_ref(Immovable &r) { r.v++; }
 
@@ -71,5 +76,9 @@ int main() {
   Container c{NoCopy(6), 7};
   Container d(std::move(c));
   assert(d.inner.v == 6 && d.tag == 7 && c.inner.v == 0);
+
+  VecHolder h;
+  VecHolder h2(std::move(h));
+  assert(h2.items.size() == 0);
   return 0;
 }
