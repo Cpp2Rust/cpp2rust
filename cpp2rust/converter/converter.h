@@ -27,6 +27,34 @@
 
 namespace cpp2rust {
 inline constexpr const char kDestructorName[] = "destructor";
+
+// Sets var to value while in scope.
+template <typename T> class ScopedValue {
+  T &var_;
+  T saved_;
+
+public:
+  ScopedValue(T &var, std::type_identity_t<T> value)
+      : var_(var), saved_(std::exchange(var, std::move(value))) {}
+  ~ScopedValue() { var_ = std::move(saved_); }
+  ScopedValue(const ScopedValue &) = delete;
+  ScopedValue &operator=(const ScopedValue &) = delete;
+};
+
+// Pushes value onto stack while in scope.
+template <typename T> class ScopedPush {
+  std::vector<T> &stack_;
+
+public:
+  ScopedPush(std::vector<T> &stack, std::type_identity_t<T> value)
+      : stack_(stack) {
+    stack_.push_back(std::move(value));
+  }
+  ~ScopedPush() { stack_.pop_back(); }
+  ScopedPush(const ScopedPush &) = delete;
+  ScopedPush &operator=(const ScopedPush &) = delete;
+};
+
 class Converter : public clang::RecursiveASTVisitor<Converter> {
 
 public:
@@ -113,6 +141,9 @@ public:
 
   void EmitHoistedDecls(clang::CompoundStmt *body);
 
+  // Declares decl ahead of its initialization, with a default value.
+  void EmitHoistedDecl(clang::VarDecl *decl);
+
   virtual bool VisitFunctionTemplateDecl(clang::FunctionTemplateDecl *decl);
   bool VisitVarTemplateDecl(clang::VarTemplateDecl *decl);
 
@@ -128,7 +159,7 @@ public:
 
   virtual void ConvertGlobalVarDecl(clang::VarDecl *decl);
 
-  virtual void ConvertVaListVarDecl(clang::VarDecl *decl);
+  void ConvertVaListVarDecl(clang::VarDecl *decl);
 
   virtual bool ConvertVarDeclSkipInit(clang::VarDecl *decl);
 
@@ -139,6 +170,7 @@ public:
   virtual void EmitRustStructOrUnion(clang::RecordDecl *decl);
 
   void EmitReprC(clang::RecordDecl *decl);
+  void EmitDerives(const clang::RecordDecl *decl);
   virtual void EmitRustUnion(clang::RecordDecl *decl);
 
   virtual bool EmitsReprCForRecords() const { return true; }
@@ -195,6 +227,8 @@ public:
   virtual bool VisitNamespaceDecl(clang::NamespaceDecl *decl);
 
   bool VisitLinkageSpecDecl(clang::LinkageSpecDecl *decl);
+
+  void ConvertDeclContext(clang::DeclContext *decl);
 
   virtual bool VisitTypedefDecl(clang::TypedefDecl *decl);
   virtual bool VisitTypeAliasDecl(clang::TypeAliasDecl *decl);
@@ -402,6 +436,13 @@ public:
 
   virtual bool VisitCXXBoolLiteralExpr(clang::CXXBoolLiteralExpr *expr);
 
+  void EmitBoolLiteral(bool value);
+
+  // The value of expr, an integer constant expression.
+  void EmitEvaluatedInt(clang::Expr *expr);
+
+  void EmitNullPointer();
+
   bool VisitCXXNoexceptExpr(clang::CXXNoexceptExpr *expr);
 
   void ConvertIntegerToEnumeralCast(clang::Expr *to, clang::Expr *from);
@@ -426,6 +467,10 @@ public:
   bool ConvertLValueConditional(clang::ConditionalOperator *expr);
 
   virtual bool VisitConditionalOperator(clang::ConditionalOperator *expr);
+
+  // A branch of a conditional operator of the given type.
+  virtual void ConvertConditionalBranch(clang::Expr *expr,
+                                        clang::QualType type);
 
   virtual bool VisitDeclRefExpr(clang::DeclRefExpr *expr);
 
@@ -663,6 +708,9 @@ protected:
 
   virtual void ConvertFunctionParameters(clang::FunctionDecl *decl);
 
+  void ConvertParamList(llvm::ArrayRef<clang::ParmVarDecl *> params,
+                        bool is_variadic);
+
   virtual void ConvertFunctionQualifiers(clang::FunctionDecl *decl);
 
   virtual void ConvertFunctionReturnType(clang::FunctionDecl *decl);
@@ -721,6 +769,10 @@ protected:
   virtual void AddDefaultTraitForUnion(const clang::RecordDecl *decl);
 
   void EmitDefaultStructLiteral(const clang::RecordDecl *decl);
+
+  // Emits `impl Default for decl`, whose default() returns what body emits.
+  void EmitDefaultImpl(const clang::RecordDecl *decl,
+                       llvm::function_ref<void()> body);
 
   virtual void EmitByteSizeAttr(const clang::RecordDecl *decl);
 
@@ -813,6 +865,9 @@ protected:
   clang::ASTContext &ctx_;
   std::unique_ptr<clang::MangleContext> mangle_context_;
   clang::FunctionDecl *curr_function_ = nullptr;
+  bool InConstructor() const {
+    return clang::isa_and_present<clang::CXXConstructorDecl>(curr_function_);
+  }
   bool in_function_formals_ = false;
   enum class MethodTarget : uint8_t {
     ValueImpl,
@@ -822,39 +877,10 @@ protected:
   };
   MethodTarget method_target_ = MethodTarget::ValueImpl;
 
-  struct PushMethodTarget {
-    Converter &c;
-    MethodTarget prev;
-    PushMethodTarget(Converter &c, MethodTarget k)
-        : c(c), prev(c.method_target_) {
-      c.method_target_ = k;
-    }
-    ~PushMethodTarget() { c.method_target_ = prev; }
-  };
-
   std::string ufcs_receiver_;
   bool in_const_initializer_ = false;
   std::optional<bool> autoref_mut_;
 
-  struct PushExplicitAutoref {
-    Converter &c;
-    std::optional<bool> prev;
-    PushExplicitAutoref(Converter &c, std::optional<bool> v)
-        : c(c), prev(c.autoref_mut_) {
-      c.autoref_mut_ = v;
-    }
-    ~PushExplicitAutoref() { c.autoref_mut_ = prev; }
-  };
-
-  struct PushConstInitializer {
-    Converter &c;
-    bool prev;
-    PushConstInitializer(Converter &c, bool enabled)
-        : c(c), prev(c.in_const_initializer_) {
-      c.in_const_initializer_ = enabled;
-    }
-    ~PushConstInitializer() { c.in_const_initializer_ = prev; }
-  };
   std::vector<clang::Expr *> curr_for_inc_;
   std::vector<clang::QualType> curr_init_type_;
 
@@ -866,50 +892,9 @@ protected:
            break_target_.back() == BreakTarget::Switch;
   }
 
-  class PushBreakTarget {
-  public:
-    PushBreakTarget(std::vector<BreakTarget> &stack, BreakTarget target)
-        : stack_(stack) {
-      stack_.push_back(target);
-    }
-    ~PushBreakTarget() { stack_.pop_back(); }
-    PushBreakTarget(const PushBreakTarget &) = delete;
-    PushBreakTarget &operator=(const PushBreakTarget &) = delete;
-
-  private:
-    std::vector<BreakTarget> &stack_;
-  };
-
-  class PushInitType {
-  public:
-    PushInitType(Converter &c, clang::QualType type) : c_(c) {
-      c_.curr_init_type_.emplace_back(type);
-    }
-    ~PushInitType() { c_.curr_init_type_.pop_back(); }
-    PushInitType(const PushInitType &) = delete;
-    PushInitType &operator=(const PushInitType &) = delete;
-
-  private:
-    Converter &c_;
-  };
-
   // Local variables hoisted outside a goto_block so that all labels can see and
   // use the variables.
   std::unordered_set<const clang::VarDecl *> hoisted_decls_;
-  class PushHoistedDecls {
-  public:
-    PushHoistedDecls(std::unordered_set<const clang::VarDecl *> &field)
-        : field_(field), saved_(std::move(field)) {
-      field_.clear();
-    }
-    ~PushHoistedDecls() { field_ = std::move(saved_); }
-    PushHoistedDecls(const PushHoistedDecls &) = delete;
-    PushHoistedDecls &operator=(const PushHoistedDecls &) = delete;
-
-  private:
-    std::unordered_set<const clang::VarDecl *> &field_;
-    std::unordered_set<const clang::VarDecl *> saved_;
-  };
 
   unsigned materialized_temp_id_ = 0;
   std::string *materialized_temp_bindings_ = nullptr;
@@ -1027,22 +1012,16 @@ protected:
 
   void dump_expr_kinds();
 
-  struct PushCurrFunction {
-    Converter &c;
-    clang::FunctionDecl *prev;
-    PushCurrFunction(Converter &c, clang::FunctionDecl *decl)
-        : c(c), prev(c.curr_function_) {
-      c.curr_function_ = decl;
-    }
-    ~PushCurrFunction() { c.curr_function_ = prev; }
-  };
-
   struct PushExprKind {
     Converter &c;
-    PushExprKind(Converter &c, ExprKind k, const char *file = __builtin_FILE(),
+    bool pushed;
+    PushExprKind(Converter &c, ExprKind k, bool enabled = true,
+                 const char *file = __builtin_FILE(),
                  int line = __builtin_LINE())
-        : c(c) {
-      c.curr_expr_kind_.push_back(k);
+        : c(c), pushed(enabled) {
+      if (pushed) {
+        c.curr_expr_kind_.push_back(k);
+      }
       log() << "PushExprKind " << file << ':' << line << ' ';
       c.dump_expr_kinds();
       log() << '[';
@@ -1051,7 +1030,11 @@ protected:
       }
       log() << "]\n";
     }
-    ~PushExprKind() { c.curr_expr_kind_.pop_back(); }
+    ~PushExprKind() {
+      if (pushed) {
+        c.curr_expr_kind_.pop_back();
+      }
+    }
   };
 
   enum class ComputedExprType : uint8_t {
@@ -1072,6 +1055,8 @@ protected:
   }
 
   void SetFresh();
+  // str, cloned unless the expression it was converted from is fresh.
+  std::string MakeFresh(std::string str);
   void SetValueFreshness(clang::QualType type);
   void SetFreshType(clang::QualType type);
 

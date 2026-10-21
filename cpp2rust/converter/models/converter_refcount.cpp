@@ -288,10 +288,9 @@ bool ConverterRefCount::VisitReferenceType(clang::ReferenceType *type) {
     // element, the same way a by-value array parameter would, instead of
     // going through a pointer to the whole boxed array.
     auto element_type = pointee_type->getAsArrayTypeUnsafe()->getElementType();
-    PushConversionKind push1(*this, ConversionKind::Ptr,
-                             !element_type->isArrayType());
-    PushConversionKind push2(*this, ConversionKind::Pointee,
-                             element_type->isArrayType());
+    PushConversionKind push(*this, element_type->isArrayType()
+                                       ? ConversionKind::Pointee
+                                       : ConversionKind::Ptr);
     StrCat("Ptr<");
     Convert(element_type);
     StrCat(token::kGt);
@@ -329,8 +328,8 @@ bool ConverterRefCount::VisitPointerType(clang::PointerType *type) {
   auto pointee_type = type->getPointeeType();
   bool pointee_is_array =
       pointee_type->isArrayType() && !IsVaListType(pointee_type);
-  PushConversionKind push1(*this, ConversionKind::Ptr, !pointee_is_array);
-  PushConversionKind push2(*this, ConversionKind::Pointee, pointee_is_array);
+  PushConversionKind push(*this, pointee_is_array ? ConversionKind::Pointee
+                                                  : ConversionKind::Ptr);
   if (pointee_type->isRecordType() &&
       IsAbstractUserClass(pointee_type->getAsRecordDecl())) {
     StrCat("PtrDyn<dyn");
@@ -377,12 +376,7 @@ bool ConverterRefCount::VisitConstantArrayType(clang::ConstantArrayType *type) {
 }
 
 std::string ConverterRefCount::ConvertFreshLValue(clang::Expr *expr) {
-  auto str = ConvertLValue(expr);
-  if (isFresh()) {
-    return str;
-  }
-  SetFresh();
-  return std::format("({}).clone()", std::move(str));
+  return MakeFresh(ConvertLValue(expr));
 }
 
 std::string ConverterRefCount::ConvertObject(clang::Expr *expr,
@@ -477,12 +471,7 @@ void ConverterRefCount::CheckRuleReturnType(clang::Expr *expr) {
 }
 
 std::string ConverterRefCount::ConvertFreshObject(clang::Expr *expr) {
-  auto str = ConvertObject(expr);
-  if (isFresh()) {
-    return str;
-  }
-  SetFresh();
-  return std::format("({}).clone()", std::move(str));
+  return MakeFresh(ConvertObject(expr));
 }
 
 std::string ConverterRefCount::ConvertTemporaryPointer(
@@ -494,34 +483,30 @@ std::string ConverterRefCount::ConvertTemporaryPointer(
 std::string ConverterRefCount::ConvertFresh(
     clang::Expr *expr, std::optional<clang::QualType> implicit_convert_to) {
   auto str = ToString(expr, implicit_convert_to);
-  if (isFresh() || expr->getType()->isVoidType() || isVoid()) {
+  if (expr->getType()->isVoidType() || isVoid()) {
     return str;
   }
-  SetFresh();
-  return std::format("({}).clone()", std::move(str));
+  return MakeFresh(std::move(str));
 }
 
 std::string ConverterRefCount::ConvertFreshRValue(
     clang::Expr *expr, std::optional<clang::QualType> implicit_convert_to) {
-  auto *copied = std::exchange(copied_expr_, expr->IgnoreParenImpCasts());
-  auto str = ConvertRValue(expr, implicit_convert_to);
-  copied_expr_ = copied;
-  if (!isFresh() && !expr->getType()->isVoidType()) {
-    SetFresh();
-    return std::format("({}).clone()", std::move(str));
+  std::string str;
+  {
+    ScopedValue<const clang::Expr *> copied(copied_expr_,
+                                            expr->IgnoreParenImpCasts());
+    str = ConvertRValue(expr, implicit_convert_to);
   }
-  SetFresh();
-  return str;
+  if (expr->getType()->isVoidType()) {
+    SetFresh();
+    return str;
+  }
+  return MakeFresh(std::move(str));
 }
 
 std::string ConverterRefCount::ConvertFreshPointer(
     clang::Expr *expr, std::optional<clang::QualType> implicit_convert_to) {
-  auto str = ConvertPointer(expr, implicit_convert_to);
-  if (isFresh()) {
-    return str;
-  }
-  SetFresh();
-  return std::format("({}).clone()", std::move(str));
+  return MakeFresh(ConvertPointer(expr, implicit_convert_to));
 }
 
 std::string ConverterRefCount::ConvertPointeeCast(std::string str,
@@ -747,24 +732,17 @@ void ConverterRefCount::AddDefaultTrait(const clang::RecordDecl *decl) {
 }
 
 void ConverterRefCount::AddDefaultTraitForUnion(const clang::RecordDecl *decl) {
-  auto name = GetRecordName(decl);
-  StrCat("impl Default for", name);
-  PushBrace impl_brace(*this);
-  StrCat("fn default() -> Self");
-  PushBrace fn_brace(*this);
-  StrCat(std::format("{} {{ __bytes: Box::from([0u8; {}]) }}", name,
-                     ctx_.getASTRecordLayout(decl).getSize().getQuantity()));
+  EmitDefaultImpl(decl, [&] {
+    StrCat(std::format("{} {{ __bytes: Box::from([0u8; {}]) }}",
+                       GetRecordName(decl),
+                       ctx_.getASTRecordLayout(decl).getSize().getQuantity()));
+  });
 }
 
 void ConverterRefCount::EmitRustUnion(clang::RecordDecl *decl) {
   auto name = GetRecordName(decl);
 
-  auto attrs = GetStructAttributes(decl);
-  StrCat("#[derive(");
-  for (auto *attr : attrs) {
-    StrCat(attr, ',');
-  }
-  StrCat(")]");
+  EmitDerives(decl);
 
   auto size = ctx_.getTypeSizeInChars(ctx_.getCanonicalTagType(decl));
   StrCat(std::format(
@@ -829,21 +807,19 @@ bool ConverterRefCount::VisitFieldDecl(clang::FieldDecl *decl) {
 }
 
 void ConverterRefCount::EmitFunctionPreamble(clang::FunctionDecl *decl) {
-  // In the header, the function might be declared as `int foo(int name_1)',
-  // while in the source file the function might be defined as `int foo(int
-  // name_2)'. We want to get the parameters from the definition if possible,
-  // i.e. name_2.
   PushConversionKind push(*this, ConversionKind::FullRefCount);
   if (decl->isVariadic()) {
     StrCat("let __args: Value<Box<[VaArg]>> = "
            "Rc::new(RefCell::new(__args.into()));");
   }
-  auto params = decl->getDefinition() ? decl->getDefinition()->parameters()
-                                      : decl->parameters();
-  for (auto *param : params) {
+  for (auto *param : DefinitionParameters(decl)) {
+    auto name = GetNamedDeclAsString(param);
+    // Unnamed parameters are never used.
+    if (name == "_") {
+      continue;
+    }
     if (param->getType()->isReferenceType()) {
-      auto name = GetNamedDeclAsString(param);
-      if (name == "_" || !HasUsableDefaultArg(param)) {
+      if (!HasUsableDefaultArg(param)) {
         continue;
       }
       auto type = ToString(param->getType());
@@ -865,42 +841,21 @@ void ConverterRefCount::EmitFunctionPreamble(clang::FunctionDecl *decl) {
              token::kSemiColon);
       continue;
     }
-    if (!param->getType()->isReferenceType()) {
-      auto name = GetNamedDeclAsString(param);
-      // Skip emitting the preamble for unnamed parameters
-      if (name == "_") {
-        continue;
-      }
 
-      auto init = name;
-
-      if (HasUsableDefaultArg(param)) {
-        init = std::format("{}.unwrap_or_else(|| {})", name,
-                           ToString(param->getDefaultArg()));
-      }
-
-      // Unboxed parameters are used in place.
-      bool unboxed = IsUnboxedVar(param);
-      if (unboxed && !HasUsableDefaultArg(param)) {
-        continue;
-      }
-      PushConversionKind push(*this, ConversionKind::Unboxed, unboxed);
-      StrCat(std::format("let {}{} : {} = {}", unboxed ? "mut " : "", name,
-                         ToString(param->getType()), BoxValue(std::move(init))),
-             token::kSemiColon);
+    // Unboxed parameters are used in place.
+    bool unboxed = IsUnboxedVar(param);
+    if (unboxed && !HasUsableDefaultArg(param)) {
+      continue;
     }
+    auto init = HasUsableDefaultArg(param)
+                    ? std::format("{}.unwrap_or_else(|| {})", name,
+                                  ToString(param->getDefaultArg()))
+                    : name;
+    PushConversionKind push(*this, ConversionKind::Unboxed, unboxed);
+    StrCat(std::format("let {}{} : {} = {}", unboxed ? "mut " : "", name,
+                       ToString(param->getType()), BoxValue(std::move(init))),
+           token::kSemiColon);
   }
-}
-
-void ConverterRefCount::ConvertVaListVarDecl(clang::VarDecl *decl) {
-  if (clang::isa<clang::ParmVarDecl>(decl)) {
-    // va_list parameter (decayed to __va_list_tag *)
-  } else {
-    // va_list local variable
-    StrCat(keyword::kLet);
-  }
-
-  StrCat(GetNamedDeclAsString(decl), token::kColon, "Value<Ptr<VaArg>>");
 }
 
 bool ConverterRefCount::ConvertVarDeclSkipInit(clang::VarDecl *decl) {
@@ -946,58 +901,28 @@ void ConverterRefCount::ConvertGlobalVarDecl(clang::VarDecl *decl) {
 
 bool ConverterRefCount::VisitVarDecl(clang::VarDecl *decl) {
   PushConversionKind push(*this, VarConversionKind(decl));
-  if (decl->getType()->isReferenceType()) {
-    PushExprKind push(*this, ExprKind::AddrOf);
-    Converter::VisitVarDecl(decl);
-  } else {
-    Converter::VisitVarDecl(decl);
-  }
+  PushExprKind push_kind(*this, ExprKind::AddrOf,
+                         decl->getType()->isReferenceType());
+  Converter::VisitVarDecl(decl);
   return false;
 }
 
 void ConverterRefCount::EmitScopedDestructor(const clang::VarDecl *decl) {
-  if (in_function_formals_ || !decl->isLocalVarDecl() || IsGlobalVar(decl)) {
+  if (!NeedsScopedDestructor(decl)) {
     return;
   }
-  auto type = decl->getType();
-  if (auto lambda = AsLambdaClass(type);
-      lambda && LambdaNeedsDestruction(lambda)) {
-    StrCat(token::kSemiColon,
-           std::format("let _dtor_{0} = ScopedDestructor::new(&{0}, |__p| "
-                       "__p.with(|__f| __f.destroy()))",
-                       GetNamedDeclAsString(decl)));
-    return;
-  }
-  if (type->isReferenceType() || type->isArrayType() ||
-      !TypeNeedsDestruction(type)) {
-    return;
-  }
-  auto name = GetNamedDeclAsString(decl);
+  auto destroy = AsLambdaClass(decl->getType())
+                     ? std::string("__p.with(|__f| __f.destroy())")
+                     : std::format("__p.{}()", kDestructorName);
   StrCat(token::kSemiColon,
-         std::format("let _dtor_{0} = ScopedDestructor::new(&{0}, |__p| "
-                     "__p.{1}())",
-                     name, kDestructorName));
+         std::format("let _dtor_{0} = ScopedDestructor::new(&{0}, |__p| {1})",
+                     GetNamedDeclAsString(decl), destroy));
 }
 
 bool ConverterRefCount::ConvertIncAndDec(clang::UnaryOperator *expr) {
-  auto opcode = expr->getOpcode();
   auto *sub_expr = expr->getSubExpr();
-
-  const char *method = nullptr;
-  switch (opcode) {
-  case clang::UO_PostInc:
-    method = "postfix_inc";
-    break;
-  case clang::UO_PostDec:
-    method = "postfix_dec";
-    break;
-  case clang::UO_PreInc:
-    method = "prefix_inc";
-    break;
-  case clang::UO_PreDec:
-    method = "prefix_dec";
-    break;
-  default:
+  const char *method = GetIncDecMethod(expr->getOpcode());
+  if (!method) {
     return false;
   }
 
@@ -1017,29 +942,9 @@ bool ConverterRefCount::ConvertIncAndDec(clang::UnaryOperator *expr) {
   return true;
 }
 
-bool ConverterRefCount::VisitConditionalOperator(
-    clang::ConditionalOperator *expr) {
-  if (ConvertLValueConditional(expr)) {
-    return false;
-  }
-  StrCat(keyword::kIf);
-  ConvertCondition(expr->getCond());
-  {
-    PushBrace then_brace(*this);
-    StrCat(ConvertFresh(expr->getTrueExpr(), expr->getType()));
-    if (expr->getType()->isVoidType()) {
-      StrCat(token::kSemiColon);
-    }
-  }
-  StrCat(keyword::kElse);
-  {
-    PushBrace else_brace(*this);
-    StrCat(ConvertFresh(expr->getFalseExpr(), expr->getType()));
-    if (expr->getType()->isVoidType()) {
-      StrCat(token::kSemiColon);
-    }
-  }
-  return false;
+void ConverterRefCount::ConvertConditionalBranch(clang::Expr *expr,
+                                                 clang::QualType type) {
+  StrCat(ConvertFresh(expr, type));
 }
 
 void ConverterRefCount::ConvertDeclRefValue(clang::Expr *expr,
@@ -1662,34 +1567,29 @@ void ConverterRefCount::ConvertEqualsNullPtr(clang::Expr *expr) {
   computed_expr_type_ = ComputedExprType::FreshValue;
 }
 
-bool ConverterRefCount::VisitFunctionPointerCast(
+bool ConverterRefCount::ConvertFunctionPointerCast(
     clang::ExplicitCastExpr *expr) {
-  if (expr->getType()->isFunctionPointerType() ||
-      expr->getSubExpr()->getType()->isFunctionPointerType()) {
-    if (expr->getSubExpr()->getType()->isFunctionPointerType() &&
-        expr->getType()->isFunctionPointerType()) {
-      auto target_proto =
-          expr->getType()->getPointeeType()->getAs<clang::FunctionProtoType>();
-      StrCat(std::format("{}.cast::<{}>()", ToString(expr->getSubExpr()),
-                         ConvertFunctionPointerType(target_proto)));
-    } else if (expr->getSubExpr()->getType()->isFunctionPointerType() ||
-               expr->getType()->isVoidPointerType()) {
-      Convert(expr->getSubExpr());
-      StrCat(".to_any()");
-    } else if (expr->getSubExpr()->getType()->isVoidPointerType() ||
-               expr->getType()->isFunctionPointerType()) {
-      auto target_proto =
-          expr->getType()->getPointeeType()->getAs<clang::FunctionProtoType>();
-      auto fn_type = ConvertFunctionPointerType(target_proto);
-      StrCat(std::format("{}.cast_fn::<{}>().expect(\"ub:wrong fn type\")",
-                         ToString(expr->getSubExpr()), fn_type));
-    } else {
-      assert(0 && "Unhandled function pointer cast");
-    }
-    computed_expr_type_ = ComputedExprType::FreshPointer;
+  bool from_fn = expr->getSubExpr()->getType()->isFunctionPointerType();
+  bool to_fn = expr->getType()->isFunctionPointerType();
+  if (!from_fn && !to_fn) {
     return false;
   }
-
+  if (from_fn && to_fn) {
+    auto target_proto =
+        expr->getType()->getPointeeType()->getAs<clang::FunctionProtoType>();
+    StrCat(std::format("{}.cast::<{}>()", ToString(expr->getSubExpr()),
+                       ConvertFunctionPointerType(target_proto)));
+  } else if (from_fn) {
+    Convert(expr->getSubExpr());
+    StrCat(".to_any()");
+  } else {
+    auto target_proto =
+        expr->getType()->getPointeeType()->getAs<clang::FunctionProtoType>();
+    StrCat(std::format("{}.cast_fn::<{}>().expect(\"ub:wrong fn type\")",
+                       ToString(expr->getSubExpr()),
+                       ConvertFunctionPointerType(target_proto)));
+  }
+  computed_expr_type_ = ComputedExprType::FreshPointer;
   return true;
 }
 
@@ -1736,7 +1636,7 @@ bool ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
       return false;
     }
 
-    if (!VisitFunctionPointerCast(expr)) {
+    if (ConvertFunctionPointerCast(expr)) {
       return false;
     } else if (expr->getSubExpr()->getType()->isVoidPointerType() &&
                expr->getType()->isVoidPointerType()) {
@@ -1816,11 +1716,9 @@ bool ConverterRefCount::VisitUnaryExprOrTypeTraitExpr(
 
 bool ConverterRefCount::VisitReturnStmt(clang::ReturnStmt *stmt) {
   auto *value = stmt->getRetValue();
-  auto moved_reads =
-      std::exchange(moved_reads_, value ? FindMovableReads(ctx_, value)
-                                        : decltype(moved_reads_){});
+  ScopedValue moved_reads(moved_reads_, value ? FindMovableReads(ctx_, value)
+                                              : decltype(moved_reads_){});
   Converter::VisitReturnStmt(stmt);
-  moved_reads_ = std::move(moved_reads);
   return false;
 }
 
@@ -1841,25 +1739,21 @@ void ConverterRefCount::ConvertBinaryOperator(clang::BinaryOperator *expr) {
                     GetSafeTypeAsString(assign->getComputationResultType())) {
     auto computation_result_type = assign->getComputationResultType();
     std::optional<Buffer> buf(std::in_place, *this);
-    if (IsUnsignedArithOp(assign)) {
+    {
       PushParen outer(*this);
       {
         PushParen inner(*this);
         StrCat(ConvertRValue(lhs));
         ConvertCast(computation_result_type);
       }
-      ConvertUnsignedArithBinaryOperator(expr, rhs);
-    } else {
-      PushParen outer(*this);
-      {
-        PushParen inner(*this);
-        StrCat(ConvertRValue(lhs));
-        ConvertCast(computation_result_type);
+      if (IsUnsignedArithOp(assign)) {
+        ConvertUnsignedArithBinaryOperator(expr, rhs);
+      } else {
+        auto op = opcode_as_string;
+        op.remove_suffix(1); // remove '=' from operator
+        StrCat(op);
+        Convert(rhs);
       }
-      auto op = opcode_as_string;
-      op.remove_suffix(1); // remove '=' from operator
-      StrCat(op);
-      Convert(rhs);
     }
     if (lhs_type->isBooleanType()) {
       StrCat(token::kDiff, token::kZero);
@@ -2306,11 +2200,10 @@ bool ConverterRefCount::VisitCXXDeleteExpr(clang::CXXDeleteExpr *expr) {
     StrCat(std::format("for __i in 0..__p.len() {{ __p.offset(__i as "
                        "isize).{}(); }}",
                        kDestructorName));
-    StrCat("__p.delete();");
   } else {
     StrCat(std::format("__p.{}();", kDestructorName));
-    StrCat("__p.delete();");
   }
+  StrCat("__p.delete();");
   return false;
 }
 
@@ -2461,10 +2354,6 @@ bool ConverterRefCount::VisitVAArgExpr(clang::VAArgExpr *expr) {
   return false;
 }
 
-bool ConverterRefCount::VisitCXXDefaultArgExpr(clang::CXXDefaultArgExpr *expr) {
-  return Converter::VisitCXXDefaultArgExpr(expr);
-}
-
 std::string
 ConverterRefCount::GetArrayDefaultAsString(clang::QualType qual_type) {
   if (auto *array_type =
@@ -2610,7 +2499,7 @@ std::string ConverterRefCount::ConvertVarInitValue(clang::QualType qual_type,
     return std::move(buf).str();
   }
 
-  PushInitType init_type(*this, qual_type);
+  ScopedPush init_type(curr_init_type_, qual_type);
   if (qual_type->isReferenceType() || qual_type->isFunctionPointerType()) {
     if (llvm::isa<clang::MaterializeTemporaryExpr>(expr->IgnoreImpCasts())) {
       return EmitMaterializedTempBinding(qual_type, expr);
@@ -3361,9 +3250,8 @@ std::string ConverterRefCount::ConvertMappedMethodCall(
   // the call, after the other arguments are computed.
   std::string receiver;
   {
-    auto saved = std::exchange(in_receiver_, true);
+    ScopedValue in_receiver(in_receiver_, true);
     receiver = ConvertIRFragment(mc.receiver, expr, args, num_args, ctx);
-    in_receiver_ = saved;
   }
   if (pending_deref_.empty()) {
     return receiver + ConvertIRFragment(mc.body, expr, args, num_args, ctx);
@@ -3420,9 +3308,7 @@ void ConverterRefCount::SetUFCSReceiver(clang::Expr *base, bool is_arrow,
                                          base->IgnoreParenImpCasts());
   if (clang::isa<clang::CXXThisExpr>(base->IgnoreParenImpCasts()) &&
       !AsLambdaOperatorCall(curr_function_)) {
-    bool in_ctor =
-        curr_function_ && clang::isa<clang::CXXConstructorDecl>(curr_function_);
-    if (in_ctor) {
+    if (InConstructor()) {
       ctor_uses_this_ = true;
       ufcs_receiver_ = "&this";
     } else if (ThisIsRustPtr()) {
@@ -3472,7 +3358,7 @@ bool ConverterRefCount::ConvertOutOfLineMethod(clang::CXXMethodDecl *decl) {
   }
   Buffer buf(*this);
   {
-    PushMethodTarget push(*this, MethodTarget::PtrImpl);
+    ScopedValue push(method_target_, MethodTarget::PtrImpl);
     ConvertCXXMethodDecl(decl);
   }
   MethodsOnPtrFor(decl->getParent()).impl.body += std::move(buf).str();
@@ -3483,10 +3369,10 @@ void ConverterRefCount::ConvertMethodOnPtrTraitDecl(
     clang::CXXMethodDecl *method) {
   Buffer buf(*this);
   {
-    PushCurrFunction push_fn(*this, method);
-    PushMethodTarget push(*this, method->getDefinition()
-                                     ? MethodTarget::TraitDecl
-                                     : MethodTarget::TraitDefault);
+    ScopedValue push_fn(curr_function_, method);
+    ScopedValue push(method_target_, method->getDefinition()
+                                         ? MethodTarget::TraitDecl
+                                         : MethodTarget::TraitDefault);
     ConvertCXXMethodDecl(method);
   }
   MethodsOnPtrFor(method->getParent()).trait.body += std::move(buf).str();
@@ -3498,7 +3384,7 @@ void ConverterRefCount::ConvertMethodOnPtr(clang::CXXMethodDecl *method) {
   }
   Buffer buf(*this);
   {
-    PushMethodTarget push(*this, MethodTarget::PtrImpl);
+    ScopedValue push(method_target_, MethodTarget::PtrImpl);
     VisitCXXMethodDecl(method);
   }
   MethodsOnPtrFor(method->getParent()).impl.body += std::move(buf).str();
@@ -3513,16 +3399,12 @@ void ConverterRefCount::ConvertLateInstantiatedMethods(
                !IsMethodOnPtr(method) &&
                !decl_ids_.contains(GetMethodID(method));
       });
-  auto convert_method = [&](clang::CXXMethodDecl *method) {
+  ForEachMethod(decl, [&](clang::CXXMethodDecl *method) {
     if (IsEmittableMethod(method) && method->hasBody() &&
         IsMethodOnPtr(method) && !decl_ids_.contains(GetMethodID(method))) {
       ConvertMethodOnPtr(method);
     }
-  };
-  for (auto *method : decl->methods()) {
-    convert_method(method);
-  }
-  ForEachTemplateInstantiatedMethod(decl, convert_method);
+  });
 }
 
 void ConverterRefCount::ConvertCXXRecordMethods(clang::CXXRecordDecl *decl) {
@@ -3534,16 +3416,12 @@ void ConverterRefCount::ConvertCXXRecordMethods(clang::CXXRecordDecl *decl) {
                                  !IsMethodOnPtr(method);
                         });
 
-  auto convert_method = [&](clang::CXXMethodDecl *method) {
+  ForEachMethod(decl, [&](clang::CXXMethodDecl *method) {
     if (IsMethodOnPtr(method) && !method->getReturnType()->isUndeducedType()) {
       ConvertMethodOnPtrTraitDecl(method);
       ConvertMethodOnPtr(method);
     }
-  };
-  for (auto *method : decl->methods()) {
-    convert_method(method);
-  }
-  ForEachTemplateInstantiatedMethod(decl, convert_method);
+  });
 
   if (!GetUserDefinedDestructor(decl) && HasFieldsNeedingDestruction(decl)) {
     MethodsOnPtrFor(decl).trait.body +=
@@ -3555,15 +3433,8 @@ void ConverterRefCount::ConvertCXXRecordMethods(clang::CXXRecordDecl *decl) {
 
 std::string
 ConverterRefCount::DestroyMembers(const clang::CXXRecordDecl *decl) {
-  std::vector<const clang::FieldDecl *> fields;
-  for (auto *field : decl->fields()) {
-    if (TypeNeedsDestruction(field->getType())) {
-      fields.push_back(field);
-    }
-  }
-
   std::string out;
-  for (auto *field : std::ranges::reverse_view(fields)) {
+  for (auto *field : FieldsToDestroy(decl)) {
     auto name = GetNamedDeclAsString(field);
     if (field->getType()->isArrayType()) {
       auto *elem =
@@ -3635,9 +3506,7 @@ bool ConverterRefCount::VisitCXXThisExpr(
     computed_expr_type_ = ComputedExprType::FreshPointer;
     return false;
   }
-  bool in_ctor =
-      curr_function_ && clang::isa<clang::CXXConstructorDecl>(curr_function_);
-  if (in_ctor) {
+  if (InConstructor()) {
     ctor_uses_this_ = true;
     StrCat("this");
   } else {

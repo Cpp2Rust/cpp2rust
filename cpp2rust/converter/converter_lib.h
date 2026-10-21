@@ -74,6 +74,15 @@ bool IsMutatingCall(const clang::CallExpr *expr);
 
 bool IsOverloadedFunction(const clang::FunctionDecl *decl);
 
+// The method of a prefix or postfix increment or decrement, or nullptr if
+// opcode is neither.
+const char *GetIncDecMethod(clang::UnaryOperatorKind opcode);
+
+// Calls fn on the methods of decl and on the instantiations of its method
+// templates.
+void ForEachMethod(const clang::CXXRecordDecl *decl,
+                   llvm::function_ref<void(clang::CXXMethodDecl *)> fn);
+
 void ForEachTemplateInstantiatedMethod(
     const clang::CXXRecordDecl *decl,
     llvm::function_ref<void(clang::CXXMethodDecl *)> fn);
@@ -266,6 +275,15 @@ bool HasFieldsNeedingDestruction(const clang::CXXRecordDecl *decl);
 
 bool RecordNeedsDestruction(const clang::CXXRecordDecl *decl);
 
+// The fields of decl that need destruction, in the order they are destroyed.
+std::vector<const clang::FieldDecl *>
+FieldsToDestroy(const clang::CXXRecordDecl *decl);
+
+// The parameters of the definition of decl if there is one, as their names
+// may differ from those of the declaration.
+llvm::ArrayRef<clang::ParmVarDecl *>
+DefinitionParameters(const clang::FunctionDecl *decl);
+
 clang::Expr *ToAddrOf(clang::ASTContext &ctx, clang::Expr *expr);
 
 clang::ConditionalOperator *
@@ -390,13 +408,8 @@ void Unwrap(std::string &s, std::string_view prefix, std::string_view suffix);
 
 void ReplaceAll(std::string &str, std::string_view from, std::string_view to);
 
-enum class ConstCastType {
-  ConstToConst,
-  ConstToMutable,
-  MutableToConst,
-  MutableToMutable,
-};
-
-ConstCastType GetConstCastType(clang::QualType to, clang::QualType from);
+// The method that casts a pointer to from into a pointer to to when only
+// their constness differs, or nullptr if it doesn't.
+const char *GetConstCastSuffix(clang::QualType to, clang::QualType from);
 
 } // namespace cpp2rust

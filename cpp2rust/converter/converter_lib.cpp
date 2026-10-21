@@ -98,17 +98,13 @@ bool IsGlobalVar(const clang::Expr *expr) {
 }
 
 const clang::ValueDecl *GetBuiltinDecl(const clang::Expr *expr) {
-  if (clang::isa<clang::ImplicitCastExpr>(expr)) {
-    const auto *implicit_cast = clang::cast<clang::ImplicitCastExpr>(expr);
-    const auto *sub_expr = implicit_cast->getSubExpr();
-    if (implicit_cast->getCastKind() == clang::CK_BuiltinFnToFnPtr &&
-        clang::isa<clang::DeclRefExpr>(sub_expr)) {
-      const auto *decl_ref = clang::cast<clang::DeclRefExpr>(sub_expr);
-      const auto *value_decl = decl_ref->getDecl();
-      return value_decl->getAsFunction();
-    }
+  const auto *cast = clang::dyn_cast<clang::ImplicitCastExpr>(expr);
+  if (!cast || cast->getCastKind() != clang::CK_BuiltinFnToFnPtr) {
+    return nullptr;
   }
-  return nullptr;
+  const auto *decl_ref =
+      clang::dyn_cast<clang::DeclRefExpr>(cast->getSubExpr());
+  return decl_ref ? decl_ref->getDecl()->getAsFunction() : nullptr;
 }
 
 bool IsBuiltinConstantP(const clang::Expr *expr) {
@@ -257,29 +253,29 @@ std::string GetNumAsString(llvm::APFloat value) {
 bool IsUserDefinedDecl(const clang::Decl *decl) {
   const auto &ctx = decl->getASTContext();
   const auto &src_mgr = ctx.getSourceManager();
-  if (auto fn = llvm::dyn_cast<clang::FunctionDecl>(decl)) {
-    if (const clang::FunctionDecl *definition = nullptr;
-        fn->isDefined(definition)) {
+  // Look at the definition, if any; otherwise, a declaration in a system
+  // header makes the entity a library one.
+  auto use_definition = [&](auto *redeclarable, const clang::Decl *definition) {
+    if (definition) {
       decl = definition;
-    } else if (llvm::any_of(fn->redecls(), [&](auto redecl) {
-                 return src_mgr.isInSystemHeader(redecl->getLocation());
-               })) {
+      return true;
+    }
+    return llvm::none_of(redeclarable->redecls(), [&](auto redecl) {
+      return src_mgr.isInSystemHeader(redecl->getLocation());
+    });
+  };
+  if (auto fn = llvm::dyn_cast<clang::FunctionDecl>(decl)) {
+    const clang::FunctionDecl *definition = nullptr;
+    fn->isDefined(definition);
+    if (!use_definition(fn, definition)) {
       return false;
     }
   } else if (auto var = llvm::dyn_cast<clang::VarDecl>(decl)) {
-    if (auto definition = var->getDefinition()) {
-      decl = definition;
-    } else if (llvm::any_of(var->redecls(), [&](auto redecl) {
-                 return src_mgr.isInSystemHeader(redecl->getLocation());
-               })) {
+    if (!use_definition(var, var->getDefinition())) {
       return false;
     }
   } else if (auto tag = llvm::dyn_cast<clang::TagDecl>(decl)) {
-    if (auto definition = tag->getDefinition()) {
-      decl = definition;
-    } else if (llvm::any_of(tag->redecls(), [&](auto redecl) {
-                 return src_mgr.isInSystemHeader(redecl->getLocation());
-               })) {
+    if (!use_definition(tag, tag->getDefinition())) {
       return false;
     }
   }
@@ -409,6 +405,29 @@ void ForEachTemplateInstantiatedMethod(
         }
       }
     }
+  }
+}
+
+void ForEachMethod(const clang::CXXRecordDecl *decl,
+                   llvm::function_ref<void(clang::CXXMethodDecl *)> fn) {
+  for (auto *method : decl->methods()) {
+    fn(method);
+  }
+  ForEachTemplateInstantiatedMethod(decl, fn);
+}
+
+const char *GetIncDecMethod(clang::UnaryOperatorKind opcode) {
+  switch (opcode) {
+  case clang::UO_PostInc:
+    return "postfix_inc";
+  case clang::UO_PostDec:
+    return "postfix_dec";
+  case clang::UO_PreInc:
+    return "prefix_inc";
+  case clang::UO_PreDec:
+    return "prefix_dec";
+  default:
+    return nullptr;
   }
 }
 
@@ -1029,14 +1048,18 @@ std::string DisambiguateAnonymousTag(const clang::TagDecl *tag) {
   return typedef_decl->getName().str() + '_' + tag->getKindName().str();
 }
 
-static std::unordered_map<std::string, size_t> type_mapping;
+// A number that is unique to key.
+static size_t GetUniqueNumber(std::string key) {
+  static std::unordered_map<std::string, size_t> numbers;
+  return numbers.try_emplace(std::move(key), numbers.size()).first->second;
+}
 
 static size_t GetDeclId(const clang::NamedDecl *decl, bool internal) {
   std::string key = GetMangledName(decl) + GetParamSignature(decl);
   if (internal) {
     key += GetLocationID(decl);
   }
-  return type_mapping.try_emplace(key, type_mapping.size()).first->second;
+  return GetUniqueNumber(std::move(key));
 }
 
 void EscapeRustKeyword(std::string &name) {
@@ -1081,10 +1104,7 @@ std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
   }
 
   if (clang::isa<clang::DecompositionDecl>(decl)) {
-    return std::format(
-        "__decomp_{}",
-        type_mapping.try_emplace(GetID(decl), type_mapping.size())
-            .first->second);
+    return std::format("__decomp_{}", GetUniqueNumber(GetID(decl)));
   }
 
   // Anonymous record or enum
@@ -1101,10 +1121,9 @@ std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
       }
     }
     auto *record = clang::dyn_cast<clang::CXXRecordDecl>(target);
-    return std::format(
-        "{}_{}", record && record->isLambda() ? "lambda" : "anon",
-        type_mapping.try_emplace(GetID(target), type_mapping.size())
-            .first->second);
+    return std::format("{}_{}",
+                       record && record->isLambda() ? "lambda" : "anon",
+                       GetUniqueNumber(GetID(target)));
   }
 
   std::optional<size_t> id;
@@ -1118,8 +1137,7 @@ std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
                    var->getFormalLinkage() != clang::Linkage::External);
   } else if (auto *tag = clang::dyn_cast<clang::TagDecl>(decl);
              tag && tag->getDeclContext()->isFunctionOrMethod()) {
-    id =
-        type_mapping.try_emplace(GetID(tag), type_mapping.size()).first->second;
+    id = GetUniqueNumber(GetID(tag));
   }
   if (id) {
     name += '_';
@@ -1574,6 +1592,26 @@ bool RecordNeedsDestruction(const clang::CXXRecordDecl *decl) {
   return GetUserDefinedDestructor(decl) || HasFieldsNeedingDestruction(decl);
 }
 
+std::vector<const clang::FieldDecl *>
+FieldsToDestroy(const clang::CXXRecordDecl *decl) {
+  std::vector<const clang::FieldDecl *> fields;
+  for (auto *field : decl->fields()) {
+    if (TypeNeedsDestruction(field->getType())) {
+      fields.push_back(field);
+    }
+  }
+  std::ranges::reverse(fields);
+  return fields;
+}
+
+llvm::ArrayRef<clang::ParmVarDecl *>
+DefinitionParameters(const clang::FunctionDecl *decl) {
+  if (auto *definition = decl->getDefinition()) {
+    return definition->parameters();
+  }
+  return decl->parameters();
+}
+
 bool IsComparisonOperator(const clang::FunctionDecl *fn) {
   switch (fn->getOverloadedOperator()) {
   case clang::OO_EqualEqual:
@@ -1830,15 +1868,22 @@ GetAllVars(const clang::Stmt *stmt) {
   return vars;
 }
 
+// Whether pred holds for stmt or for any statement in it.
+static bool AnyStmt(const clang::Stmt *stmt,
+                    llvm::function_ref<bool(const clang::Stmt *)> pred) {
+  return stmt &&
+         (pred(stmt) ||
+          std::ranges::any_of(stmt->children(), [&](const clang::Stmt *child) {
+            return AnyStmt(child, pred);
+          }));
+}
+
 bool ReferencesVar(const clang::Stmt *stmt, const clang::VarDecl *var) {
-  if (!stmt) {
+  if (!stmt || clang::isa<clang::UnaryExprOrTypeTraitExpr>(stmt)) {
     return false;
   }
   if (auto *decl_ref = clang::dyn_cast<clang::DeclRefExpr>(stmt)) {
     return decl_ref->getDecl() == var;
-  }
-  if (clang::isa<clang::UnaryExprOrTypeTraitExpr>(stmt)) {
-    return false;
   }
   return std::ranges::any_of(stmt->children(), [var](const clang::Stmt *child) {
     return ReferencesVar(child, var);
@@ -1873,28 +1918,16 @@ bool DefaultInitHasSideEffects(const clang::ASTContext &ctx,
 }
 
 bool ReadsMemory(const clang::Stmt *stmt) {
-  if (auto *cast = clang::dyn_cast<clang::ImplicitCastExpr>(stmt);
-      cast && cast->getCastKind() == clang::CK_LValueToRValue) {
-    return true;
-  }
-  return std::ranges::any_of(stmt->children(), [](const clang::Stmt *child) {
-    return child && ReadsMemory(child);
+  return AnyStmt(stmt, [](const clang::Stmt *s) {
+    auto *cast = clang::dyn_cast<clang::ImplicitCastExpr>(s);
+    return cast && cast->getCastKind() == clang::CK_LValueToRValue;
   });
 }
 
 bool ReferencesThis(const clang::Stmt *stmt) {
-  if (!stmt) {
-    return false;
-  }
-  if (clang::isa<clang::CXXThisExpr>(stmt)) {
-    return true;
-  }
-  for (auto *child : stmt->children()) {
-    if (ReferencesThis(child)) {
-      return true;
-    }
-  }
-  return false;
+  return AnyStmt(stmt, [](const clang::Stmt *s) {
+    return clang::isa<clang::CXXThisExpr>(s);
+  });
 }
 
 bool MayCauseBorrowMutError(const clang::Expr *lhs, const clang::Expr *rhs) {
@@ -2046,11 +2079,21 @@ bool IsVaListType(clang::QualType type) {
   return false;
 }
 
+static bool IsBuiltinCall(const clang::CallExpr *expr, unsigned id) {
+  auto *fn = expr->getDirectCallee();
+  return fn && fn->getBuiltinID() == id;
+}
+
 bool IsBuiltinVaStart(const clang::CallExpr *expr) {
-  if (auto *fn = expr->getDirectCallee()) {
-    return fn->getBuiltinID() == clang::Builtin::BI__builtin_va_start;
-  }
-  return false;
+  return IsBuiltinCall(expr, clang::Builtin::BI__builtin_va_start);
+}
+
+bool IsBuiltinVaEnd(const clang::CallExpr *expr) {
+  return IsBuiltinCall(expr, clang::Builtin::BI__builtin_va_end);
+}
+
+bool IsBuiltinVaCopy(const clang::CallExpr *expr) {
+  return IsBuiltinCall(expr, clang::Builtin::BI__builtin_va_copy);
 }
 
 bool NeedsImplicitScalarCast(clang::ASTContext &ctx, clang::QualType from,
@@ -2173,20 +2216,6 @@ std::optional<clang::QualType> GetOperandImplicitConversionTarget(
   return std::nullopt;
 }
 
-bool IsBuiltinVaEnd(const clang::CallExpr *expr) {
-  if (auto *fn = expr->getDirectCallee()) {
-    return fn->getBuiltinID() == clang::Builtin::BI__builtin_va_end;
-  }
-  return false;
-}
-
-bool IsBuiltinVaCopy(const clang::CallExpr *expr) {
-  if (auto *fn = expr->getDirectCallee()) {
-    return fn->getBuiltinID() == clang::Builtin::BI__builtin_va_copy;
-  }
-  return false;
-}
-
 bool IsTransparentStdCall(const clang::CallExpr *expr) {
   const auto *callee = expr->getDirectCallee();
   if (!callee) {
@@ -2225,15 +2254,9 @@ bool IsTemporaryObject(const clang::Expr *expr) {
 }
 
 bool ContainsVAArgExpr(const clang::Stmt *stmt) {
-  if (clang::isa<clang::VAArgExpr>(stmt)) {
-    return true;
-  }
-  for (auto *child : stmt->children()) {
-    if (ContainsVAArgExpr(child)) {
-      return true;
-    }
-  }
-  return false;
+  return AnyStmt(stmt, [](const clang::Stmt *s) {
+    return clang::isa<clang::VAArgExpr>(s);
+  });
 }
 
 clang::Expr *NormalizeToBool(clang::Expr *expr, clang::ASTContext &ctx) {
@@ -2370,16 +2393,11 @@ void ReplaceAll(std::string &str, std::string_view from, std::string_view to) {
   }
 }
 
-ConstCastType GetConstCastType(clang::QualType to, clang::QualType from) {
-  if (to.isConstQualified() && from.isConstQualified()) {
-    return ConstCastType::ConstToConst;
-  } else if (!to.isConstQualified() && from.isConstQualified()) {
-    return ConstCastType::ConstToMutable;
-  } else if (to.isConstQualified() && !from.isConstQualified()) {
-    return ConstCastType::MutableToConst;
-  } else {
-    return ConstCastType::MutableToMutable;
+const char *GetConstCastSuffix(clang::QualType to, clang::QualType from) {
+  if (to.isConstQualified() == from.isConstQualified()) {
+    return nullptr;
   }
+  return to.isConstQualified() ? ".cast_const()" : ".cast_mut()";
 }
 
 } // namespace cpp2rust

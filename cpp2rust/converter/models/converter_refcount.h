@@ -103,8 +103,6 @@ public:
 
   void ConvertGlobalVarDecl(clang::VarDecl *decl) override;
 
-  void ConvertVaListVarDecl(clang::VarDecl *decl) override;
-
   bool ConvertVarDeclSkipInit(clang::VarDecl *decl) override;
 
   void EmitHoistedInArmAssignment(clang::VarDecl *decl) override;
@@ -113,7 +111,8 @@ public:
 
   bool ConvertIncAndDec(clang::UnaryOperator *expr) override;
 
-  bool VisitConditionalOperator(clang::ConditionalOperator *expr) override;
+  void ConvertConditionalBranch(clang::Expr *expr,
+                                clang::QualType type) override;
 
   void ConvertPrintf(clang::CallExpr *expr) override;
 
@@ -146,7 +145,8 @@ public:
 
   bool VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) override;
 
-  bool VisitFunctionPointerCast(clang::ExplicitCastExpr *expr);
+  // Converts a cast from or to a function pointer, if expr is one.
+  bool ConvertFunctionPointerCast(clang::ExplicitCastExpr *expr);
 
   bool VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) override;
 
@@ -195,19 +195,14 @@ public:
   std::unordered_set<const clang::DeclRefExpr *> moved_reads_;
 
   struct PushRecordPtr {
-    ConverterRefCount &c;
-    std::string *record_ptr;
-    const clang::Expr *record_base;
+    ScopedValue<std::string *> record_ptr;
+    ScopedValue<const clang::Expr *> record_base;
 
     PushRecordPtr(ConverterRefCount &c, std::string *ptr,
                   const clang::Expr *base)
-        : c(c), record_ptr(std::exchange(c.record_ptr_, ptr)),
-          record_base(std::exchange(
-              c.record_base_, base ? base->IgnoreParenImpCasts() : nullptr)) {}
-    ~PushRecordPtr() {
-      c.record_ptr_ = record_ptr;
-      c.record_base_ = record_base;
-    }
+        : record_ptr(c.record_ptr_, ptr),
+          record_base(c.record_base_,
+                      base ? base->IgnoreParenImpCasts() : nullptr) {}
   };
 
   bool VisitCXXNewExpr(clang::CXXNewExpr *expr) override;
@@ -227,8 +222,6 @@ public:
   void ConvertVariadicArg(clang::Expr *arg) override;
 
   void ConvertArrayCXXConstructExpr(clang::CXXConstructExpr *expr) override;
-
-  bool VisitCXXDefaultArgExpr(clang::CXXDefaultArgExpr *expr) override;
 
   std::string GetDefaultAsString(clang::QualType qual_type) override;
 
