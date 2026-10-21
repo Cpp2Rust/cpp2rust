@@ -75,7 +75,7 @@ using ResolvedDecl =
 ResolvedDecl getResolvedDecl(clang::ASTContext &ctx, const clang::Expr *expr,
                              bool must_resolve) {
   expr = RuleDecls::SkipImplicit(expr);
-  if (llvm::isa<clang::IntegerLiteral>(expr) &&
+  if (llvm::isa<clang::IntegerLiteral, clang::AtomicExpr>(expr) &&
       expr->getBeginLoc().isMacroID()) {
     return MacroUsage{
         clang::Lexer::getImmediateMacroName(
