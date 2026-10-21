@@ -73,7 +73,8 @@ std::optional<TypeMatch> MatchType(clang::Sema &sema, clang::QualType use,
       }
       return TypeMatch{};
     }
-    if (RuleDecls::GetSugar(spelled) || !ctx.hasSameUnqualifiedType(pattern, spelled)) {
+    if (RuleDecls::GetSugar(spelled) ||
+        !ctx.hasSameUnqualifiedType(pattern, spelled)) {
       return std::nullopt;
     }
     return TypeMatch{};
@@ -100,7 +101,8 @@ std::optional<TypeMatch> MatchType(clang::Sema &sema, clang::QualType use,
     }
     return std::nullopt;
   }
-  if (RuleDecls::GetSugar(spelled) && !pattern->getAs<clang::TemplateTypeParmType>()) {
+  if (RuleDecls::GetSugar(spelled) &&
+      !pattern->getAs<clang::TemplateTypeParmType>()) {
     return std::nullopt;
   }
   auto args = RuleDecls::DeduceFromType(sema, params, pattern, spelled);

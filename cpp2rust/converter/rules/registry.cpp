@@ -287,8 +287,8 @@ TypeRuleMatch findType(clang::QualType use) {
           continue;
         }
         if (best.rule_decl) {
-          auto better = AstMatcher::MoreSpecializedType(
-              *sema_, it->second.decl, best.rule_decl->decl);
+          auto better = AstMatcher::MoreSpecializedType(*sema_, it->second.decl,
+                                                        best.rule_decl->decl);
           if (!better) {
             type.dump(llvm::errs(), ctx);
             it->second.decl->dump(llvm::errs());
