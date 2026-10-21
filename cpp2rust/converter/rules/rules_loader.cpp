@@ -473,7 +473,13 @@ std::string DeclKey(const clang::NamedDecl *decl) {
 }
 
 std::string ExprKey(clang::ASTContext &ctx, const clang::Expr *expr) {
-  expr = expr->IgnoreParenImpCasts();
+  for (auto inner = expr->IgnoreParens()->IgnoreImplicit(); inner != expr;
+       inner = expr->IgnoreParens()->IgnoreImplicit()) {
+    expr = inner;
+  }
+  if (auto cast = llvm::dyn_cast<clang::ExplicitCastExpr>(expr)) {
+    return ExprKey(ctx, cast->getSubExpr());
+  }
   if (llvm::isa<clang::IntegerLiteral>(expr) &&
       expr->getBeginLoc().isMacroID()) {
     return clang::Lexer::getImmediateMacroName(
