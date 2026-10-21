@@ -19,7 +19,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut a: Counter = Counter::default();
-    let mut v: Counter = (a as Counter);
+    let mut v: Counter = a;
     assert!(((v.n) == (0)));
     return 0;
 }

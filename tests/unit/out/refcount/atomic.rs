@@ -18,7 +18,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let a: Value<Counter> = Rc::new(RefCell::new(Counter::default()));
-    let mut v: Counter = ((*a.borrow()) as Counter);
+    let mut v: Counter = (*a.borrow()).clone();
     assert!((v.n == 0));
     return 0;
 }
