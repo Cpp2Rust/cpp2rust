@@ -1,7 +1,9 @@
+#include <cassert>
 #include <cctype>
-#include <cstdio>
 
 int main() {
-  printf("%d %d %d\n", toupper('a'), toupper('Z'), toupper('5'));
+  assert(toupper('a') == 'A');
+  assert(toupper('Z') == 'Z');
+  assert(toupper('5') == '5');
   return 0;
 }
