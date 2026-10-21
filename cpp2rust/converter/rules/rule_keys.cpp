@@ -123,7 +123,7 @@ std::optional<ExprKey> getDeclKey(const clang::NamedDecl *decl) {
 std::optional<ExprKey> getExprKey(clang::ASTContext &ctx,
                                   const clang::Expr *expr) {
   expr = RuleDecls::SkipImplicit(expr);
-  if (llvm::isa<clang::IntegerLiteral>(expr) &&
+  if (llvm::isa<clang::IntegerLiteral, clang::AtomicExpr>(expr) &&
       expr->getBeginLoc().isMacroID()) {
     auto macro = clang::Lexer::getImmediateMacroName(
         expr->getBeginLoc(), ctx.getSourceManager(), ctx.getLangOpts());

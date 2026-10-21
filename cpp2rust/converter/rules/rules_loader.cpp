@@ -474,7 +474,7 @@ std::string DeclKey(const clang::NamedDecl *decl) {
 
 std::string ExprKey(clang::ASTContext &ctx, const clang::Expr *expr) {
   expr = expr->IgnoreParenImpCasts();
-  if (llvm::isa<clang::IntegerLiteral>(expr) &&
+  if (llvm::isa<clang::IntegerLiteral, clang::AtomicExpr>(expr) &&
       expr->getBeginLoc().isMacroID()) {
     return clang::Lexer::getImmediateMacroName(
                expr->getBeginLoc(), ctx.getSourceManager(), ctx.getLangOpts())
@@ -523,7 +523,8 @@ std::string TypeKey(clang::QualType type) {
           llvm::dyn_cast<clang::TypeOfExprType>(type.getTypePtr())) {
     type = typeof_type->getUnderlyingExpr()->getType();
   }
-  if (auto alias = type->getAs<clang::TypedefType>()) {
+  if (auto alias = type->getAs<clang::TypedefType>();
+      alias && !type.getCanonicalType()->getAsTagDecl()) {
     return DeclKey(alias->getDecl());
   }
   if (auto sugar = type->getAs<clang::PredefinedSugarType>()) {

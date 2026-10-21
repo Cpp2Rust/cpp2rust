@@ -40,6 +40,12 @@ impl HashHolder_unsigned_long__ptr__bool__ {
         Self { h: (h.read()) }
     }
 }
+thread_local!(
+    pub static total_7: Value<i32> = Rc::new(RefCell::new(0));
+);
+pub fn add_to_total_8(mut x: i32) {
+    total_7.with(|rc| *rc.borrow_mut() += x);
+}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
@@ -71,6 +77,12 @@ fn main_0() -> i32 {
         HashHolder_unsigned_long__ptr__bool__::new({ __tmp_0.as_pointer() })
     };
     assert!((({ hh.h.call(true,) }) == 1_u64));
+    let mut handler: FnPtr<fn(i32)> = FnPtr::<fn(i32)>::new(add_to_total_8);
+    ({ handler.call(2) });
+    ({ handler.call(3) });
+    assert!((total_7.with(|rc| *rc.borrow()) == 5));
     return 0;
 }
-pub fn __cpp2rust_init_globals() {}
+pub fn __cpp2rust_init_globals() {
+    let _ = total_7.with(|_| ());
+}
