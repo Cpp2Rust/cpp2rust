@@ -26,8 +26,8 @@
 #include <vector>
 
 #include "compat/platform_flags.h"
-#include "converter/rules/rules_loader.h"
 #include "converter/rules/decls.h"
+#include "converter/rules/rules_loader.h"
 
 namespace fs = std::filesystem;
 
@@ -238,7 +238,10 @@ const clang::TypedefNameDecl *InternalTypedefOf(const clang::Decl *rule) {
   }
   auto pattern = alias->getUnderlyingType()->getAs<clang::TypedefType>();
   if (!pattern || RuleDecls::IsInternal(pattern->getDecl()) ||
-      !pattern->getDecl()->getDeclContext()->getRedeclContext()->isFileContext()) {
+      !pattern->getDecl()
+           ->getDeclContext()
+           ->getRedeclContext()
+           ->isFileContext()) {
     return nullptr;
   }
   auto internal =
