@@ -292,6 +292,33 @@ fn main_0() -> i32 {
             .unwrap_or(usize::MAX)
     });
     assert!((pos == ((-1_i64 as u64) as usize)));
+    pos = {
+        let __hay = &result[..result.len().saturating_sub(1)];
+        Ptr::<i8>::from_string_literal(b"f").with_c_str(|__needle| {
+            (0_usize..=__hay.len().saturating_sub(__needle.len()))
+                .find(|&__i| __hay[__i..].starts_with(__needle))
+                .unwrap_or(usize::MAX)
+        })
+    };
+    assert!((pos == 5_usize));
+    pos = {
+        let __hay = &result[..result.len().saturating_sub(1)];
+        Ptr::<i8>::from_string_literal(b"oo").with_c_str(|__needle| {
+            (0_usize..=__hay.len().saturating_sub(__needle.len()))
+                .find(|&__i| __hay[__i..].starts_with(__needle))
+                .unwrap_or(usize::MAX)
+        })
+    };
+    assert!((pos == 6_usize));
+    pos = {
+        let __hay = &result[..result.len().saturating_sub(1)];
+        Ptr::<i8>::from_string_literal(b"x").with_c_str(|__needle| {
+            (0_usize..=__hay.len().saturating_sub(__needle.len()))
+                .find(|&__i| __hay[__i..].starts_with(__needle))
+                .unwrap_or(usize::MAX)
+        })
+    };
+    assert!((pos == ((-1_i64 as u64) as usize)));
     let string_to_cast: Value<Vec<i8>> = Rc::new(RefCell::new({
         let mut __bytes = Ptr::<i8>::from_string_literal(b"cast").to_c_bytes();
         __bytes.push(0);
