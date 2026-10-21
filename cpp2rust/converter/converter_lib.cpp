@@ -692,7 +692,10 @@ bool HasCallableCopyConstructor(const clang::RecordDecl *decl) {
              ctor->getDefinition();
     });
   }
-  if (cxx->defaultedCopyConstructorIsDeleted()) {
+  if (cxx->defaultedCopyConstructorIsDeleted() ||
+      std::ranges::any_of(cxx->ctors(), [](const auto *ctor) {
+        return ctor->isCopyConstructor() && ctor->isDeleted();
+      })) {
     return false;
   }
   auto &ctx = cxx->getASTContext();
