@@ -69,7 +69,3 @@ unsafe fn f21<T1, T2>(a0: &mut (T1, T2)) -> *mut T1 {
 unsafe fn f22<T1, T2>(a0: &mut (T1, T2)) -> *mut T2 {
     &mut a0.1
 }
-
-unsafe fn f23<T1: Default, T2: Default>() -> (T1, T2) {
-    <(T1, T2)>::default()
-}

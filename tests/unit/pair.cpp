@@ -12,9 +12,6 @@ int main() {
   std::pair<double, int> p3 = std::make_pair(5, 6);
   assert(p3.first == 5.0);
   assert(p3.second == 6);
-  std::pair<double, int> p4{};
-  assert(p4.first == 0.0);
-  assert(p4.second == 0);
   const int arr[2] = {1, 2};
   unsigned n = 2;
   std::vector<std::pair<const int *, size_t>> const_ptr_pairs(1);
