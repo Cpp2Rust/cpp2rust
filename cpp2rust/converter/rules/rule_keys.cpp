@@ -135,6 +135,10 @@ std::optional<ExprKey> getExprKey(clang::ASTContext &ctx,
                                    rewritten->getOperator()));
   }
   if (auto cast = llvm::dyn_cast<clang::ExplicitCastExpr>(expr)) {
+    if (auto key = getConstructorKey(getParent(cast->getSubExpr()->getType()));
+        key && cast->isTypeDependent()) {
+      return key;
+    }
     return getExprKey(ctx, cast->getSubExpr());
   }
   if (auto construct = llvm::dyn_cast<clang::CXXConstructExpr>(expr)) {
