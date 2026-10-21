@@ -34,8 +34,6 @@ public:
   std::string
   ConvertFunctionPointerType(const clang::FunctionProtoType *proto) override;
 
-  bool VisitCXXRecordDecl(clang::CXXRecordDecl *decl) override;
-
   bool VisitOffsetOfExpr(clang::OffsetOfExpr *expr) override;
 
   void EmitRustUnion(clang::RecordDecl *decl) override;
@@ -418,7 +416,6 @@ private:
 
   std::string GetInnerType(clang::QualType type);
 
-  std::string ConvertFreshLValue(clang::Expr *expr);
   // What an Object-kind conversion of a boxed container/array should yield:
   // a pointer to the whole object (Ptr<Vec<T>>), or one to its first
   // element (Ptr<T>).
@@ -462,12 +459,22 @@ private:
 
   std::string ConvertSubscriptIndex(clang::Expr *idx);
 
+  // A pointer to the first element of the string literal expr.
+  std::string ConvertStringLiteralPtr(clang::Expr *expr);
+
   // Element `idx` of pointer `base`, accessed without creating a pointer to it.
   void ConvertPointerElem(clang::Expr *base, clang::Expr *idx);
 
   // The place of element `idx` of the container `container`, e.g., a
   // std::vector.
   std::string ConvertElemPlace(clang::Expr *container, clang::Expr *idx);
+
+  // Reads the element at place, a record, for a read of one of its fields in
+  // a closure that borrows it, or as a whole.
+  void EmitRecordElemRead(std::string_view place, clang::QualType type);
+
+  // Captures what convert emits as the pending dereference.
+  void CapturePendingDeref(llvm::function_ref<void()> convert);
 
   // The place of `expr`, which is reached through a pointer.
   std::string ConvertPlace(clang::Expr *expr);

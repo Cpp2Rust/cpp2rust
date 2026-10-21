@@ -134,14 +134,16 @@ std::optional<ExprKey> getMemberKey(const clang::Decl *parent,
   return Member{parent, name};
 }
 
-std::optional<ExprKey> getDeclKey(const clang::NamedDecl *decl) {
+} // namespace
+
+std::optional<ExprKey> GetDeclKey(const clang::NamedDecl *decl) {
   if (auto ctor = llvm::dyn_cast<clang::CXXConstructorDecl>(decl)) {
     return getConstructorKey(getParent(ctor));
   }
   return getMemberKey(getParent(decl), decl->getDeclName());
 }
 
-std::optional<ExprKey> getExprKey(clang::ASTContext &ctx,
+std::optional<ExprKey> GetExprKey(clang::ASTContext &ctx,
                                   const clang::Expr *expr) {
   expr = RuleDecls::SkipImplicit(expr);
   if (llvm::isa<clang::IntegerLiteral, clang::AtomicExpr>(expr) &&
@@ -156,10 +158,10 @@ std::optional<ExprKey> getExprKey(clang::ASTContext &ctx,
                                    rewritten->getOperator()));
   }
   if (auto cast = llvm::dyn_cast<clang::ExplicitCastExpr>(expr)) {
-    return getExprKey(ctx, cast->getSubExpr());
+    return GetExprKey(ctx, cast->getSubExpr());
   }
   if (auto construct = llvm::dyn_cast<clang::CXXConstructExpr>(expr)) {
-    return getDeclKey(construct->getConstructor());
+    return GetDeclKey(construct->getConstructor());
   }
   if (auto construct =
           llvm::dyn_cast<clang::CXXUnresolvedConstructExpr>(expr)) {
@@ -167,9 +169,9 @@ std::optional<ExprKey> getExprKey(clang::ASTContext &ctx,
   }
   if (auto call = llvm::dyn_cast<clang::CallExpr>(expr)) {
     if (auto callee = call->getDirectCallee()) {
-      return getDeclKey(callee);
+      return GetDeclKey(callee);
     }
-    return getExprKey(ctx, call->getCallee());
+    return GetExprKey(ctx, call->getCallee());
   }
   if (auto member = llvm::dyn_cast<clang::UnresolvedMemberExpr>(expr)) {
     return getMemberKey(getParent(member->getBaseType()),
@@ -191,10 +193,10 @@ std::optional<ExprKey> getExprKey(clang::ASTContext &ctx,
                                                        sm, ctx.getLangOpts());
       return Unqualified{clang::DeclarationName(&ctx.Idents.get(macro))};
     }
-    return getDeclKey(member->getMemberDecl());
+    return GetDeclKey(member->getMemberDecl());
   }
   if (auto ref = llvm::dyn_cast<clang::DeclRefExpr>(expr)) {
-    return getDeclKey(ref->getDecl());
+    return GetDeclKey(ref->getDecl());
   }
   if (auto binary = llvm::dyn_cast<clang::BinaryOperator>(expr)) {
     return getOperatorKey(
@@ -217,18 +219,11 @@ std::optional<ExprKey> getExprKey(clang::ASTContext &ctx,
   return std::nullopt;
 }
 
-} // namespace
-
-std::optional<ExprKey> GetExprKey(clang::ASTContext &ctx,
-                                  const clang::Expr *use) {
-  return getExprKey(ctx, use);
-}
-
 std::vector<ExprKey> GetExprKeys(clang::Sema &sema,
                                  const clang::NamedDecl *rule) {
   auto &ctx = sema.Context;
   if (auto var = llvm::dyn_cast<clang::VarDecl>(rule)) {
-    auto key = getExprKey(ctx, var->getInit());
+    auto key = GetExprKey(ctx, var->getInit());
     assert(key && "expression rule has no key");
     return {*key};
   }
@@ -252,7 +247,7 @@ std::vector<ExprKey> GetExprKeys(clang::Sema &sema,
     }
     return keys;
   }
-  auto key = getExprKey(ctx, returned);
+  auto key = GetExprKey(ctx, returned);
   assert(key && "expression rule has no key");
   return {*key};
 }
@@ -313,10 +308,6 @@ std::vector<TypeKey> GetTypeKeys(clang::ASTContext &ctx, clang::QualType use) {
     }
   }
   return keys;
-}
-
-std::optional<ExprKey> GetDeclKey(const clang::NamedDecl *decl) {
-  return getDeclKey(decl);
 }
 
 } // namespace cpp2rust::RuleKeys

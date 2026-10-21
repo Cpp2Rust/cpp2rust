@@ -85,5 +85,11 @@ int main() {
       std::make_unique<SafePointer>(SafePointer{std::move(x)});
   DoStuffWithSafePointer(safe_ptr);
   assert(Consume(std::move(safe_ptr)) == 60);
+
+  std::unique_ptr<int> p(new int(1));
+  p.reset(new int(2));
+  assert(*p == 2);
+  p.reset();
+  assert(p == nullptr);
   return 0;
 }
