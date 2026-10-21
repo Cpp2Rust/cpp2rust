@@ -31,6 +31,10 @@ private:
   std::unordered_set<const clang::VarDecl *> range_iterators_;
 };
 
+// The object that expr, a field or element of it, is stored in, if it is
+// accessed without making a pointer to the object, or nullptr otherwise.
+const clang::Expr *GetEnclosingObject(const clang::Expr *expr);
+
 // The reads of the value of variables in a returned expression that are the
 // only reference to their variable in it. As the variables die on return,
 // these reads can move the value instead of copying it. Excluded are the

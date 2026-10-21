@@ -114,7 +114,15 @@ public:
   void ConvertConditionalBranch(clang::Expr *expr,
                                 clang::QualType type) override;
 
-  void ConvertPrintf(clang::CallExpr *expr) override;
+  void ConvertPrintf(clang::CallExpr *expr);
+
+  void ConvertVAArgCall(clang::CallExpr *expr) override;
+
+  std::optional<TempMaterializationCtx>
+  ConvertCallExpr(clang::CallExpr *expr) override;
+
+  void EmitCallResult(clang::CallExpr *expr, std::string str,
+                      const TempMaterializationCtx *temps) override;
 
   void EmitFnPtrCall(clang::CallExpr *expr) override;
 
@@ -137,7 +145,6 @@ public:
 
   // FnPtr does not implement Copy
   bool FunctionPointerImplementsCopy() const override { return false; }
-  bool VisitCallExpr(clang::CallExpr *expr) override;
 
   bool VisitStringLiteral(clang::StringLiteral *expr) override;
 
@@ -353,6 +360,34 @@ private:
   // copy read with .read() is fresh.
   void SetDerefFreshness(clang::QualType pointee_type);
   const char *GetPointerDerefPrefix(clang::QualType pointee_type) override;
+
+  // Dereferences, if enabled, the pointer to pointee_type emitted in scope.
+  class PushDeref {
+    ConverterRefCount &c;
+    clang::QualType pointee_type;
+    bool enabled;
+
+  public:
+    PushDeref(ConverterRefCount &c, clang::QualType pointee_type,
+              bool enabled = true)
+        : c(c), pointee_type(pointee_type), enabled(enabled) {
+      if (enabled) {
+        c.StrCat(token::kOpenParen, c.GetPointerDerefPrefix(pointee_type));
+      }
+    }
+    ~PushDeref() {
+      if (enabled) {
+        c.StrCat(c.GetPointerDerefSuffix(pointee_type), token::kCloseParen);
+        c.SetDerefFreshness(pointee_type);
+      }
+    }
+    PushDeref(const PushDeref &) = delete;
+    PushDeref &operator=(const PushDeref &) = delete;
+  };
+
+  // Emits the object that ptr points to: a pending dereference, which is
+  // written through ptr, if an lvalue is converted, or a read otherwise.
+  void EmitPointee(std::string ptr, clang::QualType pointee_type, bool fresh);
 
   void EmitSetOrAssign(clang::Expr *lhs, std::string_view rhs);
 

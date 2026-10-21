@@ -59,7 +59,7 @@ bool CanUnbox(clang::ASTContext &ctx, const clang::VarDecl *decl) {
          !IsVaListType(decl->getType());
 }
 
-clang::Expr *IgnoreNoOpCasts(clang::Expr *expr) {
+template <typename E> E *IgnoreNoOpCasts(E *expr) {
   while (auto *cast = clang::dyn_cast<clang::ImplicitCastExpr>(expr)) {
     if (cast->getCastKind() != clang::CK_NoOp) {
       break;
@@ -91,6 +91,31 @@ bool IsTrivialAssignment(clang::CXXOperatorCallExpr *expr) {
          method->isTrivial() && !IsUserOperatorCall(expr);
 }
 
+} // namespace
+
+const clang::Expr *GetEnclosingObject(const clang::Expr *expr) {
+  // A union member is accessed through a pointer to the union.
+  if (auto *member = clang::dyn_cast<clang::MemberExpr>(expr)) {
+    auto *field = clang::dyn_cast<clang::FieldDecl>(member->getMemberDecl());
+    return !member->isArrow() && field && !field->getParent()->isUnion()
+               ? member->getBase()
+               : nullptr;
+  }
+  if (auto *subscript = clang::dyn_cast<clang::ArraySubscriptExpr>(expr)) {
+    auto *cast = clang::dyn_cast<clang::ImplicitCastExpr>(subscript->getBase());
+    return cast && cast->getCastKind() == clang::CK_ArrayToPointerDecay
+               ? cast->getSubExpr()
+               : nullptr;
+  }
+  if (auto *op = clang::dyn_cast<clang::CXXOperatorCallExpr>(expr);
+      op && op->getOperator() == clang::OO_Subscript) {
+    auto *vec = IgnoreNoOpCasts(op->getArg(0));
+    return IsFlatVec(vec->getType()) ? vec : nullptr;
+  }
+  return nullptr;
+}
+
+namespace {
 // Statements are visited before their children, so the uses of a variable
 // that only access its value are recorded before the variable is reached.
 class AddressTakenVisitor
@@ -221,7 +246,7 @@ private:
 
   // An element of an array or vector, or a field of a struct, is accessed
   // without making a pointer to it.
-  void AddValueUse(clang::Expr *expr, bool write = false) {
+  void AddValueUse(const clang::Expr *expr, bool write = false) {
     expr = expr->IgnoreParens();
     // The value of a conditional lvalue is the value of either operand; it is
     // written through a pointer to the operand.
@@ -230,32 +255,15 @@ private:
         AddValueUse(cond->getTrueExpr());
         AddValueUse(cond->getFalseExpr());
       }
-    } else if (auto *member = clang::dyn_cast<clang::MemberExpr>(expr)) {
-      auto *field = clang::dyn_cast<clang::FieldDecl>(member->getMemberDecl());
-      // A union member is accessed through a pointer to the union.
-      if (!member->isArrow() && field && !field->getParent()->isUnion()) {
-        AddValueUse(member->getBase(), write);
-      }
-    } else if (auto *subscript =
-                   clang::dyn_cast<clang::ArraySubscriptExpr>(expr)) {
-      auto *cast =
-          clang::dyn_cast<clang::ImplicitCastExpr>(subscript->getBase());
-      if (cast && cast->getCastKind() == clang::CK_ArrayToPointerDecay) {
-        AddValueUse(cast->getSubExpr(), write);
-      }
-    } else if (auto *op = clang::dyn_cast<clang::CXXOperatorCallExpr>(expr)) {
-      // Rust doesn't let the index of an element that is written to read the
-      // vector, as the vector is borrowed mutably first.
-      auto *vec = IgnoreNoOpCasts(op->getArg(0));
-      if (op->getOperator() == clang::OO_Subscript &&
-          IsFlatVec(vec->getType()) &&
-          (!write || std::ranges::none_of(GetAllVars(vec), [&](auto *var) {
-            return GetAllVars(op->getArg(1)).contains(var);
-          }))) {
-        AddValueUse(vec, write);
-      }
     } else if (auto *ref = clang::dyn_cast<clang::DeclRefExpr>(expr)) {
       value_uses_.insert(ref);
+    } else if (auto *object = GetEnclosingObject(expr)) {
+      // Rust doesn't let the index of an element that is written to read the
+      // vector, as the vector is borrowed mutably first.
+      auto *op = clang::dyn_cast<clang::CXXOperatorCallExpr>(expr);
+      if (!write || !op || !ReferToCommonVar(object, op->getArg(1))) {
+        AddValueUse(object, write);
+      }
     }
   }
 

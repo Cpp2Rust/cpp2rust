@@ -286,8 +286,7 @@ std::string Converter::EmitMaterializedTempBinding(clang::QualType param_type,
                                                    clang::Expr *expr) {
   assert(materialized_temp_bindings_ && "materialized temp emitted outside a "
                                         "HoistMaterializedTempBindings scope");
-  auto [binding, ref] = MaterializeTemp(
-      std::format("__tmp_{}", materialized_temp_id_++), param_type, expr);
+  auto [binding, ref] = MaterializeTemp(NewTempName(), param_type, expr);
   *materialized_temp_bindings_ += std::move(binding);
   return ref;
 }
@@ -1413,13 +1412,10 @@ void Converter::ConvertCondition(clang::Expr *cond) {
 }
 
 bool Converter::VisitIfStmt(clang::IfStmt *stmt) {
+  // The variables of the init statement are only visible in the if.
+  PushBrace scope(*this, stmt->getInit());
   if (auto *init = stmt->getInit()) {
-    PushBrace scope(*this);
     Convert(init);
-    stmt->setInit(nullptr);
-    Convert(stmt);
-    stmt->setInit(init);
-    return false;
   }
   if (bool taken = false;
       !stmt->getConditionVariable() && !stmt->isConsteval() &&
@@ -1500,14 +1496,12 @@ bool Converter::VisitCXXForRangeStmt(clang::CXXForRangeStmt *stmt) {
   auto *begin =
       clang::cast<clang::VarDecl>(stmt->getBeginStmt()->getSingleDecl());
   auto *end = clang::cast<clang::VarDecl>(stmt->getEndStmt()->getSingleDecl());
-  begin->setDeclName(
-      clang::isa<clang::DecompositionDecl>(stmt->getLoopVariable())
-          ? clang::DeclarationName(
-                &ctx_.Idents.get(GetNamedDeclAsString(stmt->getLoopVariable())))
-          : stmt->getLoopVariable()->getDeclName());
+  // The iterator is named after the loop variable, which shadows it.
+  auto name = GetNamedDeclAsString(stmt->getLoopVariable());
+  range_iterator_names_[begin] = name;
   StrCat("'loop_:");
-  StrCat(keyword::kFor, GetNamedDeclAsString(begin), keyword::kIn,
-         "IterRange::new(", ConvertFreshRValue(begin->getInit()), token::kComma,
+  StrCat(keyword::kFor, name, keyword::kIn, "IterRange::new(",
+         ConvertFreshRValue(begin->getInit()), token::kComma,
          ConvertFreshRValue(end->getInit()), ')');
   {
     PushBrace brace(*this);
@@ -1741,21 +1735,6 @@ void Converter::ConvertCallToOstream(clang::CallExpr *expr) {
   assert(*fmt_trait == '\0' && "Stream state was not restored after call");
 }
 
-void Converter::ConvertPrintf(clang::CallExpr *expr) {
-  bool is_fprintf = IsCDecl(expr->getDirectCallee(), "fprintf");
-
-  StrCat("printf(");
-  for (unsigned i = is_fprintf; i < expr->getNumArgs(); ++i) {
-    Convert(expr->getArg(i));
-    // The format string
-    if (i == is_fprintf) {
-      StrCat("as *const i8");
-    }
-    StrCat(token::kComma);
-  }
-  StrCat(')');
-}
-
 void Converter::ConvertVariadicArg(clang::Expr *arg) {
   PushExprKind push(*this, ExprKind::RValue);
   if (arg->getType()->isFunctionPointerType()) {
@@ -1783,17 +1762,32 @@ void Converter::ConvertVAArgCall(clang::CallExpr *expr) {
 }
 
 bool Converter::VisitCallExpr(clang::CallExpr *expr) {
+  if (ConvertSpecialCall(expr)) {
+    return false;
+  }
+  std::optional<TempMaterializationCtx> temps;
+  std::string str;
+  {
+    Buffer buf(*this);
+    temps = ConvertCallExpr(expr);
+    str = std::move(buf).str();
+  }
+  EmitCallResult(expr, std::move(str), temps ? &*temps : nullptr);
+  return false;
+}
+
+bool Converter::ConvertSpecialCall(clang::CallExpr *expr) {
   if (IsBuiltinVaStart(expr) || IsBuiltinVaEnd(expr) || IsBuiltinVaCopy(expr)) {
     ConvertVAArgCall(expr);
     MarkFresh();
-    return false;
+    return true;
   }
 
   // p->~T() on a scalar is a no-op
   if (clang::isa<clang::CXXPseudoDestructorExpr>(
           expr->getCallee()->IgnoreParenImpCasts())) {
     MarkFresh();
-    return false;
+    return true;
   }
 
   // p->~T() is a no-op when T has nothing to destruct
@@ -1801,7 +1795,7 @@ bool Converter::VisitCallExpr(clang::CallExpr *expr) {
           expr->getCalleeDecl());
       dtor && !RecordNeedsDestruction(dtor->getParent())) {
     MarkFresh();
-    return false;
+    return true;
   }
 
   if (auto conversion = clang::dyn_cast_or_null<clang::CXXConversionDecl>(
@@ -1810,76 +1804,51 @@ bool Converter::VisitCallExpr(clang::CallExpr *expr) {
     ConvertLambdaToFunctionPointer(clang::cast<clang::CXXMemberCallExpr>(expr)
                                        ->getImplicitObjectArgument(),
                                    conversion);
+    return true;
+  }
+
+  // The remaining calls are converted as rules say, if there is one.
+  if (Mapper::Contains(ctx_, expr)) {
     return false;
   }
 
-  if (IsImplicitAssignmentCall(expr) && !Mapper::Contains(ctx_, expr)) {
+  if (IsImplicitAssignmentCall(expr)) {
     auto *call = clang::cast<clang::CXXMemberCallExpr>(expr);
     ConvertAssignment(call->getImplicitObjectArgument(), call->getArg(0), "=");
-    return false;
-  }
-
-  if (Mapper::Contains(ctx_, expr)) {
-    if (RuleRegistry::IsLibcPassthrough(ctx_, expr)) {
-      ConvertGenericCallExpr(expr);
-      return false;
-    }
-
-    bool deref_ref = (IsReferenceType(expr) ||
-                      GetReturnTypeOfFunction(expr)->isReferenceType()) &&
-                     !isAddrOf() && !isVoid();
-
-    auto **args = expr->getArgs();
-    auto num_args = expr->getNumArgs();
-    auto ctx = CollectRefBindingTempArgs(expr);
-    auto str = GetMappedAsString(expr, args, num_args, &ctx);
-
-    if (deref_ref && !Mapper::IsRefExpr(ctx_, expr)) {
-      Buffer buf(*this);
-      EmitDeref(std::move(str), expr->getType());
-      str = std::move(buf).str();
-    }
-
-    if (!ctx.temporary_bindings.empty()) {
-      str = std::format("{{ {} {} }}", ctx.temporary_bindings, str);
-    }
-
-    StrCat(str);
-    if (deref_ref) {
-      SetValueFreshness(expr->getType());
-    } else if (!IsPassThroughRule(expr)) {
-      MarkFresh();
-    }
-    return false;
+    return true;
   }
 
   if (IsTransparentStdCall(expr)) {
     Convert(expr->getArg(0));
-    return false;
+    return true;
   }
 
   if (auto *opcall = clang::dyn_cast<clang::CXXOperatorCallExpr>(expr);
-      opcall && !IsUserOperatorCall(opcall) && !Mapper::Contains(ctx_, expr)) {
-    return ConvertCXXOperatorCallExpr(opcall);
+      opcall && !IsUserOperatorCall(opcall)) {
+    ConvertCXXOperatorCallExpr(opcall);
+    return true;
   }
+  return false;
+}
 
-  std::string str;
-  {
+void Converter::EmitCallResult(clang::CallExpr *expr, std::string str,
+                               const TempMaterializationCtx *temps) {
+  bool deref = (GetReturnTypeOfFunction(expr)->isReferenceType() ||
+                (temps && IsReferenceType(expr))) &&
+               !isAddrOf() && !isVoid();
+  // The dereference is in the block of the temporaries, so they are still
+  // alive.
+  if (deref && !(temps && Mapper::IsRefExpr(ctx_, expr))) {
     Buffer buf(*this);
-    Converter::ConvertCallExpr(expr);
+    EmitDeref(std::move(str), expr->getType());
     str = std::move(buf).str();
   }
-
-  auto ty = GetReturnTypeOfFunction(expr);
-  auto ref = ty->getAs<clang::ReferenceType>();
-
-  if (ref && !isAddrOf() && !isVoid()) {
-    EmitDeref(std::move(str), ref->getPointeeType());
-    return false;
+  StrCat(temps ? temps->Wrap(std::move(str)) : str);
+  if (deref) {
+    SetValueFreshness(expr->getType());
+  } else if (!temps || !IsPassThroughRule(expr)) {
+    MarkFresh();
   }
-
-  EmitFresh(str);
-  return false;
 }
 
 void Converter::ConvertLambdaToFunctionPointer(
@@ -2212,14 +2181,7 @@ std::optional<Converter::TempMaterializationCtx>
 Converter::ConvertCallExpr(clang::CallExpr *expr) {
   auto *callee = expr->getCallee();
 
-  bool is_printf = IsCDecl(expr->getDirectCallee(), "printf");
-  bool is_fprintf = IsCDecl(expr->getDirectCallee(), "fprintf");
-  unsigned format_arg = is_fprintf ? 1 : 0;
-  if ((is_printf || is_fprintf) &&
-      clang::isa<clang::StringLiteral>(
-          expr->getArg(format_arg)->IgnoreImplicit())) {
-    ConvertPrintf(expr);
-  } else if (IsBuiltinConstantP(callee)) {
+  if (IsBuiltinConstantP(callee)) {
     clang::APValue V;
     StrCat(expr->getArg(0)->isCXX11ConstantExpr(ctx_
 #if CLANG_VERSION_MAJOR >= 24
@@ -2229,7 +2191,8 @@ Converter::ConvertCallExpr(clang::CallExpr *expr) {
                                                 )
                ? token::kOne
                : token::kZero);
-  } else if (Mapper::Contains(ctx_, expr)) {
+  } else if (Mapper::Contains(ctx_, expr) &&
+             !RuleRegistry::IsLibcPassthrough(ctx_, expr)) {
     auto **args = expr->getArgs();
     auto num_args = expr->getNumArgs();
     auto ctx = CollectRefBindingTempArgs(expr);
@@ -3090,6 +3053,10 @@ std::string Converter::ConvertDeclRef(clang::Expr *expr,
                        GetNamedDeclAsString(decl));
   }
 
+  if (auto it = range_iterator_names_.find(decl);
+      it != range_iterator_names_.end()) {
+    return it->second;
+  }
   return GetNamedDeclAsString(decl);
 }
 
@@ -3184,20 +3151,17 @@ bool Converter::ConvertCXXOperatorCallExpr(clang::CXXOperatorCallExpr *expr) {
     // Rust borrows the container before computing the index, so an index that
     // reads the container, or that has side effects through anything the
     // container is reached through, is computed beforehand.
-    std::unordered_set<const clang::ValueDecl *> base_vars;
-    auto *inner = base->IgnoreParenImpCasts();
-    if (idx->HasSideEffects(ctx_)) {
-      base_vars = GetAllVars(base);
-    } else if (auto *ref = clang::dyn_cast<clang::DeclRefExpr>(inner)) {
-      base_vars.insert(ref->getDecl());
-    } else if (auto *member = clang::dyn_cast<clang::MemberExpr>(inner)) {
-      base_vars.insert(member->getMemberDecl());
-    } else {
-      base_vars = GetAllVars(base);
+    const clang::ValueDecl *container = nullptr;
+    if (!idx->HasSideEffects(ctx_)) {
+      auto *inner = base->IgnoreParenImpCasts();
+      if (auto *ref = clang::dyn_cast<clang::DeclRefExpr>(inner)) {
+        container = ref->getDecl();
+      } else if (auto *member = clang::dyn_cast<clang::MemberExpr>(inner)) {
+        container = member->getMemberDecl();
+      }
     }
-    if (std::ranges::any_of(GetAllVars(idx), [&](const clang::ValueDecl *var) {
-          return base_vars.contains(var);
-        })) {
+    if (container ? GetAllVars(idx).contains(container)
+                  : ReferToCommonVar(idx, base)) {
       std::string idx_str;
       {
         ScopedValue no_autoref(autoref_mut_, std::nullopt);
@@ -4925,10 +4889,16 @@ Converter::CollectRefBindingTempArgs(clang::CallExpr *expr) {
   return ctx;
 }
 
+std::string Converter::TempMaterializationCtx::Wrap(std::string str) const {
+  if (temporary_bindings.empty()) {
+    return str;
+  }
+  return std::format("{{ {} {} }}", temporary_bindings, str);
+}
+
 const std::string &Converter::TempMaterializationCtx::GetOrMaterialize(
     unsigned argument_num,
-    std::function<std::pair<std::string, std::string>(const std::string &,
-                                                      clang::QualType)>
+    std::function<std::pair<std::string, std::string>(clang::QualType)>
         materialize_fn) {
   auto &str = materialized_refs_.at(argument_num);
   if (!str.empty()) {
@@ -4936,8 +4906,7 @@ const std::string &Converter::TempMaterializationCtx::GetOrMaterialize(
   }
 
   if (auto m = materialized_args.at(argument_num)) {
-    auto [binding, ref] =
-        materialize_fn(std::format("__tmp_{}", argument_num), *m);
+    auto [binding, ref] = materialize_fn(*m);
     temporary_bindings += std::move(binding);
     str = std::move(ref);
     return str;
@@ -4973,8 +4942,8 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
   if (ph_ctx.needs_materialization()) {
     auto materialized = ph_ctx.materialize_ctx->GetOrMaterialize(
         static_cast<unsigned>(ph_ctx.materialize_idx),
-        [this, arg](const std::string &name, clang::QualType type) {
-          return MaterializeTemp(name, type, arg);
+        [this, arg](clang::QualType type) {
+          return MaterializeTemp(NewTempName(), type, arg);
         });
     if (!materialized.empty()) {
       return materialized;

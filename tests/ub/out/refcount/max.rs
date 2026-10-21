@@ -21,12 +21,12 @@ fn main_0() -> i32 {
         }
     });
     let b: Ptr<i32> = ({
-        let __tmp_0: Value<i32> = Rc::new(RefCell::new(1));
-        let __tmp_1: Value<i32> = Rc::new(RefCell::new(2));
-        if __tmp_0.as_pointer().read() >= __tmp_1.as_pointer().read() {
-            __tmp_0.as_pointer()
+        let __tmp_2: Value<i32> = Rc::new(RefCell::new(1));
+        let __tmp_3: Value<i32> = Rc::new(RefCell::new(2));
+        if __tmp_2.as_pointer().read() >= __tmp_3.as_pointer().read() {
+            __tmp_2.as_pointer()
         } else {
-            __tmp_1.as_pointer()
+            __tmp_3.as_pointer()
         }
     });
     return (({ (a.read()) } == { (b.read()) }) as i32);

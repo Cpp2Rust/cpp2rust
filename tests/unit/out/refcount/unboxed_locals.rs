@@ -142,11 +142,11 @@ fn main_0() -> i32 {
     assert!(((vec_.len() == 4_usize) && (vec_[0_usize] == 5)) && (vec_[1_usize] == 2));
     let high: Value<i32> = Rc::new(RefCell::new(3));
     let mut low: i32 = {
-        let __tmp_1: Value<i32> = Rc::new(RefCell::new(2));
-        (if high.as_pointer().read() <= __tmp_1.as_pointer().read() {
+        let __tmp_0: Value<i32> = Rc::new(RefCell::new(2));
+        (if high.as_pointer().read() <= __tmp_0.as_pointer().read() {
             high.as_pointer()
         } else {
-            __tmp_1.as_pointer()
+            __tmp_0.as_pointer()
         }
         .read())
     };

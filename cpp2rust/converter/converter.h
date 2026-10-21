@@ -284,9 +284,11 @@ public:
 
     const std::string &GetOrMaterialize(
         unsigned argument_num,
-        std::function<std::pair<std::string, std::string>(const std::string &,
-                                                          clang::QualType)>
+        std::function<std::pair<std::string, std::string>(clang::QualType)>
             materialize_fn);
+
+    // str, preceded by the bindings of the temporaries that it refers to.
+    std::string Wrap(std::string str) const;
 
   private:
     std::vector<std::string> materialized_refs_;
@@ -329,7 +331,18 @@ public:
     void dump() const;
   };
 
-  std::optional<TempMaterializationCtx> ConvertCallExpr(clang::CallExpr *expr);
+  // Converts the calls that are converted to something other than a call,
+  // and returns whether expr is one.
+  bool ConvertSpecialCall(clang::CallExpr *expr);
+
+  // Converts the call expr, and returns the temporaries of the arguments of a
+  // call translated by a rule.
+  virtual std::optional<TempMaterializationCtx>
+  ConvertCallExpr(clang::CallExpr *expr);
+
+  // Emits the result of the call expr, which was converted to str.
+  virtual void EmitCallResult(clang::CallExpr *expr, std::string str,
+                              const TempMaterializationCtx *temps);
 
   struct CallArg {
     enum class Kind : int8_t {
@@ -414,15 +427,13 @@ public:
     return false;
   }
 
-  virtual void ConvertPrintf(clang::CallExpr *expr);
-
-  void ConvertVAArgCall(clang::CallExpr *expr);
+  virtual void ConvertVAArgCall(clang::CallExpr *expr);
 
   virtual void ConvertVariadicArg(clang::Expr *arg);
 
   void DefineImplicitMembers(clang::CXXRecordDecl *decl);
 
-  virtual bool VisitCallExpr(clang::CallExpr *expr);
+  bool VisitCallExpr(clang::CallExpr *expr);
 
   virtual bool VisitIntegerLiteral(clang::IntegerLiteral *expr);
 
@@ -901,6 +912,9 @@ protected:
   std::optional<bool> autoref_mut_;
 
   std::vector<clang::Expr *> curr_for_inc_;
+  // The names of the iterators of range-based for loops.
+  std::unordered_map<const clang::ValueDecl *, std::string>
+      range_iterator_names_;
   std::vector<clang::QualType> curr_init_type_;
 
   enum class BreakTarget : int8_t { Loop, FallthroughSwitch, Switch };
@@ -916,6 +930,9 @@ protected:
   std::unordered_set<const clang::VarDecl *> hoisted_decls_;
 
   unsigned materialized_temp_id_ = 0;
+  std::string NewTempName() {
+    return std::format("__tmp_{}", materialized_temp_id_++);
+  }
   std::string *materialized_temp_bindings_ = nullptr;
   class HoistMaterializedTempBindings {
     Converter &c;

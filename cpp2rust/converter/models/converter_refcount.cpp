@@ -174,23 +174,16 @@ bool ConverterRefCount::IsUnboxedVar(const clang::ValueDecl *decl) const {
 
 bool ConverterRefCount::IsUnboxedPlace(const clang::Expr *expr) const {
   expr = expr->IgnoreParenImpCasts();
-  // Fields of unions and references are accessed through pointers.
-  if (auto *member = clang::dyn_cast<clang::MemberExpr>(expr)) {
-    return !member->getMemberDecl()->getType()->isReferenceType() &&
-           IsFieldOfUnboxedPlace(member);
+  if (auto *ref = clang::dyn_cast<clang::DeclRefExpr>(expr)) {
+    return IsUnboxedVar(ref->getDecl());
   }
-  // An element of an unboxed array or vector.
-  if (auto *subscript = clang::dyn_cast<clang::ArraySubscriptExpr>(expr)) {
-    auto *cast = clang::dyn_cast<clang::ImplicitCastExpr>(subscript->getBase());
-    return cast && cast->getCastKind() == clang::CK_ArrayToPointerDecay &&
-           IsUnboxedPlace(cast->getSubExpr());
+  // References are accessed through pointers.
+  if (auto *member = clang::dyn_cast<clang::MemberExpr>(expr);
+      member && member->getMemberDecl()->getType()->isReferenceType()) {
+    return false;
   }
-  if (auto *op = clang::dyn_cast<clang::CXXOperatorCallExpr>(expr)) {
-    return op->getOperator() == clang::OO_Subscript &&
-           !Mapper::Contains(ctx_, op) && IsUnboxedPlace(op->getArg(0));
-  }
-  auto *ref = clang::dyn_cast<clang::DeclRefExpr>(expr);
-  return ref && IsUnboxedVar(ref->getDecl());
+  auto *object = GetEnclosingObject(expr);
+  return object && IsUnboxedPlace(object);
 }
 
 bool ConverterRefCount::IsValueLocal(const clang::Expr *expr) const {
@@ -203,8 +196,8 @@ bool ConverterRefCount::IsValueLocal(const clang::Expr *expr) const {
 
 bool ConverterRefCount::IsFieldOfUnboxedPlace(
     const clang::MemberExpr *expr) const {
-  return !expr->isArrow() && !expr->getBase()->getType()->isUnionType() &&
-         IsUnboxedPlace(expr->getBase());
+  auto *object = GetEnclosingObject(expr);
+  return object && IsUnboxedPlace(object);
 }
 
 ConverterRefCount::ConversionKind
@@ -597,11 +590,8 @@ bool ConverterRefCount::VisitArraySubscriptExpr(
         pending_deref_.set_unchecked(std::move(buf).str(), isFresh());
         return false;
       }
-      PushParen paren(*this);
-      StrCat(GetPointerDerefPrefix(expr->getType()));
+      PushDeref deref(*this, expr->getType());
       ConvertArraySubscript(base, expr->getIdx(), expr->getType());
-      StrCat(GetPointerDerefSuffix(expr->getType()));
-      SetDerefFreshness(expr->getType());
     } else {
       ConvertArraySubscript(base, expr->getIdx(), expr->getType());
     }
@@ -1000,12 +990,7 @@ void ConverterRefCount::ConvertDeclRefValue(clang::Expr *expr,
       if (str == "self") {
         StrCat(str);
       } else {
-        if (isLValue()) {
-          pending_deref_.set(str, /*fresh=*/false);
-          return;
-        }
-        StrCat(DerefPtrExpr(str, ref->getPointeeType()));
-        SetDerefFreshness(ref->getPointeeType());
+        EmitPointee(str, ref->getPointeeType(), /*fresh=*/false);
         return;
       }
       SetValueFreshness(expr->getType());
@@ -1211,100 +1196,60 @@ void ConverterRefCount::ConvertPrintf(clang::CallExpr *expr) {
   StrCat(')');
 }
 
-bool ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
+void ConverterRefCount::ConvertVAArgCall(clang::CallExpr *expr) {
   if (IsBuiltinVaStart(expr)) {
     StrCat(ToString(expr->getArg(0)->IgnoreImpCasts()),
            "= __args.as_pointer()");
-    return false;
+    return;
   }
-  if (IsBuiltinVaEnd(expr) || IsBuiltinVaCopy(expr)) {
-    ConvertVAArgCall(expr);
-    return false;
-  }
+  Converter::ConvertVAArgCall(expr);
+}
 
-  // p->~T() on a scalar is a no-op
-  if (clang::isa<clang::CXXPseudoDestructorExpr>(
-          expr->getCallee()->IgnoreParenImpCasts())) {
-    return false;
+std::optional<Converter::TempMaterializationCtx>
+ConverterRefCount::ConvertCallExpr(clang::CallExpr *expr) {
+  PushConversionKind push(*this, ConversionKind::Unboxed);
+  bool is_fprintf = IsCDecl(expr->getDirectCallee(), "fprintf");
+  if ((is_fprintf || IsCDecl(expr->getDirectCallee(), "printf")) &&
+      clang::isa<clang::StringLiteral>(
+          expr->getArg(is_fprintf)->IgnoreImplicit())) {
+    ConvertPrintf(expr);
+    return std::nullopt;
   }
+  return Converter::ConvertCallExpr(expr);
+}
 
-  // p->~T() is a no-op when T has nothing to destruct
-  if (auto *dtor = clang::dyn_cast_or_null<clang::CXXDestructorDecl>(
-          expr->getCalleeDecl());
-      dtor && !RecordNeedsDestruction(dtor->getParent())) {
-    return false;
-  }
-
-  if (IsImplicitAssignmentCall(expr) && !Mapper::Contains(ctx_, expr)) {
-    auto *call = clang::cast<clang::CXXMemberCallExpr>(expr);
-    ConvertAssignment(call->getImplicitObjectArgument(), call->getArg(0), "=");
-    return false;
-  }
-
-  if (auto conversion = clang::dyn_cast_or_null<clang::CXXConversionDecl>(
-          expr->getCalleeDecl());
-      conversion && conversion->getParent()->isLambda()) {
-    ConvertLambdaToFunctionPointer(clang::cast<clang::CXXMemberCallExpr>(expr)
-                                       ->getImplicitObjectArgument(),
-                                   conversion);
-    return false;
-  }
-
-  if (IsTransparentStdCall(expr)) {
-    return Converter::VisitCallExpr(expr);
-  }
-
-  if (auto *opcall = clang::dyn_cast<clang::CXXOperatorCallExpr>(expr);
-      opcall && !IsUserOperatorCall(opcall) && !Mapper::Contains(ctx_, expr)) {
-    PushConversionKind push(*this, ConversionKind::Unboxed,
-                            opcall->getOperator() == clang::OO_Call);
-    return ConvertCXXOperatorCallExpr(opcall);
-  }
-
-  std::optional<TempMaterializationCtx> ctx;
-  std::string str;
-  {
-    PushConversionKind push(*this, ConversionKind::Unboxed);
-    Buffer buf(*this);
-    ctx = Converter::ConvertCallExpr(expr);
-    str = std::move(buf).str();
-  }
-
+void ConverterRefCount::EmitCallResult(clang::CallExpr *expr, std::string str,
+                                       const TempMaterializationCtx *temps) {
+  auto wrap = [temps](std::string s) {
+    return temps ? temps->Wrap(std::move(s)) : s;
+  };
   auto ty = GetReturnTypeOfFunction(expr);
-  auto ref = ty->getAs<clang::ReferenceType>();
-
-  if (ref && !isAddrOf() && !isVoid()) {
+  if (auto *ref = ty->getAs<clang::ReferenceType>();
+      ref && !isAddrOf() && !isVoid()) {
     if (isLValue()) {
-      if (ctx && !ctx->temporary_bindings.empty()) {
-        str = std::format("{{ {} {} }}", ctx->temporary_bindings, str);
-      }
-      pending_deref_.set(str, /*fresh=*/true);
-      return false;
+      pending_deref_.set(wrap(std::move(str)), /*fresh=*/true);
+      return;
     }
-    // Apply deref before block wrapping so temporaries are still alive.
-    str = DerefPtrExpr(str, ref->getPointeeType());
-    if (ctx && !ctx->temporary_bindings.empty()) {
-      str = std::format("{{ {} {} }}", ctx->temporary_bindings, str);
-    }
-    StrCat(str);
+    // The dereference is in the block of the temporaries, so they are still
+    // alive.
+    StrCat(wrap(DerefPtrExpr(str, ref->getPointeeType())));
     SetDerefFreshness(ref->getPointeeType());
-    return false;
+    return;
   }
 
   if (isAddrOf() && !ty->isReferenceType() && !IsPointerType(ctx_, ty)) {
     PushConversionKind push(*this, ConversionKind::FullRefCount);
-    StrCat(BoxValue(std::move(str)), AsPointerMethod(ty));
-    return false;
+    StrCat(BoxValue(wrap(std::move(str))), AsPointerMethod(ty));
+    return;
   }
 
-  if (ctx && !ctx->temporary_bindings.empty()) {
-    str = std::format("({{ {} {} }})", ctx->temporary_bindings, str);
+  if (temps && !temps->temporary_bindings.empty()) {
+    str = std::format("({})", temps->Wrap(std::move(str)));
   }
   StrCat(str);
   if (!IsPassThroughRule(expr)) {
     MarkFresh();
   }
-  return false;
 }
 
 std::string ConverterRefCount::GetSourceFileAsString(clang::QualType type) {
@@ -1808,12 +1753,7 @@ void ConverterRefCount::ConvertUnionMemberAccessor(clang::MemberExpr *expr) {
     return;
   }
 
-  if (isLValue()) {
-    pending_deref_.set(str, /*fresh=*/true);
-    return;
-  }
-  StrCat(DerefPtrExpr(str, member->getType()));
-  SetDerefFreshness(member->getType());
+  EmitPointee(str, member->getType(), /*fresh=*/true);
 }
 
 bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
@@ -1835,12 +1775,7 @@ bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
       EmitFresh(str);
       return false;
     }
-    if (isLValue()) {
-      pending_deref_.set(str, /*fresh=*/true);
-      return false;
-    }
-    StrCat(DerefPtrExpr(str, expr->getType()));
-    SetDerefFreshness(expr->getType());
+    EmitPointee(str, expr->getType(), /*fresh=*/true);
     return false;
   }
 
@@ -1904,12 +1839,8 @@ bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
   }
 
   if (member->getType()->isReferenceType()) {
-    if (isLValue()) {
-      pending_deref_.set(str, /*fresh=*/false);
-      return false;
-    }
-    StrCat(DerefPtrExpr(str, member->getType().getNonReferenceType()));
-    SetDerefFreshness(member->getType().getNonReferenceType());
+    EmitPointee(str, member->getType().getNonReferenceType(),
+                /*fresh=*/false);
     return false;
   }
   if (isRValue()) {
@@ -2503,14 +2434,10 @@ void ConverterRefCount::ConvertGenericBinaryOperator(
   auto lhs_vars = GetAllVars(lhs);
   auto rhs_vars = GetAllVars(rhs);
 
-  auto predicate = [](auto *var) {
-    return var->getType()->isPointerType() || var->getType()->isReferenceType();
-  };
-
   auto sides_contains_literal = rhs_vars.empty() || lhs_vars.empty();
   auto same_var_on_both_sides = lhs_vars == rhs_vars;
-  auto sides_contain_ptr_or_deref = std::ranges::any_of(rhs_vars, predicate) ||
-                                    std::ranges::any_of(lhs_vars, predicate);
+  auto sides_contain_ptr_or_deref =
+      RefersToPointer(lhs) || RefersToPointer(rhs);
 
   auto both_sides_have_va_arg = same_var_on_both_sides &&
                                 ContainsVAArgExpr(lhs) &&
@@ -2555,16 +2482,8 @@ bool ConverterRefCount::ConvertCXXOperatorCallExpr(
     }
 
     {
-      bool deref = !isAddrOf();
-      PushParen paren(*this, deref);
-      if (deref) {
-        StrCat(GetPointerDerefPrefix(expr->getType()));
-      }
+      PushDeref deref(*this, expr->getType(), !isAddrOf());
       Convert(expr->getArg(0));
-      if (deref) {
-        StrCat(GetPointerDerefSuffix(expr->getType()));
-        SetDerefFreshness(expr->getType());
-      }
     }
     break;
 
@@ -2582,12 +2501,7 @@ bool ConverterRefCount::ConvertCXXOperatorCallExpr(
     if ((isLValue() || isRValue()) && !is_inner_boxed &&
         (is_unboxed ||
          (IsValueLocal(expr->getArg(0)) && !idx->HasSideEffects(ctx_) &&
-          std::ranges::none_of(
-              GetAllVars(idx), [&](const clang::ValueDecl *var) {
-                return var->getType()->isPointerType() ||
-                       var->getType()->isReferenceType() ||
-                       GetAllVars(expr->getArg(0)).contains(var);
-              })))) {
+          !RefersToPointer(idx) && !ReferToCommonVar(idx, expr->getArg(0))))) {
       // The index is a size_t, i.e., a usize.
       auto str =
           std::format("{}[{}]", ToString(expr->getArg(0)), ConvertRValue(idx));
@@ -2625,11 +2539,7 @@ bool ConverterRefCount::ConvertCXXOperatorCallExpr(
 
     {
       bool deref = !isAddrOf();
-      PushParen paren(*this, deref);
-      if (deref) {
-        StrCat(GetPointerDerefPrefix(expr->getType()));
-      }
-
+      PushDeref push_deref(*this, expr->getType(), deref);
       PushConversionKind push(*this, ConversionKind::Unboxed);
       if (deref && !is_inner_boxed) {
         StrCat(ConvertElemPlace(expr->getArg(0), expr->getArg(1)));
@@ -2638,15 +2548,15 @@ bool ConverterRefCount::ConvertCXXOperatorCallExpr(
                            ConvertObject(expr->getArg(0), ObjectShape::Element),
                            ConvertSubscriptIndex(expr->getArg(1))));
       }
-
-      if (isAddrOf()) {
+      if (!deref) {
         MarkFresh();
-      } else {
-        StrCat(GetPointerDerefSuffix(expr->getType()));
-        SetDerefFreshness(expr->getType());
       }
     }
     break;
+  }
+  case clang::OverloadedOperatorKind::OO_Call: {
+    PushConversionKind push(*this, ConversionKind::Unboxed);
+    return Converter::ConvertCXXOperatorCallExpr(expr);
   }
   default:
     return Converter::ConvertCXXOperatorCallExpr(expr);
@@ -2860,19 +2770,14 @@ void ConverterRefCount::ConvertPointerSubscript(
   }
 
   bool deref = !isAddrOf();
-  PushParen paren(*this, deref);
+  PushDeref push_deref(*this, expr->getType(), deref);
   if (deref) {
-    StrCat(GetPointerDerefPrefix(expr->getType()));
     ConvertPointerElem(base, idx);
   } else {
     ConvertPointerOffset(base, idx);
     if (expr->getType()->isArrayType()) {
       StrCat(".as_pointer()");
     }
-  }
-  if (deref) {
-    StrCat(GetPointerDerefSuffix(expr->getType()));
-    SetDerefFreshness(expr->getType());
   }
 }
 
@@ -2935,17 +2840,9 @@ void ConverterRefCount::ConvertDeref(clang::Expr *expr) {
   std::string str;
   {
     Buffer buf(*this);
-    bool deref = !isAddrOf();
     {
-      PushParen paren(*this, deref);
-      if (deref) {
-        StrCat(GetPointerDerefPrefix(pointee_type));
-      }
+      PushDeref deref(*this, pointee_type, !isAddrOf());
       Convert(expr);
-      if (deref) {
-        StrCat(GetPointerDerefSuffix(pointee_type));
-        SetDerefFreshness(pointee_type);
-      }
     }
     str = std::move(buf).str();
   }
@@ -2975,9 +2872,7 @@ void ConverterRefCount::ConvertArrow(clang::Expr *expr) {
       ConvertDeref(expr);
       return;
     }
-    auto ptr = ToString(expr);
-    StrCat(DerefPtrExpr(ptr, pointee_type));
-    SetDerefFreshness(pointee_type);
+    EmitPointee(ToString(expr), pointee_type, /*fresh=*/false);
     return;
   }
 
@@ -3009,6 +2904,16 @@ bool ConverterRefCount::DerefReadsValue(clang::QualType pointee_type) {
 const char *
 ConverterRefCount::GetPointerDerefSuffix(clang::QualType pointee_type) {
   return DerefReadsValue(pointee_type) ? ".read()" : ".upgrade().deref()";
+}
+
+void ConverterRefCount::EmitPointee(std::string ptr,
+                                    clang::QualType pointee_type, bool fresh) {
+  if (isLValue()) {
+    pending_deref_.set(std::move(ptr), fresh);
+    return;
+  }
+  StrCat(DerefPtrExpr(ptr, pointee_type));
+  SetDerefFreshness(pointee_type);
 }
 
 void ConverterRefCount::SetDerefFreshness(clang::QualType pointee_type) {

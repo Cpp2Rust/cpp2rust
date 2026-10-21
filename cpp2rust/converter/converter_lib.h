@@ -322,6 +322,13 @@ GetAllVars(const clang::Stmt *stmt);
 
 bool ReferencesVar(const clang::Stmt *stmt, const clang::VarDecl *var);
 
+// Whether a and b refer to a common variable or field.
+bool ReferToCommonVar(const clang::Stmt *a, const clang::Stmt *b);
+
+// Whether stmt refers to a pointer or reference variable or field, through
+// which it may access any object.
+bool RefersToPointer(const clang::Stmt *stmt);
+
 bool DefaultInitHasSideEffects(const clang::ASTContext &ctx,
                                clang::QualType type);
 

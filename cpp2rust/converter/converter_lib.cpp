@@ -1893,6 +1893,21 @@ bool ReferencesVar(const clang::Stmt *stmt, const clang::VarDecl *var) {
   });
 }
 
+bool ReferToCommonVar(const clang::Stmt *a, const clang::Stmt *b) {
+  auto a_vars = GetAllVars(a);
+  return std::ranges::any_of(GetAllVars(b), [&](const clang::ValueDecl *var) {
+    return a_vars.contains(var);
+  });
+}
+
+static bool IsPointerVar(const clang::ValueDecl *var) {
+  return var->getType()->isPointerType() || var->getType()->isReferenceType();
+}
+
+bool RefersToPointer(const clang::Stmt *stmt) {
+  return std::ranges::any_of(GetAllVars(stmt), IsPointerVar);
+}
+
 bool DefaultInitHasSideEffects(const clang::ASTContext &ctx,
                                clang::QualType type) {
   auto *record = ctx.getBaseElementType(type)->getAsCXXRecordDecl();
@@ -1938,9 +1953,9 @@ bool MayCauseBorrowMutError(const clang::Expr *lhs, const clang::Expr *rhs) {
   auto rhs_vars = GetAllVars(rhs);
 
   auto predicate = [lhs](auto *var) {
-    auto qual_type = var->getType();
-    return (qual_type->isPointerType() || qual_type->isReferenceType()) &&
-           qual_type->getPointeeType()
+    return IsPointerVar(var) &&
+           var->getType()
+                   ->getPointeeType()
                    .getCanonicalType()
                    .getUnqualifiedType() ==
                lhs->getType().getCanonicalType().getUnqualifiedType();
@@ -1951,11 +1966,7 @@ bool MayCauseBorrowMutError(const clang::Expr *lhs, const clang::Expr *rhs) {
     return true;
   }
 
-  for (auto *lhs_var : lhs_vars) {
-    if (rhs_vars.count(lhs_var))
-      return true;
-  }
-  return false;
+  return ReferToCommonVar(lhs, rhs);
 }
 
 bool ArgsMayAlias(const clang::Expr *a, const clang::Expr *b) {
