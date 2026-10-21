@@ -331,7 +331,7 @@ impl<T: CChar> Ptr<T> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{AsPointer, Decay};
+    use crate::Decay;
 
     // "ab\0cd\0": C string functions must stop at the first NUL.
     const EMBEDDED_NUL: [u8; 6] = [b'a', b'b', 0, b'c', b'd', 0];
