@@ -271,6 +271,11 @@ void IndexRuleFile(clang::ASTContext &ctx, const std::string &dir_name,
     if (key.empty()) {
       key = ClassOfParameters(decl);
     }
+    if (auto returned = RuleExpr(decl);
+        key.empty() && returned &&
+        llvm::isa<clang::InitListExpr>(returned->IgnoreImplicit())) {
+      key = ClassOf(decl->getAsFunction()->getReturnType());
+    }
     bool any_class = key.empty() && llvm::isa<clang::TemplateDecl>(decl);
     if (any_class) {
       key = RulesLoader::kAnyClassKey;
