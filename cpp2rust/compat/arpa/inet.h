@@ -8,10 +8,16 @@
 #undef htonl
 #undef htons
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 uint32_t cpp2rust_ntohl(uint32_t x);
 uint16_t cpp2rust_ntohs(uint16_t x);
 uint32_t cpp2rust_htonl(uint32_t x);
 uint16_t cpp2rust_htons(uint16_t x);
+#ifdef __cplusplus
+}
+#endif
 
 #define ntohl(x) cpp2rust_ntohl(x)
 #define ntohs(x) cpp2rust_ntohs(x)

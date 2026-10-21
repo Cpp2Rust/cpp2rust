@@ -197,6 +197,13 @@ unsafe fn main_0() -> i32 {
             == (4_i64))
     );
     assert!(((*(sizes_end.offset(-((1) as isize)))) == (4_usize)));
+    let mut set: ::libc::fd_set = std::mem::zeroed::<::libc::fd_set>();
+    libc::FD_ZERO((&mut set as *mut ::libc::fd_set));
+    libc::FD_SET(3, (&mut set as *mut ::libc::fd_set));
+    assert!((libc::FD_ISSET(3, (&mut set as *mut ::libc::fd_set).cast_const()) as i32 != 0));
+    (*libcc2rs::cpp2rust_errno_unsafe()) = 42;
+    assert!(((*libcc2rs::cpp2rust_errno_unsafe()) == (42)));
+    assert!(((u32::from_be(u32::to_be(7_u32))) == (7_u32)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

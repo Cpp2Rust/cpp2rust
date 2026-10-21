@@ -1,8 +1,11 @@
 #include <algorithm>
+#include <arpa/inet.h>
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
+#include <errno.h>
 #include <iterator>
+#include <sys/select.h>
 #include <sys/types.h>
 #include <utility>
 
@@ -113,5 +116,15 @@ int main() {
   const size_t *sizes_end = std::end(sizes);
   assert(sizes_end - sizes == 4);
   assert(*(sizes_end - 1) == 4);
+
+  fd_set set;
+  FD_ZERO(&set);
+  FD_SET(3, &set);
+  assert(FD_ISSET(3, &set));
+
+  errno = 42;
+  assert(errno == 42);
+
+  assert(ntohl(htonl(7)) == 7);
   return 0;
 }

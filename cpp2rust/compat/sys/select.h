@@ -8,10 +8,16 @@
 #undef FD_ISSET
 #undef FD_ZERO
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 void cpp2rust_fd_set(int fd, fd_set *set);
 void cpp2rust_fd_clr(int fd, fd_set *set);
 int cpp2rust_fd_isset(int fd, const fd_set *set);
 void cpp2rust_fd_zero(fd_set *set);
+#ifdef __cplusplus
+}
+#endif
 
 #define FD_SET(fd, set) cpp2rust_fd_set(fd, set)
 #define FD_CLR(fd, set) cpp2rust_fd_clr(fd, set)
