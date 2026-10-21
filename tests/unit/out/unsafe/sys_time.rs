@@ -8,7 +8,7 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn test_time_0() {
     let mut t1: ::libc::time_t = libc::time(std::ptr::null_mut());
-    let mut t2: ::libc::time_t = 0 as ::libc::time_t;
+    let mut t2: ::libc::time_t = (0 as ::libc::time_t);
     let mut t3: ::libc::time_t = libc::time((&mut t2 as *mut ::libc::time_t));
     assert!(((((t1) > (1500000000 as ::libc::time_t)) as i32) != 0));
     assert!(((((t2) == (t3)) as i32) != 0));
@@ -45,7 +45,7 @@ pub unsafe fn print_tm_1(mut t: ::libc::time_t) {
     });
 }
 pub unsafe fn test_gmtime_r_2() {
-    (unsafe { print_tm_1(0 as ::libc::time_t) });
+    (unsafe { print_tm_1((0 as ::libc::time_t)) });
     (unsafe { print_tm_1((1 as ::libc::time_t)) });
     (unsafe { print_tm_1((86399 as ::libc::time_t)) });
     (unsafe { print_tm_1((86400 as ::libc::time_t)) });
@@ -87,7 +87,7 @@ pub unsafe fn print_local_tm_3(mut t: ::libc::time_t) {
     });
 }
 pub unsafe fn test_localtime_r_4() {
-    (unsafe { print_local_tm_3(0 as ::libc::time_t) });
+    (unsafe { print_local_tm_3((0 as ::libc::time_t)) });
     (unsafe { print_local_tm_3((951782400 as ::libc::time_t)) });
     (unsafe { print_local_tm_3((1704067199 as ::libc::time_t)) });
     (unsafe { print_local_tm_3((1721126096 as ::libc::time_t)) });

@@ -65,8 +65,8 @@ fn main_0() -> i32 {
     assert!(({ (*t.borrow()).tm_mon } == 5));
     assert!(({ (*t.borrow()).tm_mday } == 15));
     let st: Value<libcc2rs::Stat> = Rc::new(RefCell::new(Default::default()));
-    (*st.borrow_mut()).st_size = 1024_i64;
-    assert!(({ (*st.borrow()).st_size } == 1024_i64));
+    (*st.borrow_mut()).st_size = (1024 as ::libc::off_t);
+    assert!(({ (*st.borrow()).st_size } == (1024 as ::libc::off_t)));
     let ud: Value<UserDefined> = Rc::new(RefCell::new(<UserDefined>::default()));
     assert!(((vec_elem!(ud.as_pointer(), a, 0_usize).read()) == 0));
     assert!(((*ud.borrow()).v.len() == 0_usize));

@@ -38,7 +38,7 @@ fn main_0() -> i32 {
             .memset((0) as u8, 16usize as usize);
         ((tv.as_pointer()) as Ptr<libcc2rs::Timeval>).to_any()
     };
-    (*tv.borrow_mut()).tv_sec = 0_i64;
+    (*tv.borrow_mut()).tv_sec = (0 as ::libc::time_t);
     assert!(
         ((({
             let __rp = (rset.as_pointer());
@@ -184,7 +184,7 @@ fn main_0() -> i32 {
     );
     (rset.as_pointer()).with_mut(|__s| __s.zero());
     (rset.as_pointer()).with_mut(|__s| __s.set((*fds.borrow())[(0) as usize]));
-    (*tv.borrow_mut()).tv_sec = 1_i64;
+    (*tv.borrow_mut()).tv_sec = (1 as ::libc::time_t);
     assert!(
         ((({
             let __rp = (rset.as_pointer());

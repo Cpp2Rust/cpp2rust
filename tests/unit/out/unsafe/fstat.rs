@@ -33,7 +33,7 @@ unsafe fn main_0() -> i32 {
     );
     let mut st: ::libc::stat = unsafe { std::mem::zeroed() };
     assert!(((((libc::fstat(fd, (&mut st as *mut ::libc::stat))) == (0)) as i32) != 0));
-    assert!(((((st.st_size) == (5_i64)) as i32) != 0));
+    assert!(((((st.st_size) == (5 as ::libc::off_t)) as i32) != 0));
     assert!(((((libc::close(fd)) == (0)) as i32) != 0));
     assert!(((((libc::unlink(path)) == (0)) as i32) != 0));
     return 0;

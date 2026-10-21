@@ -23,7 +23,7 @@ pub fn test_time_0() {
             }
         }
     };
-    let t2: Value<::libc::time_t> = Rc::new(RefCell::new(0 as ::libc::time_t));
+    let t2: Value<::libc::time_t> = Rc::new(RefCell::new((0 as ::libc::time_t)));
     let mut t3: ::libc::time_t = {
         let __out = (t2.as_pointer());
         match nix::time::clock_gettime(nix::time::ClockId::CLOCK_REALTIME) {
@@ -81,7 +81,7 @@ pub fn print_tm_1(t: ::libc::time_t) {
     );
 }
 pub fn test_gmtime_r_2() {
-    ({ print_tm_1(0 as ::libc::time_t) });
+    ({ print_tm_1((0 as ::libc::time_t)) });
     ({ print_tm_1((1 as ::libc::time_t)) });
     ({ print_tm_1((86399 as ::libc::time_t)) });
     ({ print_tm_1((86400 as ::libc::time_t)) });
@@ -135,7 +135,7 @@ pub fn print_local_tm_3(t: ::libc::time_t) {
     );
 }
 pub fn test_localtime_r_4() {
-    ({ print_local_tm_3(0 as ::libc::time_t) });
+    ({ print_local_tm_3((0 as ::libc::time_t)) });
     ({ print_local_tm_3((951782400 as ::libc::time_t)) });
     ({ print_local_tm_3((1704067199 as ::libc::time_t)) });
     ({ print_local_tm_3((1721126096 as ::libc::time_t)) });

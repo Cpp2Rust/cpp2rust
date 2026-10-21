@@ -21,7 +21,7 @@ pub unsafe fn test_getpwuid_0() {
 }
 pub unsafe fn test_getpwuid_missing_1() {
     (*libcc2rs::cpp2rust_errno_unsafe()) = 0;
-    let mut pw: *mut ::libc::passwd = libc::getpwuid(2147483646_u32);
+    let mut pw: *mut ::libc::passwd = libc::getpwuid((2147483646 as ::libc::uid_t));
     assert!(((((pw).is_null()) as i32) != 0));
     assert!(((((*libcc2rs::cpp2rust_errno_unsafe()) == (0)) as i32) != 0));
 }

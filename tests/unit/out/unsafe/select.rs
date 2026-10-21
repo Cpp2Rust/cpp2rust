@@ -26,7 +26,7 @@ unsafe fn main_0() -> i32 {
         }
         ((&mut tv as *mut ::libc::timeval) as *mut ::libc::c_void)
     };
-    tv.tv_sec = 0_i64;
+    tv.tv_sec = (0 as ::libc::time_t);
     assert!(
         ((((libc::select(
             ((fds[(0) as usize]) + (1)),
@@ -55,7 +55,7 @@ unsafe fn main_0() -> i32 {
     );
     libc::FD_ZERO((&mut rset as *mut ::libc::fd_set));
     libc::FD_SET(fds[(0) as usize], (&mut rset as *mut ::libc::fd_set));
-    tv.tv_sec = 1_i64;
+    tv.tv_sec = (1 as ::libc::time_t);
     assert!(
         ((((libc::select(
             ((fds[(0) as usize]) + (1)),

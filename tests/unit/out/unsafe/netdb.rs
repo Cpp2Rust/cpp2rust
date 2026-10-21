@@ -10,7 +10,7 @@ pub unsafe fn test_ipv4_literal_0() {
     let mut hints: ::libc::addrinfo = unsafe { std::mem::zeroed() };
     hints.ai_flags = 0;
     hints.ai_protocol = 0;
-    hints.ai_addrlen = 0 as libc::socklen_t;
+    hints.ai_addrlen = (0 as libc::socklen_t);
     hints.ai_addr = std::ptr::null_mut();
     hints.ai_canonname = std::ptr::null_mut();
     hints.ai_next = std::ptr::null_mut();
@@ -88,7 +88,7 @@ pub unsafe fn test_ipv6_literal_1() {
     let mut hints: ::libc::addrinfo = unsafe { std::mem::zeroed() };
     hints.ai_flags = 0;
     hints.ai_protocol = 0;
-    hints.ai_addrlen = 0 as libc::socklen_t;
+    hints.ai_addrlen = (0 as libc::socklen_t);
     hints.ai_addr = std::ptr::null_mut();
     hints.ai_canonname = std::ptr::null_mut();
     hints.ai_next = std::ptr::null_mut();

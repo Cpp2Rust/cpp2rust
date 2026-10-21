@@ -55,14 +55,16 @@ fn main_0() -> i32 {
                 2 => nix::unistd::Whence::SeekEnd,
                 __w => panic!("lseek: unsupported whence {__w}"),
             };
-            match FdRegistry::with_fd(fd, |__fd| nix::unistd::lseek(__fd, 0_i64, __whence)) {
+            match FdRegistry::with_fd(fd, |__fd| {
+                nix::unistd::lseek(__fd, (0 as ::libc::off_t), __whence)
+            }) {
                 Ok(__off) => __off,
                 Err(__e) => {
                     libcc2rs::cpp2rust_errno().write(__e as i32);
                     -1
                 }
             }
-        } == 11_i64) as i32)
+        } == (11 as ::libc::off_t)) as i32)
             != 0)
     );
     assert!(
@@ -73,14 +75,16 @@ fn main_0() -> i32 {
                 2 => nix::unistd::Whence::SeekEnd,
                 __w => panic!("lseek: unsupported whence {__w}"),
             };
-            match FdRegistry::with_fd(fd, |__fd| nix::unistd::lseek(__fd, 6_i64, __whence)) {
+            match FdRegistry::with_fd(fd, |__fd| {
+                nix::unistd::lseek(__fd, (6 as ::libc::off_t), __whence)
+            }) {
                 Ok(__off) => __off,
                 Err(__e) => {
                     libcc2rs::cpp2rust_errno().write(__e as i32);
                     -1
                 }
             }
-        } == 6_i64) as i32)
+        } == (6 as ::libc::off_t)) as i32)
             != 0)
     );
     let buf: Value<Box<[i8]>> = Rc::new(RefCell::new((0..16).map(|_| 0_i8).collect::<Box<[i8]>>()));
@@ -125,7 +129,10 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        (((match FdRegistry::with_fd(fd, |__fd| nix::unistd::ftruncate(__fd, 5_i64)) {
+        (((match FdRegistry::with_fd(fd, |__fd| nix::unistd::ftruncate(
+            __fd,
+            (5 as ::libc::off_t)
+        )) {
             Ok(()) => 0,
             Err(__e) => {
                 libcc2rs::cpp2rust_errno().write(__e as i32);
@@ -142,14 +149,16 @@ fn main_0() -> i32 {
                 2 => nix::unistd::Whence::SeekEnd,
                 __w => panic!("lseek: unsupported whence {__w}"),
             };
-            match FdRegistry::with_fd(fd, |__fd| nix::unistd::lseek(__fd, 0_i64, __whence)) {
+            match FdRegistry::with_fd(fd, |__fd| {
+                nix::unistd::lseek(__fd, (0 as ::libc::off_t), __whence)
+            }) {
                 Ok(__off) => __off,
                 Err(__e) => {
                     libcc2rs::cpp2rust_errno().write(__e as i32);
                     -1
                 }
             }
-        } == 5_i64) as i32)
+        } == (5 as ::libc::off_t)) as i32)
             != 0)
     );
     assert!((((FdRegistry::close(fd) == 0) as i32) != 0));

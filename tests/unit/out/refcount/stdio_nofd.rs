@@ -444,7 +444,7 @@ pub fn test_fseeko_4() {
     };
     assert!((((!((fp).is_null())) as i32) != 0));
     assert!(
-        (((match fp.with_mut(|__f| __f.seek(6_i64, ::libc::SEEK_SET)) {
+        (((match fp.with_mut(|__f| __f.seek((6 as ::libc::off_t), ::libc::SEEK_SET)) {
             -1 => -1,
             _ => 0,
         } == 0) as i32)
@@ -471,7 +471,7 @@ pub fn test_fseeko_4() {
             != 0)
     );
     assert!(
-        (((match fp.with_mut(|__f| __f.seek((-5_i32 as i64), ::libc::SEEK_END)) {
+        (((match fp.with_mut(|__f| __f.seek((-5_i32 as ::libc::off_t), ::libc::SEEK_END)) {
             -1 => -1,
             _ => 0,
         } == 0) as i32)
@@ -479,7 +479,7 @@ pub fn test_fseeko_4() {
     );
     assert!((((fp.with_mut(|__f| __f.getc()) == ('w' as i32)) as i32) != 0));
     assert!(
-        (((match fp.with_mut(|__f| __f.seek(1_i64, ::libc::SEEK_CUR)) {
+        (((match fp.with_mut(|__f| __f.seek((1 as ::libc::off_t), ::libc::SEEK_CUR)) {
             -1 => -1,
             _ => 0,
         } == 0) as i32)

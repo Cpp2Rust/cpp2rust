@@ -32,15 +32,16 @@ pub fn test_getpwuid_0() {
 }
 pub fn test_getpwuid_missing_1() {
     libcc2rs::cpp2rust_errno().write(0);
-    let mut pw: Ptr<libcc2rs::Passwd> =
-        match nix::unistd::User::from_uid(nix::unistd::Uid::from_raw(2147483646_u32)) {
-            Ok(Some(__u)) => Ptr::alloc(Passwd::from_user(&__u)),
-            Ok(None) => Ptr::null(),
-            Err(__e) => {
-                libcc2rs::cpp2rust_errno().write(__e as i32);
-                Ptr::null()
-            }
-        };
+    let mut pw: Ptr<libcc2rs::Passwd> = match nix::unistd::User::from_uid(
+        nix::unistd::Uid::from_raw((2147483646 as ::libc::uid_t)),
+    ) {
+        Ok(Some(__u)) => Ptr::alloc(Passwd::from_user(&__u)),
+        Ok(None) => Ptr::null(),
+        Err(__e) => {
+            libcc2rs::cpp2rust_errno().write(__e as i32);
+            Ptr::null()
+        }
+    };
     assert!(((((pw).is_null()) as i32) != 0));
     assert!(((((libcc2rs::cpp2rust_errno().read()) == 0) as i32) != 0));
 }

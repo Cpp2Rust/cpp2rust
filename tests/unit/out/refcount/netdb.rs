@@ -10,7 +10,7 @@ pub fn test_ipv4_literal_0() {
     let hints: Value<libcc2rs::Addrinfo> = Rc::new(RefCell::new(Default::default()));
     (*hints.borrow_mut()).ai_flags = 0;
     (*hints.borrow_mut()).ai_protocol = 0;
-    (*hints.borrow_mut()).ai_addrlen = 0 as libc::socklen_t;
+    (*hints.borrow_mut()).ai_addrlen = (0 as libc::socklen_t);
     (*hints.borrow_mut()).ai_addr = Ptr::<libcc2rs::Sockaddr>::null();
     (*hints.borrow_mut()).ai_canonname = Ptr::<i8>::null();
     (*hints.borrow_mut()).ai_next = Ptr::<libcc2rs::Addrinfo>::null();
@@ -160,7 +160,7 @@ pub fn test_ipv6_literal_1() {
     let hints: Value<libcc2rs::Addrinfo> = Rc::new(RefCell::new(Default::default()));
     (*hints.borrow_mut()).ai_flags = 0;
     (*hints.borrow_mut()).ai_protocol = 0;
-    (*hints.borrow_mut()).ai_addrlen = 0 as libc::socklen_t;
+    (*hints.borrow_mut()).ai_addrlen = (0 as libc::socklen_t);
     (*hints.borrow_mut()).ai_addr = Ptr::<libcc2rs::Sockaddr>::null();
     (*hints.borrow_mut()).ai_canonname = Ptr::<i8>::null();
     (*hints.borrow_mut()).ai_next = Ptr::<libcc2rs::Addrinfo>::null();

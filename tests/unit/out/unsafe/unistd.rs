@@ -31,8 +31,16 @@ pub unsafe fn test_lseek_1() {
     fp = libc::fopen(path, (c"rb".as_ptr().cast_mut()).cast_const());
     assert!((((!((fp).is_null())) as i32) != 0));
     let mut fd: i32 = libc::fileno(fp);
-    assert!(((((libc::lseek(fd, 0_i64, ::libc::SEEK_END)) == (11_i64)) as i32) != 0));
-    assert!(((((libc::lseek(fd, 6_i64, ::libc::SEEK_SET)) == (6_i64)) as i32) != 0));
+    assert!(
+        ((((libc::lseek(fd, (0 as ::libc::off_t), ::libc::SEEK_END)) == (11 as ::libc::off_t))
+            as i32)
+            != 0)
+    );
+    assert!(
+        ((((libc::lseek(fd, (6 as ::libc::off_t), ::libc::SEEK_SET)) == (6 as ::libc::off_t))
+            as i32)
+            != 0)
+    );
     let mut buf: [libc::c_char; 8] = [
         (0 as libc::c_char),
         (0 as libc::c_char),
@@ -205,12 +213,16 @@ pub unsafe fn test_ftruncate_5() {
     libc::fputs((c"hello world".as_ptr().cast_mut()).cast_const(), fp);
     libc::fflush(fp);
     let mut fd: i32 = libc::fileno(fp);
-    assert!(((((libc::ftruncate(fd, 5_i64)) == (0)) as i32) != 0));
+    assert!(((((libc::ftruncate(fd, (5 as ::libc::off_t))) == (0)) as i32) != 0));
     assert!(((((libc::fclose(fp)) == (0)) as i32) != 0));
     fp = libc::fopen(path, (c"rb".as_ptr().cast_mut()).cast_const());
     assert!((((!((fp).is_null())) as i32) != 0));
     fd = libc::fileno(fp);
-    assert!(((((libc::lseek(fd, 0_i64, ::libc::SEEK_END)) == (5_i64)) as i32) != 0));
+    assert!(
+        ((((libc::lseek(fd, (0 as ::libc::off_t), ::libc::SEEK_END)) == (5 as ::libc::off_t))
+            as i32)
+            != 0)
+    );
     assert!(((((libc::fclose(fp)) == (0)) as i32) != 0));
     libc::unlink(path);
 }
