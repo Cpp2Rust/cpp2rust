@@ -170,7 +170,7 @@ void addRule(clang::ASTContext &ctx, const std::string &dir,
     assert(llvm::isa<clang::VarDecl>(decl) &&
            "expression rule is neither a function nor a variable");
   }
-  auto keys = RuleKeys::GetExprKeys(ctx, decl);
+  auto keys = RuleKeys::GetExprKeys(*sema_, decl);
   assert(!keys.empty() && "expression rule has no key");
   for (const auto &key : keys) {
     exprs_.emplace(

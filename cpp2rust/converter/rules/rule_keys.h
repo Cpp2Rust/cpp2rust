@@ -8,6 +8,7 @@
 #include <clang/AST/DeclarationName.h>
 #include <clang/AST/Expr.h>
 #include <clang/AST/Type.h>
+#include <clang/Sema/Sema.h>
 #include <llvm/ADT/Hashing.h>
 
 #include <compare>
@@ -46,7 +47,7 @@ inline const Constructor kAnyConstructor{nullptr};
 std::optional<ExprKey> GetExprKey(clang::ASTContext &ctx,
                                   const clang::Expr *use);
 
-std::vector<ExprKey> GetExprKeys(clang::ASTContext &ctx,
+std::vector<ExprKey> GetExprKeys(clang::Sema &sema,
                                  const clang::NamedDecl *rule);
 
 std::optional<ExprKey> GetDeclKey(const clang::NamedDecl *decl);
