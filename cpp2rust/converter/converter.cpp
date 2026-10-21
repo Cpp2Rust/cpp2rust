@@ -763,11 +763,22 @@ bool Converter::TypeDerivesDefault(clang::QualType qual_type) {
   return true;
 }
 
-bool Converter::IsPassThroughRule(clang::Expr *expr) const {
+bool Converter::IsPassThroughRule(clang::Expr *expr) {
   const auto *rule = RuleRegistry::GetExprRule(ctx_, expr);
-  return rule && rule->body.size() == 1 &&
-         std::holds_alternative<TranslationRule::PlaceholderFragment>(
-             rule->body[0]);
+  if (!rule || rule->body.size() != 1) {
+    return false;
+  }
+  auto *ph = std::get_if<TranslationRule::PlaceholderFragment>(&rule->body[0]);
+  if (!ph) {
+    return false;
+  }
+  // A pointer to the elements of a container argument is a new pointer.
+  auto *call = clang::dyn_cast<clang::CallExpr>(expr);
+  return !call ||
+         !ParamIsElementPtr(
+             expr,
+             BuildUnifiedArgs(call, call->getArgs(), call->getNumArgs())[ph->n],
+             ph->n);
 }
 
 bool Converter::RecordDerivesCopy(clang::QualType type) {
@@ -5140,6 +5151,13 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
     }
   }
 
+  // A pointer to the elements of the container is a new pointer, whatever the
+  // rule does with it.
+  if ((ph_ctx.needs_pointer_receiver() || ph_ctx.needs_ptr_wrap()) &&
+      ParamIsElementPtr(expr, arg, ph_ctx.arg_idx)) {
+    return ConvertElementPtr(arg);
+  }
+
   if (ph_ctx.needs_pointer_receiver()) {
     auto param_type = Mapper::GetParamType(*this, expr, ph_ctx.arg_idx);
     bool borrowed = ph_ctx.access == TranslationRule::Access::kBorrow ||
@@ -5232,6 +5250,8 @@ std::string Converter::GetMappedAsString(clang::Expr *expr, clang::Expr **args,
   auto *tgt_ir = RuleRegistry::GetExprRule(ctx_, expr);
   if (!tgt_ir)
     return {};
+
+  CheckRuleReturnType(expr);
 
   auto saved_borrows = std::exchange(mut_borrows_, {});
   auto *operand = tgt_ir->refExprOperand();

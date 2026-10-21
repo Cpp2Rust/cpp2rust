@@ -1368,6 +1368,19 @@ pub trait AsPointer<T> {
     fn as_pointer(&self) -> Ptr<T>;
 }
 
+// A pointer to the elements of the container that self holds, which is what
+// the container decays to, e.g., `v.decay()` for `v.as_pointer().decay()`.
+pub trait Decay<T> {
+    fn decay(&self) -> Ptr<T>;
+}
+
+impl<T: 'static> Decay<T> for Rc<RefCell<Vec<T>>> {
+    #[inline]
+    fn decay(&self) -> Ptr<T> {
+        self.as_pointer().decay()
+    }
+}
+
 pub struct ScopedDestructor<T> {
     owner: Rc<RefCell<T>>,
     destroy: fn(Ptr<T>),
@@ -1697,7 +1710,7 @@ mod tests {
         assert_eq!(pp.borrow().read(), 3);
         pp_ptr.read().write(7);
         assert_eq!(a.borrow()[2], 7);
-        pp_ptr.write(v.as_pointer().decay().offset(1));
+        pp_ptr.write(v.decay().offset(1));
         pp_ptr.read().write(8);
         assert_eq!(*v.borrow(), vec![4, 8]);
     }

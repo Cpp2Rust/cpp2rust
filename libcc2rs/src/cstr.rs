@@ -331,7 +331,7 @@ impl<T: CChar> Ptr<T> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::AsPointer;
+    use crate::{AsPointer, Decay};
 
     // "ab\0cd\0": C string functions must stop at the first NUL.
     const EMBEDDED_NUL: [u8; 6] = [b'a', b'b', 0, b'c', b'd', 0];
@@ -357,7 +357,7 @@ mod tests {
     #[test]
     fn stops_at_first_nul_in_vec() {
         let v = std::rc::Rc::new(RefCell::new(EMBEDDED_NUL.to_vec()));
-        check(&v.as_pointer().decay());
+        check(&v.decay());
     }
 
     #[test]

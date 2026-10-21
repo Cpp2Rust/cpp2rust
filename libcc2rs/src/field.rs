@@ -23,7 +23,7 @@ use std::marker::PhantomData;
 use std::rc::{Rc, Weak};
 
 use crate::rc::{
-    AsPointer, FieldShape, Ptr, PtrKind, SliceParent, SliceRoot, StrongPtr, Value, dangling,
+    AsPointer, Decay, FieldShape, Ptr, PtrKind, SliceParent, SliceRoot, StrongPtr, Value, dangling,
     null_deref,
 };
 use crate::reinterpret::ByteRepr;
@@ -442,6 +442,19 @@ where
     }
 }
 
+impl<S, T, G, M> Decay<T> for FieldRef<S, Vec<T>, G, M>
+where
+    S: Record,
+    T: ByteRepr + 'static,
+    G: Fn(&S) -> &Vec<T> + Copy + 'static,
+    M: Fn(&mut S) -> &mut Vec<T> + Copy + 'static,
+{
+    #[inline]
+    fn decay(&self) -> Ptr<T> {
+        self.as_pointer().decay()
+    }
+}
+
 // The sequence that `get` gives in the struct that `base` points to, which is
 // reached through `base`: a field, as a sequence of one element, or the
 // elements of an array or vector field. It is the parent of the pointers into
@@ -568,7 +581,8 @@ macro_rules! array_field_ptr {
 
 // Field `field` of the struct that a Ptr or a Value holds, to make a pointer
 // to with as_pointer(), e.g., `field_ref!(p, v).as_pointer()` for a vector
-// field `v`, which gives a pointer to the vector.
+// field `v`, which gives a pointer to the vector, or with decay(), which gives
+// one to its elements.
 #[macro_export]
 macro_rules! field_ref {
     ($base:expr, $field:ident) => {{
@@ -1211,7 +1225,7 @@ pub(crate) fn upgrade(root: &Weak<dyn Root>) -> Rc<dyn Root> {
 
 #[cfg(test)]
 mod tests {
-    use crate::{AsPointer, ByteRepr, Ptr, Record, Value};
+    use crate::{AsPointer, ByteRepr, Decay, Ptr, Record, Value};
     use std::cell::RefCell;
     use std::rc::Rc;
 
@@ -1565,7 +1579,7 @@ mod tests {
     #[should_panic(expected = "too large for a pointer to its elements")]
     fn far_vector_field_ptr() {
         let far: Ptr<Far> = field_ptr!(holds_far(), far);
-        let _: Ptr<i32> = field_ref!(far, v).as_pointer().decay();
+        let _: Ptr<i32> = field_ref!(far, v).decay();
     }
 
     #[test]
@@ -1622,7 +1636,7 @@ mod tests {
         assert_ne!(a.offset(1), b);
         assert_eq!(b.offset(-2), a);
         // The elements of a vector are not in the struct.
-        let v: Ptr<i32> = field_ref!(s, v).as_pointer().decay();
+        let v: Ptr<i32> = field_ref!(s, v).decay();
         assert_ne!(v.offset(6), field_ptr!(s, c));
     }
 

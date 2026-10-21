@@ -59,7 +59,7 @@ fn main_0() -> i32 {
         __bytes.push(0);
         __bytes
     }));
-    println!("{}", s.as_pointer().decay());
+    println!("{}", s.decay());
     println!(
         "{}",
         Rc::new(RefCell::new(
@@ -71,7 +71,6 @@ fn main_0() -> i32 {
                 })
             })
         ))
-        .as_pointer()
         .decay()
     );
     println!("{}", ({ fn2_1(s.as_pointer(),) }).decay());

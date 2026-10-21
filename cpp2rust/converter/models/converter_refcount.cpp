@@ -60,6 +60,17 @@ static bool IsBoxedType(clang::ASTContext &ctx, clang::QualType type) {
   return IsBoxedType(Mapper::Map(ctx, type.getUnqualifiedType()));
 }
 
+// A Rust type without whitespace, and with the paths into libcc2rs, which the
+// rules import, unqualified, to compare it with another.
+static std::string NormalizeType(std::string type) {
+  std::erase_if(type, [](char c) { return std::isspace(c); });
+  static constexpr std::string_view kLib = "libcc2rs::";
+  for (size_t pos; (pos = type.find(kLib)) != std::string::npos;) {
+    type.erase(pos, kLib.size());
+  }
+  return type;
+}
+
 // Virtual methods take &mut self, as the fields of the struct are stored in
 // it.
 static bool NeedsMutAccess(clang::ASTContext &ctx,
@@ -379,29 +390,90 @@ std::string ConverterRefCount::ConvertObject(clang::Expr *expr,
   PushExprKind push(*this, ExprKind::Object);
   auto saved_shape = std::exchange(object_shape_, shape);
   auto str = ToString(expr);
+  // Unless the visitor already made a pointer to the elements.
+  bool decay = object_shape_ == ObjectShape::Element;
   object_shape_ = saved_shape;
-  if (shape == ObjectShape::Element && expr->getType()->isPointerType()) {
-    auto pointee = expr->getType()->getPointeeType();
-    if (IsBoxedType(ctx_, pointee) || pointee->isArrayType()) {
-      PushConversionKind push(*this, ConversionKind::Pointee);
+  if (decay) {
+    auto type = expr->getType().getNonReferenceType();
+    bool is_ptr = type->isPointerType();
+    if (is_ptr) {
+      type = type->getPointeeType();
+    }
+    if (IsBoxedType(ctx_, type) || (is_ptr && type->isArrayType())) {
       computed_expr_type_ = ComputedExprType::FreshPointer;
-      return std::format("Ptr::<{}>::decay(&({}))", ToString(pointee),
-                         std::move(str));
+      return std::move(str) + ".decay()";
     }
   }
   return str;
 }
 
-std::string ConverterRefCount::AsPointerMethod(clang::QualType type) const {
-  return isObject() && WantsElementPtr() &&
-                 type.getNonReferenceType()->isRecordType()
-             ? ".as_pointer().decay()"
-             : ".as_pointer()";
+std::string ConverterRefCount::AsPointerMethod(clang::QualType type) {
+  if (isObject() && object_shape_ == ObjectShape::Element &&
+      type->isRecordType() && IsBoxedType(ctx_, type)) {
+    object_shape_ = ObjectShape::Whole;
+    return ".decay()";
+  }
+  return ".as_pointer()";
 }
 
 std::string ConverterRefCount::ConvertPointerReceiver(clang::Expr *arg,
                                                       std::string_view) {
   return isObject() ? ConvertObject(arg) : ConvertFreshObject(arg);
+}
+
+bool ConverterRefCount::ParamIsElementPtr(clang::Expr *expr, clang::Expr *arg,
+                                          unsigned index) {
+  if (!RuleRegistry::ParamIsPointer(ctx_, expr, index)) {
+    return false;
+  }
+  auto type = arg->getType().getNonReferenceType();
+  if (type->isPointerType()) {
+    type = type->getPointeeType();
+  }
+  type = type.getUnqualifiedType();
+  if (!IsBoxedType(ctx_, type)) {
+    return false;
+  }
+  // The C++ parameter is a reference or pointer to the container, which the
+  // rule takes either as a pointer to it or as one to its elements.
+  auto param = NormalizeType(Mapper::GetParamType(*this, expr, index));
+  auto whole = NormalizeType(ToString(ctx_.getPointerType(type)));
+  if (param == whole) {
+    return false;
+  }
+  auto element = NormalizeType(ConvertPtrType(type));
+  if (param != element) {
+    llvm::errs() << "rule parameter " << index << " of type " << param
+                 << " is neither " << whole << " nor " << element << '\n';
+    llvm::report_fatal_error("rule parameter does not match the C++ one");
+  }
+  return true;
+}
+
+std::string ConverterRefCount::ConvertElementPtr(clang::Expr *arg) {
+  return ConvertObject(arg, ObjectShape::Element);
+}
+
+void ConverterRefCount::CheckRuleReturnType(clang::Expr *expr) {
+  auto *call = clang::dyn_cast<clang::CallExpr>(expr);
+  if (!call ||
+      !RuleRegistry::GetExprRule(ctx_, expr)->return_type.is_refcount_pointer) {
+    return;
+  }
+  // A reference is returned as a pointer. The library may spell the pointer
+  // or reference type with a typedef of its own, e.g., iterator::pointer,
+  // which is not what the pointee is spelled with.
+  auto type = GetReturnTypeOfFunction(call).getDesugaredType(ctx_);
+  if (auto *ref = type->getAs<clang::ReferenceType>()) {
+    type = ctx_.getPointerType(ref->getPointeeType());
+  }
+  auto ret = NormalizeType(Mapper::GetReturnType(*this, expr));
+  auto expected = NormalizeType(ToString(type));
+  if (ret != expected) {
+    llvm::errs() << "rule return type " << ret << " is not " << expected
+                 << '\n';
+    llvm::report_fatal_error("rule return type does not match the C++ one");
+  }
 }
 
 std::string ConverterRefCount::ConvertFreshObject(clang::Expr *expr) {
@@ -1020,14 +1092,6 @@ void ConverterRefCount::ConvertDeclRefValue(clang::Expr *expr,
   }
 
   if (auto *ref = decl_t->getAs<clang::ReferenceType>()) {
-    if (auto pointee = ref->getPointeeType();
-        isObject() && WantsElementPtr() && IsBoxedType(ctx_, pointee)) {
-      StrCat(std::format("Ptr::<{}>::decay(&({}))", ToString(pointee),
-                         std::move(str)));
-      computed_expr_type_ = ComputedExprType::FreshPointer;
-      return;
-    }
-
     // references are not boxed
     if (isAddrOf()) {
       StrCat(str);
@@ -1348,14 +1412,6 @@ bool ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
   if (isAddrOf() && !ty->isReferenceType() && !IsPointerType(ctx_, ty)) {
     PushConversionKind push(*this, ConversionKind::FullRefCount);
     StrCat(BoxValue(std::move(str)), AsPointerMethod(ty));
-    return false;
-  }
-
-  if (isObject() && WantsElementPtr() && ref &&
-      IsBoxedType(ctx_, ref->getPointeeType())) {
-    StrCat(std::format("Ptr::<{}>::decay(&({}))",
-                       ToString(ref->getPointeeType()), std::move(str)));
-    computed_expr_type_ = ComputedExprType::FreshPointer;
     return false;
   }
 
@@ -2299,8 +2355,8 @@ bool ConverterRefCount::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
   if (auto str = GetMappedAsString(expr, expr->getArgs(), expr->getNumArgs());
       !str.empty()) {
     if (isAddrOf()) {
-      StrCat(std::format("Rc::new(RefCell::new({})).as_pointer()",
-                         std::move(str)));
+      StrCat(std::format("Rc::new(RefCell::new({})){}", std::move(str),
+                         AsPointerMethod(expr->getType())));
       computed_expr_type_ = ComputedExprType::FreshPointer;
     } else {
       StrCat(str);
@@ -2841,10 +2897,6 @@ bool ConverterRefCount::ConvertCXXOperatorCallExpr(
                            ConvertSubscriptIndex(expr->getArg(1))));
       }
 
-      if (is_inner_boxed && isObject() && WantsElementPtr()) {
-        StrCat(".decay()");
-      }
-
       if (isAddrOf()) {
         computed_expr_type_ = ComputedExprType::FreshPointer;
       } else {
@@ -3123,16 +3175,6 @@ pub fn main() {{
 
 void ConverterRefCount::ConvertAddrOf(clang::Expr *expr,
                                       clang::QualType pointer_type) {
-  auto pointee_type = pointer_type->getPointeeType();
-  if (isObject() && WantsElementPtr() &&
-      (IsBoxedType(ctx_, pointee_type) || pointee_type->isArrayType())) {
-    auto ptr = ConvertPointer(expr);
-    PushConversionKind push(*this, ConversionKind::Pointee);
-    StrCat(std::format("Ptr::<{}>::decay(&({}))", ToString(pointee_type),
-                       std::move(ptr)));
-    computed_expr_type_ = ComputedExprType::FreshPointer;
-    return;
-  }
   StrCat(ConvertPointer(expr));
 }
 
@@ -3170,15 +3212,6 @@ void ConverterRefCount::ConvertDeref(clang::Expr *expr) {
 
   if (isAddrOf() && pointee_type->isArrayType()) {
     str = std::format("({}).as_pointer()", std::move(str));
-  }
-
-  if (isObject() && WantsElementPtr() &&
-      (IsBoxedType(ctx_, pointee_type) || pointee_type->isArrayType())) {
-    PushConversionKind push(*this, ConversionKind::Pointee);
-    StrCat(std::format("Ptr::<{}>::decay(&({}))", ToString(pointee_type),
-                       std::move(str)));
-    computed_expr_type_ = ComputedExprType::FreshPointer;
-    return;
   }
   StrCat(std::move(str));
 }
@@ -3402,8 +3435,8 @@ void ConverterRefCount::SetUFCSReceiver(clang::Expr *base, bool is_arrow,
   if (IsTemporaryObject(base) && base->getType()->isRecordType() &&
       !IsReferenceType(base->IgnoreImplicit())) {
     PushConversionKind push(*this, ConversionKind::FullRefCount);
-    ufcs_receiver_ = token::kRef + BoxValue(ConvertRValue(base)) +
-                     AsPointerMethod(base->getType());
+    ufcs_receiver_ =
+        token::kRef + BoxValue(ConvertRValue(base)) + ".as_pointer()";
     return;
   }
   ufcs_receiver_ = token::kRef + (base_is_pointer ? ConvertRValue(base)

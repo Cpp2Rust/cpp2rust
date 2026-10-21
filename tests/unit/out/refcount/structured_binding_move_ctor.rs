@@ -83,22 +83,8 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new(({ HolderImpl::extract(&h.as_pointer()) })));
     assert!(((*__decomp_3.borrow()).xs.len() == 3_usize));
     assert!(((*__decomp_3.borrow()).ys.len() == 2_usize));
-    assert!(
-        ((elem!(
-            field_ref!(__decomp_3.as_pointer(), xs).as_pointer().decay(),
-            2_usize
-        )
-        .read())
-            == 3)
-    );
-    assert!(
-        ((elem!(
-            field_ref!(__decomp_3.as_pointer(), ys).as_pointer().decay(),
-            0_usize
-        )
-        .read())
-            == 4)
-    );
+    assert!(((elem!(field_ref!(__decomp_3.as_pointer(), xs).decay(), 2_usize).read()) == 3));
+    assert!(((elem!(field_ref!(__decomp_3.as_pointer(), ys).decay(), 0_usize).read()) == 4));
     assert!((*h.borrow()).xs.is_empty());
     assert!((*h.borrow()).ys.is_empty());
     return 0;

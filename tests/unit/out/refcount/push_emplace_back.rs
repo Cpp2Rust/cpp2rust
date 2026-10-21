@@ -179,13 +179,12 @@ fn main_0() -> i32 {
     let vecs: Value<Vec<Vec<u8>>> = Rc::new(RefCell::new(Vec::new()));
     ({ push_param_0((vecs.as_pointer())) });
     assert!(((*vecs.borrow()).len() == 1_usize));
-    assert!((*vecs.as_pointer().decay().offset(0_usize).upgrade().deref()).is_empty());
+    assert!((*vecs.decay().offset(0_usize).upgrade().deref()).is_empty());
     let jpg: Value<JPEGData> = Rc::new(RefCell::new(<JPEGData>::default()));
     ({ push_local_from_field_1((jpg.as_pointer()), true) });
     assert!(((*jpg.borrow()).com_data.len() == 1_usize));
     assert!(
         ((*field_ref!(jpg.as_pointer(), com_data)
-            .as_pointer()
             .decay()
             .offset(0_usize)
             .upgrade()
@@ -216,7 +215,6 @@ fn main_0() -> i32 {
     assert!(((*jpg.borrow()).app_data.len() == 1_usize));
     assert!(
         ((*field_ref!(jpg.as_pointer(), app_data)
-            .as_pointer()
             .decay()
             .offset(0_usize)
             .upgrade()
@@ -256,12 +254,11 @@ fn main_0() -> i32 {
     let queue: Value<Vec<Pair>> = Rc::new(RefCell::new(Vec::new()));
     ({ emplace_deque_8((queue.as_pointer())) });
     assert!(
-        (queue.as_pointer().decay().with(|__s| __s.first) == 6)
-            && (queue.as_pointer().decay().with(|__s| __s.second) == 14)
+        (queue.decay().with(|__s| __s.first) == 6) && (queue.decay().with(|__s| __s.second) == 14)
     );
     assert!(
-        (queue.as_pointer().decay().to_last().with(|__s| __s.first) == -1_i32)
-            && (queue.as_pointer().decay().to_last().with(|__s| __s.second) == -1_i32)
+        (queue.decay().to_last().with(|__s| __s.first) == -1_i32)
+            && (queue.decay().to_last().with(|__s| __s.second) == -1_i32)
     );
     let values: Value<Vec<i64>> = Rc::new(RefCell::new(Vec::new()));
     ({ emplace_scalar_9((values.as_pointer()), 7) });

@@ -17,22 +17,22 @@ fn main_0() -> i32 {
         __bytes
     }));
     'loop_: for c in IterRange::new(
-        RandomAccessIterator::Vec(x.as_pointer().decay()),
-        RandomAccessIterator::Vec(x.as_pointer().decay().to_last()),
+        RandomAccessIterator::Vec(x.decay()),
+        RandomAccessIterator::Vec(x.decay().to_last()),
     ) {
         let c: Ptr<i8> = c.iter_deref();
         c.with_mut(|__v| __v.prefix_inc());
     }
     'loop_: for c in IterRange::new(
-        RandomAccessIterator::Vec(x.as_pointer().decay()),
-        RandomAccessIterator::Vec(x.as_pointer().decay().to_last()),
+        RandomAccessIterator::Vec(x.decay()),
+        RandomAccessIterator::Vec(x.decay().to_last()),
     ) {
         let c: Ptr<i8> = c.iter_deref();
         println!("{}", ((c.read()) as i32) as u8 as char);
     }
     'loop_: for c in IterRange::new(
-        RandomAccessIterator::Vec(x.as_pointer().decay()),
-        RandomAccessIterator::Vec(x.as_pointer().decay().to_last()),
+        RandomAccessIterator::Vec(x.decay()),
+        RandomAccessIterator::Vec(x.decay().to_last()),
     ) {
         let mut c: i8 = (c.iter_deref().read());
         println!("{}", (c as i32) as u8 as char);
@@ -46,7 +46,7 @@ fn main_0() -> i32 {
         let __a1 = Ptr::alloc(3);
         (*v.borrow_mut()).push(__a1)
     };
-    'loop_: for p in IterRange::new(v.as_pointer().decay().begin(), v.as_pointer().decay().end()) {
+    'loop_: for p in IterRange::new(v.decay().begin(), v.decay().end()) {
         let mut p: Ptr<i32> = (p.iter_deref().read());
         println!("{}", (p.read()));
     }

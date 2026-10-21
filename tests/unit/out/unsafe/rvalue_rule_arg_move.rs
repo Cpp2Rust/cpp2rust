@@ -53,18 +53,16 @@ unsafe fn main_0() -> i32 {
     let mut a: Elem = Elem::new({ 1 });
     let mut b: Elem = Elem::new({ 2 });
     {
-        let pos = <UnsafeRandomAccessIterator<Elem>>::from(v.end())
-            .iter_distance(&UnsafeRandomAccessIterator::Vec(v.as_mut_ptr()))
-            as usize;
+        let __it = <UnsafeRandomAccessIterator<Elem>>::from(v.end());
+        let pos = __it.iter_distance(&UnsafeRandomAccessIterator::Vec(v.as_mut_ptr())) as usize;
         v.insert(pos, Elem::move_from({ &mut a }));
-        <UnsafeRandomAccessIterator<Elem>>::from(v.end())
+        __it
     };
     {
-        let pos = <UnsafeRandomAccessIterator<Elem>>::from(v.end())
-            .iter_distance(&UnsafeRandomAccessIterator::Vec(v.as_mut_ptr()))
-            as usize;
+        let __it = <UnsafeRandomAccessIterator<Elem>>::from(v.end());
+        let pos = __it.iter_distance(&UnsafeRandomAccessIterator::Vec(v.as_mut_ptr())) as usize;
         v.insert(pos, (b).clone());
-        <UnsafeRandomAccessIterator<Elem>>::from(v.end())
+        __it
     };
     let mut ok: bool = ((((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (1))
         && ((*std::cell::LazyCell::force_mut(&mut *&raw mut moves_1)) == (1)))

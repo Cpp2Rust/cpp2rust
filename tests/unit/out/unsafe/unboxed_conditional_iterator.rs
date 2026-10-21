@@ -53,11 +53,11 @@ pub unsafe fn lehmer_2(mut sigma: *const u32, mut len: u32, mut code: *mut u32) 
         assert!(it != items.end());
         (*code.offset((i) as isize)) = (it.iter_distance(&items.begin()) as u32);
         {
-            let pos = <UnsafeRandomAccessIterator<u32>>::from((it).clone())
-                .iter_distance(&UnsafeRandomAccessIterator::Vec(items.as_mut_ptr()))
-                as usize;
+            let __it = <UnsafeRandomAccessIterator<u32>>::from((it).clone());
+            let pos =
+                __it.iter_distance(&UnsafeRandomAccessIterator::Vec(items.as_mut_ptr())) as usize;
             items.remove(pos);
-            <UnsafeRandomAccessIterator<u32>>::from((it).clone())
+            __it
         };
         i.prefix_inc();
     }

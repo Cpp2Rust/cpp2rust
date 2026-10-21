@@ -123,17 +123,11 @@ fn main_0() -> i32 {
             }) == 12)
     );
     assert!(((vec_elem!(s.as_pointer(), arr, 1_usize).read()) == 7));
-    let mut e: Ptr<Elem> = (field_ref!(s.as_pointer(), elems)
-        .as_pointer()
-        .decay()
-        .offset(2_usize));
+    let mut e: Ptr<Elem> = (field_ref!(s.as_pointer(), elems).decay().offset(2_usize));
     let mut h: Ptr<i32> = (array_field_ptr!(e, hist) as Ptr<i32>);
-    let mut c: Ptr<i16> = (field_ref!(e, coeffs).as_pointer().decay().offset(1_usize));
+    let mut c: Ptr<i16> = (field_ref!(e, coeffs).decay().offset(1_usize));
     let mut id: Ptr<i32> = (field_ptr!(
-        field_ref!(s.as_pointer(), elems)
-            .as_pointer()
-            .decay()
-            .offset(1_usize),
+        field_ref!(s.as_pointer(), elems).decay().offset(1_usize),
         id
     ));
     let mut k: i32 = 0;
@@ -151,10 +145,7 @@ fn main_0() -> i32 {
         (({
             sum_0(
                 (array_field_ptr!(
-                    field_ref!(s.as_pointer(), elems)
-                        .as_pointer()
-                        .decay()
-                        .offset(2_usize),
+                    field_ref!(s.as_pointer(), elems).decay().offset(2_usize),
                     hist
                 ) as Ptr<i32>),
                 4,
@@ -171,17 +162,13 @@ fn main_0() -> i32 {
         (vec_elem!(s.as_pointer(), elems, 1_usize).with(|__s| __s.id) == 11)
             && ({ h.offset((3) as isize) } == {
                 ((array_field_ptr!(
-                    field_ref!(s.as_pointer(), elems)
-                        .as_pointer()
-                        .decay()
-                        .offset(2_usize),
+                    field_ref!(s.as_pointer(), elems).decay().offset(2_usize),
                     hist
                 ) as Ptr<i32>)
                     .offset((3) as isize))
             })
     );
     let mut row: Ptr<i32> = (field_ref!(s.as_pointer(), rows)
-        .as_pointer()
         .decay()
         .offset(0_usize)
         .decay()

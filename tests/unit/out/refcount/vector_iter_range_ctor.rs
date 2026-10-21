@@ -119,10 +119,10 @@ fn main_0() -> i32 {
             && ((*(*v6.borrow())[2_usize].1.borrow()) == 30)
     );
     {
-        let start_idx = <RandomAccessIterator<(Value<i32>, Value<i32>)>>::from(
-            v6.as_pointer().decay().begin().iter_add(1_isize),
-        )
-        .index();
+        let __pos = <RandomAccessIterator<(Value<i32>, Value<i32>)>>::from(
+            v6.decay().begin().iter_add(1_isize),
+        );
+        let start_idx = __pos.index();
         let mut temp_vec: Vec<(Value<i32>, Value<i32>)> = Vec::new();
         let mut __it = m
             .as_pointer()
@@ -138,7 +138,7 @@ fn main_0() -> i32 {
             .with_mut(|v: &mut Vec<(Value<i32>, Value<i32>)>| {
                 v.splice(start_idx..start_idx, temp_vec);
             });
-        RandomAccessIterator::Vec(v6.as_pointer().decay() + start_idx)
+        __pos
     };
     assert!(((*v6.borrow()).len() == 6_usize));
     assert!(

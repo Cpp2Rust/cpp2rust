@@ -17,7 +17,7 @@ fn main_0() -> i32 {
         let a0_clone = inner.clone();
         (*outer.borrow_mut()).push(a0_clone)
     };
-    let mut sink: Ptr<Vec<i32>> = (outer.as_pointer().decay().to_last());
+    let mut sink: Ptr<Vec<i32>> = (outer.decay().to_last());
     assert!(((*sink.upgrade().deref()).len() == 0_usize));
     let mut p: Ptr<Vec<Vec<i32>>> = (outer.as_pointer());
     sink = (p.decay().to_last());

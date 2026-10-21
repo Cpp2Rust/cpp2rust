@@ -37,7 +37,7 @@ fn main_0() -> i32 {
         !(Ptr::<i8>::from_string_literal(b"hello")
             .with_c_str(|__s| (*s1.borrow())[..(*s1.borrow()).len().saturating_sub(1)] != *__s))
     );
-    let mut p1: Ptr<i8> = s1.as_pointer().decay();
+    let mut p1: Ptr<i8> = s1.decay();
     assert!((((elem!(p1, 0).read()) as i32) == (('h' as i8) as i32)));
     assert!((((elem!(p1, 1).read()) as i32) == (('e' as i8) as i32)));
     assert!((((elem!(p1, 2).read()) as i32) == (('l' as i8) as i32)));
@@ -50,7 +50,7 @@ fn main_0() -> i32 {
             .chain(std::iter::once(0))
             .collect(),
     ));
-    let mut p2: Ptr<i8> = s2.as_pointer().decay();
+    let mut p2: Ptr<i8> = s2.decay();
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < ((*s2.borrow()).len() - 1)) {
         assert!(
@@ -85,7 +85,7 @@ fn main_0() -> i32 {
     }));
     assert!((((*s3.borrow()).len() - 1) == 5_usize));
     assert!((((*s3.borrow()).len() - 1) == ((*s3.borrow()).len() - 1)));
-    let mut p3: Ptr<i8> = s3.as_pointer().decay();
+    let mut p3: Ptr<i8> = s3.decay();
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < ((*s3.borrow()).len() - 1)) {
         assert!(
@@ -112,7 +112,7 @@ fn main_0() -> i32 {
     }));
     assert!((((*s4.borrow()).len() - 1) == 3_usize));
     assert!((((*s4.borrow()).len() - 1) == ((*s4.borrow()).len() - 1)));
-    let mut p4: Ptr<i8> = s4.as_pointer().decay();
+    let mut p4: Ptr<i8> = s4.decay();
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < ((*s4.borrow()).len() - 1)) {
         assert!(
@@ -129,7 +129,7 @@ fn main_0() -> i32 {
     }));
     assert!((((*s5.borrow()).len() - 1) == 12_usize));
     assert!((((*s5.borrow()).len() - 1) == ((*s5.borrow()).len() - 1)));
-    let mut p5: Ptr<i8> = s5.as_pointer().decay();
+    let mut p5: Ptr<i8> = s5.decay();
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < ((*s5.borrow()).len() - 1)) {
         assert!(
@@ -298,7 +298,7 @@ fn main_0() -> i32 {
         __bytes
     }));
     let mut output_data: Ptr<u8> =
-        (string_to_cast.as_pointer().decay().offset(0_usize)).reinterpret_cast::<u8>();
+        (string_to_cast.decay().offset(0_usize)).reinterpret_cast::<u8>();
     assert!((((output_data.read()) as i32) == (('c' as i8) as i32)));
     assert!((((elem!(output_data, 1).read()) as i32) == (('a' as i8) as i32)));
     assert!((((elem!(output_data, 2).read()) as i32) == (('s' as i8) as i32)));

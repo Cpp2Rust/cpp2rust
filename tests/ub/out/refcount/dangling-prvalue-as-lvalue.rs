@@ -15,7 +15,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let v: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::from([1, 2])));
-    let b: Ptr<i32> = ({ foo_0(v.as_pointer().decay().begin().iter_deref()) });
+    let b: Ptr<i32> = ({ foo_0(v.decay().begin().iter_deref()) });
     (*v.borrow_mut()).clear();
     return (b.read());
 }

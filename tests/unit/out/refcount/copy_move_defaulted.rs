@@ -341,7 +341,6 @@ fn main_0() -> i32 {
     assert!(
         (((*r.borrow()).rows.len() == 1_usize)
             && ((*field_ref!(r.as_pointer(), rows)
-                .as_pointer()
                 .decay()
                 .offset(0_usize)
                 .upgrade()
@@ -356,7 +355,7 @@ fn main_0() -> i32 {
         (*bufs.borrow_mut()).push(__a1)
     };
     {
-        let __init = Buffer::move_from({ bufs.as_pointer().decay().offset(0_usize) });
+        let __init = Buffer::move_from({ bufs.decay().offset(0_usize) });
         (*bufs.borrow_mut()).push(__init)
     };
     assert!(

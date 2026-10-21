@@ -13,12 +13,12 @@ fn t5<T1>() -> Ptr<T1> {
     Ptr::null()
 }
 
-fn f1<T1: 'static>(a0: Ptr<Vec<T1>>) -> Ptr<T1> {
-    a0.decay()
+fn f1<T1>(a0: Ptr<T1>) -> Ptr<T1> {
+    a0
 }
 
-fn f3<T1: 'static>(a0: Ptr<Vec<T1>>) -> Ptr<T1> {
-    a0.decay()
+fn f3<T1>(a0: Ptr<T1>) -> Ptr<T1> {
+    a0
 }
 
 fn f5<T1: ByteRepr + Clone>(a0: Ptr<Vec<T1>>, a1: &mut Vec<T1>) {

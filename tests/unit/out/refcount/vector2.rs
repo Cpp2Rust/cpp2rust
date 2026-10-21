@@ -30,11 +30,7 @@ pub fn fn_0(v: Ptr<Vec<i32>>, v3: Vec<i32>) {
     x = (index!(v, 2_usize).read());
     (*v2.borrow_mut())[0_usize] = 1;
     elem!(
-        (if true {
-            (Ptr::<Vec<i32>>::decay(&(v3.as_pointer())))
-        } else {
-            (Ptr::<Vec<i32>>::decay(&(v)))
-        }),
+        (if true { (v3.as_pointer()) } else { (v).clone() }).decay(),
         0_usize
     )
     .write(7);

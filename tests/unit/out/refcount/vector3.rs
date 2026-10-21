@@ -18,38 +18,35 @@ fn main_0() -> i32 {
     };
     {
         let __a0 = 2_usize as usize;
-        elem!(v.as_pointer().decay(), 0_usize)
+        elem!(v.decay(), 0_usize)
             .with_mut(|__v: &mut Vec<i32>| __v.resize_with(__a0, || <i32>::default()))
     };
     {
         let __a0 = 1_usize as usize;
-        elem!(v.as_pointer().decay(), 1_usize)
+        elem!(v.decay(), 1_usize)
             .with_mut(|__v: &mut Vec<i32>| __v.resize_with(__a0, || <i32>::default()))
     };
-    index!(elem!(v.as_pointer().decay(), 0_usize), 0_usize).write(1);
-    index!(elem!(v.as_pointer().decay(), 0_usize), 1_usize).write(5);
-    index!(elem!(v.as_pointer().decay(), 1_usize), 0_usize).write(6);
-    'loop_: for v2 in IterRange::new(v.as_pointer().decay().begin(), v.as_pointer().decay().end()) {
+    index!(elem!(v.decay(), 0_usize), 0_usize).write(1);
+    index!(elem!(v.decay(), 0_usize), 1_usize).write(5);
+    index!(elem!(v.decay(), 1_usize), 0_usize).write(6);
+    'loop_: for v2 in IterRange::new(v.decay().begin(), v.decay().end()) {
         let v2: Ptr<Vec<i32>> = v2.iter_deref();
         'loop_: for i in IterRange::new(v2.decay().begin(), v2.decay().end()) {
             let i: Ptr<i32> = i.iter_deref();
             i.with_mut(|__v| __v.prefix_inc());
         }
     }
-    'loop_: for v2 in IterRange::new(v.as_pointer().decay().begin(), v.as_pointer().decay().end()) {
+    'loop_: for v2 in IterRange::new(v.decay().begin(), v.decay().end()) {
         let v2: Ptr<Vec<i32>> = v2.iter_deref();
         'loop_: for i in IterRange::new(v2.decay().begin(), v2.decay().end()) {
             let mut i: i32 = (i.iter_deref().read());
             println!("{}", (i + 3));
         }
     }
-    'loop_: for v2 in IterRange::new(v.as_pointer().decay().begin(), v.as_pointer().decay().end()) {
+    'loop_: for v2 in IterRange::new(v.decay().begin(), v.decay().end()) {
         let v2: Value<Vec<i32>> =
             Rc::new(RefCell::new((*v2.iter_deref().upgrade().deref()).clone()));
-        'loop_: for i in IterRange::new(
-            v2.as_pointer().decay().begin(),
-            v2.as_pointer().decay().end(),
-        ) {
+        'loop_: for i in IterRange::new(v2.decay().begin(), v2.decay().end()) {
             let mut i: i32 = (i.iter_deref().read());
             println!("{}", i);
         }

@@ -55,32 +55,25 @@ fn main_0() -> i32 {
     (*v.borrow_mut())[0_usize] = __rhs;
     assert!(({ (*v.borrow())[0_usize] } == 7));
     (*v.borrow_mut())[1_usize] = 0;
-    assert!(
-        ((elem!(
-            v.as_pointer().decay(),
-            ({ (*v.borrow())[1_usize] } as usize)
-        )
-        .read())
-            == 7)
-    );
+    assert!(((elem!(v.decay(), ({ (*v.borrow())[1_usize] } as usize)).read()) == 7));
     let mut i: i32 = 0;
-    elem!(v.as_pointer().decay(), (i.postfix_inc() as usize)).write(3);
+    elem!(v.decay(), (i.postfix_inc() as usize)).write(3);
     assert!((i == 1) && ({ (*v.borrow())[0_usize] } == 3));
     assert!(
         ((elem!(
-            v.as_pointer().decay(),
+            v.decay(),
             (({ push_and_index_0(v.as_pointer(),) }) as usize)
         )
         .read())
             == 42)
     );
     elem!(
-        v.as_pointer().decay(),
+        v.decay(),
         (({ push_and_index_0(v.as_pointer(),) }) as usize)
     )
     .write(5);
     assert!(((*v.borrow()).len() == 5_usize) && ({ (*v.borrow())[4_usize] } == 5));
-    let mut p: Ptr<i32> = (v.as_pointer().decay().offset(2_usize));
+    let mut p: Ptr<i32> = (v.decay().offset(2_usize));
     p.write(9);
     assert!(({ (*v.borrow())[2_usize] } == 9));
     assert!((({ sum_ref_1(v.as_pointer(),) }) == ((((3 + 0) + 9) + 42) + 5)));
@@ -99,14 +92,7 @@ fn main_0() -> i32 {
     field!(vec_elem!(h.as_pointer(), points, 0_usize), y).write(5);
     assert!(((vec_elem!(h.as_pointer(), values, 1_usize).read()) == 6));
     assert!(
-        (({
-            PointImpl::sum(
-                &field_ref!(h.as_pointer(), points)
-                    .as_pointer()
-                    .decay()
-                    .offset(0_usize),
-            )
-        }) == 6)
+        (({ PointImpl::sum(&field_ref!(h.as_pointer(), points).decay().offset(0_usize),) }) == 6)
     );
     let mut hp: Ptr<Holder> = (h.as_pointer());
     let __rhs = ((vec_elem!(hp, values, 1_usize).read()) + 1);
@@ -129,21 +115,20 @@ fn main_0() -> i32 {
         let __a1 = vec![0; 3_usize as usize];
         (*grid.borrow_mut()).push(__a1)
     };
-    index!(elem!(grid.as_pointer().decay(), 1_usize), 2_usize).write(8);
+    index!(elem!(grid.decay(), 1_usize), 2_usize).write(8);
     assert!(
-        ((index!(elem!(grid.as_pointer().decay(), 1_usize), 2_usize).read()) == 8)
-            && ((index!(elem!(grid.as_pointer().decay(), 0_usize), 2_usize).read()) == 0)
+        ((index!(elem!(grid.decay(), 1_usize), 2_usize).read()) == 8)
+            && ((index!(elem!(grid.decay(), 0_usize), 2_usize).read()) == 0)
     );
-    let __rhs = (index!(elem!(grid.as_pointer().decay(), 1_usize), 2_usize).read());
-    index!(elem!(grid.as_pointer().decay(), 0_usize), 1_usize).write(__rhs);
-    let __rhs = (index!(elem!(grid.as_pointer().decay(), 0_usize), 1_usize).read());
+    let __rhs = (index!(elem!(grid.decay(), 1_usize), 2_usize).read());
+    index!(elem!(grid.decay(), 0_usize), 1_usize).write(__rhs);
+    let __rhs = (index!(elem!(grid.decay(), 0_usize), 1_usize).read());
     {
-        index!(elem!(grid.as_pointer().decay(), 1_usize), 0_usize)
-            .with_mut(|__v| *__v = *__v + __rhs)
+        index!(elem!(grid.decay(), 1_usize), 0_usize).with_mut(|__v| *__v = *__v + __rhs)
     };
     assert!(
-        ((index!(elem!(grid.as_pointer().decay(), 0_usize), 1_usize).read()) == 8)
-            && ((index!(elem!(grid.as_pointer().decay(), 1_usize), 0_usize).read()) == 8)
+        ((index!(elem!(grid.decay(), 0_usize), 1_usize).read()) == 8)
+            && ((index!(elem!(grid.decay(), 1_usize), 0_usize).read()) == 8)
     );
     let a: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::from([4, 5, 6])));
     let __rhs = ({ (*a.borrow())[0_usize] } + { (*a.borrow())[2_usize] });

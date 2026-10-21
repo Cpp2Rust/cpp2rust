@@ -154,10 +154,10 @@ fn main_0() -> i32 {
     let by_ref: Value<Vec<i32>> = Rc::new(RefCell::new(vec![3; 2_usize as usize]));
     assert!((({ total_2(by_ref.as_pointer(),) }) == 6));
     let elem_ptr: Value<Vec<i32>> = Rc::new(RefCell::new(vec![0; 2_usize as usize]));
-    ({ set_0((elem_ptr.as_pointer().decay().offset(1_usize)), 7) });
+    ({ set_0((elem_ptr.decay().offset(1_usize)), 7) });
     assert!(({ (*elem_ptr.borrow())[1_usize] } == 7));
     let data: Value<Vec<i32>> = Rc::new(RefCell::new(vec![0; 2_usize as usize]));
-    ({ set_0(data.as_pointer().decay(), 8) });
+    ({ set_0(data.decay(), 8) });
     assert!(({ (*data.borrow())[0_usize] } == 8));
     let square: Value<Square> = Rc::new(RefCell::new(<Square>::default()));
     let mut shape: PtrDyn<dyn Shape> = (square.as_pointer()).to_dyn::<dyn Shape>(|w| w);

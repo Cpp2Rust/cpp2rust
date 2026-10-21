@@ -11,7 +11,7 @@ pub fn second_row_0() -> Ptr<i32> {
         Vec::from([1, 2, 3]),
         Vec::from([4, 5, 6]),
     ])));
-    return rows.as_pointer().decay().offset(1_usize).decay();
+    return rows.decay().offset(1_usize).decay();
 }
 pub fn main() {
     __cpp2rust_init_globals();

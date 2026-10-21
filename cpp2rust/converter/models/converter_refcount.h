@@ -398,13 +398,18 @@ private:
   std::string ConvertPointerReceiver(clang::Expr *arg,
                                      std::string_view param_type) override;
 
-  std::string AsPointerMethod(clang::QualType type) const;
+  bool ParamIsElementPtr(clang::Expr *expr, clang::Expr *arg,
+                         unsigned index) override;
+  std::string ConvertElementPtr(clang::Expr *arg) override;
+  // The method that makes a pointer to an object of the given type, which is
+  // one to its elements if they are what ConvertObject wants.
+  std::string AsPointerMethod(clang::QualType type);
+  void CheckRuleReturnType(clang::Expr *expr) override;
 
   std::string ConvertTemporaryPointer(
       clang::Expr *expr,
       std::optional<clang::QualType> implicit_convert_to) override;
 
-  bool WantsElementPtr() const { return object_shape_ == ObjectShape::Element; }
   std::string
   ConvertFresh(clang::Expr *expr,
                std::optional<clang::QualType> implicit_convert_to = {});
@@ -516,6 +521,8 @@ private:
   std::string BoxValue(std::string &&str) const;
 
   std::vector<ConversionKind> conversion_kind_;
+  // The shape that the innermost ConvertObject wants, until a visitor makes a
+  // pointer of that shape.
   ObjectShape object_shape_ = ObjectShape::Whole;
 
   // Set by pointer-related visit methods (ConvertDeref,

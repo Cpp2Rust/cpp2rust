@@ -793,7 +793,17 @@ protected:
 
   bool RecordDerivesCopy(clang::QualType type);
 
-  bool IsPassThroughRule(clang::Expr *expr) const;
+  bool IsPassThroughRule(clang::Expr *expr);
+
+  // Whether the rule of expr takes its argument number index, arg, a container
+  // in C++, as a pointer to its elements rather than to the container.
+  virtual bool ParamIsElementPtr(clang::Expr * /*expr*/, clang::Expr * /*arg*/,
+                                 unsigned /*index*/) {
+    return false;
+  }
+
+  // Checks that the rule of expr returns the type that expr returns in C++.
+  virtual void CheckRuleReturnType(clang::Expr * /*expr*/) {}
 
   bool RecordHasCopyableFields(const clang::RecordDecl *decl);
 
@@ -1080,6 +1090,11 @@ protected:
 
   virtual std::string ConvertPointerReceiver(clang::Expr *arg,
                                              std::string_view param_type);
+
+  // A pointer to the elements of the container arg.
+  virtual std::string ConvertElementPtr(clang::Expr *arg) {
+    llvm_unreachable("no pointers to elements in this model");
+  }
 
   // A pointer to a new temporary with the value of the prvalue expr, which
   // lives until the end of the statement.
