@@ -32,7 +32,6 @@ const clang::Decl *getParent(clang::QualType type) {
             spec->getTemplateName().getAsTemplateDecl())) {
       return tmpl->getCanonicalDecl();
     }
-    return nullptr;
   }
   auto record = type->getAsCXXRecordDecl();
   if (!record) {
@@ -149,6 +148,9 @@ std::optional<ExprKey> getExprKey(clang::ASTContext &ctx,
     return getConstructorKey(getParent(construct->getTypeAsWritten()));
   }
   if (auto call = llvm::dyn_cast<clang::CallExpr>(expr)) {
+    if (llvm::isa<clang::CXXMemberCallExpr>(call)) {
+      return getExprKey(ctx, call->getCallee());
+    }
     if (auto callee = call->getDirectCallee()) {
       return getDeclKey(callee);
     }
@@ -174,7 +176,9 @@ std::optional<ExprKey> getExprKey(clang::ASTContext &ctx,
                                                        sm, ctx.getLangOpts());
       return Unqualified{clang::DeclarationName(&ctx.Idents.get(macro))};
     }
-    return getDeclKey(member->getMemberDecl());
+    return getMemberKey(
+        getParent(member->getBase()->IgnoreImpCasts()->getType()),
+        member->getMemberDecl()->getDeclName());
   }
   if (auto ref = llvm::dyn_cast<clang::DeclRefExpr>(expr)) {
     return getDeclKey(ref->getDecl());
