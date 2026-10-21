@@ -274,25 +274,33 @@ struct TypeRuleMatch {
 
 TypeRuleMatch findType(clang::QualType use) {
   TypeRuleMatch best;
-  for (auto key : RuleKeys::GetTypeKeys(sema_->Context, use)) {
-    auto [begin, end] = types_.equal_range(key);
-    for (auto it = begin; it != end; ++it) {
-      if (!AstMatcher::MatchPublicAlias(sema_->Context, use, it->second.decl)) {
-        continue;
+  auto &ctx = sema_->Context;
+  auto spelled = AstMatcher::SpelledTypedef(ctx, use);
+  auto skipped = AstMatcher::SkipInternalTypedefs(ctx, use);
+  if (spelled && AstMatcher::SpelledTypedef(ctx, skipped) != spelled) {
+    for (auto key : RuleKeys::GetTypeKeys(ctx, use)) {
+      auto [begin, end] = types_.equal_range(key);
+      for (auto it = begin; it != end; ++it) {
+        auto alias = llvm::dyn_cast<clang::TypedefNameDecl>(it->second.decl);
+        if (!alias ||
+            AstMatcher::SpelledTypedef(ctx, alias->getUnderlyingType()) !=
+                spelled) {
+          continue;
+        }
+        if (best.rule_decl) {
+          use.dump(llvm::errs(), ctx);
+          it->second.decl->dump(llvm::errs());
+          best.rule_decl->decl->dump(llvm::errs());
+          llvm::report_fatal_error("internal typedef matches several rules");
+        }
+        best = {&it->second, {}};
       }
-      if (best.rule_decl) {
-        use.dump(llvm::errs(), sema_->Context);
-        it->second.decl->dump(llvm::errs());
-        best.rule_decl->decl->dump(llvm::errs());
-        llvm::report_fatal_error("type matches several public aliases");
-      }
-      best = {&it->second, {}};
+    }
+    if (best.rule_decl) {
+      return best;
     }
   }
-  if (best.rule_decl) {
-    return best;
-  }
-  use = AstMatcher::SkipInternalTypedefs(sema_->Context, use);
+  use = skipped;
   if (auto tag = use->getAsTagDecl();
       tag &&
       (IsUserDefinedDecl(tag) || tag->hasAttr<clang::TransparentUnionAttr>())) {

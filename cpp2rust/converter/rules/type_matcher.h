@@ -19,9 +19,6 @@ struct TypeMatch {
 std::optional<TypeMatch> MatchType(clang::Sema &sema, clang::QualType use,
                                    const clang::NamedDecl *rule);
 
-bool MatchPublicAlias(clang::ASTContext &ctx, clang::QualType use,
-                      const clang::NamedDecl *rule);
-
 clang::QualType SkipInternalTypedefs(clang::ASTContext &ctx,
                                      clang::QualType use);
 
