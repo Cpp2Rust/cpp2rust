@@ -215,9 +215,14 @@ std::string ExprKey(clang::ASTContext &ctx, const clang::Decl *rule) {
 
 std::string TypeKey(const clang::TypedefNameDecl *rule) {
   auto type = rule->getUnderlyingType();
-  if (auto alias = type->getAs<clang::TypedefType>();
-      alias && !type->isDependentType()) {
-    return RulesLoader::DeclKey(alias->getDecl());
+  for (auto pointee = type;; pointee = pointee->getPointeeType()) {
+    if (auto alias = pointee->getAs<clang::TypedefType>();
+        alias && !pointee->isDependentType()) {
+      return RulesLoader::DeclKey(alias->getDecl());
+    }
+    if (!pointee->isPointerType() && !pointee->isReferenceType()) {
+      break;
+    }
   }
   if (auto key = RulesLoader::TypeKey(type); !key.empty()) {
     return key;
