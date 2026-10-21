@@ -42,6 +42,10 @@ impl HashHolder_unsigned_long__ptr__bool__ {
         this
     }
 }
+pub static mut total_7: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
+pub unsafe fn add_to_total_8(mut x: i32) {
+    (*std::cell::LazyCell::force_mut(&mut *&raw mut total_7)) += x;
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -76,6 +80,12 @@ unsafe fn main_0() -> i32 {
         HashHolder_unsigned_long__ptr__bool__::new({ &mut __tmp_0 })
     };
     assert!(((unsafe { (hh.h).unwrap()(true,) }) == (1_u64)));
+    let mut handler: Option<unsafe fn(i32)> = Some(add_to_total_8);
+    (unsafe { (handler).unwrap()(2) });
+    (unsafe { (handler).unwrap()(3) });
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut total_7)) == (5)));
     return 0;
 }
-pub unsafe fn __cpp2rust_init_globals() {}
+pub unsafe fn __cpp2rust_init_globals() {
+    std::cell::LazyCell::force(&*&raw const total_7);
+}
