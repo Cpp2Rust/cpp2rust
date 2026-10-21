@@ -9,6 +9,18 @@ typedef struct timeval t2;
 typedef struct timespec t3;
 typedef time_t t4;
 
+// struct timespec::tv_sec is `__time_t` on glibc and `__darwin_time_t` on
+// Darwin. Give both time_t's translation.
+//
+// TODO:
+//
+//   Rules are written in terms of standard names `time_t tv_sec`, however
+//   libraries choose to implement them using library specific names `__time_t
+//   tv_sec`.
+//
+//   Fix this in converter by using the names in the rules, not the
+//   library-specific names.
+
 #if defined(__GLIBC__)
 typedef __time_t t5;
 #elif defined(__APPLE__)
