@@ -98,27 +98,16 @@ fn main_0() -> i32 {
     let mut a: Key = Key::new({ 1 });
     let mut b: Key = Key::new({ 2 });
     let c: Value<Key> = Rc::new(RefCell::new(Key::new({ 3 })));
-    Map::subscript(
-        (m.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<i32>)>>),
-        &a,
-    )
-    .write(10);
+    Map::subscript(m.as_pointer(), &a).write(10);
     ok = { ((ok as i32) & ((copies_0.with(|rc| *rc.borrow()) == 1) as i32)) != 0 };
-    Map::subscript(
-        (m.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<i32>)>>),
-        &b,
-    )
-    .write(20);
+    Map::subscript(m.as_pointer(), &b).write(20);
     ok = { ((ok as i32) & ((copies_0.with(|rc| *rc.borrow()) == 2) as i32)) != 0 };
-    Map::subscript(
-        (m.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<i32>)>>),
-        &a,
-    )
-    .write(11);
+    Map::subscript(m.as_pointer(), &a).write(11);
     ok = { ((ok as i32) & ((copies_0.with(|rc| *rc.borrow()) == 2) as i32)) != 0 };
     {
         let rhs_0 = ((ok as i32)
-            & (((*(*(m.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<i32>)>>)
+            & (((*(*m
+                .as_pointer()
                 .with(|__m: &Map<Key, (Value<Key>, Value<i32>)>| __m.find(&a))
                 .iter_deref()
                 .upgrade()
@@ -144,13 +133,13 @@ fn main_0() -> i32 {
     };
     ok = { ((ok as i32) & ((copies_0.with(|rc| *rc.borrow()) == 2) as i32)) != 0 };
     Map::subscript_move(
-        (m.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<i32>)>>),
+        m.as_pointer(),
         Rc::new(RefCell::new(({ make_key_3(4) }))).as_pointer(),
         |__k| cpp_move!(__k),
     )
     .write(40);
     Map::subscript_move(
-        (m.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<i32>)>>),
+        m.as_pointer(),
         Rc::new(RefCell::new(({ make_key_3(4) }))).as_pointer(),
         |__k| cpp_move!(__k),
     )
@@ -161,18 +150,8 @@ fn main_0() -> i32 {
                 && (copies_0.with(|rc| *rc.borrow()) == 2)) as i32))
             != 0
     };
-    Map::subscript_move(
-        (m.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<i32>)>>),
-        c.as_pointer(),
-        |__k| cpp_move!(__k),
-    )
-    .write(30);
-    Map::subscript_move(
-        (m.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<i32>)>>),
-        c.as_pointer(),
-        |__k| cpp_move!(__k),
-    )
-    .write(31);
+    Map::subscript_move(m.as_pointer(), c.as_pointer(), |__k| cpp_move!(__k)).write(30);
+    Map::subscript_move(m.as_pointer(), c.as_pointer(), |__k| cpp_move!(__k)).write(31);
     ok = {
         ((ok as i32)
             & ((((moves_1.with(|rc| *rc.borrow()) == 2) && (copies_0.with(|rc| *rc.borrow()) == 2))
@@ -185,8 +164,9 @@ fn main_0() -> i32 {
     };
     {
         Map::subscript(
-            (m.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<i32>)>>),
-            &(*(*(m.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<i32>)>>)
+            m.as_pointer(),
+            &(*(*m
+                .as_pointer()
                 .with(|__m: &Map<Key, (Value<Key>, Value<i32>)>| __m.begin())
                 .iter_deref()
                 .upgrade()
@@ -199,16 +179,12 @@ fn main_0() -> i32 {
     {
         let rhs_0 = ((ok as i32)
             & (((copies_0.with(|rc| *rc.borrow()) == 2)
-                && ((Map::subscript(
-                    (m.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<i32>)>>),
-                    &a,
-                )
-                .read())
-                    == 12)) as i32))
+                && ((Map::subscript(m.as_pointer(), &a).read()) == 12)) as i32))
             != 0;
         ok = rhs_0
     };
-    let mut first: Ptr<Key> = ((*(m.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<i32>)>>)
+    let mut first: Ptr<Key> = ((*m
+        .as_pointer()
         .with(|__m: &Map<Key, (Value<Key>, Value<i32>)>| __m.begin())
         .iter_deref()
         .upgrade()
@@ -216,7 +192,7 @@ fn main_0() -> i32 {
     .0
     .as_pointer());
     Map::subscript_move(
-        (m.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<i32>)>>),
+        m.as_pointer(),
         Rc::new(RefCell::new(Key::new({ 0 }))).as_pointer(),
         |__k| cpp_move!(__k),
     )
@@ -225,7 +201,7 @@ fn main_0() -> i32 {
     {
         let rhs_0 = ((ok as i32)
             & (({
-                ((*(m.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<i32>)>>)
+                ((*m.as_pointer()
                     .with(|__m: &Map<Key, (Value<Key>, Value<i32>)>| __m.find(&a))
                     .iter_deref()
                     .upgrade()
@@ -241,46 +217,30 @@ fn main_0() -> i32 {
     {
         let rhs_0 = ((ok as i32)
             & ((((*n.borrow()).len() == 5_usize)
-                && ((Map::subscript(
-                    (n.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<i32>)>>),
-                    &a,
-                )
-                .read())
-                    == 12)) as i32))
+                && ((Map::subscript(n.as_pointer(), &a).read()) == 12)) as i32))
             != 0;
         ok = rhs_0
     };
     {
-        let __it = (m.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<i32>)>>)
+        let __it = m
+            .as_pointer()
             .with(|__m: &Map<Key, (Value<Key>, Value<i32>)>| __m.find(&a));
-        Map::erase(
-            (m.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<i32>)>>),
-            &__it,
-        )
+        Map::erase(m.as_pointer(), &__it)
     };
     {
-        let rhs_0 = ((ok as i32)
-            & ((Map::erase_key(
-                (m.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<i32>)>>),
-                &b,
-            ) == 1_usize) as i32))
-            != 0;
+        let rhs_0 = ((ok as i32) & ((Map::erase_key(m.as_pointer(), &b) == 1_usize) as i32)) != 0;
+        ok = rhs_0
+    };
+    {
+        let rhs_0 = ((ok as i32) & ((Map::erase_key(m.as_pointer(), &b) == 0_usize) as i32)) != 0;
         ok = rhs_0
     };
     {
         let rhs_0 = ((ok as i32)
             & ((Map::erase_key(
-                (m.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<i32>)>>),
-                &b,
-            ) == 0_usize) as i32))
-            != 0;
-        ok = rhs_0
-    };
-    {
-        let rhs_0 = ((ok as i32)
-            & ((Map::erase_key(
-                (m.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<i32>)>>),
-                &(*(*(m.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<i32>)>>)
+                m.as_pointer(),
+                &(*(*m
+                    .as_pointer()
                     .with(|__m: &Map<Key, (Value<Key>, Value<i32>)>| __m.begin())
                     .iter_deref()
                     .upgrade()
@@ -305,9 +265,9 @@ fn main_0() -> i32 {
     };
     let mut sum: i32 = 0;
     'loop_: for entry in IterRange::new(
-        (m.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<i32>)>>)
+        m.as_pointer()
             .with(|__m: &Map<Key, (Value<Key>, Value<i32>)>| __m.begin()),
-        (m.as_pointer() as Ptr<Map<Key, (Value<Key>, Value<i32>)>>)
+        m.as_pointer()
             .with(|__m: &Map<Key, (Value<Key>, Value<i32>)>| __m.end()),
     ) {
         let entry: Ptr<(Value<Key>, Value<i32>)> = entry.iter_deref();
