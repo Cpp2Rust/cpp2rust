@@ -15,19 +15,7 @@ fn main_0() -> i32 {
     let mut i: i32 = 0;
     let mut k: i32 = 100;
     'loop_: while (i < 100) {
-        m.as_pointer()
-            .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<f64>)>| {
-                __m.get_or_insert_with(i.clone(), || {
-                    (
-                        Rc::new(RefCell::new(i)),
-                        Rc::new(RefCell::new(<f64>::default())),
-                    )
-                })
-                .borrow()
-                .1
-                .as_pointer()
-            })
-            .write(((k as f64) / 2_f64));
+        Map::subscript(m.as_pointer(), &i).write(((k as f64) / 2_f64));
         {
             i.prefix_inc();
             k.prefix_dec()

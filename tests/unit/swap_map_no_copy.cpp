@@ -98,11 +98,6 @@ struct Owner {
   std::unique_ptr<int> p;
 };
 
-struct Maps {
-  std::map<int, Tracked> m1;
-  std::map<int, Tracked> m2;
-};
-
 int main() {
   Tracked a(1);
   Tracked b(2);
@@ -171,12 +166,12 @@ int main() {
   assert(grid[0].size() == 1 && grid[0][0].v == 2);
   assert(copies == 0);
 
-  Maps maps;
-  maps.m1[1] = Tracked(1);
-  maps.m2[2] = Tracked(2);
-  std::swap(maps.m1, maps.m2);
-  assert(maps.m1.size() == 1 && maps.m1[2].v == 2);
-  assert(maps.m2.size() == 1 && maps.m2[1].v == 1);
+  std::map<int, Tracked> maps[2];
+  maps[0][1] = Tracked(1);
+  maps[1][2] = Tracked(2);
+  std::swap(maps[0], maps[1]);
+  assert(maps[0].size() == 1 && maps[0][2].v == 2);
+  assert(maps[1].size() == 1 && maps[1][1].v == 1);
   assert(copies == 0);
 
   CopyOnly c1(1);

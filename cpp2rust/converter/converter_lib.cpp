@@ -1992,8 +1992,8 @@ bool HasReceiver(clang::Expr *expr) {
   return false;
 }
 
-std::optional<clang::QualType> GetParamImplicitConvertTarget(clang::Expr *expr,
-                                                             unsigned arg_idx) {
+std::optional<clang::QualType> GetParamType(clang::Expr *expr,
+                                            unsigned arg_idx) {
   const clang::FunctionDecl *fn = nullptr;
   if (auto *call = clang::dyn_cast<clang::CallExpr>(expr)) {
     fn = call->getDirectCallee();
@@ -2007,7 +2007,16 @@ std::optional<clang::QualType> GetParamImplicitConvertTarget(clang::Expr *expr,
   if (param_idx >= fn->getNumParams()) {
     return std::nullopt;
   }
-  return fn->getParamDecl(param_idx)->getType().getNonReferenceType();
+  return fn->getParamDecl(param_idx)->getType();
+}
+
+std::optional<clang::QualType> GetParamImplicitConvertTarget(clang::Expr *expr,
+                                                             unsigned arg_idx) {
+  auto type = GetParamType(expr, arg_idx);
+  if (!type) {
+    return std::nullopt;
+  }
+  return type->getNonReferenceType();
 }
 
 bool IsAliasOfInit(clang::ASTContext &ctx, const clang::VarDecl *var) {

@@ -1080,6 +1080,13 @@ protected:
 
   virtual std::string ConvertPointerReceiver(clang::Expr *arg,
                                              std::string_view param_type);
+
+  // A pointer to a new temporary with the value of the prvalue expr, which
+  // lives until the end of the statement.
+  virtual std::string
+  ConvertTemporaryPointer(clang::Expr *expr,
+                          std::optional<clang::QualType> implicit_convert_to);
+
   std::string
   ConvertPointer(clang::Expr *expr,
                  std::optional<clang::QualType> implicit_convert_to = {},

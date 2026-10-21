@@ -85,6 +85,27 @@ macro_rules! cpp_swap_unsafe {
     }};
 }
 
+// cpp_move!(p), or cpp_move_unsafe!(p), constructs a value from the one that
+// p points to as C++ does with T(std::move(*p)), like the temporary of the
+// swap.
+#[macro_export]
+macro_rules! cpp_move {
+    ($p:expr) => {{
+        #[allow(unused_imports)]
+        use $crate::__swap::{ConstructCopy, ConstructMove, ConstructNone};
+        (&&&$crate::__swap::Construct(&$p)).construct()
+    }};
+}
+
+#[macro_export]
+macro_rules! cpp_move_unsafe {
+    ($p:expr) => {{
+        #[allow(unused_imports)]
+        use $crate::__swap::{ConstructCopyUnsafe, ConstructMoveUnsafe, ConstructNoneUnsafe};
+        unsafe { (&&&$crate::__swap::ConstructUnsafe($p)).construct() }
+    }};
+}
+
 // Whether the type has none of the special members that the swap calls.
 macro_rules! trivial {
     ($wrapper:ident, $ptr:ty, $none:ident, $($tr:ident: $bound:ident for $recv:ty),*) => {

@@ -20,14 +20,14 @@ fn t6<T1, T2>() -> T2 {
 }
 
 unsafe fn f1<T1: Ord + Clone, T2: Default>(a0: &mut UnsafeMap<T1, (T1, T2)>, a1: T1) -> &mut T2 {
-    &mut (*a0.get_or_insert_with(a1.clone(), || (a1, <T2>::default()))).1
+    &mut (*a0.subscript(&a1))
 }
 
 unsafe fn f2<T1, T2>(a0: UnsafeMap<T1, (T1, T2)>) -> usize {
     a0.len()
 }
 
-unsafe fn f3<T1: Ord + Clone, T2>(a0: &mut UnsafeMap<T1, (T1, T2)>, a1: UnsafeBidirectionalIterator<(T1, T2)>) -> UnsafeBidirectionalIterator<(T1, T2)> {
+unsafe fn f3<T1: Ord, T2>(a0: &mut UnsafeMap<T1, (T1, T2)>, a1: UnsafeBidirectionalIterator<(T1, T2)>) -> UnsafeBidirectionalIterator<(T1, T2)> {
     a0.erase(&a1)
 }
 
@@ -43,8 +43,8 @@ unsafe fn f7<T1: Ord, T2>(a0: &mut UnsafeMap<T1, (T1, T2)>, a1: T1) -> *const T2
     &raw const (*a0.get(&a1).expect("out of range!")).1
 }
 
-unsafe fn f8<T1: Ord + Clone, T2: Default>(a0: &mut UnsafeMap<T1, (T1, T2)>, a1: T1) -> &mut T2 {
-    &mut (*a0.get_or_insert_with(a1.clone(), || (a1, <T2>::default()))).1
+unsafe fn f8<T1: Ord, T2: Default>(a0: &mut UnsafeMap<T1, (T1, T2)>, a1: *mut T1) -> &mut T2 {
+    &mut (*a0.subscript_move(a1, |__k| cpp_move_unsafe!(__k)))
 }
 
 unsafe fn f9<T1, T2>(a0: UnsafeMap<T1, (T1, T2)>) -> UnsafeBidirectionalIterator<(T1, T2)> {
@@ -83,7 +83,7 @@ unsafe fn f26<T1: Ord + Clone, T2: Clone>(a0: &mut UnsafeMap<T1, (T1, T2)>, a1: 
     *a0 = a1.clone()
 }
 
-unsafe fn f27<T1: Ord + Clone, T2>(
+unsafe fn f27<T1: Ord, T2>(
     a0: &mut UnsafeMap<T1, (T1, T2)>,
     a1: UnsafeBidirectionalIterator<(T1, T2)>,
 ) -> UnsafeBidirectionalIterator<(T1, T2)> {

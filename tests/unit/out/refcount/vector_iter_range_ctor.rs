@@ -73,45 +73,24 @@ fn main_0() -> i32 {
     assert!((v5.len() == 5_usize));
     assert!(((v5[0_usize] as i32) == 10) && ((v5[4_usize] as i32) == 50));
     let m: Value<Map<i32, (Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
-    m.as_pointer()
-        .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<i32>)>| {
-            __m.get_or_insert_with(1.clone(), || {
-                (
-                    Rc::new(RefCell::new(1)),
-                    Rc::new(RefCell::new(<i32>::default())),
-                )
-            })
-            .borrow()
-            .1
-            .as_pointer()
-        })
-        .write(10);
-    m.as_pointer()
-        .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<i32>)>| {
-            __m.get_or_insert_with(2.clone(), || {
-                (
-                    Rc::new(RefCell::new(2)),
-                    Rc::new(RefCell::new(<i32>::default())),
-                )
-            })
-            .borrow()
-            .1
-            .as_pointer()
-        })
-        .write(20);
-    m.as_pointer()
-        .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<i32>)>| {
-            __m.get_or_insert_with(3.clone(), || {
-                (
-                    Rc::new(RefCell::new(3)),
-                    Rc::new(RefCell::new(<i32>::default())),
-                )
-            })
-            .borrow()
-            .1
-            .as_pointer()
-        })
-        .write(30);
+    Map::subscript_move(
+        m.as_pointer(),
+        Rc::new(RefCell::new(1)).as_pointer(),
+        |__k| cpp_move!(__k),
+    )
+    .write(10);
+    Map::subscript_move(
+        m.as_pointer(),
+        Rc::new(RefCell::new(2)).as_pointer(),
+        |__k| cpp_move!(__k),
+    )
+    .write(20);
+    Map::subscript_move(
+        m.as_pointer(),
+        Rc::new(RefCell::new(3)).as_pointer(),
+        |__k| cpp_move!(__k),
+    )
+    .write(30);
     let v6: Value<Vec<(Value<i32>, Value<i32>)>> = Rc::new(RefCell::new({
         let mut __v = Vec::new();
         let mut __it = m

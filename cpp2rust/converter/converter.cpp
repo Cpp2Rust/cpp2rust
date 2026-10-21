@@ -228,6 +228,11 @@ std::string Converter::ConvertPointerReceiver(clang::Expr *arg,
   return std::format("({} as {})", ConvertFreshObject(arg), param_type);
 }
 
+std::string Converter::ConvertTemporaryPointer(
+    clang::Expr *expr, std::optional<clang::QualType> implicit_convert_to) {
+  return std::format("&mut {}", ConvertFreshRValue(expr, implicit_convert_to));
+}
+
 std::string Converter::ConvertLValue(clang::Expr *expr) {
   PushExprKind push(*this, ExprKind::LValue);
   return ToString(expr);
@@ -3857,7 +3862,8 @@ bool Converter::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
     return false;
   }
 
-  if (ctor->isDefaultConstructor() && !ctor->isUserProvided()) {
+  if (ctor->isDefaultConstructor() &&
+      !(ctor->isUserProvided() && IsUserDefinedDecl(ctor))) {
     auto ty = expr->getType();
     StrCat(GetDefaultAsString(ty));
     SetFreshType(expr->getType());
@@ -5159,6 +5165,9 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
   }
 
   if (ph_ctx.needs_ptr_wrap()) {
+    if (clang::isa<clang::MaterializeTemporaryExpr>(arg)) {
+      return ConvertTemporaryPointer(arg, ph_ctx.implicit_convert_to);
+    }
     return ConvertFreshObject(arg);
   }
 
@@ -5166,10 +5175,13 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
     return ConvertBorrowMut(arg);
   }
 
-  if (ph_ctx.access == TranslationRule::Access::kTake) {
-    if (clang::isa<clang::MaterializeTemporaryExpr>(arg)) {
-      return ConvertRValue(arg);
-    }
+  // The rule takes the argument by value from an rvalue reference parameter,
+  // e.g., push_back(T &&), and so C++ moves it.
+  auto param_type = GetParamType(expr, ph_ctx.arg_idx);
+  bool moved = ph_ctx.access == TranslationRule::Access::kTake ||
+               (ph_ctx.access == TranslationRule::Access::kMove && param_type &&
+                (*param_type)->isRValueReferenceType());
+  if (moved && !clang::isa<clang::MaterializeTemporaryExpr>(arg)) {
     if (auto *record = arg->getType()->getAsCXXRecordDecl();
         record && IsUserDefinedDecl(record)) {
       for (auto *ctor : record->ctors()) {
@@ -5184,6 +5196,12 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
         return ConvertRValue(arg);
       }
       return ConvertFreshRValue(arg);
+    }
+  }
+
+  if (ph_ctx.access == TranslationRule::Access::kTake) {
+    if (clang::isa<clang::MaterializeTemporaryExpr>(arg)) {
+      return ConvertRValue(arg);
     }
     return ConvertTake(arg);
   }

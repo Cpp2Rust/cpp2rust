@@ -15,19 +15,7 @@ fn main_0() -> i32 {
     let mut sentinel: i32 = (N / 2);
     let m: Value<Map<i32, (Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
     let __rhs = sentinel;
-    m.as_pointer()
-        .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<i32>)>| {
-            __m.get_or_insert_with(sentinel.clone(), || {
-                (
-                    Rc::new(RefCell::new(sentinel)),
-                    Rc::new(RefCell::new(<i32>::default())),
-                )
-            })
-            .borrow()
-            .1
-            .as_pointer()
-        })
-        .write(__rhs);
+    Map::subscript(m.as_pointer(), &sentinel).write(__rhs);
     let it: Value<BidirectionalIterator<(Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(
         m.as_pointer()
             .with(|__m: &Map<i32, (Value<i32>, Value<i32>)>| __m.find(&sentinel)),
@@ -52,37 +40,13 @@ fn main_0() -> i32 {
     let mut i: i32 = 0;
     'loop_: while (i < sentinel) {
         let __rhs = i;
-        m.as_pointer()
-            .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<i32>)>| {
-                __m.get_or_insert_with(i.clone(), || {
-                    (
-                        Rc::new(RefCell::new(i)),
-                        Rc::new(RefCell::new(<i32>::default())),
-                    )
-                })
-                .borrow()
-                .1
-                .as_pointer()
-            })
-            .write(__rhs);
+        Map::subscript(m.as_pointer(), &i).write(__rhs);
         i.prefix_inc();
     }
     let mut i: i32 = (sentinel + 1);
     'loop_: while (i <= N) {
         let __rhs = i;
-        m.as_pointer()
-            .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<i32>)>| {
-                __m.get_or_insert_with(i.clone(), || {
-                    (
-                        Rc::new(RefCell::new(i)),
-                        Rc::new(RefCell::new(<i32>::default())),
-                    )
-                })
-                .borrow()
-                .1
-                .as_pointer()
-            })
-            .write(__rhs);
+        Map::subscript(m.as_pointer(), &i).write(__rhs);
         i.prefix_inc();
     }
     assert!(
@@ -109,22 +73,7 @@ fn main_0() -> i32 {
     (*(*(*it.borrow()).iter_deref().upgrade().deref())
         .1
         .borrow_mut()) = 57005;
-    assert!(
-        ((m.as_pointer()
-            .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<i32>)>| {
-                __m.get_or_insert_with(sentinel.clone(), || {
-                    (
-                        Rc::new(RefCell::new(sentinel)),
-                        Rc::new(RefCell::new(<i32>::default())),
-                    )
-                })
-                .borrow()
-                .1
-                .as_pointer()
-            })
-            .read())
-            == 57005)
-    );
+    assert!(((Map::subscript(m.as_pointer(), &sentinel).read()) == 57005));
     assert!(((p.read()) == 57005));
     assert!(((*m.borrow()).len() == (((N + 1) as u32) as usize)));
     let mut prev: i32 = -1_i32;

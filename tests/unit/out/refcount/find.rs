@@ -37,45 +37,24 @@ fn main_0() -> i32 {
     }));
     let mut v_result_true: bool = (*it.borrow()) != v.as_pointer().decay().end();
     let m: Value<Map<i32, (Value<i32>, Value<f64>)>> = Rc::new(RefCell::new(Map::new()));
-    m.as_pointer()
-        .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<f64>)>| {
-            __m.get_or_insert_with(1.clone(), || {
-                (
-                    Rc::new(RefCell::new(1)),
-                    Rc::new(RefCell::new(<f64>::default())),
-                )
-            })
-            .borrow()
-            .1
-            .as_pointer()
-        })
-        .write(1_f64);
-    m.as_pointer()
-        .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<f64>)>| {
-            __m.get_or_insert_with(2.clone(), || {
-                (
-                    Rc::new(RefCell::new(2)),
-                    Rc::new(RefCell::new(<f64>::default())),
-                )
-            })
-            .borrow()
-            .1
-            .as_pointer()
-        })
-        .write(2_f64);
-    m.as_pointer()
-        .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<f64>)>| {
-            __m.get_or_insert_with(3.clone(), || {
-                (
-                    Rc::new(RefCell::new(3)),
-                    Rc::new(RefCell::new(<f64>::default())),
-                )
-            })
-            .borrow()
-            .1
-            .as_pointer()
-        })
-        .write(3_f64);
+    Map::subscript_move(
+        m.as_pointer(),
+        Rc::new(RefCell::new(1)).as_pointer(),
+        |__k| cpp_move!(__k),
+    )
+    .write(1_f64);
+    Map::subscript_move(
+        m.as_pointer(),
+        Rc::new(RefCell::new(2)).as_pointer(),
+        |__k| cpp_move!(__k),
+    )
+    .write(2_f64);
+    Map::subscript_move(
+        m.as_pointer(),
+        Rc::new(RefCell::new(3)).as_pointer(),
+        |__k| cpp_move!(__k),
+    )
+    .write(3_f64);
     let m_begin: Value<BidirectionalIterator<(Value<i32>, Value<f64>)>> = Rc::new(RefCell::new(
         m.as_pointer()
             .with(|__m: &Map<i32, (Value<i32>, Value<f64>)>| __m.begin()),
