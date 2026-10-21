@@ -8,6 +8,7 @@
 #include <clang/AST/RecursiveASTVisitor.h>
 #include <clang/Sema/Sema.h>
 
+#include <format>
 #include <functional>
 #include <map>
 #include <memory>
