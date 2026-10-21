@@ -282,9 +282,8 @@ TypeRuleMatch findType(clang::QualType use) {
       auto [begin, end] = types_.equal_range(key);
       for (auto it = begin; it != end; ++it) {
         auto alias = llvm::dyn_cast<clang::TypedefNameDecl>(it->second.decl);
-        if (!alias ||
-            AstMatcher::SpelledTypedef(ctx, alias->getUnderlyingType()) !=
-                spelled) {
+        if (!alias || AstMatcher::SpelledTypedef(
+                          ctx, alias->getUnderlyingType()) != spelled) {
           continue;
         }
         if (best.rule_decl) {
