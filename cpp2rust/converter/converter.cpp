@@ -2304,11 +2304,6 @@ std::string Converter::getIntegerLiteral(clang::IntegerLiteral *expr,
   auto type_as_string = GetUnsafeTypeAsString(ty);
 
   if (ty->isFloatingType() || incl_type) {
-    if (value.isZero()) {
-      if (auto init = Mapper::MapInitializer(*this, ty); !init.empty()) {
-        return init;
-      }
-    }
     return getTypedLiteral(num_as_string.c_str(), type_as_string);
   }
 
