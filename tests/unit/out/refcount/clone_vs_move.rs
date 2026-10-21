@@ -161,18 +161,20 @@ fn main_0() -> i32 {
     let mut i: i32 = 0;
     'loop_: while (i < N) {
         assert!(
-            ((*((m1.as_pointer() as Ptr<Vec<i32>>)
+            ((*m1
+                .as_pointer()
+                .decay()
                 .offset((i as usize))
-                .as_pointer() as Ptr<Vec<i32>>)
                 .upgrade()
                 .deref())
             .len()
                 == 10_usize)
         );
         assert!(
-            ((*((m2.as_pointer() as Ptr<Vec<i32>>)
+            ((*m2
+                .as_pointer()
+                .decay()
                 .offset((i as usize))
-                .as_pointer() as Ptr<Vec<i32>>)
                 .upgrade()
                 .deref())
             .len()
@@ -181,20 +183,10 @@ fn main_0() -> i32 {
         let mut j: i32 = 0;
         'loop_: while (j < 10) {
             assert!(
-                ((index!(
-                    elem!((m1.as_pointer() as Ptr<Vec<i32>>), (i as usize)),
-                    (j as usize)
-                )
-                .read())
-                    == 0)
+                ((index!(elem!(m1.as_pointer().decay(), (i as usize)), (j as usize)).read()) == 0)
             );
             assert!(
-                ((index!(
-                    elem!((m2.as_pointer() as Ptr<Vec<i32>>), (i as usize)),
-                    (j as usize)
-                )
-                .read())
-                    == 0)
+                ((index!(elem!(m2.as_pointer().decay(), (i as usize)), (j as usize)).read()) == 0)
             );
             j.prefix_inc();
         }
@@ -204,11 +196,8 @@ fn main_0() -> i32 {
     'loop_: while (i < N) {
         let mut j: i32 = 0;
         'loop_: while (j < 10) {
-            index!(
-                elem!((m2.as_pointer() as Ptr<Vec<i32>>), (i as usize)),
-                (j as usize)
-            )
-            .with_mut(|__v| __v.postfix_inc());
+            index!(elem!(m2.as_pointer().decay(), (i as usize)), (j as usize))
+                .with_mut(|__v| __v.postfix_inc());
             j.prefix_inc();
         }
         i.prefix_inc();
@@ -216,18 +205,20 @@ fn main_0() -> i32 {
     let mut i: i32 = 0;
     'loop_: while (i < N) {
         assert!(
-            ((*((m1.as_pointer() as Ptr<Vec<i32>>)
+            ((*m1
+                .as_pointer()
+                .decay()
                 .offset((i as usize))
-                .as_pointer() as Ptr<Vec<i32>>)
                 .upgrade()
                 .deref())
             .len()
                 == 10_usize)
         );
         assert!(
-            ((*((m2.as_pointer() as Ptr<Vec<i32>>)
+            ((*m2
+                .as_pointer()
+                .decay()
                 .offset((i as usize))
-                .as_pointer() as Ptr<Vec<i32>>)
                 .upgrade()
                 .deref())
             .len()
@@ -236,20 +227,10 @@ fn main_0() -> i32 {
         let mut j: i32 = 0;
         'loop_: while (j < 10) {
             assert!(
-                ((index!(
-                    elem!((m1.as_pointer() as Ptr<Vec<i32>>), (i as usize)),
-                    (j as usize)
-                )
-                .read())
-                    == 0)
+                ((index!(elem!(m1.as_pointer().decay(), (i as usize)), (j as usize)).read()) == 0)
             );
             assert!(
-                ((index!(
-                    elem!((m2.as_pointer() as Ptr<Vec<i32>>), (i as usize)),
-                    (j as usize)
-                )
-                .read())
-                    == 1)
+                ((index!(elem!(m2.as_pointer().decay(), (i as usize)), (j as usize)).read()) == 1)
             );
             j.prefix_inc();
         }
@@ -259,50 +240,21 @@ fn main_0() -> i32 {
     let mut i: i32 = 0;
     'loop_: while (i < N) {
         let __rhs = i;
-        Map::subscript(
-            (map1.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>),
-            &i,
-        )
-        .write(__rhs);
+        Map::subscript(map1.as_pointer(), &i).write(__rhs);
         i.prefix_inc();
     }
     let map2: Value<Map<i32, (Value<i32>, Value<i32>)>> =
         Rc::new(RefCell::new((*map1.borrow()).clone()));
     let mut i: i32 = 0;
     'loop_: while (i < N) {
-        assert!(
-            ((Map::subscript(
-                (map2.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>),
-                &i
-            )
-            .read())
-                == i)
-        );
-        Map::subscript(
-            (map2.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>),
-            &i,
-        )
-        .with_mut(|__v| __v.prefix_inc());
+        assert!(((Map::subscript(map2.as_pointer(), &i).read()) == i));
+        Map::subscript(map2.as_pointer(), &i).with_mut(|__v| __v.prefix_inc());
         i.prefix_inc();
     }
     let mut i: i32 = 0;
     'loop_: while (i < N) {
-        assert!(
-            ((Map::subscript(
-                (map1.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>),
-                &i
-            )
-            .read())
-                == i)
-        );
-        assert!(
-            ((Map::subscript(
-                (map2.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>),
-                &i
-            )
-            .read())
-                == (i + 1))
-        );
+        assert!(((Map::subscript(map1.as_pointer(), &i).read()) == i));
+        assert!(((Map::subscript(map2.as_pointer(), &i).read()) == (i + 1)));
         i.prefix_inc();
     }
     let pair1: Value<(Value<i32>, Value<i32>)> = Rc::new(RefCell::new((
@@ -364,7 +316,7 @@ fn main_0() -> i32 {
     assert!((b1.w == 1));
     assert!((b2.w == 2));
     let v4: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
-    (v4.as_pointer() as Ptr<Vec<i32>>).write((v2).clone());
+    v4.as_pointer().write((v2).clone());
     let mut i: i32 = 0;
     'loop_: while (i < N) {
         assert!(({ (*v4.borrow())[(i as usize)] } == (i + 1)));

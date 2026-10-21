@@ -15,11 +15,7 @@ fn main_0() -> i32 {
     let mut i: i32 = 0;
     let mut k: i32 = 100;
     'loop_: while (i < 100) {
-        Map::subscript(
-            (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<f64>)>>),
-            &i,
-        )
-        .write(((k as f64) / 2_f64));
+        Map::subscript(m.as_pointer(), &i).write(((k as f64) / 2_f64));
         {
             i.prefix_inc();
             k.prefix_dec()
@@ -27,18 +23,18 @@ fn main_0() -> i32 {
     }
     let mut sum: f64 = 0_f64;
     'loop_: for i in IterRange::new(
-        (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<f64>)>>)
+        m.as_pointer()
             .with(|__m: &Map<i32, (Value<i32>, Value<f64>)>| __m.begin()),
-        (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<f64>)>>)
+        m.as_pointer()
             .with(|__m: &Map<i32, (Value<i32>, Value<f64>)>| __m.end()),
     ) {
         let i: Ptr<(Value<i32>, Value<f64>)> = i.iter_deref();
         sum += (*(*i.upgrade().deref()).1.borrow());
     }
     'loop_: for i in IterRange::new(
-        (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<f64>)>>)
+        m.as_pointer()
             .with(|__m: &Map<i32, (Value<i32>, Value<f64>)>| __m.begin()),
-        (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<f64>)>>)
+        m.as_pointer()
             .with(|__m: &Map<i32, (Value<i32>, Value<f64>)>| __m.end()),
     ) {
         let i: Value<(Value<i32>, Value<f64>)> = Rc::new(RefCell::new((
@@ -53,9 +49,9 @@ fn main_0() -> i32 {
     }
     assert!((sum == 7475_f64));
     'loop_: for i in IterRange::new(
-        (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<f64>)>>)
+        m.as_pointer()
             .with(|__m: &Map<i32, (Value<i32>, Value<f64>)>| __m.begin()),
-        (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<f64>)>>)
+        m.as_pointer()
             .with(|__m: &Map<i32, (Value<i32>, Value<f64>)>| __m.end()),
     ) {
         let i: Value<(Value<i32>, Value<f64>)> = Rc::new(RefCell::new((
@@ -70,9 +66,9 @@ fn main_0() -> i32 {
         assert!(((*(*i.borrow()).1.borrow()) == (-1_i32 as f64)));
     }
     'loop_: for i in IterRange::new(
-        (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<f64>)>>)
+        m.as_pointer()
             .with(|__m: &Map<i32, (Value<i32>, Value<f64>)>| __m.begin()),
-        (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<f64>)>>)
+        m.as_pointer()
             .with(|__m: &Map<i32, (Value<i32>, Value<f64>)>| __m.end()),
     ) {
         let i: Ptr<(Value<i32>, Value<f64>)> = i.iter_deref();

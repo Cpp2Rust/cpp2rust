@@ -38,22 +38,22 @@ fn main_0() -> i32 {
     items[2_usize].postfix_inc();
     assert!(((items[0_usize] == 0_u32) && (items[1_usize] == 7_u32)) && (items[2_usize] == 5_u32));
     elem!(
-        (v.as_pointer() as Ptr<i32>),
+        v.as_pointer().decay(),
         ({ (*v.borrow())[0_usize] } as usize)
     )
     .write(3);
     let __rhs = ({ (*v.borrow())[1_usize] } + 4);
     elem!(
-        (v.as_pointer() as Ptr<i32>),
+        v.as_pointer().decay(),
         ({ (*v.borrow())[1_usize] } as usize)
     )
     .write(__rhs);
     assert!(({ (*v.borrow())[1_usize] } == 3) && ({ (*v.borrow())[3_usize] } == 7));
-    let mut p: Ptr<i32> = ((v.as_pointer() as Ptr<i32>).offset(0_usize));
-    elem!((v.as_pointer() as Ptr<i32>), ((p.read()) as usize)).write(9);
+    let mut p: Ptr<i32> = (v.as_pointer().decay().offset(0_usize));
+    elem!(v.as_pointer().decay(), ((p.read()) as usize)).write(9);
     assert!(({ (*v.borrow())[1_usize] } == 9));
     elem!(
-        (v.as_pointer() as Ptr<i32>),
+        v.as_pointer().decay(),
         (({ bump_1((v.as_pointer()), 10,) }) as usize)
     )
     .write(2);

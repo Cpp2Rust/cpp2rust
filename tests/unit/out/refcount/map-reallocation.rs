@@ -15,13 +15,9 @@ fn main_0() -> i32 {
     let mut sentinel: i32 = (N / 2);
     let m: Value<Map<i32, (Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
     let __rhs = sentinel;
-    Map::subscript(
-        (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>),
-        &sentinel,
-    )
-    .write(__rhs);
+    Map::subscript(m.as_pointer(), &sentinel).write(__rhs);
     let it: Value<BidirectionalIterator<(Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(
-        (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
+        m.as_pointer()
             .with(|__m: &Map<i32, (Value<i32>, Value<i32>)>| __m.find(&sentinel)),
     ));
     let mut p: Ptr<i32> = ((*(*it.borrow()).iter_deref().upgrade().deref())
@@ -44,21 +40,13 @@ fn main_0() -> i32 {
     let mut i: i32 = 0;
     'loop_: while (i < sentinel) {
         let __rhs = i;
-        Map::subscript(
-            (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>),
-            &i,
-        )
-        .write(__rhs);
+        Map::subscript(m.as_pointer(), &i).write(__rhs);
         i.prefix_inc();
     }
     let mut i: i32 = (sentinel + 1);
     'loop_: while (i <= N) {
         let __rhs = i;
-        Map::subscript(
-            (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>),
-            &i,
-        )
-        .write(__rhs);
+        Map::subscript(m.as_pointer(), &i).write(__rhs);
         i.prefix_inc();
     }
     assert!(
@@ -85,21 +73,14 @@ fn main_0() -> i32 {
     (*(*(*it.borrow()).iter_deref().upgrade().deref())
         .1
         .borrow_mut()) = 57005;
-    assert!(
-        ((Map::subscript(
-            (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>),
-            &sentinel
-        )
-        .read())
-            == 57005)
-    );
+    assert!(((Map::subscript(m.as_pointer(), &sentinel).read()) == 57005));
     assert!(((p.read()) == 57005));
     assert!(((*m.borrow()).len() == (((N + 1) as u32) as usize)));
     let mut prev: i32 = -1_i32;
     'loop_: for pair in IterRange::new(
-        (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
+        m.as_pointer()
             .with(|__m: &Map<i32, (Value<i32>, Value<i32>)>| __m.begin()),
-        (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
+        m.as_pointer()
             .with(|__m: &Map<i32, (Value<i32>, Value<i32>)>| __m.end()),
     ) {
         let pair: Ptr<(Value<i32>, Value<i32>)> = pair.iter_deref();

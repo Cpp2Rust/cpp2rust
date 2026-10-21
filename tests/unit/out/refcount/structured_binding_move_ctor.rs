@@ -85,7 +85,7 @@ fn main_0() -> i32 {
     assert!(((*__decomp_3.borrow()).ys.len() == 2_usize));
     assert!(
         ((elem!(
-            (field_ref!(__decomp_3.as_pointer(), xs).as_pointer() as Ptr<i32>),
+            field_ref!(__decomp_3.as_pointer(), xs).as_pointer().decay(),
             2_usize
         )
         .read())
@@ -93,7 +93,7 @@ fn main_0() -> i32 {
     );
     assert!(
         ((elem!(
-            (field_ref!(__decomp_3.as_pointer(), ys).as_pointer() as Ptr<i32>),
+            field_ref!(__decomp_3.as_pointer(), ys).as_pointer().decay(),
             0_usize
         )
         .read())
