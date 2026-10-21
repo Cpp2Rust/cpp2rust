@@ -1,12 +1,11 @@
-#include <sys/select.h>
-
-#include <arpa/inet.h>
 #include <algorithm>
+#include <arpa/inet.h>
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <errno.h>
 #include <iterator>
+#include <sys/select.h>
 #include <sys/types.h>
 #include <utility>
 
