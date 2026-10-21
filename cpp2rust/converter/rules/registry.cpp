@@ -274,6 +274,24 @@ struct TypeRuleMatch {
 
 TypeRuleMatch findType(clang::QualType use) {
   TypeRuleMatch best;
+  for (auto key : RuleKeys::GetTypeKeys(sema_->Context, use)) {
+    auto [begin, end] = types_.equal_range(key);
+    for (auto it = begin; it != end; ++it) {
+      if (!AstMatcher::MatchPublicAlias(sema_->Context, use, it->second.decl)) {
+        continue;
+      }
+      if (best.rule_decl) {
+        use.dump(llvm::errs(), sema_->Context);
+        it->second.decl->dump(llvm::errs());
+        best.rule_decl->decl->dump(llvm::errs());
+        llvm::report_fatal_error("type matches several public aliases");
+      }
+      best = {&it->second, {}};
+    }
+  }
+  if (best.rule_decl) {
+    return best;
+  }
   use = AstMatcher::SkipInternalTypedefs(sema_->Context, use);
   if (auto tag = use->getAsTagDecl();
       tag &&

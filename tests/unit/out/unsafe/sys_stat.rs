@@ -16,7 +16,7 @@ pub unsafe fn test_stat_0() {
     let mut st: ::libc::stat = unsafe { std::mem::zeroed() };
     assert!(((((libc::stat(path, (&mut st as *mut ::libc::stat))) == (0)) as i32) != 0));
     assert!(((((st.st_size) == (5_i64)) as i32) != 0));
-    assert!((((((*(&mut st as *mut ::libc::stat)).st_mtime) > (0_i64)) as i32) != 0));
+    assert!((((((*(&mut st as *mut ::libc::stat)).st_mtime) > (0 as ::libc::time_t)) as i32) != 0));
     libc::unlink(path);
 }
 pub unsafe fn test_fstat_1() {
@@ -30,35 +30,41 @@ pub unsafe fn test_fstat_1() {
     let mut st: ::libc::stat = unsafe { std::mem::zeroed() };
     assert!(((((libc::fstat(fd, (&mut st as *mut ::libc::stat))) == (0)) as i32) != 0));
     assert!(((((st.st_size) == (11_i64)) as i32) != 0));
-    assert!((((((*(&mut st as *mut ::libc::stat)).st_mtime) > (0_i64)) as i32) != 0));
+    assert!((((((*(&mut st as *mut ::libc::stat)).st_mtime) > (0 as ::libc::time_t)) as i32) != 0));
     assert!(((((libc::fclose(fp)) == (0)) as i32) != 0));
     libc::unlink(path);
 }
 pub unsafe fn test_st_mtime_access_2() {
     let mut st: ::libc::stat = unsafe { std::mem::zeroed() };
     let mut sp: *mut ::libc::stat = (&mut st as *mut ::libc::stat);
-    (*(&mut st as *mut ::libc::stat)).st_mtime = 5_i64;
-    assert!((((((*(&mut st as *mut ::libc::stat)).st_mtime) == (5_i64)) as i32) != 0));
-    (*(sp as *mut ::libc::stat)).st_mtime = 6_i64;
-    assert!((((((*(sp as *mut ::libc::stat)).st_mtime) == (6_i64)) as i32) != 0));
-    (*(&mut st as *mut ::libc::stat)).st_mtime += 2_i64;
-    assert!((((((*(&mut st as *mut ::libc::stat)).st_mtime) == (8_i64)) as i32) != 0));
-    (*(sp as *mut ::libc::stat)).st_mtime -= 1_i64;
-    assert!((((((*(sp as *mut ::libc::stat)).st_mtime) == (7_i64)) as i32) != 0));
+    (*(&mut st as *mut ::libc::stat)).st_mtime = (5 as ::libc::time_t);
+    assert!(
+        (((((*(&mut st as *mut ::libc::stat)).st_mtime) == (5 as ::libc::time_t)) as i32) != 0)
+    );
+    (*(sp as *mut ::libc::stat)).st_mtime = (6 as ::libc::time_t);
+    assert!((((((*(sp as *mut ::libc::stat)).st_mtime) == (6 as ::libc::time_t)) as i32) != 0));
+    (*(&mut st as *mut ::libc::stat)).st_mtime += (2 as ::libc::time_t);
+    assert!(
+        (((((*(&mut st as *mut ::libc::stat)).st_mtime) == (8 as ::libc::time_t)) as i32) != 0)
+    );
+    (*(sp as *mut ::libc::stat)).st_mtime -= (1 as ::libc::time_t);
+    assert!((((((*(sp as *mut ::libc::stat)).st_mtime) == (7 as ::libc::time_t)) as i32) != 0));
     (*(&mut st as *mut ::libc::stat)).st_mtime.postfix_inc();
     (*(sp as *mut ::libc::stat)).st_mtime.prefix_inc();
-    assert!((((((*(&mut st as *mut ::libc::stat)).st_mtime) == (9_i64)) as i32) != 0));
-    let mut mtime: *mut ::libc::time_t = ((&mut (*(&mut st as *mut ::libc::stat)).st_mtime
-        as *mut i64) as *mut i64)
-        .cast::<::libc::time_t>();
+    assert!(
+        (((((*(&mut st as *mut ::libc::stat)).st_mtime) == (9 as ::libc::time_t)) as i32) != 0)
+    );
+    let mut mtime: *mut ::libc::time_t =
+        (&mut (*(&mut st as *mut ::libc::stat)).st_mtime as *mut ::libc::time_t);
     (*mtime) = (10 as ::libc::time_t);
-    assert!((((((*(&mut st as *mut ::libc::stat)).st_mtime) == (10_i64)) as i32) != 0));
-    let mut mtime_via_ptr: *mut ::libc::time_t = ((&mut (*(sp as *mut ::libc::stat)).st_mtime
-        as *mut i64) as *mut i64)
-        .cast::<::libc::time_t>();
+    assert!(
+        (((((*(&mut st as *mut ::libc::stat)).st_mtime) == (10 as ::libc::time_t)) as i32) != 0)
+    );
+    let mut mtime_via_ptr: *mut ::libc::time_t =
+        (&mut (*(sp as *mut ::libc::stat)).st_mtime as *mut ::libc::time_t);
     (*mtime_via_ptr) = (11 as ::libc::time_t);
     assert!(((((*mtime) == (11 as ::libc::time_t)) as i32) != 0));
-    let mut copy: ::libc::time_t = ((*(sp as *mut ::libc::stat)).st_mtime as ::libc::time_t);
+    let mut copy: ::libc::time_t = (*(sp as *mut ::libc::stat)).st_mtime;
     assert!(((((copy) == (11 as ::libc::time_t)) as i32) != 0));
 }
 pub fn main() {

@@ -156,6 +156,24 @@ std::optional<TypeMatch> MatchType(clang::Sema &sema, clang::QualType use,
   return std::nullopt;
 }
 
+bool MatchPublicAlias(clang::ASTContext &ctx, clang::QualType use,
+                      const clang::NamedDecl *rule) {
+  auto internal =
+      llvm::dyn_cast<clang::TypedefType>(peelSugar(ctx, use).getTypePtr());
+  auto alias = llvm::dyn_cast<clang::TypedefNameDecl>(rule);
+  if (!internal || !alias || !isInternal(internal->getDecl()) ||
+      IsUserDefinedDecl(internal->getDecl())) {
+    return false;
+  }
+  auto pattern = llvm::dyn_cast<clang::TypedefType>(
+      peelSugar(ctx, alias->getUnderlyingType()).getTypePtr());
+  if (!pattern || isInternal(pattern->getDecl())) {
+    return false;
+  }
+  auto target = peelSugar(ctx, pattern->getDecl()->getUnderlyingType());
+  return isSameSugar(target.getTypePtr(), internal);
+}
+
 clang::QualType SkipInternalTypedefs(clang::ASTContext &ctx,
                                      clang::QualType use) {
   auto cvr = use.getLocalCVRQualifiers();
