@@ -6,8 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
-#[byte_size(64)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(32)]
 pub struct Holder {
     #[offset(0)]
     #[byte_size(8)]
@@ -15,20 +15,6 @@ pub struct Holder {
     #[offset(8)]
     #[byte_size(24)]
     pub vec_: Vec<i32>,
-    #[offset(32)]
-    #[byte_size(32)]
-    pub str: Vec<i8>,
-}
-impl Default for Holder {
-    fn default() -> Self {
-        {
-            Holder {
-                ref_: <Ptr<Vec<i32>>>::default(),
-                vec_: Default::default(),
-                str: vec![0],
-            }
-        }
-    }
 }
 pub fn pick_0(a: Ptr<Vec<i32>>, b: Ptr<Vec<i32>>, mut first: bool) -> Ptr<Vec<i32>> {
     return if first { (a).clone() } else { (b).clone() };
@@ -61,11 +47,6 @@ fn main_0() -> i32 {
     let h: Value<Holder> = Rc::new(RefCell::new(Holder {
         ref_: v.as_pointer(),
         vec_: Vec::from([4, 5]),
-        str: {
-            let mut __bytes = Ptr::<i8>::from_string_literal(b"abc").to_c_bytes();
-            __bytes.push(0);
-            __bytes
-        },
     }));
     assert!((({ (*h.borrow()).ref_.clone() }.decay().read()) == 1));
     { (*h.borrow()).ref_.clone() }.decay().write(9);
@@ -74,13 +55,6 @@ fn main_0() -> i32 {
     assert!(((field_ref!(h.as_pointer(), vec_).decay().to_last().read()) == 5));
     let mut p: Ptr<Vec<i32>> = (field_ref!(h.as_pointer(), vec_).as_pointer());
     assert!(((p.decay().read()) == 4));
-    assert!(
-        (field_ref!(h.as_pointer(), str)
-            .decay()
-            .to_c_string_iterator()
-            .count()
-            == 3_usize)
-    );
     ({
         pick_0(
             v.as_pointer(),

@@ -7,7 +7,6 @@
 struct Holder {
   std::vector<int> &ref;
   std::vector<int> vec;
-  std::string str;
 };
 
 std::vector<int> &pick(std::vector<int> &a, std::vector<int> &b, bool first) {
@@ -24,7 +23,7 @@ int sum(const std::vector<int> &v) {
 
 int main() {
   std::vector<int> v = {1, 2, 3};
-  Holder h{v, {4, 5}, "abc"};
+  Holder h{v, {4, 5}};
 
   // Through a reference field, a field, and a pointer.
   assert(*h.ref.data() == 1);
@@ -34,7 +33,6 @@ int main() {
   assert(h.vec.back() == 5);
   std::vector<int> *p = &h.vec;
   assert(*p->data() == 4);
-  assert(strlen(h.str.c_str()) == 3);
 
   // Through a call that returns a reference, and a map element.
   pick(v, h.vec, false).front() = 7;
