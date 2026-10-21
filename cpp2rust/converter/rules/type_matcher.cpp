@@ -56,6 +56,10 @@ clang::QualType peelSugar(clang::ASTContext &ctx, clang::QualType type) {
 }
 
 bool isInternal(const clang::NamedDecl *decl) {
+  if (decl->getAccess() == clang::AS_private ||
+      decl->getAccess() == clang::AS_protected) {
+    return true;
+  }
   auto &opts = decl->getASTContext().getLangOpts();
   if (decl->isReserved(opts) != clang::ReservedIdentifierStatus::NotReserved) {
     return true;
