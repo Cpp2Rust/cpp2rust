@@ -1641,13 +1641,14 @@ void DefineImplicitMembers(clang::Sema &sema, clang::CXXRecordDecl *decl) {
   sema.ForceDeclarationOfImplicitMembers(decl);
   auto define = [&](clang::FunctionDecl *fn, auto &&definer) {
     RuleDecls::Trial trial(sema);
+    clang::DiagnosticErrorTrap errors(sema.getDiagnostics());
     {
       clang::Sema::GlobalEagerInstantiationScope instantiations(
           sema, /*Enabled=*/true, /*AtEndOfTU=*/false);
       definer();
       instantiations.perform();
     }
-    if (trial.failed()) {
+    if (trial.failed() || errors.hasErrorOccurred()) {
       fn->setDeletedAsWritten(true);
     }
   };
