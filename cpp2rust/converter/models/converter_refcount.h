@@ -399,6 +399,11 @@ private:
                                      std::string_view param_type) override;
 
   std::string AsPointerMethod(clang::QualType type) const;
+
+  std::string ConvertTemporaryPointer(
+      clang::Expr *expr,
+      std::optional<clang::QualType> implicit_convert_to) override;
+
   bool WantsElementPtr() const { return object_shape_ == ObjectShape::Element; }
   std::string
   ConvertFresh(clang::Expr *expr,

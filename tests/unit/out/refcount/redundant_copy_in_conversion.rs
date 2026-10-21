@@ -25,25 +25,18 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let m: Value<Map<i32, (Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
-    m.as_pointer()
-        .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<i32>)>| {
-            __m.get_or_insert_with(0.clone(), || {
-                (
-                    Rc::new(RefCell::new(0)),
-                    Rc::new(RefCell::new(<i32>::default())),
-                )
-            })
-            .borrow()
-            .1
-            .as_pointer()
-        })
-        .write(1);
+    Map::subscript_move(
+        (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>),
+        Rc::new(RefCell::new(0)).as_pointer(),
+        |__k| cpp_move!(__k),
+    )
+    .write(1);
     let end: Value<BidirectionalIterator<(Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(
-        m.as_pointer()
+        (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
             .with(|__m: &Map<i32, (Value<i32>, Value<i32>)>| __m.end()),
     ));
     let it0: Value<BidirectionalIterator<(Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(
-        m.as_pointer()
+        (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
             .with(|__m: &Map<i32, (Value<i32>, Value<i32>)>| __m.find(&0)),
     ));
     let const_it: Value<BidirectionalIterator<(Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(

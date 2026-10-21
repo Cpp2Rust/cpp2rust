@@ -15,21 +15,13 @@ fn main_0() -> i32 {
     let mut sentinel: i32 = (N / 2);
     let m: Value<Map<i32, (Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
     let __rhs = sentinel;
-    m.as_pointer()
-        .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<i32>)>| {
-            __m.get_or_insert_with(sentinel.clone(), || {
-                (
-                    Rc::new(RefCell::new(sentinel)),
-                    Rc::new(RefCell::new(<i32>::default())),
-                )
-            })
-            .borrow()
-            .1
-            .as_pointer()
-        })
-        .write(__rhs);
+    Map::subscript(
+        (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>),
+        &sentinel,
+    )
+    .write(__rhs);
     let it: Value<BidirectionalIterator<(Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(
-        m.as_pointer()
+        (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
             .with(|__m: &Map<i32, (Value<i32>, Value<i32>)>| __m.find(&sentinel)),
     ));
     let mut p: Ptr<i32> = ((*(*it.borrow()).iter_deref().upgrade().deref())
@@ -52,37 +44,21 @@ fn main_0() -> i32 {
     let mut i: i32 = 0;
     'loop_: while (i < sentinel) {
         let __rhs = i;
-        m.as_pointer()
-            .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<i32>)>| {
-                __m.get_or_insert_with(i.clone(), || {
-                    (
-                        Rc::new(RefCell::new(i)),
-                        Rc::new(RefCell::new(<i32>::default())),
-                    )
-                })
-                .borrow()
-                .1
-                .as_pointer()
-            })
-            .write(__rhs);
+        Map::subscript(
+            (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>),
+            &i,
+        )
+        .write(__rhs);
         i.prefix_inc();
     }
     let mut i: i32 = (sentinel + 1);
     'loop_: while (i <= N) {
         let __rhs = i;
-        m.as_pointer()
-            .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<i32>)>| {
-                __m.get_or_insert_with(i.clone(), || {
-                    (
-                        Rc::new(RefCell::new(i)),
-                        Rc::new(RefCell::new(<i32>::default())),
-                    )
-                })
-                .borrow()
-                .1
-                .as_pointer()
-            })
-            .write(__rhs);
+        Map::subscript(
+            (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>),
+            &i,
+        )
+        .write(__rhs);
         i.prefix_inc();
     }
     assert!(
@@ -110,28 +86,20 @@ fn main_0() -> i32 {
         .1
         .borrow_mut()) = 57005;
     assert!(
-        ((m.as_pointer()
-            .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<i32>)>| {
-                __m.get_or_insert_with(sentinel.clone(), || {
-                    (
-                        Rc::new(RefCell::new(sentinel)),
-                        Rc::new(RefCell::new(<i32>::default())),
-                    )
-                })
-                .borrow()
-                .1
-                .as_pointer()
-            })
-            .read())
+        ((Map::subscript(
+            (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>),
+            &sentinel
+        )
+        .read())
             == 57005)
     );
     assert!(((p.read()) == 57005));
     assert!(((*m.borrow()).len() == (((N + 1) as u32) as usize)));
     let mut prev: i32 = -1_i32;
     'loop_: for pair in IterRange::new(
-        m.as_pointer()
+        (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
             .with(|__m: &Map<i32, (Value<i32>, Value<i32>)>| __m.begin()),
-        m.as_pointer()
+        (m.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<i32>)>>)
             .with(|__m: &Map<i32, (Value<i32>, Value<i32>)>| __m.end()),
     ) {
         let pair: Ptr<(Value<i32>, Value<i32>)> = pair.iter_deref();
