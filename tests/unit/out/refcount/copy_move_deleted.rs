@@ -80,6 +80,20 @@ impl Container {
         }
     }
 }
+#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, Default)]
+#[byte_size(24)]
+pub struct VecHolder {
+    #[offset(0)]
+    #[byte_size(24)]
+    pub items: Vec<NoCopy>,
+}
+impl VecHolder {
+    pub fn move_from(_a0: Ptr<VecHolder>) -> Self {
+        Self {
+            items: field!(_a0, items).with_mut(std::mem::take),
+        }
+    }
+}
 pub fn bump_0(mut p: Ptr<NoCopy>) {
     field!(p, v).with_mut(|__v| __v.postfix_inc());
 }
@@ -115,6 +129,9 @@ fn main_0() -> i32 {
     }));
     let mut d: Container = Container::move_from({ c.as_pointer() });
     assert!(((d.inner.v == 6) && (d.tag == 7)) && ({ (*c.borrow()).inner.v } == 0));
+    let h: Value<VecHolder> = Rc::new(RefCell::new(<VecHolder>::default()));
+    let mut h2: VecHolder = VecHolder::move_from({ h.as_pointer() });
+    assert!((h2.items.len() == 0_usize));
     return 0;
 }
 pub trait ContainerImpl {
