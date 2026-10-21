@@ -5,3 +5,6 @@
 
 template <typename T2, typename T1 = typename T2::value_type>
 using t1 = typename std::allocator_traits<T2>::value_type;
+
+template <typename T1>
+using t2 = typename std::allocator_traits<T1>::size_type;

@@ -10,6 +10,7 @@ using t4 = std::basic_string<char>;
 typedef std::string::size_type t3;
 using t5 = std::string::reference;
 using t6 = std::string::const_reference;
+typedef std::string::value_type t7;
 
 std::string f1(const std::string &s, std::size_t pos, std::size_t count) {
   return s.substr(pos, count);
