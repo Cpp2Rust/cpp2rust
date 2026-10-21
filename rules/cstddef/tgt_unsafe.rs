@@ -49,6 +49,9 @@ fn f4(a0: &mut u8, a1: u32) -> u8 {
     *a0
 }
 
-fn f5<T1: Into<u8>>(a0: u8, a1: T1) -> u8 {
-    a0 << Into::<u8>::into(a1)
+fn f5<T1>(a0: u8, a1: T1) -> u8
+where
+    u8: ::std::ops::Shl<T1, Output = u8>,
+{
+    a0 << a1
 }
