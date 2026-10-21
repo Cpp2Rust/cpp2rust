@@ -179,8 +179,7 @@ std::string DependentExprKey(const clang::Expr *expr) {
       }
     }
     if (auto lookup = llvm::dyn_cast<clang::UnresolvedLookupExpr>(callee);
-        lookup && lookup->getQualifier() &&
-        !llvm::isa<clang::CXXOperatorCallExpr>(call) &&
+        lookup && !llvm::isa<clang::CXXOperatorCallExpr>(call) &&
         lookup->decls_begin() != lookup->decls_end()) {
       return RulesLoader::DeclKey(
           (*lookup->decls_begin())->getUnderlyingDecl());
