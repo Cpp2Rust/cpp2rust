@@ -15,5 +15,5 @@ fn f1(a0: Ptr<i8>) -> Vec<i8> {
 }
 
 fn f2(a0: Vec<i8>) -> Vec<i8> {
-    a0.clone()
+    a0
 }
