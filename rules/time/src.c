@@ -9,6 +9,14 @@ typedef struct timeval t2;
 typedef struct timespec t3;
 typedef time_t t4;
 
+#if defined(__GLIBC__)
+typedef __time_t t5;
+#elif defined(__APPLE__)
+typedef __darwin_time_t t5;
+#else
+#error "Unsupported platform for time_t"
+#endif
+
 time_t f1(time_t *t) { return time(t); }
 
 int f2(clockid_t clk_id, struct timespec *tp) {

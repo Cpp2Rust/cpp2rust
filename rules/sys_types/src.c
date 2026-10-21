@@ -5,3 +5,8 @@
 
 typedef uid_t t1;
 typedef off_t t2;
+
+#ifdef __GLIBC__
+typedef __uid_t t3;
+typedef __off_t t4;
+#endif
