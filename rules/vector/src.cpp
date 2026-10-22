@@ -254,3 +254,9 @@ f116(std::vector<T1, T2> &o, typename std::vector<T1, T2>::const_iterator pos,
      std::initializer_list<T1> l) {
   return o.insert(pos, l);
 }
+
+template <typename T1>
+typename std::vector<bool, T1>::reference
+f117(const typename std::vector<bool, T1>::reference &a0) {
+  return typename std::vector<bool, T1>::reference(a0);
+}

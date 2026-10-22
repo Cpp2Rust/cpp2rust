@@ -9,6 +9,8 @@
 #include <clang/Basic/OperatorKinds.h>
 #include <clang/Basic/SourceManager.h>
 #include <clang/Lex/Lexer.h>
+#include <clang/Sema/Sema.h>
+#include <clang/Sema/TemplateDeduction.h>
 #include <llvm/ADT/STLExtras.h>
 
 #include <cassert>
@@ -56,7 +58,30 @@ const clang::Decl *getParent(const clang::Decl *decl) {
   return nullptr;
 }
 
-std::vector<clang::QualType> resolveMemberType(clang::QualType type) {
+llvm::SmallVector<clang::CXXRecordDecl *>
+matchingDefinitions(clang::Sema &sema, clang::ClassTemplateDecl *tmpl,
+                    const clang::TemplateSpecializationType *spec) {
+  llvm::SmallVector<clang::ClassTemplatePartialSpecializationDecl *> partials;
+  tmpl->getPartialSpecializations(partials);
+  llvm::SmallVector<clang::CXXRecordDecl *> records;
+  for (auto partial : partials) {
+    RuleDecls::Trial trial(sema);
+    clang::sema::TemplateDeductionInfo info(partial->getLocation());
+    if (sema.DeduceTemplateArguments(partial, spec->template_arguments(),
+                                     info) ==
+            clang::TemplateDeductionResult::Success &&
+        !trial.failed()) {
+      records.push_back(partial);
+    }
+  }
+  if (records.empty()) {
+    records.push_back(tmpl->getTemplatedDecl());
+  }
+  return records;
+}
+
+std::vector<clang::QualType> resolveMemberType(clang::Sema &sema,
+                                               clang::QualType type) {
   auto member = type->getAs<clang::DependentNameType>();
   if (!member) {
     return {type};
@@ -64,24 +89,20 @@ std::vector<clang::QualType> resolveMemberType(clang::QualType type) {
   auto qualifier = member->getQualifier().getAsType();
   assert(qualifier && "member type is not qualified by a type");
   std::vector<clang::QualType> resolved;
-  for (auto owner : resolveMemberType(clang::QualType(qualifier, 0))) {
+  for (auto owner : resolveMemberType(sema, clang::QualType(qualifier, 0))) {
     auto spec = owner->getAs<clang::TemplateSpecializationType>();
     auto tmpl = spec ? llvm::dyn_cast_or_null<clang::ClassTemplateDecl>(
                            spec->getTemplateName().getAsTemplateDecl())
                      : nullptr;
     assert(tmpl && "member type is not qualified by a class template");
-    llvm::SmallVector<clang::ClassTemplatePartialSpecializationDecl *> partials;
-    tmpl->getPartialSpecializations(partials);
-    llvm::SmallVector<clang::CXXRecordDecl *> records{tmpl->getTemplatedDecl()};
-    records.append(partials.begin(), partials.end());
-    for (auto record : records) {
+    for (auto record : matchingDefinitions(sema, tmpl, spec)) {
       if (!record->hasDefinition()) {
         continue;
       }
       for (auto decl :
            record->getDefinition()->lookup(member->getIdentifier())) {
         if (auto alias = llvm::dyn_cast<clang::TypedefNameDecl>(decl)) {
-          auto types = resolveMemberType(alias->getUnderlyingType());
+          auto types = resolveMemberType(sema, alias->getUnderlyingType());
           resolved.insert(resolved.end(), types.begin(), types.end());
         }
       }
@@ -198,8 +219,9 @@ std::optional<ExprKey> GetExprKey(clang::ASTContext &ctx,
   return std::nullopt;
 }
 
-std::vector<ExprKey> GetExprKeys(clang::ASTContext &ctx,
+std::vector<ExprKey> GetExprKeys(clang::Sema &sema,
                                  const clang::NamedDecl *rule) {
+  auto &ctx = sema.Context;
   if (auto var = llvm::dyn_cast<clang::VarDecl>(rule)) {
     auto key = GetExprKey(ctx, var->getInit());
     assert(key && "expression rule has no key");
@@ -210,7 +232,7 @@ std::vector<ExprKey> GetExprKeys(clang::ASTContext &ctx,
   if (auto construct =
           llvm::dyn_cast<clang::CXXUnresolvedConstructExpr>(returned)) {
     std::vector<ExprKey> keys;
-    for (auto type : resolveMemberType(construct->getTypeAsWritten())) {
+    for (auto type : resolveMemberType(sema, construct->getTypeAsWritten())) {
       if (type->getAs<clang::TemplateTypeParmType>()) {
         if (!llvm::is_contained(keys, ExprKey{kAnyConstructor})) {
           keys.push_back(kAnyConstructor);

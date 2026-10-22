@@ -249,3 +249,7 @@ unsafe fn f116<T1>(a0: &mut Vec<T1>, a1: UnsafeRandomAccessIterator<T1>, a2: Vec
     a0.splice(__off..__off, a2);
     UnsafeRandomAccessIterator::Vec(a0.as_mut_ptr().add(__off))
 }
+
+unsafe fn f117(a0: bool) -> bool {
+    a0
+}
