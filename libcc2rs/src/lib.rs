@@ -18,7 +18,7 @@ pub use field::{
 pub mod __field {
     pub use crate::field::{
         LenLeaf, LenOf, LenRecord, LenSlice, Locate, LocateLeaf, LocateLeafMut, LocateMut,
-        LocateRecord, LocateRecordMut, size_of_pointee,
+        LocateRecord, LocateRecordMut, min_offset, size_of_pointee,
     };
 }
 

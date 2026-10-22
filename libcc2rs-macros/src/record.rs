@@ -39,7 +39,7 @@ pub fn expand(input: TokenStream) -> TokenStream {
     // The field that contains a byte is one that starts before it, usually
     // the last one, as fields are usually declared in the order of their
     // offsets.
-    let locate = fields.iter().rev().map(|(ident, _)| {
+    let locate = search_fields(&fields, &|ident| {
         quote! {
             if offset >= Self::OFFSETS.#ident {
                 if let ::core::option::Option::Some(field) = ::libcc2rs::__locate_field!(
@@ -49,7 +49,7 @@ pub fn expand(input: TokenStream) -> TokenStream {
             }
         }
     });
-    let locate_mut = fields.iter().rev().map(|(ident, _)| {
+    let locate_mut = search_fields(&fields, &|ident| {
         quote! {
             if offset >= Self::OFFSETS.#ident {
                 if let ::core::option::Option::Some(field) = ::libcc2rs::__locate_field_mut!(
@@ -59,7 +59,7 @@ pub fn expand(input: TokenStream) -> TokenStream {
             }
         }
     });
-    let len_at = fields.iter().rev().map(|(ident, _)| {
+    let len_at = search_fields(&fields, &|ident| {
         quote! {
             if offset >= Self::OFFSETS.#ident {
                 if let ::core::option::Option::Some(len) = ::libcc2rs::__len_field!(
@@ -91,7 +91,7 @@ pub fn expand(input: TokenStream) -> TokenStream {
                 if offset == 0 && ty == ::std::any::TypeId::of::<Self>() {
                     return ::core::option::Option::Some(self);
                 }
-                #(#locate)*
+                #locate
                 ::core::option::Option::None
             }
 
@@ -105,16 +105,42 @@ pub fn expand(input: TokenStream) -> TokenStream {
                 if offset == 0 && ty == ::std::any::TypeId::of::<Self>() {
                     return ::core::option::Option::Some(self);
                 }
-                #(#locate_mut)*
+                #locate_mut
                 ::core::option::Option::None
             }
 
             #[allow(unused_comparisons)]
             fn len_at(&self, offset: usize) -> ::core::option::Option<usize> {
-                #(#len_at)*
+                #len_at
                 ::core::option::Option::None
             }
         }
     }
     .into()
+}
+
+// The searches of `fields`, from the last one to the first one, for the field
+// that contains byte `offset`. Those in the second half of the fields are
+// skipped if all of them start after the byte, which is checked against the
+// smallest of their offsets, so the fields can be in any order.
+fn search_fields(
+    fields: &[(Ident, Expr)],
+    search: &dyn Fn(&Ident) -> proc_macro2::TokenStream,
+) -> proc_macro2::TokenStream {
+    if fields.len() <= 4 {
+        let searches = fields.iter().rev().map(|(ident, _)| search(ident));
+        return quote! { #(#searches)* };
+    }
+    let (first, second) = fields.split_at(fields.len() / 2);
+    let starts = second
+        .iter()
+        .map(|(ident, _)| quote! { Self::OFFSETS.#ident });
+    let first = search_fields(first, search);
+    let second = search_fields(second, search);
+    quote! {
+        if offset >= const { ::libcc2rs::__field::min_offset(&[#(#starts),*]) } {
+            #second
+        }
+        #first
+    }
 }

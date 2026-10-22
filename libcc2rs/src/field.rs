@@ -449,9 +449,16 @@ where
     G: Fn(&S) -> &Vec<T> + Copy + 'static,
     M: Fn(&mut S) -> &mut Vec<T> + Copy + 'static,
 {
+    // The elements are reached through the struct, rather than through a
+    // pointer to the vector, which would be a parent of every access to them.
     #[inline]
     fn decay(&self) -> Ptr<T> {
-        self.as_pointer().decay()
+        match &self.base.kind {
+            PtrKind::Field(_, _, FieldShape::Single) => self.as_pointer().decay(),
+            _ => self
+                .base
+                .elems_of(self.get, self.get_mut, (self.offset)(&S::OFFSETS), false),
+        }
     }
 }
 
@@ -1020,7 +1027,6 @@ impl<S: Record, T: ByteRepr> VecElem<'_, S, T> {
         let elems: Ptr<T> = self
             .base
             .field_ref(self.get, self.get_mut, self.offset)
-            .as_pointer()
             .decay();
         elems.offset(self.idx).upgrade()
     }
@@ -1199,6 +1205,21 @@ macro_rules! __len_field {
         use $crate::__field::{LenLeaf, LenRecord, LenSlice};
         (&&&$crate::__field::LenOf($field)).len_at($offset)
     }};
+}
+
+// The smallest of the offsets of some fields, which Record::locate compares
+// the offset that it looks for with to skip all of them.
+#[doc(hidden)]
+pub const fn min_offset(offsets: &[usize]) -> usize {
+    let mut min = usize::MAX;
+    let mut i = 0;
+    while i < offsets.len() {
+        if offsets[i] < min {
+            min = offsets[i];
+        }
+        i += 1;
+    }
+    min
 }
 
 impl<T: 'static> Ptr<T> {
@@ -1653,6 +1674,49 @@ mod tests {
         let other: Value<Adjacent> = Rc::new(RefCell::new(adjacent()));
         let a: Ptr<i32> = array_field_ptr!(s, a);
         assert_ne!(a.offset(2), array_field_ptr!(other, b));
+    }
+
+    // A struct with enough fields for Record::locate to search them in
+    // halves, which are not in the order of their offsets, as in some libc
+    // structs.
+    #[derive(Default, Record, ByteRepr)]
+    #[byte_size(28)]
+    struct Shuffled {
+        #[offset(20)]
+        f: i32,
+        #[offset(0)]
+        a: i32,
+        #[offset(4)]
+        b: i32,
+        #[offset(16)]
+        e: i32,
+        #[offset(8)]
+        inner: Inner,
+        #[offset(24)]
+        g: i32,
+    }
+
+    #[test]
+    fn fields_out_of_order() {
+        let s: Value<Shuffled> = Rc::new(RefCell::new(Shuffled::default()));
+        let fields = [
+            field_ptr!(s, a),
+            field_ptr!(s, b),
+            field_ptr!(field_ptr!(s, inner), a),
+            field_ptr!(field_ptr!(s, inner), b),
+            field_ptr!(s, e),
+            field_ptr!(s, f),
+            field_ptr!(s, g),
+        ];
+        for (i, p) in fields.iter().enumerate() {
+            p.write(i as i32 + 1);
+        }
+        for (i, p) in fields.iter().enumerate() {
+            assert_eq!(p.read(), i as i32 + 1);
+        }
+        let s = s.borrow();
+        assert_eq!((s.a, s.b, s.inner.a, s.inner.b), (1, 2, 3, 4));
+        assert_eq!((s.e, s.f, s.g), (5, 6, 7));
     }
 
     #[test]
