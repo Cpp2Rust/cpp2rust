@@ -678,7 +678,10 @@ bool HasCallableCopyConstructor(const clang::RecordDecl *decl) {
              ctor->getDefinition();
     });
   }
-  if (cxx->defaultedCopyConstructorIsDeleted()) {
+  if (cxx->defaultedCopyConstructorIsDeleted() ||
+      std::ranges::any_of(cxx->ctors(), [](const auto *ctor) {
+        return ctor->isCopyConstructor() && ctor->isDeleted();
+      })) {
     return false;
   }
   auto &ctx = cxx->getASTContext();
@@ -1607,27 +1610,48 @@ void DefineImplicitMembers(clang::Sema &sema, clang::CXXRecordDecl *decl) {
   tu_scope.setEntity(sema.Context.getTranslationUnitDecl());
   auto *saved_tu_scope = std::exchange(sema.TUScope, &tu_scope);
   sema.ForceDeclarationOfImplicitMembers(decl);
+  auto define = [&](clang::FunctionDecl *fn, auto &&definer) {
+    RuleDecls::Trial trial(sema);
+    clang::DiagnosticErrorTrap errors(sema.getDiagnostics());
+    {
+      clang::Sema::GlobalEagerInstantiationScope instantiations(
+          sema, /*Enabled=*/true, /*AtEndOfTU=*/false);
+      definer();
+      instantiations.perform();
+    }
+    if (trial.failed() || errors.hasErrorOccurred()) {
+      fn->setDeletedAsWritten(true);
+    }
+  };
   for (auto ctor : decl->ctors()) {
     if (ctor->isCopyConstructor() && ctor->isImplicit() &&
         !ctor->doesThisDeclarationHaveABody() && !ctor->isDeleted()) {
-      sema.DefineImplicitCopyConstructor(decl->getLocation(), ctor);
+      define(ctor, [&] {
+        sema.DefineImplicitCopyConstructor(decl->getLocation(), ctor);
+      });
     }
     if (ctor->isMoveConstructor() && !ctor->isUserProvided() &&
         !ctor->doesThisDeclarationHaveABody() && !ctor->isDeleted() &&
         !HasDefaultedCopyConstructor(decl)) {
-      sema.DefineImplicitMoveConstructor(decl->getLocation(), ctor);
+      define(ctor, [&] {
+        sema.DefineImplicitMoveConstructor(decl->getLocation(), ctor);
+      });
     }
   }
   for (auto *method : decl->methods()) {
     if (method->isMoveAssignmentOperator() && !method->isUserProvided() &&
         !method->doesThisDeclarationHaveABody() && !method->isDeleted() &&
         !HasDefaultedCopyAssignment(decl)) {
-      sema.DefineImplicitMoveAssignment(decl->getLocation(), method);
+      define(method, [&] {
+        sema.DefineImplicitMoveAssignment(decl->getLocation(), method);
+      });
     }
     if (method->isCopyAssignmentOperator() && !method->isUserProvided() &&
         !method->doesThisDeclarationHaveABody() && !method->isDeleted() &&
         NeedsDefaultedCopyAssignment(decl)) {
-      sema.DefineImplicitCopyAssignment(decl->getLocation(), method);
+      define(method, [&] {
+        sema.DefineImplicitCopyAssignment(decl->getLocation(), method);
+      });
     }
   }
   auto define_defaulted_comparison = [&](clang::FunctionDecl *fn) {
@@ -1640,7 +1664,9 @@ void DefineImplicitMembers(clang::Sema &sema, clang::CXXRecordDecl *decl) {
 #else
     auto kind = sema.getDefaultedComparisonKind(fn);
 #endif
-    sema.DefineDefaultedComparison(decl->getLocation(), fn, kind);
+    define(fn, [&] {
+      sema.DefineDefaultedComparison(decl->getLocation(), fn, kind);
+    });
   };
   for (auto *method : decl->methods()) {
     define_defaulted_comparison(method);

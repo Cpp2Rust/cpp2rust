@@ -92,6 +92,19 @@ impl Container {
         return &mut (*(self as *mut Container));
     }
 }
+#[repr(C)]
+#[derive(FnPtrArg, MoveCtorUnsafe, Default)]
+pub struct VecHolder {
+    pub items: Vec<NoCopy>,
+}
+impl VecHolder {
+    pub unsafe fn move_from(_a0: *mut VecHolder) -> Self {
+        let mut this = Self {
+            items: std::mem::take(&mut (*_a0).items),
+        };
+        this
+    }
+}
 pub unsafe fn bump_0(mut p: *mut NoCopy) {
     (*p).v.postfix_inc();
 }
@@ -129,6 +142,9 @@ unsafe fn main_0() -> i32 {
     };
     let mut d: Container = Container::move_from({ &mut c });
     assert!((((d.inner.v) == (6)) && ((d.tag) == (7))) && ((c.inner.v) == (0)));
+    let mut h: VecHolder = <VecHolder>::default();
+    let mut h2: VecHolder = VecHolder::move_from({ &mut h });
+    assert!(((h2.items.len()) == (0_usize)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}
