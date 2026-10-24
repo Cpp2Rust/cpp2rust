@@ -2438,8 +2438,8 @@ void Converter::ConvertIntegralToBooleanCast(clang::ImplicitCastExpr *expr) {
 bool Converter::IsCastRedundantInRust(clang::Expr *expr,
                                       clang::QualType target_type) {
   auto target = GetUnsafeTypeAsString(target_type);
-  if (const auto *rule = RuleRegistry::GetExprRule(ctx_, expr)) {
-    return rule->return_type.type == target;
+  if (RuleRegistry::GetExprRule(ctx_, expr)) {
+    return Trim(Mapper::GetReturnType(*this, expr)) == target;
   }
   return GetUnsafeTypeAsString(expr->getType()) == target;
 }
