@@ -44,7 +44,7 @@ impl Clone for Movable {
     }
 }
 #[repr(C)]
-#[derive(Clone, VaArg, FnPtrArg, Default)]
+#[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
 pub struct Holder {
     pub xs: Vec<i32>,
     pub ys: Vec<i32>,
@@ -55,6 +55,18 @@ impl Holder {
             xs: std::mem::take(&mut self.xs),
             ys: std::mem::take(&mut self.ys),
         };
+    }
+    pub unsafe fn move_from(_a0: *mut Holder) -> Self {
+        let mut this = Self {
+            xs: std::mem::take(&mut (*_a0).xs),
+            ys: std::mem::take(&mut (*_a0).ys),
+        };
+        this
+    }
+    pub unsafe fn move_assign(&mut self, _a0: *mut Holder) -> *mut Holder {
+        self.xs = std::mem::take(&mut (*_a0).xs);
+        self.ys = std::mem::take(&mut (*_a0).ys);
+        return &mut (*(self as *mut Holder));
     }
 }
 pub fn main() {

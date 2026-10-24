@@ -510,6 +510,8 @@ public:
 
   void ConvertMemberExpr(clang::MemberExpr *expr);
 
+  static const clang::Expr *GetFieldReadCall(const clang::MemberExpr *expr);
+
   virtual bool VisitMemberExpr(clang::MemberExpr *expr);
 
   virtual bool VisitCXXThisExpr(clang::CXXThisExpr *expr);
@@ -759,10 +761,16 @@ protected:
 
   void AddOrdTrait(const clang::CXXRecordDecl *decl);
 
-  void ConvertOrdAndPartialOrdTraits(const clang::CXXRecordDecl *decl,
-                                     const clang::FunctionDecl *eq,
-                                     const clang::FunctionDecl *lt,
-                                     const clang::FunctionDecl *cmp);
+  virtual void ConvertOrdAndPartialOrdTraits(const clang::CXXRecordDecl *decl,
+                                             const clang::FunctionDecl *eq,
+                                             const clang::FunctionDecl *lt,
+                                             const clang::FunctionDecl *cmp);
+
+  std::string GetEqBody(const clang::CXXRecordDecl *decl,
+                        const clang::FunctionDecl *eq,
+                        const clang::FunctionDecl *lt,
+                        const clang::FunctionDecl *cmp, std::string_view lhs,
+                        std::string_view rhs);
 
   void ConvertOrdAndPartialOrdTraitsBase(std::string_view cmp_body,
                                          std::string_view eq_body,
@@ -776,17 +784,17 @@ protected:
                                 const clang::CXXRecordDecl *decl,
                                 std::string_view lhs, std::string_view rhs);
 
-  virtual std::string
-  GetComparisonReferenceArg(const clang::CXXRecordDecl *decl,
-                            std::string_view value);
+  // The argument for param of a comparison operator of decl, from an operand
+  // of the comparison.
+  virtual std::string GetComparisonArg(const clang::ParmVarDecl *param,
+                                       const clang::CXXRecordDecl *decl,
+                                       std::string_view value);
 
   virtual std::string
-  GetComparisonReferenceReceiver(const clang::CXXMethodDecl *method,
-                                 const clang::CXXRecordDecl *decl,
-                                 std::string_view ptr);
+  GetComparisonResultReceiver(const clang::CXXMethodDecl *method,
+                              bool returns_ref, std::string_view result);
 
   virtual std::string GetComparisonReceiver(const clang::CXXMethodDecl *method,
-                                            const clang::CXXRecordDecl *decl,
                                             std::string_view lhs);
 
   virtual void AddCloneTrait(const clang::RecordDecl *decl);
@@ -927,6 +935,28 @@ protected:
   // Local variables hoisted outside a goto_block so that all labels can see and
   // use the variables.
   std::unordered_set<const clang::VarDecl *> hoisted_decls_;
+
+  // A call whose result a field is read from, e.g., `f(g()).x`, and the
+  // bindings of the temporaries of its arguments, which the read is in the
+  // block of, so that they are alive during it.
+  struct FieldReadCall {
+    const clang::Expr *call;
+    std::string temporary_bindings;
+  };
+  FieldReadCall *field_read_call_ = nullptr;
+  // Whether the bindings of temps, of the arguments of call, are deferred to
+  // the read of a field of its result.
+  bool DeferTemporaries(const clang::Expr *call,
+                        const TempMaterializationCtx *temps);
+
+  // The number of array init loops being converted, which copy arrays
+  // element by element, e.g., in implicit copy constructors, and the number
+  // of loops outside each of them, whose indices their common expressions
+  // use.
+  unsigned array_init_depth_ = 0;
+  std::unordered_map<const clang::OpaqueValueExpr *, unsigned>
+      array_init_outer_depth_;
+  std::string ArrayInitIndexName() const;
 
   unsigned materialized_temp_id_ = 0;
   std::string NewTempName() {

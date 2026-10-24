@@ -63,10 +63,10 @@ fn main_0() -> i32 {
         let __tmp_1: Value<u64> = Rc::new(RefCell::new(
             (::std::mem::size_of::<i64>() as u64).wrapping_add((*ul.borrow())),
         ));
-        (if __tmp_0.as_pointer().read() <= __tmp_1.as_pointer().read() {
-            __tmp_0.as_pointer()
-        } else {
-            __tmp_1.as_pointer()
+        ({
+            let __a = __tmp_0.as_pointer();
+            let __b = __tmp_1.as_pointer();
+            if CppLess::less(&__b, &__a) { __b } else { __a }
         }
         .read())
     } as usize);
@@ -74,10 +74,10 @@ fn main_0() -> i32 {
         let __tmp_2: Value<u64> = Rc::new(RefCell::new(
             (::std::mem::size_of::<i32>() as u64).wrapping_add(((*sz.borrow()) as u64)),
         ));
-        (if __tmp_2.as_pointer().read() >= ul.as_pointer().read() {
-            __tmp_2.as_pointer()
-        } else {
-            ul.as_pointer()
+        ({
+            let __a = __tmp_2.as_pointer();
+            let __b = ul.as_pointer();
+            if CppLess::less(&__a, &__b) { __b } else { __a }
         }
         .read())
     } as usize);
@@ -86,10 +86,10 @@ fn main_0() -> i32 {
     let mut bound: usize = ({
         let __tmp_3: Value<u64> = Rc::new(RefCell::new(((*sz.borrow()) as u64)));
         let __tmp_4: Value<u64> = Rc::new(RefCell::new((4_usize as u64)));
-        (if __tmp_3.as_pointer().read() <= __tmp_4.as_pointer().read() {
-            __tmp_3.as_pointer()
-        } else {
-            __tmp_4.as_pointer()
+        ({
+            let __a = __tmp_3.as_pointer();
+            let __b = __tmp_4.as_pointer();
+            if CppLess::less(&__b, &__a) { __b } else { __a }
         }
         .read())
     } as usize);
@@ -134,20 +134,20 @@ fn main_0() -> i32 {
     let mut smin: isize = ({
         let __tmp_5: Value<i64> = Rc::new(RefCell::new(((*sd.borrow()) as i64)));
         let __tmp_6: Value<i64> = Rc::new(RefCell::new(((*sm.borrow()) as i64)));
-        (if __tmp_5.as_pointer().read() <= __tmp_6.as_pointer().read() {
-            __tmp_5.as_pointer()
-        } else {
-            __tmp_6.as_pointer()
+        ({
+            let __a = __tmp_5.as_pointer();
+            let __b = __tmp_6.as_pointer();
+            if CppLess::less(&__b, &__a) { __b } else { __a }
         }
         .read())
     } as isize);
     let mut smax: isize = ({
         let __tmp_7: Value<i64> = Rc::new(RefCell::new(((*sd.borrow()) as i64)));
         let __tmp_8: Value<i64> = Rc::new(RefCell::new(((*sm.borrow()) as i64)));
-        (if __tmp_7.as_pointer().read() >= __tmp_8.as_pointer().read() {
-            __tmp_7.as_pointer()
-        } else {
-            __tmp_8.as_pointer()
+        ({
+            let __a = __tmp_7.as_pointer();
+            let __b = __tmp_8.as_pointer();
+            if CppLess::less(&__a, &__b) { __b } else { __a }
         }
         .read())
     } as isize);
@@ -171,10 +171,10 @@ fn main_0() -> i32 {
         ({
             let __tmp_9: Value<u64> = Rc::new(RefCell::new(1_u64));
             let __tmp_10: Value<u64> = Rc::new(RefCell::new(((*mx.borrow()) as u64)));
-            (if __tmp_9.as_pointer().read() <= __tmp_10.as_pointer().read() {
-                __tmp_9.as_pointer()
-            } else {
-                __tmp_10.as_pointer()
+            ({
+                let __a = __tmp_9.as_pointer();
+                let __b = __tmp_10.as_pointer();
+                if CppLess::less(&__b, &__a) { __b } else { __a }
             }
             .read())
         } as usize),
@@ -182,10 +182,10 @@ fn main_0() -> i32 {
             let __tmp_11: Value<u64> = Rc::new(RefCell::new(((*mx.borrow()) as u64)));
             let __tmp_12: Value<u64> =
                 Rc::new(RefCell::new(((*mx.borrow()).wrapping_sub(3_usize) as u64)));
-            (if __tmp_11.as_pointer().read() <= __tmp_12.as_pointer().read() {
-                __tmp_11.as_pointer()
-            } else {
-                __tmp_12.as_pointer()
+            ({
+                let __a = __tmp_11.as_pointer();
+                let __b = __tmp_12.as_pointer();
+                if CppLess::less(&__b, &__a) { __b } else { __a }
             }
             .read())
         } as usize),

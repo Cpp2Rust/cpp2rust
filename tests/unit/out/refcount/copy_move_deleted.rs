@@ -80,7 +80,7 @@ impl Container {
         }
     }
 }
-#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, Default)]
+#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(24)]
 pub struct VecHolder {
     #[offset(0)]
@@ -167,6 +167,17 @@ impl PrivateCopyImpl for Ptr<PrivateCopy> {
     fn move_assign(&self, o: Ptr<PrivateCopy>) -> Ptr<PrivateCopy> {
         field!((*self), v).write({ o.with(|__s| __s.v) });
         field!(o, v).write(0);
+        return (*self).clone();
+    }
+}
+pub trait VecHolderImpl {
+    fn move_assign(&self, _a0: Ptr<VecHolder>) -> Ptr<VecHolder>;
+}
+impl VecHolderImpl for Ptr<VecHolder> {
+    fn move_assign(&self, _a0: Ptr<VecHolder>) -> Ptr<VecHolder> {
+        field_ref!((*self), items)
+            .as_pointer()
+            .write(field!(_a0, items).with_mut(std::mem::take));
         return (*self).clone();
     }
 }

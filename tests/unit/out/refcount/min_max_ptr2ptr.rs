@@ -17,16 +17,16 @@ fn main_0() -> i32 {
     let pb: Value<Ptr<i32>> = Rc::new(RefCell::new((b.as_pointer())));
     let mut ppa: Ptr<Ptr<i32>> = (pa.as_pointer());
     let mut ppb: Ptr<Ptr<i32>> = (pb.as_pointer());
-    let mut r1: i32 = (if (ppa.read()).read() >= (ppb.read()).read() {
-        (ppa.read())
-    } else {
-        (ppb.read())
+    let mut r1: i32 = ({
+        let __a = (ppa.read());
+        let __b = (ppb.read());
+        if CppLess::less(&__a, &__b) { __b } else { __a }
     }
     .read());
-    let mut r2: i32 = (if (ppa.read()).read() <= (ppb.read()).read() {
-        (ppa.read())
-    } else {
-        (ppb.read())
+    let mut r2: i32 = ({
+        let __a = (ppa.read());
+        let __b = (ppb.read());
+        if CppLess::less(&__b, &__a) { __b } else { __a }
     }
     .read());
     assert!(((r1 + r2) == 30));

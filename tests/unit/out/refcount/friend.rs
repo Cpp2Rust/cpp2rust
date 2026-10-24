@@ -24,17 +24,11 @@ pub struct V {
     #[offset(0)]
     pub x: i32,
 }
-impl std::cmp::PartialEq for V {
-    fn eq(&self, other: &Self) -> bool {
-        {
-            operator_eq_1(
-                Rc::new(RefCell::new(V { x: self.x.clone() })).as_pointer(),
-                Rc::new(RefCell::new(V { x: other.x.clone() })).as_pointer(),
-            )
-        }
+impl CppEq for V {
+    fn equal(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
+        operator_eq_1(__lhs.clone(), __rhs.clone())
     }
 }
-impl std::cmp::Eq for V {}
 pub fn get_4(w: Ptr<W_int_>) -> i32 {
     return w.with(|__s| __s.x);
 }

@@ -6,12 +6,19 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(24)]
 pub struct Holder {
     #[offset(0)]
     #[byte_size(24)]
     pub v: Vec<i32>,
+}
+impl Holder {
+    pub fn move_from(_a0: Ptr<Holder>) -> Self {
+        Self {
+            v: field!(_a0, v).with_mut(std::mem::take),
+        }
+    }
 }
 pub fn write_through_0(mut p: Ptr<i32>) {
     p.write(42);
@@ -52,5 +59,16 @@ fn main_0() -> i32 {
     ({ write_through_0((p.decay().offset(0_usize as isize))) });
     assert!(((index!(p, 0_usize).read()) == 42));
     return 0;
+}
+pub trait HolderImpl {
+    fn move_assign(&self, _a0: Ptr<Holder>) -> Ptr<Holder>;
+}
+impl HolderImpl for Ptr<Holder> {
+    fn move_assign(&self, _a0: Ptr<Holder>) -> Ptr<Holder> {
+        field_ref!((*self), v)
+            .as_pointer()
+            .write(field!(_a0, v).with_mut(std::mem::take));
+        return (*self).clone();
+    }
 }
 pub fn __cpp2rust_init_globals() {}

@@ -17,8 +17,9 @@ unsafe fn main_0() -> i32 {
     let mut output: [i32; 3] = [0_i32; 3];
     {
         let mut __first = input.as_mut_ptr();
+        let __last = input.as_mut_ptr().offset((3) as isize);
         let mut __out = output.as_mut_ptr();
-        while __first != input.as_mut_ptr().offset((3) as isize) {
+        while __first != __last {
             *__out.iter_deref() = (*__first.iter_deref()).clone().into();
             __first.iter_inc();
             __out.iter_inc();

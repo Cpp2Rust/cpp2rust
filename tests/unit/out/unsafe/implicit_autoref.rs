@@ -7,9 +7,21 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Clone, VaArg, FnPtrArg, Default)]
+#[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
 pub struct Holder {
     pub v: Vec<i32>,
+}
+impl Holder {
+    pub unsafe fn move_from(_a0: *mut Holder) -> Self {
+        let mut this = Self {
+            v: std::mem::take(&mut (*_a0).v),
+        };
+        this
+    }
+    pub unsafe fn move_assign(&mut self, _a0: *mut Holder) -> *mut Holder {
+        self.v = std::mem::take(&mut (*_a0).v);
+        return &mut (*(self as *mut Holder));
+    }
 }
 pub unsafe fn write_through_0(mut p: *mut i32) {
     (*p) = 42;

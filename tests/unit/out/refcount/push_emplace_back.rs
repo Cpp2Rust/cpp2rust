@@ -22,7 +22,7 @@ pub struct Writer {
     #[byte_size(4)]
     pub chunk: Chunk,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(48)]
 pub struct JPEGData {
     #[offset(0)]
@@ -31,6 +31,14 @@ pub struct JPEGData {
     #[offset(24)]
     #[byte_size(24)]
     pub app_data: Vec<Vec<u8>>,
+}
+impl JPEGData {
+    pub fn move_from(_a0: Ptr<JPEGData>) -> Self {
+        Self {
+            com_data: field!(_a0, com_data).with_mut(std::mem::take),
+            app_data: field!(_a0, app_data).with_mut(std::mem::take),
+        }
+    }
 }
 pub fn push_param_0(mut dest: Ptr<Vec<Vec<u8>>>) {
     {
@@ -266,5 +274,19 @@ fn main_0() -> i32 {
     assert!(({ (*values.borrow())[0_usize] } == 0_i64));
     assert!(({ (*values.borrow())[1_usize] } == 7_i64));
     return 0;
+}
+pub trait JPEGDataImpl {
+    fn move_assign(&self, _a0: Ptr<JPEGData>) -> Ptr<JPEGData>;
+}
+impl JPEGDataImpl for Ptr<JPEGData> {
+    fn move_assign(&self, _a0: Ptr<JPEGData>) -> Ptr<JPEGData> {
+        field_ref!((*self), com_data)
+            .as_pointer()
+            .write(field!(_a0, com_data).with_mut(std::mem::take));
+        field_ref!((*self), app_data)
+            .as_pointer()
+            .write(field!(_a0, app_data).with_mut(std::mem::take));
+        return (*self).clone();
+    }
 }
 pub fn __cpp2rust_init_globals() {}

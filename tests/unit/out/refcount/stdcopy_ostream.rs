@@ -25,14 +25,16 @@ fn main_0() -> i32 {
                 .expect("Failed to open file"),
         ));
         {
-            let mut __bytes: Vec<u8> = Vec::new();
             let mut __it = RandomAccessIterator::Vec(str.decay());
-            while __it != RandomAccessIterator::Vec(str.decay().to_last()) {
+            let __last = RandomAccessIterator::Vec(str.decay().to_last());
+            let __out = &mut (*ofs.borrow_mut());
+            let mut __bytes: Vec<u8> = Vec::new();
+            while __it != __last {
                 __bytes.push(__it.iter_deref().read() as u8);
                 __it.iter_inc();
             }
-            (*ofs.borrow_mut()).write_all(&__bytes);
-            (*ofs.borrow_mut()).try_clone().unwrap()
+            __out.write_all(&__bytes);
+            __out.try_clone().unwrap()
         };
     }
     match nix::unistd::unlink((file.as_pointer() as Ptr<i8>).to_rust_string().as_str()) {

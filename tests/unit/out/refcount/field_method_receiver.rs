@@ -12,7 +12,7 @@ pub struct Counter {
     #[offset(0)]
     pub n: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, MoveAssign)]
 #[byte_size(40)]
 pub struct S {
     #[offset(0)]
@@ -26,6 +26,18 @@ pub struct S {
     #[offset(16)]
     #[byte_size(24)]
     pub v: Vec<i32>,
+}
+impl S {
+    pub fn move_from(_a0: Ptr<S>) -> Self {
+        Self {
+            tag: { (*_a0.upgrade().deref()).tag },
+            c: { (*_a0.upgrade().deref()).c.clone() },
+            arr: Box::new(std::array::from_fn::<_, 2, _>(|__i: usize| {
+                ((*_a0.upgrade().deref()).arr[(__i) as usize]).clone()
+            })),
+            v: field!(_a0, v).with_mut(std::mem::take),
+        }
+    }
 }
 impl Default for S {
     fn default() -> Self {
@@ -131,6 +143,7 @@ impl CounterImpl for Ptr<Counter> {
 }
 pub trait SImpl {
     fn bump(&self);
+    fn move_assign(&self, _a0: Ptr<S>) -> Ptr<S>;
 }
 impl SImpl for Ptr<S> {
     fn bump(&self) {
@@ -138,6 +151,23 @@ impl SImpl for Ptr<S> {
             let _k: i32 = (*self).with(|__s| __s.tag);
             CounterImpl::add(&field_ptr!((*self), c), _k)
         });
+    }
+    fn move_assign(&self, _a0: Ptr<S>) -> Ptr<S> {
+        field!((*self), tag).write({ { (*_a0.upgrade().deref()).tag } });
+        field!((*self), c).write({ { (*_a0.upgrade().deref()).c.clone() } });
+        {
+            ((array_field_ptr!((*self), arr)) as Ptr<Counter>)
+                .to_any()
+                .memcpy(
+                    &((array_field_ptr!(_a0, arr)) as Ptr<Counter>).to_any(),
+                    8_usize as usize,
+                );
+            ((array_field_ptr!((*self), arr)) as Ptr<Counter>).to_any()
+        };
+        field_ref!((*self), v)
+            .as_pointer()
+            .write(field!(_a0, v).with_mut(std::mem::take));
+        return (*self).clone();
     }
 }
 pub fn __cpp2rust_init_globals() {}

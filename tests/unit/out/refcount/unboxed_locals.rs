@@ -143,10 +143,10 @@ fn main_0() -> i32 {
     let high: Value<i32> = Rc::new(RefCell::new(3));
     let mut low: i32 = {
         let __tmp_0: Value<i32> = Rc::new(RefCell::new(2));
-        (if high.as_pointer().read() <= __tmp_0.as_pointer().read() {
-            high.as_pointer()
-        } else {
-            __tmp_0.as_pointer()
+        ({
+            let __a = high.as_pointer();
+            let __b = __tmp_0.as_pointer();
+            if CppLess::less(&__b, &__a) { __b } else { __a }
         }
         .read())
     };

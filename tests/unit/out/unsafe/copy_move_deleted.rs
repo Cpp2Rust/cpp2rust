@@ -93,7 +93,7 @@ impl Container {
     }
 }
 #[repr(C)]
-#[derive(FnPtrArg, MoveCtorUnsafe, Default)]
+#[derive(FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
 pub struct VecHolder {
     pub items: Vec<NoCopy>,
 }
@@ -103,6 +103,10 @@ impl VecHolder {
             items: std::mem::take(&mut (*_a0).items),
         };
         this
+    }
+    pub unsafe fn move_assign(&mut self, _a0: *mut VecHolder) -> *mut VecHolder {
+        self.items = std::mem::take(&mut (*_a0).items);
+        return &mut (*(self as *mut VecHolder));
     }
 }
 pub unsafe fn bump_0(mut p: *mut NoCopy) {

@@ -45,7 +45,9 @@ pub unsafe fn lehmer_2(mut sigma: *const u32, mut len: u32, mut code: *mut u32) 
     'loop_: while ((i) < (len)) {
         let mut it: UnsafeRandomAccessIterator<u32> = {
             let mut __it = items.begin();
-            while __it != items.end() && *__it.iter_deref() != (*sigma.offset((i) as isize)) {
+            let __last = items.end();
+            let __value = &(*sigma.offset((i) as isize));
+            while __it != __last && *__it.iter_deref() != *__value {
                 __it.iter_inc();
             }
             __it

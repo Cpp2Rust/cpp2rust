@@ -12,30 +12,16 @@ pub struct X {
     #[offset(0)]
     pub v: i32,
 }
-impl std::cmp::Ord for X {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        {
-            if ((operator_lt_0(self.clone(), other.clone())) != 0) {
-                std::cmp::Ordering::Less
-            } else if ((operator_lt_0(other.clone(), self.clone())) != 0) {
-                std::cmp::Ordering::Greater
-            } else {
-                std::cmp::Ordering::Equal
-            }
-        }
+impl CppLess for X {
+    fn less(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
+        ((operator_lt_0(__lhs.read(), __rhs.read())) != 0)
     }
 }
-impl std::cmp::PartialOrd for X {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(other))
+impl CppEq for X {
+    fn equal(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
+        ((operator_eq_1(__lhs.read(), __rhs.read())) != 0)
     }
 }
-impl std::cmp::PartialEq for X {
-    fn eq(&self, other: &Self) -> bool {
-        { ((operator_eq_1(self.clone(), other.clone())) != 0) }
-    }
-}
-impl std::cmp::Eq for X {}
 pub fn operator_eq_1(mut a: X, mut b: X) -> i32 {
     return if (a.v == b.v) { 2 } else { 0 };
 }
@@ -72,43 +58,16 @@ pub struct Mixed {
     #[offset(0)]
     pub v: i32,
 }
-impl std::cmp::Ord for Mixed {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        {
-            if ((MixedImpl::operator_lt(
-                &Rc::new(RefCell::new(Mixed { v: self.v.clone() })).as_pointer(),
-                Rc::new(RefCell::new(Mixed { v: other.v.clone() })).as_pointer(),
-            )) != 0)
-            {
-                std::cmp::Ordering::Less
-            } else if ((MixedImpl::operator_lt(
-                &Rc::new(RefCell::new(Mixed { v: other.v.clone() })).as_pointer(),
-                Rc::new(RefCell::new(Mixed { v: self.v.clone() })).as_pointer(),
-            )) != 0)
-            {
-                std::cmp::Ordering::Greater
-            } else {
-                std::cmp::Ordering::Equal
-            }
-        }
+impl CppLess for Mixed {
+    fn less(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
+        ((MixedImpl::operator_lt(__lhs, __rhs.clone())) != 0)
     }
 }
-impl std::cmp::PartialOrd for Mixed {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(other))
+impl CppEq for Mixed {
+    fn equal(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
+        ((MixedImpl::operator_eq(__lhs, __rhs.clone())) != 0)
     }
 }
-impl std::cmp::PartialEq for Mixed {
-    fn eq(&self, other: &Self) -> bool {
-        {
-            ((MixedImpl::operator_eq(
-                &Rc::new(RefCell::new(Mixed { v: self.v.clone() })).as_pointer(),
-                Rc::new(RefCell::new(Mixed { v: other.v.clone() })).as_pointer(),
-            )) != 0)
-        }
-    }
-}
-impl std::cmp::Eq for Mixed {}
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct MyBool {
@@ -126,56 +85,22 @@ pub struct Boolish {
     #[offset(0)]
     pub v: i32,
 }
-impl std::cmp::Ord for Boolish {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+impl CppLess for Boolish {
+    fn less(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
         {
-            if {
-                let __cmp = &operator_lt_6(self.clone(), other.clone());
-                MyBoolImpl::to_bool(
-                    &Rc::new(RefCell::new(MyBool {
-                        value: __cmp.value.clone(),
-                    }))
-                    .as_pointer(),
-                )
-            } {
-                std::cmp::Ordering::Less
-            } else if {
-                let __cmp = &operator_lt_6(other.clone(), self.clone());
-                MyBoolImpl::to_bool(
-                    &Rc::new(RefCell::new(MyBool {
-                        value: __cmp.value.clone(),
-                    }))
-                    .as_pointer(),
-                )
-            } {
-                std::cmp::Ordering::Greater
-            } else {
-                std::cmp::Ordering::Equal
-            }
+            let __cmp = operator_lt_6(__lhs.read(), __rhs.read());
+            MyBoolImpl::to_bool(&Rc::new(RefCell::new(__cmp)).as_pointer())
         }
     }
 }
-impl std::cmp::PartialOrd for Boolish {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(other))
-    }
-}
-impl std::cmp::PartialEq for Boolish {
-    fn eq(&self, other: &Self) -> bool {
+impl CppEq for Boolish {
+    fn equal(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
         {
-            {
-                let __cmp = &operator_eq_7(self.clone(), other.clone());
-                MyBoolImpl::to_bool(
-                    &Rc::new(RefCell::new(MyBool {
-                        value: __cmp.value.clone(),
-                    }))
-                    .as_pointer(),
-                )
-            }
+            let __cmp = operator_eq_7(__lhs.read(), __rhs.read());
+            MyBoolImpl::to_bool(&Rc::new(RefCell::new(__cmp)).as_pointer())
         }
     }
 }
-impl std::cmp::Eq for Boolish {}
 pub fn operator_eq_7(mut a: Boolish, mut b: Boolish) -> MyBool {
     return MyBool::new({ (a.v == b.v) });
 }
@@ -202,20 +127,14 @@ pub struct RefInt {
     #[offset(0)]
     pub v: i32,
 }
-impl std::cmp::PartialEq for RefInt {
-    fn eq(&self, other: &Self) -> bool {
+impl CppEq for RefInt {
+    fn equal(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
         {
-            {
-                let __cmp = RefIntImpl::operator_eq(
-                    &Rc::new(RefCell::new(RefInt { v: self.v.clone() })).as_pointer(),
-                    Rc::new(RefCell::new(RefInt { v: other.v.clone() })).as_pointer(),
-                );
-                RefBoolImpl::to_bool(&__cmp)
-            }
+            let __cmp = RefIntImpl::operator_eq(__lhs, __rhs.clone());
+            RefBoolImpl::to_bool(&__cmp)
         }
     }
 }
-impl std::cmp::Eq for RefInt {}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
@@ -268,18 +187,13 @@ fn main_0() -> i32 {
     );
     let xs: Value<Box<[X]>> = Rc::new(RefCell::new(Box::new([X { v: 3 }, X { v: 1 }, X { v: 2 }])));
     {
+        let __first = (xs.as_pointer() as Ptr<X>);
         let __n = (xs.as_pointer() as Ptr<X>)
             .offset((3) as isize)
-            .iter_distance(&(xs.as_pointer() as Ptr<X>));
+            .iter_distance(&__first);
         let mut __order: Vec<isize> = (0..__n).collect();
-        __order.sort_by(|&__x, &__y| {
-            (xs.as_pointer() as Ptr<X>).iter_at(__x).with(|__a| {
-                (xs.as_pointer() as Ptr<X>)
-                    .iter_at(__y)
-                    .with(|__b| __a.cmp(__b))
-            })
-        });
-        reorder(__order, |__i| (xs.as_pointer() as Ptr<X>).iter_at(__i));
+        __order.sort_by(|&__x, &__y| cpp_cmp(&__first.iter_at(__x), &__first.iter_at(__y)));
+        reorder(__order, |__i| __first.iter_at(__i));
     };
     assert!(
         (({ (*xs.borrow())[(0) as usize].v } == 1) && ({ (*xs.borrow())[(1) as usize].v } == 2))
@@ -299,18 +213,13 @@ fn main_0() -> i32 {
         Mixed { v: 5 },
     ])));
     {
+        let __first = (ms.as_pointer() as Ptr<Mixed>);
         let __n = (ms.as_pointer() as Ptr<Mixed>)
             .offset((3) as isize)
-            .iter_distance(&(ms.as_pointer() as Ptr<Mixed>));
+            .iter_distance(&__first);
         let mut __order: Vec<isize> = (0..__n).collect();
-        __order.sort_by(|&__x, &__y| {
-            (ms.as_pointer() as Ptr<Mixed>).iter_at(__x).with(|__a| {
-                (ms.as_pointer() as Ptr<Mixed>)
-                    .iter_at(__y)
-                    .with(|__b| __a.cmp(__b))
-            })
-        });
-        reorder(__order, |__i| (ms.as_pointer() as Ptr<Mixed>).iter_at(__i));
+        __order.sort_by(|&__x, &__y| cpp_cmp(&__first.iter_at(__x), &__first.iter_at(__y)));
+        reorder(__order, |__i| __first.iter_at(__i));
     };
     assert!(
         (({ (*ms.borrow())[(0) as usize].v } == 4) && ({ (*ms.borrow())[(1) as usize].v } == 5))
@@ -361,20 +270,13 @@ fn main_0() -> i32 {
         Boolish { v: 2 },
     ])));
     {
+        let __first = (bs.as_pointer() as Ptr<Boolish>);
         let __n = (bs.as_pointer() as Ptr<Boolish>)
             .offset((3) as isize)
-            .iter_distance(&(bs.as_pointer() as Ptr<Boolish>));
+            .iter_distance(&__first);
         let mut __order: Vec<isize> = (0..__n).collect();
-        __order.sort_by(|&__x, &__y| {
-            (bs.as_pointer() as Ptr<Boolish>).iter_at(__x).with(|__a| {
-                (bs.as_pointer() as Ptr<Boolish>)
-                    .iter_at(__y)
-                    .with(|__b| __a.cmp(__b))
-            })
-        });
-        reorder(__order, |__i| {
-            (bs.as_pointer() as Ptr<Boolish>).iter_at(__i)
-        });
+        __order.sort_by(|&__x, &__y| cpp_cmp(&__first.iter_at(__x), &__first.iter_at(__y)));
+        reorder(__order, |__i| __first.iter_at(__i));
     };
     assert!(
         (({ (*bs.borrow())[(0) as usize].v } == 1) && ({ (*bs.borrow())[(1) as usize].v } == 2))
@@ -394,9 +296,9 @@ fn main_0() -> i32 {
     assert!(
         ({
             let mut __it = (ris.as_pointer() as Ptr<RefInt>);
-            while __it != (ris.as_pointer() as Ptr<RefInt>).offset((2) as isize)
-                && __it.iter_deref().with(|__v| *__v != (*ri2.borrow()))
-            {
+            let __last = (ris.as_pointer() as Ptr<RefInt>).offset((2) as isize);
+            let __value = ri2.as_pointer();
+            while __it != __last && !CppEq::equal(&__it.iter_deref(), &__value) {
                 __it.iter_inc();
             }
             __it

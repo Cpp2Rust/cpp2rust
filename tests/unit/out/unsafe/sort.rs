@@ -55,15 +55,16 @@ unsafe fn main_0() -> i32 {
         v.push(__a1)
     };
     {
-        let __n = v.end().iter_distance(&v.begin());
+        let __first = v.begin();
+        let __n = v.end().iter_distance(&__first);
         let mut __order: Vec<isize> = (0..__n).collect();
-        __order.sort_by(|&__x, &__y| (*v.begin().iter_at(__x)).cmp(&*v.begin().iter_at(__y)));
+        __order.sort_by(|&__x, &__y| (*__first.iter_at(__x)).cmp(&*__first.iter_at(__y)));
         let __values: Vec<_> = __order
             .iter()
-            .map(|&__i| std::ptr::read(v.begin().iter_at(__i)))
+            .map(|&__i| std::ptr::read(__first.iter_at(__i)))
             .collect();
         for (__i, __v) in (0..__n).zip(__values) {
-            std::ptr::write(v.begin().iter_at(__i), __v);
+            std::ptr::write(__first.iter_at(__i), __v);
         }
     };
     let mut i: u32 = 0_u32;

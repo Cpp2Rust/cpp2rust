@@ -14,12 +14,19 @@ pub struct Outer_RunInfo {
     #[offset(4)]
     pub num_extra_zero_runs: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(24)]
 pub struct Outer {
     #[offset(0)]
     #[byte_size(24)]
     pub runs: Vec<Outer_RunInfo>,
+}
+impl Outer {
+    pub fn move_from(_a0: Ptr<Outer>) -> Self {
+        Self {
+            runs: field!(_a0, runs).with_mut(std::mem::take),
+        }
+    }
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -38,5 +45,16 @@ fn main_0() -> i32 {
     assert!((o.runs[0_usize].block_idx == 1));
     assert!((o.runs[0_usize].num_extra_zero_runs == 2));
     return 0;
+}
+pub trait OuterImpl {
+    fn move_assign(&self, _a0: Ptr<Outer>) -> Ptr<Outer>;
+}
+impl OuterImpl for Ptr<Outer> {
+    fn move_assign(&self, _a0: Ptr<Outer>) -> Ptr<Outer> {
+        field_ref!((*self), runs)
+            .as_pointer()
+            .write(field!(_a0, runs).with_mut(std::mem::take));
+        return (*self).clone();
+    }
 }
 pub fn __cpp2rust_init_globals() {}

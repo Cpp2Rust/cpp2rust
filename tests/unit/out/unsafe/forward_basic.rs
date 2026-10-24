@@ -71,9 +71,17 @@ impl Holder {
     }
 }
 #[repr(C)]
-#[derive(Clone, VaArg, FnPtrArg, Default)]
+#[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, Default)]
 pub struct Holder {
     pub t: Tracked,
+}
+impl Holder {
+    pub unsafe fn move_from(_a0: *mut Holder) -> Self {
+        let mut this = Self {
+            t: Tracked::move_from({ &mut (*_a0).t }),
+        };
+        this
+    }
 }
 pub unsafe fn forward_once_2(x: *mut Tracked) -> Overload {
     return (unsafe { chosen_overload_0(x) });

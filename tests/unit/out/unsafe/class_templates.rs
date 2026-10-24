@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Clone, VaArg, FnPtrArg, Default)]
+#[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
 pub struct MyContainer_int_ {
     vec_: Vec<i32>,
 }
@@ -31,9 +31,19 @@ impl MyContainer_int_ {
             self.vec_.push(a0_clone)
         };
     }
+    pub unsafe fn move_from(_a0: *mut MyContainer_int_) -> Self {
+        let mut this = Self {
+            vec_: std::mem::take(&mut (*_a0).vec_),
+        };
+        this
+    }
+    pub unsafe fn move_assign(&mut self, _a0: *mut MyContainer_int_) -> *mut MyContainer_int_ {
+        self.vec_ = std::mem::take(&mut (*_a0).vec_);
+        return &mut (*(self as *mut MyContainer_int_));
+    }
 }
 #[repr(C)]
-#[derive(Clone, VaArg, FnPtrArg, Default)]
+#[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
 pub struct MyContainer_char_ {
     vec_: Vec<libc::c_char>,
 }
@@ -57,9 +67,19 @@ impl MyContainer_char_ {
             self.vec_.push(a0_clone)
         };
     }
+    pub unsafe fn move_from(_a0: *mut MyContainer_char_) -> Self {
+        let mut this = Self {
+            vec_: std::mem::take(&mut (*_a0).vec_),
+        };
+        this
+    }
+    pub unsafe fn move_assign(&mut self, _a0: *mut MyContainer_char_) -> *mut MyContainer_char_ {
+        self.vec_ = std::mem::take(&mut (*_a0).vec_);
+        return &mut (*(self as *mut MyContainer_char_));
+    }
 }
 #[repr(C)]
-#[derive(Clone, VaArg, FnPtrArg, Default)]
+#[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
 pub struct MyContainer_float_ {
     vec_: Vec<f32>,
 }
@@ -82,6 +102,16 @@ impl MyContainer_float_ {
             let a0_clone = (*item).clone();
             self.vec_.push(a0_clone)
         };
+    }
+    pub unsafe fn move_from(_a0: *mut MyContainer_float_) -> Self {
+        let mut this = Self {
+            vec_: std::mem::take(&mut (*_a0).vec_),
+        };
+        this
+    }
+    pub unsafe fn move_assign(&mut self, _a0: *mut MyContainer_float_) -> *mut MyContainer_float_ {
+        self.vec_ = std::mem::take(&mut (*_a0).vec_);
+        return &mut (*(self as *mut MyContainer_float_));
     }
 }
 #[repr(C)]

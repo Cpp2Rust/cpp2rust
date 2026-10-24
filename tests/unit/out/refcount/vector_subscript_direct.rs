@@ -14,7 +14,7 @@ pub struct Point {
     #[offset(4)]
     pub y: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(48)]
 pub struct Holder {
     #[offset(0)]
@@ -23,6 +23,14 @@ pub struct Holder {
     #[offset(24)]
     #[byte_size(24)]
     pub points: Vec<Point>,
+}
+impl Holder {
+    pub fn move_from(_a0: Ptr<Holder>) -> Self {
+        Self {
+            values: field!(_a0, values).with_mut(std::mem::take),
+            points: field!(_a0, points).with_mut(std::mem::take),
+        }
+    }
 }
 pub fn push_and_index_0(v: Ptr<Vec<i32>>) -> i32 {
     {
@@ -135,6 +143,20 @@ fn main_0() -> i32 {
     (*a.borrow_mut())[1_usize] = __rhs;
     assert!(({ (*a.borrow())[1_usize] } == 10));
     return 0;
+}
+pub trait HolderImpl {
+    fn move_assign(&self, _a0: Ptr<Holder>) -> Ptr<Holder>;
+}
+impl HolderImpl for Ptr<Holder> {
+    fn move_assign(&self, _a0: Ptr<Holder>) -> Ptr<Holder> {
+        field_ref!((*self), values)
+            .as_pointer()
+            .write(field!(_a0, values).with_mut(std::mem::take));
+        field_ref!((*self), points)
+            .as_pointer()
+            .write(field!(_a0, points).with_mut(std::mem::take));
+        return (*self).clone();
+    }
 }
 pub trait PointImpl {
     fn sum(&self) -> i32;

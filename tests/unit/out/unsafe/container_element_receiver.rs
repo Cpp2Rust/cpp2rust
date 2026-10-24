@@ -7,10 +7,19 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Clone, VaArg, FnPtrArg, Default)]
+#[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, Default)]
 pub struct Holder {
     pub ref_: *mut Vec<i32>,
     pub vec_: Vec<i32>,
+}
+impl Holder {
+    pub unsafe fn move_from(_a0: *mut Holder) -> Self {
+        let mut this = Self {
+            ref_: (*_a0).ref_,
+            vec_: std::mem::take(&mut (*_a0).vec_),
+        };
+        this
+    }
 }
 pub unsafe fn pick_0(a: *mut Vec<i32>, b: *mut Vec<i32>, mut first: bool) -> *mut Vec<i32> {
     return if first { (a) } else { (b) };

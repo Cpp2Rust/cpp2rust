@@ -11,6 +11,11 @@ pub trait ErasedPtr: std::any::Any {
     fn as_any(&self) -> &dyn std::any::Any;
     fn equals(&self, other: &dyn ErasedPtr) -> bool;
     fn is_null(&self) -> bool;
+    // Copies len bytes from src as whole values, if it points to the same
+    // type, whose values have different sizes, e.g., the rows of a 2D array.
+    fn memcpy_values(&self, _src: &dyn ErasedPtr, _len: usize) -> bool {
+        false
+    }
 }
 
 impl PartialEq for dyn ErasedPtr {
@@ -38,6 +43,31 @@ where
 
     fn is_null(&self) -> bool {
         Ptr::is_null(self)
+    }
+
+    fn memcpy_values(&self, src: &dyn ErasedPtr, len: usize) -> bool {
+        if !T::VARIABLE_SIZE {
+            return false;
+        }
+        let Some(src) = src.as_any().downcast_ref::<Ptr<T>>() else {
+            return false;
+        };
+        let mut dst = self.clone();
+        let mut src = src.clone();
+        let mut copied = 0;
+        while copied < len {
+            let bytes = src.with(|value| {
+                let mut buf = vec![0; value.value_byte_size()];
+                value.to_bytes(&mut buf);
+                buf
+            });
+            dst.with_mut(|value| value.assign_bytes(&bytes));
+            copied += bytes.len();
+            dst += 1;
+            src += 1;
+        }
+        assert_eq!(copied, len, "ub: memcpy of part of an array");
+        true
     }
 }
 
@@ -92,6 +122,9 @@ impl AnyPtr {
     pub fn memcpy(&self, src: &AnyPtr, len: usize) {
         if let (Some(dst), Some(src)) = (self.as_chars(), src.as_chars()) {
             return dst.memcpy(src, len);
+        }
+        if self.ptr.memcpy_values(&*src.ptr, len) {
+            return;
         }
         let dst_u8 = self.ptr.as_bytes();
         let src_u8 = src.ptr.as_bytes();

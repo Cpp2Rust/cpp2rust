@@ -13,5 +13,11 @@ struct S {
   S &operator=(S &&) = default;
 };
 
+// Copyable, with implicit members, and moved only in b.cpp.
+struct T {
+  std::vector<int> v;
+  int size() const { return static_cast<int>(v.size()); }
+};
+
 int sum(const S &s);
 int shuffle(int x);

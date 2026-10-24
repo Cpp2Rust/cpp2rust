@@ -52,7 +52,7 @@ impl Clone for Movable {
         Movable::copy_from(__src.as_pointer())
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(48)]
 pub struct Holder {
     #[offset(0)]
@@ -61,6 +61,14 @@ pub struct Holder {
     #[offset(24)]
     #[byte_size(24)]
     pub ys: Vec<i32>,
+}
+impl Holder {
+    pub fn move_from(_a0: Ptr<Holder>) -> Self {
+        Self {
+            xs: field!(_a0, xs).with_mut(std::mem::take),
+            ys: field!(_a0, ys).with_mut(std::mem::take),
+        }
+    }
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -91,6 +99,7 @@ fn main_0() -> i32 {
 }
 pub trait HolderImpl {
     fn extract(&self) -> Holder;
+    fn move_assign(&self, _a0: Ptr<Holder>) -> Ptr<Holder>;
 }
 impl HolderImpl for Ptr<Holder> {
     fn extract(&self) -> Holder {
@@ -98,6 +107,15 @@ impl HolderImpl for Ptr<Holder> {
             xs: field!((*self), xs).with_mut(std::mem::take),
             ys: field!((*self), ys).with_mut(std::mem::take),
         };
+    }
+    fn move_assign(&self, _a0: Ptr<Holder>) -> Ptr<Holder> {
+        field_ref!((*self), xs)
+            .as_pointer()
+            .write(field!(_a0, xs).with_mut(std::mem::take));
+        field_ref!((*self), ys)
+            .as_pointer()
+            .write(field!(_a0, ys).with_mut(std::mem::take));
+        return (*self).clone();
     }
 }
 pub fn __cpp2rust_init_globals() {

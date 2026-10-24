@@ -9,12 +9,19 @@ use std::rc::{Rc, Weak};
 pub fn unused_param_0(mut x: i32) {
     &(x);
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(24)]
 pub struct NonTrivial {
     #[offset(0)]
     #[byte_size(24)]
     pub data: Vec<i32>,
+}
+impl NonTrivial {
+    pub fn move_from(_a0: Ptr<NonTrivial>) -> Self {
+        Self {
+            data: field!(_a0, data).with_mut(std::mem::take),
+        }
+    }
 }
 pub fn unused_ref_param_1(x: Ptr<NonTrivial>) {
     &(*x.upgrade().deref());
@@ -132,6 +139,17 @@ impl NonCopyableImpl for Ptr<NonCopyable> {
     fn move_assign(&self, _a0: Ptr<NonCopyable>) -> Ptr<NonCopyable> {
         field_ptr!((*self), value)
             .write(field!(_a0, value).with_mut(|__v: &mut Option<Value<i32>>| __v.take()));
+        return (*self).clone();
+    }
+}
+pub trait NonTrivialImpl {
+    fn move_assign(&self, _a0: Ptr<NonTrivial>) -> Ptr<NonTrivial>;
+}
+impl NonTrivialImpl for Ptr<NonTrivial> {
+    fn move_assign(&self, _a0: Ptr<NonTrivial>) -> Ptr<NonTrivial> {
+        field_ref!((*self), data)
+            .as_pointer()
+            .write(field!(_a0, data).with_mut(std::mem::take));
         return (*self).clone();
     }
 }

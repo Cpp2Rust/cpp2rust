@@ -139,15 +139,16 @@ unsafe fn main_0() -> i32 {
     assert!(((w.v) == (2)));
     let mut lts: Vec<Lt> = Vec::from([Lt { v: 3 }, Lt { v: 1 }, Lt { v: 2 }]);
     {
-        let __n = lts.end().iter_distance(&lts.begin());
+        let __first = lts.begin();
+        let __n = lts.end().iter_distance(&__first);
         let mut __order: Vec<isize> = (0..__n).collect();
-        __order.sort_by(|&__x, &__y| (*lts.begin().iter_at(__x)).cmp(&*lts.begin().iter_at(__y)));
+        __order.sort_by(|&__x, &__y| (*__first.iter_at(__x)).cmp(&*__first.iter_at(__y)));
         let __values: Vec<_> = __order
             .iter()
-            .map(|&__i| std::ptr::read(lts.begin().iter_at(__i)))
+            .map(|&__i| std::ptr::read(__first.iter_at(__i)))
             .collect();
         for (__i, __v) in (0..__n).zip(__values) {
-            std::ptr::write(lts.begin().iter_at(__i), __v);
+            std::ptr::write(__first.iter_at(__i), __v);
         }
     };
     assert!(
@@ -159,7 +160,9 @@ unsafe fn main_0() -> i32 {
     assert!(
         (((*{
             let mut __it = eqs.begin();
-            while __it != eqs.end() && *__it.iter_deref() != two {
+            let __last = eqs.end();
+            let __value = &two;
+            while __it != __last && *__it.iter_deref() != *__value {
                 __it.iter_inc();
             }
             __it
@@ -170,7 +173,9 @@ unsafe fn main_0() -> i32 {
     assert!(
         {
             let mut __it = eqs.begin();
-            while __it != eqs.end() && *__it.iter_deref() != nine {
+            let __last = eqs.end();
+            let __value = &nine;
+            while __it != __last && *__it.iter_deref() != *__value {
                 __it.iter_inc();
             }
             __it
@@ -178,15 +183,16 @@ unsafe fn main_0() -> i32 {
     );
     let mut cmps: Vec<Cmp> = Vec::from([Cmp { v: 3 }, Cmp { v: 1 }, Cmp { v: 2 }]);
     {
-        let __n = cmps.end().iter_distance(&cmps.begin());
+        let __first = cmps.begin();
+        let __n = cmps.end().iter_distance(&__first);
         let mut __order: Vec<isize> = (0..__n).collect();
-        __order.sort_by(|&__x, &__y| (*cmps.begin().iter_at(__x)).cmp(&*cmps.begin().iter_at(__y)));
+        __order.sort_by(|&__x, &__y| (*__first.iter_at(__x)).cmp(&*__first.iter_at(__y)));
         let __values: Vec<_> = __order
             .iter()
-            .map(|&__i| std::ptr::read(cmps.begin().iter_at(__i)))
+            .map(|&__i| std::ptr::read(__first.iter_at(__i)))
             .collect();
         for (__i, __v) in (0..__n).zip(__values) {
-            std::ptr::write(cmps.begin().iter_at(__i), __v);
+            std::ptr::write(__first.iter_at(__i), __v);
         }
     };
     assert!(((cmps[(0_usize)].v) == (1)) && ((cmps[(2_usize)].v) == (3)));
@@ -194,7 +200,9 @@ unsafe fn main_0() -> i32 {
     assert!(
         (((*{
             let mut __it = cmps.begin();
-            while __it != cmps.end() && *__it.iter_deref() != three {
+            let __last = cmps.end();
+            let __value = &three;
+            while __it != __last && *__it.iter_deref() != *__value {
                 __it.iter_inc();
             }
             __it
@@ -204,16 +212,16 @@ unsafe fn main_0() -> i32 {
     );
     let mut frees: Vec<Free> = Vec::from([Free { v: 2 }, Free { v: 1 }]);
     {
-        let __n = frees.end().iter_distance(&frees.begin());
+        let __first = frees.begin();
+        let __n = frees.end().iter_distance(&__first);
         let mut __order: Vec<isize> = (0..__n).collect();
-        __order
-            .sort_by(|&__x, &__y| (*frees.begin().iter_at(__x)).cmp(&*frees.begin().iter_at(__y)));
+        __order.sort_by(|&__x, &__y| (*__first.iter_at(__x)).cmp(&*__first.iter_at(__y)));
         let __values: Vec<_> = __order
             .iter()
-            .map(|&__i| std::ptr::read(frees.begin().iter_at(__i)))
+            .map(|&__i| std::ptr::read(__first.iter_at(__i)))
             .collect();
         for (__i, __v) in (0..__n).zip(__values) {
-            std::ptr::write(frees.begin().iter_at(__i), __v);
+            std::ptr::write(__first.iter_at(__i), __v);
         }
     };
     assert!(((frees[(0_usize)].v) == (1)));
@@ -221,7 +229,9 @@ unsafe fn main_0() -> i32 {
     assert!(
         (((*{
             let mut __it = frees.begin();
-            while __it != frees.end() && *__it.iter_deref() != ftwo {
+            let __last = frees.end();
+            let __value = &ftwo;
+            while __it != __last && *__it.iter_deref() != *__value {
                 __it.iter_inc();
             }
             __it

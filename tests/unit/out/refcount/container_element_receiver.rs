@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, Default)]
 #[byte_size(32)]
 pub struct Holder {
     #[offset(0)]
@@ -15,6 +15,14 @@ pub struct Holder {
     #[offset(8)]
     #[byte_size(24)]
     pub vec_: Vec<i32>,
+}
+impl Holder {
+    pub fn move_from(_a0: Ptr<Holder>) -> Self {
+        Self {
+            ref_: ({ (*_a0.upgrade().deref()).ref_.clone() }).clone(),
+            vec_: field!(_a0, vec_).with_mut(std::mem::take),
+        }
+    }
 }
 pub fn pick_0(a: Ptr<Vec<i32>>, b: Ptr<Vec<i32>>, mut first: bool) -> Ptr<Vec<i32>> {
     return if first { (a).clone() } else { (b).clone() };

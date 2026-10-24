@@ -6,26 +6,47 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(24)]
 pub struct MyContainer_int_ {
     #[offset(0)]
     #[byte_size(24)]
     vec_: Vec<i32>,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+impl MyContainer_int_ {
+    pub fn move_from(_a0: Ptr<MyContainer_int_>) -> Self {
+        Self {
+            vec_: field!(_a0, vec_).with_mut(std::mem::take),
+        }
+    }
+}
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(24)]
 pub struct MyContainer_char_ {
     #[offset(0)]
     #[byte_size(24)]
     vec_: Vec<i8>,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+impl MyContainer_char_ {
+    pub fn move_from(_a0: Ptr<MyContainer_char_>) -> Self {
+        Self {
+            vec_: field!(_a0, vec_).with_mut(std::mem::take),
+        }
+    }
+}
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(24)]
 pub struct MyContainer_float_ {
     #[offset(0)]
     #[byte_size(24)]
     vec_: Vec<f32>,
+}
+impl MyContainer_float_ {
+    pub fn move_from(_a0: Ptr<MyContainer_float_>) -> Self {
+        Self {
+            vec_: field!(_a0, vec_).with_mut(std::mem::take),
+        }
+    }
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(2)]
@@ -222,6 +243,7 @@ pub trait MyContainer_char_Impl {
     fn back_4(&self) -> Ptr<i8>;
     fn pop_back(&self);
     fn push_back(&self, item: Ptr<i8>);
+    fn move_assign(&self, _a0: Ptr<MyContainer_char_>) -> Ptr<MyContainer_char_>;
 }
 impl MyContainer_char_Impl for Ptr<MyContainer_char_> {
     fn empty(&self) -> bool {
@@ -243,6 +265,12 @@ impl MyContainer_char_Impl for Ptr<MyContainer_char_> {
             field!((*self), vec_).with_mut(|__v: &mut Vec<i8>| __v.push(a0_clone))
         };
     }
+    fn move_assign(&self, _a0: Ptr<MyContainer_char_>) -> Ptr<MyContainer_char_> {
+        field_ref!((*self), vec_)
+            .as_pointer()
+            .write(field!(_a0, vec_).with_mut(std::mem::take));
+        return (*self).clone();
+    }
 }
 pub trait MyContainer_float_Impl {
     fn empty(&self) -> bool;
@@ -253,6 +281,7 @@ pub trait MyContainer_float_Impl {
     fn back_4(&self) -> Ptr<f32>;
     fn pop_back(&self);
     fn push_back(&self, item: Ptr<f32>);
+    fn move_assign(&self, _a0: Ptr<MyContainer_float_>) -> Ptr<MyContainer_float_>;
 }
 impl MyContainer_float_Impl for Ptr<MyContainer_float_> {
     fn empty(&self) -> bool {
@@ -274,6 +303,12 @@ impl MyContainer_float_Impl for Ptr<MyContainer_float_> {
             field!((*self), vec_).with_mut(|__v: &mut Vec<f32>| __v.push(a0_clone))
         };
     }
+    fn move_assign(&self, _a0: Ptr<MyContainer_float_>) -> Ptr<MyContainer_float_> {
+        field_ref!((*self), vec_)
+            .as_pointer()
+            .write(field!(_a0, vec_).with_mut(std::mem::take));
+        return (*self).clone();
+    }
 }
 pub trait MyContainer_int_Impl {
     fn empty(&self) -> bool;
@@ -284,6 +319,7 @@ pub trait MyContainer_int_Impl {
     fn back_4(&self) -> Ptr<i32>;
     fn pop_back(&self);
     fn push_back(&self, item: Ptr<i32>);
+    fn move_assign(&self, _a0: Ptr<MyContainer_int_>) -> Ptr<MyContainer_int_>;
 }
 impl MyContainer_int_Impl for Ptr<MyContainer_int_> {
     fn empty(&self) -> bool {
@@ -304,6 +340,12 @@ impl MyContainer_int_Impl for Ptr<MyContainer_int_> {
             let a0_clone = (item.read()).clone();
             field!((*self), vec_).with_mut(|__v: &mut Vec<i32>| __v.push(a0_clone))
         };
+    }
+    fn move_assign(&self, _a0: Ptr<MyContainer_int_>) -> Ptr<MyContainer_int_> {
+        field_ref!((*self), vec_)
+            .as_pointer()
+            .write(field!(_a0, vec_).with_mut(std::mem::take));
+        return (*self).clone();
     }
 }
 pub trait Outer_int_Impl {

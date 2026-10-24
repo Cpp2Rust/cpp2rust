@@ -7,10 +7,24 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Clone, VaArg, FnPtrArg)]
+#[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe)]
 pub struct UserDefined {
     pub a: Vec<i32>,
     pub v: Vec<i32>,
+}
+impl UserDefined {
+    pub unsafe fn move_from(_a0: *mut UserDefined) -> Self {
+        let mut this = Self {
+            a: std::mem::take(&mut (*_a0).a),
+            v: std::mem::take(&mut (*_a0).v),
+        };
+        this
+    }
+    pub unsafe fn move_assign(&mut self, _a0: *mut UserDefined) -> *mut UserDefined {
+        self.a = std::mem::take(&mut (*_a0).a);
+        self.v = std::mem::take(&mut (*_a0).v);
+        return &mut (*(self as *mut UserDefined));
+    }
 }
 impl Default for UserDefined {
     fn default() -> Self {

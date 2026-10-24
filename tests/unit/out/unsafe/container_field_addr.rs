@@ -7,10 +7,24 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Clone, VaArg, FnPtrArg, Default)]
+#[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
 pub struct S {
     pub tag: i32,
     pub v: Vec<i32>,
+}
+impl S {
+    pub unsafe fn move_from(_a0: *mut S) -> Self {
+        let mut this = Self {
+            tag: (*_a0).tag,
+            v: std::mem::take(&mut (*_a0).v),
+        };
+        this
+    }
+    pub unsafe fn move_assign(&mut self, _a0: *mut S) -> *mut S {
+        self.tag = (*_a0).tag;
+        self.v = std::mem::take(&mut (*_a0).v);
+        return &mut (*(self as *mut S));
+    }
 }
 pub unsafe fn add_0(mut v: *mut Vec<i32>, mut k: i32) {
     {

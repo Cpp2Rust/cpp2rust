@@ -512,11 +512,26 @@ IsConvertibleImplicitMemberParent(const clang::CXXRecordDecl *decl) {
          decl->getNumBases() == 0;
 }
 
+// Whether moving a field of decl isn't a copy: the field is a record with a
+// move_from method, or a library type that moves its contents (e.g.,
+// std::vector).
 static bool HasFieldWithMoveFrom(const clang::RecordDecl *decl) {
   return llvm::any_of(decl->fields(), [](const clang::FieldDecl *field) {
-    auto *record = field->getType()->getAsRecordDecl();
-    return record && HasMoveFromConstructor(record);
+    auto *record =
+        field->getType()->getBaseElementTypeUnsafe()->getAsCXXRecordDecl();
+    if (!record) {
+      return false;
+    }
+    if (!IsUserDefinedDecl(record)) {
+      return !record->hasTrivialMoveConstructor();
+    }
+    return HasMoveFromConstructor(record);
   });
+}
+
+// Whether a defaulted move constructor of decl isn't a copy.
+static bool NeedsDefaultedMoveConstructor(const clang::CXXRecordDecl *decl) {
+  return !HasDefaultedCopyConstructor(decl) || HasFieldWithMoveFrom(decl);
 }
 
 bool IsConvertibleMoveConstructor(const clang::CXXConstructorDecl *ctor) {
@@ -525,8 +540,7 @@ bool IsConvertibleMoveConstructor(const clang::CXXConstructorDecl *ctor) {
       !IsConvertibleImplicitMemberParent(parent)) {
     return false;
   }
-  return ctor->isUserProvided() || !HasDefaultedCopyConstructor(parent) ||
-         HasFieldWithMoveFrom(parent);
+  return ctor->isUserProvided() || NeedsDefaultedMoveConstructor(parent);
 }
 
 bool HasMoveFromConstructor(const clang::RecordDecl *decl) {
@@ -537,13 +551,27 @@ bool HasMoveFromConstructor(const clang::RecordDecl *decl) {
          });
 }
 
+// Whether move assigning a field of decl isn't a copy: the field is a record
+// with a move_assign method, or a library type that moves its contents.
 static bool HasFieldWithMoveAssign(const clang::RecordDecl *decl) {
   return llvm::any_of(decl->fields(), [](const clang::FieldDecl *field) {
-    auto *record = field->getType()->getAsCXXRecordDecl();
-    return record && llvm::any_of(record->methods(), [](auto *method) {
-             return IsConvertibleMoveAssignment(method);
-           });
+    auto *record =
+        field->getType()->getBaseElementTypeUnsafe()->getAsCXXRecordDecl();
+    if (!record) {
+      return false;
+    }
+    if (!IsUserDefinedDecl(record)) {
+      return !record->hasTrivialMoveAssignment();
+    }
+    return llvm::any_of(record->methods(), [](auto *method) {
+      return IsConvertibleMoveAssignment(method);
+    });
   });
+}
+
+// Whether a defaulted move assignment of decl isn't a copy assignment.
+static bool NeedsDefaultedMoveAssignment(const clang::CXXRecordDecl *decl) {
+  return !HasDefaultedCopyAssignment(decl) || HasFieldWithMoveAssign(decl);
 }
 
 bool IsConvertibleMoveAssignment(const clang::CXXMethodDecl *method) {
@@ -552,8 +580,7 @@ bool IsConvertibleMoveAssignment(const clang::CXXMethodDecl *method) {
       !method->hasBody() || !IsConvertibleImplicitMemberParent(parent)) {
     return false;
   }
-  return method->isUserProvided() || !HasDefaultedCopyAssignment(parent) ||
-         HasFieldWithMoveAssign(parent);
+  return method->isUserProvided() || NeedsDefaultedMoveAssignment(parent);
 }
 
 static bool IsTranslatedCopyAssignment(const clang::CXXMethodDecl *method) {
@@ -1632,7 +1659,7 @@ void DefineImplicitMembers(clang::Sema &sema, clang::CXXRecordDecl *decl) {
     }
     if (ctor->isMoveConstructor() && !ctor->isUserProvided() &&
         !ctor->doesThisDeclarationHaveABody() && !ctor->isDeleted() &&
-        !HasDefaultedCopyConstructor(decl)) {
+        NeedsDefaultedMoveConstructor(decl)) {
       define(ctor, [&] {
         sema.DefineImplicitMoveConstructor(decl->getLocation(), ctor);
       });
@@ -1641,7 +1668,7 @@ void DefineImplicitMembers(clang::Sema &sema, clang::CXXRecordDecl *decl) {
   for (auto *method : decl->methods()) {
     if (method->isMoveAssignmentOperator() && !method->isUserProvided() &&
         !method->doesThisDeclarationHaveABody() && !method->isDeleted() &&
-        !HasDefaultedCopyAssignment(decl)) {
+        NeedsDefaultedMoveAssignment(decl)) {
       define(method, [&] {
         sema.DefineImplicitMoveAssignment(decl->getLocation(), method);
       });

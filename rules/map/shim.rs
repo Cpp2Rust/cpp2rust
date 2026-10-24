@@ -1,78 +1,42 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use std::cell::{Ref, RefCell};
+use std::cell::RefCell;
 use std::cmp::Ordering;
 use std::collections::BTreeMap;
-use std::ops::{Bound, Deref};
+use std::ops::Bound;
 use std::rc::{Rc, Weak};
 
 use crate::{
-    AsPointer, BidirectionalIterator, ByteRepr, CppIterator, Ptr, UnsafeBidirectionalIterator,
-    UnsafeCppIterator, Value,
+    AsPointer, BidirectionalIterator, ByteRepr, CppIterator, CppLess, Ptr,
+    UnsafeBidirectionalIterator, UnsafeCppIterator, Value, cpp_cmp,
 };
 
 // A map keeps a single copy of each key, as C++ does, since copying a key may
-// have side effects. Its index is ordered by the keys of the entries, which it
-// shares with them, and is searched for a borrowed key by comparing it with
-// those through this trait.
-pub trait MapKey<K> {
-    fn key(&self) -> MapKeyRef<'_, K>;
-}
+// have side effects. Its index points to the keys of the entries, is ordered
+// by them with operator< (CppLess), and is searched for a key through a
+// pointer to it.
+struct MapKey<K>(Ptr<K>);
 
-pub enum MapKeyRef<'a, K> {
-    Shared(Ref<'a, K>),
-    Borrowed(&'a K),
-}
-
-impl<K> Deref for MapKeyRef<'_, K> {
-    type Target = K;
-
-    fn deref(&self) -> &K {
-        match self {
-            Self::Shared(key) => key,
-            Self::Borrowed(key) => key,
-        }
-    }
-}
-
-impl<K> MapKey<K> for K {
-    fn key(&self) -> MapKeyRef<'_, K> {
-        MapKeyRef::Borrowed(self)
-    }
-}
-
-impl<K> MapKey<K> for RefCell<K> {
-    fn key(&self) -> MapKeyRef<'_, K> {
-        MapKeyRef::Shared(self.borrow())
-    }
-}
-
-impl<K: Ord> Ord for dyn MapKey<K> + '_ {
+impl<K: CppLess> Ord for MapKey<K> {
     fn cmp(&self, other: &Self) -> Ordering {
-        (*self.key()).cmp(&*other.key())
+        cpp_cmp(&self.0, &other.0)
     }
 }
 
-impl<K: Ord> PartialOrd for dyn MapKey<K> + '_ {
+impl<K: CppLess> PartialOrd for MapKey<K> {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
     }
 }
 
-impl<K: Ord> PartialEq for dyn MapKey<K> + '_ {
+impl<K: CppLess> PartialEq for MapKey<K> {
     fn eq(&self, other: &Self) -> bool {
         self.cmp(other) == Ordering::Equal
     }
 }
 
-impl<K: Ord> Eq for dyn MapKey<K> + '_ {}
-
-impl<'a, K: Ord + 'a> std::borrow::Borrow<dyn MapKey<K> + 'a> for Value<K> {
-    fn borrow(&self) -> &(dyn MapKey<K> + 'a) {
-        &**self
-    }
-}
+impl<K: CppLess> Eq for MapKey<K> {}
 
 pub struct MapNode<T> {
     value: Option<Value<T>>,
@@ -119,7 +83,7 @@ impl<T> MapNode<T> {
 }
 
 pub struct Map<K, T> {
-    nodes: BTreeMap<Value<K>, Value<MapNode<T>>>,
+    nodes: BTreeMap<MapKey<K>, Value<MapNode<T>>>,
     header: Value<MapNode<T>>,
 }
 
@@ -134,7 +98,7 @@ impl<K, T> Default for Map<K, T> {
 
 impl<K: 'static, T: 'static> ByteRepr for Map<K, T> {}
 
-impl<K: Ord + Clone, V: Clone> Clone for Map<K, (Value<K>, Value<V>)> {
+impl<K: CppLess + Clone + 'static, V: Clone> Clone for Map<K, (Value<K>, Value<V>)> {
     fn clone(&self) -> Self {
         let mut map = Self::default();
         let mut prev = map.header.clone();
@@ -182,13 +146,13 @@ impl<K, T> Map<K, T> {
 type Entry<K, V> = (Value<K>, Value<V>);
 type EntryNode<K, V> = Value<MapNode<Entry<K, V>>>;
 
-impl<K: Ord, V> Map<K, Entry<K, V>> {
+impl<K: CppLess + 'static, V> Map<K, Entry<K, V>> {
     fn link_after(
         &mut self,
         prev: Value<MapNode<Entry<K, V>>>,
         entry: Entry<K, V>,
     ) -> Value<MapNode<Entry<K, V>>> {
-        let key = entry.0.clone();
+        let key = MapKey(entry.0.as_pointer());
         let next = MapNode::next(&prev);
         let node = Rc::new(RefCell::new(MapNode {
             value: Some(Rc::new(RefCell::new(entry))),
@@ -202,14 +166,14 @@ impl<K: Ord, V> Map<K, Entry<K, V>> {
     }
 
     // The node with the given key, or else the node after which it goes.
-    fn search(&self, key: &K) -> Result<EntryNode<K, V>, EntryNode<K, V>> {
-        let key: &dyn MapKey<K> = key;
+    fn search(&self, key: &Ptr<K>) -> Result<EntryNode<K, V>, EntryNode<K, V>> {
+        let key = MapKey(key.clone());
         match self
             .nodes
-            .range::<dyn MapKey<K>, _>((Bound::Unbounded, Bound::Included(key)))
+            .range((Bound::Unbounded, Bound::Included(&key)))
             .next_back()
         {
-            Some((k, node)) if (&**k as &dyn MapKey<K>) == key => Ok(node.clone()),
+            Some((k, node)) if *k == key => Ok(node.clone()),
             Some((_, node)) => Err(node.clone()),
             None => Err(self.header.clone()),
         }
@@ -236,8 +200,8 @@ impl<K: Ord, V> Map<K, Entry<K, V>> {
         Self::mapped(&self.link_after(prev, entry))
     }
 
-    pub fn get(&self, key: &K) -> Option<Value<Entry<K, V>>> {
-        self.nodes.get(key as &dyn MapKey<K>).map(|node| {
+    pub fn get(&self, key: &Ptr<K>) -> Option<Value<Entry<K, V>>> {
+        self.nodes.get(&MapKey(key.clone())).map(|node| {
             node.borrow()
                 .value
                 .clone()
@@ -245,8 +209,8 @@ impl<K: Ord, V> Map<K, Entry<K, V>> {
         })
     }
 
-    pub fn find(&self, key: &K) -> BidirectionalIterator<Entry<K, V>> {
-        match self.nodes.get(key as &dyn MapKey<K>) {
+    pub fn find(&self, key: &Ptr<K>) -> BidirectionalIterator<Entry<K, V>> {
+        match self.nodes.get(&MapKey(key.clone())) {
             Some(node) => BidirectionalIterator::Map(node.clone()),
             None => self.end(),
         }
@@ -264,26 +228,25 @@ impl<K: Ord, V> Map<K, Entry<K, V>> {
 
 // The functions that modify a map take a pointer to it, and borrow it after
 // their arguments are evaluated, which may access the map.
-impl<K: Ord + 'static, V: 'static> Map<K, Entry<K, V>> {
+impl<K: CppLess + 'static, V: 'static> Map<K, Entry<K, V>> {
     // operator[] with a key that is copied if inserted.
-    pub fn subscript(map: Ptr<Self>, key: &K) -> Ptr<V>
+    pub fn subscript(map: Ptr<Self>, key: Ptr<K>) -> Ptr<V>
     where
-        K: Clone,
+        K: Clone + ByteRepr,
         V: Default,
     {
-        map.with_mut(|map| match map.search(key) {
+        map.with_mut(|map| match map.search(&key) {
             Ok(node) => Self::mapped(&node),
-            Err(prev) => map.insert_after(prev, key.clone()),
+            Err(prev) => map.insert_after(prev, key.read()),
         })
     }
 
     // operator[] with a key that is moved, by new_key, if inserted.
     pub fn subscript_move(map: Ptr<Self>, key: Ptr<K>, new_key: impl FnOnce(Ptr<K>) -> K) -> Ptr<V>
     where
-        K: ByteRepr,
         V: Default,
     {
-        map.with_mut(|map| match key.with(|key| map.search(key)) {
+        map.with_mut(|map| match map.search(&key) {
             Ok(node) => Self::mapped(&node),
             Err(prev) => map.insert_after(prev, new_key(key)),
         })
@@ -301,14 +264,14 @@ impl<K: Ord + 'static, V: 'static> Map<K, Entry<K, V>> {
             .expect("ub: erase of end iterator")
             .borrow()
             .0
-            .clone();
+            .as_pointer();
         let next = Self::unlink(node);
-        map.with_mut(|map| map.nodes.remove(&key));
+        map.with_mut(|map| map.nodes.remove(&MapKey(key)));
         BidirectionalIterator::Map(next)
     }
 
-    pub fn erase_key(map: Ptr<Self>, key: &K) -> usize {
-        match map.with_mut(|map| map.nodes.remove(key as &dyn MapKey<K>)) {
+    pub fn erase_key(map: Ptr<Self>, key: &Ptr<K>) -> usize {
+        match map.with_mut(|map| map.nodes.remove(&MapKey(key.clone()))) {
             Some(node) => {
                 Self::unlink(&node);
                 1

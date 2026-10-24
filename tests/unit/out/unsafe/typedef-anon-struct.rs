@@ -13,9 +13,21 @@ pub struct Outer_RunInfo {
     pub num_extra_zero_runs: i32,
 }
 #[repr(C)]
-#[derive(Clone, VaArg, FnPtrArg, Default)]
+#[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
 pub struct Outer {
     pub runs: Vec<Outer_RunInfo>,
+}
+impl Outer {
+    pub unsafe fn move_from(_a0: *mut Outer) -> Self {
+        let mut this = Self {
+            runs: std::mem::take(&mut (*_a0).runs),
+        };
+        this
+    }
+    pub unsafe fn move_assign(&mut self, _a0: *mut Outer) -> *mut Outer {
+        self.runs = std::mem::take(&mut (*_a0).runs);
+        return &mut (*(self as *mut Outer));
+    }
 }
 pub fn main() {
     unsafe {

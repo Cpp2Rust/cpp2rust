@@ -1803,13 +1803,17 @@ void Converter::EmitCallResult(clang::CallExpr *expr, std::string str,
                 (temps && IsReferenceType(expr))) &&
                !isAddrOf() && !isVoid();
   // The dereference is in the block of the temporaries, so they are still
-  // alive.
+  // alive, as is the read of a field of the result.
   if (deref && !(temps && Mapper::IsRefExpr(ctx_, expr))) {
     Buffer buf(*this);
     EmitDeref(std::move(str), expr->getType());
     str = std::move(buf).str();
   }
-  StrCat(temps ? temps->Wrap(std::move(str)) : str);
+  if (deref && DeferTemporaries(expr, temps)) {
+    StrCat(str);
+  } else {
+    StrCat(temps ? temps->Wrap(std::move(str)) : str);
+  }
   if (deref) {
     SetValueFreshness(expr->getType());
   } else if (!temps || !IsPassThroughRule(expr)) {
@@ -3296,6 +3300,26 @@ void Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
     return;
   }
 
+  // A field of the result of a call is read in the block of the temporaries
+  // of the arguments of the call.
+  if (auto *call = GetFieldReadCall(expr);
+      call && (!field_read_call_ || field_read_call_->call != call)) {
+    FieldReadCall read{call, ""};
+    std::string str;
+    {
+      ScopedValue push_read(field_read_call_, &read);
+      Buffer buf(*this);
+      ConvertMemberExpr(expr);
+      str = std::move(buf).str();
+    }
+    if (read.temporary_bindings.empty()) {
+      StrCat(str);
+    } else {
+      StrCat(std::format("{{ {} {} }}", read.temporary_bindings, str));
+    }
+    return;
+  }
+
   auto *member = expr->getMemberDecl();
   auto *base = expr->getBase();
   bool base_is_this = clang::isa<clang::CXXThisExpr>(base->IgnoreCasts()) &&
@@ -3319,6 +3343,27 @@ void Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
   }
 }
 
+bool Converter::DeferTemporaries(const clang::Expr *call,
+                                 const TempMaterializationCtx *temps) {
+  if (!temps || !field_read_call_ || field_read_call_->call != call) {
+    return false;
+  }
+  field_read_call_->temporary_bindings = temps->temporary_bindings;
+  return true;
+}
+
+// The call whose result expr reads a field of, through fields of fields.
+const clang::Expr *Converter::GetFieldReadCall(const clang::MemberExpr *expr) {
+  const clang::Expr *base = expr;
+  while (auto *member = clang::dyn_cast<clang::MemberExpr>(base)) {
+    if (member->isArrow()) {
+      return nullptr;
+    }
+    base = member->getBase()->IgnoreParenImpCasts();
+  }
+  return clang::isa<clang::CallExpr>(base) ? base : nullptr;
+}
+
 bool Converter::VisitCXXThisExpr(clang::CXXThisExpr *expr) {
   if (auto field = AsLambdaCaptureThis(curr_function_)) {
     auto name = GetNamedDeclAsString(field);
@@ -3338,12 +3383,26 @@ bool Converter::VisitCXXThisExpr(clang::CXXThisExpr *expr) {
 }
 
 bool Converter::VisitOpaqueValueExpr(clang::OpaqueValueExpr *expr) {
+  // The common expression of an array init loop uses the indices of the
+  // loops outside it.
+  auto outer = array_init_outer_depth_.find(expr);
+  if (outer == array_init_outer_depth_.end()) {
+    Convert(expr->getSourceExpr());
+    return false;
+  }
+  auto depth = std::exchange(array_init_depth_, outer->second);
   Convert(expr->getSourceExpr());
+  array_init_depth_ = depth;
   return false;
 }
 
+std::string Converter::ArrayInitIndexName() const {
+  return array_init_depth_ == 1 ? "__i"
+                                : std::format("__i{}", array_init_depth_);
+}
+
 bool Converter::VisitArrayInitIndexExpr(clang::ArrayInitIndexExpr *expr) {
-  EmitFresh("__i");
+  EmitFresh(ArrayInitIndexName());
   return false;
 }
 
@@ -3351,8 +3410,10 @@ bool Converter::VisitArrayInitLoopExpr(clang::ArrayInitLoopExpr *expr) {
   StrCat(std::format("std::array::from_fn::<_, {}, _>",
                      GetArraySize(expr->getType())));
   PushParen paren(*this);
-  StrCat("|__i: usize|");
+  array_init_outer_depth_[expr->getCommonExpr()] = array_init_depth_++;
+  StrCat(std::format("|{}: usize|", ArrayInitIndexName()));
   ConvertVarInit(expr->getSubExpr()->getType(), expr->getSubExpr());
+  --array_init_depth_;
   MarkFresh();
   return false;
 }
@@ -4466,19 +4527,15 @@ std::string Converter::GetComparisonCall(const clang::FunctionDecl *op,
                                          const clang::CXXRecordDecl *decl,
                                          std::string_view lhs,
                                          std::string_view rhs) {
-  auto arg = [&](unsigned i, std::string_view value) {
-    if (op->getParamDecl(i)->getType()->isReferenceType()) {
-      return GetComparisonReferenceArg(decl, value);
-    }
-    return std::format("{}.clone()", value);
-  };
   if (const auto *method = clang::dyn_cast<clang::CXXMethodDecl>(op)) {
     return std::format("{}::{}({}, {})", GetUFCSName(method),
                        GetMethodName(method),
-                       GetComparisonReceiver(method, decl, lhs), arg(0, rhs));
+                       GetComparisonReceiver(method, lhs),
+                       GetComparisonArg(op->getParamDecl(0), decl, rhs));
   }
   return std::format("{}({}, {})", GetNamedDeclAsString(op->getCanonicalDecl()),
-                     arg(0, lhs), arg(1, rhs));
+                     GetComparisonArg(op->getParamDecl(0), decl, lhs),
+                     GetComparisonArg(op->getParamDecl(1), decl, rhs));
 }
 
 std::string Converter::GetComparisonBool(const clang::FunctionDecl *op,
@@ -4499,34 +4556,34 @@ std::string Converter::GetComparisonBool(const clang::FunctionDecl *op,
   for (const auto *found : record->getVisibleConversionFunctions()) {
     const auto *conversion = clang::dyn_cast<clang::CXXConversionDecl>(found);
     if (conversion && conversion->getConversionType()->isBooleanType()) {
-      auto receiver =
-          returns_ref
-              ? GetComparisonReferenceReceiver(conversion, record, "__cmp")
-              : GetComparisonReceiver(conversion, record, "__cmp");
-      return std::format("{{ let __cmp = {}{}; {}::{}({}) }}",
-                         returns_ref ? "" : "&", call, GetUFCSName(conversion),
-                         GetMethodName(conversion), receiver);
+      return std::format(
+          "{{ let __cmp = {}; {}::{}({}) }}", call, GetUFCSName(conversion),
+          GetMethodName(conversion),
+          GetComparisonResultReceiver(conversion, returns_ref, "__cmp"));
     }
   }
   assert(0 && "comparison operator result has no conversion to bool");
   return call;
 }
 
-std::string
-Converter::GetComparisonReferenceArg(const clang::CXXRecordDecl *decl,
-                                     std::string_view value) {
-  return std::format("{} as *const {}", value, GetRecordName(decl));
+std::string Converter::GetComparisonArg(const clang::ParmVarDecl *param,
+                                        const clang::CXXRecordDecl *decl,
+                                        std::string_view value) {
+  if (param->getType()->isReferenceType()) {
+    return std::format("{} as *const {}", value, GetRecordName(decl));
+  }
+  return std::format("{}.clone()", value);
 }
 
 std::string
-Converter::GetComparisonReferenceReceiver(const clang::CXXMethodDecl *method,
-                                          const clang::CXXRecordDecl *decl,
-                                          std::string_view ptr) {
-  return GetComparisonReceiver(method, decl, std::format("&*{}", ptr));
+Converter::GetComparisonResultReceiver(const clang::CXXMethodDecl *method,
+                                       bool returns_ref,
+                                       std::string_view result) {
+  return GetComparisonReceiver(
+      method, std::format("{}{}", returns_ref ? "&*" : "&", result));
 }
 
 std::string Converter::GetComparisonReceiver(const clang::CXXMethodDecl *method,
-                                             const clang::CXXRecordDecl *,
                                              std::string_view lhs) {
   if (!MethodNeedsMutableReceiver(method)) {
     return std::string(lhs);
@@ -4534,12 +4591,27 @@ std::string Converter::GetComparisonReceiver(const clang::CXXMethodDecl *method,
   return std::format("&mut *(&raw const *{}).cast_mut()", lhs);
 }
 
+std::string Converter::GetEqBody(const clang::CXXRecordDecl *decl,
+                                 const clang::FunctionDecl *eq,
+                                 const clang::FunctionDecl *lt,
+                                 const clang::FunctionDecl *cmp,
+                                 std::string_view lhs, std::string_view rhs) {
+  if (eq) {
+    return GetComparisonBool(eq, decl, lhs, rhs);
+  }
+  if (cmp) {
+    return std::format("{} == std::cmp::Ordering::Equal",
+                       GetComparisonCall(cmp, decl, lhs, rhs));
+  }
+  return std::format("!({}) && !({})", GetComparisonBool(lt, decl, lhs, rhs),
+                     GetComparisonBool(lt, decl, rhs, lhs));
+}
+
 void Converter::ConvertOrdAndPartialOrdTraits(const clang::CXXRecordDecl *decl,
                                               const clang::FunctionDecl *eq,
                                               const clang::FunctionDecl *lt,
                                               const clang::FunctionDecl *cmp) {
-  std::string cmp_body, eq_body;
-
+  std::string cmp_body;
   if (cmp) {
     cmp_body = GetComparisonCall(cmp, decl, "self", "other");
   } else if (lt) {
@@ -4549,19 +4621,9 @@ void Converter::ConvertOrdAndPartialOrdTraits(const clang::CXXRecordDecl *decl,
                            GetComparisonBool(lt, decl, "self", "other"),
                            GetComparisonBool(lt, decl, "other", "self"));
   }
-
-  if (eq) {
-    eq_body = GetComparisonBool(eq, decl, "self", "other");
-  } else if (cmp) {
-    eq_body = std::format("{} == std::cmp::Ordering::Equal",
-                          GetComparisonCall(cmp, decl, "self", "other"));
-  } else {
-    eq_body = std::format("!({}) && !({})",
-                          GetComparisonBool(lt, decl, "self", "other"),
-                          GetComparisonBool(lt, decl, "other", "self"));
-  }
-
-  ConvertOrdAndPartialOrdTraitsBase(cmp_body, eq_body, GetRecordName(decl));
+  ConvertOrdAndPartialOrdTraitsBase(
+      cmp_body, GetEqBody(decl, eq, lt, cmp, "self", "other"),
+      GetRecordName(decl));
 }
 
 void Converter::AddOrdTrait(const clang::CXXRecordDecl *decl) {

@@ -18,25 +18,11 @@ pub struct Defaulted {
     #[offset(4)]
     pub b: i32,
 }
-impl std::cmp::PartialEq for Defaulted {
-    fn eq(&self, other: &Self) -> bool {
-        {
-            operator_eq_0(
-                Rc::new(RefCell::new(Defaulted {
-                    a: self.a.clone(),
-                    b: self.b.clone(),
-                }))
-                .as_pointer(),
-                Rc::new(RefCell::new(Defaulted {
-                    a: other.a.clone(),
-                    b: other.b.clone(),
-                }))
-                .as_pointer(),
-            )
-        }
+impl CppEq for Defaulted {
+    fn equal(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
+        operator_eq_0(__lhs.clone(), __rhs.clone())
     }
 }
-impl std::cmp::Eq for Defaulted {}
 pub fn operator_cmp_1(_a0: Ptr<DefaultedOrd>, _a1: Ptr<DefaultedOrd>) -> std::cmp::Ordering {
     {
         let cmp: Value<std::cmp::Ordering> = Rc::new(RefCell::new(std::cmp::Ord::cmp(
@@ -58,32 +44,16 @@ pub struct DefaultedOrd {
     #[offset(0)]
     pub a: i32,
 }
-impl std::cmp::Ord for DefaultedOrd {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        {
-            operator_cmp_1(
-                Rc::new(RefCell::new(DefaultedOrd { a: self.a.clone() })).as_pointer(),
-                Rc::new(RefCell::new(DefaultedOrd { a: other.a.clone() })).as_pointer(),
-            )
-        }
+impl CppLess for DefaultedOrd {
+    fn less(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
+        operator_cmp_1(__lhs.clone(), __rhs.clone()) == std::cmp::Ordering::Less
     }
 }
-impl std::cmp::PartialOrd for DefaultedOrd {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(other))
+impl CppEq for DefaultedOrd {
+    fn equal(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
+        operator_eq_2(__lhs.clone(), __rhs.clone())
     }
 }
-impl std::cmp::PartialEq for DefaultedOrd {
-    fn eq(&self, other: &Self) -> bool {
-        {
-            operator_eq_2(
-                Rc::new(RefCell::new(DefaultedOrd { a: self.a.clone() })).as_pointer(),
-                Rc::new(RefCell::new(DefaultedOrd { a: other.a.clone() })).as_pointer(),
-            )
-        }
-    }
-}
-impl std::cmp::Eq for DefaultedOrd {}
 pub fn operator_eq_3(x: Ptr<Inline>, y: Ptr<Inline>) -> bool {
     return ({ x.with(|__s| __s.a) } == { y.with(|__s| __s.a) });
 }
@@ -101,58 +71,27 @@ pub struct Inline {
     #[offset(0)]
     pub a: i32,
 }
-impl std::cmp::Ord for Inline {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        {
-            if operator_lt_4(
-                Rc::new(RefCell::new(Inline { a: self.a.clone() })).as_pointer(),
-                Rc::new(RefCell::new(Inline { a: other.a.clone() })).as_pointer(),
-            ) {
-                std::cmp::Ordering::Less
-            } else if operator_lt_4(
-                Rc::new(RefCell::new(Inline { a: other.a.clone() })).as_pointer(),
-                Rc::new(RefCell::new(Inline { a: self.a.clone() })).as_pointer(),
-            ) {
-                std::cmp::Ordering::Greater
-            } else {
-                std::cmp::Ordering::Equal
-            }
-        }
+impl CppLess for Inline {
+    fn less(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
+        operator_lt_4(__lhs.clone(), __rhs.clone())
     }
 }
-impl std::cmp::PartialOrd for Inline {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(other))
+impl CppEq for Inline {
+    fn equal(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
+        operator_eq_3(__lhs.clone(), __rhs.clone())
     }
 }
-impl std::cmp::PartialEq for Inline {
-    fn eq(&self, other: &Self) -> bool {
-        {
-            operator_eq_3(
-                Rc::new(RefCell::new(Inline { a: self.a.clone() })).as_pointer(),
-                Rc::new(RefCell::new(Inline { a: other.a.clone() })).as_pointer(),
-            )
-        }
-    }
-}
-impl std::cmp::Eq for Inline {}
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct OutOfLine {
     #[offset(0)]
     pub a: i32,
 }
-impl std::cmp::PartialEq for OutOfLine {
-    fn eq(&self, other: &Self) -> bool {
-        {
-            operator_eq_6(
-                Rc::new(RefCell::new(OutOfLine { a: self.a.clone() })).as_pointer(),
-                Rc::new(RefCell::new(OutOfLine { a: other.a.clone() })).as_pointer(),
-            )
-        }
+impl CppEq for OutOfLine {
+    fn equal(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
+        operator_eq_6(__lhs.clone(), __rhs.clone())
     }
 }
-impl std::cmp::Eq for OutOfLine {}
 pub fn operator_eq_6(x: Ptr<OutOfLine>, y: Ptr<OutOfLine>) -> bool {
     return ({ x.with(|__s| __s.a) } == { y.with(|__s| __s.a) });
 }
@@ -178,41 +117,16 @@ pub struct Tmpl_int_ {
     #[offset(0)]
     pub v: i32,
 }
-impl std::cmp::Ord for Tmpl_int_ {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        {
-            if operator_lt_9(
-                Rc::new(RefCell::new(Tmpl_int_ { v: self.v.clone() })).as_pointer(),
-                Rc::new(RefCell::new(Tmpl_int_ { v: other.v.clone() })).as_pointer(),
-            ) {
-                std::cmp::Ordering::Less
-            } else if operator_lt_9(
-                Rc::new(RefCell::new(Tmpl_int_ { v: other.v.clone() })).as_pointer(),
-                Rc::new(RefCell::new(Tmpl_int_ { v: self.v.clone() })).as_pointer(),
-            ) {
-                std::cmp::Ordering::Greater
-            } else {
-                std::cmp::Ordering::Equal
-            }
-        }
+impl CppLess for Tmpl_int_ {
+    fn less(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
+        operator_lt_9(__lhs.clone(), __rhs.clone())
     }
 }
-impl std::cmp::PartialOrd for Tmpl_int_ {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(other))
+impl CppEq for Tmpl_int_ {
+    fn equal(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
+        operator_eq_8(__lhs.clone(), __rhs.clone())
     }
 }
-impl std::cmp::PartialEq for Tmpl_int_ {
-    fn eq(&self, other: &Self) -> bool {
-        {
-            operator_eq_8(
-                Rc::new(RefCell::new(Tmpl_int_ { v: self.v.clone() })).as_pointer(),
-                Rc::new(RefCell::new(Tmpl_int_ { v: other.v.clone() })).as_pointer(),
-            )
-        }
-    }
-}
-impl std::cmp::Eq for Tmpl_int_ {}
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct Tmpl_long_ {
@@ -228,17 +142,11 @@ pub struct TmplDefaulted_int_ {
     #[offset(0)]
     pub v: i32,
 }
-impl std::cmp::PartialEq for TmplDefaulted_int_ {
-    fn eq(&self, other: &Self) -> bool {
-        {
-            operator_eq_11(
-                Rc::new(RefCell::new(TmplDefaulted_int_ { v: self.v.clone() })).as_pointer(),
-                Rc::new(RefCell::new(TmplDefaulted_int_ { v: other.v.clone() })).as_pointer(),
-            )
-        }
+impl CppEq for TmplDefaulted_int_ {
+    fn equal(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
+        operator_eq_11(__lhs.clone(), __rhs.clone())
     }
 }
-impl std::cmp::Eq for TmplDefaulted_int_ {}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());

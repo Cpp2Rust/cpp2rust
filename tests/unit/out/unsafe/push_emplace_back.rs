@@ -18,10 +18,24 @@ pub struct Writer {
     pub chunk: Chunk,
 }
 #[repr(C)]
-#[derive(Clone, VaArg, FnPtrArg, Default)]
+#[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
 pub struct JPEGData {
     pub com_data: Vec<Vec<u8>>,
     pub app_data: Vec<Vec<u8>>,
+}
+impl JPEGData {
+    pub unsafe fn move_from(_a0: *mut JPEGData) -> Self {
+        let mut this = Self {
+            com_data: std::mem::take(&mut (*_a0).com_data),
+            app_data: std::mem::take(&mut (*_a0).app_data),
+        };
+        this
+    }
+    pub unsafe fn move_assign(&mut self, _a0: *mut JPEGData) -> *mut JPEGData {
+        self.com_data = std::mem::take(&mut (*_a0).com_data);
+        self.app_data = std::mem::take(&mut (*_a0).app_data);
+        return &mut (*(self as *mut JPEGData));
+    }
 }
 pub unsafe fn push_param_0(mut dest: *mut Vec<Vec<u8>>) {
     {

@@ -88,12 +88,23 @@ impl Pair {
     }
 }
 #[repr(C)]
-#[derive(Clone, VaArg, FnPtrArg, CopyAssignUnsafe, Default)]
+#[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, CopyAssignUnsafe, MoveAssignUnsafe, Default)]
 pub struct Arrays {
     pub a: [Tracked; 2],
     pub b: [Tracked; 2],
 }
 impl Arrays {
+    pub unsafe fn move_from(_a0: *mut Arrays) -> Self {
+        let mut this = Self {
+            a: std::array::from_fn::<_, 2, _>(|__i: usize| {
+                Tracked::move_from({ &mut (*_a0).a[(__i)] })
+            }),
+            b: std::array::from_fn::<_, 2, _>(|__i: usize| {
+                Tracked::move_from({ &mut (*_a0).b[(__i)] })
+            }),
+        };
+        this
+    }
     pub unsafe fn copy_assign(&mut self, _a0: *const Arrays) -> *mut Arrays {
         let mut __i0: usize = 0_usize;
         'loop_: while ((__i0) != (2_usize)) {
@@ -108,6 +119,25 @@ impl Arrays {
             (unsafe {
                 let _o: *const Tracked = &(*_a0).b[(__i0)];
                 Tracked::copy_assign(&mut self.b[(__i0)], _o)
+            });
+            __i0.prefix_inc();
+        }
+        return &mut (*(self as *mut Arrays));
+    }
+    pub unsafe fn move_assign(&mut self, _a0: *mut Arrays) -> *mut Arrays {
+        let mut __i0: usize = 0_usize;
+        'loop_: while ((__i0) != (2_usize)) {
+            (unsafe {
+                let _o: *mut Tracked = &mut (*_a0).a[(__i0)];
+                Tracked::move_assign(&mut self.a[(__i0)], _o)
+            });
+            __i0.prefix_inc();
+        }
+        let mut __i0: usize = 0_usize;
+        'loop_: while ((__i0) != (2_usize)) {
+            (unsafe {
+                let _o: *mut Tracked = &mut (*_a0).b[(__i0)];
+                Tracked::move_assign(&mut self.b[(__i0)], _o)
             });
             __i0.prefix_inc();
         }
@@ -219,12 +249,28 @@ impl Clone for Moved {
     }
 }
 #[repr(C)]
-#[derive(Clone, VaArg, FnPtrArg, CopyAssignUnsafe, DestructorUnsafe, Default)]
+#[derive(
+    Clone,
+    VaArg,
+    FnPtrArg,
+    MoveCtorUnsafe,
+    CopyAssignUnsafe,
+    MoveAssignUnsafe,
+    DestructorUnsafe,
+    Default,
+)]
 pub struct MovedPair {
     pub x: Moved,
     pub y: Moved,
 }
 impl MovedPair {
+    pub unsafe fn move_from(_a0: *mut MovedPair) -> Self {
+        let mut this = Self {
+            x: Moved::move_from({ &mut (*_a0).x }),
+            y: Moved::move_from({ &mut (*_a0).y }),
+        };
+        this
+    }
     pub unsafe fn copy_assign(&mut self, _a0: *const MovedPair) -> *mut MovedPair {
         (unsafe {
             let _o: *const Moved = &(*_a0).x;
@@ -233,6 +279,17 @@ impl MovedPair {
         (unsafe {
             let _o: *const Moved = &(*_a0).y;
             Moved::copy_assign(&mut self.y, _o)
+        });
+        return &mut (*(self as *mut MovedPair));
+    }
+    pub unsafe fn move_assign(&mut self, _a0: *mut MovedPair) -> *mut MovedPair {
+        (unsafe {
+            let _o: *mut Moved = &mut (*_a0).x;
+            Moved::move_assign(&mut self.x, _o)
+        });
+        (unsafe {
+            let _o: *mut Moved = &mut (*_a0).y;
+            Moved::move_assign(&mut self.y, _o)
         });
         return &mut (*(self as *mut MovedPair));
     }

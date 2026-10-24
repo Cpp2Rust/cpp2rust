@@ -31,25 +31,11 @@ pub struct Counter {
     #[offset(4)]
     pub calls: i32,
 }
-impl std::cmp::PartialEq for Counter {
-    fn eq(&self, other: &Self) -> bool {
-        {
-            CounterImpl::operator_eq(
-                &Rc::new(RefCell::new(Counter {
-                    v: self.v.clone(),
-                    calls: self.calls.clone(),
-                }))
-                .as_pointer(),
-                Rc::new(RefCell::new(Counter {
-                    v: other.v.clone(),
-                    calls: other.calls.clone(),
-                }))
-                .as_pointer(),
-            )
-        }
+impl CppEq for Counter {
+    fn equal(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
+        CounterImpl::operator_eq(__lhs, __rhs.clone())
     }
 }
-impl std::cmp::Eq for Counter {}
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Tally {

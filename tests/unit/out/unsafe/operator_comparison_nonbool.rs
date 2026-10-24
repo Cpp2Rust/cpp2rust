@@ -135,13 +135,13 @@ impl std::cmp::Ord for Boolish {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         unsafe {
             if {
-                let __cmp = &operator_lt_6(self.clone(), other.clone());
-                MyBool::to_bool(__cmp)
+                let __cmp = operator_lt_6(self.clone(), other.clone());
+                MyBool::to_bool(&__cmp)
             } {
                 std::cmp::Ordering::Less
             } else if {
-                let __cmp = &operator_lt_6(other.clone(), self.clone());
-                MyBool::to_bool(__cmp)
+                let __cmp = operator_lt_6(other.clone(), self.clone());
+                MyBool::to_bool(&__cmp)
             } {
                 std::cmp::Ordering::Greater
             } else {
@@ -159,8 +159,8 @@ impl std::cmp::PartialEq for Boolish {
     fn eq(&self, other: &Self) -> bool {
         unsafe {
             {
-                let __cmp = &operator_eq_7(self.clone(), other.clone());
-                MyBool::to_bool(__cmp)
+                let __cmp = operator_eq_7(self.clone(), other.clone());
+                MyBool::to_bool(&__cmp)
             }
         }
     }
@@ -263,20 +263,16 @@ unsafe fn main_0() -> i32 {
     );
     let mut xs: [X; 3] = [X { v: 3 }, X { v: 1 }, X { v: 2 }];
     {
-        let __n = xs
-            .as_mut_ptr()
-            .offset((3) as isize)
-            .iter_distance(&xs.as_mut_ptr());
+        let __first = xs.as_mut_ptr();
+        let __n = xs.as_mut_ptr().offset((3) as isize).iter_distance(&__first);
         let mut __order: Vec<isize> = (0..__n).collect();
-        __order.sort_by(|&__x, &__y| {
-            (*xs.as_mut_ptr().iter_at(__x)).cmp(&*xs.as_mut_ptr().iter_at(__y))
-        });
+        __order.sort_by(|&__x, &__y| (*__first.iter_at(__x)).cmp(&*__first.iter_at(__y)));
         let __values: Vec<_> = __order
             .iter()
-            .map(|&__i| std::ptr::read(xs.as_mut_ptr().iter_at(__i)))
+            .map(|&__i| std::ptr::read(__first.iter_at(__i)))
             .collect();
         for (__i, __v) in (0..__n).zip(__values) {
-            std::ptr::write(xs.as_mut_ptr().iter_at(__i), __v);
+            std::ptr::write(__first.iter_at(__i), __v);
         }
     };
     assert!(
@@ -293,20 +289,16 @@ unsafe fn main_0() -> i32 {
     assert!((((unsafe { Mixed::operator_cmp(&m, &n,) }).r) == (0)));
     let mut ms: [Mixed; 3] = [Mixed { v: 6 }, Mixed { v: 4 }, Mixed { v: 5 }];
     {
-        let __n = ms
-            .as_mut_ptr()
-            .offset((3) as isize)
-            .iter_distance(&ms.as_mut_ptr());
+        let __first = ms.as_mut_ptr();
+        let __n = ms.as_mut_ptr().offset((3) as isize).iter_distance(&__first);
         let mut __order: Vec<isize> = (0..__n).collect();
-        __order.sort_by(|&__x, &__y| {
-            (*ms.as_mut_ptr().iter_at(__x)).cmp(&*ms.as_mut_ptr().iter_at(__y))
-        });
+        __order.sort_by(|&__x, &__y| (*__first.iter_at(__x)).cmp(&*__first.iter_at(__y)));
         let __values: Vec<_> = __order
             .iter()
-            .map(|&__i| std::ptr::read(ms.as_mut_ptr().iter_at(__i)))
+            .map(|&__i| std::ptr::read(__first.iter_at(__i)))
             .collect();
         for (__i, __v) in (0..__n).zip(__values) {
-            std::ptr::write(ms.as_mut_ptr().iter_at(__i), __v);
+            std::ptr::write(__first.iter_at(__i), __v);
         }
     };
     assert!(
@@ -348,20 +340,16 @@ unsafe fn main_0() -> i32 {
     assert!(lt.value);
     let mut bs: [Boolish; 3] = [Boolish { v: 3 }, Boolish { v: 1 }, Boolish { v: 2 }];
     {
-        let __n = bs
-            .as_mut_ptr()
-            .offset((3) as isize)
-            .iter_distance(&bs.as_mut_ptr());
+        let __first = bs.as_mut_ptr();
+        let __n = bs.as_mut_ptr().offset((3) as isize).iter_distance(&__first);
         let mut __order: Vec<isize> = (0..__n).collect();
-        __order.sort_by(|&__x, &__y| {
-            (*bs.as_mut_ptr().iter_at(__x)).cmp(&*bs.as_mut_ptr().iter_at(__y))
-        });
+        __order.sort_by(|&__x, &__y| (*__first.iter_at(__x)).cmp(&*__first.iter_at(__y)));
         let __values: Vec<_> = __order
             .iter()
-            .map(|&__i| std::ptr::read(bs.as_mut_ptr().iter_at(__i)))
+            .map(|&__i| std::ptr::read(__first.iter_at(__i)))
             .collect();
         for (__i, __v) in (0..__n).zip(__values) {
-            std::ptr::write(bs.as_mut_ptr().iter_at(__i), __v);
+            std::ptr::write(__first.iter_at(__i), __v);
         }
     };
     assert!(
@@ -375,7 +363,9 @@ unsafe fn main_0() -> i32 {
     assert!(
         (({
             let mut __it = ris.as_mut_ptr();
-            while __it != ris.as_mut_ptr().offset((2) as isize) && *__it.iter_deref() != ri2 {
+            let __last = ris.as_mut_ptr().offset((2) as isize);
+            let __value = &ri2;
+            while __it != __last && *__it.iter_deref() != *__value {
                 __it.iter_inc();
             }
             __it

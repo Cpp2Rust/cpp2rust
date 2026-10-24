@@ -7,10 +7,24 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Clone, VaArg, FnPtrArg)]
+#[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe)]
 pub struct NonCopy {
     pub data: Vec<i32>,
     pub tag: i32,
+}
+impl NonCopy {
+    pub unsafe fn move_from(_a0: *mut NonCopy) -> Self {
+        let mut this = Self {
+            data: std::mem::take(&mut (*_a0).data),
+            tag: (*_a0).tag,
+        };
+        this
+    }
+    pub unsafe fn move_assign(&mut self, _a0: *mut NonCopy) -> *mut NonCopy {
+        self.data = std::mem::take(&mut (*_a0).data);
+        self.tag = (*_a0).tag;
+        return &mut (*(self as *mut NonCopy));
+    }
 }
 impl Default for NonCopy {
     fn default() -> Self {

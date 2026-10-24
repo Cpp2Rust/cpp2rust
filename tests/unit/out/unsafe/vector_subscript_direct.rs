@@ -18,10 +18,24 @@ impl Point {
     }
 }
 #[repr(C)]
-#[derive(Clone, VaArg, FnPtrArg, Default)]
+#[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
 pub struct Holder {
     pub values: Vec<i32>,
     pub points: Vec<Point>,
+}
+impl Holder {
+    pub unsafe fn move_from(_a0: *mut Holder) -> Self {
+        let mut this = Self {
+            values: std::mem::take(&mut (*_a0).values),
+            points: std::mem::take(&mut (*_a0).points),
+        };
+        this
+    }
+    pub unsafe fn move_assign(&mut self, _a0: *mut Holder) -> *mut Holder {
+        self.values = std::mem::take(&mut (*_a0).values);
+        self.points = std::mem::take(&mut (*_a0).points);
+        return &mut (*(self as *mut Holder));
+    }
 }
 pub unsafe fn push_and_index_0(v: *mut Vec<i32>) -> i32 {
     {

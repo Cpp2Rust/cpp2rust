@@ -192,25 +192,27 @@ fn main_0() -> i32 {
         i.prefix_inc();
     }
     let map1: Value<Map<i32, (Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
-    let mut i: i32 = 0;
-    'loop_: while (i < N) {
-        let __rhs = i;
-        Map::subscript(map1.as_pointer(), &i).write(__rhs);
-        i.prefix_inc();
+    let i: Value<i32> = Rc::new(RefCell::new(0));
+    'loop_: while ((*i.borrow()) < N) {
+        let __rhs = (*i.borrow());
+        Map::subscript(map1.as_pointer(), i.as_pointer()).write(__rhs);
+        (*i.borrow_mut()).prefix_inc();
     }
     let map2: Value<Map<i32, (Value<i32>, Value<i32>)>> =
         Rc::new(RefCell::new((*map1.borrow()).clone()));
-    let mut i: i32 = 0;
-    'loop_: while (i < N) {
-        assert!(((Map::subscript(map2.as_pointer(), &i).read()) == i));
-        Map::subscript(map2.as_pointer(), &i).with_mut(|__v| __v.prefix_inc());
-        i.prefix_inc();
+    let i: Value<i32> = Rc::new(RefCell::new(0));
+    'loop_: while ((*i.borrow()) < N) {
+        assert!(((Map::subscript(map2.as_pointer(), i.as_pointer()).read()) == (*i.borrow())));
+        Map::subscript(map2.as_pointer(), i.as_pointer()).with_mut(|__v| __v.prefix_inc());
+        (*i.borrow_mut()).prefix_inc();
     }
-    let mut i: i32 = 0;
-    'loop_: while (i < N) {
-        assert!(((Map::subscript(map1.as_pointer(), &i).read()) == i));
-        assert!(((Map::subscript(map2.as_pointer(), &i).read()) == (i + 1)));
-        i.prefix_inc();
+    let i: Value<i32> = Rc::new(RefCell::new(0));
+    'loop_: while ((*i.borrow()) < N) {
+        assert!(((Map::subscript(map1.as_pointer(), i.as_pointer()).read()) == (*i.borrow())));
+        assert!(
+            ((Map::subscript(map2.as_pointer(), i.as_pointer()).read()) == ((*i.borrow()) + 1))
+        );
+        (*i.borrow_mut()).prefix_inc();
     }
     let pair1: Value<(Value<i32>, Value<i32>)> = Rc::new(RefCell::new((
         Rc::new(RefCell::new(1.try_into().expect("failed conversion"))),

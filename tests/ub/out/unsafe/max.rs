@@ -16,19 +16,19 @@ unsafe fn main_0() -> i32 {
     let a: *const i32 = {
         let mut __tmp_0: i32 = 1;
         let mut __tmp_1: i32 = 2;
-        if *&mut __tmp_0 <= *&mut __tmp_1 {
-            (&mut __tmp_0) as *const _
-        } else {
-            (&mut __tmp_1) as *const _
+        {
+            let __a: *const _ = &mut __tmp_0;
+            let __b: *const _ = &mut __tmp_1;
+            if *__b < *__a { __b } else { __a }
         }
     };
     let b: *const i32 = {
         let mut __tmp_2: i32 = 1;
         let mut __tmp_3: i32 = 2;
-        if *&mut __tmp_2 >= *&mut __tmp_3 {
-            (&mut __tmp_2) as *const _
-        } else {
-            (&mut __tmp_3) as *const _
+        {
+            let __a: *const _ = &mut __tmp_2;
+            let __b: *const _ = &mut __tmp_3;
+            if *__a < *__b { __b } else { __a }
         }
     };
     return (((*a) == (*b)) as i32);

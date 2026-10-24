@@ -148,10 +148,10 @@ unsafe fn main_0() -> i32 {
     let mut high: i32 = 3;
     let mut low: i32 = {
         let mut __tmp_0: i32 = 2;
-        (*if *&mut high <= *&mut __tmp_0 {
-            (&mut high) as *const _
-        } else {
-            (&mut __tmp_0) as *const _
+        (*{
+            let __a: *const _ = &mut high;
+            let __b: *const _ = &mut __tmp_0;
+            if *__b < *__a { __b } else { __a }
         })
     };
     assert!(((low) == (2)));

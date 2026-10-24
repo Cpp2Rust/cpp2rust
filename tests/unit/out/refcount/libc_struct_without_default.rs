@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, MoveAssign)]
 #[byte_size(32)]
 pub struct UserDefined {
     #[offset(0)]
@@ -15,6 +15,14 @@ pub struct UserDefined {
     #[offset(8)]
     #[byte_size(24)]
     pub v: Vec<i32>,
+}
+impl UserDefined {
+    pub fn move_from(_a0: Ptr<UserDefined>) -> Self {
+        Self {
+            a: field!(_a0, a).with_mut(std::mem::take),
+            v: field!(_a0, v).with_mut(std::mem::take),
+        }
+    }
 }
 impl Default for UserDefined {
     fn default() -> Self {
@@ -73,5 +81,19 @@ fn main_0() -> i32 {
     let mut filt: FieldIsLibcType = <FieldIsLibcType>::default();
     assert!(((filt.addr.sa_family as i32) == 0));
     return 0;
+}
+pub trait UserDefinedImpl {
+    fn move_assign(&self, _a0: Ptr<UserDefined>) -> Ptr<UserDefined>;
+}
+impl UserDefinedImpl for Ptr<UserDefined> {
+    fn move_assign(&self, _a0: Ptr<UserDefined>) -> Ptr<UserDefined> {
+        field_ref!((*self), a)
+            .as_pointer()
+            .write(field!(_a0, a).with_mut(std::mem::take));
+        field_ref!((*self), v)
+            .as_pointer()
+            .write(field!(_a0, v).with_mut(std::mem::take));
+        return (*self).clone();
+    }
 }
 pub fn __cpp2rust_init_globals() {}

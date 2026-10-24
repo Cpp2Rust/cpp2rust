@@ -33,7 +33,7 @@ pub struct Header {
     #[offset(4)]
     pub size: i16,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, MoveAssign)]
 #[byte_size(104)]
 pub struct Outer {
     #[offset(0)]
@@ -53,6 +53,22 @@ pub struct Outer {
     #[offset(88)]
     #[byte_size(16)]
     pub buf: Box<[i32]>,
+}
+impl Outer {
+    pub fn move_from(_a0: Ptr<Outer>) -> Self {
+        Self {
+            x: { (*_a0.upgrade().deref()).x },
+            inner: { (*_a0.upgrade().deref()).inner.clone() },
+            items: Box::new(std::array::from_fn::<_, 3, _>(|__i: usize| {
+                ((*_a0.upgrade().deref()).items[(__i) as usize]).clone()
+            })),
+            v: field!(_a0, v).with_mut(std::mem::take),
+            cursor: { (*_a0.upgrade().deref()).cursor.clone() },
+            buf: Box::new(std::array::from_fn::<_, 4, _>(|__i: usize| {
+                (*_a0.upgrade().deref()).buf[(__i) as usize]
+            })),
+        }
+    }
 }
 impl Default for Outer {
     fn default() -> Self {
@@ -207,6 +223,7 @@ pub trait OuterImpl {
     fn next(&self) -> i32;
     fn sum(&self) -> i32;
     fn push(&self, k: i32);
+    fn move_assign(&self, _a0: Ptr<Outer>) -> Ptr<Outer>;
 }
 impl OuterImpl for Ptr<Outer> {
     fn next(&self) -> i32 {
@@ -225,6 +242,33 @@ impl OuterImpl for Ptr<Outer> {
             let __a1 = (k + (*self).with(|__s| __s.x));
             field!((*self), v).with_mut(|__v: &mut Vec<i32>| __v.push(__a1))
         };
+    }
+    fn move_assign(&self, _a0: Ptr<Outer>) -> Ptr<Outer> {
+        field!((*self), x).write({ { (*_a0.upgrade().deref()).x } });
+        field!((*self), inner).write({ { (*_a0.upgrade().deref()).inner.clone() } });
+        {
+            ((array_field_ptr!((*self), items)) as Ptr<Inner>)
+                .to_any()
+                .memcpy(
+                    &((array_field_ptr!(_a0, items)) as Ptr<Inner>).to_any(),
+                    36_usize as usize,
+                );
+            ((array_field_ptr!((*self), items)) as Ptr<Inner>).to_any()
+        };
+        field_ref!((*self), v)
+            .as_pointer()
+            .write(field!(_a0, v).with_mut(std::mem::take));
+        field!((*self), cursor).write({ { (*_a0.upgrade().deref()).cursor.clone() } });
+        {
+            ((array_field_ptr!((*self), buf)) as Ptr<i32>)
+                .to_any()
+                .memcpy(
+                    &((array_field_ptr!(_a0, buf)) as Ptr<i32>).to_any(),
+                    16_usize as usize,
+                );
+            ((array_field_ptr!((*self), buf)) as Ptr<i32>).to_any()
+        };
+        return (*self).clone();
     }
 }
 pub fn __cpp2rust_init_globals() {}

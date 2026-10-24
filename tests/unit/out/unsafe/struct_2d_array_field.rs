@@ -109,6 +109,59 @@ unsafe fn main_0() -> i32 {
     let mut p: *const libc::c_char = (local.rows[(2) as usize].as_mut_ptr()).cast_const();
     assert!((((((*p.offset((0) as isize)) as i32) == ('t' as i32)) as i32) != 0));
     assert!(((((local.count) == (3_usize)) as i32) != 0));
+    let mut copy: table = <table>::default();
+    {
+        if ::std::mem::size_of::<[[libc::c_char; 10]; 3]>() != 0 {
+            ::std::ptr::copy_nonoverlapping(
+                ((&mut local.rows as *mut [[libc::c_char; 10]; 3]) as *const ::libc::c_void),
+                ((&mut copy.rows as *mut [[libc::c_char; 10]; 3]) as *mut ::libc::c_void),
+                ::std::mem::size_of::<[[libc::c_char; 10]; 3]>() as usize,
+            )
+        }
+        ((&mut copy.rows as *mut [[libc::c_char; 10]; 3]) as *mut ::libc::c_void)
+    };
+    assert!(
+        (((((((libc::strcmp(
+            (copy.rows[(1) as usize].as_mut_ptr()).cast_const(),
+            (c"Two".as_ptr().cast_mut()).cast_const()
+        )) == (0)) as i32)
+            != 0)
+            && ((((libc::strcmp(
+                (copy.rows[(2) as usize].as_mut_ptr()).cast_const(),
+                (c"three".as_ptr().cast_mut()).cast_const()
+            )) == (0)) as i32)
+                != 0)) as i32)
+            != 0)
+    );
+    let mut grid: [[libc::c_char; 3]; 2] = [
+        [
+            (('a' as i32) as libc::c_char),
+            (('b' as i32) as libc::c_char),
+            (('c' as i32) as libc::c_char),
+        ],
+        [
+            (('d' as i32) as libc::c_char),
+            (('e' as i32) as libc::c_char),
+            (('f' as i32) as libc::c_char),
+        ],
+    ];
+    let mut other: [[libc::c_char; 3]; 2] = [[(0 as libc::c_char); 3]; 2];
+    {
+        if ::std::mem::size_of::<[[libc::c_char; 3]; 2]>() != 0 {
+            ::std::ptr::copy_nonoverlapping(
+                ((&mut grid as *mut [[libc::c_char; 3]; 2]) as *const ::libc::c_void),
+                ((&mut other as *mut [[libc::c_char; 3]; 2]) as *mut ::libc::c_void),
+                ::std::mem::size_of::<[[libc::c_char; 3]; 2]>() as usize,
+            )
+        }
+        ((&mut other as *mut [[libc::c_char; 3]; 2]) as *mut ::libc::c_void)
+    };
+    assert!(
+        (((((((other[(1) as usize][(2) as usize] as i32) == ('f' as i32)) as i32) != 0)
+            && ((((other[(0) as usize][(1) as usize] as i32) == ('b' as i32)) as i32) != 0))
+            as i32)
+            != 0)
+    );
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {

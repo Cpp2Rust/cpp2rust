@@ -12,12 +12,12 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let m: Value<Map<i32, (Value<i32>, Value<f64>)>> = Rc::new(RefCell::new(Map::new()));
-    let mut i: i32 = 0;
+    let i: Value<i32> = Rc::new(RefCell::new(0));
     let mut k: i32 = 100;
-    'loop_: while (i < 100) {
-        Map::subscript(m.as_pointer(), &i).write(((k as f64) / 2_f64));
+    'loop_: while ((*i.borrow()) < 100) {
+        Map::subscript(m.as_pointer(), i.as_pointer()).write(((k as f64) / 2_f64));
         {
-            i.prefix_inc();
+            (*i.borrow_mut()).prefix_inc();
             k.prefix_dec()
         };
     }

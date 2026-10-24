@@ -10,32 +10,21 @@ pub fn f1_0(first: RandomAccessIterator<i32>, last: RandomAccessIterator<i32>) {
     let first: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(first));
     let last: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(last));
     {
-        let __n = (*last.borrow())
-            .clone()
-            .iter_distance(&(*first.borrow()).clone());
+        let __first = (*first.borrow()).clone();
+        let __n = (*last.borrow()).clone().iter_distance(&__first);
         let mut __order: Vec<isize> = (0..__n).collect();
-        __order.sort_by(|&__x, &__y| {
-            (*first.borrow()).clone().iter_at(__x).with(|__a| {
-                (*first.borrow())
-                    .clone()
-                    .iter_at(__y)
-                    .with(|__b| __a.cmp(__b))
-            })
-        });
-        reorder(__order, |__i| (*first.borrow()).clone().iter_at(__i));
+        __order.sort_by(|&__x, &__y| cpp_cmp(&__first.iter_at(__x), &__first.iter_at(__y)));
+        reorder(__order, |__i| __first.iter_at(__i));
     };
     return;
 }
 pub fn f1_1(mut first: Ptr<i32>, mut last: Ptr<i32>) {
     {
-        let __n = last.iter_distance(&first);
+        let __first = first;
+        let __n = last.iter_distance(&__first);
         let mut __order: Vec<isize> = (0..__n).collect();
-        __order.sort_by(|&__x, &__y| {
-            first
-                .iter_at(__x)
-                .with(|__a| first.iter_at(__y).with(|__b| __a.cmp(__b)))
-        });
-        reorder(__order, |__i| first.iter_at(__i));
+        __order.sort_by(|&__x, &__y| cpp_cmp(&__first.iter_at(__x), &__first.iter_at(__y)));
+        reorder(__order, |__i| __first.iter_at(__i));
     };
     return;
 }

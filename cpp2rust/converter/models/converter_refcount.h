@@ -42,16 +42,21 @@ public:
 
   const char *CharRustType() const override { return "i8"; }
 
-  std::string GetComparisonReferenceArg(const clang::CXXRecordDecl *decl,
-                                        std::string_view value) override;
+  std::string GetComparisonArg(const clang::ParmVarDecl *param,
+                               const clang::CXXRecordDecl *decl,
+                               std::string_view value) override;
 
-  std::string GetComparisonReferenceReceiver(const clang::CXXMethodDecl *method,
-                                             const clang::CXXRecordDecl *decl,
-                                             std::string_view ptr) override;
+  std::string GetComparisonResultReceiver(const clang::CXXMethodDecl *method,
+                                          bool returns_ref,
+                                          std::string_view result) override;
 
   std::string GetComparisonReceiver(const clang::CXXMethodDecl *method,
-                                    const clang::CXXRecordDecl *decl,
                                     std::string_view lhs) override;
+
+  void ConvertOrdAndPartialOrdTraits(const clang::CXXRecordDecl *decl,
+                                     const clang::FunctionDecl *eq,
+                                     const clang::FunctionDecl *lt,
+                                     const clang::FunctionDecl *cmp) override;
 
   std::string GetShallowCopy(const clang::RecordDecl *decl,
                              std::string_view src);
@@ -492,6 +497,10 @@ private:
   bool IsUnboxedPlace(const clang::Expr *expr) const;
   // Whether expr is a local variable or parameter stored in a Value.
   bool IsValueLocal(const clang::Expr *expr) const;
+
+  bool IsFieldOfVectorElem(const clang::MemberExpr *expr) const;
+
+  bool IsElemOfBorrowedValue(const clang::CXXOperatorCallExpr *expr) const;
   // Whether expr is a field of an unboxed variable, or of a field of one,
   // which is stored in place, even if it is a reference.
   bool IsFieldOfUnboxedPlace(const clang::MemberExpr *expr) const;

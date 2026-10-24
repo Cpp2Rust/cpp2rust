@@ -42,6 +42,20 @@ impl Default for S {
         }
     }
 }
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, MoveAssign, Default)]
+#[byte_size(24)]
+pub struct T {
+    #[offset(0)]
+    #[byte_size(24)]
+    pub v: Vec<i32>,
+}
+impl T {
+    pub fn move_from(_a0: Ptr<T>) -> Self {
+        Self {
+            v: field!(_a0, v).with_mut(std::mem::take),
+        }
+    }
+}
 pub fn sum_0(s: Ptr<S>) -> i32 {
     return ({ ({ ((*s.upgrade().deref()).v.len() as i32) } + { (array_elem!(s, n, 0).read()) }) }
         + { (array_elem!(s, n, 1).read()) });
@@ -54,6 +68,10 @@ fn main_0() -> i32 {
     let s: Value<S> = Rc::new(RefCell::new(S::new({ 2 })));
     assert!((({ sum_0(s.as_pointer(),) }) == 7));
     assert!((({ shuffle_1(3,) }) == 10));
+    let t: Value<T> = Rc::new(RefCell::new(T {
+        v: Vec::from([1, 2]),
+    }));
+    assert!((({ TImpl::size(&t.as_pointer(),) }) == 2));
     return 0;
 }
 pub fn shuffle_1(mut x: i32) -> i32 {
@@ -63,6 +81,14 @@ pub fn shuffle_1(mut x: i32) -> i32 {
     let c: Value<S> = Rc::new(RefCell::new(S::new({ 1 })));
     ({ SImpl::move_assign(&c.as_pointer(), b.as_pointer()) });
     assert!((*b.borrow()).v.is_empty());
+    let t: Value<T> = Rc::new(RefCell::new(T { v: Vec::from([1]) }));
+    let u: Value<T> = Rc::new(RefCell::new(T::move_from({ t.as_pointer() })));
+    let w: Value<T> = Rc::new(RefCell::new(<T>::default()));
+    ({ TImpl::move_assign(&w.as_pointer(), u.as_pointer()) });
+    assert!(
+        ((({ TImpl::size(&t.as_pointer(),) }) == 0) && (({ TImpl::size(&u.as_pointer(),) }) == 0))
+            && (({ TImpl::size(&w.as_pointer(),) }) == 1)
+    );
     return ({ sum_0(c.as_pointer()) });
 }
 pub trait SImpl {
@@ -82,6 +108,21 @@ impl SImpl for Ptr<S> {
                 );
             ((array_field_ptr!((*self), n)) as Ptr<i32>).to_any()
         };
+        return (*self).clone();
+    }
+}
+pub trait TImpl {
+    fn size(&self) -> i32;
+    fn move_assign(&self, _a0: Ptr<T>) -> Ptr<T>;
+}
+impl TImpl for Ptr<T> {
+    fn size(&self) -> i32 {
+        return ((*(*self).upgrade().deref()).v.len() as i32);
+    }
+    fn move_assign(&self, _a0: Ptr<T>) -> Ptr<T> {
+        field_ref!((*self), v)
+            .as_pointer()
+            .write(field!(_a0, v).with_mut(std::mem::take));
         return (*self).clone();
     }
 }

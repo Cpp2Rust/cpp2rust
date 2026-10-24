@@ -12,32 +12,16 @@ pub struct S {
     #[offset(0)]
     pub v: i32,
 }
-impl std::cmp::Ord for S {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        {
-            SImpl::operator_cmp(
-                &Rc::new(RefCell::new(S { v: self.v.clone() })).as_pointer(),
-                Rc::new(RefCell::new(S { v: other.v.clone() })).as_pointer(),
-            )
-        }
+impl CppLess for S {
+    fn less(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
+        SImpl::operator_cmp(__lhs, __rhs.clone()) == std::cmp::Ordering::Less
     }
 }
-impl std::cmp::PartialOrd for S {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(other))
+impl CppEq for S {
+    fn equal(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
+        SImpl::operator_eq(__lhs, __rhs.clone())
     }
 }
-impl std::cmp::PartialEq for S {
-    fn eq(&self, other: &Self) -> bool {
-        {
-            SImpl::operator_eq(
-                &Rc::new(RefCell::new(S { v: self.v.clone() })).as_pointer(),
-                Rc::new(RefCell::new(S { v: other.v.clone() })).as_pointer(),
-            )
-        }
-    }
-}
-impl std::cmp::Eq for S {}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());

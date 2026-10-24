@@ -7,20 +7,76 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Clone, VaArg, FnPtrArg, Default)]
+#[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
 pub struct Elem {
     pub id: i32,
     pub hist: [i32; 4],
     pub coeffs: Vec<i16>,
 }
+impl Elem {
+    pub unsafe fn move_from(_a0: *mut Elem) -> Self {
+        let mut this = Self {
+            id: (*_a0).id,
+            hist: std::array::from_fn::<_, 4, _>(|__i: usize| (*_a0).hist[(__i)]),
+            coeffs: std::mem::take(&mut (*_a0).coeffs),
+        };
+        this
+    }
+    pub unsafe fn move_assign(&mut self, _a0: *mut Elem) -> *mut Elem {
+        self.id = (*_a0).id;
+        {
+            if 16_usize != 0 {
+                ::std::ptr::copy_nonoverlapping(
+                    ((&mut (*_a0).hist as *mut [i32; 4]) as *const ::libc::c_void),
+                    ((&mut self.hist as *mut [i32; 4]) as *mut ::libc::c_void),
+                    16_usize as usize,
+                )
+            }
+            ((&mut self.hist as *mut [i32; 4]) as *mut ::libc::c_void)
+        };
+        self.coeffs = std::mem::take(&mut (*_a0).coeffs);
+        return &mut (*(self as *mut Elem));
+    }
+}
 #[repr(C)]
-#[derive(Clone, VaArg, FnPtrArg)]
+#[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe)]
 pub struct State {
     pub count: i32,
     pub grid: [[i32; 3]; 2],
     pub arr: Vec<i32>,
     pub elems: Vec<Elem>,
     pub rows: Vec<Vec<i32>>,
+}
+impl State {
+    pub unsafe fn move_from(_a0: *mut State) -> Self {
+        let mut this = Self {
+            count: (*_a0).count,
+            grid: std::array::from_fn::<_, 2, _>(|__i: usize| {
+                std::array::from_fn::<_, 3, _>(|__i2: usize| (*_a0).grid[(__i)][(__i2)])
+            }),
+            arr: std::mem::take(&mut (*_a0).arr),
+            elems: std::mem::take(&mut (*_a0).elems),
+            rows: std::mem::take(&mut (*_a0).rows),
+        };
+        this
+    }
+    pub unsafe fn move_assign(&mut self, _a0: *mut State) -> *mut State {
+        self.count = (*_a0).count;
+        {
+            if 24_usize != 0 {
+                ::std::ptr::copy_nonoverlapping(
+                    ((&mut (*_a0).grid as *mut [[i32; 3]; 2]) as *const ::libc::c_void),
+                    ((&mut self.grid as *mut [[i32; 3]; 2]) as *mut ::libc::c_void),
+                    24_usize as usize,
+                )
+            }
+            ((&mut self.grid as *mut [[i32; 3]; 2]) as *mut ::libc::c_void)
+        };
+        self.arr = std::mem::take(&mut (*_a0).arr);
+        self.elems = std::mem::take(&mut (*_a0).elems);
+        self.rows = std::mem::take(&mut (*_a0).rows);
+        return &mut (*(self as *mut State));
+    }
 }
 impl Default for State {
     fn default() -> Self {
@@ -135,6 +191,36 @@ unsafe fn main_0() -> i32 {
     assert!(
         (((*p).elems.len()) == (4_usize))
             && (((&mut (*p)).elems[(3_usize)].hist[(0) as usize]) == (100))
+    );
+    let mut elems: Vec<Elem> = (0..(2_usize) as usize)
+        .map(|_| <Elem>::default())
+        .collect::<Vec<_>>();
+    let mut first: *mut Elem = (&mut elems[(0_usize)] as *mut Elem);
+    {
+        let __a0 = 2_usize as usize;
+        elems[(1_usize)]
+            .coeffs
+            .resize_with(__a0, || <i16>::default())
+    };
+    elems[(1_usize)].coeffs[(1_usize)] = 4_i16;
+    elems[(1_usize)].hist[(2) as usize] = ((elems[(1_usize)].coeffs[(1_usize)] as i32) + (1));
+    assert!(
+        ((elems[(1_usize)].hist[(2) as usize]) == (5)) && (((*first).hist[(2) as usize]) == (0))
+    );
+    let mut moved: State = State::move_from({ &mut t });
+    assert!(
+        ((moved.grid[(0) as usize][(0) as usize]) == (100))
+            && ((moved.grid[(1) as usize][(2) as usize]) == (5))
+    );
+    assert!((((moved.elems.len()) == (4_usize)) && (t.elems.is_empty())) && (t.rows.is_empty()));
+    let mut assigned: State = <State>::default();
+    (unsafe { State::move_assign(&mut assigned, &mut moved) });
+    assert!(
+        ((assigned.grid[(0) as usize][(0) as usize]) == (100))
+            && ((assigned.grid[(1) as usize][(1) as usize]) == (4))
+    );
+    assert!(
+        ((assigned.elems[(2_usize)].coeffs[(1_usize)] as i32) == (7)) && (moved.elems.is_empty())
     );
     return 0;
 }

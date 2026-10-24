@@ -10,9 +10,21 @@ pub unsafe fn unused_param_0(mut x: i32) {
     &(x);
 }
 #[repr(C)]
-#[derive(Clone, VaArg, FnPtrArg, Default)]
+#[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
 pub struct NonTrivial {
     pub data: Vec<i32>,
+}
+impl NonTrivial {
+    pub unsafe fn move_from(_a0: *mut NonTrivial) -> Self {
+        let mut this = Self {
+            data: std::mem::take(&mut (*_a0).data),
+        };
+        this
+    }
+    pub unsafe fn move_assign(&mut self, _a0: *mut NonTrivial) -> *mut NonTrivial {
+        self.data = std::mem::take(&mut (*_a0).data);
+        return &mut (*(self as *mut NonTrivial));
+    }
 }
 pub unsafe fn unused_ref_param_1(x: *const NonTrivial) {
     &(*x);

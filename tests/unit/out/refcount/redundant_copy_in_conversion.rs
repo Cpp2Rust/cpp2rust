@@ -36,8 +36,11 @@ fn main_0() -> i32 {
             .with(|__m: &Map<i32, (Value<i32>, Value<i32>)>| __m.end()),
     ));
     let it0: Value<BidirectionalIterator<(Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(
-        m.as_pointer()
-            .with(|__m: &Map<i32, (Value<i32>, Value<i32>)>| __m.find(&0)),
+        ({
+            let __tmp_0: Value<i32> = Rc::new(RefCell::new(0));
+            m.as_pointer()
+                .with(|__m: &Map<i32, (Value<i32>, Value<i32>)>| __m.find(&__tmp_0.as_pointer()))
+        }),
     ));
     let const_it: Value<BidirectionalIterator<(Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(
         <BidirectionalIterator<(Value<i32>, Value<i32>)>>::from((*it0.borrow()).clone()),

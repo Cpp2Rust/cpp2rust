@@ -40,44 +40,17 @@ impl Key {
         __this
     }
 }
-impl std::cmp::Ord for Key {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        {
-            if KeyImpl::operator_lt(
-                &Rc::new(RefCell::new(Key { k: self.k.clone() })).as_pointer(),
-                Rc::new(RefCell::new(Key { k: other.k.clone() })).as_pointer(),
-            ) {
-                std::cmp::Ordering::Less
-            } else if KeyImpl::operator_lt(
-                &Rc::new(RefCell::new(Key { k: other.k.clone() })).as_pointer(),
-                Rc::new(RefCell::new(Key { k: self.k.clone() })).as_pointer(),
-            ) {
-                std::cmp::Ordering::Greater
-            } else {
-                std::cmp::Ordering::Equal
-            }
-        }
+impl CppLess for Key {
+    fn less(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
+        KeyImpl::operator_lt(__lhs, __rhs.clone())
     }
 }
-impl std::cmp::PartialOrd for Key {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(other))
+impl CppEq for Key {
+    fn equal(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
+        !(KeyImpl::operator_lt(__lhs, __rhs.clone()))
+            && !(KeyImpl::operator_lt(__rhs, __lhs.clone()))
     }
 }
-impl std::cmp::PartialEq for Key {
-    fn eq(&self, other: &Self) -> bool {
-        {
-            !(KeyImpl::operator_lt(
-                &Rc::new(RefCell::new(Key { k: self.k.clone() })).as_pointer(),
-                Rc::new(RefCell::new(Key { k: other.k.clone() })).as_pointer(),
-            )) && !(KeyImpl::operator_lt(
-                &Rc::new(RefCell::new(Key { k: other.k.clone() })).as_pointer(),
-                Rc::new(RefCell::new(Key { k: self.k.clone() })).as_pointer(),
-            ))
-        }
-    }
-}
-impl std::cmp::Eq for Key {}
 impl Clone for Key {
     fn clone(&self) -> Self {
         let __src: Value<Key> = Rc::new(RefCell::new(Key { k: self.k.clone() }));
@@ -95,20 +68,20 @@ pub fn main() {
 fn main_0() -> i32 {
     let mut ok: bool = true;
     let m: Value<Map<Key, (Value<Key>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
-    let mut a: Key = Key::new({ 1 });
-    let mut b: Key = Key::new({ 2 });
+    let a: Value<Key> = Rc::new(RefCell::new(Key::new({ 1 })));
+    let b: Value<Key> = Rc::new(RefCell::new(Key::new({ 2 })));
     let c: Value<Key> = Rc::new(RefCell::new(Key::new({ 3 })));
-    Map::subscript(m.as_pointer(), &a).write(10);
+    Map::subscript(m.as_pointer(), a.as_pointer()).write(10);
     ok = { ((ok as i32) & ((copies_0.with(|rc| *rc.borrow()) == 1) as i32)) != 0 };
-    Map::subscript(m.as_pointer(), &b).write(20);
+    Map::subscript(m.as_pointer(), b.as_pointer()).write(20);
     ok = { ((ok as i32) & ((copies_0.with(|rc| *rc.borrow()) == 2) as i32)) != 0 };
-    Map::subscript(m.as_pointer(), &a).write(11);
+    Map::subscript(m.as_pointer(), a.as_pointer()).write(11);
     ok = { ((ok as i32) & ((copies_0.with(|rc| *rc.borrow()) == 2) as i32)) != 0 };
     {
         let rhs_0 = ((ok as i32)
             & (((*(*m
                 .as_pointer()
-                .with(|__m: &Map<Key, (Value<Key>, Value<i32>)>| __m.find(&a))
+                .with(|__m: &Map<Key, (Value<Key>, Value<i32>)>| __m.find(&a.as_pointer()))
                 .iter_deref()
                 .upgrade()
                 .deref())
@@ -121,7 +94,7 @@ fn main_0() -> i32 {
     {
         let rhs_0 = ((ok as i32)
             & ((((*m.borrow())
-                .get(&b)
+                .get(&b.as_pointer())
                 .expect("out of range!")
                 .borrow()
                 .1
@@ -165,21 +138,21 @@ fn main_0() -> i32 {
     {
         Map::subscript(
             m.as_pointer(),
-            &(*(*m
-                .as_pointer()
+            (*m.as_pointer()
                 .with(|__m: &Map<Key, (Value<Key>, Value<i32>)>| __m.begin())
                 .iter_deref()
                 .upgrade()
                 .deref())
             .0
-            .borrow()),
+            .as_pointer(),
         )
         .with_mut(|__v| *__v = *__v + 1)
     };
     {
         let rhs_0 = ((ok as i32)
             & (((copies_0.with(|rc| *rc.borrow()) == 2)
-                && ((Map::subscript(m.as_pointer(), &a).read()) == 12)) as i32))
+                && ((Map::subscript(m.as_pointer(), a.as_pointer()).read()) == 12))
+                as i32))
             != 0;
         ok = rhs_0
     };
@@ -202,7 +175,7 @@ fn main_0() -> i32 {
         let rhs_0 = ((ok as i32)
             & (({
                 ((*m.as_pointer()
-                    .with(|__m: &Map<Key, (Value<Key>, Value<i32>)>| __m.find(&a))
+                    .with(|__m: &Map<Key, (Value<Key>, Value<i32>)>| __m.find(&a.as_pointer()))
                     .iter_deref()
                     .upgrade()
                     .deref())
@@ -217,36 +190,40 @@ fn main_0() -> i32 {
     {
         let rhs_0 = ((ok as i32)
             & ((((*n.borrow()).len() == 5_usize)
-                && ((Map::subscript(n.as_pointer(), &a).read()) == 12)) as i32))
+                && ((Map::subscript(n.as_pointer(), a.as_pointer()).read()) == 12))
+                as i32))
             != 0;
         ok = rhs_0
     };
     {
         let __it = m
             .as_pointer()
-            .with(|__m: &Map<Key, (Value<Key>, Value<i32>)>| __m.find(&a));
+            .with(|__m: &Map<Key, (Value<Key>, Value<i32>)>| __m.find(&a.as_pointer()));
         Map::erase(m.as_pointer(), &__it)
     };
     {
-        let rhs_0 = ((ok as i32) & ((Map::erase_key(m.as_pointer(), &b) == 1_usize) as i32)) != 0;
+        let rhs_0 = ((ok as i32)
+            & ((Map::erase_key(m.as_pointer(), &b.as_pointer()) == 1_usize) as i32))
+            != 0;
         ok = rhs_0
     };
     {
-        let rhs_0 = ((ok as i32) & ((Map::erase_key(m.as_pointer(), &b) == 0_usize) as i32)) != 0;
+        let rhs_0 = ((ok as i32)
+            & ((Map::erase_key(m.as_pointer(), &b.as_pointer()) == 0_usize) as i32))
+            != 0;
         ok = rhs_0
     };
     {
         let rhs_0 = ((ok as i32)
             & ((Map::erase_key(
                 m.as_pointer(),
-                &(*(*m
-                    .as_pointer()
+                &(*m.as_pointer()
                     .with(|__m: &Map<Key, (Value<Key>, Value<i32>)>| __m.begin())
                     .iter_deref()
                     .upgrade()
                     .deref())
                 .0
-                .borrow()),
+                .as_pointer(),
             ) == 1_usize) as i32))
             != 0;
         ok = rhs_0

@@ -119,7 +119,7 @@ impl Pair {
         }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, Default)]
 #[byte_size(24)]
 pub struct Pair {
     #[offset(0)]
@@ -128,6 +128,14 @@ pub struct Pair {
     #[offset(12)]
     #[byte_size(12)]
     pub b: Tracked,
+}
+impl Pair {
+    pub fn move_from(_a0: Ptr<Pair>) -> Self {
+        Self {
+            a: Tracked::move_from({ field_ptr!(_a0, a) }),
+            b: Tracked::move_from({ field_ptr!(_a0, b) }),
+        }
+    }
 }
 pub fn forward_pack_into_ctor_8(args_0: Ptr<Tracked>, args_1: Ptr<Tracked>) -> Pair {
     return Pair::new({ (args_0).clone() }, { (args_1).clone() });

@@ -1,5 +1,6 @@
 #include <array>
 #include <cassert>
+#include <utility>
 #include <vector>
 
 // Arrays and vectors in fields are stored inline in their structs, including
@@ -77,5 +78,23 @@ int main() {
   assert(t.elems[0].hist[3] == 11);
   p->elems.push_back(p->elems[2]);
   assert(p->elems.size() == 4 && p->elems[3].hist[0] == 100);
+
+  // Elements of array and vector fields of elements of a vector variable
+  // whose address is taken.
+  std::vector<Elem> elems(2);
+  Elem *first = &elems[0];
+  elems[1].coeffs.resize(2);
+  elems[1].coeffs[1] = 4;
+  elems[1].hist[2] = elems[1].coeffs[1] + 1;
+  assert(elems[1].hist[2] == 5 && first->hist[2] == 0);
+
+  // Moves of the struct copy the arrays and move the vectors.
+  State moved(std::move(t));
+  assert(moved.grid[0][0] == 100 && moved.grid[1][2] == 5);
+  assert(moved.elems.size() == 4 && t.elems.empty() && t.rows.empty());
+  State assigned{};
+  assigned = std::move(moved);
+  assert(assigned.grid[0][0] == 100 && assigned.grid[1][1] == 4);
+  assert(assigned.elems[2].coeffs[1] == 7 && moved.elems.empty());
   return 0;
 }

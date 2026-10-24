@@ -201,6 +201,85 @@ fn main_0() -> i32 {
         .as_pointer()) as Ptr<i8>);
     assert!((((((elem!(p, 0).read()) as i32) == ('t' as i32)) as i32) != 0));
     assert!(((({ (*local.borrow()).count } == 3_usize) as i32) != 0));
+    let copy: Value<table> = <Value<table>>::default();
+    {
+        ((array_field_ptr!(copy.as_pointer(), rows)) as Ptr<Box<[i8]>>)
+            .to_any()
+            .memcpy(
+                &((array_field_ptr!(local.as_pointer(), rows)) as Ptr<Box<[i8]>>).to_any(),
+                ::std::mem::size_of::<[[i8; 10]; 3]>() as usize,
+            );
+        ((array_field_ptr!(copy.as_pointer(), rows)) as Ptr<Box<[i8]>>).to_any()
+    };
+    assert!(
+        (((((({
+            let mut __it1 = (((array_field_ptr!(copy.as_pointer(), rows) as Ptr<Box<[i8]>>)
+                .offset(1)
+                .as_pointer()) as Ptr<i8>)
+                .to_c_string_iterator();
+            let mut __it2 = Ptr::<i8>::from_string_literal(b"Two").to_c_string_iterator();
+            loop {
+                let __c1 = __it1.next();
+                let __c2 = __it2.next();
+                if __c1 != __c2 {
+                    break (__c1.unwrap_or(0) as u8 as i32) - (__c2.unwrap_or(0) as u8 as i32);
+                }
+                if __c1.is_none() {
+                    break 0;
+                }
+            }
+        } == 0) as i32)
+            != 0)
+            && ((({
+                let mut __it1 = (((array_field_ptr!(copy.as_pointer(), rows) as Ptr<Box<[i8]>>)
+                    .offset(2)
+                    .as_pointer()) as Ptr<i8>)
+                    .to_c_string_iterator();
+                let mut __it2 = Ptr::<i8>::from_string_literal(b"three").to_c_string_iterator();
+                loop {
+                    let __c1 = __it1.next();
+                    let __c2 = __it2.next();
+                    if __c1 != __c2 {
+                        break (__c1.unwrap_or(0) as u8 as i32) - (__c2.unwrap_or(0) as u8 as i32);
+                    }
+                    if __c1.is_none() {
+                        break 0;
+                    }
+                }
+            } == 0) as i32)
+                != 0)) as i32)
+            != 0)
+    );
+    let grid: Value<Box<[Box<[i8]>]>> = Rc::new(RefCell::new(Box::new([
+        Box::new([
+            (('a' as i32) as i8),
+            (('b' as i32) as i8),
+            (('c' as i32) as i8),
+        ]),
+        Box::new([
+            (('d' as i32) as i8),
+            (('e' as i32) as i8),
+            (('f' as i32) as i8),
+        ]),
+    ])));
+    let other: Value<Box<[Box<[i8]>]>> = Rc::new(RefCell::new(
+        (0..2)
+            .map(|_| (0..3).map(|_| 0_i8).collect::<Box<[i8]>>())
+            .collect::<Box<[Box<[i8]>]>>(),
+    ));
+    {
+        ((other.as_pointer()) as Ptr<Box<[i8]>>).to_any().memcpy(
+            &((grid.as_pointer()) as Ptr<Box<[i8]>>).to_any(),
+            ::std::mem::size_of::<[[i8; 3]; 2]>() as usize,
+        );
+        ((other.as_pointer()) as Ptr<Box<[i8]>>).to_any()
+    };
+    assert!(
+        ((((((((*other.borrow())[(1) as usize][(2) as usize] as i32) == ('f' as i32)) as i32) != 0)
+            && (((((*other.borrow())[(0) as usize][(1) as usize] as i32) == ('b' as i32)) as i32)
+                != 0)) as i32)
+            != 0)
+    );
     return 0;
 }
 pub fn __cpp2rust_init_globals() {

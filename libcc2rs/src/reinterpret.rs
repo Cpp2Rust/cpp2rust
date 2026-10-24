@@ -36,6 +36,23 @@ pub trait ByteRepr: 'static {
             std::any::type_name::<Self>()
         )
     }
+    // Whether the values of the type have different sizes, as arrays (boxed
+    // slices) do, which have no byte_size.
+    const VARIABLE_SIZE: bool = false;
+    fn value_byte_size(&self) -> usize
+    where
+        Self: Sized,
+    {
+        Self::byte_size()
+    }
+    // Writes the bytes of a value, as from_bytes reads them, to this one,
+    // keeping the lengths of its arrays.
+    fn assign_bytes(&mut self, buf: &[u8])
+    where
+        Self: Sized,
+    {
+        *self = Self::from_bytes(buf);
+    }
 }
 
 macro_rules! impl_byte_repr {
@@ -124,9 +141,26 @@ impl<T: ByteRepr> ByteRepr for std::cell::RefCell<T> {
 }
 impl<T: ByteRepr> ByteRepr for Box<[T]> {
     fn to_bytes(&self, buf: &mut [u8]) {
-        let elem_size = T::byte_size();
-        for (i, elem) in self.iter().enumerate() {
-            elem.to_bytes(&mut buf[i * elem_size..(i + 1) * elem_size]);
+        let mut offset = 0;
+        for elem in self.iter() {
+            let size = elem.value_byte_size();
+            elem.to_bytes(&mut buf[offset..offset + size]);
+            offset += size;
+        }
+    }
+
+    const VARIABLE_SIZE: bool = true;
+
+    fn value_byte_size(&self) -> usize {
+        self.iter().map(T::value_byte_size).sum()
+    }
+
+    fn assign_bytes(&mut self, buf: &[u8]) {
+        let mut offset = 0;
+        for elem in self.iter_mut() {
+            let size = elem.value_byte_size();
+            elem.assign_bytes(&buf[offset..offset + size]);
+            offset += size;
         }
     }
 

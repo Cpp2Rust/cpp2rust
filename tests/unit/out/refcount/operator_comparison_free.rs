@@ -12,41 +12,16 @@ pub struct S {
     #[offset(0)]
     pub v: i32,
 }
-impl std::cmp::Ord for S {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        {
-            if operator_lt_0(
-                Rc::new(RefCell::new(S { v: self.v.clone() })).as_pointer(),
-                Rc::new(RefCell::new(S { v: other.v.clone() })).as_pointer(),
-            ) {
-                std::cmp::Ordering::Less
-            } else if operator_lt_0(
-                Rc::new(RefCell::new(S { v: other.v.clone() })).as_pointer(),
-                Rc::new(RefCell::new(S { v: self.v.clone() })).as_pointer(),
-            ) {
-                std::cmp::Ordering::Greater
-            } else {
-                std::cmp::Ordering::Equal
-            }
-        }
+impl CppLess for S {
+    fn less(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
+        operator_lt_0(__lhs.clone(), __rhs.clone())
     }
 }
-impl std::cmp::PartialOrd for S {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(other))
+impl CppEq for S {
+    fn equal(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
+        operator_eq_1(__lhs.clone(), __rhs.clone())
     }
 }
-impl std::cmp::PartialEq for S {
-    fn eq(&self, other: &Self) -> bool {
-        {
-            operator_eq_1(
-                Rc::new(RefCell::new(S { v: self.v.clone() })).as_pointer(),
-                Rc::new(RefCell::new(S { v: other.v.clone() })).as_pointer(),
-            )
-        }
-    }
-}
-impl std::cmp::Eq for S {}
 pub fn operator_eq_1(a: Ptr<S>, b: Ptr<S>) -> bool {
     return ({ a.with(|__s| __s.v) } == { b.with(|__s| __s.v) });
 }
@@ -77,30 +52,16 @@ pub struct V {
     #[offset(0)]
     pub v: i32,
 }
-impl std::cmp::Ord for V {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        {
-            if operator_lt_8(self.clone(), other.clone()) {
-                std::cmp::Ordering::Less
-            } else if operator_lt_8(other.clone(), self.clone()) {
-                std::cmp::Ordering::Greater
-            } else {
-                std::cmp::Ordering::Equal
-            }
-        }
+impl CppLess for V {
+    fn less(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
+        operator_lt_8(__lhs.read(), __rhs.read())
     }
 }
-impl std::cmp::PartialOrd for V {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(other))
+impl CppEq for V {
+    fn equal(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
+        operator_eq_9(__lhs.read(), __rhs.read())
     }
 }
-impl std::cmp::PartialEq for V {
-    fn eq(&self, other: &Self) -> bool {
-        { operator_eq_9(self.clone(), other.clone()) }
-    }
-}
-impl std::cmp::Eq for V {}
 pub fn operator_eq_9(mut a: V, mut b: V) -> bool {
     return (a.v == b.v);
 }

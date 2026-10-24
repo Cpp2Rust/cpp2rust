@@ -64,7 +64,7 @@ impl Pair {
         }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CopyAssign)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, CopyAssign, MoveAssign)]
 #[byte_size(16)]
 pub struct Arrays {
     #[offset(0)]
@@ -73,6 +73,18 @@ pub struct Arrays {
     #[offset(8)]
     #[byte_size(8)]
     pub b: Box<[Tracked]>,
+}
+impl Arrays {
+    pub fn move_from(_a0: Ptr<Arrays>) -> Self {
+        Self {
+            a: Box::new(std::array::from_fn::<_, 2, _>(|__i: usize| {
+                Tracked::move_from({ (array_field_ptr!(_a0, a) as Ptr<Tracked>).offset(__i) })
+            })),
+            b: Box::new(std::array::from_fn::<_, 2, _>(|__i: usize| {
+                Tracked::move_from({ (array_field_ptr!(_a0, b) as Ptr<Tracked>).offset(__i) })
+            })),
+        }
+    }
 }
 impl Default for Arrays {
     fn default() -> Self {
@@ -171,7 +183,9 @@ impl Clone for Moved {
         Moved::copy_from(__src.as_pointer())
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CopyAssign, Destructor, Default)]
+#[derive(
+    Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, CopyAssign, MoveAssign, Destructor, Default,
+)]
 #[byte_size(8)]
 pub struct MovedPair {
     #[offset(0)]
@@ -180,6 +194,14 @@ pub struct MovedPair {
     #[offset(4)]
     #[byte_size(4)]
     pub y: Moved,
+}
+impl MovedPair {
+    pub fn move_from(_a0: Ptr<MovedPair>) -> Self {
+        Self {
+            x: Moved::move_from({ field_ptr!(_a0, x) }),
+            y: Moved::move_from({ field_ptr!(_a0, y) }),
+        }
+    }
 }
 pub fn swapped_once_6() -> bool {
     let mut ok: bool = ((moves_3.with(|rc| *rc.borrow()) == 1)
@@ -576,6 +598,7 @@ fn main_0() -> i32 {
 }
 pub trait ArraysImpl {
     fn copy_assign(&self, _a0: Ptr<Arrays>) -> Ptr<Arrays>;
+    fn move_assign(&self, _a0: Ptr<Arrays>) -> Ptr<Arrays>;
 }
 impl ArraysImpl for Ptr<Arrays> {
     fn copy_assign(&self, _a0: Ptr<Arrays>) -> Ptr<Arrays> {
@@ -597,6 +620,33 @@ impl ArraysImpl for Ptr<Arrays> {
                 let _o: Ptr<Tracked> =
                     (array_field_ptr!(_a0, b) as Ptr<Tracked>).offset((__i0) as isize);
                 TrackedImpl::copy_assign(
+                    &(array_field_ptr!((*self), b) as Ptr<Tracked>).offset((__i0) as isize),
+                    _o,
+                )
+            });
+            __i0.prefix_inc();
+        }
+        return (*self).clone();
+    }
+    fn move_assign(&self, _a0: Ptr<Arrays>) -> Ptr<Arrays> {
+        let mut __i0: usize = 0_usize;
+        'loop_: while (__i0 != 2_usize) {
+            ({
+                let _o: Ptr<Tracked> =
+                    (array_field_ptr!(_a0, a) as Ptr<Tracked>).offset((__i0) as isize);
+                TrackedImpl::move_assign(
+                    &(array_field_ptr!((*self), a) as Ptr<Tracked>).offset((__i0) as isize),
+                    _o,
+                )
+            });
+            __i0.prefix_inc();
+        }
+        let mut __i0: usize = 0_usize;
+        'loop_: while (__i0 != 2_usize) {
+            ({
+                let _o: Ptr<Tracked> =
+                    (array_field_ptr!(_a0, b) as Ptr<Tracked>).offset((__i0) as isize);
+                TrackedImpl::move_assign(
                     &(array_field_ptr!((*self), b) as Ptr<Tracked>).offset((__i0) as isize),
                     _o,
                 )
@@ -664,6 +714,7 @@ impl MovedImpl for Ptr<Moved> {
 }
 pub trait MovedPairImpl {
     fn copy_assign(&self, _a0: Ptr<MovedPair>) -> Ptr<MovedPair>;
+    fn move_assign(&self, _a0: Ptr<MovedPair>) -> Ptr<MovedPair>;
     fn destructor(&self);
 }
 impl MovedPairImpl for Ptr<MovedPair> {
@@ -675,6 +726,17 @@ impl MovedPairImpl for Ptr<MovedPair> {
         ({
             let _o: Ptr<Moved> = field_ptr!(_a0, y);
             MovedImpl::copy_assign(&field_ptr!((*self), y), _o)
+        });
+        return (*self).clone();
+    }
+    fn move_assign(&self, _a0: Ptr<MovedPair>) -> Ptr<MovedPair> {
+        ({
+            let _o: Ptr<Moved> = field_ptr!(_a0, x);
+            MovedImpl::move_assign(&field_ptr!((*self), x), _o)
+        });
+        ({
+            let _o: Ptr<Moved> = field_ptr!(_a0, y);
+            MovedImpl::move_assign(&field_ptr!((*self), y), _o)
         });
         return (*self).clone();
     }

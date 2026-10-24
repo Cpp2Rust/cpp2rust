@@ -74,12 +74,19 @@ impl Holder {
         }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, Default)]
 #[byte_size(12)]
 pub struct Holder {
     #[offset(0)]
     #[byte_size(12)]
     pub t: Tracked,
+}
+impl Holder {
+    pub fn move_from(_a0: Ptr<Holder>) -> Self {
+        Self {
+            t: Tracked::move_from({ field_ptr!(_a0, t) }),
+        }
+    }
 }
 pub fn forward_once_2(x: Ptr<Tracked>) -> Overload {
     return ({ chosen_overload_0((x).clone()) });

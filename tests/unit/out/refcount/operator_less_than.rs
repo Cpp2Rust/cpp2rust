@@ -14,76 +14,17 @@ pub struct Pair {
     #[offset(4)]
     pub y: i32,
 }
-impl std::cmp::Ord for Pair {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        {
-            if PairImpl::operator_lt(
-                &Rc::new(RefCell::new(Pair {
-                    x: self.x.clone(),
-                    y: self.y.clone(),
-                }))
-                .as_pointer(),
-                Rc::new(RefCell::new(Pair {
-                    x: other.x.clone(),
-                    y: other.y.clone(),
-                }))
-                .as_pointer(),
-            ) {
-                std::cmp::Ordering::Less
-            } else if PairImpl::operator_lt(
-                &Rc::new(RefCell::new(Pair {
-                    x: other.x.clone(),
-                    y: other.y.clone(),
-                }))
-                .as_pointer(),
-                Rc::new(RefCell::new(Pair {
-                    x: self.x.clone(),
-                    y: self.y.clone(),
-                }))
-                .as_pointer(),
-            ) {
-                std::cmp::Ordering::Greater
-            } else {
-                std::cmp::Ordering::Equal
-            }
-        }
+impl CppLess for Pair {
+    fn less(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
+        PairImpl::operator_lt(__lhs, __rhs.clone())
     }
 }
-impl std::cmp::PartialOrd for Pair {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(other))
+impl CppEq for Pair {
+    fn equal(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
+        !(PairImpl::operator_lt(__lhs, __rhs.clone()))
+            && !(PairImpl::operator_lt(__rhs, __lhs.clone()))
     }
 }
-impl std::cmp::PartialEq for Pair {
-    fn eq(&self, other: &Self) -> bool {
-        {
-            !(PairImpl::operator_lt(
-                &Rc::new(RefCell::new(Pair {
-                    x: self.x.clone(),
-                    y: self.y.clone(),
-                }))
-                .as_pointer(),
-                Rc::new(RefCell::new(Pair {
-                    x: other.x.clone(),
-                    y: other.y.clone(),
-                }))
-                .as_pointer(),
-            )) && !(PairImpl::operator_lt(
-                &Rc::new(RefCell::new(Pair {
-                    x: other.x.clone(),
-                    y: other.y.clone(),
-                }))
-                .as_pointer(),
-                Rc::new(RefCell::new(Pair {
-                    x: self.x.clone(),
-                    y: self.y.clone(),
-                }))
-                .as_pointer(),
-            ))
-        }
-    }
-}
-impl std::cmp::Eq for Pair {}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());

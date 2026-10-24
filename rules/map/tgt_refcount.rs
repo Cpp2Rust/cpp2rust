@@ -7,18 +7,18 @@ fn t1<T1, T2>() -> Map<T1, (Value<T1>, Value<T2>)> {
     Map::new()
 }
 
-fn f1<T1: Ord + Clone + 'static, T2: Default + 'static>(
+fn f1<T1: CppLess + Clone + ByteRepr + 'static, T2: Default + 'static>(
     a0: Ptr<Map<T1, (Value<T1>, Value<T2>)>>,
-    a1: T1,
+    a1: Ptr<T1>,
 ) -> Ptr<T2> {
-    Map::subscript(a0, &a1)
+    Map::subscript(a0, a1)
 }
 
 fn f2<T1, T2>(a0: Map<T1, (Value<T1>, Value<T2>)>) -> usize {
     a0.len()
 }
 
-fn f3<T1: Ord + 'static, T2: 'static>(
+fn f3<T1: CppLess + 'static, T2: 'static>(
     a0: Ptr<Map<T1, (Value<T1>, Value<T2>)>>,
     a1: BidirectionalIterator<(Value<T1>, Value<T2>)>,
 ) -> BidirectionalIterator<(Value<T1>, Value<T2>)> {
@@ -30,15 +30,15 @@ fn f5<T1, T2>() -> Map<T1, (Value<T1>, Value<T2>)> {
     Map::new()
 }
 
-fn f6<T1: Ord + Clone, T2: Clone>(a0: Map<T1, (Value<T1>, Value<T2>)>) -> Map<T1, (Value<T1>, Value<T2>)> {
+fn f6<T1: CppLess + Clone + 'static, T2: Clone>(a0: Map<T1, (Value<T1>, Value<T2>)>) -> Map<T1, (Value<T1>, Value<T2>)> {
     a0.clone()
 }
 
-fn f7<T1: Ord, T2>(a0: &mut Map<T1, (Value<T1>, Value<T2>)>, a1: T1) -> Ptr<T2> {
+fn f7<T1: CppLess + 'static, T2>(a0: &mut Map<T1, (Value<T1>, Value<T2>)>, a1: Ptr<T1>) -> Ptr<T2> {
     a0.get(&a1).expect("out of range!").borrow().1.as_pointer()
 }
 
-fn f8<T1: Ord + ByteRepr + 'static, T2: Default + 'static>(
+fn f8<T1: CppLess + 'static, T2: Default + 'static>(
     a0: Ptr<Map<T1, (Value<T1>, Value<T2>)>>,
     a1: Ptr<T1>,
 ) -> Ptr<T2> {
@@ -49,7 +49,7 @@ fn f9<T1: 'static, T2: 'static>(a0: Ptr<Map<T1, (Value<T1>, Value<T2>)>>) -> Bid
     a0.with(|__m: &Map<T1, (Value<T1>, Value<T2>)>| __m.end())
 }
 
-fn f10<T1: Ord + 'static, T2: 'static>(a0: Ptr<Map<T1, (Value<T1>, Value<T2>)>>, a1: T1) -> BidirectionalIterator<(Value<T1>, Value<T2>)> {
+fn f10<T1: CppLess + 'static, T2: 'static>(a0: Ptr<Map<T1, (Value<T1>, Value<T2>)>>, a1: Ptr<T1>) -> BidirectionalIterator<(Value<T1>, Value<T2>)> {
     a0.with(|__m: &Map<T1, (Value<T1>, Value<T2>)>| __m.find(&a1))
 }
 
@@ -61,11 +61,11 @@ fn f14<T1: 'static, T2: 'static>(a0: Ptr<Map<T1, (Value<T1>, Value<T2>)>>) -> Bi
     a0.with(|__m: &Map<T1, (Value<T1>, Value<T2>)>| __m.end())
 }
 
-fn f15<T1: Ord, T2>(a0: &mut Map<T1, (Value<T1>, Value<T2>)>, a1: T1) -> Ptr<T2> {
+fn f15<T1: CppLess + 'static, T2>(a0: &mut Map<T1, (Value<T1>, Value<T2>)>, a1: Ptr<T1>) -> Ptr<T2> {
     a0.get(&a1).expect("out of range!").borrow().1.as_pointer()
 }
 
-fn f17<T1: Ord + 'static, T2: 'static>(a0: Ptr<Map<T1, (Value<T1>, Value<T2>)>>, a1: T1) -> BidirectionalIterator<(Value<T1>, Value<T2>)> {
+fn f17<T1: CppLess + 'static, T2: 'static>(a0: Ptr<Map<T1, (Value<T1>, Value<T2>)>>, a1: Ptr<T1>) -> BidirectionalIterator<(Value<T1>, Value<T2>)> {
     a0.with(|__m: &Map<T1, (Value<T1>, Value<T2>)>| __m.find(&a1))
 }
 
@@ -78,11 +78,11 @@ fn f25<T1: 'static, T2: 'static>(a0: Ptr<Map<T1, (Value<T1>, Value<T2>)>>, a1: P
     a0.write(__src)
 }
 
-fn f26<T1: Ord + Clone + 'static, T2: Clone + 'static>(a0: Ptr<Map<T1, (Value<T1>, Value<T2>)>>, a1: Map<T1, (Value<T1>, Value<T2>)>) {
+fn f26<T1: CppLess + Clone + 'static, T2: Clone + 'static>(a0: Ptr<Map<T1, (Value<T1>, Value<T2>)>>, a1: Map<T1, (Value<T1>, Value<T2>)>) {
     a0.write(a1.clone())
 }
 
-fn f27<T1: Ord + 'static, T2: 'static>(
+fn f27<T1: CppLess + 'static, T2: 'static>(
     a0: Ptr<Map<T1, (Value<T1>, Value<T2>)>>,
     a1: BidirectionalIterator<(Value<T1>, Value<T2>)>,
 ) -> BidirectionalIterator<(Value<T1>, Value<T2>)> {
@@ -90,7 +90,7 @@ fn f27<T1: Ord + 'static, T2: 'static>(
     Map::erase(a0, &__it)
 }
 
-fn f28<T1: Ord + 'static, T2: 'static>(a0: Ptr<Map<T1, (Value<T1>, Value<T2>)>>, a1: T1) -> usize {
+fn f28<T1: CppLess + 'static, T2: 'static>(a0: Ptr<Map<T1, (Value<T1>, Value<T2>)>>, a1: Ptr<T1>) -> usize {
     Map::erase_key(a0, &a1)
 }
 

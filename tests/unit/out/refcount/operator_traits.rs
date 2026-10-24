@@ -12,134 +12,59 @@ pub struct Lt {
     #[offset(0)]
     pub v: i32,
 }
-impl std::cmp::Ord for Lt {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        {
-            if LtImpl::operator_lt(
-                &Rc::new(RefCell::new(Lt { v: self.v.clone() })).as_pointer(),
-                Rc::new(RefCell::new(Lt { v: other.v.clone() })).as_pointer(),
-            ) {
-                std::cmp::Ordering::Less
-            } else if LtImpl::operator_lt(
-                &Rc::new(RefCell::new(Lt { v: other.v.clone() })).as_pointer(),
-                Rc::new(RefCell::new(Lt { v: self.v.clone() })).as_pointer(),
-            ) {
-                std::cmp::Ordering::Greater
-            } else {
-                std::cmp::Ordering::Equal
-            }
-        }
+impl CppLess for Lt {
+    fn less(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
+        LtImpl::operator_lt(__lhs, __rhs.clone())
     }
 }
-impl std::cmp::PartialOrd for Lt {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(other))
+impl CppEq for Lt {
+    fn equal(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
+        !(LtImpl::operator_lt(__lhs, __rhs.clone())) && !(LtImpl::operator_lt(__rhs, __lhs.clone()))
     }
 }
-impl std::cmp::PartialEq for Lt {
-    fn eq(&self, other: &Self) -> bool {
-        {
-            !(LtImpl::operator_lt(
-                &Rc::new(RefCell::new(Lt { v: self.v.clone() })).as_pointer(),
-                Rc::new(RefCell::new(Lt { v: other.v.clone() })).as_pointer(),
-            )) && !(LtImpl::operator_lt(
-                &Rc::new(RefCell::new(Lt { v: other.v.clone() })).as_pointer(),
-                Rc::new(RefCell::new(Lt { v: self.v.clone() })).as_pointer(),
-            ))
-        }
-    }
-}
-impl std::cmp::Eq for Lt {}
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Eq {
     #[offset(0)]
     pub v: i32,
 }
-impl std::cmp::PartialEq for Eq {
-    fn eq(&self, other: &Self) -> bool {
-        {
-            EqImpl::operator_eq(
-                &Rc::new(RefCell::new(Eq { v: self.v.clone() })).as_pointer(),
-                Rc::new(RefCell::new(Eq { v: other.v.clone() })).as_pointer(),
-            )
-        }
+impl CppEq for Eq {
+    fn equal(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
+        EqImpl::operator_eq(__lhs, __rhs.clone())
     }
 }
-impl std::cmp::Eq for Eq {}
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Cmp {
     #[offset(0)]
     pub v: i32,
 }
-impl std::cmp::Ord for Cmp {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        {
-            CmpImpl::operator_cmp(
-                &Rc::new(RefCell::new(Cmp { v: self.v.clone() })).as_pointer(),
-                Rc::new(RefCell::new(Cmp { v: other.v.clone() })).as_pointer(),
-            )
-        }
+impl CppLess for Cmp {
+    fn less(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
+        CmpImpl::operator_cmp(__lhs, __rhs.clone()) == std::cmp::Ordering::Less
     }
 }
-impl std::cmp::PartialOrd for Cmp {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(other))
+impl CppEq for Cmp {
+    fn equal(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
+        CmpImpl::operator_eq(__lhs, __rhs.clone())
     }
 }
-impl std::cmp::PartialEq for Cmp {
-    fn eq(&self, other: &Self) -> bool {
-        {
-            CmpImpl::operator_eq(
-                &Rc::new(RefCell::new(Cmp { v: self.v.clone() })).as_pointer(),
-                Rc::new(RefCell::new(Cmp { v: other.v.clone() })).as_pointer(),
-            )
-        }
-    }
-}
-impl std::cmp::Eq for Cmp {}
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Free {
     #[offset(0)]
     pub v: i32,
 }
-impl std::cmp::Ord for Free {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        {
-            if operator_lt_0(
-                Rc::new(RefCell::new(Free { v: self.v.clone() })).as_pointer(),
-                Rc::new(RefCell::new(Free { v: other.v.clone() })).as_pointer(),
-            ) {
-                std::cmp::Ordering::Less
-            } else if operator_lt_0(
-                Rc::new(RefCell::new(Free { v: other.v.clone() })).as_pointer(),
-                Rc::new(RefCell::new(Free { v: self.v.clone() })).as_pointer(),
-            ) {
-                std::cmp::Ordering::Greater
-            } else {
-                std::cmp::Ordering::Equal
-            }
-        }
+impl CppLess for Free {
+    fn less(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
+        operator_lt_0(__lhs.clone(), __rhs.clone())
     }
 }
-impl std::cmp::PartialOrd for Free {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(other))
+impl CppEq for Free {
+    fn equal(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
+        operator_eq_1(__lhs.clone(), __rhs.clone())
     }
 }
-impl std::cmp::PartialEq for Free {
-    fn eq(&self, other: &Self) -> bool {
-        {
-            operator_eq_1(
-                Rc::new(RefCell::new(Free { v: self.v.clone() })).as_pointer(),
-                Rc::new(RefCell::new(Free { v: other.v.clone() })).as_pointer(),
-            )
-        }
-    }
-}
-impl std::cmp::Eq for Free {}
 pub fn operator_lt_0(a: Ptr<Free>, b: Ptr<Free>) -> bool {
     return ({ a.with(|__s| __s.v) } < { b.with(|__s| __s.v) });
 }
@@ -165,15 +90,11 @@ fn main_0() -> i32 {
         Lt { v: 2 },
     ])));
     {
-        let __n = lts.decay().end().iter_distance(&lts.decay().begin());
+        let __first = lts.decay().begin();
+        let __n = lts.decay().end().iter_distance(&__first);
         let mut __order: Vec<isize> = (0..__n).collect();
-        __order.sort_by(|&__x, &__y| {
-            lts.decay()
-                .begin()
-                .iter_at(__x)
-                .with(|__a| lts.decay().begin().iter_at(__y).with(|__b| __a.cmp(__b)))
-        });
-        reorder(__order, |__i| lts.decay().begin().iter_at(__i));
+        __order.sort_by(|&__x, &__y| cpp_cmp(&__first.iter_at(__x), &__first.iter_at(__y)));
+        reorder(__order, |__i| __first.iter_at(__i));
     };
     assert!(
         (({ (*lts.borrow())[0_usize].v } == 1) && ({ (*lts.borrow())[1_usize].v } == 2))
@@ -184,12 +105,14 @@ fn main_0() -> i32 {
         Eq { v: 2 },
         Eq { v: 3 },
     ])));
-    let mut two: Eq = Eq { v: 2 };
-    let mut nine: Eq = Eq { v: 9 };
+    let two: Value<Eq> = Rc::new(RefCell::new(Eq { v: 2 }));
+    let nine: Value<Eq> = Rc::new(RefCell::new(Eq { v: 9 }));
     assert!(
         ({
             let mut __it = eqs.decay().begin();
-            while __it != eqs.decay().end() && __it.iter_deref().with(|__v| *__v != two) {
+            let __last = eqs.decay().end();
+            let __value = two.as_pointer();
+            while __it != __last && !CppEq::equal(&__it.iter_deref(), &__value) {
                 __it.iter_inc();
             }
             __it
@@ -201,7 +124,9 @@ fn main_0() -> i32 {
     assert!(
         {
             let mut __it = eqs.decay().begin();
-            while __it != eqs.decay().end() && __it.iter_deref().with(|__v| *__v != nine) {
+            let __last = eqs.decay().end();
+            let __value = nine.as_pointer();
+            while __it != __last && !CppEq::equal(&__it.iter_deref(), &__value) {
                 __it.iter_inc();
             }
             __it
@@ -213,22 +138,20 @@ fn main_0() -> i32 {
         Cmp { v: 2 },
     ])));
     {
-        let __n = cmps.decay().end().iter_distance(&cmps.decay().begin());
+        let __first = cmps.decay().begin();
+        let __n = cmps.decay().end().iter_distance(&__first);
         let mut __order: Vec<isize> = (0..__n).collect();
-        __order.sort_by(|&__x, &__y| {
-            cmps.decay()
-                .begin()
-                .iter_at(__x)
-                .with(|__a| cmps.decay().begin().iter_at(__y).with(|__b| __a.cmp(__b)))
-        });
-        reorder(__order, |__i| cmps.decay().begin().iter_at(__i));
+        __order.sort_by(|&__x, &__y| cpp_cmp(&__first.iter_at(__x), &__first.iter_at(__y)));
+        reorder(__order, |__i| __first.iter_at(__i));
     };
     assert!(({ (*cmps.borrow())[0_usize].v } == 1) && ({ (*cmps.borrow())[2_usize].v } == 3));
-    let mut three: Cmp = Cmp { v: 3 };
+    let three: Value<Cmp> = Rc::new(RefCell::new(Cmp { v: 3 }));
     assert!(
         ({
             let mut __it = cmps.decay().begin();
-            while __it != cmps.decay().end() && __it.iter_deref().with(|__v| *__v != three) {
+            let __last = cmps.decay().end();
+            let __value = three.as_pointer();
+            while __it != __last && !CppEq::equal(&__it.iter_deref(), &__value) {
                 __it.iter_inc();
             }
             __it
@@ -239,23 +162,20 @@ fn main_0() -> i32 {
     );
     let frees: Value<Vec<Free>> = Rc::new(RefCell::new(Vec::from([Free { v: 2 }, Free { v: 1 }])));
     {
-        let __n = frees.decay().end().iter_distance(&frees.decay().begin());
+        let __first = frees.decay().begin();
+        let __n = frees.decay().end().iter_distance(&__first);
         let mut __order: Vec<isize> = (0..__n).collect();
-        __order.sort_by(|&__x, &__y| {
-            frees
-                .decay()
-                .begin()
-                .iter_at(__x)
-                .with(|__a| frees.decay().begin().iter_at(__y).with(|__b| __a.cmp(__b)))
-        });
-        reorder(__order, |__i| frees.decay().begin().iter_at(__i));
+        __order.sort_by(|&__x, &__y| cpp_cmp(&__first.iter_at(__x), &__first.iter_at(__y)));
+        reorder(__order, |__i| __first.iter_at(__i));
     };
     assert!(({ (*frees.borrow())[0_usize].v } == 1));
-    let mut ftwo: Free = Free { v: 2 };
+    let ftwo: Value<Free> = Rc::new(RefCell::new(Free { v: 2 }));
     assert!(
         ({
             let mut __it = frees.decay().begin();
-            while __it != frees.decay().end() && __it.iter_deref().with(|__v| *__v != ftwo) {
+            let __last = frees.decay().end();
+            let __value = ftwo.as_pointer();
+            while __it != __last && !CppEq::equal(&__it.iter_deref(), &__value) {
                 __it.iter_inc();
             }
             __it

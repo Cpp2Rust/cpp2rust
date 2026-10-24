@@ -30,7 +30,9 @@ unsafe fn main_0() -> i32 {
     let mut v_end: UnsafeRandomAccessIterator<i32> = v.end();
     let mut it: UnsafeRandomAccessIterator<i32> = {
         let mut __it = (v_begin).clone();
-        while __it != (v_end).clone() && *__it.iter_deref() != 2 {
+        let __last = (v_end).clone();
+        let __value = &2;
+        while __it != __last && *__it.iter_deref() != *__value {
             __it.iter_inc();
         }
         __it
@@ -47,7 +49,9 @@ unsafe fn main_0() -> i32 {
         ((v_result_true) && (m_result_true))
             && ({
                 let mut __it = v.begin();
-                while __it != v.begin() && *__it.iter_deref() != 2 {
+                let __last = v.begin();
+                let __value = &2;
+                while __it != __last && *__it.iter_deref() != *__value {
                     __it.iter_inc();
                 }
                 __it
@@ -57,7 +61,9 @@ unsafe fn main_0() -> i32 {
     assert!(
         {
             let mut __it = w.begin().iter_add(2_isize);
-            while __it != w.end() && *__it.iter_deref() != 4 {
+            let __last = w.end();
+            let __value = &4;
+            while __it != __last && *__it.iter_deref() != *__value {
                 __it.iter_inc();
             }
             __it
@@ -66,7 +72,9 @@ unsafe fn main_0() -> i32 {
     assert!(
         {
             let mut __it = w.begin().iter_add(2_isize);
-            while __it != w.end() && *__it.iter_deref() != 1 {
+            let __last = w.end();
+            let __value = &1;
+            while __it != __last && *__it.iter_deref() != *__value {
                 __it.iter_inc();
             }
             __it
@@ -75,7 +83,9 @@ unsafe fn main_0() -> i32 {
     assert!(
         {
             let mut __it = w.begin().iter_add(2_isize);
-            while __it != w.begin().iter_add(4_isize) && *__it.iter_deref() != 5 {
+            let __last = w.begin().iter_add(4_isize);
+            let __value = &5;
+            while __it != __last && *__it.iter_deref() != *__value {
                 __it.iter_inc();
             }
             __it

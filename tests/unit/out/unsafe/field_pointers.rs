@@ -19,7 +19,7 @@ pub struct Header {
     pub size: i16,
 }
 #[repr(C)]
-#[derive(Clone, VaArg, FnPtrArg, Default)]
+#[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
 pub struct Outer {
     pub x: i32,
     pub inner: Inner,
@@ -40,6 +40,44 @@ impl Outer {
             let __a1 = ((k) + (self.x));
             self.v.push(__a1)
         };
+    }
+    pub unsafe fn move_from(_a0: *mut Outer) -> Self {
+        let mut this = Self {
+            x: (*_a0).x,
+            inner: (*_a0).inner,
+            items: std::array::from_fn::<_, 3, _>(|__i: usize| (*_a0).items[(__i)]),
+            v: std::mem::take(&mut (*_a0).v),
+            cursor: (*_a0).cursor,
+            buf: std::array::from_fn::<_, 4, _>(|__i: usize| (*_a0).buf[(__i)]),
+        };
+        this
+    }
+    pub unsafe fn move_assign(&mut self, _a0: *mut Outer) -> *mut Outer {
+        self.x = (*_a0).x;
+        self.inner = (*_a0).inner;
+        {
+            if 36_usize != 0 {
+                ::std::ptr::copy_nonoverlapping(
+                    ((&mut (*_a0).items as *mut [Inner; 3]) as *const ::libc::c_void),
+                    ((&mut self.items as *mut [Inner; 3]) as *mut ::libc::c_void),
+                    36_usize as usize,
+                )
+            }
+            ((&mut self.items as *mut [Inner; 3]) as *mut ::libc::c_void)
+        };
+        self.v = std::mem::take(&mut (*_a0).v);
+        self.cursor = (*_a0).cursor;
+        {
+            if 16_usize != 0 {
+                ::std::ptr::copy_nonoverlapping(
+                    ((&mut (*_a0).buf as *mut [i32; 4]) as *const ::libc::c_void),
+                    ((&mut self.buf as *mut [i32; 4]) as *mut ::libc::c_void),
+                    16_usize as usize,
+                )
+            }
+            ((&mut self.buf as *mut [i32; 4]) as *mut ::libc::c_void)
+        };
+        return &mut (*(self as *mut Outer));
     }
 }
 pub unsafe fn set_0(mut p: *mut i32, mut value: i32) {

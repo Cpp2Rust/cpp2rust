@@ -19,15 +19,15 @@ unsafe fn main_0() -> i32 {
     let mut pb: *mut i32 = (&mut b as *mut i32);
     let mut ppa: *mut *mut i32 = (&mut pa as *mut *mut i32);
     let mut ppb: *mut *mut i32 = (&mut pb as *mut *mut i32);
-    let mut r1: i32 = (*if *(*ppa) >= *(*ppb) {
-        (*ppa) as *const _
-    } else {
-        (*ppb) as *const _
+    let mut r1: i32 = (*{
+        let __a: *const _ = (*ppa);
+        let __b: *const _ = (*ppb);
+        if *__a < *__b { __b } else { __a }
     });
-    let mut r2: i32 = (*if *(*ppa) <= *(*ppb) {
-        (*ppa) as *const _
-    } else {
-        (*ppb) as *const _
+    let mut r2: i32 = (*{
+        let __a: *const _ = (*ppa);
+        let __b: *const _ = (*ppb);
+        if *__b < *__a { __b } else { __a }
     });
     assert!((((r1) + (r2)) == (30)));
     return 0;

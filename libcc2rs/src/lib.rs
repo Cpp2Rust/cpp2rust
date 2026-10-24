@@ -45,6 +45,9 @@ pub use capture::{
     MoveCtor, MoveCtorUnsafe,
 };
 
+mod cmp;
+pub use cmp::*;
+
 mod swap;
 // Used by cpp_swap! and cpp_swap_unsafe!.
 #[doc(hidden)]

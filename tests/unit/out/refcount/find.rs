@@ -26,13 +26,20 @@ fn main_0() -> i32 {
     };
     let v_begin: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(v.decay().begin()));
     let v_end: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(v.decay().end()));
-    let it: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new({
-        let mut __it = (*v_begin.borrow()).clone();
-        while __it != (*v_end.borrow()).clone() && __it.iter_deref().with(|__v| *__v != 2) {
-            __it.iter_inc();
-        }
-        __it
-    }));
+    let it: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(
+        ({
+            let __tmp_0: Value<i32> = Rc::new(RefCell::new(2));
+            {
+                let mut __it = (*v_begin.borrow()).clone();
+                let __last = (*v_end.borrow()).clone();
+                let __value = __tmp_0.as_pointer();
+                while __it != __last && !CppEq::equal(&__it.iter_deref(), &__value) {
+                    __it.iter_inc();
+                }
+                __it
+            }
+        }),
+    ));
     let mut v_result_true: bool = (*it.borrow()) != v.decay().end();
     let m: Value<Map<i32, (Value<i32>, Value<f64>)>> = Rc::new(RefCell::new(Map::new()));
     Map::subscript_move(
@@ -64,43 +71,61 @@ fn main_0() -> i32 {
     let mut m_result_true: bool = (*m_begin.borrow()) != (*m_end.borrow());
     assert!(
         ((v_result_true) && (m_result_true))
-            && ({
-                let mut __it = v.decay().begin();
-                while __it != v.decay().begin() && __it.iter_deref().with(|__v| *__v != 2) {
-                    __it.iter_inc();
+            && (({
+                let __tmp_1: Value<i32> = Rc::new(RefCell::new(2));
+                {
+                    let mut __it = v.decay().begin();
+                    let __last = v.decay().begin();
+                    let __value = __tmp_1.as_pointer();
+                    while __it != __last && !CppEq::equal(&__it.iter_deref(), &__value) {
+                        __it.iter_inc();
+                    }
+                    __it
                 }
-                __it
-            } == v.decay().begin())
+            }) == v.decay().begin())
     );
     let w: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::from([1, 2, 3, 4, 5])));
     assert!(
-        {
-            let mut __it = w.decay().begin().iter_add(2_isize);
-            while __it != w.decay().end() && __it.iter_deref().with(|__v| *__v != 4) {
-                __it.iter_inc();
-            }
-            __it
-        } == w.decay().begin().iter_add(3_isize)
-    );
-    assert!(
-        {
-            let mut __it = w.decay().begin().iter_add(2_isize);
-            while __it != w.decay().end() && __it.iter_deref().with(|__v| *__v != 1) {
-                __it.iter_inc();
-            }
-            __it
-        } == w.decay().end()
-    );
-    assert!(
-        {
-            let mut __it = w.decay().begin().iter_add(2_isize);
-            while __it != w.decay().begin().iter_add(4_isize)
-                && __it.iter_deref().with(|__v| *__v != 5)
+        ({
+            let __tmp_2: Value<i32> = Rc::new(RefCell::new(4));
             {
-                __it.iter_inc();
+                let mut __it = w.decay().begin().iter_add(2_isize);
+                let __last = w.decay().end();
+                let __value = __tmp_2.as_pointer();
+                while __it != __last && !CppEq::equal(&__it.iter_deref(), &__value) {
+                    __it.iter_inc();
+                }
+                __it
             }
-            __it
-        } == w.decay().begin().iter_add(4_isize)
+        }) == w.decay().begin().iter_add(3_isize)
+    );
+    assert!(
+        ({
+            let __tmp_3: Value<i32> = Rc::new(RefCell::new(1));
+            {
+                let mut __it = w.decay().begin().iter_add(2_isize);
+                let __last = w.decay().end();
+                let __value = __tmp_3.as_pointer();
+                while __it != __last && !CppEq::equal(&__it.iter_deref(), &__value) {
+                    __it.iter_inc();
+                }
+                __it
+            }
+        }) == w.decay().end()
+    );
+    assert!(
+        ({
+            let __tmp_4: Value<i32> = Rc::new(RefCell::new(5));
+            {
+                let mut __it = w.decay().begin().iter_add(2_isize);
+                let __last = w.decay().begin().iter_add(4_isize);
+                let __value = __tmp_4.as_pointer();
+                while __it != __last && !CppEq::equal(&__it.iter_deref(), &__value) {
+                    __it.iter_inc();
+                }
+                __it
+            }
+        }) == w.decay().begin().iter_add(4_isize)
     );
     return 0;
 }

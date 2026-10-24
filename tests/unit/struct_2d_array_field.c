@@ -29,5 +29,14 @@ int main(void) {
   const char *p = local.rows[2];
   assert(p[0] == 't');
   assert(local.count == 3);
+
+  struct table copy;
+  memcpy(&copy.rows, &local.rows, sizeof local.rows);
+  assert(strcmp(copy.rows[1], "Two") == 0 &&
+         strcmp(copy.rows[2], "three") == 0);
+  char grid[2][3] = {{'a', 'b', 'c'}, {'d', 'e', 'f'}};
+  char other[2][3];
+  memcpy(&other, &grid, sizeof grid);
+  assert(other[1][2] == 'f' && other[0][1] == 'b');
   return 0;
 }

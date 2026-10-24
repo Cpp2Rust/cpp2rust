@@ -27,7 +27,7 @@ impl Counter {
     }
 }
 #[repr(C)]
-#[derive(Clone, VaArg, FnPtrArg, Default)]
+#[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
 pub struct S {
     pub tag: i32,
     pub c: Counter,
@@ -40,6 +40,31 @@ impl S {
             let _k: i32 = self.tag;
             Counter::add(&mut self.c, _k)
         });
+    }
+    pub unsafe fn move_from(_a0: *mut S) -> Self {
+        let mut this = Self {
+            tag: (*_a0).tag,
+            c: (*_a0).c,
+            arr: std::array::from_fn::<_, 2, _>(|__i: usize| (*_a0).arr[(__i)]),
+            v: std::mem::take(&mut (*_a0).v),
+        };
+        this
+    }
+    pub unsafe fn move_assign(&mut self, _a0: *mut S) -> *mut S {
+        self.tag = (*_a0).tag;
+        self.c = (*_a0).c;
+        {
+            if 8_usize != 0 {
+                ::std::ptr::copy_nonoverlapping(
+                    ((&mut (*_a0).arr as *mut [Counter; 2]) as *const ::libc::c_void),
+                    ((&mut self.arr as *mut [Counter; 2]) as *mut ::libc::c_void),
+                    8_usize as usize,
+                )
+            }
+            ((&mut self.arr as *mut [Counter; 2]) as *mut ::libc::c_void)
+        };
+        self.v = std::mem::take(&mut (*_a0).v);
+        return &mut (*(self as *mut S));
     }
 }
 pub unsafe fn run_0(mut o: *mut S) {

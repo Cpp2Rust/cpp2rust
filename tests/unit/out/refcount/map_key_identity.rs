@@ -17,65 +17,16 @@ pub struct Key {
     #[offset(4)]
     pub identity: i32,
 }
-impl std::cmp::Ord for Key {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        {
-            if operator_lt_1(
-                Rc::new(RefCell::new(Key {
-                    order: self.order.clone(),
-                    identity: self.identity.clone(),
-                }))
-                .as_pointer(),
-                Rc::new(RefCell::new(Key {
-                    order: other.order.clone(),
-                    identity: other.identity.clone(),
-                }))
-                .as_pointer(),
-            ) {
-                std::cmp::Ordering::Less
-            } else if operator_lt_1(
-                Rc::new(RefCell::new(Key {
-                    order: other.order.clone(),
-                    identity: other.identity.clone(),
-                }))
-                .as_pointer(),
-                Rc::new(RefCell::new(Key {
-                    order: self.order.clone(),
-                    identity: self.identity.clone(),
-                }))
-                .as_pointer(),
-            ) {
-                std::cmp::Ordering::Greater
-            } else {
-                std::cmp::Ordering::Equal
-            }
-        }
+impl CppLess for Key {
+    fn less(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
+        operator_lt_1(__lhs.clone(), __rhs.clone())
     }
 }
-impl std::cmp::PartialOrd for Key {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(other))
+impl CppEq for Key {
+    fn equal(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
+        operator_eq_2(__lhs.clone(), __rhs.clone())
     }
 }
-impl std::cmp::PartialEq for Key {
-    fn eq(&self, other: &Self) -> bool {
-        {
-            operator_eq_2(
-                Rc::new(RefCell::new(Key {
-                    order: self.order.clone(),
-                    identity: self.identity.clone(),
-                }))
-                .as_pointer(),
-                Rc::new(RefCell::new(Key {
-                    order: other.order.clone(),
-                    identity: other.identity.clone(),
-                }))
-                .as_pointer(),
-            )
-        }
-    }
-}
-impl std::cmp::Eq for Key {}
 pub fn operator_lt_1(a: Ptr<Key>, b: Ptr<Key>) -> bool {
     return ({ a.with(|__s| __s.order) } < { b.with(|__s| __s.order) });
 }
@@ -124,21 +75,21 @@ fn main_0() -> i32 {
         ok = rhs_0
     };
     let distinct: Value<Map<Key, (Value<Key>, Value<Mapped>)>> = Rc::new(RefCell::new(Map::new()));
-    let a: Ptr<Mapped> = Map::subscript(distinct.as_pointer(), &(*distinct_a.borrow()));
+    let a: Ptr<Mapped> = Map::subscript(distinct.as_pointer(), distinct_a.as_pointer());
     field!(a, value).write(11);
     let a_it: Value<BidirectionalIterator<(Value<Key>, Value<Mapped>)>> =
         Rc::new(RefCell::new(distinct.as_pointer().with(
-            |__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.find(&(*distinct_a.borrow())),
+            |__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.find(&distinct_a.as_pointer()),
         )));
     let mut a_value: Ptr<Mapped> = ((*(*a_it.borrow()).iter_deref().upgrade().deref())
         .1
         .as_pointer());
     ok = { ((ok as i32) & ((default_constructions_0.with(|rc| *rc.borrow()) == 1) as i32)) != 0 };
-    let b: Ptr<Mapped> = Map::subscript(distinct.as_pointer(), &(*distinct_b.borrow()));
+    let b: Ptr<Mapped> = Map::subscript(distinct.as_pointer(), distinct_b.as_pointer());
     field!(b, value).write(22);
     let b_it: Value<BidirectionalIterator<(Value<Key>, Value<Mapped>)>> =
         Rc::new(RefCell::new(distinct.as_pointer().with(
-            |__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.find(&(*distinct_b.borrow())),
+            |__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.find(&distinct_b.as_pointer()),
         )));
     ok = { ((ok as i32) & ((default_constructions_0.with(|rc| *rc.borrow()) == 2) as i32)) != 0 };
     {
@@ -157,7 +108,7 @@ fn main_0() -> i32 {
                 == distinct
                     .as_pointer()
                     .with(|__m: &Map<Key, (Value<Key>, Value<Mapped>)>| {
-                        __m.find(&(*distinct_a.borrow()))
+                        __m.find(&distinct_a.as_pointer())
                     })) as i32))
             != 0;
         ok = rhs_0
@@ -168,7 +119,7 @@ fn main_0() -> i32 {
                 == distinct
                     .as_pointer()
                     .with(|__m: &Map<Key, (Value<Key>, Value<Mapped>)>| {
-                        __m.find(&(*distinct_b.borrow()))
+                        __m.find(&distinct_b.as_pointer())
                     })) as i32))
             != 0;
         ok = rhs_0
@@ -261,11 +212,11 @@ fn main_0() -> i32 {
     let equivalent: Value<Map<Key, (Value<Key>, Value<Mapped>)>> =
         Rc::new(RefCell::new(Map::new()));
     let mut before_equivalent: i32 = default_constructions_0.with(|rc| *rc.borrow());
-    let first: Ptr<Mapped> = Map::subscript(equivalent.as_pointer(), &(*equivalent_a.borrow()));
+    let first: Ptr<Mapped> = Map::subscript(equivalent.as_pointer(), equivalent_a.as_pointer());
     field!(first, value).write(31);
     let first_it: Value<BidirectionalIterator<(Value<Key>, Value<Mapped>)>> =
         Rc::new(RefCell::new(equivalent.as_pointer().with(
-            |__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.find(&(*equivalent_a.borrow())),
+            |__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.find(&equivalent_a.as_pointer()),
         )));
     let mut first_value: Ptr<Mapped> = ((*(*first_it.borrow()).iter_deref().upgrade().deref())
         .1
@@ -275,7 +226,7 @@ fn main_0() -> i32 {
             & ((default_constructions_0.with(|rc| *rc.borrow()) == (before_equivalent + 1)) as i32))
             != 0
     };
-    let second: Ptr<Mapped> = Map::subscript(equivalent.as_pointer(), &(*equivalent_b.borrow()));
+    let second: Ptr<Mapped> = Map::subscript(equivalent.as_pointer(), equivalent_b.as_pointer());
     let mut reused: bool =
         (default_constructions_0.with(|rc| *rc.borrow()) == (before_equivalent + 1));
     ok = { ((ok as i32) & (reused as i32)) != 0 };
@@ -300,7 +251,7 @@ fn main_0() -> i32 {
                 & (((*first_it.borrow())
                     == equivalent.as_pointer().with(
                         |__m: &Map<Key, (Value<Key>, Value<Mapped>)>| {
-                            __m.find(&(*equivalent_a.borrow()))
+                            __m.find(&equivalent_a.as_pointer())
                         },
                     )) as i32))
                 != 0;
@@ -311,7 +262,7 @@ fn main_0() -> i32 {
                 & (((*first_it.borrow())
                     == equivalent.as_pointer().with(
                         |__m: &Map<Key, (Value<Key>, Value<Mapped>)>| {
-                            __m.find(&(*equivalent_b.borrow()))
+                            __m.find(&equivalent_b.as_pointer())
                         },
                     )) as i32))
                 != 0;
@@ -367,11 +318,11 @@ fn main_0() -> i32 {
             != 0;
         ok = rhs_0
     };
-    let mut later_key: Key = Key {
+    let later_key: Value<Key> = Rc::new(RefCell::new(Key {
         order: 4,
         identity: 10,
-    };
-    let later: Ptr<Mapped> = Map::subscript(equivalent.as_pointer(), &later_key);
+    }));
+    let later: Ptr<Mapped> = Map::subscript(equivalent.as_pointer(), later_key.as_pointer());
     field!(later, value).write(41);
     ok = {
         ((ok as i32)
@@ -388,7 +339,7 @@ fn main_0() -> i32 {
                 & (((*first_it.borrow())
                     == equivalent.as_pointer().with(
                         |__m: &Map<Key, (Value<Key>, Value<Mapped>)>| {
-                            __m.find(&(*equivalent_a.borrow()))
+                            __m.find(&equivalent_a.as_pointer())
                         },
                     )) as i32))
                 != 0;
@@ -414,25 +365,25 @@ fn main_0() -> i32 {
             ok = rhs_0
         };
     }
-    let mut matching_a: Key = Key {
+    let matching_a: Value<Key> = Rc::new(RefCell::new(Key {
         order: 5,
         identity: 5,
-    };
-    let mut matching_b: Key = Key {
+    }));
+    let matching_b: Value<Key> = Rc::new(RefCell::new(Key {
         order: 5,
         identity: 5,
-    };
-    let mut matching_c: Key = Key {
+    }));
+    let matching_c: Value<Key> = Rc::new(RefCell::new(Key {
         order: 6,
         identity: 6,
-    };
+    }));
     let mut before_matching: i32 = default_constructions_0.with(|rc| *rc.borrow());
     let matching: Value<Map<Key, (Value<Key>, Value<Mapped>)>> = Rc::new(RefCell::new(Map::new()));
-    let matched: Ptr<Mapped> = Map::subscript(matching.as_pointer(), &matching_a);
+    let matched: Ptr<Mapped> = Map::subscript(matching.as_pointer(), matching_a.as_pointer());
     field!(matched, value).write(51);
     let matched_it: Value<BidirectionalIterator<(Value<Key>, Value<Mapped>)>> =
         Rc::new(RefCell::new(matching.as_pointer().with(
-            |__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.find(&matching_a),
+            |__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.find(&matching_a.as_pointer()),
         )));
     let mut matched_value: Ptr<Mapped> = ((*(*matched_it.borrow()).iter_deref().upgrade().deref())
         .1
@@ -442,7 +393,7 @@ fn main_0() -> i32 {
             & ((default_constructions_0.with(|rc| *rc.borrow()) == (before_matching + 1)) as i32))
             != 0
     };
-    let matched_again: Ptr<Mapped> = Map::subscript(matching.as_pointer(), &matching_b);
+    let matched_again: Ptr<Mapped> = Map::subscript(matching.as_pointer(), matching_b.as_pointer());
     ok = {
         ((ok as i32)
             & ((default_constructions_0.with(|rc| *rc.borrow()) == (before_matching + 1)) as i32))
@@ -458,8 +409,9 @@ fn main_0() -> i32 {
             & (((*matched_it.borrow())
                 == matching
                     .as_pointer()
-                    .with(|__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.find(&matching_b)))
-                as i32))
+                    .with(|__m: &Map<Key, (Value<Key>, Value<Mapped>)>| {
+                        __m.find(&matching_b.as_pointer())
+                    })) as i32))
             != 0;
         ok = rhs_0
     };
@@ -482,7 +434,7 @@ fn main_0() -> i32 {
             != 0;
         ok = rhs_0
     };
-    let other: Ptr<Mapped> = Map::subscript(matching.as_pointer(), &matching_c);
+    let other: Ptr<Mapped> = Map::subscript(matching.as_pointer(), matching_c.as_pointer());
     field!(other, value).write(61);
     ok = {
         ((ok as i32)
@@ -498,8 +450,9 @@ fn main_0() -> i32 {
             & (((*matched_it.borrow())
                 == matching
                     .as_pointer()
-                    .with(|__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.find(&matching_a)))
-                as i32))
+                    .with(|__m: &Map<Key, (Value<Key>, Value<Mapped>)>| {
+                        __m.find(&matching_a.as_pointer())
+                    })) as i32))
             != 0;
         ok = rhs_0
     };

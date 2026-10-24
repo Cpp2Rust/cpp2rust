@@ -106,10 +106,19 @@ impl Pair {
     }
 }
 #[repr(C)]
-#[derive(Clone, VaArg, FnPtrArg, Default)]
+#[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, Default)]
 pub struct Pair {
     pub a: Tracked,
     pub b: Tracked,
+}
+impl Pair {
+    pub unsafe fn move_from(_a0: *mut Pair) -> Self {
+        let mut this = Self {
+            a: Tracked::move_from({ &mut (*_a0).a }),
+            b: Tracked::move_from({ &mut (*_a0).b }),
+        };
+        this
+    }
 }
 pub unsafe fn forward_pack_into_ctor_8(args_0: *mut Tracked, args_1: *mut Tracked) -> Pair {
     return Pair::new({ args_0 }, { args_1 });

@@ -23,14 +23,16 @@ unsafe fn main_0() -> i32 {
             ::std::fs::File::create(::std::ffi::CStr::from_ptr(file.as_ptr()).to_str().unwrap())
                 .unwrap();
         {
-            let mut __bytes: Vec<u8> = Vec::new();
             let mut __it = UnsafeRandomAccessIterator::Vec(str.as_mut_ptr());
-            while __it != UnsafeRandomAccessIterator::Vec(str.as_mut_ptr().add(str.len() - 1)) {
+            let __last = UnsafeRandomAccessIterator::Vec(str.as_mut_ptr().add(str.len() - 1));
+            let __out = &mut ofs;
+            let mut __bytes: Vec<u8> = Vec::new();
+            while __it != __last {
                 __bytes.push(*__it.iter_deref() as u8);
                 __it.iter_inc();
             }
-            ofs.write_all(&__bytes);
-            ofs.try_clone().unwrap()
+            __out.write_all(&__bytes);
+            __out.try_clone().unwrap()
         };
     }
     libc::unlink(file.as_ptr());

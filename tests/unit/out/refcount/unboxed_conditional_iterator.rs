@@ -49,11 +49,9 @@ pub fn lehmer_2(mut sigma: Ptr<u32>, mut len: u32, mut code: Ptr<u32>) {
     'loop_: while (i < len) {
         let it: Value<RandomAccessIterator<u32>> = Rc::new(RefCell::new({
             let mut __it = items.decay().begin();
-            while __it != items.decay().end()
-                && __it
-                    .iter_deref()
-                    .with(|__v| *__v != (elem!(sigma, i).read()))
-            {
+            let __last = items.decay().end();
+            let __value = sigma.offset((i) as isize);
+            while __it != __last && !CppEq::equal(&__it.iter_deref(), &__value) {
                 __it.iter_inc();
             }
             __it

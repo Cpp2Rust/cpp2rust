@@ -97,15 +97,25 @@ static bool IsArrayFieldPtr(clang::ASTContext &ctx, const clang::Expr *expr) {
   return type && !type->getElementType()->isArrayType();
 }
 
-// Whether `expr` is a field of an element of a std::vector, whose arrays and
-// vectors are accessed through the place of the element, which is never
-// reinterpreted memory.
-static bool IsFieldOfVectorElem(clang::ASTContext &ctx,
-                                const clang::MemberExpr *expr) {
+// Whether `expr` is a field of an element of a std::vector reached through
+// a pointer, whose arrays and vectors are accessed through the place of the
+// element, which is never reinterpreted memory.
+bool ConverterRefCount::IsFieldOfVectorElem(
+    const clang::MemberExpr *expr) const {
   auto *op = clang::dyn_cast<clang::CXXOperatorCallExpr>(
       expr->getBase()->IgnoreParenImpCasts());
   return !expr->isArrow() && op && op->getOperator() == clang::OO_Subscript &&
-         !Mapper::Contains(ctx, op);
+         !Mapper::Contains(ctx_, op) && !IsElemOfBorrowedValue(op);
+}
+
+// Whether the element that a subscript accesses is reached by borrowing the
+// container, which is stored in a Value, unless computing the index may
+// access the container too, as it stays borrowed meanwhile.
+bool ConverterRefCount::IsElemOfBorrowedValue(
+    const clang::CXXOperatorCallExpr *expr) const {
+  auto *idx = expr->getArg(1);
+  return IsValueLocal(expr->getArg(0)) && !idx->HasSideEffects(ctx_) &&
+         !RefersToPointer(idx) && !ReferToCommonVar(idx, expr->getArg(0));
 }
 
 static bool IsPointerType(clang::ASTContext &ctx, clang::QualType type) {
@@ -586,26 +596,53 @@ bool ConverterRefCount::VisitOffsetOfExpr(clang::OffsetOfExpr *expr) {
   return false;
 }
 
-std::string
-ConverterRefCount::GetComparisonReferenceArg(const clang::CXXRecordDecl *decl,
-                                             std::string_view value) {
-  PushConversionKind push(*this, ConversionKind::FullRefCount);
-  return BoxValue(GetShallowCopy(decl, value)) + ".as_pointer()";
+// The operands of comparison operators are pointers to the values (&Ptr).
+std::string ConverterRefCount::GetComparisonArg(const clang::ParmVarDecl *param,
+                                                const clang::CXXRecordDecl *,
+                                                std::string_view value) {
+  if (param->getType()->isReferenceType()) {
+    return std::format("{}.clone()", value);
+  }
+  return std::format("{}.read()", value);
 }
 
-std::string
-ConverterRefCount::GetComparisonReferenceReceiver(const clang::CXXMethodDecl *,
-                                                  const clang::CXXRecordDecl *,
-                                                  std::string_view ptr) {
-  return std::format("&{}", ptr);
+std::string ConverterRefCount::GetComparisonResultReceiver(
+    const clang::CXXMethodDecl *, bool returns_ref, std::string_view result) {
+  if (returns_ref) {
+    return std::format("&{}", result);
+  }
+  PushConversionKind push(*this, ConversionKind::FullRefCount);
+  return std::format("&{}.as_pointer()", BoxValue(std::string(result)));
 }
 
 std::string
 ConverterRefCount::GetComparisonReceiver(const clang::CXXMethodDecl *,
-                                         const clang::CXXRecordDecl *decl,
                                          std::string_view lhs) {
-  PushConversionKind push(*this, ConversionKind::FullRefCount);
-  return std::format("&{}.as_pointer()", BoxValue(GetShallowCopy(decl, lhs)));
+  return std::string(lhs);
+}
+
+// Records implement the comparisons of the standard library (CppLess and
+// CppEq) with their comparison operators, which get pointers to the values.
+// They don't implement Ord and PartialEq, which get references to the values,
+// as passing those to the operators would require copying the values.
+void ConverterRefCount::ConvertOrdAndPartialOrdTraits(
+    const clang::CXXRecordDecl *decl, const clang::FunctionDecl *eq,
+    const clang::FunctionDecl *lt, const clang::FunctionDecl *cmp) {
+  auto record_name = GetRecordName(decl);
+  auto emit = [&](std::string_view trait, std::string_view fn,
+                  std::string_view body) {
+    StrCat(std::format("impl {} for {} {{ fn {}(__lhs: &Ptr<Self>, "
+                       "__rhs: &Ptr<Self>) -> bool {{ {} }} }}",
+                       trait, record_name, fn, body));
+  };
+  if (lt) {
+    emit("CppLess", "less", GetComparisonBool(lt, decl, "__lhs", "__rhs"));
+  } else if (cmp) {
+    emit("CppLess", "less",
+         std::format("{} == std::cmp::Ordering::Less",
+                     GetComparisonCall(cmp, decl, "__lhs", "__rhs")));
+  }
+  emit("CppEq", "equal", GetEqBody(decl, eq, lt, cmp, "__lhs", "__rhs"));
 }
 
 std::string ConverterRefCount::GetShallowCopy(const clang::RecordDecl *decl,
@@ -1199,8 +1236,9 @@ void ConverterRefCount::EmitCallResult(clang::CallExpr *expr, std::string str,
       return;
     }
     // The dereference is in the block of the temporaries, so they are still
-    // alive.
-    StrCat(wrap(DerefPtrExpr(str, ref->getPointeeType())));
+    // alive, as is the read of a field of the result.
+    auto deref = DerefPtrExpr(str, ref->getPointeeType());
+    StrCat(DeferTemporaries(expr, temps) ? deref : wrap(std::move(deref)));
     SetDerefFreshness(ref->getPointeeType());
     return;
   }
@@ -1289,11 +1327,13 @@ bool ConverterRefCount::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
         StrCat(std::format("({}).to_any()", ptr));
       } else if (sub_expr->getType()->isPointerType() &&
                  sub_expr->getType()->getPointeeType()->isArrayType()) {
-        StrCat(std::format("({} as Ptr<{}>).to_any()", ptr,
-                           ToString(sub_expr->getType()
-                                        ->getPointeeType()
-                                        ->getAsArrayTypeUnsafe()
-                                        ->getElementType())));
+        // A pointer to an array points to its first element.
+        StrCat(std::format(
+            "({} as {}).to_any()", ptr,
+            ToString(ctx_.getPointerType(sub_expr->getType()
+                                             ->getPointeeType()
+                                             ->getAsArrayTypeUnsafe()
+                                             ->getElementType()))));
       } else if (IsStringLiteralExpr(sub_expr)) {
         StrCat(std::format("{}.to_any()", ptr));
       } else {
@@ -1877,7 +1917,11 @@ std::string ConverterRefCount::ReadField(clang::MemberExpr *expr,
   // block.
   std::string ptr;
   std::string str;
+  // The read of a field of the result of a call is in the block of the
+  // temporaries of the arguments of the call.
+  FieldReadCall read{GetFieldReadCall(expr), ""};
   {
+    ScopedValue push_read(field_read_call_, read.call ? &read : nullptr);
     Buffer buf(*this);
     PushRecordPtr push(*this, &ptr,
                        expr->isArrow() ? nullptr : expr->getBase());
@@ -1891,8 +1935,15 @@ std::string ConverterRefCount::ReadField(clang::MemberExpr *expr,
   if (IsFieldOfUnboxedPlace(expr)) {
     return str;
   }
-  return ptr.empty() ? std::format("{{ {} }}", str)
-                     : std::format("{}.with(|__s| {})", ptr, str);
+  if (!ptr.empty()) {
+    str = std::format("{}.with(|__s| {})", ptr, str);
+  } else if (read.temporary_bindings.empty()) {
+    str = std::format("{{ {} }}", str);
+  }
+  if (read.temporary_bindings.empty()) {
+    return str;
+  }
+  return std::format("{{ {} {} }}", read.temporary_bindings, str);
 }
 
 bool ConverterRefCount::VisitCXXNewExpr(clang::CXXNewExpr *expr) {
@@ -1952,7 +2003,8 @@ bool ConverterRefCount::VisitCXXDeleteExpr(clang::CXXDeleteExpr *expr) {
 }
 
 bool ConverterRefCount::VisitArrayInitLoopExpr(clang::ArrayInitLoopExpr *expr) {
-  StrCat("Box::new");
+  // Arrays are boxed slices, also when they are elements of arrays.
+  StrCat(array_init_depth_ == 0 ? "Box::new" : "Box::<[_]>::from");
   PushParen outer(*this);
   PushConversionKind push(*this, ConversionKind::Unboxed);
   return Converter::VisitArrayInitLoopExpr(expr);
@@ -2434,15 +2486,11 @@ bool ConverterRefCount::ConvertCXXOperatorCallExpr(
         IsBoxedType(ctx_, expr->getArg(0)->getType().getNonReferenceType());
 
     // An element of an unboxed container is accessed directly, as is one of
-    // a container stored in a Value by borrowing the container, unless
-    // computing the index may access the container too, as it stays borrowed
-    // meanwhile.
+    // a container stored in a Value that can be borrowed.
     auto *idx = expr->getArg(1);
     bool is_unboxed = IsUnboxedPlace(expr->getArg(0));
     if ((isLValue() || isRValue()) && !is_inner_boxed &&
-        (is_unboxed ||
-         (IsValueLocal(expr->getArg(0)) && !idx->HasSideEffects(ctx_) &&
-          !RefersToPointer(idx) && !ReferToCommonVar(idx, expr->getArg(0))))) {
+        (is_unboxed || IsElemOfBorrowedValue(expr))) {
       // The index is a size_t, i.e., a usize.
       auto str =
           std::format("{}[{}]", ToString(expr->getArg(0)), ConvertRValue(idx));
@@ -2537,7 +2585,7 @@ std::string ConverterRefCount::ConvertElemPlace(clang::Expr *container,
       !IsUnboxedPlace(member) &&
       Mapper::Map(ctx_, field->getType().getUnqualifiedType())
           .starts_with("Vec<")) {
-    if (IsFieldOfVectorElem(ctx_, member)) {
+    if (IsFieldOfVectorElem(member)) {
       return std::format("index!({}, {})", ConvertPlace(member),
                          ConvertSubscriptIndex(idx));
     }
@@ -2678,7 +2726,7 @@ void ConverterRefCount::ConvertPointerElem(clang::Expr *base,
   // An element of an array field is accessed in place, through the struct.
   if (IsArrayFieldPtr(ctx_, base)) {
     auto *member = clang::cast<clang::MemberExpr>(base->IgnoreParenImpCasts());
-    if (IsFieldOfVectorElem(ctx_, member)) {
+    if (IsFieldOfVectorElem(member)) {
       EmitFresh(std::format("index!({}, {})", ConvertPlace(member),
                             ConvertRValue(idx)));
       return;
