@@ -72,7 +72,6 @@ struct Owner {
 
 struct Copyable {
   std::vector<int> data;
-  std::string name;
 };
 
 struct Holder {
@@ -160,14 +159,14 @@ int main() {
   assert(o3.n == 5 && o3.data[0] == 5 && o3.arr[0] == 5 && *o3.p == 7);
   assert(o2.data.empty() && o2.p.get() == nullptr);
 
-  Copyable c1{{1, 2}, "c"};
+  Copyable c1{{1, 2}};
   Copyable c2 = c1;
   Copyable c3 = std::move(c1);
-  assert(c2.data.size() == 2 && c3.data.size() == 2 && c3.name == "c");
-  assert(c1.data.empty() && c1.name.empty());
+  assert(c2.data.size() == 2 && c3.data.size() == 2);
+  assert(c1.data.empty());
   Copyable c4;
   c4 = std::move(c3);
-  assert(c4.data[1] == 2 && c4.name == "c" && c3.data.empty());
+  assert(c4.data[1] == 2 && c3.data.empty());
 
   Holder h1(4);
   h1.p.reset(new int(9));

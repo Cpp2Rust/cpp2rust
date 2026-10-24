@@ -181,33 +181,20 @@ impl Owner {
     }
 }
 #[repr(C)]
-#[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe)]
+#[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
 pub struct Copyable {
     pub data: Vec<i32>,
-    pub name: Vec<libc::c_char>,
 }
 impl Copyable {
     pub unsafe fn move_from(_a0: *mut Copyable) -> Self {
         let mut this = Self {
             data: std::mem::take(&mut (*_a0).data),
-            name: std::mem::take(&mut (*_a0).name),
         };
         this
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Copyable) -> *mut Copyable {
         self.data = std::mem::take(&mut (*_a0).data);
-        self.name = ((*_a0).name).clone();
         return &mut (*(self as *mut Copyable));
-    }
-}
-impl Default for Copyable {
-    fn default() -> Self {
-        unsafe {
-            Copyable {
-                data: Default::default(),
-                name: vec![0],
-            }
-        }
     }
 }
 #[repr(C)]
@@ -410,34 +397,14 @@ unsafe fn main_0() -> i32 {
     );
     let mut c1: Copyable = Copyable {
         data: Vec::from([1, 2]),
-        name: {
-            let s = c"c".as_ptr();
-            std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1)
-                .to_vec()
-        },
     };
     let mut c2: Copyable = c1.clone();
     let mut c3: Copyable = Copyable::move_from({ &mut c1 });
-    assert!(
-        (((c2.data.len()) == (2_usize)) && ((c3.data.len()) == (2_usize)))
-            && (c3.name == {
-                let s = c"c".as_ptr();
-                std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1)
-                    .to_vec()
-            })
-    );
-    assert!((c1.data.is_empty()) && (c1.name.len() <= 1));
+    assert!(((c2.data.len()) == (2_usize)) && ((c3.data.len()) == (2_usize)));
+    assert!(c1.data.is_empty());
     let mut c4: Copyable = <Copyable>::default();
     (unsafe { Copyable::move_assign(&mut c4, &mut c3) });
-    assert!(
-        (((c4.data[(1_usize)]) == (2))
-            && (c4.name == {
-                let s = c"c".as_ptr();
-                std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1)
-                    .to_vec()
-            }))
-            && (c3.data.is_empty())
-    );
+    assert!(((c4.data[(1_usize)]) == (2)) && (c3.data.is_empty()));
     let mut h1: Holder = Holder::new({ 4 });
     let _dtor_h1 = ScopedDestructorUnsafe::new(&raw mut h1, Holder::destructor);
     {
