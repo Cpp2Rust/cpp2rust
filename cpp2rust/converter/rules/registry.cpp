@@ -315,8 +315,7 @@ TypeRuleMatch findType(clang::QualType use) {
   if (!best.rule_decl) {
     auto spelled = RuleDecls::SpelledTypedef(ctx, use);
     if (spelled && !IsUserDefinedDecl(spelled)) {
-      use.dump(llvm::errs(), ctx);
-      llvm::report_fatal_error("typedef has no type rule");
+      return findType(use.getCanonicalType());
     }
   }
   return best;

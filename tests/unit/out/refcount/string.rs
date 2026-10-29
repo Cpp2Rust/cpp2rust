@@ -330,6 +330,10 @@ fn main_0() -> i32 {
     assert!((((elem!(output_data, 1).read()) as i32) == (('a' as i8) as i32)));
     assert!((((elem!(output_data, 2).read()) as i32) == (('s' as i8) as i32)));
     assert!((((elem!(output_data, 3).read()) as i32) == (('t' as i8) as i32)));
+    let mut diff: i64 = (-3_i32 as i64);
+    assert!((diff < 0_i64));
+    diff += 6_i64;
+    assert!((diff == 3_i64));
     let mut t0: usize = ((*s1.borrow()).len() - 1);
     let mut t1: usize = (t0).wrapping_add(((p1.read()) as usize));
     let mut t2: usize = (t1).wrapping_add(((*s2.borrow()).len() - 1));
