@@ -33,7 +33,12 @@ fn main_0() -> i32 {
     let mut n: u32 = 2_u32;
     let const_ptr_pairs: Value<Vec<(Value<Ptr<i32>>, Value<u64>)>> = Rc::new(RefCell::new(
         (0..(1_usize) as usize)
-            .map(|_| <(Value<Ptr<i32>>, Value<u64>)>::default())
+            .map(|_| {
+                (
+                    Rc::new(RefCell::new(Ptr::<i32>::null())),
+                    Rc::new(RefCell::new(0_u64)),
+                )
+            })
             .collect::<Vec<_>>(),
     ));
     (*const_ptr_pairs.borrow_mut())[0_usize] = (

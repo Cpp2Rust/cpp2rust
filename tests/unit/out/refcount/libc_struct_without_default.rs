@@ -28,7 +28,7 @@ impl Default for UserDefined {
     fn default() -> Self {
         {
             UserDefined {
-                a: std::array::from_fn::<_, 1_usize, _>(|_| <i32>::default()).to_vec(),
+                a: std::array::from_fn::<_, 1_usize, _>(|_| 0_i32).to_vec(),
                 v: Default::default(),
             }
         }
