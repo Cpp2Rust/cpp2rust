@@ -161,6 +161,9 @@ pub enum BodyFragment {
     Generic {
         generic: i32,
     },
+    Default {
+        default: i32,
+    },
     MethodCall {
         method_call: MethodCallInner,
     },

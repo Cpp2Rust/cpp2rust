@@ -188,6 +188,13 @@ impl<'a> FragmentCtx<'a> {
                     self.emit_method_call(&call);
                     return;
                 }
+                if let Some(generic) = ast::CallExpr::cast(node.clone())
+                    .and_then(|call| self.generic_default(&call))
+                {
+                    self.flush_text();
+                    self.fragments.push(BodyFragment::Default { default: generic });
+                    return;
+                }
                 for child in node.children_with_tokens() {
                     self.visit(child);
                 }
@@ -248,6 +255,32 @@ impl<'a> FragmentCtx<'a> {
             }
         }
         self.text_buf.push_str(token.text());
+    }
+
+    fn generic_default(&self, call: &ast::CallExpr) -> Option<i32> {
+        if call.arg_list()?.args().next().is_some() {
+            return None;
+        }
+        let ast::Expr::PathExpr(path_expr) = call.expr()? else {
+            return None;
+        };
+        let path = path_expr.path()?;
+        if path.segment()?.name_ref()?.text() != "default" {
+            return None;
+        }
+        let qualifier = path.qualifier()?;
+        if qualifier.qualifier().is_some() {
+            return None;
+        }
+        let segment = qualifier.segment()?;
+        let name = match segment.type_anchor() {
+            Some(anchor) => anchor.ty()?.syntax().text().to_string(),
+            None => segment.name_ref()?.text().to_string(),
+        };
+        if !self.generic_names.contains(&name) {
+            return None;
+        }
+        Some(name[1..].parse().unwrap_or(0))
     }
 
     fn emit_method_call(&mut self, call: &ast::MethodCallExpr) {
