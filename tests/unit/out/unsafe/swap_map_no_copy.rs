@@ -439,7 +439,7 @@ unsafe fn main_0() -> i32 {
     assert!(((arrays.a[(0) as usize].v) == (0)) && ((arrays.a[(1) as usize].v) == (2)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
     let mut grid: Vec<Vec<Tracked>> = (0..(2_usize) as usize)
-        .map(|_| <Vec<Tracked>>::default())
+        .map(|_| Default::default())
         .collect::<Vec<_>>();
     {
         let __init = Tracked::new_2({ 1 });

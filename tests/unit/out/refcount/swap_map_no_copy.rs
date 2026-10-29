@@ -429,7 +429,7 @@ fn main_0() -> i32 {
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
     let grid: Value<Vec<Vec<Tracked>>> = Rc::new(RefCell::new(
         (0..(2_usize) as usize)
-            .map(|_| <Vec<Tracked>>::default())
+            .map(|_| Default::default())
             .collect::<Vec<_>>(),
     ));
     {

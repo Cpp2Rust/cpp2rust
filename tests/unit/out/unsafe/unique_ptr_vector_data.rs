@@ -21,9 +21,7 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut v: Option<Box<Vec<u8>>> = Some(Box::from_raw(
         (Box::leak(Box::new(
-            (0..(3_usize) as usize)
-                .map(|_| <u8>::default())
-                .collect::<Vec<_>>(),
+            (0..(3_usize) as usize).map(|_| 0_u8).collect::<Vec<_>>(),
         )) as *mut Vec<u8>),
     ));
     let mut p: *mut u8 = (*v.as_deref().map_or(::std::ptr::null_mut(), |v| {

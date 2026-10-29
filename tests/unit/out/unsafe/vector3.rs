@@ -16,15 +16,15 @@ unsafe fn main_0() -> i32 {
     let mut v: Vec<Vec<i32>> = Vec::new();
     {
         let __a0 = 2_usize as usize;
-        v.resize_with(__a0, || <Vec<i32>>::default())
+        v.resize_with(__a0, || Default::default())
     };
     {
         let __a0 = 2_usize as usize;
-        v[(0_usize)].resize_with(__a0, || <i32>::default())
+        v[(0_usize)].resize_with(__a0, || 0_i32)
     };
     {
         let __a0 = 1_usize as usize;
-        v[(1_usize)].resize_with(__a0, || <i32>::default())
+        v[(1_usize)].resize_with(__a0, || 0_i32)
     };
     v[(0_usize)][(0_usize)] = 1;
     v[(0_usize)][(1_usize)] = 5;

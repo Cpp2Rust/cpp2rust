@@ -34,7 +34,7 @@ pub unsafe fn assign_1(mut c: bool, mut v: i32) -> i32 {
 }
 pub unsafe fn lehmer_2(mut sigma: *const u32, mut len: u32, mut code: *mut u32) {
     let mut items: Vec<u32> = (0..(len as usize) as usize)
-        .map(|_| <u32>::default())
+        .map(|_| 0_u32)
         .collect::<Vec<_>>();
     let mut i: u32 = 0_u32;
     'loop_: while ((i) < (len)) {

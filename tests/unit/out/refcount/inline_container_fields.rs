@@ -242,7 +242,7 @@ fn main_0() -> i32 {
         let __a0 = 2_usize as usize;
         (*elems.borrow_mut())[1_usize]
             .coeffs
-            .resize_with(__a0, || <i16>::default())
+            .resize_with(__a0, || 0_i16)
     };
     vec_elem!(elems.decay().offset(1_usize), coeffs, 1_usize).write(4_i16);
     let __rhs = (((vec_elem!(elems.decay().offset(1_usize), coeffs, 1_usize).read()) as i32) + 1);

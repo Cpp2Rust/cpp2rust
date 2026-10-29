@@ -198,9 +198,7 @@ unsafe fn main_0() -> i32 {
     let mut first: *mut Elem = (&mut elems[(0_usize)] as *mut Elem);
     {
         let __a0 = 2_usize as usize;
-        elems[(1_usize)]
-            .coeffs
-            .resize_with(__a0, || <i16>::default())
+        elems[(1_usize)].coeffs.resize_with(__a0, || 0_i16)
     };
     elems[(1_usize)].coeffs[(1_usize)] = 4_i16;
     elems[(1_usize)].hist[(2) as usize] = ((elems[(1_usize)].coeffs[(1_usize)] as i32) + (1));

@@ -170,9 +170,7 @@ pub fn RndStuff_2() {
 }
 pub fn unique_ptr_that_wraps_container_3() {
     let mut v: Option<Value<Box<[Vec<i8>]>>> = Some(Rc::new(RefCell::new(
-        (0..2_usize)
-            .map(|_| <Vec<i8>>::default())
-            .collect::<Box<[_]>>(),
+        (0..2_usize).map(|_| vec![0]).collect::<Box<[_]>>(),
     )));
     assert!(
         (((*(v.as_pointer() as Ptr<Vec<i8>>)

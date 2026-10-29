@@ -79,7 +79,7 @@ pub fn AllocMinHeap_1(mut capacity: i32) -> Option<Value<MinHeap>> {
         capacity: capacity,
         arr: Some(Rc::new(RefCell::new(
             (0..(capacity as usize))
-                .map(|_| <Ptr<MinHeapNode>>::default())
+                .map(|_| Ptr::<MinHeapNode>::null())
                 .collect::<Box<[_]>>(),
         ))),
         next: 0,
@@ -209,14 +209,10 @@ pub fn HuffmanCodes_5(
     });
     let mut root: Ptr<MinHeapNode> = ({ MinHeapImpl::ExtractMin(&(minHeap.as_pointer())) });
     let arr: Value<Option<Value<Box<[i32]>>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
-        (0..100_usize)
-            .map(|_| <i32>::default())
-            .collect::<Box<[_]>>(),
+        (0..100_usize).map(|_| 0_i32).collect::<Box<[_]>>(),
     )))));
     let out: Value<Option<Value<Box<[i32]>>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
-        (0..100_usize)
-            .map(|_| <i32>::default())
-            .collect::<Box<[_]>>(),
+        (0..100_usize).map(|_| 0_i32).collect::<Box<[_]>>(),
     )))));
     let mut top: i32 = 0;
     let next: Value<i32> = Rc::new(RefCell::new(0));
@@ -247,16 +243,11 @@ fn main_0() -> i32 {
     ];
     let mut arr2: [i32; 6] = [5, 9, 12, 13, 16, 45];
     let data: Value<Option<Value<Box<[i8]>>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
-        (0..(size as usize))
-            .map(|_| <i8>::default())
-            .collect::<Box<[_]>>(),
+        (0..(size as usize)).map(|_| 0_i8).collect::<Box<[_]>>(),
     )))));
-    let freq: Value<Option<Value<Box<[i32]>>>> =
-        Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
-            (0..(size as usize))
-                .map(|_| <i32>::default())
-                .collect::<Box<[_]>>(),
-        )))));
+    let freq: Value<Option<Value<Box<[i32]>>>> = Rc::new(RefCell::new(Some(Rc::new(
+        RefCell::new((0..(size as usize)).map(|_| 0_i32).collect::<Box<[_]>>()),
+    ))));
     let mut i: i32 = 0;
     'loop_: while (i < size) {
         let __rhs = arr1[(i) as usize];

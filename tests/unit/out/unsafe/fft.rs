@@ -199,16 +199,9 @@ unsafe fn main_0() -> i32 {
         i.postfix_inc();
     }
     let mut b: Option<Box<[Complex]>> = (unsafe { fft_3(&mut a, N) });
-    let mut reals: Option<Box<[i32]>> = Some(
-        (0..(N as usize))
-            .map(|_| <i32>::default())
-            .collect::<Box<[_]>>(),
-    );
-    let mut imgs: Option<Box<[i32]>> = Some(
-        (0..(N as usize))
-            .map(|_| <i32>::default())
-            .collect::<Box<[_]>>(),
-    );
+    let mut reals: Option<Box<[i32]>> =
+        Some((0..(N as usize)).map(|_| 0_i32).collect::<Box<[_]>>());
+    let mut imgs: Option<Box<[i32]>> = Some((0..(N as usize)).map(|_| 0_i32).collect::<Box<[_]>>());
     let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {
         (*reals

@@ -72,7 +72,7 @@ fn main_0() -> i32 {
     let mut s1: usize = v1.len();
     {
         let __a0 = 100_usize as usize;
-        v1.resize_with(__a0, || <i32>::default())
+        v1.resize_with(__a0, || 0_i32)
     };
     assert!((v1.len() == 100_usize));
     assert!((v1[99_usize] == 0));

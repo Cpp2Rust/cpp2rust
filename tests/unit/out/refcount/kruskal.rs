@@ -196,12 +196,12 @@ pub fn MSTKruskal_2(graph: Ptr<Graph>) -> f64 {
     let set: Value<DisjointSet> = Rc::new(RefCell::new(DisjointSet {
         rank: Some(Rc::new(RefCell::new(
             (0..(graph.with(|__s| __s.V) as usize))
-                .map(|_| <i32>::default())
+                .map(|_| 0_i32)
                 .collect::<Box<[_]>>(),
         ))),
         parent: Some(Rc::new(RefCell::new(
             (0..(graph.with(|__s| __s.V) as usize))
-                .map(|_| <i32>::default())
+                .map(|_| 0_i32)
                 .collect::<Box<[_]>>(),
         ))),
         n: graph.with(|__s| __s.V),

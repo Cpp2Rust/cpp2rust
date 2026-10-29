@@ -125,9 +125,7 @@ unsafe fn main_0() -> i32 {
     let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {
         {
-            let __a1 = (0..(10_usize) as usize)
-                .map(|_| <i32>::default())
-                .collect::<Vec<_>>();
+            let __a1 = (0..(10_usize) as usize).map(|_| 0_i32).collect::<Vec<_>>();
             m1.push(__a1)
         };
         i.prefix_inc();
@@ -195,7 +193,7 @@ unsafe fn main_0() -> i32 {
     assert!(((pair1.1) == (2)));
     let mut pair3: (Vec<i32>, i32) = (
         (0..(0_usize) as usize)
-            .map(|_| <i32>::default())
+            .map(|_| 0_i32)
             .collect::<Vec<_>>()
             .into(),
         0.into(),
