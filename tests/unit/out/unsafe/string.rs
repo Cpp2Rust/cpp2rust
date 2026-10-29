@@ -346,6 +346,10 @@ unsafe fn main_0() -> i32 {
     assert!((((*output_data.offset((1) as isize)) as i32) == (('a' as libc::c_char) as i32)));
     assert!((((*output_data.offset((2) as isize)) as i32) == (('s' as libc::c_char) as i32)));
     assert!((((*output_data.offset((3) as isize)) as i32) == (('t' as libc::c_char) as i32)));
+    let mut diff: i64 = (-3_i32 as i64);
+    assert!(((diff) < (0_i64)));
+    diff += 6_i64;
+    assert!(((diff) == (3_i64)));
     let mut t0: usize = (s1.len() - 1);
     let mut t1: usize = (t0).wrapping_add(((*p1) as usize));
     let mut t2: usize = (t1).wrapping_add((s2.len() - 1));

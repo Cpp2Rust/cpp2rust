@@ -138,6 +138,10 @@ int main() {
   assert(output_data[1] == 'a');
   assert(output_data[2] == 's');
   assert(output_data[3] == 't');
+  std::string::difference_type diff = -3;
+  assert(diff < 0);
+  diff += 6;
+  assert(diff == 3);
 
   // FIXME
   auto t0 = s1.length();
