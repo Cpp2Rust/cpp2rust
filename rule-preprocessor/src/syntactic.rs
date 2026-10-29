@@ -3,7 +3,9 @@
 
 use cfg_expr::Expression;
 use cfg_expr::expr::{Predicate, TargetPredicate};
-use ra_ap_syntax::ast::{HasAttrs, HasGenericArgs, HasGenericParams, HasName, HasTypeBounds};
+use ra_ap_syntax::ast::{
+    HasArgList, HasAttrs, HasGenericArgs, HasGenericParams, HasName, HasTypeBounds,
+};
 use ra_ap_syntax::{AstNode, SyntaxKind, ast, match_ast};
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
@@ -273,9 +275,15 @@ impl<'a> FragmentCtx<'a> {
             return None;
         }
         let segment = qualifier.segment()?;
-        let name = match segment.type_anchor() {
-            Some(anchor) => anchor.ty()?.syntax().text().to_string(),
-            None => segment.name_ref()?.text().to_string(),
+        let name = match segment.name_ref() {
+            Some(name_ref) => name_ref.text().to_string(),
+            None => segment
+                .syntax()
+                .descendants()
+                .find_map(ast::Type::cast)?
+                .syntax()
+                .text()
+                .to_string(),
         };
         if !self.generic_names.contains(&name) {
             return None;
