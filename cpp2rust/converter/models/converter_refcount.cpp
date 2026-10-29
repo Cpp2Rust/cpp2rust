@@ -2996,10 +2996,9 @@ std::string ConverterRefCount::ConvertMappedMethodCall(
   auto param_type = Mapper::GetParamType(*this, expr, arg_idx);
 
   if (arg->getType()->isPointerType()) {
-    return std::format("{}.with_mut(|__v: {}| __v{})", ConvertPointer(arg),
-                       param_type,
-                       ConvertIRFragment(mc.body, bindings, expr, args,
-                                         num_args, ctx));
+    return std::format(
+        "{}.with_mut(|__v: {}| __v{})", ConvertPointer(arg), param_type,
+        ConvertIRFragment(mc.body, bindings, expr, args, num_args, ctx));
   }
 
   // A receiver reached through a pointer is modified through it, only for
@@ -3016,8 +3015,7 @@ std::string ConverterRefCount::ConvertMappedMethodCall(
   }
 
   auto ptr = pending_deref_.take();
-  auto body =
-      ConvertIRFragment(mc.body, bindings, expr, args, num_args, ctx);
+  auto body = ConvertIRFragment(mc.body, bindings, expr, args, num_args, ctx);
   MarkFresh();
 
   return std::format("{}.with_mut(|__v: {}| __v{})", ptr, param_type, body);

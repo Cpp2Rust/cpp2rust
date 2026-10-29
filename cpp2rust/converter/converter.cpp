@@ -5135,9 +5135,9 @@ std::string Converter::ConvertIRFragment(
           ConvertMappedMethodCall(expr, **mc, bindings, args, num_args, ctx);
     } else if (auto *re =
                    std::get_if<std::unique_ptr<RefExprFragment>>(&frag)) {
-      result += (*re)->prefix + ' ' +
-                ConvertIRFragment((*re)->inner, bindings, expr, args, num_args,
-                                  ctx);
+      result +=
+          (*re)->prefix + ' ' +
+          ConvertIRFragment((*re)->inner, bindings, expr, args, num_args, ctx);
     }
   }
 

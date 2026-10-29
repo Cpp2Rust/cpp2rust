@@ -94,12 +94,6 @@ public:
 
   virtual std::string GetUnboxedDefaultAsString(clang::QualType qual_type);
 
-  std::string
-  ConvertIRFragment(const std::vector<TranslationRule::BodyFragment> &fragments,
-                    llvm::ArrayRef<clang::TemplateArgument> bindings,
-                    clang::Expr *expr, clang::Expr **args, unsigned num_args,
-                    TempMaterializationCtx *ctx);
-
   std::string GetTemplateArgumentAsString(const clang::TemplateArgument &arg);
 
   bool VisitRecoveryExpr(clang::RecoveryExpr *expr);
@@ -303,6 +297,12 @@ public:
   private:
     std::vector<std::string> materialized_refs_;
   };
+
+  std::string
+  ConvertIRFragment(const std::vector<TranslationRule::BodyFragment> &fragments,
+                    llvm::ArrayRef<clang::TemplateArgument> bindings,
+                    clang::Expr *expr, clang::Expr **args, unsigned num_args,
+                    TempMaterializationCtx *ctx);
 
   struct PlaceholderCtx {
     unsigned arg_idx;
