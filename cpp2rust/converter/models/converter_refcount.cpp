@@ -2977,11 +2977,13 @@ std::string ConverterRefCount::ConvertTake(clang::Expr *arg) {
 
 std::string ConverterRefCount::ConvertMappedMethodCall(
     clang::Expr *expr, const TranslationRule::MethodCallFragment &mc,
-    clang::Expr **args, unsigned num_args, TempMaterializationCtx *ctx) {
+    llvm::ArrayRef<clang::TemplateArgument> bindings, clang::Expr **args,
+    unsigned num_args, TempMaterializationCtx *ctx) {
   auto receiver_ph = mc.getReceiverPlaceholder();
   if (!receiver_ph || receiver_ph->access == TranslationRule::Access::kBorrow ||
       receiver_ph->access == TranslationRule::Access::kMove) {
-    return Converter::ConvertMappedMethodCall(expr, mc, args, num_args, ctx);
+    return Converter::ConvertMappedMethodCall(expr, mc, bindings, args,
+                                              num_args, ctx);
   }
 
   auto arg_idx = receiver_ph->n;
@@ -2996,7 +2998,8 @@ std::string ConverterRefCount::ConvertMappedMethodCall(
   if (arg->getType()->isPointerType()) {
     return std::format("{}.with_mut(|__v: {}| __v{})", ConvertPointer(arg),
                        param_type,
-                       ConvertIRFragment(mc.body, expr, args, num_args, ctx));
+                       ConvertIRFragment(mc.body, bindings, expr, args,
+                                         num_args, ctx));
   }
 
   // A receiver reached through a pointer is modified through it, only for
@@ -3004,14 +3007,17 @@ std::string ConverterRefCount::ConvertMappedMethodCall(
   std::string receiver;
   {
     ScopedValue in_receiver(in_receiver_, true);
-    receiver = ConvertIRFragment(mc.receiver, expr, args, num_args, ctx);
+    receiver =
+        ConvertIRFragment(mc.receiver, bindings, expr, args, num_args, ctx);
   }
   if (pending_deref_.empty()) {
-    return receiver + ConvertIRFragment(mc.body, expr, args, num_args, ctx);
+    return receiver +
+           ConvertIRFragment(mc.body, bindings, expr, args, num_args, ctx);
   }
 
   auto ptr = pending_deref_.take();
-  auto body = ConvertIRFragment(mc.body, expr, args, num_args, ctx);
+  auto body =
+      ConvertIRFragment(mc.body, bindings, expr, args, num_args, ctx);
   MarkFresh();
 
   return std::format("{}.with_mut(|__v: {}| __v{})", ptr, param_type, body);

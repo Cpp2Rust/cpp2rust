@@ -324,6 +324,7 @@ public:
   std::string
   ConvertMappedMethodCall(clang::Expr *expr,
                           const TranslationRule::MethodCallFragment &mc,
+                          llvm::ArrayRef<clang::TemplateArgument> bindings,
                           clang::Expr **args, unsigned num_args,
                           TempMaterializationCtx *ctx) override;
 

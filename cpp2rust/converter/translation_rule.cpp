@@ -251,7 +251,10 @@ void TypeRule::dump() const {
   type_info.dump();
   log() << '\n';
   if (!initializer.empty()) {
-    log() << "  init: " << initializer << '\n';
+    log() << "  init:\n";
+    for (auto &frag : initializer) {
+      BodyFragmentDump(frag);
+    }
   }
 }
 
@@ -304,8 +307,8 @@ ExprRule ParseExprRuleJSON(const llvm::json::Object &obj) {
 
 TypeRule ParseTypeRuleJSON(const llvm::json::Object &obj) {
   TypeRule rule;
-  if (auto init = obj.getString("init"))
-    rule.initializer = init->str();
+  if (auto *init = obj.getArray("init"))
+    rule.initializer = ParseBodyFragmentsJSON(*init);
   if (auto generic = obj.getInteger("generic"))
     rule.generic = *generic;
   rule.type_info = ParseTypeInfoJSON(obj);

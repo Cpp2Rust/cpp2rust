@@ -94,6 +94,12 @@ public:
 
   virtual std::string GetUnboxedDefaultAsString(clang::QualType qual_type);
 
+  std::string
+  ConvertIRFragment(const std::vector<TranslationRule::BodyFragment> &fragments,
+                    llvm::ArrayRef<clang::TemplateArgument> bindings,
+                    clang::Expr *expr, clang::Expr **args, unsigned num_args,
+                    TempMaterializationCtx *ctx);
+
   std::string GetTemplateArgumentAsString(const clang::TemplateArgument &arg);
 
   bool VisitRecoveryExpr(clang::RecoveryExpr *expr);
@@ -836,11 +842,6 @@ protected:
                                 unsigned num_args = 0,
                                 TempMaterializationCtx *ctx = nullptr);
 
-  std::string
-  ConvertIRFragment(const std::vector<TranslationRule::BodyFragment> &fragments,
-                    clang::Expr *expr, clang::Expr **args, unsigned num_args,
-                    TempMaterializationCtx *ctx);
-
   std::string ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
                                  const PlaceholderCtx &ph_ctx);
 
@@ -870,7 +871,8 @@ protected:
 
   virtual std::string ConvertMappedMethodCall(
       clang::Expr *expr, const TranslationRule::MethodCallFragment &mc,
-      clang::Expr **args, unsigned num_args, TempMaterializationCtx *ctx);
+      llvm::ArrayRef<clang::TemplateArgument> bindings, clang::Expr **args,
+      unsigned num_args, TempMaterializationCtx *ctx);
 
   virtual std::string AccessLValueObject(clang::MemberExpr *member);
 

@@ -58,11 +58,11 @@ struct InitFragment {
 struct MethodCallFragment; // forward declaration
 struct RefExprFragment;
 
-using BodyFragment = std::variant<TextFragment, PlaceholderFragment,
-                                  GenericFragment, DefaultFragment,
-                                  VaArgsFragment, InitFragment,
-                                  std::unique_ptr<MethodCallFragment>,
-                                  std::unique_ptr<RefExprFragment>>;
+using BodyFragment =
+    std::variant<TextFragment, PlaceholderFragment, GenericFragment,
+                 DefaultFragment, VaArgsFragment, InitFragment,
+                 std::unique_ptr<MethodCallFragment>,
+                 std::unique_ptr<RefExprFragment>>;
 
 struct MethodCallFragment {
   std::vector<BodyFragment> receiver;
@@ -108,7 +108,7 @@ struct ExprRule {
 };
 
 struct TypeRule {
-  std::string initializer; // Rust initializer expression
+  std::vector<BodyFragment> initializer; // Rust initializer expression
   unsigned generic = 0;
   TypeInfo type_info;
 
