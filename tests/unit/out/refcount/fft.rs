@@ -202,14 +202,10 @@ fn main_0() -> i32 {
     }
     let mut b: Option<Value<Box<[Complex]>>> = ({ fft_3(a.as_pointer(), N) });
     let mut reals: Option<Value<Box<[i32]>>> = Some(Rc::new(RefCell::new(
-        (0..(N as usize))
-            .map(|_| <i32>::default())
-            .collect::<Box<[_]>>(),
+        (0..(N as usize)).map(|_| 0_i32).collect::<Box<[_]>>(),
     )));
     let mut imgs: Option<Value<Box<[i32]>>> = Some(Rc::new(RefCell::new(
-        (0..(N as usize))
-            .map(|_| <i32>::default())
-            .collect::<Box<[_]>>(),
+        (0..(N as usize)).map(|_| 0_i32).collect::<Box<[_]>>(),
     )));
     let mut i: i32 = 0;
     'loop_: while (i < N) {

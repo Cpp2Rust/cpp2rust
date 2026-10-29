@@ -88,9 +88,7 @@ fn main_0() -> i32 {
     let h: Value<Holder> = Rc::new(RefCell::new(<Holder>::default()));
     {
         let __a0 = 2_usize as usize;
-        (*h.borrow_mut())
-            .values
-            .resize_with(__a0, || <i32>::default())
+        (*h.borrow_mut()).values.resize_with(__a0, || 0_i32)
     };
     vec_elem!(h.as_pointer(), values, 1_usize).write(6);
     {

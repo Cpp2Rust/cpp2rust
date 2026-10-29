@@ -32,7 +32,7 @@ unsafe fn main_0() -> i32 {
     let mut s1: usize = v1.len();
     {
         let __a0 = 100_usize as usize;
-        v1.resize_with(__a0, || <i32>::default())
+        v1.resize_with(__a0, || 0_i32)
     };
     assert!(((v1.len()) == (100_usize)));
     assert!(((v1[(99_usize)]) == (0)));
@@ -166,7 +166,7 @@ unsafe fn main_0() -> i32 {
         i.prefix_inc();
     }
     let mut v4: Vec<*mut i32> = (0..(100_usize) as usize)
-        .map(|_| <*mut i32>::default())
+        .map(|_| std::ptr::null_mut())
         .collect::<Vec<_>>();
     assert!(((v4.len()) == (100_usize)));
     let mut i: u32 = 0_u32;
@@ -175,7 +175,7 @@ unsafe fn main_0() -> i32 {
         i.prefix_inc();
     }
     let mut v5: Vec<*const i32> = (0..(100_usize) as usize)
-        .map(|_| <*const i32>::default())
+        .map(|_| std::ptr::null())
         .collect::<Vec<_>>();
     assert!(((v5.len()) == (100_usize)));
     let mut i: u32 = 0_u32;

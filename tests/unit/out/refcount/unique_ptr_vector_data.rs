@@ -15,12 +15,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let v: Value<Option<Value<Vec<u8>>>> = Rc::new(RefCell::new(
-        Ptr::alloc(
-            (0..(3_usize) as usize)
-                .map(|_| <u8>::default())
-                .collect::<Vec<_>>(),
-        )
-        .to_owned_opt(),
+        Ptr::alloc((0..(3_usize) as usize).map(|_| 0_u8).collect::<Vec<_>>()).to_owned_opt(),
     ));
     let mut p: Ptr<u8> = (*v.borrow()).as_pointer().decay();
     elem!(p, 2).write(1_u8);

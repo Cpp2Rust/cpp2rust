@@ -328,12 +328,12 @@ pub unsafe fn MSTKruskal_2(graph: *mut Graph) -> f64 {
     let mut set: DisjointSet = DisjointSet {
         rank: Some(
             (0..((*graph).V as usize))
-                .map(|_| <i32>::default())
+                .map(|_| 0_i32)
                 .collect::<Box<[_]>>(),
         ),
         parent: Some(
             (0..((*graph).V as usize))
-                .map(|_| <i32>::default())
+                .map(|_| 0_i32)
                 .collect::<Box<[_]>>(),
         ),
         n: (*graph).V,

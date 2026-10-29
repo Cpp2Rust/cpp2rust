@@ -3,7 +3,9 @@
 
 use cfg_expr::Expression;
 use cfg_expr::expr::{Predicate, TargetPredicate};
-use ra_ap_syntax::ast::{HasAttrs, HasGenericArgs, HasGenericParams, HasName, HasTypeBounds};
+use ra_ap_syntax::ast::{
+    HasArgList, HasAttrs, HasGenericArgs, HasGenericParams, HasName, HasTypeBounds,
+};
 use ra_ap_syntax::{AstNode, SyntaxKind, ast, match_ast};
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
@@ -188,6 +190,14 @@ impl<'a> FragmentCtx<'a> {
                     self.emit_method_call(&call);
                     return;
                 }
+                if let Some(generic) =
+                    ast::CallExpr::cast(node.clone()).and_then(|call| self.generic_default(&call))
+                {
+                    self.flush_text();
+                    self.fragments
+                        .push(BodyFragment::Default { default: generic });
+                    return;
+                }
                 for child in node.children_with_tokens() {
                     self.visit(child);
                 }
@@ -248,6 +258,38 @@ impl<'a> FragmentCtx<'a> {
             }
         }
         self.text_buf.push_str(token.text());
+    }
+
+    fn generic_default(&self, call: &ast::CallExpr) -> Option<i32> {
+        if call.arg_list()?.args().next().is_some() {
+            return None;
+        }
+        let ast::Expr::PathExpr(path_expr) = call.expr()? else {
+            return None;
+        };
+        let path = path_expr.path()?;
+        if path.segment()?.name_ref()?.text() != "default" {
+            return None;
+        }
+        let qualifier = path.qualifier()?;
+        if qualifier.qualifier().is_some() {
+            return None;
+        }
+        let segment = qualifier.segment()?;
+        let name = match segment.name_ref() {
+            Some(name_ref) => name_ref.text().to_string(),
+            None => segment
+                .syntax()
+                .descendants()
+                .find_map(ast::Type::cast)?
+                .syntax()
+                .text()
+                .to_string(),
+        };
+        if !self.generic_names.contains(&name) {
+            return None;
+        }
+        Some(name[1..].parse().unwrap_or(0))
     }
 
     fn emit_method_call(&mut self, call: &ast::MethodCallExpr) {
@@ -634,8 +676,24 @@ impl<'a> TypeIrBuilder<'a> {
             .find(|name| name.text() == ty_text)
             .map(|name| name.text()[1..].parse().expect("generic name is T<n>"));
 
+        let generic_names: Vec<String> = self
+            .fn_item
+            .generic_param_list()
+            .into_iter()
+            .flat_map(|gpl| gpl.generic_params())
+            .filter_map(|param| match param {
+                ast::GenericParam::TypeParam(tp) => tp.name(),
+                ast::GenericParam::ConstParam(cp) => cp.name(),
+                _ => None,
+            })
+            .map(|name| name.text().to_string())
+            .collect();
+        let builder = FnIrBuilder::new(self.fn_item);
+        let mut init_ctx = FragmentCtx::new(&builder, &[], &generic_names);
+        init_ctx.visit(ra_ap_syntax::NodeOrToken::Node(init.syntax().clone()));
+
         TypeIr {
-            init: init.syntax().text().to_string(),
+            init: init_ctx.finish(),
             generic,
             type_info: TypeInfo {
                 ty: ty.syntax().text().to_string(),

@@ -36,7 +36,7 @@ pub fn assign_1(mut c: bool, mut v: i32) -> i32 {
 pub fn lehmer_2(mut sigma: Ptr<u32>, mut len: u32, mut code: Ptr<u32>) {
     let items: Value<Vec<u32>> = Rc::new(RefCell::new(
         (0..(len as usize) as usize)
-            .map(|_| <u32>::default())
+            .map(|_| 0_u32)
             .collect::<Vec<_>>(),
     ));
     let mut i: u32 = 0_u32;

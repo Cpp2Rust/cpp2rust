@@ -7,23 +7,16 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn matalloc_0(mut n: i32, mut p: i32, mut e: i32) -> Option<Box<[Option<Box<[i32]>>]>> {
-    let mut m: Option<Box<[Option<Box<[i32]>>]>> = Some(
-        (0..(n as usize))
-            .map(|_| <Option<Box<[i32]>>>::default())
-            .collect::<Box<[_]>>(),
-    );
+    let mut m: Option<Box<[Option<Box<[i32]>>]>> =
+        Some((0..(n as usize)).map(|_| None).collect::<Box<[_]>>());
     let mut i: i32 = 0;
     'loop_: while ((i) < (n)) {
         (*m.as_deref()
             .map_or(::std::ptr::null_mut(), |s| {
                 s.as_ptr() as *mut Option<Box<[i32]>>
             })
-            .add((i as usize))) = Some(
-            (0..(p as usize))
-                .map(|_| <i32>::default())
-                .collect::<Box<[_]>>(),
-        )
-        .take();
+            .add((i as usize))) =
+            Some((0..(p as usize)).map(|_| 0_i32).collect::<Box<[_]>>()).take();
         let mut j: i32 = 0;
         'loop_: while ((j) < (p)) {
             (*(*m

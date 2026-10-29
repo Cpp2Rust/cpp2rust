@@ -168,6 +168,29 @@ pub fn RndStuff_2() {
         i.prefix_inc();
     }
 }
+pub fn unique_ptr_that_wraps_container_3() {
+    let mut v: Option<Value<Box<[Vec<i8>]>>> = Some(Rc::new(RefCell::new(
+        (0..2_usize).map(|_| vec![0]).collect::<Box<[_]>>(),
+    )));
+    assert!(
+        (((*(v.as_pointer() as Ptr<Vec<i8>>)
+            .offset(0_usize as isize)
+            .upgrade()
+            .deref())
+        .len()
+            - 1)
+            == 0_usize)
+    );
+    assert!(
+        (((*(v.as_pointer() as Ptr<Vec<i8>>)
+            .offset(1_usize as isize)
+            .upgrade()
+            .deref())
+        .len()
+            - 1)
+            == 0_usize)
+    );
+}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
@@ -188,6 +211,7 @@ fn main_0() -> i32 {
     assert!((((*p.borrow()).as_pointer().read()) == 2));
     p.as_pointer().write(None);
     assert!((*p.borrow()).is_none());
+    ({ unique_ptr_that_wraps_container_3() });
     return 0;
 }
 pub trait PairImpl {

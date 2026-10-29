@@ -44,15 +44,6 @@ std::string MapFunctionName(clang::ASTContext &ctx,
   return GetNamedDeclAsString(decl->getCanonicalDecl());
 }
 
-std::string InstantiateTemplate(Converter &converter, const clang::Expr *expr,
-                                unsigned n) {
-  auto [rule, subs] = RuleRegistry::Search(converter.GetASTContext(), expr);
-  if (!rule) {
-    return std::format("T{}", n);
-  }
-  return Matcher::MapBinding(converter, subs, n - 1);
-}
-
 std::string Map(clang::ASTContext &ctx, clang::QualType qual_type) {
   auto rule = RuleRegistry::Search(ctx, qual_type).first;
   return rule ? rule->type_info.type : std::string();
@@ -71,7 +62,8 @@ std::string MapInitializer(Converter &converter, clang::QualType qual_type) {
   auto [rule, subs] =
       RuleRegistry::Search(converter.GetASTContext(), qual_type);
   if (rule && !rule->initializer.empty()) {
-    return Matcher::InstantiateTgt(converter, subs, rule->initializer);
+    return converter.ConvertIRFragment(rule->initializer, subs, nullptr,
+                                       nullptr, 0, nullptr);
   }
   return {};
 }

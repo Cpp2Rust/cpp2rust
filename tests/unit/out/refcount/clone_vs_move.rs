@@ -150,9 +150,7 @@ fn main_0() -> i32 {
     let mut i: i32 = 0;
     'loop_: while (i < N) {
         {
-            let __a1 = (0..(10_usize) as usize)
-                .map(|_| <i32>::default())
-                .collect::<Vec<_>>();
+            let __a1 = (0..(10_usize) as usize).map(|_| 0_i32).collect::<Vec<_>>();
             (*m1.borrow_mut()).push(__a1)
         };
         i.prefix_inc();
@@ -231,7 +229,7 @@ fn main_0() -> i32 {
     let pair3: Value<(Value<Vec<i32>>, Value<i32>)> = Rc::new(RefCell::new((
         Rc::new(RefCell::new(
             (0..(0_usize) as usize)
-                .map(|_| <i32>::default())
+                .map(|_| 0_i32)
                 .collect::<Vec<_>>()
                 .try_into()
                 .expect("failed conversion"),

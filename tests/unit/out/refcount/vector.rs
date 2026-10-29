@@ -31,7 +31,7 @@ fn main_0() -> i32 {
     let mut s1: usize = v1.len();
     {
         let __a0 = 100_usize as usize;
-        v1.resize_with(__a0, || <i32>::default())
+        v1.resize_with(__a0, || 0_i32)
     };
     assert!((v1.len() == 100_usize));
     assert!((v1[99_usize] == 0));
@@ -168,7 +168,7 @@ fn main_0() -> i32 {
     }
     let v4: Value<Vec<Ptr<i32>>> = Rc::new(RefCell::new(
         (0..(100_usize) as usize)
-            .map(|_| <Ptr<i32>>::default())
+            .map(|_| Ptr::<i32>::null())
             .collect::<Vec<_>>(),
     ));
     assert!(((*v4.borrow()).len() == 100_usize));
@@ -179,7 +179,7 @@ fn main_0() -> i32 {
     }
     let v5: Value<Vec<Ptr<i32>>> = Rc::new(RefCell::new(
         (0..(100_usize) as usize)
-            .map(|_| <Ptr<i32>>::default())
+            .map(|_| Ptr::<i32>::null())
             .collect::<Vec<_>>(),
     ));
     assert!(((*v5.borrow()).len() == 100_usize));
@@ -197,7 +197,12 @@ fn main_0() -> i32 {
     }
     let v7: Value<Vec<(Value<Ptr<i32>>, Value<i32>)>> = Rc::new(RefCell::new(
         (0..(200_usize) as usize)
-            .map(|_| <(Value<Ptr<i32>>, Value<i32>)>::default())
+            .map(|_| {
+                (
+                    Rc::new(RefCell::new(Ptr::<i32>::null())),
+                    Rc::new(RefCell::new(0_i32)),
+                )
+            })
             .collect::<Vec<_>>(),
     ));
     assert!(((*v7.borrow()).len() == 200_usize));

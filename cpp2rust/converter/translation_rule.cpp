@@ -91,6 +91,8 @@ std::vector<BodyFragment> ParseBodyFragmentsJSON(const llvm::json::Array &arr) {
       result.push_back(TextFragment{str->str()});
     } else if (auto n = frag_obj->getInteger("generic")) {
       result.push_back(GenericFragment{(unsigned)*n});
+    } else if (auto n = frag_obj->getInteger("default")) {
+      result.push_back(DefaultFragment{(unsigned)*n});
     } else if (auto *ph = frag_obj->getObject("placeholder")) {
       result.push_back(ParsePlaceholderFragmentJSON(*ph));
     } else if (auto *mc = frag_obj->getObject("method_call")) {
@@ -232,6 +234,8 @@ void RefExprFragment::dump() const {
 
 void GenericFragment::dump() const { log() << "  generic: " << n << '\n'; }
 
+void DefaultFragment::dump() const { log() << "  default: " << n << '\n'; }
+
 void TypeInfo::dump() const {
   log() << type;
   if (is_refcount_pointer)
@@ -247,7 +251,10 @@ void TypeRule::dump() const {
   type_info.dump();
   log() << '\n';
   if (!initializer.empty()) {
-    log() << "  init: " << initializer << '\n';
+    log() << "  init:\n";
+    for (auto &frag : initializer) {
+      BodyFragmentDump(frag);
+    }
   }
 }
 
@@ -300,8 +307,8 @@ ExprRule ParseExprRuleJSON(const llvm::json::Object &obj) {
 
 TypeRule ParseTypeRuleJSON(const llvm::json::Object &obj) {
   TypeRule rule;
-  if (auto init = obj.getString("init"))
-    rule.initializer = init->str();
+  if (auto *init = obj.getArray("init"))
+    rule.initializer = ParseBodyFragmentsJSON(*init);
   if (auto generic = obj.getInteger("generic"))
     rule.generic = *generic;
   rule.type_info = ParseTypeInfoJSON(obj);

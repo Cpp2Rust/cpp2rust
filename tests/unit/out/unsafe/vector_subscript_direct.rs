@@ -96,7 +96,7 @@ unsafe fn main_0() -> i32 {
     let mut h: Holder = <Holder>::default();
     {
         let __a0 = 2_usize as usize;
-        h.values.resize_with(__a0, || <i32>::default())
+        h.values.resize_with(__a0, || 0_i32)
     };
     h.values[(1_usize)] = 6;
     {

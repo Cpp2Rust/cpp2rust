@@ -13,9 +13,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let v: Value<Vec<Vec<i32>>> = Rc::new(RefCell::new(Vec::new()));
     {
-        let __a1 = (0..(10_usize) as usize)
-            .map(|_| <i32>::default())
-            .collect::<Vec<_>>();
+        let __a1 = (0..(10_usize) as usize).map(|_| 0_i32).collect::<Vec<_>>();
         (*v.borrow_mut()).push(__a1)
     };
     return 0;

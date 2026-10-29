@@ -93,6 +93,10 @@ void collectGenerics(const std::vector<TranslationRule::BodyFragment> &body,
                 std::get_if<TranslationRule::GenericFragment>(&fragment)) {
           used.insert(generic->n);
         }
+        if (auto generic =
+                std::get_if<TranslationRule::DefaultFragment>(&fragment)) {
+          used.insert(generic->n);
+        }
         return false;
       });
 }

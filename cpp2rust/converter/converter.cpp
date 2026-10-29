@@ -122,6 +122,10 @@ std::string Converter::GetUnboxedTypeAsString(clang::QualType qual_type) {
   return ToString(qual_type);
 }
 
+std::string Converter::GetUnboxedDefaultAsString(clang::QualType qual_type) {
+  return GetDefaultAsString(qual_type);
+}
+
 std::string
 Converter::GetTemplateArgumentAsString(const clang::TemplateArgument &arg) {
   switch (arg.getKind()) {
@@ -5041,15 +5045,16 @@ std::string Converter::ConvertTake(clang::Expr *arg) {
 
 std::string Converter::ConvertMappedMethodCall(
     clang::Expr *expr, const TranslationRule::MethodCallFragment &mc,
-    clang::Expr **args, unsigned num_args, TempMaterializationCtx *ctx) {
-  return ConvertIRFragment(mc.receiver, expr, args, num_args, ctx) +
-         ConvertIRFragment(mc.body, expr, args, num_args, ctx);
+    llvm::ArrayRef<clang::TemplateArgument> bindings, clang::Expr **args,
+    unsigned num_args, TempMaterializationCtx *ctx) {
+  return ConvertIRFragment(mc.receiver, bindings, expr, args, num_args, ctx) +
+         ConvertIRFragment(mc.body, bindings, expr, args, num_args, ctx);
 }
 
 std::string Converter::GetMappedAsString(clang::Expr *expr, clang::Expr **args,
                                          unsigned num_args,
                                          TempMaterializationCtx *ctx) {
-  auto *tgt_ir = RuleRegistry::GetExprRule(ctx_, expr);
+  auto [tgt_ir, bindings] = RuleRegistry::Search(ctx_, expr);
   if (!tgt_ir)
     return {};
 
@@ -5058,8 +5063,8 @@ std::string Converter::GetMappedAsString(clang::Expr *expr, clang::Expr **args,
   auto saved_borrows = std::exchange(mut_borrows_, {});
   auto *operand = tgt_ir->refExprOperand();
   bool lvalue = operand && !isAddrOf();
-  auto result = ConvertIRFragment(lvalue ? *operand : tgt_ir->body, expr, args,
-                                  num_args, ctx);
+  auto result = ConvertIRFragment(lvalue ? *operand : tgt_ir->body, bindings,
+                                  expr, args, num_args, ctx);
   if (tgt_ir->multi_statement) {
     result = '{' + result + '}';
   }
@@ -5073,19 +5078,28 @@ std::string Converter::GetMappedAsString(clang::Expr *expr, clang::Expr **args,
 
 std::string Converter::ConvertIRFragment(
     const std::vector<TranslationRule::BodyFragment> &fragments,
-    clang::Expr *expr, clang::Expr **args, unsigned num_args,
-    TempMaterializationCtx *ctx) {
+    llvm::ArrayRef<clang::TemplateArgument> bindings, clang::Expr *expr,
+    clang::Expr **args, unsigned num_args, TempMaterializationCtx *ctx) {
   using namespace TranslationRule;
 
-  auto all_args = BuildUnifiedArgs(expr, args, num_args);
+  std::vector<clang::Expr *> all_args;
+  if (expr) {
+    all_args = BuildUnifiedArgs(expr, args, num_args);
+  }
 
   std::string result;
   for (auto &frag : fragments) {
     if (auto *t = std::get_if<TextFragment>(&frag)) {
       result += t->text;
     } else if (auto *g = std::get_if<GenericFragment>(&frag)) {
-      result += Mapper::InstantiateTemplate(*this, expr, g->n);
+      result += GetTemplateArgumentAsString(bindings[g->n - 1]);
+    } else if (auto *d = std::get_if<DefaultFragment>(&frag)) {
+      auto &arg = bindings[d->n - 1];
+      assert(arg.getKind() == clang::TemplateArgument::Type &&
+             "default of a non-type generic");
+      result += GetUnboxedDefaultAsString(arg.getAsType());
     } else if (auto *ph = std::get_if<PlaceholderFragment>(&frag)) {
+      assert(expr && "placeholder outside an expression rule");
       auto arg_idx = ph->n;
       assert(arg_idx < all_args.size());
       auto *arg = all_args[arg_idx];
@@ -5110,16 +5124,20 @@ std::string Converter::ConvertIRFragment(
       };
       result += ConvertPlaceholder(expr, arg, ph_ctx);
     } else if (std::get_if<TranslationRule::VaArgsFragment>(&frag)) {
+      assert(expr && "variadic arguments outside an expression rule");
       result += ConvertVariadicTail(expr, all_args);
     } else if (std::get_if<TranslationRule::InitFragment>(&frag)) {
+      assert(expr && "init outside an expression rule");
       result += ConvertInitFragment(expr, all_args);
     } else if (auto *mc =
                    std::get_if<std::unique_ptr<MethodCallFragment>>(&frag)) {
-      result += ConvertMappedMethodCall(expr, **mc, args, num_args, ctx);
+      result +=
+          ConvertMappedMethodCall(expr, **mc, bindings, args, num_args, ctx);
     } else if (auto *re =
                    std::get_if<std::unique_ptr<RefExprFragment>>(&frag)) {
-      result += (*re)->prefix + ' ' +
-                ConvertIRFragment((*re)->inner, expr, args, num_args, ctx);
+      result +=
+          (*re)->prefix + ' ' +
+          ConvertIRFragment((*re)->inner, bindings, expr, args, num_args, ctx);
     }
   }
 

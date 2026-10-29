@@ -81,7 +81,7 @@ impl Default for State {
                 grid: (0..2)
                     .map(|_| (0..3).map(|_| 0_i32).collect::<Box<[i32]>>())
                     .collect::<Box<[Box<[i32]>]>>(),
-                arr: std::array::from_fn::<_, 3_usize, _>(|_| <i32>::default()).to_vec(),
+                arr: std::array::from_fn::<_, 3_usize, _>(|_| 0_i32).to_vec(),
                 elems: Default::default(),
                 rows: Default::default(),
             }
@@ -242,7 +242,7 @@ fn main_0() -> i32 {
         let __a0 = 2_usize as usize;
         (*elems.borrow_mut())[1_usize]
             .coeffs
-            .resize_with(__a0, || <i16>::default())
+            .resize_with(__a0, || 0_i16)
     };
     vec_elem!(elems.decay().offset(1_usize), coeffs, 1_usize).write(4_i16);
     let __rhs = (((vec_elem!(elems.decay().offset(1_usize), coeffs, 1_usize).read()) as i32) + 1);

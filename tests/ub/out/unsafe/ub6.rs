@@ -55,7 +55,7 @@ unsafe fn main_0() -> i32 {
     let mut n: i32 = 2;
     let mut arr: Option<Box<[*mut i32]>> = Some(
         (0..(n as usize))
-            .map(|_| <*mut i32>::default())
+            .map(|_| std::ptr::null_mut())
             .collect::<Box<[_]>>(),
     );
     (unsafe { fill_1(&mut arr, &mut n) });

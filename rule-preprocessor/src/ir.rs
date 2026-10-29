@@ -142,7 +142,7 @@ impl FnIr {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TypeIr {
-    pub init: String,
+    pub init: Vec<BodyFragment>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub generic: Option<i32>,
     #[serde(flatten)]
@@ -160,6 +160,9 @@ pub enum BodyFragment {
     },
     Generic {
         generic: i32,
+    },
+    Default {
+        default: i32,
     },
     MethodCall {
         method_call: MethodCallInner,

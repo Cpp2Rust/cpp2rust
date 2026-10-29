@@ -62,7 +62,7 @@ fn main_0() -> i32 {
     let arr: Value<Option<Value<Box<[Ptr<i32>]>>>> =
         Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
             (0..((*n.borrow()) as usize))
-                .map(|_| <Ptr<i32>>::default())
+                .map(|_| Ptr::<i32>::null())
                 .collect::<Box<[_]>>(),
         )))));
     ({ fill_1(arr.as_pointer(), n.as_pointer()) });
