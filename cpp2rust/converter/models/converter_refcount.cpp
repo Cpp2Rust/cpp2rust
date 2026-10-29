@@ -239,6 +239,12 @@ ConverterRefCount::GetUnboxedTypeAsString(clang::QualType qual_type) {
   return ToString(qual_type);
 }
 
+std::string
+ConverterRefCount::GetUnboxedDefaultAsString(clang::QualType qual_type) {
+  PushConversionKind push(*this, ConversionKind::Unboxed);
+  return GetDefaultAsString(qual_type);
+}
+
 bool ConverterRefCount::Convert(clang::QualType qual_type) {
   // Catch va_list before desugaring
   if (IsVaListType(qual_type)) {

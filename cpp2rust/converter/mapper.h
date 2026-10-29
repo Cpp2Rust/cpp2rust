@@ -27,6 +27,9 @@ std::string MapFunctionName(clang::ASTContext &ctx,
                             const clang::FunctionDecl *decl);
 std::string InstantiateTemplate(Converter &converter, const clang::Expr *expr,
                                 unsigned n);
+
+std::string InstantiateTemplateDefault(Converter &converter,
+                                       const clang::Expr *expr, unsigned n);
 std::string GetParamType(Converter &converter, const clang::Expr *expr,
                          unsigned index);
 std::string GetReturnType(Converter &converter, const clang::Expr *expr);

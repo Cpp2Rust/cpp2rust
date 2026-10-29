@@ -92,6 +92,8 @@ public:
 
   virtual std::string GetUnboxedTypeAsString(clang::QualType qual_type);
 
+  virtual std::string GetUnboxedDefaultAsString(clang::QualType qual_type);
+
   std::string GetTemplateArgumentAsString(const clang::TemplateArgument &arg);
 
   bool VisitRecoveryExpr(clang::RecoveryExpr *expr);

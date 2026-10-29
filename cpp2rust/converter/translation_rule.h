@@ -41,6 +41,12 @@ struct GenericFragment {
   void dump() const;
 };
 
+struct DefaultFragment {
+  unsigned n;
+
+  void dump() const;
+};
+
 struct VaArgsFragment {
   void dump() const;
 };
@@ -53,7 +59,8 @@ struct MethodCallFragment; // forward declaration
 struct RefExprFragment;
 
 using BodyFragment = std::variant<TextFragment, PlaceholderFragment,
-                                  GenericFragment, VaArgsFragment, InitFragment,
+                                  GenericFragment, DefaultFragment,
+                                  VaArgsFragment, InitFragment,
                                   std::unique_ptr<MethodCallFragment>,
                                   std::unique_ptr<RefExprFragment>>;
 

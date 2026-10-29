@@ -91,6 +91,8 @@ std::vector<BodyFragment> ParseBodyFragmentsJSON(const llvm::json::Array &arr) {
       result.push_back(TextFragment{str->str()});
     } else if (auto n = frag_obj->getInteger("generic")) {
       result.push_back(GenericFragment{(unsigned)*n});
+    } else if (auto n = frag_obj->getInteger("default")) {
+      result.push_back(DefaultFragment{(unsigned)*n});
     } else if (auto *ph = frag_obj->getObject("placeholder")) {
       result.push_back(ParsePlaceholderFragmentJSON(*ph));
     } else if (auto *mc = frag_obj->getObject("method_call")) {
@@ -231,6 +233,8 @@ void RefExprFragment::dump() const {
 }
 
 void GenericFragment::dump() const { log() << "  generic: " << n << '\n'; }
+
+void DefaultFragment::dump() const { log() << "  default: " << n << '\n'; }
 
 void TypeInfo::dump() const {
   log() << type;

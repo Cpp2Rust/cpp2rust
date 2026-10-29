@@ -53,6 +53,16 @@ std::string InstantiateTemplate(Converter &converter, const clang::Expr *expr,
   return Matcher::MapBinding(converter, subs, n - 1);
 }
 
+std::string InstantiateTemplateDefault(Converter &converter,
+                                       const clang::Expr *expr, unsigned n) {
+  auto [rule, subs] = RuleRegistry::Search(converter.GetASTContext(), expr);
+  assert(rule && "default of a generic outside a matched rule");
+  auto &arg = subs.at(n - 1);
+  assert(arg.getKind() == clang::TemplateArgument::Type &&
+         "default of a non-type generic");
+  return converter.GetUnboxedDefaultAsString(arg.getAsType());
+}
+
 std::string Map(clang::ASTContext &ctx, clang::QualType qual_type) {
   auto rule = RuleRegistry::Search(ctx, qual_type).first;
   return rule ? rule->type_info.type : std::string();

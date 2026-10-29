@@ -122,6 +122,10 @@ std::string Converter::GetUnboxedTypeAsString(clang::QualType qual_type) {
   return ToString(qual_type);
 }
 
+std::string Converter::GetUnboxedDefaultAsString(clang::QualType qual_type) {
+  return GetDefaultAsString(qual_type);
+}
+
 std::string
 Converter::GetTemplateArgumentAsString(const clang::TemplateArgument &arg) {
   switch (arg.getKind()) {
@@ -5085,6 +5089,8 @@ std::string Converter::ConvertIRFragment(
       result += t->text;
     } else if (auto *g = std::get_if<GenericFragment>(&frag)) {
       result += Mapper::InstantiateTemplate(*this, expr, g->n);
+    } else if (auto *d = std::get_if<DefaultFragment>(&frag)) {
+      result += Mapper::InstantiateTemplateDefault(*this, expr, d->n);
     } else if (auto *ph = std::get_if<PlaceholderFragment>(&frag)) {
       auto arg_idx = ph->n;
       assert(arg_idx < all_args.size());
