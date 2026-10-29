@@ -190,11 +190,12 @@ impl<'a> FragmentCtx<'a> {
                     self.emit_method_call(&call);
                     return;
                 }
-                if let Some(generic) = ast::CallExpr::cast(node.clone())
-                    .and_then(|call| self.generic_default(&call))
+                if let Some(generic) =
+                    ast::CallExpr::cast(node.clone()).and_then(|call| self.generic_default(&call))
                 {
                     self.flush_text();
-                    self.fragments.push(BodyFragment::Default { default: generic });
+                    self.fragments
+                        .push(BodyFragment::Default { default: generic });
                     return;
                 }
                 for child in node.children_with_tokens() {
@@ -675,8 +676,24 @@ impl<'a> TypeIrBuilder<'a> {
             .find(|name| name.text() == ty_text)
             .map(|name| name.text()[1..].parse().expect("generic name is T<n>"));
 
+        let generic_names: Vec<String> = self
+            .fn_item
+            .generic_param_list()
+            .into_iter()
+            .flat_map(|gpl| gpl.generic_params())
+            .filter_map(|param| match param {
+                ast::GenericParam::TypeParam(tp) => tp.name(),
+                ast::GenericParam::ConstParam(cp) => cp.name(),
+                _ => None,
+            })
+            .map(|name| name.text().to_string())
+            .collect();
+        let builder = FnIrBuilder::new(self.fn_item);
+        let mut init_ctx = FragmentCtx::new(&builder, &[], &generic_names);
+        init_ctx.visit(ra_ap_syntax::NodeOrToken::Node(init.syntax().clone()));
+
         TypeIr {
-            init: init.syntax().text().to_string(),
+            init: init_ctx.finish(),
             generic,
             type_info: TypeInfo {
                 ty: ty.syntax().text().to_string(),
