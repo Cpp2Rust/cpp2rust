@@ -234,6 +234,33 @@ pub unsafe fn RndStuff_2() {
         i.prefix_inc();
     }
 }
+pub unsafe fn unique_ptr_that_wraps_container_3() {
+    let mut v: Option<Box<[Vec<libc::c_char>]>> = Some(
+        (0..2_usize)
+            .map(|_| <Vec<libc::c_char>>::default())
+            .collect::<Box<[_]>>(),
+    );
+    assert!(
+        (((*v
+            .as_deref()
+            .map_or(::std::ptr::null_mut(), |s| s.as_ptr()
+                as *mut Vec<libc::c_char>)
+            .add(0_usize))
+        .len()
+            - 1)
+            == (0_usize))
+    );
+    assert!(
+        (((*v
+            .as_deref()
+            .map_or(::std::ptr::null_mut(), |s| s.as_ptr()
+                as *mut Vec<libc::c_char>)
+            .add(1_usize))
+        .len()
+            - 1)
+            == (0_usize))
+    );
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -261,6 +288,7 @@ unsafe fn main_0() -> i32 {
     );
     p = None;
     assert!(p.is_none());
+    (unsafe { unique_ptr_that_wraps_container_3() });
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

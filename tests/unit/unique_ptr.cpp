@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <memory>
+#include <string>
 
 struct SafePointer {
   std::unique_ptr<int> ptr;
@@ -79,6 +80,12 @@ void RndStuff() {
   }
 }
 
+void unique_ptr_that_wraps_container() {
+  auto v = std::make_unique<std::string[]>(2);
+  assert(v[0].size() == 0);
+  assert(v[1].size() == 0);
+}
+
 int main() {
   std::unique_ptr<int> x = std::make_unique<int>(0);
   std::unique_ptr<SafePointer> safe_ptr =
@@ -91,5 +98,8 @@ int main() {
   assert(*p == 2);
   p.reset();
   assert(p == nullptr);
+
+  unique_ptr_that_wraps_container();
+
   return 0;
 }
