@@ -148,7 +148,7 @@ unsafe fn f91<T1>(a0: Vec<T1>) -> Vec<T1> {
     a0
 }
 
-unsafe fn f92<T1: CppFromUnsafe<T2>, T2, T3: UnsafeCppInputIterator<T2>>(a0: T3, a1: T3) -> Vec<T1> {
+unsafe fn f92<T1: CppFromUnsafe<T4>, T2, T3: UnsafeCppInputIterator<T4>, T4>(a0: T3, a1: T3) -> Vec<T1> {
     let mut __v = Vec::new();
     let mut __it = a0;
     while __it != a1 {

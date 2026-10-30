@@ -101,7 +101,6 @@ void collectGenerics(const std::vector<TranslationRule::BodyFragment> &body,
                 std::get_if<std::unique_ptr<TranslationRule::ConvertFragment>>(
                     &fragment)) {
           used.insert((*convert)->to);
-          used.insert((*convert)->from);
         }
         return false;
       });
@@ -126,6 +125,27 @@ void collectGenerics(llvm::StringRef type, std::unordered_set<unsigned> &used) {
   }
 }
 
+bool isBoundArgument(const TranslationRule::ExprRule &rule, unsigned n) {
+  return llvm::any_of(rule.generics, [&](const auto &bounds) {
+    return llvm::any_of(bounds, [&](const TranslationRule::Bound &bound) {
+      return llvm::is_contained(bound.args, n);
+    });
+  });
+}
+
+unsigned iteratorOverGeneric(const TranslationRule::ExprRule &rule,
+                             unsigned n) {
+  for (unsigned i = 0; i < rule.generics.size(); ++i) {
+    for (const auto &bound : rule.generics[i]) {
+      if (llvm::StringRef(bound.trait_name).ends_with("Iterator") &&
+          llvm::is_contained(bound.args, n)) {
+        return i + 1;
+      }
+    }
+  }
+  return 0;
+}
+
 void checkGenerics(const std::string &dir, const std::string &name,
                    const clang::FunctionDecl *decl,
                    const TranslationRule::ExprRule &rule) {
@@ -142,7 +162,8 @@ void checkGenerics(const std::string &dir, const std::string &name,
     collectGenerics(param.type, used);
   }
   for (unsigned i : used) {
-    if (!declared.contains(std::format("T{}", i))) {
+    if (!declared.contains(std::format("T{}", i)) &&
+        !isBoundArgument(rule, i)) {
       llvm::errs() << dir << "::" << name << ": generic T" << i
                    << " used by the target but missing from src\n";
       llvm::report_fatal_error("Absent generic from src");
@@ -385,6 +406,46 @@ Matcher::Match<TranslationRule::ExprRule> Search(clang::ASTContext &ctx,
   }
   return {&match.rule_decl->rule,
           getBindings(match.rule_decl->decl, match.args)};
+}
+
+clang::QualType iteratorElementType(clang::ASTContext &ctx,
+                                    clang::QualType iterator) {
+  iterator = iterator.getNonReferenceType().getUnqualifiedType();
+  if (iterator->isPointerType()) {
+    return iterator->getPointeeType().getUnqualifiedType();
+  }
+  auto [rule, bindings] = Search(ctx, iterator);
+  assert(rule && !bindings.empty() &&
+         bindings[0].getKind() == clang::TemplateArgument::Type &&
+         "iterator type rule declares no element generic T1");
+  return bindings[0].getAsType();
+}
+
+clang::QualType GetGenericType(clang::ASTContext &ctx, const clang::Expr *expr,
+                               unsigned n) {
+  auto [rule, bindings] = Search(ctx, expr);
+  assert(rule && "expression must have a translation rule");
+  if (n <= bindings.size() &&
+      bindings[n - 1].getKind() == clang::TemplateArgument::Type) {
+    return bindings[n - 1].getAsType();
+  }
+  auto iterator = iteratorOverGeneric(*rule, n);
+  assert(iterator &&
+         "generic is neither bound by the src nor the element of an iterator");
+  return iteratorElementType(ctx, GetGenericType(ctx, expr, iterator));
+}
+
+clang::QualType GetConversionSourceType(clang::ASTContext &ctx,
+                                        const clang::Expr *expr, unsigned to) {
+  auto rule = Search(ctx, expr).first;
+  assert(rule && "expression must have a translation rule");
+  for (const auto &bound : rule->generics.at(to - 1)) {
+    if (bound.trait_name == "CppFrom" || bound.trait_name == "CppFromUnsafe") {
+      assert(bound.args.size() == 1 && "CppFrom takes one generic");
+      return GetGenericType(ctx, expr, bound.args[0]);
+    }
+  }
+  llvm::report_fatal_error("converted generic has no CppFrom bound");
 }
 
 clang::QualType GetInitType(const clang::Expr *expr) {

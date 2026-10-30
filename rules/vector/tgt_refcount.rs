@@ -62,7 +62,7 @@ fn f79<T1: ByteRepr>(a0: &mut Vec<T1>, a1: RandomAccessIterator<T1>, a2: T1) -> 
     __it
 }
 
-fn f92<T1: CppFrom<T2>, T2: ByteRepr, T3: CppInputIterator<T2>>(a0: T3, a1: T3) -> Vec<T1> {
+fn f92<T1: CppFrom<T4>, T2, T3: CppInputIterator<T4>, T4: ByteRepr>(a0: T3, a1: T3) -> Vec<T1> {
     let mut __v = Vec::new();
     let mut __it = a0;
     while __it != a1 {

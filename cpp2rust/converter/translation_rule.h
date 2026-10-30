@@ -9,7 +9,6 @@
 
 #include <filesystem>
 #include <string>
-#include <unordered_map>
 #include <variant>
 #include <vector>
 
@@ -81,11 +80,15 @@ struct RefExprFragment {
 
 struct ConvertFragment {
   unsigned to;
-  unsigned from;
   bool is_move;
   std::vector<BodyFragment> src;
 
   void dump() const;
+};
+
+struct Bound {
+  std::string trait_name;
+  std::vector<unsigned> args;
 };
 
 // Whether pred holds for a fragment of body, or for one nested in them.
@@ -106,7 +109,7 @@ struct TypeInfo {
 struct ExprRule {
   std::vector<TypeInfo> params;
   TypeInfo return_type;
-  std::vector<std::vector<std::string>> generics; // "T1" -> ["Ord", "Clone"]
+  std::vector<std::vector<Bound>> generics; // "T1" -> [Ord, Clone]
   std::vector<BodyFragment> body;
   bool multi_statement = false;
   bool is_extern = false;

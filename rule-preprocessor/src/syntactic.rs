@@ -11,8 +11,8 @@ use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
 use crate::ir::{
-    Access, BodyFragment, ConvertInner, FileIr, FnIr, MethodCallInner, Model, PlaceholderInner,
-    RefExprInner, RuleIr, RulesIR, TypeInfo, TypeIr,
+    Access, BodyFragment, Bound, ConvertInner, FileIr, FnIr, MethodCallInner, Model,
+    PlaceholderInner, RefExprInner, RuleIr, RulesIR, TypeInfo, TypeIr,
 };
 
 /// Classify a type AST node as refcount pointer (`Ptr<T>`), unsafe pointer
@@ -305,28 +305,9 @@ impl<'a> FragmentCtx<'a> {
         src_ctx.visit(ra_ap_syntax::NodeOrToken::Node(arg.syntax().clone()));
         Some(ConvertInner {
             to,
-            from: self.conversion_source(to),
             is_move: method == "cpp_from_move",
             src: src_ctx.finish(),
         })
-    }
-
-    fn conversion_source(&self, to: i32) -> i32 {
-        let name = format!("T{to}");
-        let sources: Vec<i32> = self.builder.generics()[&name]
-            .iter()
-            .filter_map(|bound| {
-                let inner = bound
-                    .strip_prefix("CppFromUnsafe<")
-                    .or_else(|| bound.strip_prefix("CppFrom<"))?
-                    .strip_suffix('>')?;
-                self.generic_names
-                    .contains(&inner.to_string())
-                    .then(|| inner[1..].parse().unwrap())
-            })
-            .collect();
-        assert!(sources.len() == 1, "{name} must have one CppFrom<Tm> bound");
-        sources[0]
     }
 
     fn generic_default(&self, call: &ast::CallExpr) -> Option<i32> {
@@ -452,14 +433,34 @@ impl<'a> FnIrBuilder<'a> {
         }
     }
 
-    fn generics(&self) -> BTreeMap<String, Vec<String>> {
+    fn generics(&self) -> BTreeMap<String, Vec<Bound>> {
         let mut generics = BTreeMap::new();
 
-        let extract_bounds = |tbl: Option<ast::TypeBoundList>| -> Vec<String> {
+        let extract_bounds = |tbl: Option<ast::TypeBoundList>| -> Vec<Bound> {
             tbl.into_iter()
                 .flat_map(|tbl| tbl.bounds())
-                .map(|b| b.syntax().text().to_string())
-                .filter(|s| s != "'static")
+                .filter(|b| b.lifetime().is_none())
+                .map(|b| {
+                    let segment = match b.ty() {
+                        Some(ast::Type::PathType(path)) => path.path().and_then(|p| p.segment()),
+                        _ => None,
+                    };
+                    let Some(segment) = segment else {
+                        return Bound { trait_name: b.syntax().text().to_string(), args: Vec::new() };
+                    };
+                    Bound {
+                        trait_name: segment
+                            .name_ref()
+                            .map(|name| name.text().to_string())
+                            .unwrap_or_default(),
+                        args: segment
+                            .generic_arg_list()
+                            .into_iter()
+                            .flat_map(|args| args.generic_args())
+                            .map(|arg| arg.syntax().text().to_string())
+                            .collect(),
+                    }
+                })
                 .collect()
         };
 

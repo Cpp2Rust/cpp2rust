@@ -76,7 +76,7 @@ pub struct TypeInfo {
 pub struct FnIr {
     pub body: Vec<BodyFragment>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub generics: Option<BTreeMap<String, Vec<String>>>,
+    pub generics: Option<BTreeMap<String, Vec<Bound>>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub multi_statement: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -215,10 +215,16 @@ pub struct RefExprInner {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ConvertInner {
     pub to: i32,
-    pub from: i32,
     #[serde(rename = "move")]
     pub is_move: bool,
     pub src: Vec<BodyFragment>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Bound {
+    #[serde(rename = "trait")]
+    pub trait_name: String,
+    pub args: Vec<String>,
 }
 
 // For convenience: match on fragment kind

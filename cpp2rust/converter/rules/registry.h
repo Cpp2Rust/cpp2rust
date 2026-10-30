@@ -38,6 +38,13 @@ Matcher::Match<TranslationRule::TypeRule> Search(clang::ASTContext &ctx,
 const TranslationRule::ExprRule *GetExprRule(clang::ASTContext &ctx,
                                              const clang::Expr *expr);
 clang::QualType GetInitType(const clang::Expr *expr);
+
+clang::QualType GetGenericType(clang::ASTContext &ctx, const clang::Expr *expr,
+                               unsigned n);
+
+clang::QualType GetConversionSourceType(clang::ASTContext &ctx,
+                                        const clang::Expr *expr, unsigned to);
+
 bool HasExprRule(const clang::FunctionDecl *decl);
 bool IsLibcPassthrough(clang::ASTContext &ctx, const clang::Expr *expr);
 bool ReturnsPointer(clang::ASTContext &ctx, const clang::Expr *expr);

@@ -5204,8 +5204,8 @@ std::string Converter::ConvertConversionFragment(
     clang::Expr **args, unsigned num_args, TempMaterializationCtx *ctx) {
   auto ptr =
       ConvertIRFragment(convert.src, bindings, expr, args, num_args, ctx);
-  auto to = bindings[convert.to - 1].getAsType();
-  auto from = bindings[convert.from - 1].getAsType();
+  auto to = RuleRegistry::GetGenericType(ctx_, expr, convert.to);
+  auto from = RuleRegistry::GetConversionSourceType(ctx_, expr, convert.to);
   if (to->isArithmeticType() && from->isArithmeticType()) {
     auto value = DerefPtrExpr(ptr, from);
     if (ctx_.hasSameUnqualifiedType(to, from)) {

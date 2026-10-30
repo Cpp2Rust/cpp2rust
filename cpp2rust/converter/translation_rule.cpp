@@ -75,7 +75,6 @@ MethodCallFragment ParseMethodCallFragmentJSON(const llvm::json::Object &obj) {
 ConvertFragment ParseConvertFragmentJSON(const llvm::json::Object &obj) {
   ConvertFragment cv;
   cv.to = obj.getInteger("to").value_or(0);
-  cv.from = obj.getInteger("from").value_or(0);
   cv.is_move = obj.getBoolean("move").value_or(false);
   if (auto *src = obj.getArray("src")) {
     cv.src = ParseBodyFragmentsJSON(*src);
@@ -219,7 +218,10 @@ void ExprRule::dump() const {
   for (auto &bounds : generics) {
     log() << "  generic T" << ++i << ':';
     for (auto &b : bounds) {
-      log() << ' ' << b;
+      log() << ' ' << b.trait_name;
+      for (unsigned arg : b.args) {
+        log() << " T" << arg;
+      }
     }
     log() << '\n';
   }
@@ -250,8 +252,7 @@ void RefExprFragment::dump() const {
 }
 
 void ConvertFragment::dump() const {
-  log() << "  convert: T" << from << " -> T" << to << (is_move ? " move" : "")
-        << '\n';
+  log() << "  convert: -> T" << to << (is_move ? " move" : "") << '\n';
   for (auto &frag : src) {
     BodyFragmentDump(frag);
   }
@@ -310,16 +311,33 @@ ExprRule ParseExprRuleJSON(const llvm::json::Object &obj) {
 
   if (auto *generics = obj.getObject("generics")) {
     for (auto &[key, val] : *generics) {
-      if (auto *arr = val.getAsArray()) {
-        std::vector<std::string> bounds;
-        for (auto &b : *arr) {
-          if (auto s = b.getAsString())
-            bounds.push_back(s->str());
-        }
-        size_t id = atoi(llvm::StringRef(key).data() + 1) - 1; // starts in T1
-        ir.generics.resize(std::max(ir.generics.size(), id + 1));
-        ir.generics[id] = std::move(bounds);
+      auto *arr = val.getAsArray();
+      if (!arr) {
+        continue;
       }
+      std::vector<Bound> bounds;
+      for (auto &b : *arr) {
+        auto *bound = b.getAsObject();
+        if (!bound) {
+          continue;
+        }
+        Bound parsed;
+        parsed.trait_name = bound->getString("trait").value_or("").str();
+        if (auto *args = bound->getArray("args")) {
+          for (auto &arg : *args) {
+            llvm::StringRef name = arg.getAsString().value_or("");
+            unsigned n = 0;
+            if (name.consume_front("T") && !name.empty() &&
+                !name.getAsInteger(10, n)) {
+              parsed.args.push_back(n);
+            }
+          }
+        }
+        bounds.push_back(std::move(parsed));
+      }
+      size_t id = atoi(llvm::StringRef(key).data() + 1) - 1; // starts in T1
+      ir.generics.resize(std::max(ir.generics.size(), id + 1));
+      ir.generics[id] = std::move(bounds);
     }
   }
 
