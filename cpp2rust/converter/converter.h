@@ -178,6 +178,9 @@ public:
 
   void EmitReprC(clang::RecordDecl *decl);
   void EmitDerives(const clang::RecordDecl *decl);
+
+  void EmitConversionAttrs(clang::CXXRecordDecl *decl);
+
   virtual void EmitRustUnion(clang::RecordDecl *decl);
 
   virtual bool EmitsReprCForRecords() const { return true; }

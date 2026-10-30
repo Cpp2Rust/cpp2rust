@@ -2257,6 +2257,10 @@ ConverterRefCount::GetStructAttributes(const clang::RecordDecl *decl) {
     attrs.emplace_back("MoveCtor");
   }
 
+  if (HasImplicitConversions(decl)) {
+    attrs.emplace_back("CppFrom");
+  }
+
   if (HasCopyAssignOperator(decl)) {
     attrs.emplace_back("CopyAssign");
   }

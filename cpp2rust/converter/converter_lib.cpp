@@ -543,6 +543,49 @@ bool IsConvertibleMoveConstructor(const clang::CXXConstructorDecl *ctor) {
   return ctor->isUserProvided() || NeedsDefaultedMoveConstructor(parent);
 }
 
+static bool IsImplicitConvertingConstructor(
+    const clang::CXXConstructorDecl *ctor) {
+  return !ctor->isCopyOrMoveConstructor() && !ctor->isImplicit() &&
+         !ctor->isDeleted() && ctor->hasBody() && ctor->getNumParams() == 1 &&
+         ctor->isConvertingConstructor(/*AllowExplicit=*/false);
+}
+
+void ForEachConvertingConstructor(
+    clang::CXXRecordDecl *decl,
+    llvm::function_ref<void(clang::CXXConstructorDecl *)> fn) {
+  for (auto *ctor : decl->ctors()) {
+    if (IsImplicitConvertingConstructor(ctor)) {
+      fn(ctor);
+    }
+  }
+  for (auto *ctor : GetTemplateInstantiatedCtors(decl)) {
+    if (IsImplicitConvertingConstructor(ctor)) {
+      fn(ctor);
+    }
+  }
+}
+
+bool IsImplicitConversionOperator(const clang::CXXMethodDecl *method) {
+  auto *conversion = clang::dyn_cast<clang::CXXConversionDecl>(method);
+  return conversion && !conversion->isExplicit() && !conversion->isDeleted() &&
+         conversion->hasBody() &&
+         !conversion->getConversionType()->isReferenceType();
+}
+
+bool HasImplicitConversions(const clang::RecordDecl *decl) {
+  auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
+  if (!cxx || !IsUserDefinedDecl(cxx)) {
+    return false;
+  }
+  bool found = false;
+  ForEachConvertingConstructor(const_cast<clang::CXXRecordDecl *>(cxx),
+                               [&](clang::CXXConstructorDecl *) { found = true; });
+  ForEachMethod(cxx, [&](clang::CXXMethodDecl *method) {
+    found = found || IsImplicitConversionOperator(method);
+  });
+  return found;
+}
+
 bool HasMoveFromConstructor(const clang::RecordDecl *decl) {
   auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
   return cxx && llvm::any_of(cxx->ctors(), [](auto *ctor) {

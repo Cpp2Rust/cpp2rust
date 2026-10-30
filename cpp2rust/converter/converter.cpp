@@ -879,6 +879,9 @@ void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
     EmitReprC(decl);
   }
   EmitDerives(decl);
+  if (auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl)) {
+    EmitConversionAttrs(cxx);
+  }
   EmitByteSizeAttr(decl);
 
   // Fields
@@ -954,6 +957,42 @@ void Converter::EmitDerives(const clang::RecordDecl *decl) {
     StrCat(attr, ',');
   }
   StrCat(")]");
+}
+
+void Converter::EmitConversionAttrs(clang::CXXRecordDecl *decl) {
+  std::unordered_set<std::string> from_types;
+  ForEachConvertingConstructor(decl, [&](clang::CXXConstructorDecl *ctor) {
+    auto *param = ctor->getParamDecl(0);
+    auto type = param->getType();
+    auto source = GetUnboxedTypeAsString(
+        type.getNonReferenceType().getUnqualifiedType());
+    bool is_move = type->isRValueReferenceType();
+    if (!from_types.insert(source + (is_move ? "&&" : "")).second) {
+      return;
+    }
+    const char *kind = !type->isReferenceType() ? "value"
+                       : is_move || type.getNonReferenceType().isConstQualified()
+                           ? "ptr"
+                           : "mut_ptr";
+    StrCat(std::format("#[{}({}, {}, {}{})]",
+                       is_move ? "cpp_from_move" : "cpp_from", source,
+                       GetCtorName(ctor), param->hasDefaultArg() ? "some_" : "",
+                       kind));
+  });
+  std::unordered_set<std::string> into_types;
+  ForEachMethod(decl, [&](clang::CXXMethodDecl *method) {
+    if (!IsImplicitConversionOperator(method)) {
+      return;
+    }
+    auto *conversion = clang::cast<clang::CXXConversionDecl>(method);
+    auto target = GetUnboxedTypeAsString(
+        conversion->getConversionType().getUnqualifiedType());
+    if (!into_types.insert(target).second) {
+      return;
+    }
+    StrCat(std::format("#[cpp_into({}, {})]", target,
+                       GetMethodName(conversion)));
+  });
 }
 
 void Converter::EmitReprC(clang::RecordDecl *decl) {
@@ -4206,6 +4245,10 @@ Converter::GetStructAttributes(const clang::RecordDecl *decl) {
 
   if (HasMoveFromConstructor(decl)) {
     struct_attrs.emplace_back("MoveCtorUnsafe");
+  }
+
+  if (HasImplicitConversions(decl)) {
+    struct_attrs.emplace_back("CppFromUnsafe");
   }
 
   if (HasCopyAssignOperator(decl)) {
