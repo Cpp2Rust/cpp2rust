@@ -4946,6 +4946,17 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
                        ToStringBase(ctx_.getPointerType(elem)));
   }
 
+  auto construct_as =
+      RuleRegistry::GetParamGenericBinding(ctx_, expr, ph_ctx.arg_idx);
+  if (construct_as && !arg->getType()->isArrayType() &&
+      !ctx_.hasSameUnqualifiedType(arg->getType().getNonReferenceType(),
+                                   *construct_as)) {
+    Buffer buf(*this);
+    PushExprKind push(*this, ExprKind::RValue);
+    ConvertConstructFromArgs(*construct_as, arg, arg->getExprLoc());
+    return std::move(buf).str();
+  }
+
   if (ph_ctx.needs_materialization()) {
     auto materialized = ph_ctx.materialize_ctx->GetOrMaterialize(
         static_cast<unsigned>(ph_ctx.materialize_idx),

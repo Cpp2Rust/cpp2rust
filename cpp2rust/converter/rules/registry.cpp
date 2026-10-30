@@ -461,6 +461,22 @@ bool ParamIsPointer(clang::ASTContext &ctx, const clang::Expr *expr,
   return rule->params.at(index).is_pointer();
 }
 
+std::optional<clang::QualType> GetParamGenericBinding(clang::ASTContext &ctx,
+                                                  const clang::Expr *expr,
+                                                  unsigned index) {
+  auto [rule, bindings] = Search(ctx, expr);
+  assert(rule && "expression must have a translation rule");
+  llvm::StringRef type = rule->params.at(index).type;
+  unsigned n = 0;
+  if (!type.consume_front("T") || type.empty() || type.getAsInteger(10, n)) {
+    return std::nullopt;
+  }
+  auto &binding = bindings.at(n - 1);
+  assert(binding.getKind() == clang::TemplateArgument::Type &&
+         "parameter typed by a non-type generic");
+  return binding.getAsType();
+}
+
 bool IsLibcPassthrough(clang::ASTContext &ctx, const clang::Expr *expr) {
   const auto *tgt_ir = GetExprRule(ctx, expr);
   if (tgt_ir == nullptr || !tgt_ir->body.empty() || !tgt_ir->is_extern) {
