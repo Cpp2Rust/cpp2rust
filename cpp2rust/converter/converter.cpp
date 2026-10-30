@@ -5202,7 +5202,8 @@ std::string Converter::ConvertConversionFragment(
     const TranslationRule::ConvertFragment &convert,
     llvm::ArrayRef<clang::TemplateArgument> bindings, clang::Expr *expr,
     clang::Expr **args, unsigned num_args, TempMaterializationCtx *ctx) {
-  auto ptr = ConvertIRFragment(convert.src, bindings, expr, args, num_args, ctx);
+  auto ptr =
+      ConvertIRFragment(convert.src, bindings, expr, args, num_args, ctx);
   auto to = bindings[convert.to - 1].getAsType();
   auto from = bindings[convert.from - 1].getAsType();
   if (to->isArithmeticType() && from->isArithmeticType()) {

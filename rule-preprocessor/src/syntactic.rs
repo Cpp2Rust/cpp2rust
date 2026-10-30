@@ -320,7 +320,9 @@ impl<'a> FragmentCtx<'a> {
                     .strip_prefix("CppFromUnsafe<")
                     .or_else(|| bound.strip_prefix("CppFrom<"))?
                     .strip_suffix('>')?;
-                self.generic_names.contains(&inner.to_string()).then(|| inner[1..].parse().unwrap())
+                self.generic_names
+                    .contains(&inner.to_string())
+                    .then(|| inner[1..].parse().unwrap())
             })
             .collect();
         assert!(sources.len() == 1, "{name} must have one CppFrom<Tm> bound");
