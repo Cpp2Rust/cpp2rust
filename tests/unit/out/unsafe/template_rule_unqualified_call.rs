@@ -14,33 +14,24 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     assert!(
-        (({
-            let __c: i32 = (('a' as libc::c_char) as i32).into();
-            if (0..=255).contains(&__c) {
-                (__c as u8).to_ascii_uppercase() as i32
-            } else {
-                __c
-            }
+        ((if (0..=255).contains(&(('a' as libc::c_char) as i32)) {
+            ((('a' as libc::c_char) as i32) as u8).to_ascii_uppercase() as i32
+        } else {
+            (('a' as libc::c_char) as i32)
         }) == (('A' as libc::c_char) as i32))
     );
     assert!(
-        (({
-            let __c: i32 = (('Z' as libc::c_char) as i32).into();
-            if (0..=255).contains(&__c) {
-                (__c as u8).to_ascii_uppercase() as i32
-            } else {
-                __c
-            }
+        ((if (0..=255).contains(&(('Z' as libc::c_char) as i32)) {
+            ((('Z' as libc::c_char) as i32) as u8).to_ascii_uppercase() as i32
+        } else {
+            (('Z' as libc::c_char) as i32)
         }) == (('Z' as libc::c_char) as i32))
     );
     assert!(
-        (({
-            let __c: i32 = (('5' as libc::c_char) as i32).into();
-            if (0..=255).contains(&__c) {
-                (__c as u8).to_ascii_uppercase() as i32
-            } else {
-                __c
-            }
+        ((if (0..=255).contains(&(('5' as libc::c_char) as i32)) {
+            ((('5' as libc::c_char) as i32) as u8).to_ascii_uppercase() as i32
+        } else {
+            (('5' as libc::c_char) as i32)
         }) == (('5' as libc::c_char) as i32))
     );
     return 0;

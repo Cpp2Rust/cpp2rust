@@ -56,7 +56,11 @@ pub unsafe fn push_local_from_field_1(mut jpg: *mut JPEGData, mut cond: bool) {
             let mut __v = Vec::new();
             let mut __it = head.as_mut_ptr();
             while __it != head.as_mut_ptr().offset((3) as isize) {
-                __v.push(<u8>::try_from((*__it.iter_deref()).clone()).ok().unwrap());
+                __v.push(
+                    <u8 as CppFromUnsafe<std_allocator_unsigned_char_>>::cpp_from(
+                        __it.iter_deref(),
+                    ),
+                );
                 __it.iter_inc();
             }
             __v
@@ -86,7 +90,11 @@ pub unsafe fn emplace_local_from_field_4(mut jpg: *mut JPEGData, mut cond: bool)
             let mut __v = Vec::new();
             let mut __it = head.as_mut_ptr();
             while __it != head.as_mut_ptr().offset((3) as isize) {
-                __v.push(<u8>::try_from((*__it.iter_deref()).clone()).ok().unwrap());
+                __v.push(
+                    <u8 as CppFromUnsafe<std_allocator_unsigned_char_>>::cpp_from(
+                        __it.iter_deref(),
+                    ),
+                );
                 __it.iter_inc();
             }
             __v

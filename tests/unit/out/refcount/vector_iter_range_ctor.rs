@@ -6,6 +6,25 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
+#[cpp_from(i32, new, value)]
+#[byte_size(4)]
+pub struct Degrees {
+    #[offset(0)]
+    pub value: i32,
+}
+impl Degrees {
+    pub fn new(mut v: i32) -> Self {
+        Self { value: v }
+    }
+}
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
+#[cpp_into(i64, to_i64)]
+#[byte_size(4)]
+pub struct Reading {
+    #[offset(0)]
+    pub raw_: i32,
+}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
@@ -16,7 +35,9 @@ fn main_0() -> i32 {
         let mut __v = Vec::new();
         let mut __it = (src.as_pointer() as Ptr<u32>);
         while __it != (src.as_pointer() as Ptr<u32>).offset((3) as isize) {
-            __v.push(<u32>::try_from(__it.iter_deref().read()).ok().unwrap());
+            __v.push(<u32 as CppFrom<std_allocator_unsigned_int_>>::cpp_from(
+                __it.iter_deref(),
+            ));
             __it.iter_inc();
         }
         __v
@@ -27,7 +48,9 @@ fn main_0() -> i32 {
         let mut __v = Vec::new();
         let mut __it = (src.as_pointer() as Ptr<u32>);
         while __it != (src.as_pointer() as Ptr<u32>).offset((3) as isize) {
-            __v.push(<u64>::try_from(__it.iter_deref().read()).ok().unwrap());
+            __v.push(<u64 as CppFrom<std_allocator_unsigned_long_>>::cpp_from(
+                __it.iter_deref(),
+            ));
             __it.iter_inc();
         }
         __v
@@ -38,7 +61,9 @@ fn main_0() -> i32 {
         let mut __v = Vec::new();
         let mut __it = (src.as_pointer() as Ptr<u32>);
         while __it != (src.as_pointer() as Ptr<u32>).offset((3) as isize) {
-            __v.push(<i32>::try_from(__it.iter_deref().read()).ok().unwrap());
+            __v.push(<i32 as CppFrom<std_allocator_int_>>::cpp_from(
+                __it.iter_deref(),
+            ));
             __it.iter_inc();
         }
         __v
@@ -50,7 +75,9 @@ fn main_0() -> i32 {
         let mut __v = Vec::new();
         let mut __it = (src1.as_pointer() as Ptr<u32>);
         while __it != (src1.as_pointer() as Ptr<u32>).to_end() {
-            __v.push(<u32>::try_from(__it.iter_deref().read()).ok().unwrap());
+            __v.push(<u32 as CppFrom<std_allocator_unsigned_int_>>::cpp_from(
+                __it.iter_deref(),
+            ));
             __it.iter_inc();
         }
         __v
@@ -65,7 +92,9 @@ fn main_0() -> i32 {
         let mut __v = Vec::new();
         let mut __it = (start).clone();
         while __it != start.offset((len) as isize) {
-            __v.push(<u8>::try_from(__it.iter_deref().read()).ok().unwrap());
+            __v.push(<u8 as CppFrom<std_allocator_unsigned_char_>>::cpp_from(
+                __it.iter_deref(),
+            ));
             __it.iter_inc();
         }
         __v
@@ -100,11 +129,9 @@ fn main_0() -> i32 {
             != m.as_pointer()
                 .with(|__m: &Map<i32, (Value<i32>, Value<i32>)>| __m.end())
         {
-            __v.push(
-                <(Value<i32>, Value<i32>)>::try_from(__it.iter_deref().read())
-                    .ok()
-                    .unwrap(),
-            );
+            __v.push(<(Value<i32>, Value<i32>) as CppFrom<
+                std_allocator_std_pair_int__int__,
+            >>::cpp_from(__it.iter_deref()));
             __it.iter_inc();
         }
         __v
@@ -146,6 +173,43 @@ fn main_0() -> i32 {
             && ((*(*v6.borrow())[3_usize].0.borrow()) == 3))
             && ((*(*v6.borrow())[4_usize].0.borrow()) == 2)
     );
+    let ints: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([4, 5, 6])));
+    let mut v7: Vec<Degrees> = {
+        let mut __v = Vec::new();
+        let mut __it = (ints.as_pointer() as Ptr<i32>);
+        while __it != (ints.as_pointer() as Ptr<i32>).offset((3) as isize) {
+            __v.push(<Degrees as CppFrom<std_allocator_Degrees_>>::cpp_from(
+                __it.iter_deref(),
+            ));
+            __it.iter_inc();
+        }
+        __v
+    };
+    assert!((v7[1_usize].value == 5));
+    let readings: Value<Box<[Reading]>> = Rc::new(RefCell::new(Box::new([
+        Reading { raw_: 4 },
+        Reading { raw_: 5 },
+    ])));
+    let mut v8: Vec<i64> = {
+        let mut __v = Vec::new();
+        let mut __it = (readings.as_pointer() as Ptr<Reading>);
+        while __it != (readings.as_pointer() as Ptr<Reading>).offset((2) as isize) {
+            __v.push(<i64 as CppFrom<std_allocator_long_>>::cpp_from(
+                __it.iter_deref(),
+            ));
+            __it.iter_inc();
+        }
+        __v
+    };
+    assert!((v8[0_usize] == 40_i64) && (v8[1_usize] == 50_i64));
     return 0;
+}
+pub trait ReadingImpl {
+    fn to_i64(&self) -> i64;
+}
+impl ReadingImpl for Ptr<Reading> {
+    fn to_i64(&self) -> i64 {
+        return (((*self).with(|__s| __s.raw_) as i64) * 10_i64);
+    }
 }
 pub fn __cpp2rust_init_globals() {}
