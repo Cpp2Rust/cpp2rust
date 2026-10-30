@@ -24,8 +24,24 @@ fn main_0() -> i32 {
     assert!(((*(*p2.borrow()).0.borrow()) == 3_f64));
     assert!(((*(*p2.borrow()).1.borrow()) == 4));
     let p3: Value<(Value<f64>, Value<i32>)> = Rc::new(RefCell::new((
-        Rc::new(RefCell::new(5)),
-        Rc::new(RefCell::new(6)),
+        Rc::new(RefCell::new(
+            (Rc::new(RefCell::new(5)), Rc::new(RefCell::new(6)))
+                .0
+                .borrow()
+                .clone()
+                .try_into()
+                .ok()
+                .expect("failed conversion"),
+        )),
+        Rc::new(RefCell::new(
+            (Rc::new(RefCell::new(5)), Rc::new(RefCell::new(6)))
+                .1
+                .borrow()
+                .clone()
+                .try_into()
+                .ok()
+                .expect("failed conversion"),
+        )),
     )));
     assert!(((*(*p3.borrow()).0.borrow()) == 5_f64));
     assert!(((*(*p3.borrow()).1.borrow()) == 6));

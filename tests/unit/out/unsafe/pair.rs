@@ -19,7 +19,7 @@ unsafe fn main_0() -> i32 {
     let mut p2: (f64, i32) = ((3 as f64), 4);
     assert!(((p2.0) == (3_f64)));
     assert!(((p2.1) == (4)));
-    let mut p3: (f64, i32) = (5, 6);
+    let mut p3: (f64, i32) = ((5, 6).0.clone().into(), (5, 6).1.clone().into());
     assert!(((p3.0) == (5_f64)));
     assert!(((p3.1) == (6)));
     let arr: [i32; 2] = [1, 2];
