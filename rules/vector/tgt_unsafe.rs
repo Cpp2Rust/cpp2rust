@@ -27,6 +27,14 @@ fn t13<T1>() -> *mut T1 {
     ::std::ptr::null_mut()
 }
 
+fn t15() -> *mut bool {
+    ::std::ptr::null_mut()
+}
+
+fn t16() -> bool {
+    false
+}
+
 fn t14<T1>() -> *const T1 {
     ::std::ptr::null()
 }

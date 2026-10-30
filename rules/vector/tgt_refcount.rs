@@ -9,6 +9,10 @@ fn t12() -> Ptr<bool> {
     Ptr::null()
 }
 
+fn t15() -> Ptr<bool> {
+    Ptr::null()
+}
+
 fn t13<T1>() -> Ptr<T1> {
     Ptr::null()
 }

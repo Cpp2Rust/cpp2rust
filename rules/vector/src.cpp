@@ -30,6 +30,12 @@ using t13 = typename std::vector<T1, T2>::reference;
 template <typename T1, typename T2 = std::allocator<T1>>
 using t14 = typename std::vector<T1, T2>::const_reference;
 
+template <typename T1 = std::allocator<bool>>
+using t15 = typename std::vector<bool, T1>::iterator::reference;
+
+template <typename T1 = std::allocator<bool>>
+using t16 = typename std::vector<bool, T1>::const_iterator::reference;
+
 std::vector<bool> f38(std::size_t n, const bool &value) {
   return std::vector<bool>(n, value);
 }
