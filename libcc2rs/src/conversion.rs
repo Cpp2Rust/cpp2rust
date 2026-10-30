@@ -37,7 +37,7 @@ impl<T: Clone> CppFromUnsafe<T> for T {
 }
 
 macro_rules! impl_arithmetic_from {
-    ($from:ty => $($to:ty),*) => {
+    ($from:ty => $($to:ty),* $(,)?) => {
         $(
             impl CppFrom<$from> for $to {
                 fn cpp_from(src: Ptr<$from>) -> $to {
@@ -54,48 +54,44 @@ macro_rules! impl_arithmetic_from {
     };
 }
 
-macro_rules! impl_arithmetic_conversions {
-    ($($ty:ty),*) => {
-        $(
-            impl_arithmetic_from!($ty => i8, i16, i32, i64, isize, u8, u16, u32, u64, usize, f32, f64);
-
-            impl CppFrom<$ty> for bool {
-                fn cpp_from(src: Ptr<$ty>) -> bool {
-                    src.read() != 0 as $ty
-                }
+macro_rules! impl_bool_conversions {
+    ($ty:ty) => {
+        impl CppFrom<$ty> for bool {
+            fn cpp_from(src: Ptr<$ty>) -> bool {
+                src.read() != 0 as $ty
             }
+        }
 
-            impl CppFromUnsafe<$ty> for bool {
-                unsafe fn cpp_from(src: *const $ty) -> bool {
-                    unsafe { *src != 0 as $ty }
-                }
+        impl CppFromUnsafe<$ty> for bool {
+            unsafe fn cpp_from(src: *const $ty) -> bool {
+                unsafe { *src != 0 as $ty }
             }
+        }
 
-            impl CppFrom<bool> for $ty {
-                fn cpp_from(src: Ptr<bool>) -> $ty {
-                    src.read() as u8 as $ty
-                }
+        impl CppFrom<bool> for $ty {
+            fn cpp_from(src: Ptr<bool>) -> $ty {
+                src.read() as u8 as $ty
             }
+        }
 
-            impl CppFromUnsafe<bool> for $ty {
-                unsafe fn cpp_from(src: *const bool) -> $ty {
-                    unsafe { *src as u8 as $ty }
-                }
+        impl CppFromUnsafe<bool> for $ty {
+            unsafe fn cpp_from(src: *const bool) -> $ty {
+                unsafe { *src as u8 as $ty }
             }
-        )*
+        }
     };
 }
 
+macro_rules! impl_arithmetic_conversions {
+    ($($ty:ty),* $(,)?) => {
+        impl_arithmetic_conversions!(@walk [] [$($ty),*]);
+    };
+    (@walk [$($before:ty),*] [$current:ty $(, $after:ty)*]) => {
+        impl_arithmetic_from!($current => $($before,)* $($after),*);
+        impl_bool_conversions!($current);
+        impl_arithmetic_conversions!(@walk [$($before,)* $current] [$($after),*]);
+    };
+    (@walk [$($before:ty),*] []) => {};
+}
+
 impl_arithmetic_conversions!(i8, i16, i32, i64, isize, u8, u16, u32, u64, usize, f32, f64);
-
-impl CppFrom<bool> for bool {
-    fn cpp_from(src: Ptr<bool>) -> bool {
-        src.read()
-    }
-}
-
-impl CppFromUnsafe<bool> for bool {
-    unsafe fn cpp_from(src: *const bool) -> bool {
-        unsafe { *src }
-    }
-}
