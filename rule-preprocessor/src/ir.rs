@@ -76,7 +76,7 @@ pub struct TypeInfo {
 pub struct FnIr {
     pub body: Vec<BodyFragment>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub generics: Option<BTreeMap<String, Vec<String>>>,
+    pub generics: Option<BTreeMap<String, Vec<Bound>>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub multi_statement: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -110,6 +110,9 @@ impl FnIr {
                     check(&method_call.receiver) || check(&method_call.body)
                 }
                 BodyFragment::RefExpr { ref_expr } => check(&ref_expr.inner),
+                BodyFragment::GenericCall { generic_call } => {
+                    generic_call.args.iter().any(|arg| check(arg))
+                }
                 _ => false,
             })
         }
@@ -161,9 +164,6 @@ pub enum BodyFragment {
     Generic {
         generic: i32,
     },
-    Default {
-        default: i32,
-    },
     MethodCall {
         method_call: MethodCallInner,
     },
@@ -175,6 +175,9 @@ pub enum BodyFragment {
     },
     Init {
         init: std::marker::PhantomData<()>,
+    },
+    GenericCall {
+        generic_call: GenericCallInner,
     },
 }
 
@@ -206,6 +209,20 @@ pub struct MethodCallInner {
 pub struct RefExprInner {
     pub prefix: String,
     pub inner: Vec<BodyFragment>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct GenericCallInner {
+    pub generic: i32,
+    pub method: String,
+    pub args: Vec<Vec<BodyFragment>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Bound {
+    #[serde(rename = "trait")]
+    pub trait_name: String,
+    pub args: Vec<String>,
 }
 
 // For convenience: match on fragment kind
@@ -256,6 +273,13 @@ fn resolve_nth_unknown(
                 BodyFragment::RefExpr { ref_expr } => {
                     if resolve(&mut ref_expr.inner, param, nth, count, patch) {
                         return true;
+                    }
+                }
+                BodyFragment::GenericCall { generic_call } => {
+                    for arg in &mut generic_call.args {
+                        if resolve(arg, param, nth, count, patch) {
+                            return true;
+                        }
                     }
                 }
                 _ => {}

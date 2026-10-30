@@ -36,6 +36,12 @@ unsafe fn main_0() -> i32 {
     r += (unsafe { sink_0((it0).clone()) });
     r += if end == end { 0 } else { 1 };
     assert!(((r) == (2)));
+    let mut values: Vec<u32> = Vec::from([7_u32, 8_u32, 9_u32]);
+    let mut middle: UnsafeRandomAccessIterator<u32> = values.begin().iter_add(1_isize);
+    let mut const_middle: UnsafeRandomAccessIterator<u32> =
+        <UnsafeRandomAccessIterator<u32>>::from((middle).clone());
+    assert!(((*const_middle.iter_deref()) == (8_u32)));
+    assert!(const_middle == middle);
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

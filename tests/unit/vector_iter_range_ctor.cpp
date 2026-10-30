@@ -4,6 +4,16 @@
 #include <map>
 #include <vector>
 
+struct Degrees {
+  int value;
+  Degrees(int v) : value(v) {}
+};
+
+struct Reading {
+  int raw;
+  operator long() const { return raw * 10L; }
+};
+
 int main() {
   uint32_t src[3] = {1, 2, 3};
 
@@ -45,6 +55,14 @@ int main() {
   v6.insert(v6.begin() + 1, m.begin(), m.end());
   assert(v6.size() == 6);
   assert(v6[1].first == 1 && v6[3].first == 3 && v6[4].first == 2);
+
+  int ints[3] = {4, 5, 6};
+  std::vector<Degrees> v7(ints, ints + 3);
+  assert(v7[1].value == 5);
+
+  Reading readings[2] = {{4}, {5}};
+  std::vector<long> v8(readings, readings + 2);
+  assert(v8[0] == 40L && v8[1] == 50L);
 
   return 0;
 }

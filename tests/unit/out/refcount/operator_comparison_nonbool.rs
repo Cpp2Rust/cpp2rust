@@ -68,7 +68,8 @@ impl CppEq for Mixed {
         ((MixedImpl::operator_eq(__lhs, __rhs.clone())) != 0)
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
+#[cpp_into(bool, to_bool)]
 #[byte_size(1)]
 pub struct MyBool {
     #[offset(0)]
@@ -107,7 +108,8 @@ pub fn operator_eq_7(mut a: Boolish, mut b: Boolish) -> MyBool {
 pub fn operator_lt_6(mut a: Boolish, mut b: Boolish) -> MyBool {
     return MyBool::new({ (a.v < b.v) });
 }
-#[derive(Record, ByteRepr, FnPtrArg, Default)]
+#[derive(Record, ByteRepr, FnPtrArg, CppFrom, Default)]
+#[cpp_into(bool, to_bool)]
 #[byte_size(1)]
 pub struct RefBool {
     #[offset(0)]

@@ -9,7 +9,8 @@ use std::rc::Rc;
 pub static mut copies_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 pub static mut moves_1: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
-#[derive(VaArg, FnPtrArg, MoveCtorUnsafe, Default)]
+#[derive(VaArg, FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, Default)]
+#[cpp_from(i32, new, value)]
 pub struct Elem {
     pub v: i32,
 }
@@ -94,7 +95,7 @@ unsafe fn main_0() -> i32 {
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (before_copies)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut moves_1)) == (before_moves)));
     assert!(((__decomp_6.a.v) == (1)));
-    let mut p: (Elem, Elem) = (Elem::new({ 7 }).into(), Elem::new({ 8 }).into());
+    let mut p: (Elem, Elem) = (Elem::new({ 7 }), Elem::new({ 8 }));
     before_copies = (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0));
     let mut __decomp_7: (Elem, Elem) = p.clone();
     let x: *mut Elem = &mut __decomp_7.0;

@@ -8,16 +8,17 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub static mut copies_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
-#[derive(VaArg, FnPtrArg, MoveCtorUnsafe, CopyAssignUnsafe, MoveAssignUnsafe)]
+#[derive(VaArg, FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, CopyAssignUnsafe, MoveAssignUnsafe)]
+#[cpp_from(i32, new_1, value)]
 pub struct Tracked {
     pub v: i32,
 }
 impl Tracked {
-    pub unsafe fn new_1() -> Self {
+    pub unsafe fn new_2() -> Self {
         let mut this = Self { v: 0 };
         this
     }
-    pub unsafe fn new_2(mut v: i32) -> Self {
+    pub unsafe fn new_1(mut v: i32) -> Self {
         let mut this = Self { v: v };
         this
     }
@@ -47,7 +48,7 @@ impl Clone for Tracked {
 }
 impl Default for Tracked {
     fn default() -> Self {
-        unsafe { Tracked::new_1() }
+        unsafe { Tracked::new_2() }
     }
 }
 #[repr(C)]
@@ -149,7 +150,8 @@ pub static mut copy_only_copies_1: std::cell::LazyCell<i32> =
 pub static mut copy_only_dtors_2: std::cell::LazyCell<i32> =
     std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
-#[derive(VaArg, FnPtrArg, CopyAssignUnsafe, DestructorUnsafe, Default)]
+#[derive(VaArg, FnPtrArg, CppFromUnsafe, CopyAssignUnsafe, DestructorUnsafe, Default)]
+#[cpp_from(i32, new, value)]
 pub struct CopyOnly {
     pub v: i32,
 }
@@ -207,8 +209,16 @@ pub static mut move_assigns_4: std::cell::LazyCell<i32> = std::cell::LazyCell::n
 pub static mut moved_dtors_5: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
 #[derive(
-    VaArg, FnPtrArg, MoveCtorUnsafe, CopyAssignUnsafe, MoveAssignUnsafe, DestructorUnsafe, Default,
+    VaArg,
+    FnPtrArg,
+    MoveCtorUnsafe,
+    CppFromUnsafe,
+    CopyAssignUnsafe,
+    MoveAssignUnsafe,
+    DestructorUnsafe,
+    Default,
 )]
+#[cpp_from(i32, new, value)]
 pub struct Moved {
     pub v: i32,
 }
@@ -335,21 +345,21 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut a: Tracked = Tracked::new_2({ 1 });
-    let mut b: Tracked = Tracked::new_2({ 2 });
+    let mut a: Tracked = Tracked::new_1({ 1 });
+    let mut b: Tracked = Tracked::new_1({ 2 });
     cpp_swap_unsafe!(&mut a, &mut b);
     assert!(((a.v) == (2)) && ((b.v) == (1)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
     let mut m1: UnsafeMap<i32, (i32, Tracked)> = UnsafeMap::new();
     (unsafe {
-        let mut _o: Tracked = Tracked::new_2({ 10 });
+        let mut _o: Tracked = Tracked::new_1({ 10 });
         Tracked::move_assign(
             &mut (*m1.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k))),
             &mut _o,
         )
     });
     (unsafe {
-        let mut _o: Tracked = Tracked::new_2({ 20 });
+        let mut _o: Tracked = Tracked::new_1({ 20 });
         Tracked::move_assign(
             &mut (*m1.subscript_move(&mut 2, |__k| cpp_move_unsafe!(__k))),
             &mut _o,
@@ -357,7 +367,7 @@ unsafe fn main_0() -> i32 {
     });
     let mut m2: UnsafeMap<i32, (i32, Tracked)> = UnsafeMap::new();
     (unsafe {
-        let mut _o: Tracked = Tracked::new_2({ 30 });
+        let mut _o: Tracked = Tracked::new_1({ 30 });
         Tracked::move_assign(
             &mut (*m2.subscript_move(&mut 3, |__k| cpp_move_unsafe!(__k))),
             &mut _o,
@@ -385,9 +395,9 @@ unsafe fn main_0() -> i32 {
     );
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
     let mut arr: [Tracked; 3] = [
-        Tracked::new_2({ 1 }),
-        Tracked::new_2({ 2 }),
-        Tracked::new_2({ 3 }),
+        Tracked::new_1({ 1 }),
+        Tracked::new_1({ 2 }),
+        Tracked::new_1({ 3 }),
     ];
     cpp_swap_unsafe!(&mut arr[(0) as usize], &mut arr[(2) as usize]);
     assert!(((arr[(0) as usize].v) == (3)) && ((arr[(2) as usize].v) == (1)));
@@ -396,11 +406,11 @@ unsafe fn main_0() -> i32 {
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
     let mut vec_: Vec<Tracked> = Vec::new();
     {
-        let __init = Tracked::new_2({ 4 });
+        let __init = Tracked::new_1({ 4 });
         vec_.push(__init)
     };
     {
-        let __init = Tracked::new_2({ 5 });
+        let __init = Tracked::new_1({ 5 });
         vec_.push(__init)
     };
     cpp_swap_unsafe!(&mut vec_[(0_usize)], &mut vec_[(1_usize)]);
@@ -408,17 +418,17 @@ unsafe fn main_0() -> i32 {
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
     let mut pairs: [Pair; 2] = [
         Pair {
-            x: Tracked::new_2({ 6 }),
-            y: Tracked::new_2({ 7 }),
+            x: Tracked::new_1({ 6 }),
+            y: Tracked::new_1({ 7 }),
         },
         Pair {
-            x: Tracked::new_2({ 8 }),
-            y: Tracked::new_2({ 9 }),
+            x: Tracked::new_1({ 8 }),
+            y: Tracked::new_1({ 9 }),
         },
     ];
     let mut p: Pair = Pair {
-        x: Tracked::new_2({ 10 }),
-        y: Tracked::new_2({ 11 }),
+        x: Tracked::new_1({ 10 }),
+        y: Tracked::new_1({ 11 }),
     };
     cpp_swap_unsafe!(&mut pairs[(0) as usize].x, &mut p.y);
     assert!(((pairs[(0) as usize].x.v) == (11)) && ((p.y.v) == (6)));
@@ -442,15 +452,15 @@ unsafe fn main_0() -> i32 {
         .map(|_| Default::default())
         .collect::<Vec<_>>();
     {
-        let __init = Tracked::new_2({ 1 });
+        let __init = Tracked::new_1({ 1 });
         grid[(0_usize)].push(__init)
     };
     {
-        let __init = Tracked::new_2({ 2 });
+        let __init = Tracked::new_1({ 2 });
         grid[(0_usize)].push(__init)
     };
     {
-        let __init = Tracked::new_2({ 3 });
+        let __init = Tracked::new_1({ 3 });
         grid[(1_usize)].push(__init)
     };
     cpp_swap_unsafe!(
@@ -464,14 +474,14 @@ unsafe fn main_0() -> i32 {
     let mut maps: [UnsafeMap<i32, (i32, Tracked)>; 2] =
         std::array::from_fn::<_, 2, _>(|_| UnsafeMap::new());
     (unsafe {
-        let mut _o: Tracked = Tracked::new_2({ 1 });
+        let mut _o: Tracked = Tracked::new_1({ 1 });
         Tracked::move_assign(
             &mut (*maps[(0) as usize].subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k))),
             &mut _o,
         )
     });
     (unsafe {
-        let mut _o: Tracked = Tracked::new_2({ 2 });
+        let mut _o: Tracked = Tracked::new_1({ 2 });
         Tracked::move_assign(
             &mut (*maps[(1) as usize].subscript_move(&mut 2, |__k| cpp_move_unsafe!(__k))),
             &mut _o,

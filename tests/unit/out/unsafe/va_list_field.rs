@@ -20,7 +20,8 @@ pub unsafe fn sum_0(mut n: i32, __args: Box<[VaArg]>) -> i32 {
     return total;
 }
 #[repr(C)]
-#[derive(Clone, VaArg, FnPtrArg, DestructorUnsafe, Default)]
+#[derive(Clone, VaArg, FnPtrArg, CppFromUnsafe, DestructorUnsafe, Default)]
+#[cpp_from(*const VaArg , new, mut_ptr)]
 pub struct Guard_1 {
     pub ap: *mut *const VaArg,
     pub active: bool,

@@ -110,7 +110,7 @@ unsafe fn main_0() -> i32 {
     assert!(m.find(&8_i16) == m.end());
     let mut other_map: UnsafeMap<(i32, i64), ((i32, i64), f64)> = UnsafeMap::new();
     assert!(((other_map.len()) == (0_usize)));
-    let mut key0: (i32, i64) = (1.into(), 1.into());
+    let mut key0: (i32, i64) = (1, (1 as i64));
     let mut value: f64 = 2_f64;
     (*other_map.subscript(&key0)) = value;
     value = (*other_map.subscript(&key0));

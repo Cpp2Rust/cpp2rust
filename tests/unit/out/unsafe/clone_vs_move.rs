@@ -183,7 +183,7 @@ unsafe fn main_0() -> i32 {
         assert!(((*map2.subscript(&i)) == ((i) + (1))));
         i.prefix_inc();
     }
-    let mut pair1: (i32, i32) = (1.into(), 2.into());
+    let mut pair1: (i32, i32) = (1, 2);
     let mut pair2: (i32, i32) = pair1.clone();
     pair2.0 = ((pair2.0) * (10));
     pair2.1 = ((pair2.1) * (10));
@@ -192,11 +192,8 @@ unsafe fn main_0() -> i32 {
     assert!(((pair1.0) == (1)));
     assert!(((pair1.1) == (2)));
     let mut pair3: (Vec<i32>, i32) = (
-        (0..(0_usize) as usize)
-            .map(|_| 0_i32)
-            .collect::<Vec<_>>()
-            .into(),
-        0.into(),
+        (0..(0_usize) as usize).map(|_| 0_i32).collect::<Vec<_>>(),
+        0,
     );
     let mut pair4: (Vec<i32>, i32) = pair3.clone();
     {

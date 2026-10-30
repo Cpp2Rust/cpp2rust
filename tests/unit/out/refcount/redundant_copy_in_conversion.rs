@@ -59,6 +59,14 @@ fn main_0() -> i32 {
         1
     };
     assert!((r == 2));
+    let values: Value<Vec<u32>> = Rc::new(RefCell::new(Vec::from([7_u32, 8_u32, 9_u32])));
+    let middle: Value<RandomAccessIterator<u32>> =
+        Rc::new(RefCell::new(values.decay().begin().iter_add(1_isize)));
+    let const_middle: Value<RandomAccessIterator<u32>> = Rc::new(RefCell::new(
+        <RandomAccessIterator<u32>>::from((*middle.borrow()).clone()),
+    ));
+    assert!((((*const_middle.borrow()).iter_deref().read()) == 8_u32));
+    assert!((*const_middle.borrow()) == (*middle.borrow()));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

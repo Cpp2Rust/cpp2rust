@@ -17,8 +17,8 @@ fn f1<T1: CppRandomAccessIterator<T2>, T2: CppLess + Clone + ByteRepr>(a0: T1, a
 fn f2<
     T1: CppInputIterator<T3>,
     T2: CppIterator<T4>,
-    T3: Clone + ByteRepr,
-    T4: From<T3> + ByteRepr,
+    T3: ByteRepr,
+    T4: CppFrom<T3> + ByteRepr,
 >(
     a0: T1,
     a1: T1,
@@ -28,7 +28,7 @@ fn f2<
     let __last = a1;
     let mut __out = a2;
     while __first != __last {
-        __out.iter_deref().write(__first.iter_deref().read().into());
+        __out.iter_deref().write(T4::cpp_from(__first.iter_deref()));
         __first.iter_inc();
         __out.iter_inc();
     }

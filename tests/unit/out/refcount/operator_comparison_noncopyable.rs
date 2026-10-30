@@ -12,7 +12,8 @@ pub fn operator_eq_0(x: Ptr<S>, y: Ptr<S>) -> bool {
 pub fn operator_lt_1(x: Ptr<S>, y: Ptr<S>) -> bool {
     return ({ x.with(|__s| __s.data_) } < { y.with(|__s| __s.data_) });
 }
-#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, Default)]
+#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, CppFrom, Default)]
+#[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct S {
     #[offset(0)]

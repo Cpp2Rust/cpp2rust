@@ -1,5 +1,6 @@
 #include <cassert>
 #include <map>
+#include <vector>
 
 static int sink(std::map<int, int>::iterator it) {
   std::map<int, int>::const_iterator cit(it);
@@ -24,5 +25,11 @@ int main() {
   r += sink(it0);
   r += end == end ? 0 : 1;
   assert(r == 2);
+
+  std::vector<unsigned> values = {7, 8, 9};
+  std::vector<unsigned>::iterator middle = values.begin() + 1;
+  std::vector<unsigned>::const_iterator const_middle = middle;
+  assert(*const_middle == 8);
+  assert(const_middle == middle);
   return 0;
 }

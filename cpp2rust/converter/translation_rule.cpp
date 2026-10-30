@@ -3,6 +3,7 @@
 
 #include "converter/translation_rule.h"
 
+#include <llvm/ADT/STLExtras.h>
 #include <llvm/Support/JSON.h>
 
 #include <algorithm>
@@ -72,6 +73,21 @@ MethodCallFragment ParseMethodCallFragmentJSON(const llvm::json::Object &obj) {
   return mc;
 }
 
+GenericCallFragment
+ParseGenericCallFragmentJSON(const llvm::json::Object &obj) {
+  GenericCallFragment call;
+  call.generic = obj.getInteger("generic").value_or(0);
+  call.method = obj.getString("method").value_or("").str();
+  if (auto *args = obj.getArray("args")) {
+    for (auto &arg : *args) {
+      if (auto *fragments = arg.getAsArray()) {
+        call.args.push_back(ParseBodyFragmentsJSON(*fragments));
+      }
+    }
+  }
+  return call;
+}
+
 RefExprFragment ParseRefExprFragmentJSON(const llvm::json::Object &obj) {
   RefExprFragment re;
   re.prefix = obj.getString("prefix").value_or("").str();
@@ -91,8 +107,6 @@ std::vector<BodyFragment> ParseBodyFragmentsJSON(const llvm::json::Array &arr) {
       result.push_back(TextFragment{str->str()});
     } else if (auto n = frag_obj->getInteger("generic")) {
       result.push_back(GenericFragment{(unsigned)*n});
-    } else if (auto n = frag_obj->getInteger("default")) {
-      result.push_back(DefaultFragment{(unsigned)*n});
     } else if (auto *ph = frag_obj->getObject("placeholder")) {
       result.push_back(ParsePlaceholderFragmentJSON(*ph));
     } else if (auto *mc = frag_obj->getObject("method_call")) {
@@ -101,6 +115,9 @@ std::vector<BodyFragment> ParseBodyFragmentsJSON(const llvm::json::Array &arr) {
     } else if (auto *re = frag_obj->getObject("ref_expr")) {
       result.push_back(
           std::make_unique<RefExprFragment>(ParseRefExprFragmentJSON(*re)));
+    } else if (auto *call = frag_obj->getObject("generic_call")) {
+      result.push_back(std::make_unique<GenericCallFragment>(
+          ParseGenericCallFragmentJSON(*call)));
     } else if (frag_obj->get("va_args")) {
       result.push_back(VaArgsFragment{});
     } else if (frag_obj->get("init")) {
@@ -136,6 +153,11 @@ bool AnyFragment(const std::vector<BodyFragment> &body,
     }
     if (auto *re = std::get_if<std::unique_ptr<RefExprFragment>>(&frag)) {
       return AnyFragment((*re)->inner, pred);
+    }
+    if (auto *call = std::get_if<std::unique_ptr<GenericCallFragment>>(&frag)) {
+      return llvm::any_of((*call)->args, [&](const auto &arg) {
+        return AnyFragment(arg, pred);
+      });
     }
     return false;
   });
@@ -202,7 +224,10 @@ void ExprRule::dump() const {
   for (auto &bounds : generics) {
     log() << "  generic T" << ++i << ':';
     for (auto &b : bounds) {
-      log() << ' ' << b;
+      log() << ' ' << b.trait_name;
+      for (unsigned arg : b.args) {
+        log() << " T" << arg;
+      }
     }
     log() << '\n';
   }
@@ -232,9 +257,16 @@ void RefExprFragment::dump() const {
   }
 }
 
-void GenericFragment::dump() const { log() << "  generic: " << n << '\n'; }
+void GenericCallFragment::dump() const {
+  log() << "  generic_call: T" << generic << "::" << method << '\n';
+  for (auto &arg : args) {
+    for (auto &frag : arg) {
+      BodyFragmentDump(frag);
+    }
+  }
+}
 
-void DefaultFragment::dump() const { log() << "  default: " << n << '\n'; }
+void GenericFragment::dump() const { log() << "  generic: " << n << '\n'; }
 
 void TypeInfo::dump() const {
   log() << type;
@@ -285,16 +317,33 @@ ExprRule ParseExprRuleJSON(const llvm::json::Object &obj) {
 
   if (auto *generics = obj.getObject("generics")) {
     for (auto &[key, val] : *generics) {
-      if (auto *arr = val.getAsArray()) {
-        std::vector<std::string> bounds;
-        for (auto &b : *arr) {
-          if (auto s = b.getAsString())
-            bounds.push_back(s->str());
-        }
-        size_t id = atoi(llvm::StringRef(key).data() + 1) - 1; // starts in T1
-        ir.generics.resize(std::max(ir.generics.size(), id + 1));
-        ir.generics[id] = std::move(bounds);
+      auto *arr = val.getAsArray();
+      if (!arr) {
+        continue;
       }
+      std::vector<Bound> bounds;
+      for (auto &b : *arr) {
+        auto *bound = b.getAsObject();
+        if (!bound) {
+          continue;
+        }
+        Bound parsed;
+        parsed.trait_name = bound->getString("trait").value_or("").str();
+        if (auto *args = bound->getArray("args")) {
+          for (auto &arg : *args) {
+            llvm::StringRef name = arg.getAsString().value_or("");
+            unsigned n = 0;
+            if (name.consume_front("T") && !name.empty() &&
+                !name.getAsInteger(10, n)) {
+              parsed.args.push_back(n);
+            }
+          }
+        }
+        bounds.push_back(std::move(parsed));
+      }
+      size_t id = atoi(llvm::StringRef(key).data() + 1) - 1; // starts in T1
+      ir.generics.resize(std::max(ir.generics.size(), id + 1));
+      ir.generics[id] = std::move(bounds);
     }
   }
 

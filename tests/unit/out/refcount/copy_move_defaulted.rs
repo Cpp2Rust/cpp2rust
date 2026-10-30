@@ -12,7 +12,8 @@ pub struct Inner {
     #[offset(0)]
     pub x: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Destructor)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Destructor)]
+#[cpp_from(i32, new, value)]
 #[byte_size(16)]
 pub struct Explicit {
     #[offset(0)]
@@ -67,7 +68,8 @@ impl Default for Implicit {
         }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, MoveAssign, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, CppFrom, MoveAssign, Default)]
+#[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct DefaultCopyUserMove {
     #[offset(0)]
@@ -85,7 +87,8 @@ impl DefaultCopyUserMove {
         __this
     }
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, CopyAssign, MoveAssign, Default)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, CppFrom, CopyAssign, MoveAssign, Default)]
+#[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct UserCopyDefaultMove {
     #[offset(0)]
@@ -113,7 +116,8 @@ impl Clone for UserCopyDefaultMove {
         UserCopyDefaultMove::copy_from(__src.as_pointer())
     }
 }
-#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, MoveAssign)]
+#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, CppFrom, MoveAssign)]
+#[cpp_from(i32, new, value)]
 #[byte_size(64)]
 pub struct Buffer {
     #[offset(0)]
@@ -219,7 +223,8 @@ impl Copyable {
         }
     }
 }
-#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, MoveAssign, Destructor, Default)]
+#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, CppFrom, MoveAssign, Destructor, Default)]
+#[cpp_from(i32, new, value)]
 #[byte_size(32)]
 pub struct Holder {
     #[offset(0)]

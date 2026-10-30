@@ -15,7 +15,10 @@ thread_local!(
 thread_local!(
     pub static moves_2: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, CopyAssign, MoveAssign, Destructor)]
+#[derive(
+    Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, CppFrom, CopyAssign, MoveAssign, Destructor,
+)]
+#[cpp_from(i32, new, value)]
 #[byte_size(20)]
 pub struct Buffer {
     #[offset(0)]

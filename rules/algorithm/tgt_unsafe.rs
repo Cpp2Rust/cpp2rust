@@ -18,7 +18,7 @@ unsafe fn f1<T1: UnsafeCppRandomAccessIterator<T2>, T2: Ord>(a0: T1, a1: T1) {
     }
 }
 
-unsafe fn f2<T1: UnsafeCppInputIterator<T3>, T2: UnsafeCppIterator<T4>, T3: Clone, T4: From<T3>>(
+unsafe fn f2<T1: UnsafeCppInputIterator<T3>, T2: UnsafeCppIterator<T4>, T3, T4: CppFromUnsafe<T3>>(
     a0: T1,
     a1: T1,
     a2: T2,
@@ -27,7 +27,7 @@ unsafe fn f2<T1: UnsafeCppInputIterator<T3>, T2: UnsafeCppIterator<T4>, T3: Clon
     let __last = a1;
     let mut __out = a2;
     while __first != __last {
-        *__out.iter_deref() = (*__first.iter_deref()).clone().into();
+        *__out.iter_deref() = T4::cpp_from(__first.iter_deref());
         __first.iter_inc();
         __out.iter_inc();
     }

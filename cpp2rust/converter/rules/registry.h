@@ -38,12 +38,24 @@ Matcher::Match<TranslationRule::TypeRule> Search(clang::ASTContext &ctx,
 const TranslationRule::ExprRule *GetExprRule(clang::ASTContext &ctx,
                                              const clang::Expr *expr);
 clang::QualType GetInitType(const clang::Expr *expr);
+
+clang::QualType GetGenericType(clang::ASTContext &ctx, const clang::Expr *expr,
+                               unsigned n);
+
+clang::QualType GetConversionSourceType(clang::ASTContext &ctx,
+                                        const clang::Expr *expr, unsigned to);
+
 bool HasExprRule(const clang::FunctionDecl *decl);
 bool IsLibcPassthrough(clang::ASTContext &ctx, const clang::Expr *expr);
 bool ReturnsPointer(clang::ASTContext &ctx, const clang::Expr *expr);
 bool ReturnsReference(const clang::Expr *expr);
 bool ParamIsPointer(clang::ASTContext &ctx, const clang::Expr *expr,
                     unsigned index);
+
+clang::Expr *BuildParamConversion(clang::ASTContext &ctx,
+                                  const clang::Expr *expr, unsigned index,
+                                  clang::Expr *arg);
+
 bool MapsToPointer(clang::ASTContext &ctx, clang::QualType qual_type);
 bool MapsToRefcountPointer(clang::ASTContext &ctx, clang::QualType qual_type);
 

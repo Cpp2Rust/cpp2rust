@@ -8,7 +8,8 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub static mut copies_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
-#[derive(VaArg, FnPtrArg, CopyAssignUnsafe, Default)]
+#[derive(VaArg, FnPtrArg, CppFromUnsafe, CopyAssignUnsafe, Default)]
+#[cpp_from(i32, new, value)]
 pub struct Counted {
     pub v: i32,
 }
@@ -70,7 +71,8 @@ impl Default for NonConst {
     }
 }
 #[repr(C)]
-#[derive(VaArg, FnPtrArg, CopyAssignUnsafe, Default)]
+#[derive(VaArg, FnPtrArg, CppFromUnsafe, CopyAssignUnsafe, Default)]
+#[cpp_from(i32, new, value)]
 pub struct Ignored {
     pub v: i32,
 }
@@ -120,7 +122,8 @@ impl Holder {
     }
 }
 #[repr(C)]
-#[derive(VaArg, FnPtrArg, MoveCtorUnsafe, Default)]
+#[derive(VaArg, FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, Default)]
+#[cpp_from(i32, new, value)]
 pub struct Box_int_ {
     pub val: i32,
 }
@@ -157,7 +160,8 @@ impl Owner {
     }
 }
 #[repr(C)]
-#[derive(VaArg, FnPtrArg, CopyAssignUnsafe, Default)]
+#[derive(VaArg, FnPtrArg, CppFromUnsafe, CopyAssignUnsafe, Default)]
+#[cpp_from(i32, new, value)]
 pub struct OutOfLine {
     pub v: i32,
 }

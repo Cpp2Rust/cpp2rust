@@ -108,7 +108,8 @@ impl Holder {
 }
 pub static mut copies_1: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
-#[derive(VaArg, FnPtrArg, CopyAssignUnsafe, Default)]
+#[derive(VaArg, FnPtrArg, CppFromUnsafe, CopyAssignUnsafe, Default)]
+#[cpp_from(i32, new, value)]
 pub struct CopyCounted {
     pub v: i32,
 }

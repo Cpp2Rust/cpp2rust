@@ -11,8 +11,8 @@ use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
 use crate::ir::{
-    Access, BodyFragment, FileIr, FnIr, MethodCallInner, Model, PlaceholderInner, RefExprInner,
-    RuleIr, RulesIR, TypeInfo, TypeIr,
+    Access, BodyFragment, Bound, FileIr, FnIr, GenericCallInner, MethodCallInner, Model,
+    PlaceholderInner, RefExprInner, RuleIr, RulesIR, TypeInfo, TypeIr,
 };
 
 /// Classify a type AST node as refcount pointer (`Ptr<T>`), unsafe pointer
@@ -190,12 +190,12 @@ impl<'a> FragmentCtx<'a> {
                     self.emit_method_call(&call);
                     return;
                 }
-                if let Some(generic) =
-                    ast::CallExpr::cast(node.clone()).and_then(|call| self.generic_default(&call))
+                if let Some(generic_call) =
+                    ast::CallExpr::cast(node.clone()).and_then(|call| self.generic_call(&call))
                 {
                     self.flush_text();
                     self.fragments
-                        .push(BodyFragment::Default { default: generic });
+                        .push(BodyFragment::GenericCall { generic_call });
                     return;
                 }
                 for child in node.children_with_tokens() {
@@ -260,22 +260,11 @@ impl<'a> FragmentCtx<'a> {
         self.text_buf.push_str(token.text());
     }
 
-    fn generic_default(&self, call: &ast::CallExpr) -> Option<i32> {
-        if call.arg_list()?.args().next().is_some() {
+    fn generic_of_path(&self, path: &ast::Path) -> Option<i32> {
+        if path.qualifier().is_some() {
             return None;
         }
-        let ast::Expr::PathExpr(path_expr) = call.expr()? else {
-            return None;
-        };
-        let path = path_expr.path()?;
-        if path.segment()?.name_ref()?.text() != "default" {
-            return None;
-        }
-        let qualifier = path.qualifier()?;
-        if qualifier.qualifier().is_some() {
-            return None;
-        }
-        let segment = qualifier.segment()?;
+        let segment = path.segment()?;
         let name = match segment.name_ref() {
             Some(name_ref) => name_ref.text().to_string(),
             None => segment
@@ -290,6 +279,29 @@ impl<'a> FragmentCtx<'a> {
             return None;
         }
         Some(name[1..].parse().unwrap_or(0))
+    }
+
+    fn generic_call(&self, call: &ast::CallExpr) -> Option<GenericCallInner> {
+        let ast::Expr::PathExpr(path_expr) = call.expr()? else {
+            return None;
+        };
+        let path = path_expr.path()?;
+        let method = path.segment()?.name_ref()?.text().to_string();
+        let generic = self.generic_of_path(&path.qualifier()?)?;
+        let args = call
+            .arg_list()?
+            .args()
+            .map(|arg| {
+                let mut ctx = FragmentCtx::new(self.builder, self.params, self.generic_names);
+                ctx.visit(ra_ap_syntax::NodeOrToken::Node(arg.syntax().clone()));
+                ctx.finish()
+            })
+            .collect();
+        Some(GenericCallInner {
+            generic,
+            method,
+            args,
+        })
     }
 
     fn emit_method_call(&mut self, call: &ast::MethodCallExpr) {
@@ -401,14 +413,37 @@ impl<'a> FnIrBuilder<'a> {
         }
     }
 
-    fn generics(&self) -> BTreeMap<String, Vec<String>> {
+    fn generics(&self) -> BTreeMap<String, Vec<Bound>> {
         let mut generics = BTreeMap::new();
 
-        let extract_bounds = |tbl: Option<ast::TypeBoundList>| -> Vec<String> {
+        let extract_bounds = |tbl: Option<ast::TypeBoundList>| -> Vec<Bound> {
             tbl.into_iter()
                 .flat_map(|tbl| tbl.bounds())
-                .map(|b| b.syntax().text().to_string())
-                .filter(|s| s != "'static")
+                .filter(|b| b.lifetime().is_none())
+                .map(|b| {
+                    let segment = match b.ty() {
+                        Some(ast::Type::PathType(path)) => path.path().and_then(|p| p.segment()),
+                        _ => None,
+                    };
+                    let Some(segment) = segment else {
+                        return Bound {
+                            trait_name: b.syntax().text().to_string(),
+                            args: Vec::new(),
+                        };
+                    };
+                    Bound {
+                        trait_name: segment
+                            .name_ref()
+                            .map(|name| name.text().to_string())
+                            .unwrap_or_default(),
+                        args: segment
+                            .generic_arg_list()
+                            .into_iter()
+                            .flat_map(|args| args.generic_args())
+                            .map(|arg| arg.syntax().text().to_string())
+                            .collect(),
+                    }
+                })
                 .collect()
         };
 

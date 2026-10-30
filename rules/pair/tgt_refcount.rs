@@ -20,24 +20,15 @@ fn f2<T1: Clone, T2: Clone>(a0: (Value<T1>, Value<T2>)) -> (Value<T1>, Value<T2>
 }
 
 fn f7<T1, T2>(a0: T1, a1: T2) -> (Value<T1>, Value<T2>) {
-    (
-        Rc::new(RefCell::new(a0.try_into().expect("failed conversion"))),
-        Rc::new(RefCell::new(a1.try_into().expect("failed conversion"))),
-    )
+    (Rc::new(RefCell::new(a0)), Rc::new(RefCell::new(a1)))
 }
 
 fn f9<T1, T2>(a0: T1, a1: T2) -> (Value<T1>, Value<T2>) {
-    (
-        Rc::new(RefCell::new(a0.try_into().expect("failed conversion"))),
-        Rc::new(RefCell::new(a1.try_into().expect("failed conversion"))),
-    )
+    (Rc::new(RefCell::new(a0)), Rc::new(RefCell::new(a1)))
 }
 
 fn f10<T1, T2>(a0: T1, a1: T2) -> (Value<T1>, Value<T2>) {
-    (
-        Rc::new(RefCell::new(a0.try_into().expect("failed conversion"))),
-        Rc::new(RefCell::new(a1.try_into().expect("failed conversion"))),
-    )
+    (Rc::new(RefCell::new(a0)), Rc::new(RefCell::new(a1)))
 }
 
 fn f12<T1: Default, T2: Default>(a0: &mut (Value<T1>, Value<T2>)) -> (Value<T1>, Value<T2>) {
@@ -91,4 +82,46 @@ fn f21<T1, T2>(a0: (Value<T1>, Value<T2>)) -> Ptr<T1> {
 
 fn f22<T1, T2>(a0: (Value<T1>, Value<T2>)) -> Ptr<T2> {
     a0.1.as_pointer()
+}
+
+fn f23<T1: CppFrom<T3>, T2: CppFrom<T4>, T3, T4>(
+    a0: &mut (Value<T3>, Value<T4>),
+) -> (Value<T1>, Value<T2>) {
+    let __a0 = a0;
+    (
+        Rc::new(RefCell::new(T1::cpp_from_move(__a0.0.as_pointer()))),
+        Rc::new(RefCell::new(T2::cpp_from_move(__a0.1.as_pointer()))),
+    )
+}
+
+fn f24<T1: CppFrom<T3>, T2: CppFrom<T4>, T3, T4>(
+    a0: (Value<T3>, Value<T4>),
+) -> (Value<T1>, Value<T2>) {
+    let __a0 = a0;
+    (
+        Rc::new(RefCell::new(T1::cpp_from(__a0.0.as_pointer()))),
+        Rc::new(RefCell::new(T2::cpp_from(__a0.1.as_pointer()))),
+    )
+}
+
+fn f25<T1: CppFrom<T3> + ByteRepr, T2: CppFrom<T4> + ByteRepr, T3, T4>(
+    a0: Ptr<(Value<T1>, Value<T2>)>,
+    a1: (Value<T3>, Value<T4>),
+) {
+    let __a1 = a1;
+    a0.write((
+        Rc::new(RefCell::new(T1::cpp_from(__a1.0.as_pointer()))),
+        Rc::new(RefCell::new(T2::cpp_from(__a1.1.as_pointer()))),
+    ))
+}
+
+fn f26<T1: CppFrom<T3> + ByteRepr, T2: CppFrom<T4> + ByteRepr, T3, T4>(
+    a0: Ptr<(Value<T1>, Value<T2>)>,
+    a1: &mut (Value<T3>, Value<T4>),
+) {
+    let __a1 = a1;
+    a0.write((
+        Rc::new(RefCell::new(T1::cpp_from_move(__a1.0.as_pointer()))),
+        Rc::new(RefCell::new(T2::cpp_from_move(__a1.1.as_pointer()))),
+    ))
 }
