@@ -481,7 +481,7 @@ clang::Expr *BuildParamConversion(clang::ASTContext &ctx,
   assert(binding.getKind() == clang::TemplateArgument::Type &&
          "parameter typed by a non-type generic");
   auto target = binding.getAsType();
-  if (arg->getType()->isArrayType() ||
+  if ((arg->getType()->isArrayType() && target->isPointerType()) ||
       ctx.hasSameUnqualifiedType(arg->getType().getNonReferenceType(),
                                  target)) {
     return nullptr;

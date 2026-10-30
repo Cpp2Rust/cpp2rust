@@ -28,6 +28,34 @@ struct Holder {
   Holder(Celsius c) : value(c.degrees) {}
 };
 
+struct Fallback {
+  int value;
+  Fallback(int v = -1) : value(v) {}
+};
+
+struct Counter {
+  int hits;
+};
+
+struct Observer {
+  int seen;
+  Observer(Counter &c) : seen(c.hits) { c.hits++; }
+};
+
+struct Tag {
+  int code;
+  template <class U> Tag(const U &u) : code(u.degrees + 100) {}
+};
+
+struct Name {
+  int len;
+  Name(const char *s) : len(0) {
+    while (s[len]) {
+      ++len;
+    }
+  }
+};
+
 int main() {
   std::pair<long, unsigned> widened(-1, 2u);
   assert(widened.first == -1L);
@@ -76,5 +104,32 @@ int main() {
       std::make_pair(Celsius(14), Celsius(15));
   assert(from_moved_by_value_pair.first.value == 14);
   assert(from_moved_by_value_pair.second.value == 15);
+
+  Fallback defaulted;
+  assert(defaulted.value == -1);
+  std::pair<Fallback, long> from_defaulted_ctor = ints;
+  assert(from_defaulted_ctor.first.value == 5);
+  assert(from_defaulted_ctor.second == 6L);
+
+  Counter counter{3};
+  std::pair<Observer, int> forwarded_mutable_ref(counter, 0);
+  assert(forwarded_mutable_ref.first.seen == 3);
+  assert(counter.hits == 4);
+
+  std::pair<Tag, Tag> from_template_ctor = celsius;
+  assert(from_template_ctor.first.code == 110);
+  assert(from_template_ctor.second.code == 111);
+
+  Celsius lvalue_source(16);
+  Celsius moved_source(17);
+  std::pair<Label, Owner> forwarded_records(lvalue_source,
+                                            std::move(moved_source));
+  assert(forwarded_records.first.id == 16);
+  assert(forwarded_records.second.taken == 17);
+  assert(forwarded_records.second.copied == 0);
+
+  std::pair<Name, Name> from_string_literals("ab", "cde");
+  assert(from_string_literals.first.len == 2);
+  assert(from_string_literals.second.len == 3);
   return 0;
 }

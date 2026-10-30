@@ -77,6 +77,71 @@ impl Holder {
         this
     }
 }
+#[repr(C)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe)]
+#[cpp_from(i32, new, some_value)]
+pub struct Fallback {
+    pub value: i32,
+}
+impl Fallback {
+    pub unsafe fn new(mut v: Option<i32>) -> Self {
+        let mut v: i32 = v.unwrap_or_else(|| unsafe { -1_i32 });
+        let mut this = Self { value: v };
+        this
+    }
+}
+impl Default for Fallback {
+    fn default() -> Self {
+        unsafe { Fallback::new(None) }
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+pub struct Counter {
+    pub hits: i32,
+}
+#[repr(C)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
+#[cpp_from(Counter, new, mut_ptr)]
+pub struct Observer {
+    pub seen: i32,
+}
+impl Observer {
+    pub unsafe fn new(c: *mut Counter) -> Self {
+        let mut this = Self { seen: (*c).hits };
+        (*c).hits.postfix_inc();
+        this
+    }
+}
+impl Tag {
+    pub unsafe fn new(u: *const Celsius) -> Self {
+        let mut this = Self {
+            code: (((*u).degrees) + (100)),
+        };
+        this
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
+#[cpp_from(Celsius, new, ptr)]
+pub struct Tag {
+    pub code: i32,
+}
+#[repr(C)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
+#[cpp_from(*const libc::c_char , new, value)]
+pub struct Name {
+    pub len: i32,
+}
+impl Name {
+    pub unsafe fn new(mut s: *const libc::c_char) -> Self {
+        let mut this = Self { len: 0 };
+        'loop_: while ((*s.offset((this.len) as isize)) != 0) {
+            this.len.prefix_inc();
+        }
+        this
+    }
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -162,6 +227,45 @@ unsafe fn main_0() -> i32 {
     };
     assert!(((from_moved_by_value_pair.0.value) == (14)));
     assert!(((from_moved_by_value_pair.1.value) == (15)));
+    let mut defaulted: Fallback = Fallback::new(None);
+    assert!(((defaulted.value) == (-1_i32)));
+    let mut from_defaulted_ctor: (Fallback, i64) = {
+        let __a0 = ints;
+        (
+            <Fallback as CppFromUnsafe<i32>>::cpp_from(&__a0.0),
+            ((*&__a0.1) as i64),
+        )
+    };
+    assert!(((from_defaulted_ctor.0.value) == (5)));
+    assert!(((from_defaulted_ctor.1) == (6_i64)));
+    let mut counter: Counter = Counter { hits: 3 };
+    let mut forwarded_mutable_ref: (Observer, i32) = (Observer::new({ &mut counter }), 0);
+    assert!(((forwarded_mutable_ref.0.seen) == (3)));
+    assert!(((counter.hits) == (4)));
+    let mut from_template_ctor: (Tag, Tag) = {
+        let __a0 = celsius;
+        (
+            <Tag as CppFromUnsafe<Celsius>>::cpp_from(&__a0.0),
+            <Tag as CppFromUnsafe<Celsius>>::cpp_from(&__a0.1),
+        )
+    };
+    assert!(((from_template_ctor.0.code) == (110)));
+    assert!(((from_template_ctor.1.code) == (111)));
+    let mut lvalue_source: Celsius = Celsius::new({ 16 });
+    let mut moved_source: Celsius = Celsius::new({ 17 });
+    let mut forwarded_records: (Label, Owner) = (
+        Label::new({ &lvalue_source }),
+        Owner::new_2({ &mut moved_source }),
+    );
+    assert!(((forwarded_records.0.id) == (16)));
+    assert!(((forwarded_records.1.taken) == (17)));
+    assert!(((forwarded_records.1.copied) == (0)));
+    let mut from_string_literals: (Name, Name) = (
+        Name::new({ c"ab".as_ptr() }),
+        Name::new({ c"cde".as_ptr() }),
+    );
+    assert!(((from_string_literals.0.len) == (2)));
+    assert!(((from_string_literals.1.len) == (3)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}
