@@ -260,3 +260,28 @@ typename std::vector<bool, T1>::reference
 f117(const typename std::vector<bool, T1>::reference &a0) {
   return typename std::vector<bool, T1>::reference(a0);
 }
+
+template <typename T1>
+typename std::vector<bool, T1>::reference f118(std::vector<bool, T1> &a0,
+                                               std::size_t a1) {
+  return a0.operator[](a1);
+}
+
+template <typename T1>
+typename std::vector<bool, T1>::reference &
+f119(typename std::vector<bool, T1>::reference &a0, bool a1) {
+  return a0.operator=(a1);
+}
+
+template <typename T1>
+const typename std::vector<bool, T1>::reference &
+f120(const typename std::vector<bool, T1>::reference &a0, bool a1) {
+  return a0.operator=(a1);
+}
+
+template <typename T1>
+typename std::vector<bool, T1>::reference &
+f121(typename std::vector<bool, T1>::reference &a0,
+     const typename std::vector<bool, T1>::reference &a1) {
+  return a0.operator=(a1);
+}
