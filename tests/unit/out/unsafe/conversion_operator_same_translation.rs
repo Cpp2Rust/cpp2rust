@@ -7,7 +7,9 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
+#[cpp_into(libc::c_char, to_libcc_char)]
+#[cpp_into(u8, to_u8)]
 pub struct S {
     pub v: i32,
 }
@@ -20,7 +22,9 @@ impl S {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
+#[cpp_into(i64, to_i64_1)]
+#[cpp_into(i64, to_i64_2)]
 pub struct T {
     pub v: i32,
 }

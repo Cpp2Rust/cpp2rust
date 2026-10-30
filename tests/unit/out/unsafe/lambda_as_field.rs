@@ -76,7 +76,8 @@ impl Holder__lambda_at_lambda_as_field_cpp_51_12__ {
     }
 }
 #[repr(C)]
-#[derive(FnPtrArg, MoveCtorUnsafe)]
+#[derive(FnPtrArg, MoveCtorUnsafe, CppFromUnsafe)]
+#[cpp_from(FnPtr<fn(i32 ,) -> i32 > , new, value)]
 pub struct Moving__lambda_at_lambda_as_field_cpp_64_12__ {
     pub f: FnPtr<fn(i32) -> i32>,
     pub moves: i32,

@@ -30,7 +30,8 @@ pub unsafe fn foo_0(x: *mut i32) -> *mut i32 {
     return x;
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
+#[cpp_from(i32, new, value)]
 pub struct Value_ {
     pub v: i32,
 }

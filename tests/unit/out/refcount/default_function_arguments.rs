@@ -14,7 +14,8 @@ pub fn baz_1(mut a: Ptr<i32>, b: Option<Ptr<i32>>) -> bool {
     let mut b: Ptr<i32> = b.unwrap_or_else(|| Ptr::<i32>::null());
     return ({ a } == { b });
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom)]
+#[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct Bar {
     #[offset(0)]

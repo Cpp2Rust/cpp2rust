@@ -28,7 +28,8 @@ pub fn call_fn_5(mut f: FnPtr<fn(i32) -> usize>, mut v: i32) -> usize {
 pub fn identity_hash_6(mut v: bool) -> usize {
     return (v as usize);
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
+#[cpp_from(FnPtr<fn(bool  ,) -> u64  >  , new, ptr)]
 #[byte_size(8)]
 pub struct HashHolder_unsigned_long__ptr__bool__ {
     #[offset(0)]

@@ -111,7 +111,8 @@ pub fn self_ref_push_6(mut comps: Ptr<Vec<Chunk>>) {
         comps.with_mut(|__v: &mut Vec<Chunk>| __v.push(a0_clone))
     };
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom)]
+#[cpp_from(i32, new_1, value)]
 #[byte_size(8)]
 pub struct Pair {
     #[offset(0)]
@@ -120,13 +121,13 @@ pub struct Pair {
     pub second: i32,
 }
 impl Pair {
-    pub fn new_1() -> Self {
+    pub fn new_2() -> Self {
         Self {
             first: -1_i32,
             second: -1_i32,
         }
     }
-    pub fn new_2(mut a: i32) -> Self {
+    pub fn new_1(mut a: i32) -> Self {
         Self {
             first: a,
             second: 0,
@@ -141,16 +142,16 @@ impl Pair {
 }
 impl Default for Pair {
     fn default() -> Self {
-        { Pair::new_1() }
+        { Pair::new_2() }
     }
 }
 pub fn emplace_ctor_args_7(mut pairs: Ptr<Vec<Pair>>) {
     {
-        let __init = Pair::new_1();
+        let __init = Pair::new_2();
         pairs.with_mut(|__v: &mut Vec<Pair>| __v.push(__init))
     };
     {
-        let __init = Pair::new_2({ 3 });
+        let __init = Pair::new_1({ 3 });
         pairs.with_mut(|__v: &mut Vec<Pair>| __v.push(__init))
     };
     {
@@ -164,7 +165,7 @@ pub fn emplace_deque_8(mut queue: Ptr<Vec<Pair>>) {
         queue.with_mut(|__v: &mut Vec<Pair>| __v.push(__init))
     };
     {
-        let __init = Pair::new_1();
+        let __init = Pair::new_2();
         queue.with_mut(|__v: &mut Vec<Pair>| __v.push(__init))
     };
 }

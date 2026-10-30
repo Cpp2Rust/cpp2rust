@@ -107,20 +107,21 @@ pub unsafe fn self_ref_push_6(mut comps: *mut Vec<Chunk>) {
     };
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe)]
+#[cpp_from(i32, new_1, value)]
 pub struct Pair {
     pub first: i32,
     pub second: i32,
 }
 impl Pair {
-    pub unsafe fn new_1() -> Self {
+    pub unsafe fn new_2() -> Self {
         let mut this = Self {
             first: -1_i32,
             second: -1_i32,
         };
         this
     }
-    pub unsafe fn new_2(mut a: i32) -> Self {
+    pub unsafe fn new_1(mut a: i32) -> Self {
         let mut this = Self {
             first: a,
             second: 0,
@@ -137,16 +138,16 @@ impl Pair {
 }
 impl Default for Pair {
     fn default() -> Self {
-        unsafe { Pair::new_1() }
+        unsafe { Pair::new_2() }
     }
 }
 pub unsafe fn emplace_ctor_args_7(mut pairs: *mut Vec<Pair>) {
     {
-        let __init = Pair::new_1();
+        let __init = Pair::new_2();
         (*pairs).push(__init)
     };
     {
-        let __init = Pair::new_2({ 3 });
+        let __init = Pair::new_1({ 3 });
         (*pairs).push(__init)
     };
     {
@@ -160,7 +161,7 @@ pub unsafe fn emplace_deque_8(mut queue: *mut Vec<Pair>) {
         (*queue).push(__init)
     };
     {
-        let __init = Pair::new_1();
+        let __init = Pair::new_2();
         (*queue).push(__init)
     };
 }

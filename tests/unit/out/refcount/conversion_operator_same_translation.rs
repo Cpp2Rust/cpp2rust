@@ -6,13 +6,17 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
+#[cpp_into(i8, to_i8)]
+#[cpp_into(u8, to_u8)]
 #[byte_size(4)]
 pub struct S {
     #[offset(0)]
     pub v: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
+#[cpp_into(i64, to_i64_1)]
+#[cpp_into(i64, to_i64_2)]
 #[byte_size(4)]
 pub struct T {
     #[offset(0)]

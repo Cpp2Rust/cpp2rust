@@ -7,23 +7,24 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe)]
+#[cpp_from(i32, new_1, value)]
 pub struct A {
     pub v: i32,
 }
 impl A {
-    pub unsafe fn new_1() -> Self {
+    pub unsafe fn new_2() -> Self {
         let mut this = Self { v: 1 };
         this
     }
-    pub unsafe fn new_2(mut v: i32) -> Self {
+    pub unsafe fn new_1(mut v: i32) -> Self {
         let mut this = Self { v: v };
         this
     }
 }
 impl Default for A {
     fn default() -> Self {
-        unsafe { A::new_1() }
+        unsafe { A::new_2() }
     }
 }
 #[repr(C)]
@@ -43,7 +44,8 @@ impl Default for B {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
+#[cpp_from(i32, new, value)]
 pub struct NoDefault {
     pub v: i32,
 }
@@ -54,7 +56,7 @@ impl NoDefault {
     }
 }
 pub unsafe fn used_0(mut x: Option<A>) -> i32 {
-    let mut x: A = x.unwrap_or_else(|| unsafe { A::new_1() });
+    let mut x: A = x.unwrap_or_else(|| unsafe { A::new_2() });
     return x.v;
 }
 pub unsafe fn used_1(mut x: Option<B>) -> i32 {
@@ -69,7 +71,8 @@ pub unsafe fn always_given_3(mut x: NoDefault) -> i32 {
     return x.v;
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
+#[cpp_from(i32, new, value)]
 pub struct S_NoDefault_ {
     pub v: i32,
 }
@@ -90,13 +93,13 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     assert!(((unsafe { used_0(None,) }) == (1)));
-    assert!(((unsafe { used_0(Some(A::new_2({ 5 },)),) }) == (5)));
+    assert!(((unsafe { used_0(Some(A::new_1({ 5 },)),) }) == (5)));
     assert!(((unsafe { used_1(None,) }) == (2)));
     assert!(
-        ((unsafe { scaled_2(A::new_2({ 3 },), None,) })
+        ((unsafe { scaled_2(A::new_1({ 3 },), None,) })
             == ((3) * (::std::mem::size_of::<A>() as i32)))
     );
-    assert!(((unsafe { scaled_2(A::new_2({ 3 },), Some(2),) }) == (6)));
+    assert!(((unsafe { scaled_2(A::new_1({ 3 },), Some(2),) }) == (6)));
     assert!(((unsafe { always_given_3(NoDefault::new({ 3 },),) }) == (3)));
     let mut s: S_NoDefault_ = S_NoDefault_::new({ 1 });
     assert!(((unsafe { S_NoDefault_::get(&s, NoDefault::new({ 4 },),) }) == (5)));

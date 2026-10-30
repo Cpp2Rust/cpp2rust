@@ -9,7 +9,8 @@ use std::rc::{Rc, Weak};
 thread_local!(
     pub static total_0: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Destructor, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Destructor, Default)]
+#[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct S {
     #[offset(0)]
@@ -24,7 +25,8 @@ impl S {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom)]
+#[cpp_from(i32, new_1, value)]
 #[byte_size(8)]
 pub struct Point {
     #[offset(0)]
@@ -33,11 +35,11 @@ pub struct Point {
     pub y: i32,
 }
 impl Point {
-    pub fn new_1(mut x: i32, mut y: i32) -> Self {
+    pub fn new_2(mut x: i32, mut y: i32) -> Self {
         Self { x: x, y: y }
     }
-    pub fn new_2(mut v: i32) -> Self {
-        let __this: Value<Point> = Rc::new(RefCell::new(Point::new_1({ v }, { (v + 1) })));
+    pub fn new_1(mut v: i32) -> Self {
+        let __this: Value<Point> = Rc::new(RefCell::new(Point::new_2({ v }, { (v + 1) })));
         let this: Ptr<Point> = __this.as_pointer();
         {
             field!(this, y).with_mut(|__v| *__v = *__v * 10)
@@ -45,7 +47,7 @@ impl Point {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
     pub fn new_3() -> Self {
-        let __this: Value<Point> = Rc::new(RefCell::new(Point::new_2({ 4 })));
+        let __this: Value<Point> = Rc::new(RefCell::new(Point::new_1({ 4 })));
         let this: Ptr<Point> = __this.as_pointer();
         {
             field!(this, x).with_mut(|__v| *__v = *__v + 100)
@@ -73,7 +75,7 @@ fn main_0() -> i32 {
     let mut p: Point = Point::new_3();
     assert!((p.x == 104));
     assert!((p.y == 50));
-    let mut q: Point = Point::new_2({ 7 });
+    let mut q: Point = Point::new_1({ 7 });
     assert!((q.x == 7));
     assert!((q.y == 80));
     return 0;
