@@ -20,7 +20,7 @@ unsafe fn main_0() -> i32 {
     assert!(((p2.0) == (3_f64)));
     assert!(((p2.1) == (4)));
     let mut p3: (f64, i32) = {
-        let __a0 = (5, 6);
+        let mut __a0 = (5, 6);
         ((__a0.0 as f64), __a0.1)
     };
     assert!(((p3.0) == (5_f64)));
@@ -31,7 +31,7 @@ unsafe fn main_0() -> i32 {
         .map(|_| <(*const i32, u64)>::default())
         .collect::<Vec<_>>();
     {
-        let __a1 = (arr.as_ptr().offset((1) as isize), n);
+        let mut __a1 = (arr.as_ptr().offset((1) as isize), n);
         const_ptr_pairs[(0_usize)] = (
             <*const i32 as CppFromUnsafe<*const i32>>::cpp_from_move(&mut __a1.0),
             (__a1.1 as u64),

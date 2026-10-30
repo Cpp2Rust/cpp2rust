@@ -98,7 +98,7 @@ unsafe fn main_0() -> i32 {
     assert!(((from_operators.0) == (7)));
     assert!(((from_operators.1) == (7_i64)));
     let mut from_moved_pair: (i64, f64) = {
-        let __a0 = (3, 4);
+        let mut __a0 = (3, 4);
         ((__a0.0 as i64), (__a0.1 as f64))
     };
     assert!(((from_moved_pair.0) == (3_i64)));
@@ -135,7 +135,7 @@ unsafe fn main_0() -> i32 {
     assert!(((from_record_pair.1.copied) == (11)));
     assert!(((from_record_pair.1.taken) == (0)));
     let mut from_moved_record_pair: (Label, Owner) = {
-        let __a0 = (Celsius::new({ 12 }), Celsius::new({ 13 }));
+        let mut __a0 = (Celsius::new({ 12 }), Celsius::new({ 13 }));
         (
             <Label as CppFromUnsafe<Celsius>>::cpp_from_move(&mut __a0.0),
             <Owner as CppFromUnsafe<Celsius>>::cpp_from_move(&mut __a0.1),
@@ -154,7 +154,7 @@ unsafe fn main_0() -> i32 {
     assert!(((from_by_value_pair.0.value) == (10)));
     assert!(((from_by_value_pair.1.value) == (11)));
     let mut from_moved_by_value_pair: (Holder, Holder) = {
-        let __a0 = (Celsius::new({ 14 }), Celsius::new({ 15 }));
+        let mut __a0 = (Celsius::new({ 14 }), Celsius::new({ 15 }));
         (
             <Holder as CppFromUnsafe<Celsius>>::cpp_from_move(&mut __a0.0),
             <Holder as CppFromUnsafe<Celsius>>::cpp_from_move(&mut __a0.1),
