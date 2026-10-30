@@ -17,13 +17,13 @@ unsafe fn f2<T1: Clone, T2: Clone>(a0: (T1, T2)) -> (T1, T2) {
     a0.clone()
 }
 unsafe fn f7<T1, T2>(a0: T1, a1: T2) -> (T1, T2) {
-    (a0.into(), a1.into())
+    (a0, a1)
 }
 unsafe fn f9<T1, T2>(a0: T1, a1: T2) -> (T1, T2) {
-    (a0.into(), a1.into())
+    (a0, a1)
 }
 unsafe fn f10<T1, T2>(a0: T1, a1: T2) -> (T1, T2) {
-    (a0.into(), a1.into())
+    (a0, a1)
 }
 
 unsafe fn f12<T1: Default, T2: Default>(a0: &mut (T1, T2)) -> (T1, T2) {
