@@ -76,7 +76,7 @@ impl Holder {
     }
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, CppFrom, Default)]
-#[cpp_from(Tracked, new_1, ptr)]
+#[cpp_from(Tracked, new_1, mut_ptr)]
 #[cpp_from_move(Tracked, new_2, ptr)]
 #[byte_size(12)]
 pub struct Holder {

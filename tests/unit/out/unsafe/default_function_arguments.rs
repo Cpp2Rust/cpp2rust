@@ -16,7 +16,7 @@ pub unsafe fn baz_1(mut a: *mut i32, mut b: Option<*mut i32>) -> bool {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe)]
-#[cpp_from(i32, new, value)]
+#[cpp_from(i32, new, some_value)]
 pub struct Bar {
     pub v: i32,
 }

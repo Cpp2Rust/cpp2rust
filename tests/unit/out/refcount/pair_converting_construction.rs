@@ -102,12 +102,12 @@ fn main_0() -> i32 {
     assert!(((*(*from_operators.borrow()).0.borrow()) == 7));
     assert!(((*(*from_operators.borrow()).1.borrow()) == 7_i64));
     let from_moved_pair: Value<(Value<i64>, Value<f64>)> = Rc::new(RefCell::new((
-        Rc::new(RefCell::new(i64::cpp_from_move(
+        Rc::new(RefCell::new(<i64 as CppFrom<i32>>::cpp_from_move(
             (Rc::new(RefCell::new(3)), Rc::new(RefCell::new(4)))
                 .0
                 .as_pointer(),
         ))),
-        Rc::new(RefCell::new(f64::cpp_from_move(
+        Rc::new(RefCell::new(<f64 as CppFrom<i32>>::cpp_from_move(
             (Rc::new(RefCell::new(3)), Rc::new(RefCell::new(4)))
                 .1
                 .as_pointer(),
@@ -120,10 +120,12 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new(6)),
     )));
     let from_copied_pair: Value<(Value<Celsius>, Value<i64>)> = Rc::new(RefCell::new((
-        Rc::new(RefCell::new(Celsius::cpp_from(
+        Rc::new(RefCell::new(<Celsius as CppFrom<i32>>::cpp_from(
             (*ints.borrow()).0.as_pointer(),
         ))),
-        Rc::new(RefCell::new(i64::cpp_from((*ints.borrow()).1.as_pointer()))),
+        Rc::new(RefCell::new(<i64 as CppFrom<i32>>::cpp_from(
+            (*ints.borrow()).1.as_pointer(),
+        ))),
     )));
     assert!(({ (*(*from_copied_pair.borrow()).0.borrow()).degrees } == 5));
     assert!(((*(*from_copied_pair.borrow()).1.borrow()) == 6_i64));
@@ -132,10 +134,10 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new(Meters { value: 9 })),
     )));
     let from_operator_pair: Value<(Value<i32>, Value<i32>)> = Rc::new(RefCell::new((
-        Rc::new(RefCell::new(i32::cpp_from(
+        Rc::new(RefCell::new(<i32 as CppFrom<Meters>>::cpp_from(
             (*meters.borrow()).0.as_pointer(),
         ))),
-        Rc::new(RefCell::new(i32::cpp_from(
+        Rc::new(RefCell::new(<i32 as CppFrom<Meters>>::cpp_from(
             (*meters.borrow()).1.as_pointer(),
         ))),
     )));
@@ -146,10 +148,10 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new(Celsius::new({ 11 }))),
     )));
     let from_record_pair: Value<(Value<Label>, Value<Owner>)> = Rc::new(RefCell::new((
-        Rc::new(RefCell::new(Label::cpp_from(
+        Rc::new(RefCell::new(<Label as CppFrom<Celsius>>::cpp_from(
             (*celsius.borrow()).0.as_pointer(),
         ))),
-        Rc::new(RefCell::new(Owner::cpp_from(
+        Rc::new(RefCell::new(<Owner as CppFrom<Celsius>>::cpp_from(
             (*celsius.borrow()).1.as_pointer(),
         ))),
     )));
@@ -157,7 +159,7 @@ fn main_0() -> i32 {
     assert!(({ (*(*from_record_pair.borrow()).1.borrow()).copied } == 11));
     assert!(({ (*(*from_record_pair.borrow()).1.borrow()).taken } == 0));
     let from_moved_record_pair: Value<(Value<Label>, Value<Owner>)> = Rc::new(RefCell::new((
-        Rc::new(RefCell::new(Label::cpp_from_move(
+        Rc::new(RefCell::new(<Label as CppFrom<Celsius>>::cpp_from_move(
             (
                 Rc::new(RefCell::new(Celsius::new({ 12 }))),
                 Rc::new(RefCell::new(Celsius::new({ 13 }))),
@@ -165,7 +167,7 @@ fn main_0() -> i32 {
                 .0
                 .as_pointer(),
         ))),
-        Rc::new(RefCell::new(Owner::cpp_from_move(
+        Rc::new(RefCell::new(<Owner as CppFrom<Celsius>>::cpp_from_move(
             (
                 Rc::new(RefCell::new(Celsius::new({ 12 }))),
                 Rc::new(RefCell::new(Celsius::new({ 13 }))),
@@ -178,17 +180,17 @@ fn main_0() -> i32 {
     assert!(({ (*(*from_moved_record_pair.borrow()).1.borrow()).taken } == 13));
     assert!(({ (*(*from_moved_record_pair.borrow()).1.borrow()).copied } == 0));
     let from_by_value_pair: Value<(Value<Holder>, Value<Holder>)> = Rc::new(RefCell::new((
-        Rc::new(RefCell::new(Holder::cpp_from(
+        Rc::new(RefCell::new(<Holder as CppFrom<Celsius>>::cpp_from(
             (*celsius.borrow()).0.as_pointer(),
         ))),
-        Rc::new(RefCell::new(Holder::cpp_from(
+        Rc::new(RefCell::new(<Holder as CppFrom<Celsius>>::cpp_from(
             (*celsius.borrow()).1.as_pointer(),
         ))),
     )));
     assert!(({ (*(*from_by_value_pair.borrow()).0.borrow()).value } == 10));
     assert!(({ (*(*from_by_value_pair.borrow()).1.borrow()).value } == 11));
     let from_moved_by_value_pair: Value<(Value<Holder>, Value<Holder>)> = Rc::new(RefCell::new((
-        Rc::new(RefCell::new(Holder::cpp_from_move(
+        Rc::new(RefCell::new(<Holder as CppFrom<Celsius>>::cpp_from_move(
             (
                 Rc::new(RefCell::new(Celsius::new({ 14 }))),
                 Rc::new(RefCell::new(Celsius::new({ 15 }))),
@@ -196,7 +198,7 @@ fn main_0() -> i32 {
                 .0
                 .as_pointer(),
         ))),
-        Rc::new(RefCell::new(Holder::cpp_from_move(
+        Rc::new(RefCell::new(<Holder as CppFrom<Celsius>>::cpp_from_move(
             (
                 Rc::new(RefCell::new(Celsius::new({ 14 }))),
                 Rc::new(RefCell::new(Celsius::new({ 15 }))),

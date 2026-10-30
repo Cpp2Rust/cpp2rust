@@ -24,7 +24,6 @@ impl S {
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
 #[cpp_into(i64, to_i64_1)]
-#[cpp_into(i64, to_i64_2)]
 pub struct T {
     pub v: i32,
 }

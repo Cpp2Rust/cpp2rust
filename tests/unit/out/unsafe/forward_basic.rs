@@ -73,7 +73,7 @@ impl Holder {
 }
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, Default)]
-#[cpp_from(Tracked, new_1, ptr)]
+#[cpp_from(Tracked, new_1, mut_ptr)]
 #[cpp_from_move(Tracked, new_2, ptr)]
 pub struct Holder {
     pub t: Tracked,

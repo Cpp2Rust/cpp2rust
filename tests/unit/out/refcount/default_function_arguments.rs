@@ -15,7 +15,7 @@ pub fn baz_1(mut a: Ptr<i32>, b: Option<Ptr<i32>>) -> bool {
     return ({ a } == { b });
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom)]
-#[cpp_from(i32, new, value)]
+#[cpp_from(i32, new, some_value)]
 #[byte_size(4)]
 pub struct Bar {
     #[offset(0)]

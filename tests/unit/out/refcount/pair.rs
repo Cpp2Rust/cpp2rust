@@ -24,24 +24,16 @@ fn main_0() -> i32 {
     assert!(((*(*p2.borrow()).0.borrow()) == 3_f64));
     assert!(((*(*p2.borrow()).1.borrow()) == 4));
     let p3: Value<(Value<f64>, Value<i32>)> = Rc::new(RefCell::new((
-        Rc::new(RefCell::new(
+        Rc::new(RefCell::new(<f64 as CppFrom<i32>>::cpp_from_move(
             (Rc::new(RefCell::new(5)), Rc::new(RefCell::new(6)))
                 .0
-                .borrow()
-                .clone()
-                .try_into()
-                .ok()
-                .expect("failed conversion"),
-        )),
-        Rc::new(RefCell::new(
+                .as_pointer(),
+        ))),
+        Rc::new(RefCell::new(<i32 as CppFrom<i32>>::cpp_from_move(
             (Rc::new(RefCell::new(5)), Rc::new(RefCell::new(6)))
                 .1
-                .borrow()
-                .clone()
-                .try_into()
-                .ok()
-                .expect("failed conversion"),
-        )),
+                .as_pointer(),
+        ))),
     )));
     assert!(((*(*p3.borrow()).0.borrow()) == 5_f64));
     assert!(((*(*p3.borrow()).1.borrow()) == 6));
@@ -59,20 +51,18 @@ fn main_0() -> i32 {
     ));
     const_ptr_pairs.decay().offset(0_usize).write((
         Rc::new(RefCell::new(
-            (
-                Rc::new(RefCell::new(
-                    (arr.as_pointer() as Ptr<i32>).offset((1) as isize),
-                )),
-                Rc::new(RefCell::new(n)),
-            )
-                .0
-                .borrow()
-                .clone()
-                .try_into()
-                .ok()
-                .expect("failed conversion"),
+            <Ptr<i32> as CppFrom<Ptr<i32>>>::cpp_from_move(
+                (
+                    Rc::new(RefCell::new(
+                        (arr.as_pointer() as Ptr<i32>).offset((1) as isize),
+                    )),
+                    Rc::new(RefCell::new(n)),
+                )
+                    .0
+                    .as_pointer(),
+            ),
         )),
-        Rc::new(RefCell::new(
+        Rc::new(RefCell::new(<u64 as CppFrom<u32>>::cpp_from_move(
             (
                 Rc::new(RefCell::new(
                     (arr.as_pointer() as Ptr<i32>).offset((1) as isize),
@@ -80,12 +70,8 @@ fn main_0() -> i32 {
                 Rc::new(RefCell::new(n)),
             )
                 .1
-                .borrow()
-                .clone()
-                .try_into()
-                .ok()
-                .expect("failed conversion"),
-        )),
+                .as_pointer(),
+        ))),
     ));
     assert!(
         (((*(*const_ptr_pairs.borrow())[0_usize].0.borrow()).read()) == 2)

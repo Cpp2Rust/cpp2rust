@@ -16,7 +16,6 @@ pub struct S {
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
 #[cpp_into(i64, to_i64_1)]
-#[cpp_into(i64, to_i64_2)]
 #[byte_size(4)]
 pub struct T {
     #[offset(0)]

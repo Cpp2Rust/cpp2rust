@@ -22,7 +22,7 @@ pub fn sum_0(n: i32, __args: Box<[VaArg]>) -> i32 {
     return total;
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Destructor, Default)]
-#[cpp_from(Ptr<VaArg> , new, ptr)]
+#[cpp_from(Ptr<VaArg> , new, mut_ptr)]
 #[byte_size(16)]
 pub struct Guard_1 {
     #[offset(0)]
