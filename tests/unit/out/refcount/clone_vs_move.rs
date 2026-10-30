@@ -213,8 +213,8 @@ fn main_0() -> i32 {
         (*i.borrow_mut()).prefix_inc();
     }
     let pair1: Value<(Value<i32>, Value<i32>)> = Rc::new(RefCell::new((
-        Rc::new(RefCell::new(1.try_into().expect("failed conversion"))),
-        Rc::new(RefCell::new(2.try_into().expect("failed conversion"))),
+        Rc::new(RefCell::new(1)),
+        Rc::new(RefCell::new(2)),
     )));
     let pair2: Value<(Value<i32>, Value<i32>)> = Rc::new(RefCell::new((
         Rc::new(RefCell::new((*pair1.borrow()).0.borrow().clone())),
@@ -228,13 +228,9 @@ fn main_0() -> i32 {
     assert!(((*(*pair1.borrow()).1.borrow()) == 2));
     let pair3: Value<(Value<Vec<i32>>, Value<i32>)> = Rc::new(RefCell::new((
         Rc::new(RefCell::new(
-            (0..(0_usize) as usize)
-                .map(|_| 0_i32)
-                .collect::<Vec<_>>()
-                .try_into()
-                .expect("failed conversion"),
+            (0..(0_usize) as usize).map(|_| 0_i32).collect::<Vec<_>>(),
         )),
-        Rc::new(RefCell::new(0.try_into().expect("failed conversion"))),
+        Rc::new(RefCell::new(0)),
     )));
     let pair4: Value<(Value<Vec<i32>>, Value<i32>)> = Rc::new(RefCell::new((
         Rc::new(RefCell::new((*pair3.borrow()).0.borrow().clone())),

@@ -101,12 +101,8 @@ fn main_0() -> i32 {
     assert!((moves_1.with(|rc| *rc.borrow()) == before_moves));
     assert!(({ (*__decomp_6.borrow()).a.v } == 1));
     let p: Value<(Value<Elem>, Value<Elem>)> = Rc::new(RefCell::new((
-        Rc::new(RefCell::new(
-            Elem::new({ 7 }).try_into().expect("failed conversion"),
-        )),
-        Rc::new(RefCell::new(
-            Elem::new({ 8 }).try_into().expect("failed conversion"),
-        )),
+        Rc::new(RefCell::new(Elem::new({ 7 }))),
+        Rc::new(RefCell::new(Elem::new({ 8 }))),
     )));
     before_copies = copies_0.with(|rc| *rc.borrow());
     let __decomp_7: Value<(Value<Elem>, Value<Elem>)> = Rc::new(RefCell::new((

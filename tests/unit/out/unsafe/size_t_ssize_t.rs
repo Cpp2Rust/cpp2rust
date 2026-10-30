@@ -186,7 +186,7 @@ unsafe fn main_0() -> i32 {
     ];
     assert!(((mins[(1) as usize]) == (1_usize)));
     assert!(((mins[(2) as usize]) == (2_usize)));
-    let mut pr: (u64, i32) = ((sz as u64).into(), 1.into());
+    let mut pr: (u64, i32) = ((sz as u64), 1);
     assert!(((pr.0) == (21_u64)));
     let sizes: [usize; 4] = [1_usize, 2_usize, 3_usize, 4_usize];
     let mut sizes_end: *const usize =

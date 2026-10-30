@@ -18,8 +18,8 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let p: Value<(Value<f64>, Value<i32>)> = Rc::new(RefCell::new((
-        Rc::new(RefCell::new(1.5_f64.try_into().expect("failed conversion"))),
-        Rc::new(RefCell::new(2.try_into().expect("failed conversion"))),
+        Rc::new(RefCell::new(1.5_f64)),
+        Rc::new(RefCell::new(2)),
     )));
     assert!((((*p.borrow()).0.as_pointer().read()) == 1.5_f64));
     assert!((((*p.borrow()).1.as_pointer().read()) == 2));

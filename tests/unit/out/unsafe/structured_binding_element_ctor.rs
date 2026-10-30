@@ -94,7 +94,7 @@ unsafe fn main_0() -> i32 {
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (before_copies)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut moves_1)) == (before_moves)));
     assert!(((__decomp_6.a.v) == (1)));
-    let mut p: (Elem, Elem) = (Elem::new({ 7 }).into(), Elem::new({ 8 }).into());
+    let mut p: (Elem, Elem) = (Elem::new({ 7 }), Elem::new({ 8 }));
     before_copies = (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0));
     let mut __decomp_7: (Elem, Elem) = p.clone();
     let x: *mut Elem = &mut __decomp_7.0;

@@ -388,8 +388,8 @@ fn main_0() -> i32 {
     > = Rc::new(RefCell::new(Map::new()));
     assert!(((*other_map.borrow()).len() == 0_usize));
     let key0: Value<(Value<i32>, Value<i64>)> = Rc::new(RefCell::new((
-        Rc::new(RefCell::new(1.try_into().expect("failed conversion"))),
-        Rc::new(RefCell::new(1.try_into().expect("failed conversion"))),
+        Rc::new(RefCell::new(1)),
+        Rc::new(RefCell::new((1 as i64))),
     )));
     let mut value: f64 = 2_f64;
     Map::subscript(other_map.as_pointer(), key0.as_pointer()).write(value);

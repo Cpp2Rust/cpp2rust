@@ -19,7 +19,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut p: (f64, i32) = (1.5_f64.into(), 2.into());
+    let mut p: (f64, i32) = (1.5_f64, 2);
     assert!(((p.0) == (1.5_f64)));
     assert!(((p.1) == (2)));
     assert!(((unsafe { first_of_1(&p,) }) == (1.5_f64)));

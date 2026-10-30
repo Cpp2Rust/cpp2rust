@@ -12,20 +12,20 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let p1: Value<(Value<f64>, Value<i32>)> = Rc::new(RefCell::new((
-        Rc::new(RefCell::new(1.try_into().expect("failed conversion"))),
-        Rc::new(RefCell::new(2.try_into().expect("failed conversion"))),
+        Rc::new(RefCell::new((1 as f64))),
+        Rc::new(RefCell::new(2)),
     )));
     assert!(((*(*p1.borrow()).0.borrow()) == 1_f64));
     assert!(((*(*p1.borrow()).1.borrow()) == 2));
     let p2: Value<(Value<f64>, Value<i32>)> = Rc::new(RefCell::new((
-        Rc::new(RefCell::new(3.try_into().expect("failed conversion"))),
-        Rc::new(RefCell::new(4.try_into().expect("failed conversion"))),
+        Rc::new(RefCell::new((3 as f64))),
+        Rc::new(RefCell::new(4)),
     )));
     assert!(((*(*p2.borrow()).0.borrow()) == 3_f64));
     assert!(((*(*p2.borrow()).1.borrow()) == 4));
     let p3: Value<(Value<f64>, Value<i32>)> = Rc::new(RefCell::new((
-        Rc::new(RefCell::new(5.try_into().expect("failed conversion"))),
-        Rc::new(RefCell::new(6.try_into().expect("failed conversion"))),
+        Rc::new(RefCell::new(5)),
+        Rc::new(RefCell::new(6)),
     )));
     assert!(((*(*p3.borrow()).0.borrow()) == 5_f64));
     assert!(((*(*p3.borrow()).1.borrow()) == 6));
@@ -43,12 +43,9 @@ fn main_0() -> i32 {
     ));
     (*const_ptr_pairs.borrow_mut())[0_usize] = (
         Rc::new(RefCell::new(
-            (arr.as_pointer() as Ptr<i32>)
-                .offset((1) as isize)
-                .try_into()
-                .expect("failed conversion"),
+            (arr.as_pointer() as Ptr<i32>).offset((1) as isize),
         )),
-        Rc::new(RefCell::new(n.try_into().expect("failed conversion"))),
+        Rc::new(RefCell::new(n)),
     );
     assert!(
         (((*(*const_ptr_pairs.borrow())[0_usize].0.borrow()).read()) == 2)

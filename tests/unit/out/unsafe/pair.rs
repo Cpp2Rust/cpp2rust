@@ -13,13 +13,13 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut p1: (f64, i32) = (1.into(), 2.into());
+    let mut p1: (f64, i32) = ((1 as f64), 2);
     assert!(((p1.0) == (1_f64)));
     assert!(((p1.1) == (2)));
-    let mut p2: (f64, i32) = (3.into(), 4.into());
+    let mut p2: (f64, i32) = ((3 as f64), 4);
     assert!(((p2.0) == (3_f64)));
     assert!(((p2.1) == (4)));
-    let mut p3: (f64, i32) = (5.into(), 6.into());
+    let mut p3: (f64, i32) = (5, 6);
     assert!(((p3.0) == (5_f64)));
     assert!(((p3.1) == (6)));
     let arr: [i32; 2] = [1, 2];
@@ -27,7 +27,7 @@ unsafe fn main_0() -> i32 {
     let mut const_ptr_pairs: Vec<(*const i32, u64)> = (0..(1_usize) as usize)
         .map(|_| <(*const i32, u64)>::default())
         .collect::<Vec<_>>();
-    const_ptr_pairs[(0_usize)] = (arr.as_ptr().offset((1) as isize).into(), n.into());
+    const_ptr_pairs[(0_usize)] = (arr.as_ptr().offset((1) as isize), n);
     assert!(
         ((*const_ptr_pairs[(0_usize)].0) == (2)) && ((const_ptr_pairs[(0_usize)].1) == (2_u64))
     );
