@@ -57,12 +57,36 @@ fn main_0() -> i32 {
             })
             .collect::<Vec<_>>(),
     ));
-    (*const_ptr_pairs.borrow_mut())[0_usize] = (
+    const_ptr_pairs.decay().offset(0_usize).write((
         Rc::new(RefCell::new(
-            (arr.as_pointer() as Ptr<i32>).offset((1) as isize),
+            (
+                Rc::new(RefCell::new(
+                    (arr.as_pointer() as Ptr<i32>).offset((1) as isize),
+                )),
+                Rc::new(RefCell::new(n)),
+            )
+                .0
+                .borrow()
+                .clone()
+                .try_into()
+                .ok()
+                .expect("failed conversion"),
         )),
-        Rc::new(RefCell::new(n)),
-    );
+        Rc::new(RefCell::new(
+            (
+                Rc::new(RefCell::new(
+                    (arr.as_pointer() as Ptr<i32>).offset((1) as isize),
+                )),
+                Rc::new(RefCell::new(n)),
+            )
+                .1
+                .borrow()
+                .clone()
+                .try_into()
+                .ok()
+                .expect("failed conversion"),
+        )),
+    ));
     assert!(
         (((*(*const_ptr_pairs.borrow())[0_usize].0.borrow()).read()) == 2)
             && ((*(*const_ptr_pairs.borrow())[0_usize].1.borrow()) == 2_u64)
