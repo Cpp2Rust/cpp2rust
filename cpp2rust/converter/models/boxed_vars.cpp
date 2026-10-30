@@ -237,6 +237,10 @@ private:
     auto all_args = BuildUnifiedArgs(expr, args, num_args);
     for (unsigned i = 0; i < all_args.size() && i < rule->params.size(); ++i) {
       auto *arg = IgnoreNoOpCasts(all_args[i]);
+      if (auto *init = RuleRegistry::BuildParamConversion(ctx_, expr, i, arg)) {
+        TraverseStmt(init);
+        continue;
+      }
       if (!rule->params[i].is_pointer() || arg->getType()->isPointerType() ||
           RuleRegistry::MapsToPointer(ctx_, arg->getType())) {
         AddValueUse(arg);

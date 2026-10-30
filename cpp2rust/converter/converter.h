@@ -866,6 +866,8 @@ protected:
                                 llvm::ArrayRef<clang::Expr *> args,
                                 clang::SourceLocation loc);
 
+  void ConvertInit(clang::QualType type, clang::Expr *init);
+
   virtual void ConvertConstructedValue(clang::QualType type,
                                        clang::CXXConstructExpr *ctor);
 

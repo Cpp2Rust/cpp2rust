@@ -9,7 +9,6 @@
 #include <clang/AST/Type.h>
 #include <clang/Sema/Sema.h>
 
-#include <optional>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -46,9 +45,9 @@ bool ReturnsReference(const clang::Expr *expr);
 bool ParamIsPointer(clang::ASTContext &ctx, const clang::Expr *expr,
                     unsigned index);
 
-std::optional<clang::QualType> GetParamGenericBinding(clang::ASTContext &ctx,
-                                                  const clang::Expr *expr,
-                                                  unsigned index);
+clang::Expr *BuildParamConversion(clang::ASTContext &ctx,
+                                  const clang::Expr *expr, unsigned index,
+                                  clang::Expr *arg);
 
 bool MapsToPointer(clang::ASTContext &ctx, clang::QualType qual_type);
 bool MapsToRefcountPointer(clang::ASTContext &ctx, clang::QualType qual_type);

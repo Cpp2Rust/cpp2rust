@@ -4946,14 +4946,11 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
                        ToStringBase(ctx_.getPointerType(elem)));
   }
 
-  auto construct_as =
-      RuleRegistry::GetParamGenericBinding(ctx_, expr, ph_ctx.arg_idx);
-  if (construct_as && !arg->getType()->isArrayType() &&
-      !ctx_.hasSameUnqualifiedType(arg->getType().getNonReferenceType(),
-                                   *construct_as)) {
+  if (auto *init = RuleRegistry::BuildParamConversion(ctx_, expr,
+                                                      ph_ctx.arg_idx, arg)) {
     Buffer buf(*this);
     PushExprKind push(*this, ExprKind::RValue);
-    ConvertConstructFromArgs(*construct_as, arg, arg->getExprLoc());
+    ConvertInit(init->getType(), init);
     return std::move(buf).str();
   }
 
@@ -5191,14 +5188,18 @@ void Converter::ConvertConstructFromArgs(clang::QualType type,
                                          clang::SourceLocation loc) {
   auto *init = BuildInitExpr(GetSema(), type, args, loc);
   assert(init && "type cannot be initialized from the arguments");
+  if (args.empty() &&
+      !clang::isa<clang::CXXConstructExpr>(init->IgnoreImplicit())) {
+    StrCat(GetDefaultAsString(type));
+    return;
+  }
+  ConvertInit(type, init);
+}
+
+void Converter::ConvertInit(clang::QualType type, clang::Expr *init) {
   if (auto *ctor =
           clang::dyn_cast<clang::CXXConstructExpr>(init->IgnoreImplicit())) {
     ConvertConstructedValue(type, ctor);
-    return;
-  }
-
-  if (args.empty()) {
-    StrCat(GetDefaultAsString(type));
     return;
   }
   Convert(init);
