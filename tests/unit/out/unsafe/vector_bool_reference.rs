@@ -21,6 +21,13 @@ unsafe fn main_0() -> i32 {
         r1
     };
     assert!(!(*(&mut (v1)[0_usize as usize] as *mut bool)));
+    let mut it: UnsafeRandomAccessIterator<bool> = v1.begin();
+    let mut r2: *mut bool = it.iter_deref();
+    {
+        *r2 = true;
+        r2
+    };
+    assert!(*(&mut (v1)[0_usize as usize] as *mut bool));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

@@ -7,5 +7,9 @@ int main() {
   assert(v1[0] && r1);
   r1 = false;
   assert(!v1[0]);
+  auto it = v1.begin();
+  auto r2 = *it;
+  r2 = true;
+  assert(v1[0]);
   return 0;
 }

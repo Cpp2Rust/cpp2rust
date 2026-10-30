@@ -19,6 +19,13 @@ fn main_0() -> i32 {
         (r1).clone()
     };
     assert!(!(v1.decay().offset(0_usize as isize).read()));
+    let it: Value<RandomAccessIterator<bool>> = Rc::new(RefCell::new(v1.decay().begin()));
+    let mut r2: Ptr<bool> = (*it.borrow()).iter_deref();
+    {
+        r2.write(true);
+        (r2).clone()
+    };
+    assert!(v1.decay().offset(0_usize as isize).read());
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}
