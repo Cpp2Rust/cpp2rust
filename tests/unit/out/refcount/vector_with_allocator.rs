@@ -239,9 +239,7 @@ fn main_0() -> i32 {
         let mut __v = Vec::new();
         let mut __it = (src.as_pointer() as Ptr<u32>);
         while __it != (src.as_pointer() as Ptr<u32>).offset((3) as isize) {
-            __v.push(<u32 as CppFrom<std_allocator_unsigned_int_>>::cpp_from(
-                __it.iter_deref(),
-            ));
+            __v.push((__it.iter_deref().read()));
             __it.iter_inc();
         }
         __v
@@ -252,9 +250,7 @@ fn main_0() -> i32 {
         let mut __v = Vec::new();
         let mut __it = (src.as_pointer() as Ptr<u32>);
         while __it != (src.as_pointer() as Ptr<u32>).offset((3) as isize) {
-            __v.push(<u64 as CppFrom<std_allocator_unsigned_long_>>::cpp_from(
-                __it.iter_deref(),
-            ));
+            __v.push(((__it.iter_deref().read()) as u64));
             __it.iter_inc();
         }
         __v
@@ -265,9 +261,7 @@ fn main_0() -> i32 {
         let mut __v = Vec::new();
         let mut __it = (src.as_pointer() as Ptr<u32>);
         while __it != (src.as_pointer() as Ptr<u32>).offset((3) as isize) {
-            __v.push(<i32 as CppFrom<std_allocator_int_>>::cpp_from(
-                __it.iter_deref(),
-            ));
+            __v.push(((__it.iter_deref().read()) as i32));
             __it.iter_inc();
         }
         __v
@@ -279,9 +273,7 @@ fn main_0() -> i32 {
         let mut __v = Vec::new();
         let mut __it = (src1.as_pointer() as Ptr<u32>);
         while __it != (src1.as_pointer() as Ptr<u32>).to_end() {
-            __v.push(<u32 as CppFrom<std_allocator_unsigned_int_>>::cpp_from(
-                __it.iter_deref(),
-            ));
+            __v.push((__it.iter_deref().read()));
             __it.iter_inc();
         }
         __v
@@ -296,9 +288,7 @@ fn main_0() -> i32 {
         let mut __v = Vec::new();
         let mut __it = (start).clone();
         while __it != start.offset((len) as isize) {
-            __v.push(<u8 as CppFrom<std_allocator_unsigned_char_>>::cpp_from(
-                __it.iter_deref(),
-            ));
+            __v.push((__it.iter_deref().read()));
             __it.iter_inc();
         }
         __v

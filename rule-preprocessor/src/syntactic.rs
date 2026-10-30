@@ -446,7 +446,10 @@ impl<'a> FnIrBuilder<'a> {
                         _ => None,
                     };
                     let Some(segment) = segment else {
-                        return Bound { trait_name: b.syntax().text().to_string(), args: Vec::new() };
+                        return Bound {
+                            trait_name: b.syntax().text().to_string(),
+                            args: Vec::new(),
+                        };
                     };
                     Bound {
                         trait_name: segment

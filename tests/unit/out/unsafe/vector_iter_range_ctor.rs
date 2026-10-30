@@ -41,9 +41,7 @@ unsafe fn main_0() -> i32 {
         let mut __v = Vec::new();
         let mut __it = src.as_mut_ptr();
         while __it != src.as_mut_ptr().offset((3) as isize) {
-            __v.push(
-                <u32 as CppFromUnsafe<std_allocator_unsigned_int_>>::cpp_from(__it.iter_deref()),
-            );
+            __v.push((*__it.iter_deref()));
             __it.iter_inc();
         }
         __v
@@ -57,9 +55,7 @@ unsafe fn main_0() -> i32 {
         let mut __v = Vec::new();
         let mut __it = src.as_mut_ptr();
         while __it != src.as_mut_ptr().offset((3) as isize) {
-            __v.push(
-                <u64 as CppFromUnsafe<std_allocator_unsigned_long_>>::cpp_from(__it.iter_deref()),
-            );
+            __v.push(((*__it.iter_deref()) as u64));
             __it.iter_inc();
         }
         __v
@@ -73,9 +69,7 @@ unsafe fn main_0() -> i32 {
         let mut __v = Vec::new();
         let mut __it = src.as_mut_ptr();
         while __it != src.as_mut_ptr().offset((3) as isize) {
-            __v.push(<i32 as CppFromUnsafe<std_allocator_int_>>::cpp_from(
-                __it.iter_deref(),
-            ));
+            __v.push(((*__it.iter_deref()) as i32));
             __it.iter_inc();
         }
         __v
@@ -87,9 +81,7 @@ unsafe fn main_0() -> i32 {
         let mut __v = Vec::new();
         let mut __it = src1.as_ptr();
         while __it != src1.as_ptr().add(src1.len()) {
-            __v.push(
-                <u32 as CppFromUnsafe<std_allocator_unsigned_int_>>::cpp_from(__it.iter_deref()),
-            );
+            __v.push((*__it.iter_deref()));
             __it.iter_inc();
         }
         __v
@@ -106,9 +98,7 @@ unsafe fn main_0() -> i32 {
         let mut __v = Vec::new();
         let mut __it = start;
         while __it != start.offset((len) as isize) {
-            __v.push(
-                <u8 as CppFromUnsafe<std_allocator_unsigned_char_>>::cpp_from(__it.iter_deref()),
-            );
+            __v.push((*__it.iter_deref()));
             __it.iter_inc();
         }
         __v
@@ -123,9 +113,9 @@ unsafe fn main_0() -> i32 {
         let mut __v = Vec::new();
         let mut __it = m.begin();
         while __it != m.end() {
-            __v.push(<(i32, i32) as CppFromUnsafe<
-                std_allocator_std_pair_int__int__,
-            >>::cpp_from(__it.iter_deref()));
+            __v.push(<(i32, i32) as CppFromUnsafe<(i32, i32)>>::cpp_from(
+                __it.iter_deref(),
+            ));
             __it.iter_inc();
         }
         __v
@@ -155,9 +145,7 @@ unsafe fn main_0() -> i32 {
         let mut __v = Vec::new();
         let mut __it = ints.as_mut_ptr();
         while __it != ints.as_mut_ptr().offset((3) as isize) {
-            __v.push(
-                <Degrees as CppFromUnsafe<std_allocator_Degrees_>>::cpp_from(__it.iter_deref()),
-            );
+            __v.push(<Degrees as CppFromUnsafe<i32>>::cpp_from(__it.iter_deref()));
             __it.iter_inc();
         }
         __v
@@ -168,9 +156,7 @@ unsafe fn main_0() -> i32 {
         let mut __v = Vec::new();
         let mut __it = readings.as_mut_ptr();
         while __it != readings.as_mut_ptr().offset((2) as isize) {
-            __v.push(<i64 as CppFromUnsafe<std_allocator_long_>>::cpp_from(
-                __it.iter_deref(),
-            ));
+            __v.push(<i64 as CppFromUnsafe<Reading>>::cpp_from(__it.iter_deref()));
             __it.iter_inc();
         }
         __v
