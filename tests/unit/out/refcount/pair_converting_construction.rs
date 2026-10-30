@@ -104,8 +104,8 @@ fn main_0() -> i32 {
     let from_moved_pair: Value<(Value<i64>, Value<f64>)> = Rc::new(RefCell::new({
         let __a0 = (Rc::new(RefCell::new(3)), Rc::new(RefCell::new(4)));
         (
-            Rc::new(RefCell::new((*__a0.0.borrow() as i64))),
-            Rc::new(RefCell::new((*__a0.1.borrow() as f64))),
+            Rc::new(RefCell::new(((__a0.0.as_pointer().read()) as i64))),
+            Rc::new(RefCell::new(((__a0.1.as_pointer().read()) as f64))),
         )
     }));
     assert!(((*(*from_moved_pair.borrow()).0.borrow()) == 3_i64));
@@ -120,7 +120,7 @@ fn main_0() -> i32 {
             Rc::new(RefCell::new(<Celsius as CppFrom<i32>>::cpp_from(
                 __a0.0.as_pointer(),
             ))),
-            Rc::new(RefCell::new((*__a0.1.borrow() as i64))),
+            Rc::new(RefCell::new(((__a0.1.as_pointer().read()) as i64))),
         )
     }));
     assert!(({ (*(*from_copied_pair.borrow()).0.borrow()).degrees } == 5));
