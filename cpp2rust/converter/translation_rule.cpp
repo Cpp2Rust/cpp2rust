@@ -72,6 +72,17 @@ MethodCallFragment ParseMethodCallFragmentJSON(const llvm::json::Object &obj) {
   return mc;
 }
 
+ConvertFragment ParseConvertFragmentJSON(const llvm::json::Object &obj) {
+  ConvertFragment cv;
+  cv.to = obj.getInteger("to").value_or(0);
+  cv.from = obj.getInteger("from").value_or(0);
+  cv.is_move = obj.getBoolean("move").value_or(false);
+  if (auto *src = obj.getArray("src")) {
+    cv.src = ParseBodyFragmentsJSON(*src);
+  }
+  return cv;
+}
+
 RefExprFragment ParseRefExprFragmentJSON(const llvm::json::Object &obj) {
   RefExprFragment re;
   re.prefix = obj.getString("prefix").value_or("").str();
@@ -101,6 +112,9 @@ std::vector<BodyFragment> ParseBodyFragmentsJSON(const llvm::json::Array &arr) {
     } else if (auto *re = frag_obj->getObject("ref_expr")) {
       result.push_back(
           std::make_unique<RefExprFragment>(ParseRefExprFragmentJSON(*re)));
+    } else if (auto *cv = frag_obj->getObject("convert")) {
+      result.push_back(
+          std::make_unique<ConvertFragment>(ParseConvertFragmentJSON(*cv)));
     } else if (frag_obj->get("va_args")) {
       result.push_back(VaArgsFragment{});
     } else if (frag_obj->get("init")) {
@@ -136,6 +150,9 @@ bool AnyFragment(const std::vector<BodyFragment> &body,
     }
     if (auto *re = std::get_if<std::unique_ptr<RefExprFragment>>(&frag)) {
       return AnyFragment((*re)->inner, pred);
+    }
+    if (auto *cv = std::get_if<std::unique_ptr<ConvertFragment>>(&frag)) {
+      return AnyFragment((*cv)->src, pred);
     }
     return false;
   });
@@ -228,6 +245,14 @@ const std::vector<BodyFragment> *ExprRule::refExprOperand() const {
 void RefExprFragment::dump() const {
   log() << "  ref_expr: " << prefix << '\n';
   for (auto &frag : inner) {
+    BodyFragmentDump(frag);
+  }
+}
+
+void ConvertFragment::dump() const {
+  log() << "  convert: T" << from << " -> T" << to << (is_move ? " move" : "")
+        << '\n';
+  for (auto &frag : src) {
     BodyFragmentDump(frag);
   }
 }

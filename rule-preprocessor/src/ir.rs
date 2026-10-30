@@ -110,6 +110,7 @@ impl FnIr {
                     check(&method_call.receiver) || check(&method_call.body)
                 }
                 BodyFragment::RefExpr { ref_expr } => check(&ref_expr.inner),
+                BodyFragment::Convert { convert } => check(&convert.src),
                 _ => false,
             })
         }
@@ -176,6 +177,9 @@ pub enum BodyFragment {
     Init {
         init: std::marker::PhantomData<()>,
     },
+    Convert {
+        convert: ConvertInner,
+    },
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -206,6 +210,15 @@ pub struct MethodCallInner {
 pub struct RefExprInner {
     pub prefix: String,
     pub inner: Vec<BodyFragment>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ConvertInner {
+    pub to: i32,
+    pub from: i32,
+    #[serde(rename = "move")]
+    pub is_move: bool,
+    pub src: Vec<BodyFragment>,
 }
 
 // For convenience: match on fragment kind
@@ -255,6 +268,11 @@ fn resolve_nth_unknown(
                 }
                 BodyFragment::RefExpr { ref_expr } => {
                     if resolve(&mut ref_expr.inner, param, nth, count, patch) {
+                        return true;
+                    }
+                }
+                BodyFragment::Convert { convert } => {
+                    if resolve(&mut convert.src, param, nth, count, patch) {
                         return true;
                     }
                 }

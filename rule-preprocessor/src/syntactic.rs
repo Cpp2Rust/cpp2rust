@@ -11,8 +11,8 @@ use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
 use crate::ir::{
-    Access, BodyFragment, FileIr, FnIr, MethodCallInner, Model, PlaceholderInner, RefExprInner,
-    RuleIr, RulesIR, TypeInfo, TypeIr,
+    Access, BodyFragment, ConvertInner, FileIr, FnIr, MethodCallInner, Model, PlaceholderInner,
+    RefExprInner, RuleIr, RulesIR, TypeInfo, TypeIr,
 };
 
 /// Classify a type AST node as refcount pointer (`Ptr<T>`), unsafe pointer
@@ -190,6 +190,13 @@ impl<'a> FragmentCtx<'a> {
                     self.emit_method_call(&call);
                     return;
                 }
+                if let Some(convert) =
+                    ast::CallExpr::cast(node.clone()).and_then(|call| self.conversion(&call))
+                {
+                    self.flush_text();
+                    self.fragments.push(BodyFragment::Convert { convert });
+                    return;
+                }
                 if let Some(generic) =
                     ast::CallExpr::cast(node.clone()).and_then(|call| self.generic_default(&call))
                 {
@@ -260,22 +267,11 @@ impl<'a> FragmentCtx<'a> {
         self.text_buf.push_str(token.text());
     }
 
-    fn generic_default(&self, call: &ast::CallExpr) -> Option<i32> {
-        if call.arg_list()?.args().next().is_some() {
+    fn generic_of_path(&self, path: &ast::Path) -> Option<i32> {
+        if path.qualifier().is_some() {
             return None;
         }
-        let ast::Expr::PathExpr(path_expr) = call.expr()? else {
-            return None;
-        };
-        let path = path_expr.path()?;
-        if path.segment()?.name_ref()?.text() != "default" {
-            return None;
-        }
-        let qualifier = path.qualifier()?;
-        if qualifier.qualifier().is_some() {
-            return None;
-        }
-        let segment = qualifier.segment()?;
+        let segment = path.segment()?;
         let name = match segment.name_ref() {
             Some(name_ref) => name_ref.text().to_string(),
             None => segment
@@ -290,6 +286,59 @@ impl<'a> FragmentCtx<'a> {
             return None;
         }
         Some(name[1..].parse().unwrap_or(0))
+    }
+
+    fn conversion(&self, call: &ast::CallExpr) -> Option<ConvertInner> {
+        let ast::Expr::PathExpr(path_expr) = call.expr()? else {
+            return None;
+        };
+        let path = path_expr.path()?;
+        let method = path.segment()?.name_ref()?.text().to_string();
+        if method != "cpp_from" && method != "cpp_from_move" {
+            return None;
+        }
+        let to = self.generic_of_path(&path.qualifier()?)?;
+        let Ok([arg]) = <[_; 1]>::try_from(call.arg_list()?.args().collect::<Vec<_>>()) else {
+            panic!("{method} takes one argument");
+        };
+        let mut src_ctx = FragmentCtx::new(self.builder, self.params, self.generic_names);
+        src_ctx.visit(ra_ap_syntax::NodeOrToken::Node(arg.syntax().clone()));
+        Some(ConvertInner {
+            to,
+            from: self.conversion_source(to),
+            is_move: method == "cpp_from_move",
+            src: src_ctx.finish(),
+        })
+    }
+
+    fn conversion_source(&self, to: i32) -> i32 {
+        let name = format!("T{to}");
+        let sources: Vec<i32> = self.builder.generics()[&name]
+            .iter()
+            .filter_map(|bound| {
+                let inner = bound
+                    .strip_prefix("CppFromUnsafe<")
+                    .or_else(|| bound.strip_prefix("CppFrom<"))?
+                    .strip_suffix('>')?;
+                self.generic_names.contains(&inner.to_string()).then(|| inner[1..].parse().unwrap())
+            })
+            .collect();
+        assert!(sources.len() == 1, "{name} must have one CppFrom<Tm> bound");
+        sources[0]
+    }
+
+    fn generic_default(&self, call: &ast::CallExpr) -> Option<i32> {
+        if call.arg_list()?.args().next().is_some() {
+            return None;
+        }
+        let ast::Expr::PathExpr(path_expr) = call.expr()? else {
+            return None;
+        };
+        let path = path_expr.path()?;
+        if path.segment()?.name_ref()?.text() != "default" {
+            return None;
+        }
+        self.generic_of_path(&path.qualifier()?)
     }
 
     fn emit_method_call(&mut self, call: &ast::MethodCallExpr) {

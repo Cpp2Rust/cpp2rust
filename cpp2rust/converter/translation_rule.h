@@ -57,12 +57,12 @@ struct InitFragment {
 
 struct MethodCallFragment; // forward declaration
 struct RefExprFragment;
+struct ConvertFragment;
 
-using BodyFragment =
-    std::variant<TextFragment, PlaceholderFragment, GenericFragment,
-                 DefaultFragment, VaArgsFragment, InitFragment,
-                 std::unique_ptr<MethodCallFragment>,
-                 std::unique_ptr<RefExprFragment>>;
+using BodyFragment = std::variant<
+    TextFragment, PlaceholderFragment, GenericFragment, DefaultFragment,
+    VaArgsFragment, InitFragment, std::unique_ptr<MethodCallFragment>,
+    std::unique_ptr<RefExprFragment>, std::unique_ptr<ConvertFragment>>;
 
 struct MethodCallFragment {
   std::vector<BodyFragment> receiver;
@@ -75,6 +75,15 @@ struct MethodCallFragment {
 struct RefExprFragment {
   std::string prefix;
   std::vector<BodyFragment> inner;
+
+  void dump() const;
+};
+
+struct ConvertFragment {
+  unsigned to;
+  unsigned from;
+  bool is_move;
+  std::vector<BodyFragment> src;
 
   void dump() const;
 };

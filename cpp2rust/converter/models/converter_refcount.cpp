@@ -2280,6 +2280,10 @@ ConverterRefCount::GetStructAttributes(const clang::RecordDecl *decl) {
   return attrs;
 }
 
+const char *ConverterRefCount::GetConversionTraitName() const {
+  return "CppFrom";
+}
+
 bool ConverterRefCount::TypeDerivesDefault(clang::QualType qual_type) {
   // Arrays are translated to Value<Box<[T]>>, whose Default is empty
   return !qual_type->isArrayType() && Converter::TypeDerivesDefault(qual_type);

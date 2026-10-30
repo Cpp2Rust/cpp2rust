@@ -307,6 +307,17 @@ public:
                     clang::Expr *expr, clang::Expr **args, unsigned num_args,
                     TempMaterializationCtx *ctx);
 
+  std::string
+  ConvertConversionFragment(const TranslationRule::ConvertFragment &convert,
+                            llvm::ArrayRef<clang::TemplateArgument> bindings,
+                            clang::Expr *expr, clang::Expr **args,
+                            unsigned num_args, TempMaterializationCtx *ctx);
+
+  virtual const char *GetConversionTraitName() const;
+
+  virtual std::string DerefPtrExpr(std::string_view ptr_expr,
+                                   clang::QualType pointee_type);
+
   struct PlaceholderCtx {
     unsigned arg_idx;
     std::optional<clang::QualType> implicit_convert_to;

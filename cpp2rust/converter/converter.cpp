@@ -5188,10 +5188,49 @@ std::string Converter::ConvertIRFragment(
       result +=
           (*re)->prefix + ' ' +
           ConvertIRFragment((*re)->inner, bindings, expr, args, num_args, ctx);
+    } else if (auto *cv =
+                   std::get_if<std::unique_ptr<ConvertFragment>>(&frag)) {
+      result +=
+          ConvertConversionFragment(**cv, bindings, expr, args, num_args, ctx);
     }
   }
 
   return result;
+}
+
+std::string Converter::ConvertConversionFragment(
+    const TranslationRule::ConvertFragment &convert,
+    llvm::ArrayRef<clang::TemplateArgument> bindings, clang::Expr *expr,
+    clang::Expr **args, unsigned num_args, TempMaterializationCtx *ctx) {
+  auto ptr = ConvertIRFragment(convert.src, bindings, expr, args, num_args, ctx);
+  auto to = bindings[convert.to - 1].getAsType();
+  auto from = bindings[convert.from - 1].getAsType();
+  if (to->isArithmeticType() && from->isArithmeticType()) {
+    auto value = DerefPtrExpr(ptr, from);
+    if (ctx_.hasSameUnqualifiedType(to, from)) {
+      return value;
+    }
+    if (to->isBooleanType()) {
+      return std::format("({} != {})", value,
+                         from->isFloatingType() ? "0.0" : "0");
+    }
+    if (from->isBooleanType() && to->isFloatingType()) {
+      return std::format("({} as u8 as {})", value, GetUnsafeTypeAsString(to));
+    }
+    return std::format("({} as {})", value, GetUnsafeTypeAsString(to));
+  }
+  return std::format("<{} as {}<{}>>::{}({})", GetUnboxedTypeAsString(to),
+                     GetConversionTraitName(), GetUnboxedTypeAsString(from),
+                     convert.is_move ? "cpp_from_move" : "cpp_from", ptr);
+}
+
+const char *Converter::GetConversionTraitName() const {
+  return "CppFromUnsafe";
+}
+
+std::string Converter::DerefPtrExpr(std::string_view ptr_expr,
+                                    clang::QualType pointee_type) {
+  return std::format("({}{})", GetPointerDerefPrefix(pointee_type), ptr_expr);
 }
 
 std::string

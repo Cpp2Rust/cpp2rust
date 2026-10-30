@@ -97,6 +97,12 @@ void collectGenerics(const std::vector<TranslationRule::BodyFragment> &body,
                 std::get_if<TranslationRule::DefaultFragment>(&fragment)) {
           used.insert(generic->n);
         }
+        if (auto convert =
+                std::get_if<std::unique_ptr<TranslationRule::ConvertFragment>>(
+                    &fragment)) {
+          used.insert((*convert)->to);
+          used.insert((*convert)->from);
+        }
         return false;
       });
 }
