@@ -252,10 +252,9 @@ substituteSpecializationInRuleTmpl(clang::Sema &sema,
   return result.isInvalid() || trial.failed() ? nullptr : result.get();
 }
 
-void deduceMemberTypesFromOperands(clang::Sema &sema,
-                              clang::FunctionTemplateDecl *rule,
-                              const clang::Expr *use,
-                              std::vector<clang::TemplateArgument> &deduced) {
+void deduceMemberTypesFromOperands(
+    clang::Sema &sema, clang::FunctionTemplateDecl *rule,
+    const clang::Expr *use, std::vector<clang::TemplateArgument> &deduced) {
   auto pattern = rule->getTemplatedDecl();
   auto operands = getOperands(sema.Context, use, pattern->getNumParams());
   for (unsigned i = 0; i < operands.size() && i < pattern->getNumParams();

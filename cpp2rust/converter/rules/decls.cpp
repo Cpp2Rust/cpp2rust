@@ -127,8 +127,8 @@ getMemberParentClass(clang::QualType pattern, clang::ClassTemplateDecl *&tmpl) {
 
 std::optional<std::vector<clang::TemplateArgument>>
 getDefaultedArgumentsOfRule(clang::Sema &sema, const clang::TemplateDecl *rule,
-                   clang::ClassTemplateDecl *tmpl,
-                   const clang::TemplateSpecializationType *spec) {
+                            clang::ClassTemplateDecl *tmpl,
+                            const clang::TemplateSpecializationType *spec) {
   auto params = rule->getTemplateParameters();
   auto loc = params->getTemplateLoc();
   clang::TemplateArgumentListInfo written(loc, loc);
@@ -176,9 +176,9 @@ bool resolvesTo(clang::Sema &sema, const clang::TemplateDecl *rule,
   Trial trial(sema);
   clang::MultiLevelTemplateArgumentList bound(
       const_cast<clang::TemplateDecl *>(rule), args, /*Final=*/true);
-  auto resolved = sema.SubstType(pattern, bound,
-                                 rule->getTemplateParameters()->getTemplateLoc(),
-                                 clang::DeclarationName());
+  auto resolved = sema.SubstType(
+      pattern, bound, rule->getTemplateParameters()->getTemplateLoc(),
+      clang::DeclarationName());
   return !resolved.isNull() && !trial.failed() &&
          sema.Context.hasSameUnqualifiedType(resolved, actual);
 }
@@ -201,10 +201,10 @@ DeduceMemberType(clang::Sema &sema, const clang::TemplateDecl *rule,
       return std::nullopt;
     }
     auto owner = llvm::dyn_cast<clang::CXXRecordDecl>(alias->getDeclContext());
-    if (auto args = owner ? DeduceFromType(sema, params,
-                                           clang::QualType(spec, 0),
-                                           ctx.getCanonicalTagType(owner))
-                          : std::nullopt) {
+    if (auto args = owner
+                        ? DeduceFromType(sema, params, clang::QualType(spec, 0),
+                                         ctx.getCanonicalTagType(owner))
+                        : std::nullopt) {
       return args;
     }
   }
