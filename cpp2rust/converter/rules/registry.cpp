@@ -87,19 +87,19 @@ clang::QualType getInitPattern(const clang::FunctionDecl *rule) {
 
 void collectGenerics(const std::vector<TranslationRule::BodyFragment> &body,
                      std::unordered_set<unsigned> &used) {
-  TranslationRule::AnyFragment(
-      body, [&](const TranslationRule::BodyFragment &fragment) {
-        if (auto generic =
-                std::get_if<TranslationRule::GenericFragment>(&fragment)) {
-          used.insert(generic->n);
-        }
-        if (auto call = std::get_if<
-                std::unique_ptr<TranslationRule::GenericCallFragment>>(
+  TranslationRule::AnyFragment(body, [&](const TranslationRule::BodyFragment
+                                             &fragment) {
+    if (auto generic =
+            std::get_if<TranslationRule::GenericFragment>(&fragment)) {
+      used.insert(generic->n);
+    }
+    if (auto call =
+            std::get_if<std::unique_ptr<TranslationRule::GenericCallFragment>>(
                 &fragment)) {
-          used.insert((*call)->generic);
-        }
-        return false;
-      });
+      used.insert((*call)->generic);
+    }
+    return false;
+  });
 }
 
 void collectGenerics(llvm::StringRef type, std::unordered_set<unsigned> &used) {

@@ -194,7 +194,8 @@ impl<'a> FragmentCtx<'a> {
                     ast::CallExpr::cast(node.clone()).and_then(|call| self.generic_call(&call))
                 {
                     self.flush_text();
-                    self.fragments.push(BodyFragment::GenericCall { generic_call });
+                    self.fragments
+                        .push(BodyFragment::GenericCall { generic_call });
                     return;
                 }
                 for child in node.children_with_tokens() {
@@ -296,7 +297,11 @@ impl<'a> FragmentCtx<'a> {
                 ctx.finish()
             })
             .collect();
-        Some(GenericCallInner { generic, method, args })
+        Some(GenericCallInner {
+            generic,
+            method,
+            args,
+        })
     }
 
     fn emit_method_call(&mut self, call: &ast::MethodCallExpr) {

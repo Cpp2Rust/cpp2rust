@@ -5186,24 +5186,31 @@ std::string Converter::ConvertIRFragment(
           ConvertIRFragment((*re)->inner, bindings, expr, args, num_args, ctx);
     } else if (auto *call =
                    std::get_if<std::unique_ptr<GenericCallFragment>>(&frag)) {
-      result +=
-          ConvertGenericCall(**call, bindings, expr, args, num_args, ctx);
+      result += ConvertGenericCall(**call, bindings, expr, args, num_args, ctx);
     }
   }
 
   return result;
 }
 
-std::string Converter::ConvertGenericCall(
-    const TranslationRule::GenericCallFragment &call,
-    llvm::ArrayRef<clang::TemplateArgument> bindings, clang::Expr *expr,
-    clang::Expr **args, unsigned num_args, TempMaterializationCtx *ctx) {
+std::string
+Converter::ConvertGenericCall(const TranslationRule::GenericCallFragment &call,
+                              llvm::ArrayRef<clang::TemplateArgument> bindings,
+                              clang::Expr *expr, clang::Expr **args,
+                              unsigned num_args, TempMaterializationCtx *ctx) {
   std::vector<std::string> call_args;
   for (const auto &arg : call.args) {
     call_args.push_back(
         ConvertIRFragment(arg, bindings, expr, args, num_args, ctx));
   }
-  auto type = RuleRegistry::GetGenericType(ctx_, expr, call.generic);
+  clang::QualType type;
+  if (call.generic <= bindings.size() &&
+      bindings[call.generic - 1].getKind() == clang::TemplateArgument::Type) {
+    type = bindings[call.generic - 1].getAsType();
+  } else {
+    assert(expr && "unbound generic outside an expression rule");
+    type = RuleRegistry::GetGenericType(ctx_, expr, call.generic);
+  }
   if (call.method == "default") {
     assert(call_args.empty() && "default takes no arguments");
     return GetUnboxedDefaultAsString(type);

@@ -4,7 +4,6 @@
 #include "converter/translation_rule.h"
 
 #include <llvm/ADT/STLExtras.h>
-
 #include <llvm/Support/JSON.h>
 
 #include <algorithm>
@@ -155,8 +154,7 @@ bool AnyFragment(const std::vector<BodyFragment> &body,
     if (auto *re = std::get_if<std::unique_ptr<RefExprFragment>>(&frag)) {
       return AnyFragment((*re)->inner, pred);
     }
-    if (auto *call =
-            std::get_if<std::unique_ptr<GenericCallFragment>>(&frag)) {
+    if (auto *call = std::get_if<std::unique_ptr<GenericCallFragment>>(&frag)) {
       return llvm::any_of((*call)->args, [&](const auto &arg) {
         return AnyFragment(arg, pred);
       });
