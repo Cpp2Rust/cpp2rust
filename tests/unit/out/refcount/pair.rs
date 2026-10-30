@@ -23,18 +23,13 @@ fn main_0() -> i32 {
     )));
     assert!(((*(*p2.borrow()).0.borrow()) == 3_f64));
     assert!(((*(*p2.borrow()).1.borrow()) == 4));
-    let p3: Value<(Value<f64>, Value<i32>)> = Rc::new(RefCell::new((
-        Rc::new(RefCell::new(<f64 as CppFrom<i32>>::cpp_from_move(
-            (Rc::new(RefCell::new(5)), Rc::new(RefCell::new(6)))
-                .0
-                .as_pointer(),
-        ))),
-        Rc::new(RefCell::new(<i32 as CppFrom<i32>>::cpp_from_move(
-            (Rc::new(RefCell::new(5)), Rc::new(RefCell::new(6)))
-                .1
-                .as_pointer(),
-        ))),
-    )));
+    let p3: Value<(Value<f64>, Value<i32>)> = Rc::new(RefCell::new({
+        let __a0 = (Rc::new(RefCell::new(5)), Rc::new(RefCell::new(6)));
+        (
+            Rc::new(RefCell::new((*__a0.0.borrow() as f64))),
+            Rc::new(RefCell::new(*__a0.1.borrow())),
+        )
+    }));
     assert!(((*(*p3.borrow()).0.borrow()) == 5_f64));
     assert!(((*(*p3.borrow()).1.borrow()) == 6));
     let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2])));
@@ -49,30 +44,20 @@ fn main_0() -> i32 {
             })
             .collect::<Vec<_>>(),
     ));
-    const_ptr_pairs.decay().offset(0_usize).write((
-        Rc::new(RefCell::new(
-            <Ptr<i32> as CppFrom<Ptr<i32>>>::cpp_from_move(
-                (
-                    Rc::new(RefCell::new(
-                        (arr.as_pointer() as Ptr<i32>).offset((1) as isize),
-                    )),
-                    Rc::new(RefCell::new(n)),
-                )
-                    .0
-                    .as_pointer(),
-            ),
-        )),
-        Rc::new(RefCell::new(<u64 as CppFrom<u32>>::cpp_from_move(
-            (
-                Rc::new(RefCell::new(
-                    (arr.as_pointer() as Ptr<i32>).offset((1) as isize),
-                )),
-                Rc::new(RefCell::new(n)),
-            )
-                .1
-                .as_pointer(),
-        ))),
-    ));
+    {
+        let __a1 = (
+            Rc::new(RefCell::new(
+                (arr.as_pointer() as Ptr<i32>).offset((1) as isize),
+            )),
+            Rc::new(RefCell::new(n)),
+        );
+        const_ptr_pairs.decay().offset(0_usize).write((
+            Rc::new(RefCell::new(
+                <Ptr<i32> as CppFrom<Ptr<i32>>>::cpp_from_move(__a1.0.as_pointer()),
+            )),
+            Rc::new(RefCell::new((*__a1.1.borrow() as u64))),
+        ))
+    };
     assert!(
         (((*(*const_ptr_pairs.borrow())[0_usize].0.borrow()).read()) == 2)
             && ((*(*const_ptr_pairs.borrow())[0_usize].1.borrow()) == 2_u64)
