@@ -129,6 +129,6 @@ unsafe fn f26<T1: UnsafeCppBidirectionalIterator<T2>, T2>(a0: T1) -> T1 {
     __it.iter_dec()
 }
 
-unsafe fn f27<T1: UnsafeCppInputIterator<T2> + PartialEq<T3>, T2, T3: UnsafeCppInputIterator<T2>>(a0: T1, a1: T3) -> bool {
+unsafe fn f27<T1: UnsafeCppInputIterator<T3> + PartialEq<T2>, T2: UnsafeCppInputIterator<T3>, T3>(a0: T1, a1: T2) -> bool {
     a0 == a1
 }

@@ -388,18 +388,16 @@ T1 &f26(T3 &&a0) {
   return --a0;
 }
 
-template <
-    typename T1, typename T2 = typename std::iterator_traits<T1>::value_type,
-    typename T3,
-    typename = typename std::enable_if<
-        std::is_base_of<
-            std::input_iterator_tag,
-            typename std::iterator_traits<T1>::iterator_category>::value &&
-        std::is_base_of<
-            std::input_iterator_tag,
-            typename std::iterator_traits<T3>::iterator_category>::value &&
-        !std::is_same<T1, T3>::value && !std::is_pointer<T1>::value &&
-        !std::is_pointer<T3>::value>::type>
-bool f27(const T1 &a0, const T3 &a1) {
+template <typename T1, typename T2,
+          typename = typename std::enable_if<
+              std::is_base_of<std::input_iterator_tag,
+                              typename std::iterator_traits<
+                                  T1>::iterator_category>::value &&
+              std::is_base_of<std::input_iterator_tag,
+                              typename std::iterator_traits<
+                                  T2>::iterator_category>::value &&
+              !std::is_same<T1, T2>::value && !std::is_pointer<T1>::value &&
+              !std::is_pointer<T2>::value>::type>
+auto f27(const T1 &a0, const T2 &a1) -> decltype(a0 == a1) {
   return a0 == a1;
 }
