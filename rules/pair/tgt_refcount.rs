@@ -84,40 +84,40 @@ fn f22<T1, T2>(a0: (Value<T1>, Value<T2>)) -> Ptr<T2> {
     a0.1.as_pointer()
 }
 
-fn f23<T1: TryFrom<T3>, T2: TryFrom<T4>, T3: Clone, T4: Clone>(
-    a0: (Value<T3>, Value<T4>),
+fn f23<T1: CppFrom<T3>, T2: CppFrom<T4>, T3, T4>(
+    a0: &mut (Value<T3>, Value<T4>),
 ) -> (Value<T1>, Value<T2>) {
     (
-        Rc::new(RefCell::new(a0.0.borrow().clone().try_into().ok().expect("failed conversion"))),
-        Rc::new(RefCell::new(a0.1.borrow().clone().try_into().ok().expect("failed conversion"))),
+        Rc::new(RefCell::new(T1::cpp_from_move(a0.0.as_pointer()))),
+        Rc::new(RefCell::new(T2::cpp_from_move(a0.1.as_pointer()))),
     )
 }
 
-fn f24<T1: TryFrom<T3>, T2: TryFrom<T4>, T3: Clone, T4: Clone>(
+fn f24<T1: CppFrom<T3>, T2: CppFrom<T4>, T3, T4>(
     a0: (Value<T3>, Value<T4>),
 ) -> (Value<T1>, Value<T2>) {
     (
-        Rc::new(RefCell::new(a0.0.borrow().clone().try_into().ok().expect("failed conversion"))),
-        Rc::new(RefCell::new(a0.1.borrow().clone().try_into().ok().expect("failed conversion"))),
+        Rc::new(RefCell::new(T1::cpp_from(a0.0.as_pointer()))),
+        Rc::new(RefCell::new(T2::cpp_from(a0.1.as_pointer()))),
     )
 }
 
-fn f25<T1: TryFrom<T3> + ByteRepr, T2: TryFrom<T4> + ByteRepr, T3: Clone, T4: Clone>(
+fn f25<T1: CppFrom<T3> + ByteRepr, T2: CppFrom<T4> + ByteRepr, T3, T4>(
     a0: Ptr<(Value<T1>, Value<T2>)>,
     a1: (Value<T3>, Value<T4>),
 ) {
     a0.write((
-        Rc::new(RefCell::new(a1.0.borrow().clone().try_into().ok().expect("failed conversion"))),
-        Rc::new(RefCell::new(a1.1.borrow().clone().try_into().ok().expect("failed conversion"))),
+        Rc::new(RefCell::new(T1::cpp_from(a1.0.as_pointer()))),
+        Rc::new(RefCell::new(T2::cpp_from(a1.1.as_pointer()))),
     ))
 }
 
-fn f26<T1: TryFrom<T3> + ByteRepr, T2: TryFrom<T4> + ByteRepr, T3: Clone, T4: Clone>(
+fn f26<T1: CppFrom<T3> + ByteRepr, T2: CppFrom<T4> + ByteRepr, T3, T4>(
     a0: Ptr<(Value<T1>, Value<T2>)>,
-    a1: (Value<T3>, Value<T4>),
+    a1: &mut (Value<T3>, Value<T4>),
 ) {
     a0.write((
-        Rc::new(RefCell::new(a1.0.borrow().clone().try_into().ok().expect("failed conversion"))),
-        Rc::new(RefCell::new(a1.1.borrow().clone().try_into().ok().expect("failed conversion"))),
+        Rc::new(RefCell::new(T1::cpp_from_move(a1.0.as_pointer()))),
+        Rc::new(RefCell::new(T2::cpp_from_move(a1.1.as_pointer()))),
     ))
 }
