@@ -178,6 +178,9 @@ public:
 
   void EmitReprC(clang::RecordDecl *decl);
   void EmitDerives(const clang::RecordDecl *decl);
+
+  void EmitConversionAttrs(clang::CXXRecordDecl *decl);
+
   virtual void EmitRustUnion(clang::RecordDecl *decl);
 
   virtual bool EmitsReprCForRecords() const { return true; }
@@ -303,6 +306,20 @@ public:
                     llvm::ArrayRef<clang::TemplateArgument> bindings,
                     clang::Expr *expr, clang::Expr **args, unsigned num_args,
                     TempMaterializationCtx *ctx);
+
+  std::string
+  ConvertGenericCall(const TranslationRule::GenericCallFragment &call,
+                     llvm::ArrayRef<clang::TemplateArgument> bindings,
+                     clang::Expr *expr, clang::Expr **args, unsigned num_args,
+                     TempMaterializationCtx *ctx);
+
+  std::string ConvertConversion(clang::QualType to, clang::QualType from,
+                                bool is_move, const std::string &ptr);
+
+  virtual const char *GetConversionTraitName() const;
+
+  virtual std::string DerefPtrExpr(std::string_view ptr_expr,
+                                   clang::QualType pointee_type);
 
   struct PlaceholderCtx {
     unsigned arg_idx;
@@ -865,6 +882,8 @@ protected:
   void ConvertConstructFromArgs(clang::QualType type,
                                 llvm::ArrayRef<clang::Expr *> args,
                                 clang::SourceLocation loc);
+
+  void ConvertInit(clang::QualType type, clang::Expr *init);
 
   virtual void ConvertConstructedValue(clang::QualType type,
                                        clang::CXXConstructExpr *ctor);

@@ -10,6 +10,7 @@
 #include <clang/Basic/Version.h>
 #include <clang/Sema/Template.h>
 #include <llvm/ADT/DenseMap.h>
+#include <llvm/ADT/StringExtras.h>
 #include <llvm/Support/ConvertUTF.h>
 #include <llvm/Support/ErrorHandling.h>
 
@@ -879,6 +880,9 @@ void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
     EmitReprC(decl);
   }
   EmitDerives(decl);
+  if (auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl)) {
+    EmitConversionAttrs(cxx);
+  }
   EmitByteSizeAttr(decl);
 
   // Fields
@@ -954,6 +958,41 @@ void Converter::EmitDerives(const clang::RecordDecl *decl) {
     StrCat(attr, ',');
   }
   StrCat(")]");
+}
+
+void Converter::EmitConversionAttrs(clang::CXXRecordDecl *decl) {
+  std::unordered_set<std::string> from_types;
+  ForEachConvertingConstructor(decl, [&](clang::CXXConstructorDecl *ctor) {
+    auto *param = ctor->getParamDecl(0);
+    auto type = param->getType();
+    auto source =
+        GetUnboxedTypeAsString(type.getNonReferenceType().getUnqualifiedType());
+    bool is_move = type->isRValueReferenceType();
+    if (!from_types.insert(source + (is_move ? "&&" : "")).second) {
+      return;
+    }
+    const char *kind =
+        !type->isReferenceType()                                   ? "value"
+        : is_move || type.getNonReferenceType().isConstQualified() ? "ptr"
+                                                                   : "mut_ptr";
+    StrCat(std::format(
+        "#[{}({}, {}, {}{})]", is_move ? "cpp_from_move" : "cpp_from", source,
+        GetCtorName(ctor), param->hasDefaultArg() ? "some_" : "", kind));
+  });
+  std::unordered_set<std::string> into_types;
+  ForEachMethod(decl, [&](clang::CXXMethodDecl *method) {
+    if (!IsImplicitConversionOperator(method)) {
+      return;
+    }
+    auto *conversion = clang::cast<clang::CXXConversionDecl>(method);
+    auto target = GetUnboxedTypeAsString(
+        conversion->getConversionType().getUnqualifiedType());
+    if (!into_types.insert(target).second) {
+      return;
+    }
+    StrCat(
+        std::format("#[cpp_into({}, {})]", target, GetMethodName(conversion)));
+  });
 }
 
 void Converter::EmitReprC(clang::RecordDecl *decl) {
@@ -4208,6 +4247,10 @@ Converter::GetStructAttributes(const clang::RecordDecl *decl) {
     struct_attrs.emplace_back("MoveCtorUnsafe");
   }
 
+  if (HasImplicitConversions(decl)) {
+    struct_attrs.emplace_back("CppFromUnsafe");
+  }
+
   if (HasCopyAssignOperator(decl)) {
     struct_attrs.emplace_back("CopyAssignUnsafe");
   }
@@ -4946,6 +4989,14 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
                        ToStringBase(ctx_.getPointerType(elem)));
   }
 
+  if (auto *init =
+          RuleRegistry::BuildParamConversion(ctx_, expr, ph_ctx.arg_idx, arg)) {
+    Buffer buf(*this);
+    PushExprKind push(*this, ExprKind::RValue);
+    ConvertInit(init->getType(), init);
+    return std::move(buf).str();
+  }
+
   if (ph_ctx.needs_materialization()) {
     auto materialized = ph_ctx.materialize_ctx->GetOrMaterialize(
         static_cast<unsigned>(ph_ctx.materialize_idx),
@@ -5093,11 +5144,6 @@ std::string Converter::ConvertIRFragment(
       result += t->text;
     } else if (auto *g = std::get_if<GenericFragment>(&frag)) {
       result += GetTemplateArgumentAsString(bindings[g->n - 1]);
-    } else if (auto *d = std::get_if<DefaultFragment>(&frag)) {
-      auto &arg = bindings[d->n - 1];
-      assert(arg.getKind() == clang::TemplateArgument::Type &&
-             "default of a non-type generic");
-      result += GetUnboxedDefaultAsString(arg.getAsType());
     } else if (auto *ph = std::get_if<PlaceholderFragment>(&frag)) {
       assert(expr && "placeholder outside an expression rule");
       auto arg_idx = ph->n;
@@ -5138,10 +5184,76 @@ std::string Converter::ConvertIRFragment(
       result +=
           (*re)->prefix + ' ' +
           ConvertIRFragment((*re)->inner, bindings, expr, args, num_args, ctx);
+    } else if (auto *call =
+                   std::get_if<std::unique_ptr<GenericCallFragment>>(&frag)) {
+      result += ConvertGenericCall(**call, bindings, expr, args, num_args, ctx);
     }
   }
 
   return result;
+}
+
+std::string
+Converter::ConvertGenericCall(const TranslationRule::GenericCallFragment &call,
+                              llvm::ArrayRef<clang::TemplateArgument> bindings,
+                              clang::Expr *expr, clang::Expr **args,
+                              unsigned num_args, TempMaterializationCtx *ctx) {
+  std::vector<std::string> call_args;
+  for (const auto &arg : call.args) {
+    call_args.push_back(
+        ConvertIRFragment(arg, bindings, expr, args, num_args, ctx));
+  }
+  clang::QualType type;
+  if (call.generic <= bindings.size() &&
+      bindings[call.generic - 1].getKind() == clang::TemplateArgument::Type) {
+    type = bindings[call.generic - 1].getAsType();
+  } else {
+    assert(expr && "unbound generic outside an expression rule");
+    type = RuleRegistry::GetGenericType(ctx_, expr, call.generic);
+  }
+  if (call.method == "default") {
+    assert(call_args.empty() && "default takes no arguments");
+    return GetUnboxedDefaultAsString(type);
+  }
+  if (call.method == "cpp_from" || call.method == "cpp_from_move") {
+    assert(call_args.size() == 1 && "cpp_from takes one argument");
+    return ConvertConversion(
+        type, RuleRegistry::GetConversionSourceType(ctx_, expr, call.generic),
+        call.method == "cpp_from_move", call_args[0]);
+  }
+  return std::format("<{}>::{}({})", GetUnboxedTypeAsString(type), call.method,
+                     llvm::join(call_args, ", "));
+}
+
+std::string Converter::ConvertConversion(clang::QualType to,
+                                         clang::QualType from, bool is_move,
+                                         const std::string &ptr) {
+  if (to->isArithmeticType() && from->isArithmeticType()) {
+    auto value = DerefPtrExpr(ptr, from);
+    if (ctx_.hasSameUnqualifiedType(to, from)) {
+      return value;
+    }
+    if (to->isBooleanType()) {
+      return std::format("({} != {})", value,
+                         from->isFloatingType() ? "0.0" : "0");
+    }
+    if (from->isBooleanType() && to->isFloatingType()) {
+      return std::format("({} as u8 as {})", value, GetUnsafeTypeAsString(to));
+    }
+    return std::format("({} as {})", value, GetUnsafeTypeAsString(to));
+  }
+  return std::format("<{} as {}<{}>>::{}({})", GetUnboxedTypeAsString(to),
+                     GetConversionTraitName(), GetUnboxedTypeAsString(from),
+                     is_move ? "cpp_from_move" : "cpp_from", ptr);
+}
+
+const char *Converter::GetConversionTraitName() const {
+  return "CppFromUnsafe";
+}
+
+std::string Converter::DerefPtrExpr(std::string_view ptr_expr,
+                                    clang::QualType pointee_type) {
+  return std::format("({}{})", GetPointerDerefPrefix(pointee_type), ptr_expr);
 }
 
 std::string
@@ -5180,14 +5292,18 @@ void Converter::ConvertConstructFromArgs(clang::QualType type,
                                          clang::SourceLocation loc) {
   auto *init = BuildInitExpr(GetSema(), type, args, loc);
   assert(init && "type cannot be initialized from the arguments");
+  if (args.empty() &&
+      !clang::isa<clang::CXXConstructExpr>(init->IgnoreImplicit())) {
+    StrCat(GetDefaultAsString(type));
+    return;
+  }
+  ConvertInit(type, init);
+}
+
+void Converter::ConvertInit(clang::QualType type, clang::Expr *init) {
   if (auto *ctor =
           clang::dyn_cast<clang::CXXConstructExpr>(init->IgnoreImplicit())) {
     ConvertConstructedValue(type, ctor);
-    return;
-  }
-
-  if (args.empty()) {
-    StrCat(GetDefaultAsString(type));
     return;
   }
   Convert(init);

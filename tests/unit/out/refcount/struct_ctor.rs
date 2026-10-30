@@ -26,7 +26,8 @@ impl StructWithCtor {
 pub fn foo_0(x: Ptr<i32>) -> Ptr<i32> {
     return (x).clone();
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
+#[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct Value_ {
     #[offset(0)]

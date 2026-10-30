@@ -7,10 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn make_std_pair_0(mut x: i32) -> (Value<i32>, Value<bool>) {
-    return (
-        Rc::new(RefCell::new(x.try_into().expect("failed conversion"))),
-        Rc::new(RefCell::new((x > 0).try_into().expect("failed conversion"))),
-    );
+    return (Rc::new(RefCell::new(x)), Rc::new(RefCell::new((x > 0))));
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -24,8 +21,8 @@ fn main_0() -> i32 {
     assert!(((value.read()) == 5));
     assert!(((positive.read()) as bool));
     let p: Value<(Value<i32>, Value<i32>)> = Rc::new(RefCell::new((
-        Rc::new(RefCell::new(1.try_into().expect("failed conversion"))),
-        Rc::new(RefCell::new(2.try_into().expect("failed conversion"))),
+        Rc::new(RefCell::new(1)),
+        Rc::new(RefCell::new(2)),
     )));
     let __decomp_2: Value<(Value<i32>, Value<i32>)> = Rc::new(RefCell::new((
         Rc::new(RefCell::new((*p.borrow()).0.borrow().clone())),

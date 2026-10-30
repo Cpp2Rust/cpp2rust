@@ -9,7 +9,7 @@ fn t2() -> ::std::fs::File {
     ::std::fs::File::open("").unwrap()
 }
 
-fn t3() -> ::std::fs::File {
+fn t3<T1>() -> ::std::fs::File {
     ::std::fs::File::open("").unwrap()
 }
 

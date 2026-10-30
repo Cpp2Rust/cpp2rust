@@ -5,6 +5,7 @@ use proc_macro::TokenStream;
 
 mod assign;
 mod byte_repr;
+mod cpp_from;
 mod destructor;
 mod fn_ptr_arg;
 mod goto;
@@ -216,4 +217,21 @@ pub fn derive_destructor(input: TokenStream) -> TokenStream {
 #[proc_macro_derive(DestructorUnsafe)]
 pub fn derive_destructor_unsafe(input: TokenStream) -> TokenStream {
     destructor::expand(input, true)
+}
+
+//     #[derive(CppFrom)]
+//     #[cpp_from(i32, new, value)]
+//     #[cpp_into(i32, to_i32)]
+//     pub struct S { ... }
+//
+// Encodes the C++ converting construction and conversion operators in rules.
+
+#[proc_macro_derive(CppFrom, attributes(cpp_from, cpp_from_move, cpp_into))]
+pub fn derive_cpp_from(input: TokenStream) -> TokenStream {
+    cpp_from::expand(input, false)
+}
+
+#[proc_macro_derive(CppFromUnsafe, attributes(cpp_from, cpp_from_move, cpp_into))]
+pub fn derive_cpp_from_unsafe(input: TokenStream) -> TokenStream {
+    cpp_from::expand(input, true)
 }

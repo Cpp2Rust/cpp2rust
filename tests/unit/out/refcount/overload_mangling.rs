@@ -61,10 +61,7 @@ fn main_0() -> i32 {
         (({
             SImpl::pick_8(
                 &s.as_pointer(),
-                (
-                    Rc::new(RefCell::new(1.try_into().expect("failed conversion"))),
-                    Rc::new(RefCell::new(2.try_into().expect("failed conversion"))),
-                ),
+                (Rc::new(RefCell::new(1)), Rc::new(RefCell::new(2))),
             )
         }) == 101)
     );
@@ -72,10 +69,7 @@ fn main_0() -> i32 {
         (({
             SImpl::pick_9(
                 &s.as_pointer(),
-                (
-                    Rc::new(RefCell::new(1.try_into().expect("failed conversion"))),
-                    Rc::new(RefCell::new(2_i64.try_into().expect("failed conversion"))),
-                ),
+                (Rc::new(RefCell::new(1)), Rc::new(RefCell::new(2_i64))),
             )
         }) == 102)
     );
@@ -90,8 +84,8 @@ fn main_0() -> i32 {
     assert!(
         (({
             let _p: Value<(Value<i32>, Value<i64>)> = Rc::new(RefCell::new((
-                Rc::new(RefCell::new(1.try_into().expect("failed conversion"))),
-                Rc::new(RefCell::new(2_i64.try_into().expect("failed conversion"))),
+                Rc::new(RefCell::new(1)),
+                Rc::new(RefCell::new(2_i64)),
             )));
             SImpl::combine_13(
                 &s.as_pointer(),
@@ -106,8 +100,8 @@ fn main_0() -> i32 {
     assert!(
         (({
             let _p: Value<(Value<i32>, Value<i32>)> = Rc::new(RefCell::new((
-                Rc::new(RefCell::new(1.try_into().expect("failed conversion"))),
-                Rc::new(RefCell::new(2.try_into().expect("failed conversion"))),
+                Rc::new(RefCell::new(1)),
+                Rc::new(RefCell::new(2)),
             )));
             SImpl::combine_14(
                 &s.as_pointer(),

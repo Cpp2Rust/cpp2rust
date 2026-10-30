@@ -8,16 +8,17 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub static mut copies_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
-#[derive(VaArg, FnPtrArg, MoveCtorUnsafe, CopyAssignUnsafe, MoveAssignUnsafe)]
+#[derive(VaArg, FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, CopyAssignUnsafe, MoveAssignUnsafe)]
+#[cpp_from(i32, new_1, value)]
 pub struct Tracked {
     pub v: i32,
 }
 impl Tracked {
-    pub unsafe fn new_1() -> Self {
+    pub unsafe fn new_2() -> Self {
         let mut this = Self { v: 0 };
         this
     }
-    pub unsafe fn new_2(mut v: i32) -> Self {
+    pub unsafe fn new_1(mut v: i32) -> Self {
         let mut this = Self { v: v };
         this
     }
@@ -74,7 +75,7 @@ impl Clone for Tracked {
 }
 impl Default for Tracked {
     fn default() -> Self {
-        unsafe { Tracked::new_1() }
+        unsafe { Tracked::new_2() }
     }
 }
 pub unsafe fn operator_lt_1(a: *const Tracked, b: *const Tracked) -> bool {
@@ -138,11 +139,11 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut arr: [Tracked; 5] = [
-        Tracked::new_2({ 3 }),
-        Tracked::new_2({ 1 }),
-        Tracked::new_2({ 4 }),
-        Tracked::new_2({ 1 }),
-        Tracked::new_2({ 5 }),
+        Tracked::new_1({ 3 }),
+        Tracked::new_1({ 1 }),
+        Tracked::new_1({ 4 }),
+        Tracked::new_1({ 1 }),
+        Tracked::new_1({ 5 }),
     ];
     {
         let __first = arr.as_mut_ptr();
@@ -173,19 +174,19 @@ unsafe fn main_0() -> i32 {
         vec_.reserve_exact(4_usize as usize - len_0 as usize);
     };
     {
-        let __init = Tracked::new_2({ 2 });
+        let __init = Tracked::new_1({ 2 });
         vec_.push(__init)
     };
     {
-        let __init = Tracked::new_2({ 7 });
+        let __init = Tracked::new_1({ 7 });
         vec_.push(__init)
     };
     {
-        let __init = Tracked::new_2({ 1 });
+        let __init = Tracked::new_1({ 1 });
         vec_.push(__init)
     };
     {
-        let __init = Tracked::new_2({ 8 });
+        let __init = Tracked::new_1({ 8 });
         vec_.push(__init)
     };
     {
@@ -296,15 +297,15 @@ unsafe fn main_0() -> i32 {
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
     let mut bags: [Bag; 3] = std::array::from_fn::<_, 3, _>(|_| <Bag>::default());
     {
-        let __init = Tracked::new_2({ 1 });
+        let __init = Tracked::new_1({ 1 });
         bags[(0) as usize].items.push(__init)
     };
     {
-        let __init = Tracked::new_2({ 2 });
+        let __init = Tracked::new_1({ 2 });
         bags[(0) as usize].items.push(__init)
     };
     {
-        let __init = Tracked::new_2({ 3 });
+        let __init = Tracked::new_1({ 3 });
         bags[(2) as usize].items.push(__init)
     };
     {
@@ -332,15 +333,15 @@ unsafe fn main_0() -> i32 {
         .map(|_| <Bag>::default())
         .collect::<Vec<_>>();
     {
-        let __init = Tracked::new_2({ 4 });
+        let __init = Tracked::new_1({ 4 });
         bag_vec[(1_usize)].items.push(__init)
     };
     {
-        let __init = Tracked::new_2({ 5 });
+        let __init = Tracked::new_1({ 5 });
         bag_vec[(1_usize)].items.push(__init)
     };
     {
-        let __init = Tracked::new_2({ 6 });
+        let __init = Tracked::new_1({ 6 });
         bag_vec[(2_usize)].items.push(__init)
     };
     {

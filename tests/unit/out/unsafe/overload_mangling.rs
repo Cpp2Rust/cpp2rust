@@ -138,22 +138,22 @@ unsafe fn main_0() -> i32 {
             S::take_7(&s, &mut _x)
         }) == (107))
     );
-    assert!(((unsafe { S::pick_8(&s, (1.into(), 2.into()),) }) == (101)));
-    assert!(((unsafe { S::pick_9(&s, (1.into(), 2_i64.into()),) }) == (102)));
+    assert!(((unsafe { S::pick_8(&s, (1, 2),) }) == (101)));
+    assert!(((unsafe { S::pick_9(&s, (1, 2_i64),) }) == (102)));
     assert!(((unsafe { S::apply_10(&s, Some(inc_0), 1,) }) == (102)));
     assert!(((unsafe { S::apply_11(&s, Some(add_1), 1,) }) == (111)));
     assert!(((unsafe { S::apply_12(&s, Some(twice_2), 3,) }) == (106)));
     let c: i32 = 3;
     assert!(
         ((unsafe {
-            let mut _p: (i32, i64) = (1.into(), 2_i64.into());
+            let mut _p: (i32, i64) = (1, 2_i64);
             S::combine_13(&s, &mut _p, Some(twice_2), (&c as *const i32), 4_u64)
         }) == (112))
     );
     let mut z: i32 = 1;
     assert!(
         ((unsafe {
-            let mut _p: (i32, i32) = (1.into(), 2.into());
+            let mut _p: (i32, i32) = (1, 2);
             S::combine_14(&s, &mut _p, Some(add_1), (&mut z as *mut i32), 5_u64)
         }) == (107))
     );

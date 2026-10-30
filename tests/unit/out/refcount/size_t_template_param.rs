@@ -10,7 +10,8 @@ pub fn array_ref_0(a: Ptr<u64>) -> u64 {
     elem!((a), 0).write({ (elem!((a), 0).read()).wrapping_add(1_u64) });
     return (elem!((a), (3_u64 as u64).wrapping_sub(1_u64)).read());
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
+#[cpp_from(Ptr< u64  >  , new, value)]
 #[byte_size(8)]
 pub struct PtrCtor_unsigned_long_ {
     #[offset(0)]
@@ -23,7 +24,8 @@ impl PtrCtor_unsigned_long_ {
         }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
+#[cpp_from(u64, new, ptr)]
 #[byte_size(8)]
 pub struct RefCtor_unsigned_long_ {
     #[offset(0)]

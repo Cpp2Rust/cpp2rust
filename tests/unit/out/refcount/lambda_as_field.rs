@@ -63,7 +63,8 @@ pub struct Holder__lambda_at_lambda_as_field_cpp_51_12__ {
     #[offset(4)]
     pub calls: i32,
 }
-#[derive(Record, ByteRepr, FnPtrArg, MoveCtor)]
+#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, CppFrom)]
+#[cpp_from(FnPtr<fn(i32  ,) -> i32  >  , new, value)]
 #[byte_size(8)]
 pub struct Moving__lambda_at_lambda_as_field_cpp_64_12__ {
     #[offset(0)]

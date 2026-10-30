@@ -12,7 +12,8 @@ pub struct Inner {
     pub x: i32,
 }
 #[repr(C)]
-#[derive(Clone, VaArg, FnPtrArg, DestructorUnsafe, Default)]
+#[derive(Clone, VaArg, FnPtrArg, CppFromUnsafe, DestructorUnsafe, Default)]
+#[cpp_from(i32, new, value)]
 pub struct Explicit {
     pub v: i32,
     pub inner: Inner,
@@ -37,7 +38,10 @@ pub struct Implicit {
     pub arr: [i32; 2],
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
+#[derive(
+    Copy, Clone, VaArg, FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, MoveAssignUnsafe, Default,
+)]
+#[cpp_from(i32, new, value)]
 pub struct DefaultCopyUserMove {
     pub v: i32,
 }
@@ -58,7 +62,10 @@ impl DefaultCopyUserMove {
     }
 }
 #[repr(C)]
-#[derive(VaArg, FnPtrArg, MoveCtorUnsafe, CopyAssignUnsafe, MoveAssignUnsafe, Default)]
+#[derive(
+    VaArg, FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, CopyAssignUnsafe, MoveAssignUnsafe, Default,
+)]
+#[cpp_from(i32, new, value)]
 pub struct UserCopyDefaultMove {
     pub v: i32,
 }
@@ -98,7 +105,8 @@ impl Clone for UserCopyDefaultMove {
     }
 }
 #[repr(C)]
-#[derive(FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
+#[derive(FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, MoveAssignUnsafe, Default)]
+#[cpp_from(i32, new, value)]
 pub struct Buffer {
     pub data: Vec<i32>,
     pub rows: Vec<Vec<i32>>,
@@ -198,7 +206,8 @@ impl Copyable {
     }
 }
 #[repr(C)]
-#[derive(FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, DestructorUnsafe, Default)]
+#[derive(FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, MoveAssignUnsafe, DestructorUnsafe, Default)]
+#[cpp_from(i32, new, value)]
 pub struct Holder {
     pub inner: Inner,
     pub e: Explicit,

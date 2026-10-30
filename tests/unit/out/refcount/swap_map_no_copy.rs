@@ -9,17 +9,18 @@ use std::rc::{Rc, Weak};
 thread_local!(
     pub static copies_0: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, CopyAssign, MoveAssign)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, CppFrom, CopyAssign, MoveAssign)]
+#[cpp_from(i32, new_1, value)]
 #[byte_size(4)]
 pub struct Tracked {
     #[offset(0)]
     pub v: i32,
 }
 impl Tracked {
-    pub fn new_1() -> Self {
+    pub fn new_2() -> Self {
         Self { v: 0 }
     }
-    pub fn new_2(mut v: i32) -> Self {
+    pub fn new_1(mut v: i32) -> Self {
         Self { v: v }
     }
     pub fn copy_from(o: Ptr<Tracked>) -> Self {
@@ -43,7 +44,7 @@ impl Clone for Tracked {
 }
 impl Default for Tracked {
     fn default() -> Self {
-        { Tracked::new_1() }
+        { Tracked::new_2() }
     }
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, CopyAssign, MoveAssign, Default)]
@@ -106,7 +107,8 @@ thread_local!(
 thread_local!(
     pub static copy_only_dtors_2: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, CopyAssign, Destructor, Default)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, CppFrom, CopyAssign, Destructor, Default)]
+#[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct CopyOnly {
     #[offset(0)]
@@ -150,8 +152,18 @@ thread_local!(
     pub static moved_dtors_5: Value<i32> = Rc::new(RefCell::new(0));
 );
 #[derive(
-    Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, CopyAssign, MoveAssign, Destructor, Default,
+    Record,
+    ByteRepr,
+    VaArg,
+    FnPtrArg,
+    MoveCtor,
+    CppFrom,
+    CopyAssign,
+    MoveAssign,
+    Destructor,
+    Default,
 )]
+#[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct Moved {
     #[offset(0)]
@@ -239,14 +251,14 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let a: Value<Tracked> = Rc::new(RefCell::new(Tracked::new_2({ 1 })));
-    let b: Value<Tracked> = Rc::new(RefCell::new(Tracked::new_2({ 2 })));
+    let a: Value<Tracked> = Rc::new(RefCell::new(Tracked::new_1({ 1 })));
+    let b: Value<Tracked> = Rc::new(RefCell::new(Tracked::new_1({ 2 })));
     cpp_swap!(a.as_pointer(), b.as_pointer());
     assert!(({ (*a.borrow()).v } == 2) && ({ (*b.borrow()).v } == 1));
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
     let m1: Value<Map<i32, (Value<i32>, Value<Tracked>)>> = Rc::new(RefCell::new(Map::new()));
     ({
-        let _o: Value<Tracked> = Rc::new(RefCell::new(Tracked::new_2({ 10 })));
+        let _o: Value<Tracked> = Rc::new(RefCell::new(Tracked::new_1({ 10 })));
         TrackedImpl::move_assign(
             &Map::subscript_move(
                 m1.as_pointer(),
@@ -257,7 +269,7 @@ fn main_0() -> i32 {
         )
     });
     ({
-        let _o: Value<Tracked> = Rc::new(RefCell::new(Tracked::new_2({ 20 })));
+        let _o: Value<Tracked> = Rc::new(RefCell::new(Tracked::new_1({ 20 })));
         TrackedImpl::move_assign(
             &Map::subscript_move(
                 m1.as_pointer(),
@@ -269,7 +281,7 @@ fn main_0() -> i32 {
     });
     let m2: Value<Map<i32, (Value<i32>, Value<Tracked>)>> = Rc::new(RefCell::new(Map::new()));
     ({
-        let _o: Value<Tracked> = Rc::new(RefCell::new(Tracked::new_2({ 30 })));
+        let _o: Value<Tracked> = Rc::new(RefCell::new(Tracked::new_1({ 30 })));
         TrackedImpl::move_assign(
             &Map::subscript_move(
                 m2.as_pointer(),
@@ -339,9 +351,9 @@ fn main_0() -> i32 {
     );
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
     let arr: Value<Box<[Tracked]>> = Rc::new(RefCell::new(Box::new([
-        Tracked::new_2({ 1 }),
-        Tracked::new_2({ 2 }),
-        Tracked::new_2({ 3 }),
+        Tracked::new_1({ 1 }),
+        Tracked::new_1({ 2 }),
+        Tracked::new_1({ 3 }),
     ])));
     cpp_swap!(
         (arr.as_pointer() as Ptr<Tracked>).offset(0),
@@ -358,11 +370,11 @@ fn main_0() -> i32 {
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
     let vec_: Value<Vec<Tracked>> = Rc::new(RefCell::new(Vec::new()));
     {
-        let __init = Tracked::new_2({ 4 });
+        let __init = Tracked::new_1({ 4 });
         (*vec_.borrow_mut()).push(__init)
     };
     {
-        let __init = Tracked::new_2({ 5 });
+        let __init = Tracked::new_1({ 5 });
         (*vec_.borrow_mut()).push(__init)
     };
     cpp_swap!(vec_.decay().offset(0_usize), vec_.decay().offset(1_usize));
@@ -370,17 +382,17 @@ fn main_0() -> i32 {
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
     let pairs: Value<Box<[Pair]>> = Rc::new(RefCell::new(Box::new([
         Pair {
-            x: Tracked::new_2({ 6 }),
-            y: Tracked::new_2({ 7 }),
+            x: Tracked::new_1({ 6 }),
+            y: Tracked::new_1({ 7 }),
         },
         Pair {
-            x: Tracked::new_2({ 8 }),
-            y: Tracked::new_2({ 9 }),
+            x: Tracked::new_1({ 8 }),
+            y: Tracked::new_1({ 9 }),
         },
     ])));
     let p: Value<Pair> = Rc::new(RefCell::new(Pair {
-        x: Tracked::new_2({ 10 }),
-        y: Tracked::new_2({ 11 }),
+        x: Tracked::new_1({ 10 }),
+        y: Tracked::new_1({ 11 }),
     }));
     cpp_swap!(
         field_ptr!((pairs.as_pointer() as Ptr<Pair>).offset(0), x),
@@ -433,15 +445,15 @@ fn main_0() -> i32 {
             .collect::<Vec<_>>(),
     ));
     {
-        let __init = Tracked::new_2({ 1 });
+        let __init = Tracked::new_1({ 1 });
         elem!(grid.decay(), 0_usize).with_mut(|__v: &mut Vec<Tracked>| __v.push(__init))
     };
     {
-        let __init = Tracked::new_2({ 2 });
+        let __init = Tracked::new_1({ 2 });
         elem!(grid.decay(), 0_usize).with_mut(|__v: &mut Vec<Tracked>| __v.push(__init))
     };
     {
-        let __init = Tracked::new_2({ 3 });
+        let __init = Tracked::new_1({ 3 });
         elem!(grid.decay(), 1_usize).with_mut(|__v: &mut Vec<Tracked>| __v.push(__init))
     };
     cpp_swap!(
@@ -464,7 +476,7 @@ fn main_0() -> i32 {
             .collect::<Box<[Map<i32, (Value<i32>, Value<Tracked>)>]>>(),
     ));
     ({
-        let _o: Value<Tracked> = Rc::new(RefCell::new(Tracked::new_2({ 1 })));
+        let _o: Value<Tracked> = Rc::new(RefCell::new(Tracked::new_1({ 1 })));
         TrackedImpl::move_assign(
             &Map::subscript_move(
                 (maps.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<Tracked>)>>).offset(0),
@@ -475,7 +487,7 @@ fn main_0() -> i32 {
         )
     });
     ({
-        let _o: Value<Tracked> = Rc::new(RefCell::new(Tracked::new_2({ 2 })));
+        let _o: Value<Tracked> = Rc::new(RefCell::new(Tracked::new_1({ 2 })));
         TrackedImpl::move_assign(
             &Map::subscript_move(
                 (maps.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<Tracked>)>>).offset(1),

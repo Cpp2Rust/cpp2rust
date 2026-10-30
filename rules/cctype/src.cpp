@@ -3,4 +3,4 @@
 
 #include <ctype.h>
 
-template <typename T1> int f1(T1 a0) { return toupper(a0); }
+int f1(int a0) { return toupper(a0); }

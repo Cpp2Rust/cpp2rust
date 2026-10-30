@@ -105,6 +105,14 @@ bool IsConvertibleMoveConstructor(const clang::CXXConstructorDecl *ctor);
 // Whether decl has a move constructor converted to a move_from method.
 bool HasMoveFromConstructor(const clang::RecordDecl *decl);
 
+void ForEachConvertingConstructor(
+    clang::CXXRecordDecl *decl,
+    llvm::function_ref<void(clang::CXXConstructorDecl *)> fn);
+
+bool IsImplicitConversionOperator(const clang::CXXMethodDecl *method);
+
+bool HasImplicitConversions(const clang::RecordDecl *decl);
+
 bool IsConvertibleMoveAssignment(const clang::CXXMethodDecl *method);
 
 bool IsConvertibleCopyAssignment(const clang::CXXMethodDecl *method);

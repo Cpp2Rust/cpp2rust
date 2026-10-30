@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn make_std_pair_0(mut x: i32) -> (i32, bool) {
-    return (x.into(), ((x) > (0)).into());
+    return (x, ((x) > (0)));
 }
 pub fn main() {
     unsafe {
@@ -21,7 +21,7 @@ unsafe fn main_0() -> i32 {
     let positive: *mut bool = &mut __decomp_1.1;
     assert!(((*value) == (5)));
     assert!(((*positive) as bool));
-    let mut p: (i32, i32) = (1.into(), 2.into());
+    let mut p: (i32, i32) = (1, 2);
     let mut __decomp_2: (i32, i32) = p.clone();
     let a: *mut i32 = &mut __decomp_2.0;
     let b: *mut i32 = &mut __decomp_2.1;

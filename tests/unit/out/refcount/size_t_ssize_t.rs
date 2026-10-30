@@ -194,12 +194,8 @@ fn main_0() -> i32 {
     assert!((mins[(1) as usize] == 1_usize));
     assert!((mins[(2) as usize] == 2_usize));
     let pr: Value<(Value<u64>, Value<i32>)> = Rc::new(RefCell::new((
-        Rc::new(RefCell::new(
-            ((*sz.borrow()) as u64)
-                .try_into()
-                .expect("failed conversion"),
-        )),
-        Rc::new(RefCell::new(1.try_into().expect("failed conversion"))),
+        Rc::new(RefCell::new(((*sz.borrow()) as u64))),
+        Rc::new(RefCell::new(1)),
     )));
     assert!(((*(*pr.borrow()).0.borrow()) == 21_u64));
     let sizes: Value<Box<[usize]>> =

@@ -13,7 +13,8 @@ pub unsafe fn pick_2(mut i: i32) -> *mut i32 {
     return &mut (*std::cell::LazyCell::force_mut(&mut *&raw mut xs_1))[(i) as usize];
 }
 #[repr(C)]
-#[derive(VaArg, FnPtrArg, CopyAssignUnsafe, Default)]
+#[derive(VaArg, FnPtrArg, CppFromUnsafe, CopyAssignUnsafe, Default)]
+#[cpp_from(i32, new, value)]
 pub struct Bag {
     pub n: i32,
 }

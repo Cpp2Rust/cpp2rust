@@ -48,6 +48,9 @@ pub use capture::{
 mod cmp;
 pub use cmp::*;
 
+mod conversion;
+pub use conversion::{CppFrom, CppFromUnsafe};
+
 mod swap;
 // Used by cpp_swap! and cpp_swap_unsafe!.
 #[doc(hidden)]
@@ -99,7 +102,7 @@ mod format;
 pub use format::*;
 
 pub use libcc2rs_macros::{
-    ByteRepr, CopyAssign, CopyAssignUnsafe, Destructor, DestructorUnsafe, FnPtrArg, MoveAssign,
-    MoveAssignUnsafe, MoveCtor, MoveCtorUnsafe, Record, VaArg, goto, goto_block, lambda,
-    lambda_unsafe, switch,
+    ByteRepr, CopyAssign, CopyAssignUnsafe, CppFrom, CppFromUnsafe, Destructor, DestructorUnsafe,
+    FnPtrArg, MoveAssign, MoveAssignUnsafe, MoveCtor, MoveCtorUnsafe, Record, VaArg, goto,
+    goto_block, lambda, lambda_unsafe, switch,
 };

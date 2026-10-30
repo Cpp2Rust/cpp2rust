@@ -9,7 +9,8 @@ use std::rc::{Rc, Weak};
 thread_local!(
     pub static copies_0: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, CopyAssign, Default)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, CppFrom, CopyAssign, Default)]
+#[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct Counted {
     #[offset(0)]
@@ -67,7 +68,8 @@ impl Default for NonConst {
         { NonConst::new() }
     }
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, CopyAssign, Default)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, CppFrom, CopyAssign, Default)]
+#[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct Ignored {
     #[offset(0)]
@@ -111,7 +113,8 @@ impl Default for Holder {
         }
     }
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, Default)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, CppFrom, Default)]
+#[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct Box_int_ {
     #[offset(0)]
@@ -155,7 +158,8 @@ impl Owner {
         }
     }
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, CopyAssign, Default)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, CppFrom, CopyAssign, Default)]
+#[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct OutOfLine {
     #[offset(0)]

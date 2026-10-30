@@ -9,17 +9,18 @@ use std::rc::{Rc, Weak};
 thread_local!(
     pub static copies_0: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, CopyAssign, MoveAssign)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, CppFrom, CopyAssign, MoveAssign)]
+#[cpp_from(i32, new_1, value)]
 #[byte_size(4)]
 pub struct Tracked {
     #[offset(0)]
     pub v: i32,
 }
 impl Tracked {
-    pub fn new_1() -> Self {
+    pub fn new_2() -> Self {
         Self { v: 0 }
     }
-    pub fn new_2(mut v: i32) -> Self {
+    pub fn new_1(mut v: i32) -> Self {
         Self { v: v }
     }
     pub fn copy_from(o: Ptr<Tracked>) -> Self {
@@ -54,7 +55,7 @@ impl Clone for Tracked {
 }
 impl Default for Tracked {
     fn default() -> Self {
-        { Tracked::new_1() }
+        { Tracked::new_2() }
     }
 }
 pub fn operator_lt_1(a: Ptr<Tracked>, b: Ptr<Tracked>) -> bool {
@@ -99,11 +100,11 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let arr: Value<Box<[Tracked]>> = Rc::new(RefCell::new(Box::new([
-        Tracked::new_2({ 3 }),
-        Tracked::new_2({ 1 }),
-        Tracked::new_2({ 4 }),
-        Tracked::new_2({ 1 }),
-        Tracked::new_2({ 5 }),
+        Tracked::new_1({ 3 }),
+        Tracked::new_1({ 1 }),
+        Tracked::new_1({ 4 }),
+        Tracked::new_1({ 1 }),
+        Tracked::new_1({ 5 }),
     ])));
     {
         let __first = (arr.as_pointer() as Ptr<Tracked>);
@@ -128,19 +129,19 @@ fn main_0() -> i32 {
         (*vec_.borrow_mut()).reserve_exact(4_usize as usize - len_0 as usize);
     };
     {
-        let __init = Tracked::new_2({ 2 });
+        let __init = Tracked::new_1({ 2 });
         (*vec_.borrow_mut()).push(__init)
     };
     {
-        let __init = Tracked::new_2({ 7 });
+        let __init = Tracked::new_1({ 7 });
         (*vec_.borrow_mut()).push(__init)
     };
     {
-        let __init = Tracked::new_2({ 1 });
+        let __init = Tracked::new_1({ 1 });
         (*vec_.borrow_mut()).push(__init)
     };
     {
-        let __init = Tracked::new_2({ 8 });
+        let __init = Tracked::new_1({ 8 });
         (*vec_.borrow_mut()).push(__init)
     };
     {
@@ -229,15 +230,15 @@ fn main_0() -> i32 {
         (0..3).map(|_| <Bag>::default()).collect::<Box<[Bag]>>(),
     ));
     {
-        let __init = Tracked::new_2({ 1 });
+        let __init = Tracked::new_1({ 1 });
         (*bags.borrow_mut())[(0) as usize].items.push(__init)
     };
     {
-        let __init = Tracked::new_2({ 2 });
+        let __init = Tracked::new_1({ 2 });
         (*bags.borrow_mut())[(0) as usize].items.push(__init)
     };
     {
-        let __init = Tracked::new_2({ 3 });
+        let __init = Tracked::new_1({ 3 });
         (*bags.borrow_mut())[(2) as usize].items.push(__init)
     };
     {
@@ -261,15 +262,15 @@ fn main_0() -> i32 {
             .collect::<Vec<_>>(),
     ));
     {
-        let __init = Tracked::new_2({ 4 });
+        let __init = Tracked::new_1({ 4 });
         (*bag_vec.borrow_mut())[1_usize].items.push(__init)
     };
     {
-        let __init = Tracked::new_2({ 5 });
+        let __init = Tracked::new_1({ 5 });
         (*bag_vec.borrow_mut())[1_usize].items.push(__init)
     };
     {
-        let __init = Tracked::new_2({ 6 });
+        let __init = Tracked::new_1({ 6 });
         (*bag_vec.borrow_mut())[2_usize].items.push(__init)
     };
     {

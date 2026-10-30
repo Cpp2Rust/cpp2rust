@@ -9,7 +9,6 @@
 
 #include <filesystem>
 #include <string>
-#include <unordered_map>
 #include <variant>
 #include <vector>
 
@@ -41,12 +40,6 @@ struct GenericFragment {
   void dump() const;
 };
 
-struct DefaultFragment {
-  unsigned n;
-
-  void dump() const;
-};
-
 struct VaArgsFragment {
   void dump() const;
 };
@@ -57,12 +50,12 @@ struct InitFragment {
 
 struct MethodCallFragment; // forward declaration
 struct RefExprFragment;
+struct GenericCallFragment;
 
-using BodyFragment =
-    std::variant<TextFragment, PlaceholderFragment, GenericFragment,
-                 DefaultFragment, VaArgsFragment, InitFragment,
-                 std::unique_ptr<MethodCallFragment>,
-                 std::unique_ptr<RefExprFragment>>;
+using BodyFragment = std::variant<
+    TextFragment, PlaceholderFragment, GenericFragment, VaArgsFragment,
+    InitFragment, std::unique_ptr<MethodCallFragment>,
+    std::unique_ptr<RefExprFragment>, std::unique_ptr<GenericCallFragment>>;
 
 struct MethodCallFragment {
   std::vector<BodyFragment> receiver;
@@ -77,6 +70,19 @@ struct RefExprFragment {
   std::vector<BodyFragment> inner;
 
   void dump() const;
+};
+
+struct GenericCallFragment {
+  unsigned generic;
+  std::string method;
+  std::vector<std::vector<BodyFragment>> args;
+
+  void dump() const;
+};
+
+struct Bound {
+  std::string trait_name;
+  std::vector<unsigned> args;
 };
 
 // Whether pred holds for a fragment of body, or for one nested in them.
@@ -97,7 +103,7 @@ struct TypeInfo {
 struct ExprRule {
   std::vector<TypeInfo> params;
   TypeInfo return_type;
-  std::vector<std::vector<std::string>> generics; // "T1" -> ["Ord", "Clone"]
+  std::vector<std::vector<Bound>> generics; // "T1" -> [Ord, Clone]
   std::vector<BodyFragment> body;
   bool multi_statement = false;
   bool is_extern = false;

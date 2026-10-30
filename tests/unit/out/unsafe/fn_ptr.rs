@@ -32,7 +32,8 @@ pub unsafe fn identity_hash_6(mut v: bool) -> usize {
     return (v as usize);
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
+#[cpp_from(Option<unsafe fn(bool ,) -> u64 > , new, ptr)]
 pub struct HashHolder_unsigned_long__ptr__bool__ {
     pub h: Option<unsafe fn(bool) -> u64>,
 }

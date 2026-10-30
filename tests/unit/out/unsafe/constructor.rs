@@ -8,7 +8,8 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub static mut total_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
-#[derive(Clone, VaArg, FnPtrArg, DestructorUnsafe, Default)]
+#[derive(Clone, VaArg, FnPtrArg, CppFromUnsafe, DestructorUnsafe, Default)]
+#[cpp_from(i32, new, value)]
 pub struct S {
     pub v: i32,
 }
@@ -33,23 +34,24 @@ impl S {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe)]
+#[cpp_from(i32, new_1, value)]
 pub struct Point {
     pub x: i32,
     pub y: i32,
 }
 impl Point {
-    pub unsafe fn new_1(mut x: i32, mut y: i32) -> Self {
+    pub unsafe fn new_2(mut x: i32, mut y: i32) -> Self {
         let mut this = Self { x: x, y: y };
         this
     }
-    pub unsafe fn new_2(mut v: i32) -> Self {
-        let mut this = Point::new_1({ v }, { ((v) + (1)) });
+    pub unsafe fn new_1(mut v: i32) -> Self {
+        let mut this = Point::new_2({ v }, { ((v) + (1)) });
         this.y *= 10;
         this
     }
     pub unsafe fn new_3() -> Self {
-        let mut this = Point::new_2({ 4 });
+        let mut this = Point::new_1({ 4 });
         this.x += 100;
         this
     }
@@ -76,7 +78,7 @@ unsafe fn main_0() -> i32 {
     let mut p: Point = Point::new_3();
     assert!(((p.x) == (104)));
     assert!(((p.y) == (50)));
-    let mut q: Point = Point::new_2({ 7 });
+    let mut q: Point = Point::new_1({ 7 });
     assert!(((q.x) == (7)));
     assert!(((q.y) == (80)));
     return 0;

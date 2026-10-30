@@ -6,7 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, MoveAssign, Default)]
+#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, CppFrom, MoveAssign, Default)]
+#[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct NoCopy {
     #[offset(0)]

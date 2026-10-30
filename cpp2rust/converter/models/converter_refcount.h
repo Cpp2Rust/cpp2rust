@@ -418,7 +418,9 @@ private:
   // Wraps a pointer expression with deref prefix/suffix: e.g.
   // "(*ptr.upgrade().deref())" or "(ptr.read())"
   std::string DerefPtrExpr(std::string_view ptr_expr,
-                           clang::QualType pointee_type);
+                           clang::QualType pointee_type) override;
+
+  const char *GetConversionTraitName() const override;
 
   std::string GetInnerType(clang::QualType type);
 

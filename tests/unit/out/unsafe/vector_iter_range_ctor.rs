@@ -6,6 +6,29 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+#[repr(C)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
+#[cpp_from(i32, new, value)]
+pub struct Degrees {
+    pub value: i32,
+}
+impl Degrees {
+    pub unsafe fn new(mut v: i32) -> Self {
+        let mut this = Self { value: v };
+        this
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
+#[cpp_into(i64, to_i64)]
+pub struct Reading {
+    pub raw_: i32,
+}
+impl Reading {
+    pub unsafe fn to_i64(&self) -> i64 {
+        return ((self.raw_ as i64) * (10_i64));
+    }
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -18,7 +41,7 @@ unsafe fn main_0() -> i32 {
         let mut __v = Vec::new();
         let mut __it = src.as_mut_ptr();
         while __it != src.as_mut_ptr().offset((3) as isize) {
-            __v.push(<u32>::try_from((*__it.iter_deref()).clone()).ok().unwrap());
+            __v.push((*__it.iter_deref()));
             __it.iter_inc();
         }
         __v
@@ -32,7 +55,7 @@ unsafe fn main_0() -> i32 {
         let mut __v = Vec::new();
         let mut __it = src.as_mut_ptr();
         while __it != src.as_mut_ptr().offset((3) as isize) {
-            __v.push(<u64>::try_from((*__it.iter_deref()).clone()).ok().unwrap());
+            __v.push(((*__it.iter_deref()) as u64));
             __it.iter_inc();
         }
         __v
@@ -46,7 +69,7 @@ unsafe fn main_0() -> i32 {
         let mut __v = Vec::new();
         let mut __it = src.as_mut_ptr();
         while __it != src.as_mut_ptr().offset((3) as isize) {
-            __v.push(<i32>::try_from((*__it.iter_deref()).clone()).ok().unwrap());
+            __v.push(((*__it.iter_deref()) as i32));
             __it.iter_inc();
         }
         __v
@@ -58,7 +81,7 @@ unsafe fn main_0() -> i32 {
         let mut __v = Vec::new();
         let mut __it = src1.as_ptr();
         while __it != src1.as_ptr().add(src1.len()) {
-            __v.push(<u32>::try_from((*__it.iter_deref()).clone()).ok().unwrap());
+            __v.push((*__it.iter_deref()));
             __it.iter_inc();
         }
         __v
@@ -75,7 +98,7 @@ unsafe fn main_0() -> i32 {
         let mut __v = Vec::new();
         let mut __it = start;
         while __it != start.offset((len) as isize) {
-            __v.push(<u8>::try_from((*__it.iter_deref()).clone()).ok().unwrap());
+            __v.push((*__it.iter_deref()));
             __it.iter_inc();
         }
         __v
@@ -90,11 +113,9 @@ unsafe fn main_0() -> i32 {
         let mut __v = Vec::new();
         let mut __it = m.begin();
         while __it != m.end() {
-            __v.push(
-                <(i32, i32)>::try_from((*__it.iter_deref()).clone())
-                    .ok()
-                    .unwrap(),
-            );
+            __v.push(<(i32, i32) as CppFromUnsafe<(i32, i32)>>::cpp_from(
+                __it.iter_deref(),
+            ));
             __it.iter_inc();
         }
         __v
@@ -119,6 +140,28 @@ unsafe fn main_0() -> i32 {
     assert!(
         (((v6[(1_usize)].0) == (1)) && ((v6[(3_usize)].0) == (3))) && ((v6[(4_usize)].0) == (2))
     );
+    let mut ints: [i32; 3] = [4, 5, 6];
+    let mut v7: Vec<Degrees> = {
+        let mut __v = Vec::new();
+        let mut __it = ints.as_mut_ptr();
+        while __it != ints.as_mut_ptr().offset((3) as isize) {
+            __v.push(<Degrees as CppFromUnsafe<i32>>::cpp_from(__it.iter_deref()));
+            __it.iter_inc();
+        }
+        __v
+    };
+    assert!(((v7[(1_usize)].value) == (5)));
+    let mut readings: [Reading; 2] = [Reading { raw_: 4 }, Reading { raw_: 5 }];
+    let mut v8: Vec<i64> = {
+        let mut __v = Vec::new();
+        let mut __it = readings.as_mut_ptr();
+        while __it != readings.as_mut_ptr().offset((2) as isize) {
+            __v.push(<i64 as CppFromUnsafe<Reading>>::cpp_from(__it.iter_deref()));
+            __it.iter_inc();
+        }
+        __v
+    };
+    assert!(((v8[(0_usize)]) == (40_i64)) && ((v8[(1_usize)]) == (50_i64)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

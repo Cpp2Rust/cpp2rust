@@ -7,7 +7,8 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
+#[cpp_from(i32, new_1, value)]
 pub struct S {
     pub a_: i32,
     pub self__: *mut S,
@@ -105,7 +106,8 @@ pub unsafe fn bump_0(mut p: *mut S) {
     (*p).a_.postfix_inc();
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
+#[cpp_from(i32, new, value)]
 pub struct D {
     pub a_: i32,
 }
