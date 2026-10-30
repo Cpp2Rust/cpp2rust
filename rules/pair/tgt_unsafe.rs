@@ -69,3 +69,11 @@ unsafe fn f21<T1, T2>(a0: &mut (T1, T2)) -> *mut T1 {
 unsafe fn f22<T1, T2>(a0: &mut (T1, T2)) -> *mut T2 {
     &mut a0.1
 }
+
+unsafe fn f23<T1: From<T3>, T2: From<T4>, T3: Clone, T4: Clone>(a0: &mut (T3, T4)) -> (T1, T2) {
+    (a0.0.clone().into(), a0.1.clone().into())
+}
+
+unsafe fn f24<T1: From<T3>, T2: From<T4>, T3: Clone, T4: Clone>(a0: (T3, T4)) -> (T1, T2) {
+    (a0.0.into(), a0.1.into())
+}
