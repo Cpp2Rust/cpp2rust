@@ -19,12 +19,20 @@ fn t11<T1>() -> Vec<T1> {
     Vec::new()
 }
 
-fn t12() -> bool {
-    false
+fn t6<T1>() -> *mut bool {
+    ::std::ptr::null_mut()
 }
 
 fn t13<T1>() -> *mut T1 {
     ::std::ptr::null_mut()
+}
+
+fn t15<T1>() -> *mut bool {
+    ::std::ptr::null_mut()
+}
+
+fn t16<T1>() -> bool {
+    false
 }
 
 fn t14<T1>() -> *const T1 {
@@ -39,8 +47,8 @@ unsafe fn f40<T1>(a0: Vec<T1>) -> *const T1 {
     a0.as_ptr().add(a0.len())
 }
 
-unsafe fn f47(a0: Vec<bool>) -> Vec<bool> {
-    a0
+unsafe fn f47(a0: *mut bool) -> bool {
+    *a0
 }
 
 unsafe fn f60<T1>(a0: &mut Vec<T1>, a1: UnsafeRandomAccessIterator<T1>) -> UnsafeRandomAccessIterator<T1> {
@@ -250,6 +258,25 @@ unsafe fn f116<T1>(a0: &mut Vec<T1>, a1: UnsafeRandomAccessIterator<T1>, a2: Vec
     UnsafeRandomAccessIterator::Vec(a0.as_mut_ptr().add(__off))
 }
 
-unsafe fn f117(a0: bool) -> bool {
+unsafe fn f117(a0: *mut bool) -> *mut bool {
+    a0
+}
+
+unsafe fn f118<T1>(a0: &mut Vec<bool>, a1: usize) -> *mut bool {
+    (&mut (a0)[a1 as usize] as *mut bool)
+}
+
+unsafe fn f119(a0: *mut bool, a1: bool) -> *mut bool {
+    *a0 = a1;
+    a0
+}
+
+unsafe fn f120(a0: *mut bool, a1: bool) -> *mut bool {
+    *a0 = a1;
+    a0
+}
+
+unsafe fn f121(a0: *mut bool, a1: *mut bool) -> *mut bool {
+    *a0 = *a1;
     a0
 }

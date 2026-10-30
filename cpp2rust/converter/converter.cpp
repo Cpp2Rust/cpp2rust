@@ -5163,7 +5163,9 @@ std::string Converter::ConvertIRFragment(
           .is_cpp_ptr = is_cpp_ptr,
           // Whatever its spelling, a pointer in C++ is converted as one.
           .maps_to_rust_ptr =
-              !is_cpp_ptr && RuleRegistry::MapsToPointer(ctx_, arg->getType()),
+              !is_cpp_ptr &&
+              RuleRegistry::MapsToPointer(
+                  ctx_, arg->IgnoreParenNoopCasts(ctx_)->getType()),
           .declared_in_rule_as_rust_ptr =
               RuleRegistry::ParamIsPointer(ctx_, expr, arg_idx),
           .is_index_base = ph->is_index_base,

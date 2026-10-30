@@ -444,12 +444,13 @@ void ConverterRefCount::CheckRuleReturnType(clang::Expr *expr) {
       !RuleRegistry::GetExprRule(ctx_, expr)->return_type.is_refcount_pointer) {
     return;
   }
-  // A reference is returned as a pointer. The library may spell the pointer
-  // or reference type with a typedef of its own, e.g., iterator::pointer,
-  // which is not what the pointee is spelled with.
-  auto type = GetReturnTypeOfFunction(call).getDesugaredType(ctx_);
-  if (auto *ref = type->getAs<clang::ReferenceType>()) {
-    type = ctx_.getPointerType(ref->getPointeeType());
+  auto type = RuleRegistry::GetDeclaredReturnType(expr);
+  if (auto ref = type->getAs<clang::ReferenceType>()) {
+    auto pointee = ref->getPointeeType();
+    type = pointee->isRecordType() &&
+                   RuleRegistry::MapsToRefcountPointer(ctx_, pointee)
+               ? pointee
+               : ctx_.getPointerType(pointee);
   }
   auto ret = NormalizeType(Mapper::GetReturnType(*this, expr));
   auto expected = NormalizeType(ToString(type));

@@ -94,7 +94,9 @@ std::vector<clang::QualType> resolveMemberType(clang::Sema &sema,
     auto tmpl = spec ? llvm::dyn_cast_or_null<clang::ClassTemplateDecl>(
                            spec->getTemplateName().getAsTemplateDecl())
                      : nullptr;
-    assert(tmpl && "member type is not qualified by a class template");
+    if (!tmpl) {
+      continue;
+    }
     for (auto record : matchingDefinitions(sema, tmpl, spec)) {
       if (!record->hasDefinition()) {
         continue;
@@ -266,7 +268,8 @@ std::optional<TypeKey> GetTypeKey(clang::QualType type) {
   return type.getTypePtr();
 }
 
-std::vector<TypeKey> GetTypeKeys(const clang::NamedDecl *rule) {
+std::vector<TypeKey> GetTypeKeys(clang::Sema &sema,
+                                 const clang::NamedDecl *rule) {
   auto alias = llvm::dyn_cast<clang::TypedefNameDecl>(rule);
   if (auto tmpl = llvm::dyn_cast<clang::TypeAliasTemplateDecl>(rule)) {
     alias = tmpl->getTemplatedDecl();
@@ -279,9 +282,29 @@ std::vector<TypeKey> GetTypeKeys(const clang::NamedDecl *rule) {
   if (auto member = pattern->getAs<clang::DependentNameType>()) {
     auto qualifier = member->getQualifier().getAsType();
     assert(qualifier && "member type is not qualified by a type");
-    auto parent = getParent(clang::QualType(qualifier, 0));
+    auto outermost = qualifier;
+    while (auto outer = outermost->getAs<clang::DependentNameType>()) {
+      outermost = outer->getQualifier().getAsType();
+      assert(outermost && "member type is not qualified by a type");
+    }
+    auto parent = getParent(clang::QualType(outermost, 0));
     assert(parent && "type rule has no key");
-    return {parent};
+    std::vector<TypeKey> keys{parent};
+    auto spec = qualifier->getAs<clang::TemplateSpecializationType>();
+    if (outermost == qualifier && spec &&
+        llvm::isa_and_nonnull<clang::ClassTemplateDecl>(
+            spec->getTemplateName().getAsTemplateDecl())) {
+      for (auto resolved : resolveMemberType(sema, pattern)) {
+        auto key = GetTypeKey(resolved);
+        auto decl = key ? std::get_if<const clang::Decl *>(&*key) : nullptr;
+        if (decl && *decl &&
+            RuleDecls::IsInternal(llvm::cast<clang::NamedDecl>(*decl)) &&
+            !llvm::is_contained(keys, *key)) {
+          keys.push_back(*key);
+        }
+      }
+    }
+    return keys;
   }
   auto key = GetTypeKey(pattern);
   assert(key && "type rule has no key");

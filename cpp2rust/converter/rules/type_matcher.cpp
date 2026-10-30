@@ -80,22 +80,8 @@ std::optional<TypeMatch> MatchType(clang::Sema &sema, clang::QualType use,
     return TypeMatch{};
   }
   auto params = tmpl->getTemplateParameters();
-  if (auto member = pattern->getAs<clang::DependentNameType>()) {
-    auto qualifier = member->getQualifier().getAsType();
-    auto typedef_type =
-        llvm::dyn_cast<clang::TypedefType>(spelled.getTypePtr());
-    if (!qualifier || !typedef_type ||
-        typedef_type->getDecl()->getIdentifier() != member->getIdentifier()) {
-      return std::nullopt;
-    }
-    auto owner = llvm::dyn_cast<clang::CXXRecordDecl>(
-        typedef_type->getDecl()->getDeclContext());
-    if (!owner) {
-      return std::nullopt;
-    }
-    auto args =
-        RuleDecls::DeduceFromType(sema, params, clang::QualType(qualifier, 0),
-                                  ctx.getCanonicalTagType(owner));
+  if (pattern->getAs<clang::DependentNameType>()) {
+    auto args = RuleDecls::DeduceMemberType(sema, tmpl, pattern, spelled);
     if (args && (args = completeArgs(sema, tmpl, *std::move(args)))) {
       return TypeMatch{*std::move(args)};
     }

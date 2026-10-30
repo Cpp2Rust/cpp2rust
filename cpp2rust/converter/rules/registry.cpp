@@ -182,7 +182,7 @@ void addRule(clang::ASTContext &ctx, const std::string &dir,
   }
   assert(rule && "rule has no target");
   if (!name.starts_with('f')) {
-    auto keys = RuleKeys::GetTypeKeys(decl);
+    auto keys = RuleKeys::GetTypeKeys(*sema_, decl);
     assert(!keys.empty() && "type rule has no key");
     for (auto key : keys) {
       types_.emplace(
@@ -300,6 +300,9 @@ TypeRuleMatch findType(clang::QualType use) {
       auto [begin, end] = types_.equal_range(key);
       for (auto it = begin; it != end; ++it) {
         if (!templates && llvm::isa<clang::TemplateDecl>(it->second.decl)) {
+          continue;
+        }
+        if (best.rule_decl && best.rule_decl->decl == it->second.decl) {
           continue;
         }
         auto match = AstMatcher::MatchType(*sema_, type, it->second.decl);
@@ -455,6 +458,23 @@ clang::QualType GetInitType(const clang::Expr *expr) {
   clang::Sema::InstantiatingTemplate inst(
       *sema_, expr->getBeginLoc(), const_cast<clang::FunctionDecl *>(function));
   return sema_->SubstType(pattern, args, expr->getBeginLoc(),
+                          clang::DeclarationName());
+}
+
+clang::QualType GetDeclaredReturnType(const clang::Expr *expr) {
+  auto match = findExpr(expr);
+  assert(match.rule_decl && "expression must have a translation rule");
+  auto function = match.rule_decl->decl->getAsFunction();
+  assert(function && "rule is not a function");
+  auto tmpl = function->getDescribedFunctionTemplate();
+  if (!tmpl) {
+    return function->getReturnType();
+  }
+  clang::MultiLevelTemplateArgumentList args(tmpl, match.args,
+                                             /*Final=*/false);
+  clang::Sema::InstantiatingTemplate inst(
+      *sema_, expr->getBeginLoc(), const_cast<clang::FunctionDecl *>(function));
+  return sema_->SubstType(function->getReturnType(), args, expr->getBeginLoc(),
                           clang::DeclarationName());
 }
 

@@ -54,7 +54,8 @@ std::optional<ExprKey> GetDeclKey(const clang::NamedDecl *decl);
 
 std::optional<TypeKey> GetTypeKey(clang::QualType type);
 
-std::vector<TypeKey> GetTypeKeys(const clang::NamedDecl *rule);
+std::vector<TypeKey> GetTypeKeys(clang::Sema &sema,
+                                 const clang::NamedDecl *rule);
 
 std::vector<TypeKey> GetTypeKeys(clang::ASTContext &ctx, clang::QualType use);
 } // namespace cpp2rust::RuleKeys

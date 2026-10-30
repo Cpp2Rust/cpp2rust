@@ -22,13 +22,19 @@ using t10 = typename std::vector<T1, T2>::value_type;
 template <typename T1>
 using t11 = typename std::vector<std::vector<T1>>::value_type;
 
-using t12 = std::vector<bool>::reference;
+template <typename T1> using t6 = typename std::vector<bool, T1>::reference;
 
 template <typename T1, typename T2 = std::allocator<T1>>
 using t13 = typename std::vector<T1, T2>::reference;
 
 template <typename T1, typename T2 = std::allocator<T1>>
 using t14 = typename std::vector<T1, T2>::const_reference;
+
+template <typename T1>
+using t15 = typename std::vector<bool, T1>::iterator::reference;
+
+template <typename T1>
+using t16 = typename std::vector<bool, T1>::const_iterator::reference;
 
 std::vector<bool> f38(std::size_t n, const bool &value) {
   return std::vector<bool>(n, value);
@@ -259,4 +265,29 @@ template <typename T1>
 typename std::vector<bool, T1>::reference
 f117(const typename std::vector<bool, T1>::reference &a0) {
   return typename std::vector<bool, T1>::reference(a0);
+}
+
+template <typename T1>
+typename std::vector<bool, T1>::reference f118(std::vector<bool, T1> &a0,
+                                               std::size_t a1) {
+  return a0.operator[](a1);
+}
+
+template <typename T1>
+typename std::vector<bool, T1>::reference &
+f119(typename std::vector<bool, T1>::reference &a0, bool a1) {
+  return a0.operator=(a1);
+}
+
+template <typename T1>
+const typename std::vector<bool, T1>::reference &
+f120(const typename std::vector<bool, T1>::reference &a0, bool a1) {
+  return a0.operator=(a1);
+}
+
+template <typename T1>
+typename std::vector<bool, T1>::reference &
+f121(typename std::vector<bool, T1>::reference &a0,
+     const typename std::vector<bool, T1>::reference &a1) {
+  return a0.operator=(a1);
 }
