@@ -19,7 +19,7 @@ fn t11<T1>() -> Vec<T1> {
     Vec::new()
 }
 
-fn t12() -> *mut bool {
+fn t6<T1>() -> *mut bool {
     ::std::ptr::null_mut()
 }
 
@@ -27,11 +27,11 @@ fn t13<T1>() -> *mut T1 {
     ::std::ptr::null_mut()
 }
 
-fn t15() -> *mut bool {
+fn t15<T1>() -> *mut bool {
     ::std::ptr::null_mut()
 }
 
-fn t16() -> bool {
+fn t16<T1>() -> bool {
     false
 }
 

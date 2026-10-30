@@ -5,11 +5,11 @@ use libcc2rs::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-fn t12() -> Ptr<bool> {
+fn t6<T1>() -> Ptr<bool> {
     Ptr::null()
 }
 
-fn t15() -> Ptr<bool> {
+fn t15<T1>() -> Ptr<bool> {
     Ptr::null()
 }
 
