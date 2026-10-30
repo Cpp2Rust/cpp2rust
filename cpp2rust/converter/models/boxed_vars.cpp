@@ -177,7 +177,9 @@ public:
     if (auto *source = GetTrivialCopySource(expr)) {
       AddValueUse(source);
     }
-    AddRuleArgs(expr, expr->getArgs(), expr->getNumArgs());
+    if (!expr->isElidable()) {
+      AddRuleArgs(expr, expr->getArgs(), expr->getNumArgs());
+    }
     return true;
   }
 
