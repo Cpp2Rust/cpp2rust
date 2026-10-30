@@ -85,7 +85,7 @@ fn f22<T1, T2>(a0: (Value<T1>, Value<T2>)) -> Ptr<T2> {
 }
 
 fn f23<T1: TryFrom<T3>, T2: TryFrom<T4>, T3: Clone, T4: Clone>(
-    a0: &mut (Value<T3>, Value<T4>),
+    a0: (Value<T3>, Value<T4>),
 ) -> (Value<T1>, Value<T2>) {
     (
         Rc::new(RefCell::new(a0.0.borrow().clone().try_into().ok().expect("failed conversion"))),
@@ -100,4 +100,24 @@ fn f24<T1: TryFrom<T3>, T2: TryFrom<T4>, T3: Clone, T4: Clone>(
         Rc::new(RefCell::new(a0.0.borrow().clone().try_into().ok().expect("failed conversion"))),
         Rc::new(RefCell::new(a0.1.borrow().clone().try_into().ok().expect("failed conversion"))),
     )
+}
+
+fn f25<T1: TryFrom<T3> + ByteRepr, T2: TryFrom<T4> + ByteRepr, T3: Clone, T4: Clone>(
+    a0: Ptr<(Value<T1>, Value<T2>)>,
+    a1: (Value<T3>, Value<T4>),
+) {
+    a0.write((
+        Rc::new(RefCell::new(a1.0.borrow().clone().try_into().ok().expect("failed conversion"))),
+        Rc::new(RefCell::new(a1.1.borrow().clone().try_into().ok().expect("failed conversion"))),
+    ))
+}
+
+fn f26<T1: TryFrom<T3> + ByteRepr, T2: TryFrom<T4> + ByteRepr, T3: Clone, T4: Clone>(
+    a0: Ptr<(Value<T1>, Value<T2>)>,
+    a1: (Value<T3>, Value<T4>),
+) {
+    a0.write((
+        Rc::new(RefCell::new(a1.0.borrow().clone().try_into().ok().expect("failed conversion"))),
+        Rc::new(RefCell::new(a1.1.borrow().clone().try_into().ok().expect("failed conversion"))),
+    ))
 }
