@@ -10,6 +10,7 @@
 #include <clang/Basic/Version.h>
 #include <clang/Sema/Template.h>
 #include <llvm/ADT/DenseMap.h>
+#include <llvm/ADT/StringExtras.h>
 #include <llvm/Support/ConvertUTF.h>
 #include <llvm/Support/ErrorHandling.h>
 
@@ -5143,11 +5144,6 @@ std::string Converter::ConvertIRFragment(
       result += t->text;
     } else if (auto *g = std::get_if<GenericFragment>(&frag)) {
       result += GetTemplateArgumentAsString(bindings[g->n - 1]);
-    } else if (auto *d = std::get_if<DefaultFragment>(&frag)) {
-      auto &arg = bindings[d->n - 1];
-      assert(arg.getKind() == clang::TemplateArgument::Type &&
-             "default of a non-type generic");
-      result += GetUnboxedDefaultAsString(arg.getAsType());
     } else if (auto *ph = std::get_if<PlaceholderFragment>(&frag)) {
       assert(expr && "placeholder outside an expression rule");
       auto arg_idx = ph->n;
@@ -5188,24 +5184,43 @@ std::string Converter::ConvertIRFragment(
       result +=
           (*re)->prefix + ' ' +
           ConvertIRFragment((*re)->inner, bindings, expr, args, num_args, ctx);
-    } else if (auto *cv =
-                   std::get_if<std::unique_ptr<ConvertFragment>>(&frag)) {
+    } else if (auto *call =
+                   std::get_if<std::unique_ptr<GenericCallFragment>>(&frag)) {
       result +=
-          ConvertConversionFragment(**cv, bindings, expr, args, num_args, ctx);
+          ConvertGenericCall(**call, bindings, expr, args, num_args, ctx);
     }
   }
 
   return result;
 }
 
-std::string Converter::ConvertConversionFragment(
-    const TranslationRule::ConvertFragment &convert,
+std::string Converter::ConvertGenericCall(
+    const TranslationRule::GenericCallFragment &call,
     llvm::ArrayRef<clang::TemplateArgument> bindings, clang::Expr *expr,
     clang::Expr **args, unsigned num_args, TempMaterializationCtx *ctx) {
-  auto ptr =
-      ConvertIRFragment(convert.src, bindings, expr, args, num_args, ctx);
-  auto to = RuleRegistry::GetGenericType(ctx_, expr, convert.to);
-  auto from = RuleRegistry::GetConversionSourceType(ctx_, expr, convert.to);
+  std::vector<std::string> call_args;
+  for (const auto &arg : call.args) {
+    call_args.push_back(
+        ConvertIRFragment(arg, bindings, expr, args, num_args, ctx));
+  }
+  auto type = RuleRegistry::GetGenericType(ctx_, expr, call.generic);
+  if (call.method == "default") {
+    assert(call_args.empty() && "default takes no arguments");
+    return GetUnboxedDefaultAsString(type);
+  }
+  if (call.method == "cpp_from" || call.method == "cpp_from_move") {
+    assert(call_args.size() == 1 && "cpp_from takes one argument");
+    return ConvertConversion(
+        type, RuleRegistry::GetConversionSourceType(ctx_, expr, call.generic),
+        call.method == "cpp_from_move", call_args[0]);
+  }
+  return std::format("<{}>::{}({})", GetUnboxedTypeAsString(type), call.method,
+                     llvm::join(call_args, ", "));
+}
+
+std::string Converter::ConvertConversion(clang::QualType to,
+                                         clang::QualType from, bool is_move,
+                                         const std::string &ptr) {
   if (to->isArithmeticType() && from->isArithmeticType()) {
     auto value = DerefPtrExpr(ptr, from);
     if (ctx_.hasSameUnqualifiedType(to, from)) {
@@ -5222,7 +5237,7 @@ std::string Converter::ConvertConversionFragment(
   }
   return std::format("<{} as {}<{}>>::{}({})", GetUnboxedTypeAsString(to),
                      GetConversionTraitName(), GetUnboxedTypeAsString(from),
-                     convert.is_move ? "cpp_from_move" : "cpp_from", ptr);
+                     is_move ? "cpp_from_move" : "cpp_from", ptr);
 }
 
 const char *Converter::GetConversionTraitName() const {

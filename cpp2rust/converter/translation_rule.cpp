@@ -3,6 +3,8 @@
 
 #include "converter/translation_rule.h"
 
+#include <llvm/ADT/STLExtras.h>
+
 #include <llvm/Support/JSON.h>
 
 #include <algorithm>
@@ -72,14 +74,19 @@ MethodCallFragment ParseMethodCallFragmentJSON(const llvm::json::Object &obj) {
   return mc;
 }
 
-ConvertFragment ParseConvertFragmentJSON(const llvm::json::Object &obj) {
-  ConvertFragment cv;
-  cv.to = obj.getInteger("to").value_or(0);
-  cv.is_move = obj.getBoolean("move").value_or(false);
-  if (auto *src = obj.getArray("src")) {
-    cv.src = ParseBodyFragmentsJSON(*src);
+GenericCallFragment
+ParseGenericCallFragmentJSON(const llvm::json::Object &obj) {
+  GenericCallFragment call;
+  call.generic = obj.getInteger("generic").value_or(0);
+  call.method = obj.getString("method").value_or("").str();
+  if (auto *args = obj.getArray("args")) {
+    for (auto &arg : *args) {
+      if (auto *fragments = arg.getAsArray()) {
+        call.args.push_back(ParseBodyFragmentsJSON(*fragments));
+      }
+    }
   }
-  return cv;
+  return call;
 }
 
 RefExprFragment ParseRefExprFragmentJSON(const llvm::json::Object &obj) {
@@ -101,8 +108,6 @@ std::vector<BodyFragment> ParseBodyFragmentsJSON(const llvm::json::Array &arr) {
       result.push_back(TextFragment{str->str()});
     } else if (auto n = frag_obj->getInteger("generic")) {
       result.push_back(GenericFragment{(unsigned)*n});
-    } else if (auto n = frag_obj->getInteger("default")) {
-      result.push_back(DefaultFragment{(unsigned)*n});
     } else if (auto *ph = frag_obj->getObject("placeholder")) {
       result.push_back(ParsePlaceholderFragmentJSON(*ph));
     } else if (auto *mc = frag_obj->getObject("method_call")) {
@@ -111,9 +116,9 @@ std::vector<BodyFragment> ParseBodyFragmentsJSON(const llvm::json::Array &arr) {
     } else if (auto *re = frag_obj->getObject("ref_expr")) {
       result.push_back(
           std::make_unique<RefExprFragment>(ParseRefExprFragmentJSON(*re)));
-    } else if (auto *cv = frag_obj->getObject("convert")) {
-      result.push_back(
-          std::make_unique<ConvertFragment>(ParseConvertFragmentJSON(*cv)));
+    } else if (auto *call = frag_obj->getObject("generic_call")) {
+      result.push_back(std::make_unique<GenericCallFragment>(
+          ParseGenericCallFragmentJSON(*call)));
     } else if (frag_obj->get("va_args")) {
       result.push_back(VaArgsFragment{});
     } else if (frag_obj->get("init")) {
@@ -150,8 +155,11 @@ bool AnyFragment(const std::vector<BodyFragment> &body,
     if (auto *re = std::get_if<std::unique_ptr<RefExprFragment>>(&frag)) {
       return AnyFragment((*re)->inner, pred);
     }
-    if (auto *cv = std::get_if<std::unique_ptr<ConvertFragment>>(&frag)) {
-      return AnyFragment((*cv)->src, pred);
+    if (auto *call =
+            std::get_if<std::unique_ptr<GenericCallFragment>>(&frag)) {
+      return llvm::any_of((*call)->args, [&](const auto &arg) {
+        return AnyFragment(arg, pred);
+      });
     }
     return false;
   });
@@ -251,16 +259,16 @@ void RefExprFragment::dump() const {
   }
 }
 
-void ConvertFragment::dump() const {
-  log() << "  convert: -> T" << to << (is_move ? " move" : "") << '\n';
-  for (auto &frag : src) {
-    BodyFragmentDump(frag);
+void GenericCallFragment::dump() const {
+  log() << "  generic_call: T" << generic << "::" << method << '\n';
+  for (auto &arg : args) {
+    for (auto &frag : arg) {
+      BodyFragmentDump(frag);
+    }
   }
 }
 
 void GenericFragment::dump() const { log() << "  generic: " << n << '\n'; }
-
-void DefaultFragment::dump() const { log() << "  default: " << n << '\n'; }
 
 void TypeInfo::dump() const {
   log() << type;

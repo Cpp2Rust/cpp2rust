@@ -308,10 +308,13 @@ public:
                     TempMaterializationCtx *ctx);
 
   std::string
-  ConvertConversionFragment(const TranslationRule::ConvertFragment &convert,
-                            llvm::ArrayRef<clang::TemplateArgument> bindings,
-                            clang::Expr *expr, clang::Expr **args,
-                            unsigned num_args, TempMaterializationCtx *ctx);
+  ConvertGenericCall(const TranslationRule::GenericCallFragment &call,
+                     llvm::ArrayRef<clang::TemplateArgument> bindings,
+                     clang::Expr *expr, clang::Expr **args, unsigned num_args,
+                     TempMaterializationCtx *ctx);
+
+  std::string ConvertConversion(clang::QualType to, clang::QualType from,
+                                bool is_move, const std::string &ptr);
 
   virtual const char *GetConversionTraitName() const;
 

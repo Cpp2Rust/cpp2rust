@@ -110,7 +110,9 @@ impl FnIr {
                     check(&method_call.receiver) || check(&method_call.body)
                 }
                 BodyFragment::RefExpr { ref_expr } => check(&ref_expr.inner),
-                BodyFragment::Convert { convert } => check(&convert.src),
+                BodyFragment::GenericCall { generic_call } => {
+                    generic_call.args.iter().any(|arg| check(arg))
+                }
                 _ => false,
             })
         }
@@ -162,9 +164,6 @@ pub enum BodyFragment {
     Generic {
         generic: i32,
     },
-    Default {
-        default: i32,
-    },
     MethodCall {
         method_call: MethodCallInner,
     },
@@ -177,8 +176,8 @@ pub enum BodyFragment {
     Init {
         init: std::marker::PhantomData<()>,
     },
-    Convert {
-        convert: ConvertInner,
+    GenericCall {
+        generic_call: GenericCallInner,
     },
 }
 
@@ -213,11 +212,10 @@ pub struct RefExprInner {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ConvertInner {
-    pub to: i32,
-    #[serde(rename = "move")]
-    pub is_move: bool,
-    pub src: Vec<BodyFragment>,
+pub struct GenericCallInner {
+    pub generic: i32,
+    pub method: String,
+    pub args: Vec<Vec<BodyFragment>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -277,9 +275,11 @@ fn resolve_nth_unknown(
                         return true;
                     }
                 }
-                BodyFragment::Convert { convert } => {
-                    if resolve(&mut convert.src, param, nth, count, patch) {
-                        return true;
+                BodyFragment::GenericCall { generic_call } => {
+                    for arg in &mut generic_call.args {
+                        if resolve(arg, param, nth, count, patch) {
+                            return true;
+                        }
                     }
                 }
                 _ => {}

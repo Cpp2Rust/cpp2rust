@@ -11,7 +11,7 @@ use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
 use crate::ir::{
-    Access, BodyFragment, Bound, ConvertInner, FileIr, FnIr, MethodCallInner, Model,
+    Access, BodyFragment, Bound, FileIr, FnIr, GenericCallInner, MethodCallInner, Model,
     PlaceholderInner, RefExprInner, RuleIr, RulesIR, TypeInfo, TypeIr,
 };
 
@@ -190,19 +190,11 @@ impl<'a> FragmentCtx<'a> {
                     self.emit_method_call(&call);
                     return;
                 }
-                if let Some(convert) =
-                    ast::CallExpr::cast(node.clone()).and_then(|call| self.conversion(&call))
+                if let Some(generic_call) =
+                    ast::CallExpr::cast(node.clone()).and_then(|call| self.generic_call(&call))
                 {
                     self.flush_text();
-                    self.fragments.push(BodyFragment::Convert { convert });
-                    return;
-                }
-                if let Some(generic) =
-                    ast::CallExpr::cast(node.clone()).and_then(|call| self.generic_default(&call))
-                {
-                    self.flush_text();
-                    self.fragments
-                        .push(BodyFragment::Default { default: generic });
+                    self.fragments.push(BodyFragment::GenericCall { generic_call });
                     return;
                 }
                 for child in node.children_with_tokens() {
@@ -288,40 +280,23 @@ impl<'a> FragmentCtx<'a> {
         Some(name[1..].parse().unwrap_or(0))
     }
 
-    fn conversion(&self, call: &ast::CallExpr) -> Option<ConvertInner> {
+    fn generic_call(&self, call: &ast::CallExpr) -> Option<GenericCallInner> {
         let ast::Expr::PathExpr(path_expr) = call.expr()? else {
             return None;
         };
         let path = path_expr.path()?;
         let method = path.segment()?.name_ref()?.text().to_string();
-        if method != "cpp_from" && method != "cpp_from_move" {
-            return None;
-        }
-        let to = self.generic_of_path(&path.qualifier()?)?;
-        let Ok([arg]) = <[_; 1]>::try_from(call.arg_list()?.args().collect::<Vec<_>>()) else {
-            panic!("{method} takes one argument");
-        };
-        let mut src_ctx = FragmentCtx::new(self.builder, self.params, self.generic_names);
-        src_ctx.visit(ra_ap_syntax::NodeOrToken::Node(arg.syntax().clone()));
-        Some(ConvertInner {
-            to,
-            is_move: method == "cpp_from_move",
-            src: src_ctx.finish(),
-        })
-    }
-
-    fn generic_default(&self, call: &ast::CallExpr) -> Option<i32> {
-        if call.arg_list()?.args().next().is_some() {
-            return None;
-        }
-        let ast::Expr::PathExpr(path_expr) = call.expr()? else {
-            return None;
-        };
-        let path = path_expr.path()?;
-        if path.segment()?.name_ref()?.text() != "default" {
-            return None;
-        }
-        self.generic_of_path(&path.qualifier()?)
+        let generic = self.generic_of_path(&path.qualifier()?)?;
+        let args = call
+            .arg_list()?
+            .args()
+            .map(|arg| {
+                let mut ctx = FragmentCtx::new(self.builder, self.params, self.generic_names);
+                ctx.visit(ra_ap_syntax::NodeOrToken::Node(arg.syntax().clone()));
+                ctx.finish()
+            })
+            .collect();
+        Some(GenericCallInner { generic, method, args })
     }
 
     fn emit_method_call(&mut self, call: &ast::MethodCallExpr) {
