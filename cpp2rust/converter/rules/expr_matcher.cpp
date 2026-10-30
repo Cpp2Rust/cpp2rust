@@ -252,6 +252,27 @@ substituteSpecializationInRuleTmpl(clang::Sema &sema,
   return result.isInvalid() || trial.failed() ? nullptr : result.get();
 }
 
+void deduceMemberTypesFromOperands(clang::Sema &sema,
+                              clang::FunctionTemplateDecl *rule,
+                              const clang::Expr *use,
+                              std::vector<clang::TemplateArgument> &deduced) {
+  auto pattern = rule->getTemplatedDecl();
+  auto operands = getOperands(sema.Context, use, pattern->getNumParams());
+  for (unsigned i = 0; i < operands.size() && i < pattern->getNumParams();
+       ++i) {
+    auto param = pattern->getParamDecl(i)->getType().getNonReferenceType();
+    auto operand = operands[i]->getType().getNonReferenceType();
+    auto args = param->getAs<clang::DependentNameType>()
+                    ? RuleDecls::DeduceMemberType(sema, rule, param, operand)
+                    : std::nullopt;
+    for (unsigned j = 0; args && j < deduced.size(); ++j) {
+      if (deduced[j].isNull()) {
+        deduced[j] = (*args)[j];
+      }
+    }
+  }
+}
+
 clang::TemplateArgumentListInfo getResultArgs(clang::Sema &sema,
                                               clang::FunctionTemplateDecl *rule,
                                               const clang::Expr *use) {
@@ -266,19 +287,19 @@ clang::TemplateArgumentListInfo getResultArgs(clang::Sema &sema,
     return explicit_args;
   }
   auto params = rule->getTemplateParameters();
-  auto deduced = RuleDecls::DeduceFromType(
-      sema, params, rule->getTemplatedDecl()->getReturnType(),
-      RuleDecls::SkipImplicit(use)
-          ->getType()
-          .getCanonicalType()
-          .getUnqualifiedType());
-  if (!deduced) {
-    return explicit_args;
-  }
+  auto deduced =
+      RuleDecls::DeduceFromType(sema, params,
+                                rule->getTemplatedDecl()->getReturnType(),
+                                RuleDecls::SkipImplicit(use)
+                                    ->getType()
+                                    .getCanonicalType()
+                                    .getUnqualifiedType())
+          .value_or(std::vector<clang::TemplateArgument>(params->size()));
+  deduceMemberTypesFromOperands(sema, rule, use, deduced);
   auto last = static_cast<unsigned>(deducible.find_last_unset());
   for (unsigned i = 0; i < params->size() && i <= last; ++i) {
     auto param = params->getParam(i);
-    if (param->isParameterPack() || (*deduced)[i].isNull()) {
+    if (param->isParameterPack() || deduced[i].isNull()) {
       break;
     }
     clang::QualType nttp_type;
@@ -286,7 +307,7 @@ clang::TemplateArgumentListInfo getResultArgs(clang::Sema &sema,
       nttp_type = nttp->getType();
     }
     explicit_args.addArgument(
-        sema.getTrivialTemplateArgumentLoc((*deduced)[i], nttp_type, loc));
+        sema.getTrivialTemplateArgumentLoc(deduced[i], nttp_type, loc));
   }
   return explicit_args;
 }

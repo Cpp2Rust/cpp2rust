@@ -46,6 +46,10 @@ std::optional<std::vector<clang::TemplateArgument>>
 DeduceFromType(clang::Sema &sema, clang::TemplateParameterList *params,
                clang::QualType pattern, clang::QualType actual);
 
+std::optional<std::vector<clang::TemplateArgument>>
+DeduceMemberType(clang::Sema &sema, const clang::TemplateDecl *rule,
+                 clang::QualType pattern, clang::QualType use);
+
 bool IsInternal(const clang::NamedDecl *decl);
 
 clang::QualType PeelSugar(clang::ASTContext &ctx, clang::QualType type);
