@@ -68,7 +68,12 @@ impl Parse for Conversion {
                 }
             };
         }
-        Ok(Conversion { ty, method, kind, some })
+        Ok(Conversion {
+            ty,
+            method,
+            kind,
+            some,
+        })
     }
 }
 
@@ -78,7 +83,12 @@ struct Source {
     from_move: Option<Conversion>,
 }
 
-fn ctor_call(name: &Ident, conversion: &Conversion, is_unsafe: bool, is_move: bool) -> TokenStream2 {
+fn ctor_call(
+    name: &Ident,
+    conversion: &Conversion,
+    is_unsafe: bool,
+    is_move: bool,
+) -> TokenStream2 {
     let method = &conversion.method;
     let arg = match (conversion.kind, is_unsafe) {
         (Kind::Value, true) => quote!((*src).clone()),
@@ -86,7 +96,11 @@ fn ctor_call(name: &Ident, conversion: &Conversion, is_unsafe: bool, is_move: bo
         (Kind::MutPtr, true) if !is_move => quote!(src.cast_mut()),
         (Kind::Ptr | Kind::MutPtr, _) => quote!(src),
     };
-    let arg = if conversion.some { quote!(Some(#arg)) } else { arg };
+    let arg = if conversion.some {
+        quote!(Some(#arg))
+    } else {
+        arg
+    };
     quote!(#name::#method(#arg))
 }
 
@@ -118,8 +132,9 @@ pub fn expand(input: TokenStream, is_unsafe: bool) -> TokenStream {
             }
             _ => continue,
         };
-        let conversion: Conversion =
-            attr.parse_args().expect("cpp_from(Type, method, value|ptr|mut_ptr)");
+        let conversion: Conversion = attr
+            .parse_args()
+            .expect("cpp_from(Type, method, value|ptr|mut_ptr)");
         let ty = &conversion.ty;
         let key = quote!(#ty).to_string();
         let source = match sources.iter().position(|(k, _)| *k == key) {
@@ -129,7 +144,11 @@ pub fn expand(input: TokenStream, is_unsafe: bool) -> TokenStream {
                 &mut sources.last_mut().unwrap().1
             }
         };
-        let slot = if is_move { &mut source.from_move } else { &mut source.from };
+        let slot = if is_move {
+            &mut source.from_move
+        } else {
+            &mut source.from
+        };
         assert!(slot.is_none(), "two conversions from {key}");
         *slot = Some(conversion);
     }

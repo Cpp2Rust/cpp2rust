@@ -964,20 +964,19 @@ void Converter::EmitConversionAttrs(clang::CXXRecordDecl *decl) {
   ForEachConvertingConstructor(decl, [&](clang::CXXConstructorDecl *ctor) {
     auto *param = ctor->getParamDecl(0);
     auto type = param->getType();
-    auto source = GetUnboxedTypeAsString(
-        type.getNonReferenceType().getUnqualifiedType());
+    auto source =
+        GetUnboxedTypeAsString(type.getNonReferenceType().getUnqualifiedType());
     bool is_move = type->isRValueReferenceType();
     if (!from_types.insert(source + (is_move ? "&&" : "")).second) {
       return;
     }
-    const char *kind = !type->isReferenceType() ? "value"
-                       : is_move || type.getNonReferenceType().isConstQualified()
-                           ? "ptr"
-                           : "mut_ptr";
-    StrCat(std::format("#[{}({}, {}, {}{})]",
-                       is_move ? "cpp_from_move" : "cpp_from", source,
-                       GetCtorName(ctor), param->hasDefaultArg() ? "some_" : "",
-                       kind));
+    const char *kind =
+        !type->isReferenceType()                                   ? "value"
+        : is_move || type.getNonReferenceType().isConstQualified() ? "ptr"
+                                                                   : "mut_ptr";
+    StrCat(std::format(
+        "#[{}({}, {}, {}{})]", is_move ? "cpp_from_move" : "cpp_from", source,
+        GetCtorName(ctor), param->hasDefaultArg() ? "some_" : "", kind));
   });
   std::unordered_set<std::string> into_types;
   ForEachMethod(decl, [&](clang::CXXMethodDecl *method) {
@@ -990,8 +989,8 @@ void Converter::EmitConversionAttrs(clang::CXXRecordDecl *decl) {
     if (!into_types.insert(target).second) {
       return;
     }
-    StrCat(std::format("#[cpp_into({}, {})]", target,
-                       GetMethodName(conversion)));
+    StrCat(
+        std::format("#[cpp_into({}, {})]", target, GetMethodName(conversion)));
   });
 }
 
@@ -4989,8 +4988,8 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
                        ToStringBase(ctx_.getPointerType(elem)));
   }
 
-  if (auto *init = RuleRegistry::BuildParamConversion(ctx_, expr,
-                                                      ph_ctx.arg_idx, arg)) {
+  if (auto *init =
+          RuleRegistry::BuildParamConversion(ctx_, expr, ph_ctx.arg_idx, arg)) {
     Buffer buf(*this);
     PushExprKind push(*this, ExprKind::RValue);
     ConvertInit(init->getType(), init);

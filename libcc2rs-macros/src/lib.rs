@@ -235,4 +235,3 @@ pub fn derive_cpp_from(input: TokenStream) -> TokenStream {
 pub fn derive_cpp_from_unsafe(input: TokenStream) -> TokenStream {
     cpp_from::expand(input, true)
 }
-

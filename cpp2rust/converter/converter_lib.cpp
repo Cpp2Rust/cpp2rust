@@ -543,8 +543,8 @@ bool IsConvertibleMoveConstructor(const clang::CXXConstructorDecl *ctor) {
   return ctor->isUserProvided() || NeedsDefaultedMoveConstructor(parent);
 }
 
-static bool IsImplicitConvertingConstructor(
-    const clang::CXXConstructorDecl *ctor) {
+static bool
+IsImplicitConvertingConstructor(const clang::CXXConstructorDecl *ctor) {
   return !ctor->isCopyOrMoveConstructor() && !ctor->isImplicit() &&
          !ctor->isDeleted() && ctor->hasBody() && ctor->getNumParams() == 1 &&
          ctor->isConvertingConstructor(/*AllowExplicit=*/false);
@@ -578,8 +578,9 @@ bool HasImplicitConversions(const clang::RecordDecl *decl) {
     return false;
   }
   bool found = false;
-  ForEachConvertingConstructor(const_cast<clang::CXXRecordDecl *>(cxx),
-                               [&](clang::CXXConstructorDecl *) { found = true; });
+  ForEachConvertingConstructor(
+      const_cast<clang::CXXRecordDecl *>(cxx),
+      [&](clang::CXXConstructorDecl *) { found = true; });
   ForEachMethod(cxx, [&](clang::CXXMethodDecl *method) {
     found = found || IsImplicitConversionOperator(method);
   });

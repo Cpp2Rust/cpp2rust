@@ -62,7 +62,8 @@ int main() {
   assert(from_record_pair.second.copied == 11);
   assert(from_record_pair.second.taken == 0);
 
-  std::pair<Label, Owner> from_moved_record_pair = std::make_pair(Celsius(12), Celsius(13));
+  std::pair<Label, Owner> from_moved_record_pair =
+      std::make_pair(Celsius(12), Celsius(13));
   assert(from_moved_record_pair.first.id == 12);
   assert(from_moved_record_pair.second.taken == 13);
   assert(from_moved_record_pair.second.copied == 0);
@@ -71,7 +72,8 @@ int main() {
   assert(from_by_value_pair.first.value == 10);
   assert(from_by_value_pair.second.value == 11);
 
-  std::pair<Holder, Holder> from_moved_by_value_pair = std::make_pair(Celsius(14), Celsius(15));
+  std::pair<Holder, Holder> from_moved_by_value_pair =
+      std::make_pair(Celsius(14), Celsius(15));
   assert(from_moved_by_value_pair.first.value == 14);
   assert(from_moved_by_value_pair.second.value == 15);
   return 0;
