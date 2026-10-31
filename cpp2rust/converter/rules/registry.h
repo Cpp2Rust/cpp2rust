@@ -37,7 +37,7 @@ Matcher::Match<TranslationRule::TypeRule> Search(clang::ASTContext &ctx,
 
 const TranslationRule::ExprRule *GetExprRule(clang::ASTContext &ctx,
                                              const clang::Expr *expr);
-clang::QualType GetInitType(const clang::Expr *expr);
+clang::QualType GetInitType(clang::ASTContext &ctx, const clang::Expr *expr);
 
 clang::QualType GetGenericType(clang::ASTContext &ctx, const clang::Expr *expr,
                                unsigned n);

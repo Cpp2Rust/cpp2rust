@@ -616,7 +616,7 @@ impl<'a> FnIrBuilder<'a> {
 
         let params_map: BTreeMap<String, TypeInfo> = params
             .iter()
-            .filter(|p| !p.is_va_args && !p.is_init)
+            .filter(|p| !p.is_va_args)
             .map(|p| {
                 (
                     p.name.clone(),

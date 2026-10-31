@@ -121,7 +121,12 @@ impl FnIr {
 
     pub fn validate(&self, name: &str) {
         validate_consecutive_keys(
-            self.params.as_ref().map(|p| p.keys()).into_iter().flatten(),
+            self.params
+                .as_ref()
+                .map(|p| p.keys())
+                .into_iter()
+                .flatten()
+                .filter(|key| *key != "init"),
             'a',
             0,
             &format!("Rule {name} params"),

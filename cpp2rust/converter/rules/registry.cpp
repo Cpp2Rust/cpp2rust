@@ -65,26 +65,6 @@ bool isRuleName(llvm::StringRef name) {
          llvm::all_of(name.drop_front(), llvm::isDigit);
 }
 
-// The T of a rule's trailing `Init<T, Args> &&...args` pack.
-clang::QualType getInitPattern(const clang::FunctionDecl *rule) {
-  if (rule->param_empty()) {
-    return {};
-  }
-  auto expansion =
-      rule->parameters().back()->getType()->getAs<clang::PackExpansionType>();
-  if (!expansion) {
-    return {};
-  }
-  auto alias = expansion->getPattern()
-                   .getNonReferenceType()
-                   ->getAs<clang::TemplateSpecializationType>();
-  if (!alias || !alias->isTypeAlias() ||
-      alias->getTemplateName().getAsTemplateDecl()->getName() != "Init") {
-    return {};
-  }
-  return alias->template_arguments()[0].getAsType();
-}
-
 void collectGenerics(const std::vector<TranslationRule::BodyFragment> &body,
                      std::unordered_set<unsigned> &used) {
   TranslationRule::AnyFragment(body, [&](const TranslationRule::BodyFragment
@@ -157,6 +137,7 @@ void checkGenerics(const std::string &dir, const std::string &name,
   for (const auto &param : rule.params) {
     collectGenerics(param.type, used);
   }
+  collectGenerics(rule.init.type, used);
   for (unsigned i : used) {
     if (!declared.contains(std::format("T{}", i)) &&
         !isBoundArgument(rule, i)) {
@@ -165,10 +146,14 @@ void checkGenerics(const std::string &dir, const std::string &name,
       llvm::report_fatal_error("Absent generic from src");
     }
   }
-  if (rule.usesInit() && getInitPattern(decl).isNull()) {
+  if (rule.usesInit() &&
+      (decl->param_empty() || !decl->parameters()
+                                   .back()
+                                   ->getType()
+                                   ->getAs<clang::PackExpansionType>())) {
     llvm::errs() << dir << "::" << name << '\n';
-    llvm::report_fatal_error("Expr rule uses init but its src pack is not "
-                             "declared as Init<T, Args>");
+    llvm::report_fatal_error(
+        "Expr rule uses init but its src does not end in a pack");
   }
 }
 
@@ -447,18 +432,15 @@ clang::QualType GetConversionSourceType(clang::ASTContext &ctx,
   llvm::report_fatal_error("converted generic has no CppFrom bound");
 }
 
-clang::QualType GetInitType(const clang::Expr *expr) {
-  auto match = findExpr(expr);
-  assert(match.rule_decl && "expression must have a translation rule");
-  auto function = match.rule_decl->decl->getAsFunction();
-  auto pattern = getInitPattern(function);
-  assert(!pattern.isNull() && "rule has no Init<T, Args> pack");
-  clang::MultiLevelTemplateArgumentList args(
-      function->getDescribedFunctionTemplate(), match.args, /*Final=*/false);
-  clang::Sema::InstantiatingTemplate inst(
-      *sema_, expr->getBeginLoc(), const_cast<clang::FunctionDecl *>(function));
-  return sema_->SubstType(pattern, args, expr->getBeginLoc(),
-                          clang::DeclarationName());
+clang::QualType GetInitType(clang::ASTContext &ctx, const clang::Expr *expr) {
+  auto rule = Search(ctx, expr).first;
+  assert(rule && "expression must have a translation rule");
+  llvm::StringRef type = rule->init.type;
+  unsigned n = 0;
+  [[maybe_unused]] bool bad =
+      !type.consume_front("T") || type.getAsInteger(10, n);
+  assert(!bad && "init parameter type must be a bare generic");
+  return GetGenericType(ctx, expr, n);
 }
 
 clang::QualType GetDeclaredReturnType(const clang::Expr *expr) {

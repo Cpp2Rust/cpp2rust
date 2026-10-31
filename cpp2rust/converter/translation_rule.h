@@ -102,6 +102,7 @@ struct TypeInfo {
 
 struct ExprRule {
   std::vector<TypeInfo> params;
+  TypeInfo init;
   TypeInfo return_type;
   std::vector<std::vector<Bound>> generics; // "T1" -> [Ord, Clone]
   std::vector<BodyFragment> body;
