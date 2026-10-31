@@ -60,6 +60,8 @@ bool pointsToUserType(clang::QualType type) {
   return tag && IsUserDefinedDecl(tag);
 }
 
+constexpr llvm::StringLiteral kInitAliasPrefix = "cpp2rust_init_";
+
 bool isRuleName(llvm::StringRef name) {
   return name.size() > 1 && (name[0] == 'f' || name[0] == 't') &&
          llvm::all_of(name.drop_front(), llvm::isDigit);
@@ -203,6 +205,10 @@ void addCxxRules(clang::ASTContext &ctx, const clang::NamespaceDecl *rules) {
     }
     for (auto decl : ns->decls()) {
       auto named = llvm::cast<clang::NamedDecl>(decl);
+      if (llvm::isa<clang::TypeAliasTemplateDecl>(named) &&
+          named->getName().starts_with(kInitAliasPrefix)) {
+        continue;
+      }
       if (!isRuleName(named->getName())) {
         llvm::report_fatal_error("declaration is not a rule");
       }
@@ -433,14 +439,55 @@ clang::QualType GetConversionSourceType(clang::ASTContext &ctx,
 }
 
 clang::QualType GetInitType(clang::ASTContext &ctx, const clang::Expr *expr) {
-  auto rule = Search(ctx, expr).first;
-  assert(rule && "expression must have a translation rule");
-  llvm::StringRef type = rule->init.type;
-  unsigned n = 0;
-  [[maybe_unused]] bool bad =
-      !type.consume_front("T") || type.getAsInteger(10, n);
-  assert(!bad && "init parameter type must be a bare generic");
-  return GetGenericType(ctx, expr, n);
+  auto match = findExpr(expr);
+  assert(match.rule_decl && "expression must have a translation rule");
+  const auto &rule = match.rule_decl->rule;
+  if (rule.init_cpp_type.empty()) {
+    llvm::StringRef type = rule.init.type;
+    unsigned n = 0;
+    [[maybe_unused]] bool bad =
+        !type.consume_front("T") || type.getAsInteger(10, n);
+    assert(!bad && "init type must be a bare generic or a cpp_type!");
+    return GetGenericType(ctx, expr, n);
+  }
+  auto function = match.rule_decl->decl->getAsFunction();
+  auto tmpl = function->getDescribedFunctionTemplate();
+  assert(tmpl && "cpp_type! init in a non-template rule");
+  clang::TypeAliasTemplateDecl *alias = nullptr;
+  for (auto decl : function->getDeclContext()->lookup(&ctx.Idents.get(
+           InitAliasName(model_, function->getName().str())))) {
+    if ((alias = llvm::dyn_cast<clang::TypeAliasTemplateDecl>(decl))) {
+      break;
+    }
+  }
+  assert(alias && "cpp_type! init has no alias next to its rule");
+  clang::MultiLevelTemplateArgumentList args(tmpl, match.args,
+                                             /*Final=*/false);
+  clang::Sema::InstantiatingTemplate inst(
+      *sema_, expr->getBeginLoc(), const_cast<clang::FunctionDecl *>(function));
+  auto type = sema_->SubstType(alias->getTemplatedDecl()->getUnderlyingType(),
+                               args, expr->getBeginLoc(),
+                               clang::DeclarationName());
+  assert(!type.isNull() && "cpp_type! init does not substitute");
+  return type;
+}
+
+std::string InitCppType(Model model, const std::string &dir,
+                        const std::string &name) {
+  auto rule = findRule(model, dir, name);
+  if (!rule) {
+    rule = findRule(Model::kUnsafe, dir, name);
+  }
+  if (!rule) {
+    return {};
+  }
+  auto cpp_type = rule->getString("init_cpp_type");
+  return cpp_type ? cpp_type->str() : std::string();
+}
+
+std::string InitAliasName(Model model, const std::string &name) {
+  return std::format("{}{}_{}", kInitAliasPrefix.str(),
+                     model == Model::kRefCount ? "refcount" : "unsafe", name);
 }
 
 clang::QualType GetDeclaredReturnType(const clang::Expr *expr) {

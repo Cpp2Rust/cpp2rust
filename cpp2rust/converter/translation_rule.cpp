@@ -355,6 +355,10 @@ ExprRule ParseExprRuleJSON(const llvm::json::Object &obj) {
     ir.body = ParseBodyFragmentsJSON(*body);
   }
 
+  if (auto init_cpp_type = obj.getString("init_cpp_type")) {
+    ir.init_cpp_type = init_cpp_type->str();
+  }
+
   return ir;
 }
 

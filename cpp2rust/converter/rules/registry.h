@@ -39,6 +39,11 @@ const TranslationRule::ExprRule *GetExprRule(clang::ASTContext &ctx,
                                              const clang::Expr *expr);
 clang::QualType GetInitType(clang::ASTContext &ctx, const clang::Expr *expr);
 
+std::string InitCppType(Model model, const std::string &dir,
+                        const std::string &name);
+
+std::string InitAliasName(Model model, const std::string &name);
+
 clang::QualType GetGenericType(clang::ASTContext &ctx, const clang::Expr *expr,
                                unsigned n);
 
