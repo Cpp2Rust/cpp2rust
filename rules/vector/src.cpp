@@ -8,8 +8,6 @@
 #include <type_traits>
 #include <vector>
 
-#include "../common/init.h"
-
 template <typename T1, typename T2 = std::allocator<T1>>
 using t5 = std::vector<T1, T2>;
 
@@ -242,7 +240,7 @@ std::vector<T1, T2> f110(const std::vector<T1, T2> &o) {
 }
 
 template <typename T1, typename T2 = std::allocator<T1>, typename... Args>
-auto f114(std::vector<T1, T2> &o, Init<T1, Args> &&...args)
+auto f114(std::vector<T1, T2> &o, Args &&...args)
     -> decltype(o.emplace_back(std::forward<Args>(args)...)) {
   return o.emplace_back(std::forward<Args>(args)...);
 }
