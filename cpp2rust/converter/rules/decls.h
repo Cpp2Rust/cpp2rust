@@ -47,6 +47,11 @@ DeduceFromType(clang::Sema &sema, clang::TemplateParameterList *params,
                clang::QualType pattern, clang::QualType actual);
 
 std::optional<std::vector<clang::TemplateArgument>>
+DeduceFromArguments(clang::Sema &sema, clang::TemplateParameterList *params,
+                    llvm::ArrayRef<clang::TemplateArgumentLoc> pattern,
+                    llvm::ArrayRef<clang::TemplateArgument> actual);
+
+std::optional<std::vector<clang::TemplateArgument>>
 DeduceMemberType(clang::Sema &sema, const clang::TemplateDecl *rule,
                  clang::QualType pattern, clang::QualType use);
 

@@ -1,6 +1,8 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+use libcc2rs::*;
+
 fn t1<T1>() -> Option<Box<T1>> {
     None
 }
@@ -17,8 +19,8 @@ fn t4<T1>() -> *mut T1 {
     ::std::ptr::null_mut()
 }
 
-unsafe fn f1<T1: Default>(a0: usize) -> Option<Box<[T1]>> {
-    Some((0..a0).map(|_| <T1>::default()).collect::<Box<[_]>>())
+unsafe fn f1<T1: CppArray<T2>, T2: Default>(a0: usize) -> Option<Box<[T2]>> {
+    Some((0..a0).map(|_| <T2>::default()).collect::<Box<[_]>>())
 }
 unsafe fn f2<T1>(a0: &mut Option<Box<T1>>) -> *mut T1 {
     a0.as_deref_mut()
