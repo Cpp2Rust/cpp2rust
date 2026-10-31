@@ -88,12 +88,14 @@ unsafe fn main_0() -> i32 {
         );
         i.prefix_inc();
     }
-    let mut s3: Vec<libc::c_char> = {
-        let mut __tmp1 = s2
-            [(2_usize) as usize..::std::cmp::min((2_usize + 5_usize) as usize, s2.len() - 1)]
-            .to_vec();
-        __tmp1.push(0);
-        __tmp1
+    let mut s3: Vec<libc::c_char> = match ((&mut s2 as *const Vec<libc::c_char>), 2_usize, 5_usize)
+    {
+        (__source, __pos, __count) => {
+            let __s = &*__source;
+            let mut __tmp1 = __s[__pos..::std::cmp::min(__pos + __count, __s.len() - 1)].to_vec();
+            __tmp1.push(0);
+            __tmp1
+        }
     };
     assert!(((s3.len() - 1) == (5_usize)));
     assert!(((s3.len() - 1) == (s3.len() - 1)));
@@ -103,24 +105,25 @@ unsafe fn main_0() -> i32 {
         assert!((((*p3.offset((i) as isize)) as i32) == (s3[(i as usize)] as i32)));
         i.prefix_inc();
     }
-    let mut s4: Vec<libc::c_char> = {
-        let mut __tmp1 = s1[(1_usize) as usize
-            ..::std::cmp::min(
-                (1_usize
-                    + match s1.iter().rposition(|&c| {
-                        ::std::ffi::CStr::from_ptr(c"l".as_ptr())
-                            .to_str()
-                            .unwrap()
-                            .contains(c as u8 as char)
-                    }) {
-                        Some(idx) => idx,
-                        None => usize::MAX,
-                    }) as usize,
-                s1.len() - 1,
-            )]
-            .to_vec();
-        __tmp1.push(0);
-        __tmp1
+    let mut s4: Vec<libc::c_char> = match (
+        (&mut s1 as *const Vec<libc::c_char>),
+        1_usize,
+        match s1.iter().rposition(|&c| {
+            ::std::ffi::CStr::from_ptr(c"l".as_ptr())
+                .to_str()
+                .unwrap()
+                .contains(c as u8 as char)
+        }) {
+            Some(idx) => idx,
+            None => usize::MAX,
+        },
+    ) {
+        (__source, __pos, __count) => {
+            let __s = &*__source;
+            let mut __tmp1 = __s[__pos..::std::cmp::min(__pos + __count, __s.len() - 1)].to_vec();
+            __tmp1.push(0);
+            __tmp1
+        }
     };
     assert!(((s4.len() - 1) == (3_usize)));
     assert!(((s4.len() - 1) == (s4.len() - 1)));
@@ -239,37 +242,46 @@ unsafe fn main_0() -> i32 {
     assert!(((result[(5_usize)] as i32) == (('f' as libc::c_char) as i32)));
     assert!(((result[(6_usize)] as i32) == (('o' as libc::c_char) as i32)));
     assert!(((result[(7_usize)] as i32) == (('o' as libc::c_char) as i32)));
-    let mut substr_0: Vec<libc::c_char> = {
-        let mut __tmp1 = result
-            [(5_usize) as usize..::std::cmp::min((5_usize + 3_usize) as usize, result.len() - 1)]
-            .to_vec();
-        __tmp1.push(0);
-        __tmp1
-    };
+    let mut substr_0: Vec<libc::c_char> =
+        match ((&mut result as *const Vec<libc::c_char>), 5_usize, 3_usize) {
+            (__source, __pos, __count) => {
+                let __s = &*__source;
+                let mut __tmp1 =
+                    __s[__pos..::std::cmp::min(__pos + __count, __s.len() - 1)].to_vec();
+                __tmp1.push(0);
+                __tmp1
+            }
+        };
     assert!(((substr_0.len() - 1) == (3_usize)));
     assert!(((substr_0[(0_usize)] as i32) == (('f' as libc::c_char) as i32)));
     assert!(((substr_0[(1_usize)] as i32) == (('o' as libc::c_char) as i32)));
     assert!(((substr_0[(2_usize)] as i32) == (('o' as libc::c_char) as i32)));
-    let mut substr_1: Vec<libc::c_char> = {
-        let mut __tmp1 = result
-            [(0_usize) as usize..::std::cmp::min((0_usize + 5_usize) as usize, result.len() - 1)]
-            .to_vec();
-        __tmp1.push(0);
-        __tmp1
-    };
+    let mut substr_1: Vec<libc::c_char> =
+        match ((&mut result as *const Vec<libc::c_char>), 0_usize, 5_usize) {
+            (__source, __pos, __count) => {
+                let __s = &*__source;
+                let mut __tmp1 =
+                    __s[__pos..::std::cmp::min(__pos + __count, __s.len() - 1)].to_vec();
+                __tmp1.push(0);
+                __tmp1
+            }
+        };
     assert!(((substr_1.len() - 1) == (5_usize)));
     assert!(((substr_1[(0_usize)] as i32) == (('b' as libc::c_char) as i32)));
     assert!(((substr_1[(1_usize)] as i32) == (('a' as libc::c_char) as i32)));
     assert!(((substr_1[(2_usize)] as i32) == (('r' as libc::c_char) as i32)));
     assert!(((substr_1[(3_usize)] as i32) == (0)));
     assert!(((substr_1[(4_usize)] as i32) == ((' ' as libc::c_char) as i32)));
-    let mut substr_2: Vec<libc::c_char> = {
-        let mut __tmp1 = result
-            [(0_usize) as usize..::std::cmp::min((0_usize + 15_usize) as usize, result.len() - 1)]
-            .to_vec();
-        __tmp1.push(0);
-        __tmp1
-    };
+    let mut substr_2: Vec<libc::c_char> =
+        match ((&mut result as *const Vec<libc::c_char>), 0_usize, 15_usize) {
+            (__source, __pos, __count) => {
+                let __s = &*__source;
+                let mut __tmp1 =
+                    __s[__pos..::std::cmp::min(__pos + __count, __s.len() - 1)].to_vec();
+                __tmp1.push(0);
+                __tmp1
+            }
+        };
     assert!(((substr_2.len() - 1) == (8_usize)));
     assert!(((substr_2[(0_usize)] as i32) == (('b' as libc::c_char) as i32)));
     assert!(((substr_2[(1_usize)] as i32) == (('a' as libc::c_char) as i32)));
@@ -358,12 +370,17 @@ unsafe fn main_0() -> i32 {
     diff += 6_i64;
     assert!(((diff) == (3_i64)));
     let mut substr_pos: usize = 1_usize;
-    let mut once: Vec<libc::c_char> = {
-        let mut __tmp1 = s1[(substr_pos.postfix_inc()) as usize
-            ..::std::cmp::min((substr_pos.postfix_inc() + 2_usize) as usize, s1.len() - 1)]
-            .to_vec();
-        __tmp1.push(0);
-        __tmp1
+    let mut once: Vec<libc::c_char> = match (
+        (&mut s1 as *const Vec<libc::c_char>),
+        substr_pos.postfix_inc(),
+        2_usize,
+    ) {
+        (__source, __pos, __count) => {
+            let __s = &*__source;
+            let mut __tmp1 = __s[__pos..::std::cmp::min(__pos + __count, __s.len() - 1)].to_vec();
+            __tmp1.push(0);
+            __tmp1
+        }
     };
     (unsafe {
         libc::printf(
@@ -373,15 +390,17 @@ unsafe fn main_0() -> i32 {
         )
     });
     let mut substr_count: usize = 2_usize;
-    once = {
-        let mut __tmp1 = s1[(1_usize) as usize
-            ..::std::cmp::min(
-                (1_usize + substr_count.postfix_inc()) as usize,
-                s1.len() - 1,
-            )]
-            .to_vec();
-        __tmp1.push(0);
-        __tmp1
+    once = match (
+        (&mut s1 as *const Vec<libc::c_char>),
+        1_usize,
+        substr_count.postfix_inc(),
+    ) {
+        (__source, __pos, __count) => {
+            let __s = &*__source;
+            let mut __tmp1 = __s[__pos..::std::cmp::min(__pos + __count, __s.len() - 1)].to_vec();
+            __tmp1.push(0);
+            __tmp1
+        }
     };
     (unsafe {
         libc::printf(
@@ -391,15 +410,17 @@ unsafe fn main_0() -> i32 {
         )
     });
     let mut receiver_calls: i32 = 0;
-    once = {
-        let mut __tmp1 = (unsafe { counted_string_0(&mut receiver_calls) })[(1_usize) as usize
-            ..::std::cmp::min(
-                (1_usize + 2_usize) as usize,
-                (unsafe { counted_string_0(&mut receiver_calls) }).len() - 1,
-            )]
-            .to_vec();
-        __tmp1.push(0);
-        __tmp1
+    once = match (
+        (&mut (unsafe { counted_string_0(&mut receiver_calls) }) as *const Vec<libc::c_char>),
+        1_usize,
+        2_usize,
+    ) {
+        (__source, __pos, __count) => {
+            let __s = &*__source;
+            let mut __tmp1 = __s[__pos..::std::cmp::min(__pos + __count, __s.len() - 1)].to_vec();
+            __tmp1.push(0);
+            __tmp1
+        }
     };
     (unsafe {
         libc::printf(

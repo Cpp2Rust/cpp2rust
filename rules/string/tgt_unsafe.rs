@@ -27,10 +27,16 @@ fn t7() -> libc::c_char {
     0 as libc::c_char
 }
 
-unsafe fn f1(a0: Vec<libc::c_char>, a1: usize, a2: usize) -> Vec<libc::c_char> {
-    let mut __tmp1 = a0[(a1) as usize..::std::cmp::min((a1 + a2) as usize, a0.len() - 1)].to_vec();
-    __tmp1.push(0);
-    __tmp1
+// Keep temporary receivers alive, but borrow only after evaluating the arguments.
+unsafe fn f1(a0: *const Vec<libc::c_char>, a1: usize, a2: usize) -> Vec<libc::c_char> {
+    match (a0, a1, a2) {
+        (__source, __pos, __count) => {
+            let __s = &*__source;
+            let mut __tmp1 = __s[__pos..::std::cmp::min(__pos + __count, __s.len() - 1)].to_vec();
+            __tmp1.push(0);
+            __tmp1
+        }
+    }
 }
 unsafe fn f2(a0: Vec<libc::c_char>) -> usize {
     (a0.len() - 1)

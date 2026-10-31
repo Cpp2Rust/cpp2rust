@@ -225,7 +225,12 @@ std::string Converter::ConvertFreshObject(clang::Expr *expr) {
 
 std::string Converter::ConvertPointerReceiver(clang::Expr *arg,
                                               std::string_view param_type) {
-  return std::format("({} as {})", ConvertFreshObject(arg), param_type);
+  auto *unwrapped = clang::IgnoreExprNodes(
+      arg, clang::IgnoreParensSingleStep, clang::IgnoreImplicitCastsSingleStep);
+  auto receiver = clang::isa<clang::MaterializeTemporaryExpr>(unwrapped)
+                      ? ConvertTemporaryPointer(arg, std::nullopt)
+                      : ConvertFreshObject(arg);
+  return std::format("({} as {})", receiver, param_type);
 }
 
 std::string Converter::ConvertTemporaryPointer(
