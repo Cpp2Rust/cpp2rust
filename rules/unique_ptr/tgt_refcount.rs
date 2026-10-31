@@ -21,9 +21,9 @@ fn t4<T1>() -> Ptr<T1> {
     Ptr::null()
 }
 
-fn f1<T1: Default>(a0: usize) -> Option<Value<Box<[T1]>>> {
+fn f1<T1: CppArray<T2>, T2: Default>(a0: usize) -> Option<Value<Box<[T2]>>> {
     Some(Rc::new(RefCell::new(
-        (0..a0).map(|_| <T1>::default()).collect::<Box<[_]>>(),
+        (0..a0).map(|_| <T2>::default()).collect::<Box<[_]>>(),
     )))
 }
 
