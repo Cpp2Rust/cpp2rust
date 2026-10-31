@@ -28,6 +28,11 @@ unsafe fn main_0() -> i32 {
         r2
     };
     assert!(*(&mut (v1)[0_usize as usize] as *mut bool));
+    {
+        *(&mut (v1)[0_usize as usize] as *mut bool) = false;
+        (&mut (v1)[0_usize as usize] as *mut bool)
+    };
+    assert!(!(*(&mut (v1)[0_usize as usize] as *mut bool)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}
