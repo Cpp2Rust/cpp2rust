@@ -239,10 +239,10 @@ std::vector<T1, T2> f110(const std::vector<T1, T2> &o) {
   return std::vector<T1, T2>(o);
 }
 
-template <typename T1, typename T2 = std::allocator<T1>, typename... Args>
-auto f114(std::vector<T1, T2> &o, Args &&...args)
-    -> decltype(o.emplace_back(std::forward<Args>(args)...)) {
-  return o.emplace_back(std::forward<Args>(args)...);
+template <typename T1, typename T2 = std::allocator<T1>, typename... T3>
+auto f114(std::vector<T1, T2> &o, T3 &&...a1)
+    -> decltype(o.emplace_back(std::forward<T3>(a1)...)) {
+  return o.emplace_back(std::forward<T3>(a1)...);
 }
 
 template <typename T1, typename T2 = std::allocator<T1>>

@@ -48,10 +48,10 @@ std::deque<T1> &f11(std::deque<T1> &dst, std::deque<T1> &&src) {
   return dst = std::move(src);
 }
 
-template <typename T1, typename... Args>
-auto f12(std::deque<T1> &o, Args &&...args)
-    -> decltype(o.emplace_back(std::forward<Args>(args)...)) {
-  return o.emplace_back(std::forward<Args>(args)...);
+template <typename T1, typename... T2>
+auto f12(std::deque<T1> &o, T2 &&...a1)
+    -> decltype(o.emplace_back(std::forward<T2>(a1)...)) {
+  return o.emplace_back(std::forward<T2>(a1)...);
 }
 
 template <typename T1> std::deque<T1> f14() { return std::deque<T1>(); }
