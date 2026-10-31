@@ -106,6 +106,17 @@ int main() {
     assert(pair.second == pair.first % 2);
     last = pair.first;
   }
+  std::map<int, int> m3;
+  auto inserted = m3.emplace(1, 2);
+  assert(inserted.second);
+  assert(inserted.first->second == 2);
+  auto not_inserted = m3.emplace(1, 3);
+  assert(!not_inserted.second);
+  assert(not_inserted.first->second == 2);
+  m3.emplace(std::make_pair(4, 5));
+  assert(m3.size() == 2);
+  assert(m3[1] == 2);
+  assert(m3[4] == 5);
   k = 0;
   const auto &value_0 = m.at(k);
   assert(m.size() + x1 + x2 + x3 + x4 + x5 + value_0 == 21);
