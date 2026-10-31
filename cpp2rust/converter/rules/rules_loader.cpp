@@ -321,8 +321,7 @@ std::string WrapRule(const llvm::json::Object &rule, bool is_cxx) {
       auto cpp_type = RuleRegistry::InitCppType(model, dir, name);
       if (!cpp_type.empty()) {
         text += std::format("{} using {} = {};\n", header->str(),
-                            RuleRegistry::InitAliasName(model, name),
-                            cpp_type);
+                            RuleRegistry::InitAliasName(model, name), cpp_type);
       }
     }
   }

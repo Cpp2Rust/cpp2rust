@@ -454,8 +454,8 @@ clang::QualType GetInitType(clang::ASTContext &ctx, const clang::Expr *expr) {
   auto tmpl = function->getDescribedFunctionTemplate();
   assert(tmpl && "cpp_type! init in a non-template rule");
   clang::TypeAliasTemplateDecl *alias = nullptr;
-  for (auto decl : function->getDeclContext()->lookup(&ctx.Idents.get(
-           InitAliasName(model_, function->getName().str())))) {
+  for (auto decl : function->getDeclContext()->lookup(
+           &ctx.Idents.get(InitAliasName(model_, function->getName().str())))) {
     if ((alias = llvm::dyn_cast<clang::TypeAliasTemplateDecl>(decl))) {
       break;
     }
@@ -465,9 +465,9 @@ clang::QualType GetInitType(clang::ASTContext &ctx, const clang::Expr *expr) {
                                              /*Final=*/false);
   clang::Sema::InstantiatingTemplate inst(
       *sema_, expr->getBeginLoc(), const_cast<clang::FunctionDecl *>(function));
-  auto type = sema_->SubstType(alias->getTemplatedDecl()->getUnderlyingType(),
-                               args, expr->getBeginLoc(),
-                               clang::DeclarationName());
+  auto type =
+      sema_->SubstType(alias->getTemplatedDecl()->getUnderlyingType(), args,
+                       expr->getBeginLoc(), clang::DeclarationName());
   assert(!type.isNull() && "cpp_type! init does not substitute");
   return type;
 }

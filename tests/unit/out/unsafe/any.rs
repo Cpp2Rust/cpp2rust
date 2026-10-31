@@ -25,11 +25,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut a: Option<Box<dyn std::any::Any>> = (unsafe {
-        let mut ___args_0: i32 = 3;
-        let mut ___args_1: i32 = 4;
-        make_any_0(&mut ___args_0, &mut ___args_1)
-    });
+    let mut a: Option<Box<dyn std::any::Any>> = Some(Box::new(Point::new({ 3 }, { 4 })));
     assert!(a.is_some());
     let mut p: *mut Point = match (*(&mut a as *mut Option<Box<dyn std::any::Any>>))
         .as_mut()
@@ -51,11 +47,10 @@ unsafe fn main_0() -> i32 {
         })
         .is_null()
     );
-    let q: *mut Point = (unsafe {
-        let mut ___args_0: i32 = 5;
-        let mut ___args_1: i32 = 6;
-        a.emplace(&mut ___args_0, &mut ___args_1)
-    });
+    let q: *mut Point = {
+        a = Some(Box::new(Point::new({ 5 }, { 6 })));
+        a.as_mut().unwrap().downcast_mut::<Point>().unwrap()
+    };
     assert!((((*q).x) == (5)));
     assert!(
         (((*match (*(&mut a as *mut Option<Box<dyn std::any::Any>>))
@@ -67,10 +62,7 @@ unsafe fn main_0() -> i32 {
         })
         .y) == (6))
     );
-    let mut b: Option<Box<dyn std::any::Any>> = (unsafe {
-        let mut ___args: i32 = 7;
-        make_any_1(&mut ___args)
-    });
+    let mut b: Option<Box<dyn std::any::Any>> = Some(Box::new(7));
     assert!(
         ((*match (*(&mut b as *mut Option<Box<dyn std::any::Any>>))
             .as_mut()

@@ -59,7 +59,10 @@ fn cpp_type_of(ty: &ast::Type) -> Option<String> {
         .expect("cpp_type! must start with a string literal");
     let string = ast::String::cast(token).expect("cpp_type! literal is not a string");
     let text = string.text_without_quotes();
-    assert!(!text.contains('\\'), "cpp_type! literal must not contain escapes");
+    assert!(
+        !text.contains('\\'),
+        "cpp_type! literal must not contain escapes"
+    );
     Some(text.to_string())
 }
 

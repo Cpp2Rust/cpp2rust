@@ -24,13 +24,9 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let a: Value<Option<Rc<dyn std::any::Any>>> = Rc::new(RefCell::new(
-        ({
-            let ___args_0: Value<i32> = Rc::new(RefCell::new(3));
-            let ___args_1: Value<i32> = Rc::new(RefCell::new(4));
-            make_any_0(___args_0.as_pointer(), ___args_1.as_pointer())
-        }),
-    ));
+    let a: Value<Option<Rc<dyn std::any::Any>>> = Rc::new(RefCell::new(Some(Rc::new(
+        RefCell::new(Point::new({ 3 }, { 4 })),
+    ))));
     assert!((*a.borrow()).is_some());
     let mut p: Ptr<Point> = (a.as_pointer()).with(|__a: &Option<Rc<dyn std::any::Any>>| match __a
         .clone()
@@ -51,11 +47,13 @@ fn main_0() -> i32 {
         }))
         .is_null()
     );
-    let q: Ptr<Point> = ({
-        let ___args_0: Value<i32> = Rc::new(RefCell::new(5));
-        let ___args_1: Value<i32> = Rc::new(RefCell::new(6));
-        (*a.borrow()).emplace(___args_0.as_pointer(), ___args_1.as_pointer())
-    });
+    let q: Ptr<Point> = {
+        let __value: Value<Point> = Rc::new(RefCell::new(Point::new({ 5 }, { 6 })));
+        let __ptr = __value.as_pointer();
+        a.as_pointer()
+            .with_mut(|__a: &mut Option<Rc<dyn std::any::Any>>| *__a = Some(__value));
+        __ptr
+    };
     assert!((q.with(|__s| __s.x) == 5));
     assert!(
         ((a.as_pointer())
@@ -68,12 +66,8 @@ fn main_0() -> i32 {
             .with(|__s| __s.y)
             == 6)
     );
-    let b: Value<Option<Rc<dyn std::any::Any>>> = Rc::new(RefCell::new(
-        ({
-            let ___args: Value<i32> = Rc::new(RefCell::new(7));
-            make_any_1(___args.as_pointer())
-        }),
-    ));
+    let b: Value<Option<Rc<dyn std::any::Any>>> =
+        Rc::new(RefCell::new(Some(Rc::new(RefCell::new(7)))));
     assert!(
         (((b.as_pointer())
             .with(|__a: &Option<Rc<dyn std::any::Any>>| {
