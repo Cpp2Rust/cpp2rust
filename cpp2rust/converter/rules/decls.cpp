@@ -80,6 +80,25 @@ const clang::Expr *GetMacroMemberBase(const clang::SourceManager &sm,
   }
 }
 
+namespace {
+
+std::vector<clang::TemplateArgument> deducedArguments(
+    clang::Sema &sema, clang::TemplateParameterList *params,
+    llvm::SmallVectorImpl<clang::DeducedTemplateArgument> &deduced) {
+  for (unsigned i = 0; i < deduced.size(); ++i) {
+    auto nttp =
+        llvm::dyn_cast<clang::NonTypeTemplateParmDecl>(params->getParam(i));
+    if (nttp && !nttp->getType()->isDependentType() &&
+        deduced[i].getKind() == clang::TemplateArgument::Integral) {
+      deduced[i] = clang::TemplateArgument(
+          sema.Context, deduced[i].getAsIntegral(), nttp->getType());
+    }
+  }
+  return std::vector<clang::TemplateArgument>(deduced.begin(), deduced.end());
+}
+
+} // namespace
+
 std::optional<std::vector<clang::TemplateArgument>>
 DeduceFromType(clang::Sema &sema, clang::TemplateParameterList *params,
                clang::QualType pattern, clang::QualType actual) {
@@ -94,16 +113,27 @@ DeduceFromType(clang::Sema &sema, clang::TemplateParameterList *params,
       trial.failed()) {
     return std::nullopt;
   }
-  for (unsigned i = 0; i < deduced.size(); ++i) {
-    auto nttp =
-        llvm::dyn_cast<clang::NonTypeTemplateParmDecl>(params->getParam(i));
-    if (nttp && !nttp->getType()->isDependentType() &&
-        deduced[i].getKind() == clang::TemplateArgument::Integral) {
-      deduced[i] = clang::TemplateArgument(
-          sema.Context, deduced[i].getAsIntegral(), nttp->getType());
-    }
+  return deducedArguments(sema, params, deduced);
+}
+
+std::optional<std::vector<clang::TemplateArgument>>
+DeduceFromArguments(clang::Sema &sema, clang::TemplateParameterList *params,
+                    llvm::ArrayRef<clang::TemplateArgumentLoc> pattern,
+                    llvm::ArrayRef<clang::TemplateArgument> actual) {
+  Trial trial(sema);
+  llvm::SmallVector<clang::TemplateArgument, 4> written;
+  for (const auto &arg : pattern) {
+    written.push_back(arg.getArgument());
   }
-  return std::vector<clang::TemplateArgument>(deduced.begin(), deduced.end());
+  llvm::SmallVector<clang::DeducedTemplateArgument, 4> deduced(params->size());
+  clang::sema::TemplateDeductionInfo info(params->getTemplateLoc());
+  if (sema.DeduceTemplateArguments(params, written, actual, info, deduced,
+                                   /*NumberOfArgumentsMustMatch=*/false) !=
+          clang::TemplateDeductionResult::Success ||
+      trial.failed()) {
+    return std::nullopt;
+  }
+  return deducedArguments(sema, params, deduced);
 }
 
 namespace {
