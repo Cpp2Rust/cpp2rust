@@ -97,3 +97,16 @@ fn f28<T1: CppLess + 'static, T2: 'static>(a0: Ptr<Map<T1, (Value<T1>, Value<T2>
 fn f29<T1: 'static, T2: 'static>(a0: Ptr<Map<T1, (Value<T1>, Value<T2>)>>) -> BidirectionalIterator<(Value<T1>, Value<T2>)> {
     a0.with(|__m: &Map<T1, (Value<T1>, Value<T2>)>| __m.begin())
 }
+
+fn f67<T1: CppLess + Clone + ByteRepr + 'static, T2: Default + Clone + ByteRepr + 'static>(
+    a0: Ptr<Map<T1, (Value<T1>, Value<T2>)>>,
+    init: (Value<T1>, Value<T2>),
+) -> (BidirectionalIterator<(Value<T1>, Value<T2>)>, bool) {
+    let __init = init;
+    let __key = __init.0.as_pointer();
+    let __inserted = a0.with(|__m: &Map<T1, (Value<T1>, Value<T2>)>| __m.get(&__key).is_none());
+    if __inserted {
+        Map::subscript(a0.clone(), __key.clone()).write(__init.1.borrow().clone());
+    }
+    (a0.with(|__m: &Map<T1, (Value<T1>, Value<T2>)>| __m.find(&__key)), __inserted)
+}

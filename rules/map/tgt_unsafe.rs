@@ -97,3 +97,15 @@ unsafe fn f28<T1: Ord, T2>(a0: &mut UnsafeMap<T1, (T1, T2)>, a1: T1) -> usize {
 unsafe fn f29<T1, T2>(a0: UnsafeMap<T1, (T1, T2)>) -> UnsafeBidirectionalIterator<(T1, T2)> {
     a0.begin()
 }
+
+unsafe fn f67<T1: Ord + Clone, T2: Default>(
+    a0: &mut UnsafeMap<T1, (T1, T2)>,
+    init: (T1, T2),
+) -> (UnsafeBidirectionalIterator<(T1, T2)>, bool) {
+    let __init = init;
+    let __inserted = a0.get(&__init.0).is_none();
+    if __inserted {
+        *a0.subscript(&__init.0) = __init.1;
+    }
+    (a0.find(&__init.0), __inserted)
+}

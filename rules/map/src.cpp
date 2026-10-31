@@ -109,3 +109,9 @@ template <typename T1, typename T2>
 typename std::map<T1, T2>::const_iterator f29(const std::map<T1, T2> &o) {
   return o.begin();
 }
+
+template <typename T1, typename T2, typename T3, typename T4, typename... T5>
+std::pair<typename std::map<T1, T2, T3, T4>::iterator, bool>
+f67(std::map<T1, T2, T3, T4> &a0, T5 &&...a1) {
+  return a0.template emplace<T5...>(std::forward<T5>(a1)...);
+}
