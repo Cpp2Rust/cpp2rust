@@ -17,6 +17,9 @@ using t4 = typename std::array<T1, T2>::pointer;
 template <typename T1, std::size_t T2>
 using t5 = typename std::array<T1, T2>::const_pointer;
 
+template <std::size_t T1, typename T2, std::size_t T3>
+using t6 = typename std::tuple_element<T1, std::array<T2, T3>>::type;
+
 template <typename T1, std::size_t T2>
 const T1 *f1(const std::array<T1, T2> &o) {
   return o.data();

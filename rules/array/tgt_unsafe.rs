@@ -23,6 +23,10 @@ fn t5<T1>() -> *const T1 {
     ::std::ptr::null()
 }
 
+fn t6<T2>() -> T2 {
+    unimplemented!()
+}
+
 unsafe fn f1<T1>(a0: Vec<T1>) -> *const T1 {
     a0.as_ptr()
 }
