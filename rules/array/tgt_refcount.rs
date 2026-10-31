@@ -40,3 +40,7 @@ fn f10<const T1: usize, T2>(a0: Ptr<T2>) -> Ptr<T2> {
 fn f11<const T1: usize, T2>(a0: Ptr<T2>) -> Ptr<T2> {
     a0.offset(T1 as isize)
 }
+
+fn f12<const T1: usize, T2>(a0: Ptr<T2>) -> Ptr<T2> {
+    a0.offset(T1 as isize)
+}

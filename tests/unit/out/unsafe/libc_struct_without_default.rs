@@ -30,7 +30,7 @@ impl Default for UserDefined {
     fn default() -> Self {
         unsafe {
             UserDefined {
-                a: std::array::from_fn::<_, 1_usize, _>(|_| 0_i32).to_vec(),
+                a: std::array::from_fn::<_, 1, _>(|_| 0_i32).to_vec(),
                 v: Default::default(),
             }
         }

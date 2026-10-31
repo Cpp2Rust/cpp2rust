@@ -60,25 +60,25 @@ fn f16<T1, T2>(a0: (Value<T1>, Value<T2>)) -> Value<T1> {
     a0.0
 }
 
-fn f17<const T1: usize, T2, T3, T4>(a0: (Value<T2>, Value<T3>)) -> Ptr<T4>
+fn f17<const T1: usize, T2, T3>(a0: (Value<T2>, Value<T3>)) -> Ptr<<(T2, T3) as TupleElement<T1>>::Type>
 where
-    (Value<T2>, Value<T3>): TupleElement<T1, Type = Value<T4>>,
+    (T2, T3): TupleElementValue<T1, Values = (Value<T2>, Value<T3>)>,
 {
-    a0.get::<T1>().as_pointer()
+    a0.get_value::<T1>().as_pointer()
 }
 
-fn f19<const T1: usize, T2, T3, T4>(a0: (Value<T2>, Value<T3>)) -> Ptr<T4>
+fn f19<const T1: usize, T2, T3>(a0: (Value<T2>, Value<T3>)) -> Ptr<<(T2, T3) as TupleElement<T1>>::Type>
 where
-    (Value<T2>, Value<T3>): TupleElement<T1, Type = Value<T4>>,
+    (T2, T3): TupleElementValue<T1, Values = (Value<T2>, Value<T3>)>,
 {
-    a0.get::<T1>().as_pointer()
+    a0.get_value::<T1>().as_pointer()
 }
 
-fn f21<const T1: usize, T2, T3, T4>(a0: (Value<T2>, Value<T3>)) -> Ptr<T4>
+fn f21<const T1: usize, T2, T3>(a0: (Value<T2>, Value<T3>)) -> Ptr<<(T2, T3) as TupleElement<T1>>::Type>
 where
-    (Value<T2>, Value<T3>): TupleElement<T1, Type = Value<T4>>,
+    (T2, T3): TupleElementValue<T1, Values = (Value<T2>, Value<T3>)>,
 {
-    a0.get::<T1>().as_pointer()
+    a0.get_value::<T1>().as_pointer()
 }
 
 fn f23<T1: CppFrom<T3>, T2: CppFrom<T4>, T3, T4>(
@@ -121,4 +121,11 @@ fn f26<T1: CppFrom<T3> + ByteRepr, T2: CppFrom<T4> + ByteRepr, T3, T4>(
         Rc::new(RefCell::new(T1::cpp_from_move(__a1.0.as_pointer()))),
         Rc::new(RefCell::new(T2::cpp_from_move(__a1.1.as_pointer()))),
     ))
+}
+
+fn f27<const T1: usize, T2, T3>(a0: (Value<T2>, Value<T3>)) -> Ptr<<(T2, T3) as TupleElement<T1>>::Type>
+where
+    (T2, T3): TupleElementValue<T1, Values = (Value<T2>, Value<T3>)>,
+{
+    a0.get_value::<T1>().as_pointer()
 }

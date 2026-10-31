@@ -55,24 +55,21 @@ template <typename T1, typename T2> const T1 &f16(const std::pair<T1, T2> &a0) {
   return a0.first;
 }
 
-template <
-    std::size_t T1, typename T2, typename T3,
-    typename T4 = typename std::tuple_element<T1, std::pair<T2, T3>>::type>
-T4 &f17(std::pair<T2, T3> &a0) {
+template <std::size_t T1, typename T2, typename T3>
+typename std::tuple_element<T1, std::pair<T2, T3>>::type &
+f17(std::pair<T2, T3> &a0) {
   return std::get<T1>(a0);
 }
 
-template <
-    std::size_t T1, typename T2, typename T3,
-    typename T4 = typename std::tuple_element<T1, std::pair<T2, T3>>::type>
-const T4 &f19(const std::pair<T2, T3> &a0) {
+template <std::size_t T1, typename T2, typename T3>
+const typename std::tuple_element<T1, std::pair<T2, T3>>::type &
+f19(const std::pair<T2, T3> &a0) {
   return std::get<T1>(a0);
 }
 
-template <
-    std::size_t T1, typename T2, typename T3,
-    typename T4 = typename std::tuple_element<T1, std::pair<T2, T3>>::type>
-T4 &&f21(std::pair<T2, T3> &&a0) {
+template <std::size_t T1, typename T2, typename T3>
+typename std::tuple_element<T1, std::pair<T2, T3>>::type &&
+f21(std::pair<T2, T3> &&a0) {
   return std::get<T1>(std::move(a0));
 }
 
@@ -106,4 +103,10 @@ template <
                                          std::is_same<T2, T4>::value)>::type>
 std::pair<T1, T2> &f26(std::pair<T1, T2> &a0, std::pair<T3, T4> &&a1) {
   return a0.template operator= <T3, T4>(std::move(a1));
+}
+
+template <std::size_t T1, typename T2, typename T3>
+const typename std::tuple_element<T1, std::pair<T2, T3>>::type &&
+f27(const std::pair<T2, T3> &&a0) {
+  return std::get<T1>(std::move(a0));
 }

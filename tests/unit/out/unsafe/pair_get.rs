@@ -7,10 +7,10 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn second_of_0(p: *const (f64, i32)) -> i32 {
-    return *(*p).get::<1_u64>();
+    return *(*p).get::<1>();
 }
 pub unsafe fn first_of_1(p: *const (f64, i32)) -> f64 {
-    return *(*p).get::<0_u64>();
+    return *(*p).get::<0>();
 }
 pub fn main() {
     unsafe {
@@ -20,8 +20,8 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut p: (f64, i32) = (1.5_f64, 2);
-    assert!(((*p.get_mut::<0_u64>()) == (1.5_f64)));
-    assert!(((*p.get_mut::<1_u64>()) == (2)));
+    assert!(((*p.get_mut::<0>()) == (1.5_f64)));
+    assert!(((*p.get_mut::<1>()) == (2)));
     assert!(((unsafe { first_of_1(&p,) }) == (1.5_f64)));
     assert!(((unsafe { second_of_0(&p,) }) == (2)));
     return 0;

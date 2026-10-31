@@ -66,3 +66,7 @@ unsafe fn f10<const T1: usize, T2>(a0: &Vec<T2>) -> *const T2 {
 unsafe fn f11<const T1: usize, T2>(a0: &mut Vec<T2>) -> *mut T2 {
     a0.as_mut_ptr().offset(T1 as isize)
 }
+
+unsafe fn f12<const T1: usize, T2>(a0: &Vec<T2>) -> *const T2 {
+    a0.as_ptr().offset(T1 as isize)
+}

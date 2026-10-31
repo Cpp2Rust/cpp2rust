@@ -12,7 +12,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let vec_: Value<Vec<i32>> = Rc::new(RefCell::new(
-        std::array::from_fn::<_, 3_usize, _>(|_| 0_i32).to_vec(),
+        std::array::from_fn::<_, 3, _>(|_| 0_i32).to_vec(),
     ));
     return 0;
 }
