@@ -13,9 +13,10 @@ fn t1<T1: Default, T2: Default>() -> (Value<T1>, Value<T2>) {
 }
 
 fn f2<T1: Clone, T2: Clone>(a0: (Value<T1>, Value<T2>)) -> (Value<T1>, Value<T2>) {
+    let __a0 = a0;
     (
-        Rc::new(RefCell::new(a0.0.borrow().clone())),
-        Rc::new(RefCell::new(a0.1.borrow().clone())),
+        Rc::new(RefCell::new(__a0.0.borrow().clone())),
+        Rc::new(RefCell::new(__a0.1.borrow().clone())),
     )
 }
 
@@ -39,9 +40,10 @@ fn f13<T1: Clone + ByteRepr, T2: Clone + ByteRepr>(
     a0: Ptr<(Value<T1>, Value<T2>)>,
     a1: (Value<T1>, Value<T2>),
 ) {
+    let __a1 = a1;
     a0.write((
-        Rc::new(RefCell::new(a1.0.borrow().clone())),
-        Rc::new(RefCell::new(a1.1.borrow().clone())),
+        Rc::new(RefCell::new(__a1.0.borrow().clone())),
+        Rc::new(RefCell::new(__a1.1.borrow().clone())),
     ))
 }
 

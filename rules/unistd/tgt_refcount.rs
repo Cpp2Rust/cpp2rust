@@ -86,13 +86,15 @@ fn f8() -> u32 {
 }
 
 fn f9(a0: Ptr<i8>, a1: usize) -> i32 {
+    let __a0 = a0;
+    let __a1 = a1;
     match nix::unistd::gethostname() {
         Ok(__name) => {
             let __bytes = __name.as_encoded_bytes();
-            let __n = __bytes.len().min(a1.saturating_sub(1));
-            if a1 > 0 {
-                a0.write_c_bytes(&__bytes[..__n]);
-                elem!(a0, __n).write(0);
+            let __n = __bytes.len().min(__a1.saturating_sub(1));
+            if __a1 > 0 {
+                __a0.write_c_bytes(&__bytes[..__n]);
+                elem!(__a0, __n).write(0);
             }
             0
         }

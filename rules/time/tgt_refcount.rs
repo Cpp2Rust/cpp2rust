@@ -85,6 +85,7 @@ fn f5(a0: Ptr<::libc::time_t>, a1: Ptr<Tm>) -> Ptr<Tm> {
 }
 
 fn f6(a0: Ptr<i8>, a1: usize, a2: Ptr<i8>, a3: Ptr<Tm>) -> usize {
+    let __a0 = a0;
     let __dt = a3.with(|__tm| __tm.to_civil());
     let __text = match __dt {
         Ok(__d) => {
@@ -95,8 +96,8 @@ fn f6(a0: Ptr<i8>, a1: usize, a2: Ptr<i8>, a3: Ptr<Tm>) -> usize {
     if __text.is_empty() || __text.len() + 1 > a1 {
         0
     } else {
-        a0.write_c_bytes(__text.as_bytes());
-        elem!(a0, __text.len()).write(0);
+        __a0.write_c_bytes(__text.as_bytes());
+        elem!(__a0, __text.len()).write(0);
         __text.len()
     }
 }

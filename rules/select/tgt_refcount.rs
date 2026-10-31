@@ -24,21 +24,22 @@ fn f5(a0: Ptr<CFdSet>) {
 }
 
 fn f1(a0: i32, a1: Ptr<CFdSet>, a2: Ptr<CFdSet>, a3: Ptr<CFdSet>, a4: Ptr<Timeval>) -> i32 {
+    let __a0 = a0;
     let __rp = a1;
     let __wp = a2;
     let __ep = a3;
     let __tp = a4;
     let __r_fds: Vec<i32> = match __rp.is_null() {
         true => Vec::new(),
-        false => __rp.with(|__s| (0..a0).filter(|&__fd| __s.isset(__fd)).collect()),
+        false => __rp.with(|__s| (0..__a0).filter(|&__fd| __s.isset(__fd)).collect()),
     };
     let __w_fds: Vec<i32> = match __wp.is_null() {
         true => Vec::new(),
-        false => __wp.with(|__s| (0..a0).filter(|&__fd| __s.isset(__fd)).collect()),
+        false => __wp.with(|__s| (0..__a0).filter(|&__fd| __s.isset(__fd)).collect()),
     };
     let __e_fds: Vec<i32> = match __ep.is_null() {
         true => Vec::new(),
-        false => __ep.with(|__s| (0..a0).filter(|&__fd| __s.isset(__fd)).collect()),
+        false => __ep.with(|__s| (0..__a0).filter(|&__fd| __s.isset(__fd)).collect()),
     };
     let mut __wanted = Vec::new();
     __wanted.extend(&__r_fds);
@@ -66,7 +67,7 @@ fn f1(a0: i32, a1: Ptr<CFdSet>, a2: Ptr<CFdSet>, a3: Ptr<CFdSet>, a4: Ptr<Timeva
             ),
         };
         match nix::sys::select::select(
-            a0,
+            __a0,
             match __rp.is_null() {
                 true => None,
                 false => Some(&mut __rs),

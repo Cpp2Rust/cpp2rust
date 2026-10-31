@@ -69,24 +69,26 @@ fn f8(a0: AnyPtr, a1: AnyPtr, a2: usize, a3: usize, a4: fn(AnyPtr, AnyPtr) -> i3
 }
 
 fn f9(a0: AnyPtr, a1: usize, a2: usize, a3: fn(AnyPtr, AnyPtr) -> i32) {
+    let __a1 = a1;
+    let __a2 = a2;
     let __base = a0.reinterpret_cast::<u8>();
-    for __i in 0..a1 {
+    for __i in 0..__a1 {
         let mut __min = __i;
-        for __j in (__i + 1)..a1 {
+        for __j in (__i + 1)..__a1 {
             if a3(
-                __base.offset(__j * a2).to_any(),
-                __base.offset(__min * a2).to_any(),
+                __base.offset(__j * __a2).to_any(),
+                __base.offset(__min * __a2).to_any(),
             ) < 0
             {
                 __min = __j;
             }
         }
         if __min != __i {
-            for __b in 0..a2 {
-                let __x = __base.offset(__i * a2 + __b).read();
-                let __y = __base.offset(__min * a2 + __b).read();
-                elem!(__base, __i * a2 + __b).write(__y);
-                elem!(__base, __min * a2 + __b).write(__x);
+            for __b in 0..__a2 {
+                let __x = __base.offset(__i * __a2 + __b).read();
+                let __y = __base.offset(__min * __a2 + __b).read();
+                elem!(__base, __i * __a2 + __b).write(__y);
+                elem!(__base, __min * __a2 + __b).write(__x);
             }
         }
     }

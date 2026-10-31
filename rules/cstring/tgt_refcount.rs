@@ -4,13 +4,15 @@
 use libcc2rs::*;
 
 fn f1(a0: AnyPtr, a1: AnyPtr, a2: usize) -> AnyPtr {
-    a0.memcpy(&a1, a2 as usize);
-    a0
+    let __a0 = a0;
+    __a0.memcpy(&a1, a2 as usize);
+    __a0
 }
 
 fn f2(a0: AnyPtr, a1: u8, a2: usize) -> AnyPtr {
-    a0.memset((a1) as u8, a2 as usize);
-    a0
+    let __a0 = a0;
+    __a0.memset((a1) as u8, a2 as usize);
+    __a0
 }
 
 fn f3(a0: AnyPtr, a1: AnyPtr, a2: usize) -> i32 {
@@ -18,8 +20,9 @@ fn f3(a0: AnyPtr, a1: AnyPtr, a2: usize) -> i32 {
 }
 
 fn f4(a0: AnyPtr, a1: AnyPtr, a2: usize) -> AnyPtr {
-    a0.memcpy(&a1, a2 as usize);
-    a0
+    let __a0 = a0;
+    __a0.memcpy(&a1, a2 as usize);
+    __a0
 }
 
 fn f5(a0: Ptr<i8>, a1: i32) -> Ptr<i8> {
@@ -157,8 +160,9 @@ fn f21(a0: Ptr<i8>, a1: Ptr<i8>) -> Ptr<i8> {
 
 #[cfg(target_os = "linux")]
 fn f24(a0: AnyPtr, a1: i32, a2: usize) -> AnyPtr {
-    let mut __p = a0.reinterpret_cast::<u8>().offset(a2);
-    let mut __i: usize = a2;
+    let __a2 = a2;
+    let mut __p = a0.reinterpret_cast::<u8>().offset(__a2);
+    let mut __i: usize = __a2;
     loop {
         if __i == 0 {
             break Ptr::<u8>::null().to_any();
@@ -192,30 +196,34 @@ fn f27(a0: Ptr<i8>, a1: Ptr<i8>) -> i32 {
 
 #[cfg(target_os = "linux")]
 fn f28(a0: i32, a1: Ptr<i8>, a2: usize) -> Ptr<i8> {
+    let __a1 = a1;
+    let __a2 = a2;
     let __msg = std::io::Error::from_raw_os_error(a0).to_string();
-    let __len = __msg.len().min(a2.saturating_sub(1));
-    let mut __p = a1.clone();
+    let __len = __msg.len().min(__a2.saturating_sub(1));
+    let mut __p = __a1.clone();
     for __i in 0..__len {
         __p.write(__msg.as_bytes()[__i] as i8);
         __p += 1;
     }
-    if a2 > 0 {
-        elem!(a1, __len).write(0);
+    if __a2 > 0 {
+        elem!(__a1, __len).write(0);
     }
-    a1
+    __a1
 }
 
 #[cfg(target_os = "macos")]
 fn f28(a0: i32, a1: Ptr<i8>, a2: usize) -> i32 {
+    let __a1 = a1;
+    let __a2 = a2;
     let __msg = std::io::Error::from_raw_os_error(a0).to_string();
-    let __len = __msg.len().min(a2.saturating_sub(1));
-    let mut __p = a1.clone();
+    let __len = __msg.len().min(__a2.saturating_sub(1));
+    let mut __p = __a1.clone();
     for __i in 0..__len {
         __p.write(__msg.as_bytes()[__i] as i8);
         __p += 1;
     }
-    if a2 > 0 {
-        elem!(a1, __len).write(0);
+    if __a2 > 0 {
+        elem!(__a1, __len).write(0);
     }
     0
 }
@@ -352,8 +360,9 @@ fn f23(a0: Ptr<i8>, a1: Ptr<i8>) -> Ptr<i8> {
 
 #[cfg(target_os = "linux")]
 fn f25(a0: AnyPtr, a1: i32, a2: usize) -> AnyPtr {
-    let mut __p = a0.reinterpret_cast::<u8>().offset(a2);
-    let mut __i: usize = a2;
+    let __a2 = a2;
+    let mut __p = a0.reinterpret_cast::<u8>().offset(__a2);
+    let mut __i: usize = __a2;
     loop {
         if __i == 0 {
             break Ptr::<u8>::null().to_any();
@@ -368,8 +377,9 @@ fn f25(a0: AnyPtr, a1: i32, a2: usize) -> AnyPtr {
 
 #[cfg(target_os = "linux")]
 fn f26(a0: AnyPtr, a1: i32, a2: usize) -> AnyPtr {
-    let mut __p = a0.reinterpret_cast::<u8>().offset(a2);
-    let mut __i: usize = a2;
+    let __a2 = a2;
+    let mut __p = a0.reinterpret_cast::<u8>().offset(__a2);
+    let mut __i: usize = __a2;
     loop {
         if __i == 0 {
             break Ptr::<u8>::null().to_any();

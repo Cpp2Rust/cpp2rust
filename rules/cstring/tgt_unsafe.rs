@@ -2,23 +2,27 @@
 // Distributed under the MIT license that can be found in the LICENSE file.
 
 unsafe fn f1(a0: *mut u8, a1: *const u8, a2: usize) -> *mut u8 {
-    if a2 != 0 {
-        ::std::ptr::copy_nonoverlapping(a1, a0, a2 as usize)
+    let __a0 = a0;
+    let __a2 = a2;
+    if __a2 != 0 {
+        ::std::ptr::copy_nonoverlapping(a1, __a0, __a2 as usize)
     }
-    a0
+    __a0
 }
 
 unsafe fn f2(a0: *mut u8, a1: *const u8, a2: usize) -> *mut u8 {
-    let byte_0 = a0 as *mut u8;
+    let __a0 = a0;
+    let byte_0 = __a0 as *mut u8;
     for offset in 0..a2 {
         *byte_0.offset(offset as isize) = a1 as u8;
     }
-    a0
+    __a0
 }
 
 unsafe fn f3(a0: *const u8, a1: *const u8, a2: usize) -> i32 {
-    let sa = core::slice::from_raw_parts(a0 as *const u8, a2 as usize);
-    let sb = core::slice::from_raw_parts(a1 as *const u8, a2 as usize);
+    let __a2 = a2;
+    let sa = core::slice::from_raw_parts(a0 as *const u8, __a2 as usize);
+    let sb = core::slice::from_raw_parts(a1 as *const u8, __a2 as usize);
     let mut diff = 0_i32;
     for (x, y) in sa.iter().zip(sb.iter()) {
         if x != y {
@@ -30,10 +34,12 @@ unsafe fn f3(a0: *const u8, a1: *const u8, a2: usize) -> i32 {
 }
 
 unsafe fn f4(a0: *mut u8, a1: *const u8, a2: usize) -> *mut u8 {
-    if a2 != 0 {
-        ::std::ptr::copy_nonoverlapping(a1, a0, a2 as usize)
+    let __a0 = a0;
+    let __a2 = a2;
+    if __a2 != 0 {
+        ::std::ptr::copy_nonoverlapping(a1, __a0, __a2 as usize)
     }
-    a0
+    __a0
 }
 
 unsafe fn f5(a0: *const libc::c_char, a1: i32) -> *mut libc::c_char {
@@ -140,8 +146,9 @@ unsafe fn f27(a0: *const libc::c_char, a1: *const libc::c_char) -> i32 {
 // So it's not 100% correct to always return a1. But the Rust libc version only returns int.
 #[cfg(target_os = "linux")]
 unsafe fn f28(a0: i32, a1: *mut libc::c_char, a2: usize) -> *mut libc::c_char {
-    libc::strerror_r(a0, a1, a2 as usize);
-    a1
+    let __a1 = a1;
+    libc::strerror_r(a0, __a1, a2 as usize);
+    __a1
 }
 
 #[cfg(target_os = "macos")]

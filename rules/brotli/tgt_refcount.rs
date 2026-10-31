@@ -14,18 +14,20 @@ fn f2(
     a5: Ptr<usize>,
     a6: Ptr<u8>,
 ) -> libc::c_int {
+    let __a3 = a3;
+    let __a5 = a5;
     // Compress into a buffer bounded by the input size, as the output buffer
     // may be much larger and is expensive to borrow if reinterpreted.
-    let mut __out_len = a5.read();
-    let __max = unsafe { ::brotli_sys::BrotliEncoderMaxCompressedSize(a3) };
+    let mut __out_len = __a5.read();
+    let __max = unsafe { ::brotli_sys::BrotliEncoderMaxCompressedSize(__a3) };
     let mut __out = vec![0u8; if __max == 0 { __out_len } else { __out_len.min(__max) }];
     __out_len = __out.len();
-    let __ok = a4.with_slice(a3, |__in| unsafe {
+    let __ok = a4.with_slice(__a3, |__in| unsafe {
         ::brotli_sys::BrotliEncoderCompress(
             a0,
             a1,
             a2,
-            a3,
+            __a3,
             __in.as_ptr(),
             &mut __out_len,
             __out.as_mut_ptr(),
@@ -33,18 +35,20 @@ fn f2(
     });
     if __ok != 0 {
         a6.with_slice_mut(__out_len, |__s| __s.copy_from_slice(&__out[..__out_len]));
-        a5.write(__out_len);
+        __a5.write(__out_len);
     }
     __ok
 }
 
 fn f5(a0: usize, a1: Ptr<u8>, a2: Ptr<usize>, a3: Ptr<u8>) -> ::brotli_sys::BrotliDecoderResult {
-    let __out_len = a2.read();
-    a1.with_slice(a0, |__in| {
-        a2.with_mut(|_v2| {
+    let __a0 = a0;
+    let __a2 = a2;
+    let __out_len = __a2.read();
+    a1.with_slice(__a0, |__in| {
+        __a2.with_mut(|_v2| {
             a3.with_slice_mut(__out_len, |__out| unsafe {
                 ::brotli_sys::BrotliDecoderDecompress(
-                    a0,
+                    __a0,
                     __in.as_ptr(),
                     _v2 as *mut usize,
                     __out.as_mut_ptr(),
@@ -74,10 +78,12 @@ fn f8(
     a4: Ptr<Ptr<u8>>,
     a5: Ptr<usize>,
 ) -> ::brotli_sys::BrotliDecoderResult {
-    let __in = a2.read();
-    let __in_len = a1.read();
+    let __a1 = a1;
+    let __a2 = a2;
+    let __in = __a2.read();
+    let __in_len = __a1.read();
     let __r = __in.with_slice(__in_len, |__s| {
-        a1.with_mut(|_v1| {
+        __a1.with_mut(|_v1| {
             a3.with_mut(|_v3| unsafe {
                 ::brotli_sys::BrotliDecoderDecompressStream(
                     a0,
@@ -90,7 +96,7 @@ fn f8(
             })
         })
     });
-    a2.write(__in.offset(__in_len - a1.read()));
+    __a2.write(__in.offset(__in_len - __a1.read()));
     __r
 }
 

@@ -97,11 +97,12 @@ fn f96<T1>(a0: Ptr<T1>) -> RandomAccessIterator<T1> {
 }
 
 fn f98<T1: ByteRepr + 'static>(a0: Ptr<Vec<T1>>, a1: usize) -> Ptr<T1> {
+    let __a0 = a0;
     let __idx = a1;
-    if __idx as usize >= (*a0.upgrade().deref()).len() {
+    if __idx as usize >= (*__a0.upgrade().deref()).len() {
         panic!("out of bounds access")
     } else {
-        a0.decay().offset(__idx as isize)
+        __a0.decay().offset(__idx as isize)
     }
 }
 
@@ -160,16 +161,19 @@ fn f118<T1>(a0: Ptr<bool>, a1: usize) -> Ptr<bool> {
 }
 
 fn f119(a0: Ptr<bool>, a1: bool) -> Ptr<bool> {
-    a0.write(a1);
-    a0
+    let __a0 = a0;
+    __a0.write(a1);
+    __a0
 }
 
 fn f120(a0: Ptr<bool>, a1: bool) -> Ptr<bool> {
-    a0.write(a1);
-    a0
+    let __a0 = a0;
+    __a0.write(a1);
+    __a0
 }
 
 fn f121(a0: Ptr<bool>, a1: Ptr<bool>) -> Ptr<bool> {
-    a0.write(a1.read());
-    a0
+    let __a0 = a0;
+    __a0.write(a1.read());
+    __a0
 }
