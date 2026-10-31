@@ -50,8 +50,7 @@ fn main_0() -> i32 {
     let q: Ptr<Point> = {
         let __value: Value<Point> = Rc::new(RefCell::new(Point::new({ 5 }, { 6 })));
         let __ptr = __value.as_pointer();
-        a.as_pointer()
-            .with_mut(|__a: &mut Option<Rc<dyn std::any::Any>>| *__a = Some(__value));
+        (*a.borrow_mut()) = Some(__value);
         __ptr
     };
     assert!((q.with(|__s| __s.x) == 5));
@@ -79,8 +78,7 @@ fn main_0() -> i32 {
             .read())
             == 7)
     );
-    b.as_pointer()
-        .with_mut(|__a: &mut Option<Rc<dyn std::any::Any>>| *__a = None);
+    (*b.borrow_mut()) = None;
     assert!(!((*b.borrow()).is_some()));
     assert!(
         ((b.as_pointer()).with(|__a: &Option<Rc<dyn std::any::Any>>| {

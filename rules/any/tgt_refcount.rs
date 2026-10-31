@@ -13,18 +13,18 @@ fn f1() -> Option<Rc<dyn std::any::Any>> {
     None
 }
 
-fn f6(a0: Ptr<Option<Rc<dyn std::any::Any>>>) {
-    a0.with_mut(|__a: &mut Option<Rc<dyn std::any::Any>>| *__a = None)
+fn f6(a0: &mut Option<Rc<dyn std::any::Any>>) {
+    *a0 = None
 }
 
 fn f8(a0: Option<Rc<dyn std::any::Any>>) -> bool {
     a0.is_some()
 }
 
-fn f14<T1: 'static>(a0: Ptr<Option<Rc<dyn std::any::Any>>>, init: cpp_type!("std::decay_t<T1>", T1)) -> Ptr<T1> {
+fn f14<T1: 'static>(a0: &mut Option<Rc<dyn std::any::Any>>, init: cpp_type!("std::decay_t<T1>", T1)) -> Ptr<T1> {
     let __value: Value<T1> = Rc::new(RefCell::new(init));
     let __ptr = __value.as_pointer();
-    a0.with_mut(|__a: &mut Option<Rc<dyn std::any::Any>>| *__a = Some(__value));
+    *a0 = Some(__value);
     __ptr
 }
 
