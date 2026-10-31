@@ -1840,11 +1840,16 @@ bool Converter::ConvertSpecialCall(clang::CallExpr *expr) {
   return false;
 }
 
+bool Converter::ExprMapsValueToPointer(const clang::CallExpr *expr) const {
+  return Mapper::Contains(ctx_, expr) && !expr->getType()->isPointerType() &&
+         RuleRegistry::MapsToPointer(ctx_, expr->getType());
+}
+
 void Converter::EmitCallResult(clang::CallExpr *expr, std::string str,
                                const TempMaterializationCtx *temps) {
   bool deref = (GetReturnTypeOfFunction(expr)->isReferenceType() ||
                 (temps && IsReferenceType(expr))) &&
-               !isAddrOf() && !isVoid();
+               !isAddrOf() && !isVoid() && !ExprMapsValueToPointer(expr);
   // The dereference is in the block of the temporaries, so they are still
   // alive, as is the read of a field of the result.
   if (deref && !(temps && Mapper::IsRefExpr(ctx_, expr))) {
