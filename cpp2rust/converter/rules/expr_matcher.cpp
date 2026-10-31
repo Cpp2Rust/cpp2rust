@@ -272,6 +272,57 @@ void deduceMemberTypesFromOperands(
   }
 }
 
+llvm::ArrayRef<clang::TemplateArgumentLoc>
+getExplicitTemplateArgs(const clang::Expr *expr) {
+  auto call = llvm::dyn_cast<clang::CallExpr>(RuleDecls::SkipImplicit(expr));
+  if (!call) {
+    return {};
+  }
+  auto callee = call->getCallee()->IgnoreParenImpCasts();
+  if (auto ref = llvm::dyn_cast<clang::DeclRefExpr>(callee)) {
+    return ref->template_arguments();
+  }
+  if (auto member = llvm::dyn_cast<clang::MemberExpr>(callee)) {
+    return member->template_arguments();
+  }
+  if (auto overload = llvm::dyn_cast<clang::OverloadExpr>(callee)) {
+    return overload->template_arguments();
+  }
+  if (auto member =
+          llvm::dyn_cast<clang::CXXDependentScopeMemberExpr>(callee)) {
+    return member->template_arguments();
+  }
+  return {};
+}
+
+void deduceFromExplicitArgs(clang::Sema &sema,
+                            clang::FunctionTemplateDecl *rule,
+                            const clang::Expr *use,
+                            std::vector<clang::TemplateArgument> &deduced) {
+  auto rule_args =
+      getExplicitTemplateArgs(RuleDecls::GetReturned(rule->getTemplatedDecl()));
+  auto use_args = getExplicitTemplateArgs(use);
+  for (unsigned i = 0; i < rule_args.size() && i < use_args.size(); ++i) {
+    const auto &rule_arg = rule_args[i].getArgument();
+    const auto &use_arg = use_args[i].getArgument();
+    if (rule_arg.getKind() != clang::TemplateArgument::Type ||
+        use_arg.getKind() != clang::TemplateArgument::Type) {
+      continue;
+    }
+    if (rule_arg.getAsType()->getAs<clang::PackExpansionType>()) {
+      break;
+    }
+    auto args = RuleDecls::DeduceFromType(
+        sema, rule->getTemplateParameters(), rule_arg.getAsType(),
+        use_arg.getAsType().getCanonicalType());
+    for (unsigned j = 0; args && j < deduced.size(); ++j) {
+      if (deduced[j].isNull()) {
+        deduced[j] = (*args)[j];
+      }
+    }
+  }
+}
+
 clang::TemplateArgumentListInfo getResultArgs(clang::Sema &sema,
                                               clang::FunctionTemplateDecl *rule,
                                               const clang::Expr *use) {
@@ -295,6 +346,7 @@ clang::TemplateArgumentListInfo getResultArgs(clang::Sema &sema,
                                     .getUnqualifiedType())
           .value_or(std::vector<clang::TemplateArgument>(params->size()));
   deduceMemberTypesFromOperands(sema, rule, use, deduced);
+  deduceFromExplicitArgs(sema, rule, use, deduced);
   auto last = static_cast<unsigned>(deducible.find_last_unset());
   for (unsigned i = 0; i < params->size() && i <= last; ++i) {
     auto param = params->getParam(i);

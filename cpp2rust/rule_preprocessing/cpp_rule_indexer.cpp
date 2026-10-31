@@ -78,7 +78,14 @@ void AddRequiredClasses(clang::QualType type,
   if (auto name = type->getAs<clang::DependentNameType>()) {
     auto qualifier = name->getQualifier();
     if (qualifier.getKind() == clang::NestedNameSpecifier::Kind::Type) {
-      AddRequiredClasses(clang::QualType(qualifier.getAsType(), 0), required);
+      if (auto spec = qualifier.getAsType()
+                          ->getAs<clang::TemplateSpecializationType>()) {
+        for (const auto &arg : spec->template_arguments()) {
+          if (arg.getKind() == clang::TemplateArgument::Type) {
+            AddRequiredClasses(arg.getAsType(), required);
+          }
+        }
+      }
     }
     return;
   }
@@ -286,6 +293,14 @@ void IndexRuleFile(clang::ASTContext &ctx, const std::string &dir_name,
     auto range = clang::tooling::getExtendedRange(*decl, clang::tok::semi, ctx);
     auto text = clang::tooling::getText(range, ctx).str() + '\n';
     llvm::json::Object rule{{"dir", dir_name}, {"name", name}, {"text", text}};
+    if (auto tmpl = llvm::dyn_cast<clang::FunctionTemplateDecl>(decl)) {
+      rule["template_header"] =
+          clang::tooling::getText(
+              clang::CharSourceRange::getTokenRange(
+                  tmpl->getTemplateParameters()->getSourceRange()),
+              ctx)
+              .str();
+    }
     if (any_class) {
       rule["requires"] = llvm::json::Array{RulesLoader::kAnyIteratorKey};
     } else if (auto required = RequiredClasses(decl, alias);
