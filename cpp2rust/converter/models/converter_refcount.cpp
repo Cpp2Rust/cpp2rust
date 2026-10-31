@@ -438,29 +438,6 @@ std::string ConverterRefCount::ConvertElementPtr(clang::Expr *arg) {
   return ConvertObject(arg, ObjectShape::Element);
 }
 
-void ConverterRefCount::CheckRuleReturnType(clang::Expr *expr) {
-  auto *call = clang::dyn_cast<clang::CallExpr>(expr);
-  if (!call ||
-      !RuleRegistry::GetExprRule(ctx_, expr)->return_type.is_refcount_pointer) {
-    return;
-  }
-  auto type = RuleRegistry::GetDeclaredReturnType(expr);
-  if (auto ref = type->getAs<clang::ReferenceType>()) {
-    auto pointee = ref->getPointeeType();
-    type = pointee->isRecordType() &&
-                   RuleRegistry::MapsToRefcountPointer(ctx_, pointee)
-               ? pointee
-               : ctx_.getPointerType(pointee);
-  }
-  auto ret = NormalizeType(Mapper::GetReturnType(*this, expr));
-  auto expected = NormalizeType(ToString(type));
-  if (ret != expected) {
-    llvm::errs() << "rule return type " << ret << " is not " << expected
-                 << '\n';
-    llvm::report_fatal_error("rule return type does not match the C++ one");
-  }
-}
-
 std::string ConverterRefCount::ConvertFreshObject(clang::Expr *expr) {
   return MakeFresh(ConvertObject(expr));
 }

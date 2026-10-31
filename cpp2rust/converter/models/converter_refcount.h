@@ -441,7 +441,6 @@ private:
   // The method that makes a pointer to an object of the given type, which is
   // one to its elements if they are what ConvertObject wants.
   std::string AsPointerMethod(clang::QualType type);
-  void CheckRuleReturnType(clang::Expr *expr) override;
 
   std::string ConvertTemporaryPointer(
       clang::Expr *expr,

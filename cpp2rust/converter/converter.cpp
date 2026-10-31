@@ -5109,8 +5109,6 @@ std::string Converter::GetMappedAsString(clang::Expr *expr, clang::Expr **args,
   if (!tgt_ir)
     return {};
 
-  CheckRuleReturnType(expr);
-
   auto saved_borrows = std::exchange(mut_borrows_, {});
   auto *operand = tgt_ir->refExprOperand();
   bool lvalue = operand && !isAddrOf();
