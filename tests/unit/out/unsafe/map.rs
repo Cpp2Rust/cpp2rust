@@ -12,6 +12,27 @@ pub unsafe fn foo_0(mut x: u32) {
 pub unsafe fn bar_1(x: *mut u32) {
     (*x) = (*x).wrapping_add(1_u32);
 }
+#[repr(C)]
+#[derive(Copy, Clone, VaArg, FnPtrArg)]
+pub struct Point {
+    pub x: i32,
+    pub y: i32,
+}
+impl Point {
+    pub unsafe fn new_1() -> Self {
+        let mut this = Self { x: 0, y: 0 };
+        this
+    }
+    pub unsafe fn new_2(mut x: i32, mut y: i32) -> Self {
+        let mut this = Self { x: x, y: y };
+        this
+    }
+}
+impl Default for Point {
+    fn default() -> Self {
+        unsafe { Point::new_1() }
+    }
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -163,6 +184,96 @@ unsafe fn main_0() -> i32 {
         assert!((((*pair).1 as i32) == (((*pair).0) % (2))));
         last = (*pair).0;
     }
+    let mut m3: UnsafeMap<i32, (i32, i32)> = UnsafeMap::new();
+    let mut inserted: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
+        let __init = (1, 2);
+        let __inserted = m3.get(&__init.0).is_none();
+        if __inserted {
+            *m3.subscript(&__init.0) = __init.1;
+        }
+        (m3.find(&__init.0), __inserted)
+    };
+    assert!((inserted.1 as bool));
+    assert!((((*inserted.0.iter_deref()).1) == (2)));
+    let mut not_inserted: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
+        let __init = (1, 3);
+        let __inserted = m3.get(&__init.0).is_none();
+        if __inserted {
+            *m3.subscript(&__init.0) = __init.1;
+        }
+        (m3.find(&__init.0), __inserted)
+    };
+    assert!(!(not_inserted.1));
+    assert!((((*not_inserted.0.iter_deref()).1) == (2)));
+    {
+        let __init = {
+            let mut __a0 = (4, 5);
+            ((*&mut __a0.0), (*&mut __a0.1))
+        };
+        let __inserted = m3.get(&__init.0).is_none();
+        if __inserted {
+            *m3.subscript(&__init.0) = __init.1;
+        }
+        (m3.find(&__init.0), __inserted)
+    };
+    assert!(((m3.len()) == (2_usize)));
+    assert!(((*m3.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k))) == (2)));
+    assert!(((*m3.subscript_move(&mut 4, |__k| cpp_move_unsafe!(__k))) == (5)));
+    let mut hinted: UnsafeBidirectionalIterator<(i32, i32)> = {
+        let _ = <UnsafeBidirectionalIterator<(i32, i32)>>::from(m3.end());
+        let __init = (6, 7);
+        if m3.get(&__init.0).is_none() {
+            *m3.subscript(&__init.0) = __init.1;
+        }
+        m3.find(&__init.0)
+    };
+    assert!((((*hinted.iter_deref()).1) == (7)));
+    let mut key1: i32 = 1;
+    let mut tried: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
+        let __key = key1;
+        let __inserted = m3.get(&__key).is_none();
+        if __inserted {
+            *m3.subscript(&__key) = 9;
+        }
+        (m3.find(&__key), __inserted)
+    };
+    assert!(!(tried.1));
+    assert!((((*tried.0.iter_deref()).1) == (2)));
+    let mut key8: i32 = 8;
+    let mut tried_new: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
+        let __key = key8;
+        let __inserted = m3.get(&__key).is_none();
+        if __inserted {
+            *m3.subscript(&__key) = 9;
+        }
+        (m3.find(&__key), __inserted)
+    };
+    assert!((tried_new.1 as bool));
+    assert!(((*m3.subscript_move(&mut 8, |__k| cpp_move_unsafe!(__k))) == (9)));
+    assert!(((m3.len()) == (4_usize)));
+    let mut points: UnsafeMap<i32, (i32, Point)> = UnsafeMap::new();
+    let mut point_new: (UnsafeBidirectionalIterator<(i32, Point)>, bool) = {
+        let __key = key1;
+        let __inserted = points.get(&__key).is_none();
+        if __inserted {
+            *points.subscript(&__key) = Point::new_2({ 3 }, { 4 });
+        }
+        (points.find(&__key), __inserted)
+    };
+    assert!((point_new.1 as bool));
+    assert!((((*points.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k))).x) == (3)));
+    assert!((((*points.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k))).y) == (4)));
+    {
+        let __init = (key8, Point::new_2({ 5 }, { 6 }));
+        let __inserted = points.get(&__init.0).is_none();
+        if __inserted {
+            *points.subscript(&__init.0) = __init.1;
+        }
+        (points.find(&__init.0), __inserted)
+    };
+    assert!((((*points.subscript_move(&mut 8, |__k| cpp_move_unsafe!(__k))).x) == (5)));
+    assert!((((*points.subscript_move(&mut 8, |__k| cpp_move_unsafe!(__k))).y) == (6)));
+    assert!(((points.len()) == (2_usize)));
     k = 0;
     let value_0: *const u32 = &raw const (*m.get(&(k as i16)).expect("out of range!")).1;
     assert!(
