@@ -14,10 +14,10 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut p: (f64, i32) = (1.5_f64, 2);
-    let mut first: <(f64, i32) as TupleElement<0>>::Type = *p.get_mut::<0>();
-    let mut second: <(f64, i32) as TupleElement<1>>::Type = *p.get_mut::<1>();
-    let ref_: *mut <(f64, i32) as TupleElement<1>>::Type = &mut *p.get_mut::<1>();
-    (*ref_) = (7 as <(f64, i32) as TupleElement<1>>::Type);
+    let mut first: f64 = *p.get_mut::<0>();
+    let mut second: i32 = *p.get_mut::<1>();
+    let ref_: *mut i32 = &mut *p.get_mut::<1>();
+    (*ref_) = 7;
     assert!(((first) == (1.5_f64)));
     assert!(((second) == (2)));
     assert!(((p.1) == (7)));

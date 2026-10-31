@@ -15,13 +15,10 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new(1.5_f64)),
         Rc::new(RefCell::new(2)),
     )));
-    let mut first: <(f64, i32) as TupleElement<0>>::Type =
-        ((*p.borrow()).get_value::<0>().as_pointer().read());
-    let mut second: <(f64, i32) as TupleElement<1>>::Type =
-        ((*p.borrow()).get_value::<1>().as_pointer().read());
-    let ref_: Ptr<<(f64, i32) as TupleElement<1>>::Type> =
-        (*p.borrow()).get_value::<1>().as_pointer();
-    ref_.write((7 as <(f64, i32) as TupleElement<1>>::Type));
+    let mut first: f64 = ((*p.borrow()).get_value::<0>().as_pointer().read());
+    let mut second: i32 = ((*p.borrow()).get_value::<1>().as_pointer().read());
+    let ref_: Ptr<i32> = (*p.borrow()).get_value::<1>().as_pointer();
+    ref_.write(7);
     assert!((first == 1.5_f64));
     assert!((second == 2));
     assert!(((*(*p.borrow()).1.borrow()) == 7));
