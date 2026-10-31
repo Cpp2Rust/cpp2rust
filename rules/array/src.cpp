@@ -54,3 +54,18 @@ std::array<T1, T2> &f7(std::array<T1, T2> &dst, const std::array<T1, T2> &src) {
 template <typename T1, std::size_t T2> std::array<T1, T2> f8(T1 (&&a0)[T2]) {
   return std::array<T1, T2>{a0};
 }
+
+template <std::size_t T1, typename T2, std::size_t T3>
+T2 &f9(std::array<T2, T3> &a0) {
+  return std::get<T1>(a0);
+}
+
+template <std::size_t T1, typename T2, std::size_t T3>
+const T2 &f10(const std::array<T2, T3> &a0) {
+  return std::get<T1>(a0);
+}
+
+template <std::size_t T1, typename T2, std::size_t T3>
+T2 &&f11(std::array<T2, T3> &&a0) {
+  return std::get<T1>(std::move(a0));
+}

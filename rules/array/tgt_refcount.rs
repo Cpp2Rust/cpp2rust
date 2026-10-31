@@ -28,3 +28,15 @@ fn f5<T1: ByteRepr + Clone>(a0: Ptr<Vec<T1>>, a1: &mut Vec<T1>) {
 fn f7<T1: Clone + ByteRepr>(a0: Ptr<Vec<T1>>, a1: Vec<T1>) {
     a0.write(a1)
 }
+
+fn f9<const T1: usize, T2>(a0: Ptr<T2>) -> Ptr<T2> {
+    a0.offset(T1 as isize)
+}
+
+fn f10<const T1: usize, T2>(a0: Ptr<T2>) -> Ptr<T2> {
+    a0.offset(T1 as isize)
+}
+
+fn f11<const T1: usize, T2>(a0: Ptr<T2>) -> Ptr<T2> {
+    a0.offset(T1 as isize)
+}
