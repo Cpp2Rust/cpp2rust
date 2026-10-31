@@ -31,6 +31,20 @@ fn main_0() -> i32 {
         v1.decay().offset(0_usize as isize)
     };
     assert!(!(v1.decay().offset(0_usize as isize).read()));
+    {
+        let v: Value<Vec<bool>> = Rc::new(RefCell::new(Vec::from([false, false, false])));
+        let mut i: i32 = 0;
+        let mut b: bool = (*{
+            v.decay()
+                .offset((i.postfix_inc() as usize) as isize)
+                .write(true);
+            v.decay().offset((i.postfix_inc() as usize) as isize)
+        }
+        .upgrade()
+        .deref())
+        .read();
+        assert!(b);
+    }
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

@@ -33,6 +33,15 @@ unsafe fn main_0() -> i32 {
         (&mut (v1)[0_usize as usize] as *mut bool)
     };
     assert!(!(*(&mut (v1)[0_usize as usize] as *mut bool)));
+    {
+        let mut v: Vec<bool> = Vec::from([false, false, false]);
+        let mut i: i32 = 0;
+        let mut b: bool = *(*{
+            *(&mut (v)[(i.postfix_inc() as usize) as usize] as *mut bool) = true;
+            (&mut (v)[(i.postfix_inc() as usize) as usize] as *mut bool)
+        });
+        assert!(b);
+    }
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}
