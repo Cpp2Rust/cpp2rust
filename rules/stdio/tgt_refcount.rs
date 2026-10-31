@@ -15,9 +15,8 @@ fn f1(a0: Ptr<i8>, a1: Ptr<i8>) -> Ptr<CFile> {
 }
 
 fn f2(a0: Ptr<CFile>) -> i32 {
-    let __a0 = a0;
-    let __r = __a0.with(|__f| __f.close());
-    __a0.delete();
+    let __r = a0.with(|__f| __f.close());
+    a0.delete();
     __r
 }
 
@@ -163,14 +162,12 @@ fn f20(a0: i32, a1: Ptr<i8>) -> Ptr<CFile> {
 }
 
 fn f21(a0: Ptr<i8>, a1: usize, a2: Ptr<i8>, va: Box<[VaArg]>) -> i32 {
-    let __a0 = a0;
-    let __a1 = a1;
     let __s = libcc2rs::format_c(&a2.to_rust_string(), &va);
     let __b = __s.as_bytes();
-    if __a1 > 0 {
-        let __n = ::std::cmp::min(__b.len(), __a1 - 1);
-        __a0.write_c_bytes(&__b[..__n]);
-        elem!(__a0, __n).write(0);
+    if a1 > 0 {
+        let __n = ::std::cmp::min(__b.len(), a1 - 1);
+        a0.write_c_bytes(&__b[..__n]);
+        elem!(a0, __n).write(0);
     }
     __b.len() as i32
 }

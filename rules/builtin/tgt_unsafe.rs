@@ -52,12 +52,10 @@ unsafe fn f13(a0: i64, a1: i64, a2: *mut i64) -> bool {
 }
 
 unsafe fn f14(a0: *mut u8, a1: *const u8, a2: usize) -> *mut u8 {
-    let __a0 = a0;
-    let __a2 = a2;
-    if __a2 != 0 {
-        ::std::ptr::copy_nonoverlapping(a1, __a0, __a2 as usize)
+    if a2 != 0 {
+        ::std::ptr::copy_nonoverlapping(a1, a0, a2 as usize)
     }
-    __a0
+    a0
 }
 
 unsafe fn f15() { std::process::abort() }

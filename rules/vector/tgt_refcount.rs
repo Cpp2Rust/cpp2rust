@@ -97,12 +97,11 @@ fn f96<T1>(a0: Ptr<T1>) -> RandomAccessIterator<T1> {
 }
 
 fn f98<T1: ByteRepr + 'static>(a0: Ptr<Vec<T1>>, a1: usize) -> Ptr<T1> {
-    let __a0 = a0;
     let __idx = a1;
-    if __idx as usize >= (*__a0.upgrade().deref()).len() {
+    if __idx as usize >= (*a0.upgrade().deref()).len() {
         panic!("out of bounds access")
     } else {
-        __a0.decay().offset(__idx as isize)
+        a0.decay().offset(__idx as isize)
     }
 }
 

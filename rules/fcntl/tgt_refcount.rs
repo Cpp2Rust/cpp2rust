@@ -4,23 +4,22 @@
 use libcc2rs::*;
 
 fn f1(a0: i32, a1: i32, va: Box<[VaArg]>) -> i32 {
-    let __a0 = a0;
     let __res = match a1 {
-        ::libc::F_GETFL => FdRegistry::with_fd(__a0, |__fd| {
+        ::libc::F_GETFL => FdRegistry::with_fd(a0, |__fd| {
             nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_GETFL)
         }),
         ::libc::F_SETFL => {
             let __flags = nix::fcntl::OFlag::from_bits_retain(i32::get(&va[0]));
-            FdRegistry::with_fd(__a0, |__fd| {
+            FdRegistry::with_fd(a0, |__fd| {
                 nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_SETFL(__flags))
             })
         }
-        ::libc::F_GETFD => FdRegistry::with_fd(__a0, |__fd| {
+        ::libc::F_GETFD => FdRegistry::with_fd(a0, |__fd| {
             nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_GETFD)
         }),
         ::libc::F_SETFD => {
             let __flags = nix::fcntl::FdFlag::from_bits_retain(i32::get(&va[0]));
-            FdRegistry::with_fd(__a0, |__fd| {
+            FdRegistry::with_fd(a0, |__fd| {
                 nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_SETFD(__flags))
             })
         }

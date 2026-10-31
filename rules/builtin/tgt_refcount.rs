@@ -25,7 +25,6 @@ fn f13(a0: i64, a1: i64, a2: Ptr<i64>) -> bool {
 }
 
 fn f14(a0: AnyPtr, a1: AnyPtr, a2: usize) -> AnyPtr {
-    let __a0 = a0;
-    __a0.memcpy(&a1, a2 as usize);
-    __a0
+    a0.memcpy(&a1, a2 as usize);
+    a0
 }

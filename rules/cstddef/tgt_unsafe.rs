@@ -38,17 +38,15 @@ fn f2(a0: &mut u8, a1: u32) -> u8 {
 }
 
 fn f3(a0: &mut u8, a1: u32) -> u8 {
-    let __a0 = a0;
-    let n_ = *__a0 << a1;
-    *__a0 = n_;
-    *__a0
+    let n_ = *a0 << a1;
+    *a0 = n_;
+    *a0
 }
 
 fn f4(a0: &mut u8, a1: u32) -> u8 {
-    let __a0 = a0;
-    let n_ = *__a0 >> a1;
-    *__a0 = n_;
-    *__a0
+    let n_ = *a0 >> a1;
+    *a0 = n_;
+    *a0
 }
 
 fn f5<T1>(a0: u8, a1: T1) -> u8

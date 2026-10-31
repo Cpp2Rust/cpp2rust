@@ -4,22 +4,19 @@
 use libcc2rs::*;
 
 fn f5(a0: i32, a1: Ptr<i8>, a2: AnyPtr) -> i32 {
-    let __a0 = a0;
-    let __a1 = a1;
-    let __a2 = a2;
-    if __a0 == libc::AF_INET {
-        match __a1.to_rust_string().parse::<std::net::Ipv4Addr>() {
+    if a0 == libc::AF_INET {
+        match a1.to_rust_string().parse::<std::net::Ipv4Addr>() {
             Ok(__ip) => {
-                __a2.reinterpret_cast::<u8>()
+                a2.reinterpret_cast::<u8>()
                     .with_slice_mut(4, |__s| __s.copy_from_slice(&__ip.octets()));
                 1
             }
             Err(_) => 0,
         }
-    } else if __a0 == libc::AF_INET6 {
-        match __a1.to_rust_string().parse::<std::net::Ipv6Addr>() {
+    } else if a0 == libc::AF_INET6 {
+        match a1.to_rust_string().parse::<std::net::Ipv6Addr>() {
             Ok(__ip) => {
-                __a2.reinterpret_cast::<u8>()
+                a2.reinterpret_cast::<u8>()
                     .with_slice_mut(16, |__s| __s.copy_from_slice(&__ip.octets()));
                 1
             }
@@ -32,16 +29,13 @@ fn f5(a0: i32, a1: Ptr<i8>, a2: AnyPtr) -> i32 {
 }
 
 fn f6(a0: i32, a1: AnyPtr, a2: Ptr<i8>, a3: u32) -> Ptr<i8> {
-    let __a0 = a0;
-    let __a1 = a1;
-    let __a2 = a2;
-    let __text = if __a0 == libc::AF_INET {
-        let __b: [u8; 4] = __a1
+    let __text = if a0 == libc::AF_INET {
+        let __b: [u8; 4] = a1
             .reinterpret_cast::<u8>()
             .with_slice(4, |__s| __s.try_into().unwrap());
         Some(std::net::Ipv4Addr::from(__b).to_string())
-    } else if __a0 == libc::AF_INET6 {
-        let __b: [u8; 16] = __a1
+    } else if a0 == libc::AF_INET6 {
+        let __b: [u8; 16] = a1
             .reinterpret_cast::<u8>()
             .with_slice(16, |__s| __s.try_into().unwrap());
         Some(std::net::Ipv6Addr::from(__b).to_string())
@@ -51,9 +45,9 @@ fn f6(a0: i32, a1: AnyPtr, a2: Ptr<i8>, a3: u32) -> Ptr<i8> {
     match __text {
         Some(__s) if (__s.len() as u32) < a3 => {
             let __n = __s.len();
-            __a2.write_c_bytes(__s.as_bytes());
-            elem!(__a2, __n).write(0);
-            __a2
+            a2.write_c_bytes(__s.as_bytes());
+            elem!(a2, __n).write(0);
+            a2
         }
         Some(_) => {
             libcc2rs::cpp2rust_errno().write(::libc::ENOSPC);

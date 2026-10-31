@@ -143,15 +143,14 @@ fn f10(a0: i32, a1: AnyPtr, a2: usize, a3: i32) -> isize {
 }
 
 fn f6(a0: i32, a1: i32, a2: i32) -> i32 {
-    let __a1 = a1;
     let __family = match a0 {
         ::libc::AF_INET => nix::sys::socket::AddressFamily::Inet,
         ::libc::AF_INET6 => nix::sys::socket::AddressFamily::Inet6,
         ::libc::AF_UNIX => nix::sys::socket::AddressFamily::Unix,
         __d => panic!("socket: unsupported domain {__d}"),
     };
-    let __flags = nix::sys::socket::SockFlag::from_bits_truncate(__a1);
-    let __ty = match __a1 & !nix::sys::socket::SockFlag::all().bits() {
+    let __flags = nix::sys::socket::SockFlag::from_bits_truncate(a1);
+    let __ty = match a1 & !nix::sys::socket::SockFlag::all().bits() {
         ::libc::SOCK_STREAM => nix::sys::socket::SockType::Stream,
         ::libc::SOCK_DGRAM => nix::sys::socket::SockType::Datagram,
         __t => panic!("socket: unsupported type {__t}"),
@@ -172,15 +171,14 @@ fn f6(a0: i32, a1: i32, a2: i32) -> i32 {
 }
 
 fn f11(a0: i32, a1: i32, a2: i32, a3: Ptr<i32>) -> i32 {
-    let __a1 = a1;
     let __family = match a0 {
         ::libc::AF_INET => nix::sys::socket::AddressFamily::Inet,
         ::libc::AF_INET6 => nix::sys::socket::AddressFamily::Inet6,
         ::libc::AF_UNIX => nix::sys::socket::AddressFamily::Unix,
         __d => panic!("socketpair: unsupported domain {__d}"),
     };
-    let __flags = nix::sys::socket::SockFlag::from_bits_truncate(__a1);
-    let __ty = match __a1 & !nix::sys::socket::SockFlag::all().bits() {
+    let __flags = nix::sys::socket::SockFlag::from_bits_truncate(a1);
+    let __ty = match a1 & !nix::sys::socket::SockFlag::all().bits() {
         ::libc::SOCK_STREAM => nix::sys::socket::SockType::Stream,
         ::libc::SOCK_DGRAM => nix::sys::socket::SockType::Datagram,
         __t => panic!("socketpair: unsupported type {__t}"),
