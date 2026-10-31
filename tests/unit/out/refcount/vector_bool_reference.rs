@@ -15,33 +15,33 @@ fn main_0() -> i32 {
     let mut r1: Ptr<bool> = v1.decay().offset(0_usize as isize);
     assert!((v1.decay().offset(0_usize as isize).read()) && (r1.read()));
     {
-        r1.write(false);
-        (r1).clone()
+        let __a0 = (r1).clone();
+        __a0.write(false);
+        __a0
     };
     assert!(!(v1.decay().offset(0_usize as isize).read()));
     let it: Value<RandomAccessIterator<bool>> = Rc::new(RefCell::new(v1.decay().begin()));
     let mut r2: Ptr<bool> = (*it.borrow()).iter_deref();
     {
-        r2.write(true);
-        (r2).clone()
+        let __a0 = (r2).clone();
+        __a0.write(true);
+        __a0
     };
     assert!(v1.decay().offset(0_usize as isize).read());
     {
-        v1.decay().offset(0_usize as isize).write(false);
-        v1.decay().offset(0_usize as isize)
+        let __a0 = v1.decay().offset(0_usize as isize);
+        __a0.write(false);
+        __a0
     };
     assert!(!(v1.decay().offset(0_usize as isize).read()));
     {
         let v: Value<Vec<bool>> = Rc::new(RefCell::new(Vec::from([false, false, false])));
         let mut i: i32 = 0;
-        let mut b: bool = (*{
-            v.decay()
-                .offset((i.postfix_inc() as usize) as isize)
-                .write(true);
-            v.decay().offset((i.postfix_inc() as usize) as isize)
+        let mut b: bool = {
+            let __a0 = v.decay().offset((i.postfix_inc() as usize) as isize);
+            __a0.write(true);
+            __a0
         }
-        .upgrade()
-        .deref())
         .read();
         assert!(b);
     }
