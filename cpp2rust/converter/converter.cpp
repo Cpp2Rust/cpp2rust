@@ -133,6 +133,12 @@ Converter::GetTemplateArgumentAsString(const clang::TemplateArgument &arg) {
   case clang::TemplateArgument::Type:
     return GetUnboxedTypeAsString(arg.getAsType());
   case clang::TemplateArgument::Integral:
+    if (!arg.getIntegralType()->isBooleanType()) {
+      llvm::SmallString<16> value;
+      arg.getAsIntegral().toString(value);
+      return std::string(value);
+    }
+    [[fallthrough]];
   case clang::TemplateArgument::NullPtr:
   case clang::TemplateArgument::Declaration:
   case clang::TemplateArgument::StructuralValue: {
