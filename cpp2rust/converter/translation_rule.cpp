@@ -20,6 +20,8 @@ TypeInfo ParseTypeInfoJSON(const llvm::json::Object &obj) {
   TypeInfo info;
   if (auto ty = obj.getString("type"))
     info.type = ty->str();
+  if (auto cpp_type = obj.getString("cpp_type"))
+    info.cpp_type = cpp_type->str();
   if (auto v = obj.getBoolean("is_refcount_pointer"))
     info.is_refcount_pointer = *v;
   if (auto v = obj.getBoolean("is_unsafe_pointer"))
@@ -353,10 +355,6 @@ ExprRule ParseExprRuleJSON(const llvm::json::Object &obj) {
 
   if (auto *body = obj.getArray("body")) {
     ir.body = ParseBodyFragmentsJSON(*body);
-  }
-
-  if (auto init_cpp_type = obj.getString("init_cpp_type")) {
-    ir.init_cpp_type = init_cpp_type->str();
   }
 
   return ir;

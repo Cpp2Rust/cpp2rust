@@ -440,6 +440,7 @@ impl<'a> FnIrBuilder<'a> {
                 is_refcount_pointer,
                 is_unsafe_pointer,
                 derives: Vec::new(),
+                cpp_type: None,
             })
         }
     }
@@ -656,6 +657,7 @@ impl<'a> FnIrBuilder<'a> {
                         is_refcount_pointer: p.is_refcount_pointer,
                         is_unsafe_pointer: p.is_unsafe_pointer,
                         derives: Vec::new(),
+                        cpp_type: p.cpp_type.clone(),
                     },
                 )
             })
@@ -692,7 +694,6 @@ impl<'a> FnIrBuilder<'a> {
             multi_statement,
             body,
             is_extern: self.is_extern().then_some(true),
-            init_cpp_type: params.iter().find_map(|p| p.cpp_type.clone()),
         };
         ir.validate(&format!("{}:{}", path.display(), fn_name));
         ir
@@ -767,6 +768,7 @@ impl<'a> TypeIrBuilder<'a> {
                 is_refcount_pointer,
                 is_unsafe_pointer,
                 derives: Vec::new(),
+                cpp_type: None,
             },
         }
     }

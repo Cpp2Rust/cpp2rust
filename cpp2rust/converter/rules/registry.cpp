@@ -442,7 +442,7 @@ clang::QualType GetInitType(clang::ASTContext &ctx, const clang::Expr *expr) {
   auto match = findExpr(expr);
   assert(match.rule_decl && "expression must have a translation rule");
   const auto &rule = match.rule_decl->rule;
-  if (rule.init_cpp_type.empty()) {
+  if (rule.init.cpp_type.empty()) {
     llvm::StringRef type = rule.init.type;
     unsigned n = 0;
     [[maybe_unused]] bool bad =
@@ -481,7 +481,9 @@ std::string InitCppType(Model model, const std::string &dir,
   if (!rule) {
     return {};
   }
-  auto cpp_type = rule->getString("init_cpp_type");
+  auto params = rule->getObject("params");
+  auto init = params ? params->getObject("init") : nullptr;
+  auto cpp_type = init ? init->getString("cpp_type") : std::nullopt;
   return cpp_type ? cpp_type->str() : std::string();
 }
 

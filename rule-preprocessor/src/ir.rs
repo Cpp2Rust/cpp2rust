@@ -70,6 +70,8 @@ pub struct TypeInfo {
     pub is_unsafe_pointer: bool,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub derives: Vec<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cpp_type: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -85,8 +87,6 @@ pub struct FnIr {
     pub return_type: Option<TypeInfo>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub is_extern: Option<bool>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub init_cpp_type: Option<String>,
 }
 
 impl FnIr {
