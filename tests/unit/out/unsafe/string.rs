@@ -6,6 +6,13 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+pub unsafe fn counted_string_0(calls: *mut i32) -> Vec<libc::c_char> {
+    (*calls).prefix_inc();
+    return {
+        let s = c"hello".as_ptr();
+        std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1).to_vec()
+    };
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -381,6 +388,24 @@ unsafe fn main_0() -> i32 {
             c"count: %s %zu\n".as_ptr() as *const libc::c_char,
             (once.as_ptr()),
             (substr_count),
+        )
+    });
+    let mut receiver_calls: i32 = 0;
+    once = {
+        let mut __tmp1 = (unsafe { counted_string_0(&mut receiver_calls) })[(1_usize) as usize
+            ..::std::cmp::min(
+                (1_usize + 2_usize) as usize,
+                (unsafe { counted_string_0(&mut receiver_calls) }).len() - 1,
+            )]
+            .to_vec();
+        __tmp1.push(0);
+        __tmp1
+    };
+    (unsafe {
+        libc::printf(
+            c"receiver: %s %d\n".as_ptr() as *const libc::c_char,
+            (once.as_ptr()),
+            (receiver_calls),
         )
     });
     let mut t0: usize = (s1.len() - 1);

@@ -6,6 +6,14 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+pub fn counted_string_0(calls: Ptr<i32>) -> Vec<i8> {
+    calls.with_mut(|__v| __v.prefix_inc());
+    return {
+        let mut __bytes = Ptr::<i8>::from_string_literal(b"hello").to_c_bytes();
+        __bytes.push(0);
+        __bytes
+    };
+}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
@@ -358,6 +366,20 @@ fn main_0() -> i32 {
         __tmp1
     });
     println!("count: {} {}", once.decay(), substr_count);
+    let receiver_calls: Value<i32> = Rc::new(RefCell::new(0));
+    once.as_pointer().write({
+        let mut __tmp1 = ({ counted_string_0(receiver_calls.as_pointer()) })[(1_usize) as usize
+            ..::std::cmp::min(
+                (1_usize + 2_usize) as usize,
+                ({ counted_string_0(receiver_calls.as_pointer()) })
+                    .len()
+                    .saturating_sub(1),
+            )]
+            .to_vec();
+        __tmp1.push(0);
+        __tmp1
+    });
+    println!("receiver: {} {}", once.decay(), (*receiver_calls.borrow()));
     let mut t0: usize = ((*s1.borrow()).len() - 1);
     let mut t1: usize = (t0).wrapping_add(((p1.read()) as usize));
     let mut t2: usize = (t1).wrapping_add(((*s2.borrow()).len() - 1));

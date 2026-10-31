@@ -4,6 +4,11 @@
 #include <cstdio>
 #include <string>
 
+std::string counted_string(int &calls) {
+  ++calls;
+  return "hello";
+}
+
 int main() {
   std::string empty;
   assert(empty.length() == 0);
@@ -150,6 +155,9 @@ int main() {
   std::size_t substr_count = 2;
   once = s1.substr(1, substr_count++);
   printf("count: %s %zu\n", once.c_str(), substr_count);
+  int receiver_calls = 0;
+  once = counted_string(receiver_calls).substr(1, 2);
+  printf("receiver: %s %d\n", once.c_str(), receiver_calls);
 
   // FIXME
   auto t0 = s1.length();
