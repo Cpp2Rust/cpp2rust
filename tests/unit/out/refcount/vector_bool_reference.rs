@@ -26,6 +26,11 @@ fn main_0() -> i32 {
         (r2).clone()
     };
     assert!(v1.decay().offset(0_usize as isize).read());
+    {
+        v1.decay().offset(0_usize as isize).write(false);
+        v1.decay().offset(0_usize as isize)
+    };
+    assert!(!(v1.decay().offset(0_usize as isize).read()));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

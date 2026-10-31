@@ -133,7 +133,8 @@ unsigned iteratorOverGeneric(const TranslationRule::ExprRule &rule,
                              unsigned n) {
   for (unsigned i = 0; i < rule.generics.size(); ++i) {
     for (const auto &bound : rule.generics[i]) {
-      if (llvm::StringRef(bound.trait_name).ends_with("Iterator") &&
+      llvm::StringRef trait = bound.trait_name;
+      if ((trait.ends_with("Iterator") || trait == "CppArray") &&
           llvm::is_contained(bound.args, n)) {
         return i + 1;
       }
@@ -412,6 +413,9 @@ clang::QualType iteratorElementType(clang::ASTContext &ctx,
   iterator = iterator.getNonReferenceType().getUnqualifiedType();
   if (iterator->isPointerType()) {
     return iterator->getPointeeType().getUnqualifiedType();
+  }
+  if (auto *array = ctx.getAsArrayType(iterator)) {
+    return array->getElementType().getUnqualifiedType();
   }
   auto [rule, bindings] = Search(ctx, iterator);
   assert(rule && !bindings.empty() &&

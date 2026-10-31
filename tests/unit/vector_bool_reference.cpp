@@ -11,5 +11,7 @@ int main() {
   auto r2 = *it;
   r2 = true;
   assert(v1[0]);
+  v1[0] = false;
+  assert(!v1[0]);
   return 0;
 }
