@@ -914,9 +914,6 @@ protected:
     return false;
   }
 
-  // Checks that the rule of expr returns the type that expr returns in C++.
-  virtual void CheckRuleReturnType(clang::Expr * /*expr*/) {}
-
   bool RecordHasCopyableFields(const clang::RecordDecl *decl);
 
   bool ShouldReplaceWithMappedBody(const clang::ValueDecl *decl) const;

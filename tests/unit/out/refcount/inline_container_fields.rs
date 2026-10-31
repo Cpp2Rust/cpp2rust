@@ -81,7 +81,7 @@ impl Default for State {
                 grid: (0..2)
                     .map(|_| (0..3).map(|_| 0_i32).collect::<Box<[i32]>>())
                     .collect::<Box<[Box<[i32]>]>>(),
-                arr: std::array::from_fn::<_, 3_usize, _>(|_| 0_i32).to_vec(),
+                arr: std::array::from_fn::<_, 3, _>(|_| 0_i32).to_vec(),
                 elems: Default::default(),
                 rows: Default::default(),
             }

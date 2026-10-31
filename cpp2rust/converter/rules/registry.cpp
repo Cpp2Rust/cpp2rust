@@ -461,23 +461,6 @@ clang::QualType GetInitType(const clang::Expr *expr) {
                           clang::DeclarationName());
 }
 
-clang::QualType GetDeclaredReturnType(const clang::Expr *expr) {
-  auto match = findExpr(expr);
-  assert(match.rule_decl && "expression must have a translation rule");
-  auto function = match.rule_decl->decl->getAsFunction();
-  assert(function && "rule is not a function");
-  auto tmpl = function->getDescribedFunctionTemplate();
-  if (!tmpl) {
-    return function->getReturnType();
-  }
-  clang::MultiLevelTemplateArgumentList args(tmpl, match.args,
-                                             /*Final=*/false);
-  clang::Sema::InstantiatingTemplate inst(
-      *sema_, expr->getBeginLoc(), const_cast<clang::FunctionDecl *>(function));
-  return sema_->SubstType(function->getReturnType(), args, expr->getBeginLoc(),
-                          clang::DeclarationName());
-}
-
 bool HasExprRule(const clang::FunctionDecl *decl) {
   auto key = RuleKeys::GetDeclKey(decl);
   if (!key) {
