@@ -35,3 +35,10 @@ impl<T: Clone> CppFromUnsafe<T> for T {
         unsafe { (*src).clone() }
     }
 }
+
+#[macro_export]
+macro_rules! cpp_type {
+    ($cpp:literal, $rust:ty) => {
+        $rust
+    };
+}
