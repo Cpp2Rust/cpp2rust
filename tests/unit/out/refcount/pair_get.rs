@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn second_of_0(p: Ptr<(Value<f64>, Value<i32>)>) -> i32 {
-    return ((*p.upgrade().deref()).get_value::<1>().as_pointer().read());
+    return (((*p.upgrade().deref()).get_value::<1>().as_pointer().read()) as i32);
 }
 pub fn first_of_1(p: Ptr<(Value<f64>, Value<i32>)>) -> f64 {
     return ((*p.upgrade().deref()).get_value::<0>().as_pointer().read());

@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn second_of_0(p: *const (f64, i32)) -> i32 {
-    return *(*p).get::<1>();
+    return (*(*p).get::<1>() as i32);
 }
 pub unsafe fn first_of_1(p: *const (f64, i32)) -> f64 {
     return *(*p).get::<0>();

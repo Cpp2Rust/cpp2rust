@@ -5,11 +5,8 @@
 
 template <typename T1, typename T2> using t1 = std::pair<T1, T2>;
 
-template <typename T1, typename T2>
-using t2 = typename std::tuple_element<0, std::pair<T1, T2>>::type;
-
-template <typename T1, typename T2>
-using t3 = typename std::tuple_element<1, std::pair<T1, T2>>::type;
+template <std::size_t T1, typename T2, typename T3>
+using t2 = typename std::tuple_element<T1, std::pair<T2, T3>>::type;
 
 template <typename T1, typename T2>
 std::pair<T1, T2> f2(const std::pair<T1, T2> &a0) {

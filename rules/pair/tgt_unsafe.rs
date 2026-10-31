@@ -7,11 +7,10 @@ fn t1<T1: Default, T2: Default>() -> (T1, T2) {
     <(T1, T2)>::default()
 }
 
-fn t2<T1>() -> T1 {
-    unimplemented!()
-}
-
-fn t3<T1, T2>() -> T2 {
+fn t2<const T1: usize, T2, T3>() -> <(T2, T3) as TupleElement<T1>>::Type
+where
+    (T2, T3): TupleElement<T1>,
+{
     unimplemented!()
 }
 
