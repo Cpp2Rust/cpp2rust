@@ -5,6 +5,13 @@
 void foo(unsigned x) { x = x + 1; }
 void bar(unsigned &x) { x = x + 1; }
 
+struct Point {
+  int x;
+  int y;
+  Point() : x(0), y(0) {}
+  Point(int x, int y) : x(x), y(y) {}
+};
+
 int main() {
   std::map<short, unsigned> m;
   m[0] = 1;
@@ -117,6 +124,26 @@ int main() {
   assert(m3.size() == 2);
   assert(m3[1] == 2);
   assert(m3[4] == 5);
+  std::map<int, int>::iterator hinted = m3.emplace_hint(m3.end(), 6, 7);
+  assert(hinted->second == 7);
+  int key1 = 1;
+  auto tried = m3.try_emplace(key1, 9);
+  assert(!tried.second);
+  assert(tried.first->second == 2);
+  int key8 = 8;
+  auto tried_new = m3.try_emplace(key8, 9);
+  assert(tried_new.second);
+  assert(m3[8] == 9);
+  assert(m3.size() == 4);
+  std::map<int, Point> points;
+  auto point_new = points.try_emplace(key1, 3, 4);
+  assert(point_new.second);
+  assert(points[1].x == 3);
+  assert(points[1].y == 4);
+  points.emplace(key8, Point(5, 6));
+  assert(points[8].x == 5);
+  assert(points[8].y == 6);
+  assert(points.size() == 2);
   k = 0;
   const auto &value_0 = m.at(k);
   assert(m.size() + x1 + x2 + x3 + x4 + x5 + value_0 == 21);

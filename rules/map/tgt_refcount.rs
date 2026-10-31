@@ -100,13 +100,40 @@ fn f29<T1: 'static, T2: 'static>(a0: Ptr<Map<T1, (Value<T1>, Value<T2>)>>) -> Bi
 
 fn f67<T1: CppLess + Clone + ByteRepr + 'static, T2: Default + Clone + ByteRepr + 'static>(
     a0: Ptr<Map<T1, (Value<T1>, Value<T2>)>>,
-    init: (Value<T1>, Value<T2>),
+    init: cpp_type!("typename std::map<T1, T2, T3, T4>::value_type", (Value<T1>, Value<T2>)),
 ) -> (BidirectionalIterator<(Value<T1>, Value<T2>)>, bool) {
     let __init = init;
     let __key = __init.0.as_pointer();
     let __inserted = a0.with(|__m: &Map<T1, (Value<T1>, Value<T2>)>| __m.get(&__key).is_none());
     if __inserted {
         Map::subscript(a0.clone(), __key.clone()).write(__init.1.borrow().clone());
+    }
+    (a0.with(|__m: &Map<T1, (Value<T1>, Value<T2>)>| __m.find(&__key)), __inserted)
+}
+
+fn f68<T1: CppLess + Clone + ByteRepr + 'static, T2: Default + Clone + ByteRepr + 'static>(
+    a0: Ptr<Map<T1, (Value<T1>, Value<T2>)>>,
+    a1: BidirectionalIterator<(Value<T1>, Value<T2>)>,
+    init: cpp_type!("typename std::map<T1, T2, T3, T4>::value_type", (Value<T1>, Value<T2>)),
+) -> BidirectionalIterator<(Value<T1>, Value<T2>)> {
+    let _ = a1;
+    let __init = init;
+    let __key = __init.0.as_pointer();
+    if a0.with(|__m: &Map<T1, (Value<T1>, Value<T2>)>| __m.get(&__key).is_none()) {
+        Map::subscript(a0.clone(), __key.clone()).write(__init.1.borrow().clone());
+    }
+    a0.with(|__m: &Map<T1, (Value<T1>, Value<T2>)>| __m.find(&__key))
+}
+
+fn f73<T1: CppLess + Clone + ByteRepr + 'static, T2: Default + ByteRepr + 'static>(
+    a0: Ptr<Map<T1, (Value<T1>, Value<T2>)>>,
+    a1: Ptr<T1>,
+    init: T2,
+) -> (BidirectionalIterator<(Value<T1>, Value<T2>)>, bool) {
+    let __key = a1;
+    let __inserted = a0.with(|__m: &Map<T1, (Value<T1>, Value<T2>)>| __m.get(&__key).is_none());
+    if __inserted {
+        Map::subscript(a0.clone(), __key.clone()).write(init);
     }
     (a0.with(|__m: &Map<T1, (Value<T1>, Value<T2>)>| __m.find(&__key)), __inserted)
 }
