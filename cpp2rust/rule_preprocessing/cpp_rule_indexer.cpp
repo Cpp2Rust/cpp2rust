@@ -78,7 +78,14 @@ void AddRequiredClasses(clang::QualType type,
   if (auto name = type->getAs<clang::DependentNameType>()) {
     auto qualifier = name->getQualifier();
     if (qualifier.getKind() == clang::NestedNameSpecifier::Kind::Type) {
-      AddRequiredClasses(clang::QualType(qualifier.getAsType(), 0), required);
+      if (auto spec = qualifier.getAsType()
+                          ->getAs<clang::TemplateSpecializationType>()) {
+        for (const auto &arg : spec->template_arguments()) {
+          if (arg.getKind() == clang::TemplateArgument::Type) {
+            AddRequiredClasses(arg.getAsType(), required);
+          }
+        }
+      }
     }
     return;
   }
