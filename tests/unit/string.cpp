@@ -1,6 +1,7 @@
 // ADDITIONAL_COMPILE_FLAGS: -std=c++17
 #include <cassert>
 #include <cstdint>
+#include <cstdio>
 #include <string>
 
 int main() {
@@ -142,6 +143,13 @@ int main() {
   assert(diff < 0);
   diff += 6;
   assert(diff == 3);
+
+  std::size_t substr_pos = 1;
+  auto once = s1.substr(substr_pos++, 2);
+  printf("position: %s %zu\n", once.c_str(), substr_pos);
+  std::size_t substr_count = 2;
+  once = s1.substr(1, substr_count++);
+  printf("count: %s %zu\n", once.c_str(), substr_count);
 
   // FIXME
   auto t0 = s1.length();

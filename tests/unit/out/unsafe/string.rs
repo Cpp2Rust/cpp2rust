@@ -350,6 +350,39 @@ unsafe fn main_0() -> i32 {
     assert!(((diff) < (0_i64)));
     diff += 6_i64;
     assert!(((diff) == (3_i64)));
+    let mut substr_pos: usize = 1_usize;
+    let mut once: Vec<libc::c_char> = {
+        let mut __tmp1 = s1[(substr_pos.postfix_inc()) as usize
+            ..::std::cmp::min((substr_pos.postfix_inc() + 2_usize) as usize, s1.len() - 1)]
+            .to_vec();
+        __tmp1.push(0);
+        __tmp1
+    };
+    (unsafe {
+        libc::printf(
+            c"position: %s %zu\n".as_ptr() as *const libc::c_char,
+            (once.as_ptr()),
+            (substr_pos),
+        )
+    });
+    let mut substr_count: usize = 2_usize;
+    once = {
+        let mut __tmp1 = s1[(1_usize) as usize
+            ..::std::cmp::min(
+                (1_usize + substr_count.postfix_inc()) as usize,
+                s1.len() - 1,
+            )]
+            .to_vec();
+        __tmp1.push(0);
+        __tmp1
+    };
+    (unsafe {
+        libc::printf(
+            c"count: %s %zu\n".as_ptr() as *const libc::c_char,
+            (once.as_ptr()),
+            (substr_count),
+        )
+    });
     let mut t0: usize = (s1.len() - 1);
     let mut t1: usize = (t0).wrapping_add(((*p1) as usize));
     let mut t2: usize = (t1).wrapping_add((s2.len() - 1));
