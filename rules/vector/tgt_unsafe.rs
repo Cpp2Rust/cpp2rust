@@ -267,16 +267,19 @@ unsafe fn f118<T1>(a0: &mut Vec<bool>, a1: usize) -> *mut bool {
 }
 
 unsafe fn f119(a0: *mut bool, a1: bool) -> *mut bool {
-    *a0 = a1;
-    a0
+    let __a0 = a0;
+    *__a0 = a1;
+    __a0
 }
 
 unsafe fn f120(a0: *mut bool, a1: bool) -> *mut bool {
-    *a0 = a1;
-    a0
+    let __a0 = a0;
+    *__a0 = a1;
+    __a0
 }
 
 unsafe fn f121(a0: *mut bool, a1: *mut bool) -> *mut bool {
-    *a0 = *a1;
-    a0
+    let __a0 = a0;
+    *__a0 = *a1;
+    __a0
 }
