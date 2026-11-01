@@ -70,7 +70,7 @@ fn main_0() -> i32 {
         }) == 1) as i32)
             != 0)
     );
-    assert!((((!((*s.borrow()).is_null())) as i32) != 0));
+    assert!(({ (((!((*s.borrow()).is_null())) as i32) != 0) }));
     assert!(
         (((({
             dispatch_0(
@@ -112,7 +112,7 @@ fn main_0() -> i32 {
         }) == 2) as i32)
             != 0)
     );
-    assert!(((((*outp.borrow()).is_null()) as i32) != 0));
+    assert!(({ ((((*outp.borrow()).is_null()) as i32) != 0) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

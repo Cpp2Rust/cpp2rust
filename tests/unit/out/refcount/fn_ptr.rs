@@ -59,7 +59,7 @@ fn main_0() -> i32 {
     assert!(!((fn_).is_null()));
     assert!(({ (fn_).clone() } == { FnPtr::<fn(AnyPtr) -> i32>::new(my_foo_0) }));
     let a: Value<i32> = Rc::new(RefCell::new(10));
-    assert!(({ ({ foo_1((fn_).clone(), (a.as_pointer()),) }) } == { (*a.borrow()) }));
+    assert!(({ ({ ({ foo_1((fn_).clone(), (a.as_pointer()),) }) } == { (*a.borrow()) }) }));
     let mut ul_fn: FnPtr<fn(u64) -> u64> = (FnPtr::<fn(u64) -> u64>::new(twice_2));
     let mut n: usize = 21_usize;
     let mut r: usize = (({ ul_fn.call((n as u64)) }) as usize);
@@ -69,7 +69,7 @@ fn main_0() -> i32 {
     let m: Value<usize> = Rc::new(RefCell::new(21_usize));
     let mut q: usize = (({ ul_ref_fn.call((m.as_pointer()).reinterpret_cast::<u64>()) }) as usize);
     assert!((q == 42_usize));
-    assert!(((*m.borrow()) == 42_usize));
+    assert!(({ ((*m.borrow()) == 42_usize) }));
     assert!((({ call_fn_5(FnPtr::<fn(i32) -> usize>::new(ret_size_4), 3,) }) == 8_usize));
     let mut hh: HashHolder_unsigned_long__ptr__bool__ = {
         let __tmp_0: Value<FnPtr<fn(bool) -> u64>> = Rc::new(RefCell::new(

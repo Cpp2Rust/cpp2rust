@@ -15,7 +15,7 @@ fn main_0() -> i32 {
     let mut bits: Ptr<u64> = (d.as_pointer()).reinterpret_cast::<u64>();
     assert!(((bits.read()) == 4607182418800017408_u64));
     bits.write(4614256656552045848_u64);
-    assert!(((*d.borrow()) > 3.14_f64) && ((*d.borrow()) < 3.15_f64));
+    assert!(({ ((*d.borrow()) > 3.14_f64) && ((*d.borrow()) < 3.15_f64) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

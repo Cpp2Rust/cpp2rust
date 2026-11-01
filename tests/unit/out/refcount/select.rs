@@ -47,13 +47,13 @@ fn main_0() -> i32 {
     };
     (*tv.borrow_mut()).tv_sec = (0 as ::libc::time_t);
     assert!(
-        (((match (
-            { ((*fds.borrow())[(0) as usize] + 1) },
-            { (rset.as_pointer()) },
-            { (tv.as_pointer()) },
-        ) {
-            (mut __tmp_3, mut __tmp_4, mut __tmp_5) => {
-                {
+        ({
+            (((match (
+                { ((*fds.borrow())[(0) as usize] + 1) },
+                { (rset.as_pointer()) },
+                { (tv.as_pointer()) },
+            ) {
+                (mut __tmp_3, mut __tmp_4, mut __tmp_5) => {
                     let __r_fds: Vec<i32> = match __tmp_4.is_null() {
                         true => Vec::new(),
                         false => __tmp_4
@@ -160,24 +160,26 @@ fn main_0() -> i32 {
                         }
                     })
                 }
-            }
-        } == 0) as i32)
-            != 0)
+            } == 0) as i32)
+                != 0)
+        })
     );
     assert!(
-        ((!(match ({ (*fds.borrow())[(0) as usize] },) {
-            (mut __tmp_6,) => {
-                if (rset.as_pointer()).with(|__s| __s.isset(__tmp_6)) {
-                    1
-                } else {
-                    0
+        ({
+            ((!(match ({ (*fds.borrow())[(0) as usize] },) {
+                (mut __tmp_6,) => {
+                    if (rset.as_pointer()).with(|__s| __s.isset(__tmp_6)) {
+                        1
+                    } else {
+                        0
+                    }
                 }
-            }
-        } != 0) as i32)
-            != 0)
+            } != 0) as i32)
+                != 0)
+        })
     );
     assert!(
-        (((match FdRegistry::with_fd((*fds.borrow())[(1) as usize], |__fd| {
+        (((match FdRegistry::with_fd(({ (*fds.borrow())[(1) as usize] }), |__fd| {
             Ptr::<i8>::from_string_literal(b"x")
                 .to_any()
                 .reinterpret_cast::<u8>()
@@ -199,13 +201,13 @@ fn main_0() -> i32 {
     };
     (*tv.borrow_mut()).tv_sec = (1 as ::libc::time_t);
     assert!(
-        (((match (
-            { ((*fds.borrow())[(0) as usize] + 1) },
-            { (rset.as_pointer()) },
-            { (tv.as_pointer()) },
-        ) {
-            (mut __tmp_8, mut __tmp_9, mut __tmp_10) => {
-                {
+        ({
+            (((match (
+                { ((*fds.borrow())[(0) as usize] + 1) },
+                { (rset.as_pointer()) },
+                { (tv.as_pointer()) },
+            ) {
+                (mut __tmp_8, mut __tmp_9, mut __tmp_10) => {
                     let __r_fds: Vec<i32> = match __tmp_9.is_null() {
                         true => Vec::new(),
                         false => __tmp_9
@@ -312,23 +314,25 @@ fn main_0() -> i32 {
                         }
                     })
                 }
-            }
-        } == 1) as i32)
-            != 0)
+            } == 1) as i32)
+                != 0)
+        })
     );
     assert!(
-        (match ({ (*fds.borrow())[(0) as usize] },) {
-            (mut __tmp_11,) => {
-                if (rset.as_pointer()).with(|__s| __s.isset(__tmp_11)) {
-                    1
-                } else {
-                    0
+        ({
+            (match ({ (*fds.borrow())[(0) as usize] },) {
+                (mut __tmp_11,) => {
+                    if (rset.as_pointer()).with(|__s| __s.isset(__tmp_11)) {
+                        1
+                    } else {
+                        0
+                    }
                 }
-            }
-        } != 0)
+            } != 0)
+        })
     );
-    assert!((((FdRegistry::close((*fds.borrow())[(0) as usize]) == 0) as i32) != 0));
-    assert!((((FdRegistry::close((*fds.borrow())[(1) as usize]) == 0) as i32) != 0));
+    assert!((((FdRegistry::close(({ (*fds.borrow())[(0) as usize] })) == 0) as i32) != 0));
+    assert!((((FdRegistry::close(({ (*fds.borrow())[(1) as usize] })) == 0) as i32) != 0));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

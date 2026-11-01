@@ -34,10 +34,10 @@ fn main_0() -> i32 {
     assert!((({ zero_1() }) == 0_i64));
     let x: Value<i32> = Rc::new(RefCell::new(5));
     ({ destroy_2((x.as_pointer())) });
-    assert!(((*x.borrow()) == 5));
+    assert!(({ ((*x.borrow()) == 5) }));
     let pod: Value<Pod> = Rc::new(RefCell::new(Pod { v: 7 }));
     ({ destroy_3((pod.as_pointer())) });
-    assert!(({ (*pod.borrow()).v } == 7));
+    assert!(({ ({ (*pod.borrow()).v } == 7) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

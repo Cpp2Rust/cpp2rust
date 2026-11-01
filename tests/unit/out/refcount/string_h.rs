@@ -24,22 +24,26 @@ pub fn test_memcpy_0() {
             != 0)
     );
     assert!(
-        (((((((((((*dst.borrow())[(0) as usize] as i32) == ('h' as i32)) as i32) != 0)
-            && (((((*dst.borrow())[(1) as usize] as i32) == ('e' as i32)) as i32) != 0))
-            as i32)
-            != 0)
-            && (((((*dst.borrow())[(2) as usize] as i32) == ('l' as i32)) as i32) != 0))
-            as i32)
-            != 0)
+        ({
+            (((((((((((*dst.borrow())[(0) as usize] as i32) == ('h' as i32)) as i32) != 0)
+                && (((((*dst.borrow())[(1) as usize] as i32) == ('e' as i32)) as i32) != 0))
+                as i32)
+                != 0)
+                && (((((*dst.borrow())[(2) as usize] as i32) == ('l' as i32)) as i32) != 0))
+                as i32)
+                != 0)
+        })
     );
     assert!(
-        (((((((((((*dst.borrow())[(3) as usize] as i32) == ('l' as i32)) as i32) != 0)
-            && (((((*dst.borrow())[(4) as usize] as i32) == ('o' as i32)) as i32) != 0))
-            as i32)
-            != 0)
-            && (((((*dst.borrow())[(5) as usize] as i32) == ('\0' as i32)) as i32) != 0))
-            as i32)
-            != 0)
+        ({
+            (((((((((((*dst.borrow())[(3) as usize] as i32) == ('l' as i32)) as i32) != 0)
+                && (((((*dst.borrow())[(4) as usize] as i32) == ('o' as i32)) as i32) != 0))
+                as i32)
+                != 0)
+                && (((((*dst.borrow())[(5) as usize] as i32) == ('\0' as i32)) as i32) != 0))
+                as i32)
+                != 0)
+        })
     );
 }
 pub fn test_memset_1() {
@@ -55,16 +59,18 @@ pub fn test_memset_1() {
             != 0)
     );
     assert!(
-        ((((((((((((((*buf.borrow())[(0) as usize] as i32) == ('x' as i32)) as i32) != 0)
-            && (((((*buf.borrow())[(1) as usize] as i32) == ('x' as i32)) as i32) != 0))
-            as i32)
-            != 0)
-            && (((((*buf.borrow())[(2) as usize] as i32) == ('x' as i32)) as i32) != 0))
-            as i32)
-            != 0)
-            && (((((*buf.borrow())[(3) as usize] as i32) == ('x' as i32)) as i32) != 0))
-            as i32)
-            != 0)
+        ({
+            ((((((((((((((*buf.borrow())[(0) as usize] as i32) == ('x' as i32)) as i32) != 0)
+                && (((((*buf.borrow())[(1) as usize] as i32) == ('x' as i32)) as i32) != 0))
+                as i32)
+                != 0)
+                && (((((*buf.borrow())[(2) as usize] as i32) == ('x' as i32)) as i32) != 0))
+                as i32)
+                != 0)
+                && (((((*buf.borrow())[(3) as usize] as i32) == ('x' as i32)) as i32) != 0))
+                as i32)
+                != 0)
+        })
     );
 }
 pub fn test_memcmp_2() {
@@ -119,22 +125,26 @@ pub fn test_memmove_3() {
             != 0)
     );
     assert!(
-        (((((((((((*buf.borrow())[(0) as usize] as i32) == ('a' as i32)) as i32) != 0)
-            && (((((*buf.borrow())[(1) as usize] as i32) == ('a' as i32)) as i32) != 0))
-            as i32)
-            != 0)
-            && (((((*buf.borrow())[(2) as usize] as i32) == ('b' as i32)) as i32) != 0))
-            as i32)
-            != 0)
+        ({
+            (((((((((((*buf.borrow())[(0) as usize] as i32) == ('a' as i32)) as i32) != 0)
+                && (((((*buf.borrow())[(1) as usize] as i32) == ('a' as i32)) as i32) != 0))
+                as i32)
+                != 0)
+                && (((((*buf.borrow())[(2) as usize] as i32) == ('b' as i32)) as i32) != 0))
+                as i32)
+                != 0)
+        })
     );
     assert!(
-        (((((((((((*buf.borrow())[(3) as usize] as i32) == ('c' as i32)) as i32) != 0)
-            && (((((*buf.borrow())[(4) as usize] as i32) == ('d' as i32)) as i32) != 0))
-            as i32)
-            != 0)
-            && (((((*buf.borrow())[(5) as usize] as i32) == ('\0' as i32)) as i32) != 0))
-            as i32)
-            != 0)
+        ({
+            (((((((((((*buf.borrow())[(3) as usize] as i32) == ('c' as i32)) as i32) != 0)
+                && (((((*buf.borrow())[(4) as usize] as i32) == ('d' as i32)) as i32) != 0))
+                as i32)
+                != 0)
+                && (((((*buf.borrow())[(5) as usize] as i32) == ('\0' as i32)) as i32) != 0))
+                as i32)
+                != 0)
+        })
     );
 }
 pub fn test_strchr_4() {

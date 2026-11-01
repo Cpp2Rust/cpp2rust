@@ -22,9 +22,9 @@ fn main_0() -> i32 {
     assert!((((elem!(words, 3).read()) as i32) == 2055));
     elem!(words, 1).write(48042_u16);
     assert!(((elem!(dwords, 0).read()) == 3148481025_u32));
-    assert!(((*val.borrow()) == 578437698833482241_u64));
+    assert!(({ ((*val.borrow()) == 578437698833482241_u64) }));
     elem!(dwords, 1).write(4293844428_u32);
-    assert!(((*val.borrow()) == 18441921395520307713_u64));
+    assert!(({ ((*val.borrow()) == 18441921395520307713_u64) }));
     assert!((((elem!(words, 2).read()) as i32) == 56780));
     assert!((((elem!(words, 3).read()) as i32) == 65518));
     return 0;

@@ -228,9 +228,10 @@ public:
 
 private:
   // The arguments of a call translated by a rule are passed by value or
-  // borrowed, unless the rule takes a pointer to them, or they are bound to
-  // references. A pointer parameter receives the value of an argument that is
-  // itself translated to a pointer.
+  // borrowed, unless the rule takes a pointer to them, other than to a
+  // temporary copy of them, or they are bound to references. A pointer
+  // parameter receives the value of an argument that is itself translated to a
+  // pointer.
   void AddRuleArgs(clang::Expr *expr, clang::Expr **args, unsigned num_args) {
     auto *rule = RuleRegistry::GetExprRule(ctx_, expr);
     if (!rule) {
@@ -248,7 +249,8 @@ private:
         TraverseStmt(init);
         continue;
       }
-      if (!rule->takesAddress(ctx_, i, arg)) {
+      if (!rule->takesAddress(ctx_, i, arg) ||
+          rule->takesTemporaryAddress(ctx_, expr, i, arg)) {
         AddValueUse(arg);
       }
     }

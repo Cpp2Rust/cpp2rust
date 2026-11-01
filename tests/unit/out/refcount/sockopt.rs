@@ -41,25 +41,21 @@ fn main_0() -> i32 {
     assert!((((s >= 0) as i32) != 0));
     let on: Value<i32> = Rc::new(RefCell::new(1));
     assert!(
-        ((({
-            // Computing the arguments first ends their borrows of what the call writes.
-            let __a0 = s;
-            let __a1 = libc::SOL_SOCKET;
-            let __a2 = libc::SO_KEEPALIVE;
-            let __a3 = ((on.as_pointer()) as Ptr<i32>).to_any();
-            libcc2rs::setsockopt_refcount(__a0, __a1, __a2, __a3)
-        } == 0) as i32)
+        (((libcc2rs::setsockopt_refcount(
+            s,
+            libc::SOL_SOCKET,
+            libc::SO_KEEPALIVE,
+            ((on.as_pointer()) as Ptr<i32>).to_any()
+        ) == 0) as i32)
             != 0)
     );
     assert!(
-        ((({
-            // Computing the arguments first ends their borrows of what the call writes.
-            let __a0 = s;
-            let __a1 = libc::IPPROTO_TCP;
-            let __a2 = libc::TCP_NODELAY;
-            let __a3 = ((on.as_pointer()) as Ptr<i32>).to_any();
-            libcc2rs::setsockopt_refcount(__a0, __a1, __a2, __a3)
-        } == 0) as i32)
+        (((libcc2rs::setsockopt_refcount(
+            s,
+            libc::IPPROTO_TCP,
+            libc::TCP_NODELAY,
+            ((on.as_pointer()) as Ptr<i32>).to_any()
+        ) == 0) as i32)
             != 0)
     );
     let err: Value<i32> = Rc::new(RefCell::new(-1_i32));
@@ -100,7 +96,7 @@ fn main_0() -> i32 {
         } == 0) as i32)
             != 0)
     );
-    assert!(((((*err.borrow()) == 0) as i32) != 0));
+    assert!(({ ((((*err.borrow()) == 0) as i32) != 0) }));
     assert!((((FdRegistry::close(s) == 0) as i32) != 0));
     return 0;
 }

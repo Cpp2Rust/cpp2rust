@@ -41,7 +41,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!(((({ (*s_0.with(Value::clone).borrow()).head } == 5) as i32) != 0));
+    assert!(({ ((({ (*s_0.with(Value::clone).borrow()).head } == 5) as i32) != 0) }));
     let mut i: i32 = 0;
     'loop_: while (((i < 3) as i32) != 0) {
         assert!(((((array_elem!(s_0.with(|v| v.as_pointer()), tail, i).read()) == 0) as i32) != 0));

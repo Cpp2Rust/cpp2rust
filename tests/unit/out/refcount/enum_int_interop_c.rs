@@ -177,34 +177,46 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        (((({ (*entries_3.with(Value::clone).borrow())[(0) as usize].color } as u32)
-            == ((Color_RED as i32) as u32)) as i32)
-            != 0)
+        ({
+            (((({ (*entries_3.with(Value::clone).borrow())[(0) as usize].color } as u32)
+                == ((Color_RED as i32) as u32)) as i32)
+                != 0)
+        })
     );
     assert!(
-        (((({ (*entries_3.with(Value::clone).borrow())[(0) as usize].opt } as u32)
-            == ((Option_OPT_NONE as i32) as u32)) as i32)
-            != 0)
+        ({
+            (((({ (*entries_3.with(Value::clone).borrow())[(0) as usize].opt } as u32)
+                == ((Option_OPT_NONE as i32) as u32)) as i32)
+                != 0)
+        })
     );
     assert!(
-        (((({ (*entries_3.with(Value::clone).borrow())[(1) as usize].color } as u32)
-            == ((Color_GREEN as i32) as u32)) as i32)
-            != 0)
+        ({
+            (((({ (*entries_3.with(Value::clone).borrow())[(1) as usize].color } as u32)
+                == ((Color_GREEN as i32) as u32)) as i32)
+                != 0)
+        })
     );
     assert!(
-        (((({ (*entries_3.with(Value::clone).borrow())[(1) as usize].opt } as u32)
-            == ((Option_OPT_A as i32) as u32)) as i32)
-            != 0)
+        ({
+            (((({ (*entries_3.with(Value::clone).borrow())[(1) as usize].opt } as u32)
+                == ((Option_OPT_A as i32) as u32)) as i32)
+                != 0)
+        })
     );
     assert!(
-        (((({ (*entries_3.with(Value::clone).borrow())[(2) as usize].color } as u32)
-            == ((Color_BLUE as i32) as u32)) as i32)
-            != 0)
+        ({
+            (((({ (*entries_3.with(Value::clone).borrow())[(2) as usize].color } as u32)
+                == ((Color_BLUE as i32) as u32)) as i32)
+                != 0)
+        })
     );
     assert!(
-        (((({ (*entries_3.with(Value::clone).borrow())[(2) as usize].opt } as u32)
-            == ((Option_OPT_C as i32) as u32)) as i32)
-            != 0)
+        ({
+            (((({ (*entries_3.with(Value::clone).borrow())[(2) as usize].opt } as u32)
+                == ((Option_OPT_C as i32) as u32)) as i32)
+                != 0)
+        })
     );
     let names: Value<Box<[Ptr<i8>]>> = Rc::new(RefCell::new(Box::new([
         Ptr::<i8>::from_string_literal(b"red"),
@@ -213,22 +225,29 @@ fn main_0() -> i32 {
     ])));
     let mut idx: Color = Color_GREEN;
     assert!(
-        (((((elem!((*names.borrow())[(idx) as usize], 0).read()) as i32) == ('g' as i32)) as i32)
-            != 0)
+        ({
+            (((((elem!((*names.borrow())[(idx) as usize], 0).read()) as i32) == ('g' as i32))
+                as i32)
+                != 0)
+        })
     );
     assert!(
-        (((({ (*entries_3.with(Value::clone).borrow())[(idx) as usize].opt } as u32)
-            == ((Option_OPT_A as i32) as u32)) as i32)
-            != 0)
+        ({
+            (((({ (*entries_3.with(Value::clone).borrow())[(idx) as usize].opt } as u32)
+                == ((Option_OPT_A as i32) as u32)) as i32)
+                != 0)
+        })
     );
     assert!(
-        (((((elem!(
-            (*names.borrow())[(global_tag_2.with(|rc| *rc.borrow())) as usize],
-            0
-        )
-        .read()) as i32)
-            == ('b' as i32)) as i32)
-            != 0)
+        ({
+            (((((elem!(
+                (*names.borrow())[(global_tag_2.with(|rc| *rc.borrow())) as usize],
+                0
+            )
+            .read()) as i32)
+                == ('b' as i32)) as i32)
+                != 0)
+        })
     );
     let mut pp: Ptr<Ptr<i8>> = ((names.as_pointer() as Ptr<Ptr<i8>>).offset((idx) as isize));
     assert!((((((elem!((pp.read()), 0).read()) as i32) == ('g' as i32)) as i32) != 0));

@@ -40,8 +40,10 @@ fn main_0() -> i32 {
         ({ TestImpl::as_ptr(&t3) }).with_mut(|__v| *__v = *__v + 10)
     };
     assert!(
-        (({ ({ t3.with(|__s| __s.x) } + { t2.with(|__s| __s.x) }) } + { { (*t1.borrow()).x } })
-            == 75)
+        ({
+            (({ ({ t3.with(|__s| __s.x) } + { t2.with(|__s| __s.x) }) } + { { (*t1.borrow()).x } })
+                == 75)
+        })
     );
     return 0;
 }

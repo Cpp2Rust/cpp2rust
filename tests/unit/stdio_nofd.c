@@ -15,6 +15,11 @@ static void test_fputc_fputs(void) {
   char buf[16] = {0};
   assert(fread(buf, 1, 16, fp) == 5);
   assert(memcmp(buf, "ABCD\n", 5) == 0);
+  // The count is read from the buffer before fread writes to it.
+  buf[0] = 2;
+  assert(fseek(fp, 0, SEEK_SET) == 0);
+  assert(fread(buf + 1, 1, (size_t)buf[0], fp) == 2);
+  assert(memcmp(buf, "\2AB", 3) == 0);
   assert(fclose(fp) == 0);
   assert(unlink(path) == 0);
 }

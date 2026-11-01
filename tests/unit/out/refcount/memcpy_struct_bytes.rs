@@ -40,8 +40,8 @@ fn main_0() -> i32 {
             (__tmp_1).clone()
         }
     };
-    assert!(((({ (*dst.borrow()).x } == 3) as i32) != 0));
-    assert!(((({ (*dst.borrow()).y } == 7) as i32) != 0));
+    assert!(({ ((({ (*dst.borrow()).x } == 3) as i32) != 0) }));
+    assert!(({ ((({ (*dst.borrow()).y } == 7) as i32) != 0) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

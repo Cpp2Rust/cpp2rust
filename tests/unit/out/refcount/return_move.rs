@@ -127,7 +127,9 @@ fn main_0() -> i32 {
     assert!((p.a == 4) && ({ (p.n).clone() } == { (a.as_pointer()) }));
     let q: Value<pair_t> = Rc::new(RefCell::new(({ ret_struct_param_10((p).clone()) })));
     assert!(
-        ({ (*q.borrow()).a } == 4) && ({ { (*q.borrow()).n.clone() } } == { (a.as_pointer()) })
+        ({
+            ({ (*q.borrow()).a } == 4) && ({ { (*q.borrow()).n.clone() } } == { (a.as_pointer()) })
+        })
     );
     let mut r: pair_t = ({ ret_struct_ref_11(q.as_pointer()) });
     assert!((r.a == 4) && ({ (r.n).clone() } == { (a.as_pointer()) }));

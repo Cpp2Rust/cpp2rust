@@ -58,23 +58,21 @@ fn main_0() -> i32 {
                 (__tmp_0).clone()
             }
         };
-        let mut n: usize = {
-            // Computing the arguments first ends their borrows of what the call writes.
-            let __a0 = ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any();
-            let __a1 = 1_usize;
-            let __a2 = 10_usize;
-            let __a3 = (stream).clone();
-            libcc2rs::fread_refcount(__a0, __a1, __a2, __a3)
-        };
+        let mut n: usize = libcc2rs::fread_refcount(
+            ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any(),
+            1_usize,
+            10_usize,
+            (stream).clone(),
+        );
         assert!((n == 10_usize));
         let mut i: i32 = 0;
         'loop_: while (i < 10) {
-            assert!((((*buf.borrow())[(i) as usize] as i32) == 0));
+            assert!(({ (((*buf.borrow())[(i) as usize] as i32) == 0) }));
             i.prefix_inc();
         }
         let mut i: i32 = 10;
         'loop_: while (i < 16) {
-            assert!((((*buf.borrow())[(i) as usize] as i32) == (('X' as i8) as i32)));
+            assert!(({ (((*buf.borrow())[(i) as usize] as i32) == (('X' as i8) as i32)) }));
             i.prefix_inc();
         }
         {
@@ -116,12 +114,12 @@ fn main_0() -> i32 {
         assert!((n == 10_usize));
         let mut i: i32 = 0;
         'loop_: while (i < 10) {
-            assert!((((*buf.borrow())[(i) as usize] as i32) == 0));
+            assert!(({ (((*buf.borrow())[(i) as usize] as i32) == 0) }));
             i.prefix_inc();
         }
         let mut i: i32 = 10;
         'loop_: while (i < 16) {
-            assert!((((*buf.borrow())[(i) as usize] as i32) == (('X' as i8) as i32)));
+            assert!(({ (((*buf.borrow())[(i) as usize] as i32) == (('X' as i8) as i32)) }));
             i.prefix_inc();
         }
         {
@@ -168,14 +166,12 @@ fn main_0() -> i32 {
                 (__tmp_2).clone()
             }
         };
-        let mut n: usize = {
-            // Computing the arguments first ends their borrows of what the call writes.
-            let __a0 = ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any();
-            let __a1 = 1_usize;
-            let __a2 = 10_usize;
-            let __a3 = (stream).clone();
-            libcc2rs::fwrite_refcount(__a0, __a1, __a2, __a3)
-        };
+        let mut n: usize = libcc2rs::fwrite_refcount(
+            ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any(),
+            1_usize,
+            10_usize,
+            (stream).clone(),
+        );
         assert!((n == 10_usize));
         {
             let __r = stream.with(|__f| __f.close());

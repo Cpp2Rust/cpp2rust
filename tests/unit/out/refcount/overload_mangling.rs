@@ -112,7 +112,7 @@ fn main_0() -> i32 {
             )
         }) == 107)
     );
-    assert!(((*z.borrow()) == 6));
+    assert!(({ ((*z.borrow()) == 6) }));
     let a: Value<Access_S_> = Rc::new(RefCell::new(<Access_S_>::default()));
     let mut cs: Ptr<S> = (s.as_pointer());
     let cr: Ptr<S> = s.as_pointer();

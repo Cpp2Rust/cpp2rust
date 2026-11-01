@@ -59,7 +59,7 @@ fn main_0() -> i32 {
     )));
     let mut named: FnPtr<fn(i32) -> i32> = (*twice.borrow()).clone();
     assert!((({ named.call(5,) }) == 10));
-    assert!((({ apply_0(5, (*twice.borrow()).clone(),) }) == 10));
+    assert!(({ (({ apply_0(5, (*twice.borrow()).clone(),) }) == 10) }));
     named = (fresh).clone();
     assert!((({ named.call(3,) }) == -3_i32));
     let mut p: FnPtr<fn(i32) -> i32> = FnPtr::<fn(i32) -> i32>::new(|mut x: i32| -> i32 {
@@ -89,8 +89,10 @@ fn main_0() -> i32 {
                 }
             },
         )));
-    assert!((({ (*sum.borrow()).call(2, Box::new([(5).into(), (5).into(),])) }) == 10));
-    assert!((({ (*sum.borrow()).call(3, Box::new([(1).into(), (2).into(), (3).into(),])) }) == 6));
+    assert!(({ (({ (*sum.borrow()).call(2, Box::new([(5).into(), (5).into(),])) }) == 10) }));
+    assert!(
+        ({ (({ (*sum.borrow()).call(3, Box::new([(1).into(), (2).into(), (3).into(),])) }) == 6) })
+    );
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

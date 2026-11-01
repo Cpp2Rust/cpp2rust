@@ -48,7 +48,7 @@ pub fn test_stat_0() {
         } == 0) as i32)
             != 0)
     );
-    assert!(((({ (*st.borrow()).st_size } == (5 as ::libc::off_t)) as i32) != 0));
+    assert!(({ ((({ (*st.borrow()).st_size } == (5 as ::libc::off_t)) as i32) != 0) }));
     assert!(
         ((((field_ptr!(st.as_pointer(), st_mtime).read()) > (0 as ::libc::time_t)) as i32) != 0)
     );
@@ -96,7 +96,7 @@ pub fn test_fstat_1() {
         } == 0) as i32)
             != 0)
     );
-    assert!(((({ (*st.borrow()).st_size } == (11 as ::libc::off_t)) as i32) != 0));
+    assert!(({ ((({ (*st.borrow()).st_size } == (11 as ::libc::off_t)) as i32) != 0) }));
     assert!(
         ((((field_ptr!(st.as_pointer(), st_mtime).read()) > (0 as ::libc::time_t)) as i32) != 0)
     );

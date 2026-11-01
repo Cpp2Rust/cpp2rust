@@ -9,7 +9,7 @@ use std::rc::{Rc, Weak};
 pub fn change_0(n: Ptr<Option<Value<i32>>>) {
     let m: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(20)))));
     n.write((*m.borrow_mut()).take());
-    assert!(((*m.borrow()).as_pointer()).is_null());
+    assert!(({ ((*m.borrow()).as_pointer()).is_null() }));
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -18,7 +18,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let n: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(10)))));
     ({ change_0(n.as_pointer()) });
-    assert!((((*n.borrow()).as_pointer().read()) == 20));
+    assert!(({ (((*n.borrow()).as_pointer().read()) == 20) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

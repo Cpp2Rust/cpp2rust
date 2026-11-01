@@ -66,6 +66,38 @@ pub unsafe fn test_fputc_fputs_0() {
         }) == (0)) as i32)
             != 0)
     );
+    buf[(0) as usize] = (2 as libc::c_char);
+    assert!(((((libc::fseek(fp, 0_i64 as ::libc::c_long, ::libc::SEEK_SET)) == (0)) as i32) != 0));
+    assert!(
+        ((((libcc2rs::fread_unsafe(
+            (buf.as_mut_ptr().offset((1) as isize) as *mut ::libc::c_void),
+            1_usize,
+            (buf[(0) as usize] as usize),
+            fp
+        )) == (2_usize)) as i32)
+            != 0)
+    );
+    assert!(
+        (((({
+            let sa = core::slice::from_raw_parts(
+                (buf.as_mut_ptr() as *const ::libc::c_void) as *const u8,
+                3_usize as usize,
+            );
+            let sb = core::slice::from_raw_parts(
+                (c"\x02AB".as_ptr().cast_mut() as *const ::libc::c_void) as *const u8,
+                3_usize as usize,
+            );
+            let mut diff = 0_i32;
+            for (x, y) in sa.iter().zip(sb.iter()) {
+                if x != y {
+                    diff = (*x as i32) - (*y as i32);
+                    break;
+                }
+            }
+            diff
+        }) == (0)) as i32)
+            != 0)
+    );
     assert!(((((libc::fclose(fp)) == (0)) as i32) != 0));
     assert!(((((libc::unlink(path)) == (0)) as i32) != 0));
 }

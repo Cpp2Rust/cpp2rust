@@ -52,7 +52,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!(((({ (*T1_0.with(Value::clone).borrow()).count } == 1_usize) as i32) != 0));
+    assert!(({ ((({ (*T1_0.with(Value::clone).borrow()).count } == 1_usize) as i32) != 0) }));
     assert!(
         ((({
             let mut __it1 = (((array_field_ptr!(T1_0.with(|v| v.as_pointer()), rows)
@@ -75,11 +75,13 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        (((((*T1_0.with(Value::clone).borrow()).rows[(1) as usize][(0) as usize] as i32)
-            == ('\0' as i32)) as i32)
-            != 0)
+        ({
+            (((((*T1_0.with(Value::clone).borrow()).rows[(1) as usize][(0) as usize] as i32)
+                == ('\0' as i32)) as i32)
+                != 0)
+        })
     );
-    assert!(((({ (*T2_1.with(Value::clone).borrow()).count } == 2_usize) as i32) != 0));
+    assert!(({ ((({ (*T2_1.with(Value::clone).borrow()).count } == 2_usize) as i32) != 0) }));
     assert!(
         ((({
             let mut __it1 = (((array_field_ptr!(T2_1.with(|v| v.as_pointer()), rows)
@@ -123,9 +125,11 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        (((((*T2_1.with(Value::clone).borrow()).rows[(2) as usize][(0) as usize] as i32)
-            == ('\0' as i32)) as i32)
-            != 0)
+        ({
+            (((((*T2_1.with(Value::clone).borrow()).rows[(2) as usize][(0) as usize] as i32)
+                == ('\0' as i32)) as i32)
+                != 0)
+        })
     );
     let local: Value<table> = Rc::new(RefCell::new(table {
         rows: Box::new([
@@ -200,7 +204,7 @@ fn main_0() -> i32 {
         .offset(2)
         .as_pointer()) as Ptr<i8>);
     assert!((((((elem!(p, 0).read()) as i32) == ('t' as i32)) as i32) != 0));
-    assert!(((({ (*local.borrow()).count } == 3_usize) as i32) != 0));
+    assert!(({ ((({ (*local.borrow()).count } == 3_usize) as i32) != 0) }));
     let copy: Value<table> = <Value<table>>::default();
     match ({ ((array_field_ptr!(copy.as_pointer(), rows)) as Ptr<Box<[i8]>>).to_any() },) {
         (mut __tmp_0,) => {
@@ -277,10 +281,14 @@ fn main_0() -> i32 {
         }
     };
     assert!(
-        ((((((((*other.borrow())[(1) as usize][(2) as usize] as i32) == ('f' as i32)) as i32) != 0)
-            && (((((*other.borrow())[(0) as usize][(1) as usize] as i32) == ('b' as i32)) as i32)
-                != 0)) as i32)
-            != 0)
+        ({
+            ((((((((*other.borrow())[(1) as usize][(2) as usize] as i32) == ('f' as i32)) as i32)
+                != 0)
+                && (((((*other.borrow())[(0) as usize][(1) as usize] as i32) == ('b' as i32))
+                    as i32)
+                    != 0)) as i32)
+                != 0)
+        })
     );
     return 0;
 }

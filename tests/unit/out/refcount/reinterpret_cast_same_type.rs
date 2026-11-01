@@ -18,7 +18,7 @@ fn main_0() -> i32 {
     assert!((((elem!(same, 2).read()) as i32) == 30));
     assert!((((elem!(same, 3).read()) as i32) == 40));
     elem!(same, 2).write(99_u8);
-    assert!((((*arr.borrow())[(2) as usize] as i32) == 99));
+    assert!(({ (((*arr.borrow())[(2) as usize] as i32) == 99) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

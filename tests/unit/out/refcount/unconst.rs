@@ -24,10 +24,10 @@ fn main_0() -> i32 {
     let v: Value<i32> = Rc::new(RefCell::new(1));
     let cr: Ptr<i32> = v.as_pointer();
     ({ set_0((cr).clone()) });
-    assert!(((*v.borrow()) == 7));
+    assert!(({ ((*v.borrow()) == 7) }));
     (*v.borrow_mut()) = 0;
     ({ set_through_1(v.as_pointer()) });
-    assert!(((*v.borrow()) == 7));
+    assert!(({ ((*v.borrow()) == 7) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

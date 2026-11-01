@@ -82,25 +82,25 @@ fn main_0() -> i32 {
     assert!(
         ((({ chosen_overload_0(a.as_pointer(),) }) as i32) == (Overload_kLvalueOverload as i32))
     );
-    assert!(({ (*a.borrow()).v } == 5));
+    assert!(({ ({ (*a.borrow()).v } == 5) }));
     assert!(
         ((({ chosen_overload_1(a.as_pointer(),) }) as i32) == (Overload_kRvalueOverload as i32))
     );
-    assert!(({ (*a.borrow()).v } == 5));
+    assert!(({ ({ (*a.borrow()).v } == 5) }));
     let b: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 6 })));
     let mut moved: Tracked =
         ({ copy_or_move_into_param_4(Tracked::move_from({ b.as_pointer() })) });
     assert!((moved.v == 6));
     assert!((moved.copies == 0));
     assert!((moved.moves == 2));
-    assert!(({ (*b.borrow()).v } == 0));
+    assert!(({ ({ (*b.borrow()).v } == 0) }));
     let c: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 7 })));
     let mut copied: Tracked =
         ({ copy_or_move_into_param_4(Tracked::copy_from({ c.as_pointer() })) });
     assert!((copied.v == 7));
     assert!((copied.copies == 1));
     assert!((copied.moves == 1));
-    assert!(({ (*c.borrow()).v } == 7));
+    assert!(({ ({ (*c.borrow()).v } == 7) }));
     let i: Value<i32> = Rc::new(RefCell::new(8));
     assert!(
         ((({ chosen_overload_2(i.as_pointer(),) }) as i32) == (Overload_kIntLvalueOverload as i32))
@@ -111,7 +111,7 @@ fn main_0() -> i32 {
     assert!(
         ((({ chosen_overload_3(i.as_pointer(),) }) as i32) == (Overload_kIntRvalueOverload as i32))
     );
-    assert!(((*i.borrow()) == 8));
+    assert!(({ ((*i.borrow()) == 8) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

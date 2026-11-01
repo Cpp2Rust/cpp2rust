@@ -114,8 +114,8 @@ fn main_0() -> i32 {
     assert!((({ sum_twice_4(arr.as_pointer(),) }) == 42));
     let out: Value<i32> = Rc::new(RefCell::new(0));
     ({ fill_and_sum_9(arr.as_pointer(), 2, out.as_pointer()) });
-    assert!(((*out.borrow()) == 12));
-    assert!(((*arr.borrow())[(0) as usize] == 2));
+    assert!(({ ((*out.borrow()) == 12) }));
+    assert!(({ ((*arr.borrow())[(0) as usize] == 2) }));
     let lit: Ptr<i8> = Ptr::<i8>::from_string_literal(b"beta");
     assert!((({ len_0((lit).clone(),) }) == 4));
     assert!(
@@ -129,12 +129,12 @@ fn main_0() -> i32 {
     ])));
     assert!((({ sum_points_11(pts.as_pointer(),) }) == 10));
     ({ shift_points_12(pts.as_pointer(), 10) });
-    assert!(({ (*pts.borrow())[(0) as usize].x } == 11));
-    assert!(({ (*pts.borrow())[(1) as usize].y } == 14));
+    assert!(({ ({ (*pts.borrow())[(0) as usize].x } == 11) }));
+    assert!(({ ({ (*pts.borrow())[(1) as usize].y } == 14) }));
     assert!((({ sum_points_11(pts.as_pointer(),) }) == 30));
     assert!((({ sum_decayed_6(arr.as_pointer(),) }) == ({ sum_2(arr.as_pointer(),) })));
     ({ bump_decayed_8(arr.as_pointer()) });
-    assert!(((*arr.borrow())[(0) as usize] == 3));
+    assert!(({ ((*arr.borrow())[(0) as usize] == 3) }));
     let names: Value<Box<[Ptr<i8>]>> = Rc::new(RefCell::new(Box::new([
         Ptr::<i8>::from_string_literal(b"ab"),
         Ptr::<i8>::from_string_literal(b"cde"),
@@ -170,8 +170,10 @@ fn main_0() -> i32 {
     );
     elem!((q.offset((1) as isize).as_pointer() as Ptr::<i32>), 2).write(8);
     assert!(
-        ((*rows.borrow())[(1) as usize][(2) as usize] == 8)
-            && ((*rows.borrow())[(0) as usize][(2) as usize] == 3)
+        ({
+            ((*rows.borrow())[(1) as usize][(2) as usize] == 8)
+                && ((*rows.borrow())[(0) as usize][(2) as usize] == 3)
+        })
     );
     (*rows.borrow_mut())[(0) as usize][(1) as usize] =
         { (*rows.borrow())[(0) as usize][(2) as usize] };
@@ -183,9 +185,11 @@ fn main_0() -> i32 {
             .with_mut(|__v| *__v = *__v + __rhs)
     };
     assert!(
-        (((*rows.borrow())[(0) as usize][(1) as usize] == 3)
-            && ((*rows.borrow())[(1) as usize][(0) as usize] == 3))
-            && ((*rows.borrow())[(1) as usize][(1) as usize] == 8)
+        ({
+            (((*rows.borrow())[(0) as usize][(1) as usize] == 3)
+                && ((*rows.borrow())[(1) as usize][(0) as usize] == 3))
+                && ((*rows.borrow())[(1) as usize][(1) as usize] == 8)
+        })
     );
     assert!(
         ((((((rows.as_pointer() as Ptr<Box<[i32]>>)

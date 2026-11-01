@@ -54,7 +54,10 @@ fn main_0() -> i32 {
     (*m1.borrow_mut()).handle = ((dummy.as_pointer()) as Ptr<i32>).to_any();
     anon_0::code(field_ptr!(m1.as_pointer(), payload)).write(42);
     assert!(
-        (((({ (*m1.borrow()).kind } as u32) == ((Kind_enum_KIND_DONE as i32) as u32)) as i32) != 0)
+        ({
+            (((({ (*m1.borrow()).kind } as u32) == ((Kind_enum_KIND_DONE as i32) as u32)) as i32)
+                != 0)
+        })
     );
     assert!(((((anon_0::code(field_ptr!(m1.as_pointer(), payload)).read()) == 42) as i32) != 0));
     let m2: Value<Event> = <Value<Event>>::default();

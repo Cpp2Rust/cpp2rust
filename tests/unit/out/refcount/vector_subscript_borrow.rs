@@ -38,19 +38,21 @@ fn main_0() -> i32 {
     elem!(v.decay(), ({ (*v.borrow())[0_usize] } as usize)).write(3);
     let __rhs = ({ (*v.borrow())[1_usize] } + 4);
     elem!(v.decay(), ({ (*v.borrow())[1_usize] } as usize)).write(__rhs);
-    assert!(({ (*v.borrow())[1_usize] } == 3) && ({ (*v.borrow())[3_usize] } == 7));
+    assert!(({ ({ (*v.borrow())[1_usize] } == 3) && ({ (*v.borrow())[3_usize] } == 7) }));
     let mut p: Ptr<i32> = (v.decay().offset(0_usize));
     elem!(v.decay(), ((p.read()) as usize)).write(9);
-    assert!(({ (*v.borrow())[1_usize] } == 9));
+    assert!(({ ({ (*v.borrow())[1_usize] } == 9) }));
     elem!(v.decay(), (({ bump_1((v.as_pointer()), 10,) }) as usize)).write(2);
-    assert!(({ (*v.borrow())[0_usize] } == 2));
+    assert!(({ ({ (*v.borrow())[0_usize] } == 2) }));
     assert!(
-        (({
-            let _v: Ptr<Vec<i32>> = (v.as_pointer());
-            let _x: i32 = { (*v.borrow())[2_usize] };
-            bump_1(_v, _x)
-        }) == 1)
-            && ({ (*v.borrow())[0_usize] } == 3)
+        ({
+            (({
+                let _v: Ptr<Vec<i32>> = (v.as_pointer());
+                let _x: i32 = { (*v.borrow())[2_usize] };
+                bump_1(_v, _x)
+            }) == 1)
+                && ({ (*v.borrow())[0_usize] } == 3)
+        })
     );
     return 0;
 }

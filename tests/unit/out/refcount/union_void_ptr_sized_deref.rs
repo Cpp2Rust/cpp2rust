@@ -85,17 +85,17 @@ fn main_0() -> i32 {
     anon_0::handle(field_ptr!(s.as_pointer(), out))
         .write(((buf64.as_pointer()) as Ptr<i64>).to_any());
     ({ write_count_1((s.as_pointer()), 1234605616436508552_i64) });
-    assert!(((((*buf64.borrow()) == 1234605616436508552_i64) as i32) != 0));
+    assert!(({ ((((*buf64.borrow()) == 1234605616436508552_i64) as i32) != 0) }));
     (*s.borrow_mut()).width = Width_enum_W_32;
     anon_0::handle(field_ptr!(s.as_pointer(), out))
         .write(((buf32.as_pointer()) as Ptr<i32>).to_any());
     ({ write_count_1((s.as_pointer()), 305419896_i64) });
-    assert!(((((*buf32.borrow()) == 305419896) as i32) != 0));
+    assert!(({ ((((*buf32.borrow()) == 305419896) as i32) != 0) }));
     (*s.borrow_mut()).width = Width_enum_W_16;
     anon_0::handle(field_ptr!(s.as_pointer(), out))
         .write(((buf16.as_pointer()) as Ptr<i16>).to_any());
     ({ write_count_1((s.as_pointer()), 4660_i64) });
-    assert!((((((*buf16.borrow()) as i32) == 4660) as i32) != 0));
+    assert!(({ (((((*buf16.borrow()) as i32) == 4660) as i32) != 0) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

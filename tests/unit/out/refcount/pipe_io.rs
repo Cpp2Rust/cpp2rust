@@ -32,7 +32,7 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        (((match FdRegistry::with_fd((*fds.borrow())[(1) as usize], |__fd| {
+        (((match FdRegistry::with_fd(({ (*fds.borrow())[(1) as usize] }), |__fd| {
             Ptr::<i8>::from_string_literal(b"ab")
                 .to_any()
                 .reinterpret_cast::<u8>()
@@ -56,7 +56,7 @@ fn main_0() -> i32 {
     assert!(
         (((match ({ ((buf.as_pointer() as Ptr::<i8>) as Ptr<i8>).to_any() },) {
             (mut __tmp_2,) => {
-                match FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
+                match FdRegistry::with_fd(({ (*fds.borrow())[(0) as usize] }), |__fd| {
                     __tmp_2
                         .reinterpret_cast::<u8>()
                         .with_slice_mut(::std::mem::size_of::<[i8; 4]>(), |__buf| {
@@ -90,11 +90,11 @@ fn main_0() -> i32 {
         } == 0) as i32)
             != 0)
     );
-    assert!((((FdRegistry::close((*fds.borrow())[(1) as usize]) == 0) as i32) != 0));
+    assert!((((FdRegistry::close(({ (*fds.borrow())[(1) as usize] })) == 0) as i32) != 0));
     assert!(
         (((match ({ ((buf.as_pointer() as Ptr::<i8>) as Ptr<i8>).to_any() },) {
             (mut __tmp_3,) => {
-                match FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
+                match FdRegistry::with_fd(({ (*fds.borrow())[(0) as usize] }), |__fd| {
                     __tmp_3
                         .reinterpret_cast::<u8>()
                         .with_slice_mut(::std::mem::size_of::<[i8; 4]>(), |__buf| {
@@ -111,7 +111,7 @@ fn main_0() -> i32 {
         } == 0_isize) as i32)
             != 0)
     );
-    assert!((((FdRegistry::close((*fds.borrow())[(0) as usize]) == 0) as i32) != 0));
+    assert!((((FdRegistry::close(({ (*fds.borrow())[(0) as usize] })) == 0) as i32) != 0));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

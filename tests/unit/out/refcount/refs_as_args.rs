@@ -48,7 +48,7 @@ fn main_0() -> i32 {
     let x1: Value<i32> = Rc::new(RefCell::new(1));
     let x2: Value<i32> = Rc::new(RefCell::new(2));
     ({ more_refs_0(3, 4, x1.as_pointer(), x2.as_pointer()) });
-    assert!((((*x1.borrow()) + (*x2.borrow())) == 21));
+    assert!(({ (((*x1.borrow()) + (*x2.borrow())) == 21) }));
     let v: Value<Val> = Rc::new(RefCell::new(Val { x: 5 }));
     let mut acc: i32 = ({
         let _a: Val = (*v.borrow()).clone();

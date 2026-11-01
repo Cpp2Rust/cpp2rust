@@ -56,20 +56,42 @@ pub fn test_fputc_fputs_0() {
         0_i8,
     ])));
     assert!(
-        ((({
-            // Computing the arguments first ends their borrows of what the call writes.
-            let __a0 = ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any();
-            let __a1 = 1_usize;
-            let __a2 = 16_usize;
-            let __a3 = (fp).clone();
-            libcc2rs::fread_refcount(__a0, __a1, __a2, __a3)
-        } == 5_usize) as i32)
+        (((libcc2rs::fread_refcount(
+            ((buf.as_pointer() as Ptr::<i8>) as Ptr<i8>).to_any(),
+            1_usize,
+            16_usize,
+            (fp).clone()
+        ) == 5_usize) as i32)
             != 0)
     );
     assert!(
         (((((buf.as_pointer() as Ptr::<i8>) as Ptr<i8>)
             .to_any()
             .memcmp(&Ptr::<i8>::from_string_literal(b"ABCD\n").to_any(), 5_usize)
+            == 0) as i32)
+            != 0)
+    );
+    (*buf.borrow_mut())[(0) as usize] = 2_i8;
+    assert!(
+        (((match fp.with_mut(|__v: &mut CFile| __v.seek(0_i64, ::libc::SEEK_SET)) {
+            -1 => -1,
+            _ => 0,
+        } == 0) as i32)
+            != 0)
+    );
+    assert!(
+        (((libcc2rs::fread_refcount(
+            ((buf.as_pointer() as Ptr::<i8>).offset((1) as isize) as Ptr<i8>).to_any(),
+            1_usize,
+            ({ ((*buf.borrow())[(0) as usize] as usize) }),
+            (fp).clone()
+        ) == 2_usize) as i32)
+            != 0)
+    );
+    assert!(
+        (((((buf.as_pointer() as Ptr::<i8>) as Ptr<i8>)
+            .to_any()
+            .memcmp(&Ptr::<i8>::from_string_literal(b"\x02AB").to_any(), 3_usize)
             == 0) as i32)
             != 0)
     );
@@ -373,14 +395,12 @@ pub fn test_freopen_3() {
         0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8,
     ])));
     assert!(
-        ((({
-            // Computing the arguments first ends their borrows of what the call writes.
-            let __a0 = ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any();
-            let __a1 = 1_usize;
-            let __a2 = 8_usize;
-            let __a3 = (fp2).clone();
-            libcc2rs::fread_refcount(__a0, __a1, __a2, __a3)
-        } == 5_usize) as i32)
+        (((libcc2rs::fread_refcount(
+            ((buf.as_pointer() as Ptr::<i8>) as Ptr<i8>).to_any(),
+            1_usize,
+            8_usize,
+            (fp2).clone()
+        ) == 5_usize) as i32)
             != 0)
     );
     assert!(
@@ -455,14 +475,12 @@ pub fn test_fseeko_4() {
         0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8,
     ])));
     assert!(
-        ((({
-            // Computing the arguments first ends their borrows of what the call writes.
-            let __a0 = ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any();
-            let __a1 = 1_usize;
-            let __a2 = 5_usize;
-            let __a3 = (fp).clone();
-            libcc2rs::fread_refcount(__a0, __a1, __a2, __a3)
-        } == 5_usize) as i32)
+        (((libcc2rs::fread_refcount(
+            ((buf.as_pointer() as Ptr::<i8>) as Ptr<i8>).to_any(),
+            1_usize,
+            5_usize,
+            (fp).clone()
+        ) == 5_usize) as i32)
             != 0)
     );
     assert!(

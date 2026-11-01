@@ -24,9 +24,9 @@ fn main_0() -> i32 {
             return ((((*a.borrow()) + (*b.borrow())) + (*c.borrow())) + x);
         }
     )));
-    assert!((({ (*by_value.borrow()).call(10,) }) == 16));
+    assert!(({ (({ (*by_value.borrow()).call(10,) }) == 16) }));
     (*a.borrow_mut()) = 100;
-    assert!((({ (*by_value.borrow()).call(10,) }) == 16));
+    assert!(({ (({ (*by_value.borrow()).call(10,) }) == 16) }));
     let by_ref: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(lambda!(
         {
             let a: Ptr<i32> = a.as_pointer();
@@ -37,9 +37,9 @@ fn main_0() -> i32 {
             return ((((a.read()) + (b.read())) + (c.read())) + x);
         }
     )));
-    assert!((({ (*by_ref.borrow()).call(10,) }) == 115));
+    assert!(({ (({ (*by_ref.borrow()).call(10,) }) == 115) }));
     (*b.borrow_mut()) = 200;
-    assert!((({ (*by_ref.borrow()).call(10,) }) == 313));
+    assert!(({ (({ (*by_ref.borrow()).call(10,) }) == 313) }));
     let mixed: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(lambda!(
         {
             let c: Ptr<i32> = c.as_pointer();
@@ -54,8 +54,8 @@ fn main_0() -> i32 {
             return (((*a.borrow()) + (*b.borrow())) + (c.read()));
         }
     )));
-    assert!((({ (*mixed.borrow()).call(1,) }) == ((100 + 200) + 4)));
-    assert!(((*c.borrow()) == 4));
+    assert!(({ (({ (*mixed.borrow()).call(1,) }) == ((100 + 200) + 4)) }));
+    assert!(({ ((*c.borrow()) == 4) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

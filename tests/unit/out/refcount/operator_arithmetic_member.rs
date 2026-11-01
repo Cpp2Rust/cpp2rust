@@ -28,10 +28,10 @@ fn main_0() -> i32 {
     assert!(({ ({ SImpl::operator_neg_7(&a.as_pointer(),) }).v } == -7_i32));
     assert!((({ SImpl::operator_inc_8(&a.as_pointer(),) }).with(|__s| (__s).v) == 8));
     assert!(({ ({ SImpl::operator_post_inc_9(&a.as_pointer(), 0,) }).v } == 8));
-    assert!(({ (*a.borrow()).v } == 9));
+    assert!(({ ({ (*a.borrow()).v } == 9) }));
     assert!((({ SImpl::operator_dec_10(&a.as_pointer(),) }).with(|__s| (__s).v) == 8));
     assert!(({ ({ SImpl::operator_post_dec_11(&a.as_pointer(), 0,) }).v } == 8));
-    assert!(({ (*a.borrow()).v } == 7));
+    assert!(({ ({ (*a.borrow()).v } == 7) }));
     assert!(
         (({ SImpl::operator_inc_8(&({ SImpl::operator_inc_8(&a.as_pointer(),) }),) })
             .with(|__s| (__s).v)

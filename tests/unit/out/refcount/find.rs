@@ -31,7 +31,7 @@ fn main_0() -> i32 {
             let __tmp_1: Value<i32> = Rc::new(RefCell::new(2));
             match ({ (*v_end.borrow()).clone() },) {
                 (mut __tmp_0,) => {
-                    let mut __it = (*v_begin.borrow()).clone();
+                    let mut __it = ({ (*v_begin.borrow()).clone() });
                     while __it != __tmp_0
                         && !CppEq::equal(&__it.iter_deref(), &__tmp_1.as_pointer())
                     {

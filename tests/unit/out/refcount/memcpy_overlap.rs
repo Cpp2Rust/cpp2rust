@@ -22,12 +22,12 @@ fn main_0() -> i32 {
             (__tmp_0).clone()
         }
     };
-    assert!((((*buf.borrow())[(0) as usize] as i32) == 1));
-    assert!((((*buf.borrow())[(1) as usize] as i32) == 2));
-    assert!((((*buf.borrow())[(2) as usize] as i32) == 1));
-    assert!((((*buf.borrow())[(3) as usize] as i32) == 2));
-    assert!((((*buf.borrow())[(4) as usize] as i32) == 3));
-    assert!((((*buf.borrow())[(5) as usize] as i32) == 4));
+    assert!(({ (((*buf.borrow())[(0) as usize] as i32) == 1) }));
+    assert!(({ (((*buf.borrow())[(1) as usize] as i32) == 2) }));
+    assert!(({ (((*buf.borrow())[(2) as usize] as i32) == 1) }));
+    assert!(({ (((*buf.borrow())[(3) as usize] as i32) == 2) }));
+    assert!(({ (((*buf.borrow())[(4) as usize] as i32) == 3) }));
+    assert!(({ (((*buf.borrow())[(5) as usize] as i32) == 4) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

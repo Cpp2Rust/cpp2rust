@@ -32,7 +32,7 @@ fn main_0() -> i32 {
         }) == 42) as i32)
             != 0)
     );
-    assert!((((((*buf.borrow())[(0) as usize] as i32) == 42) as i32) != 0));
+    assert!(({ (((((*buf.borrow())[(0) as usize] as i32) == 42) as i32) != 0) }));
     assert!(
         (((({
             extract_first_0(
@@ -44,7 +44,7 @@ fn main_0() -> i32 {
         }) == 65) as i32)
             != 0)
     );
-    assert!((((((*buf.borrow())[(0) as usize] as i32) == ('A' as i32)) as i32) != 0));
+    assert!(({ (((((*buf.borrow())[(0) as usize] as i32) == ('A' as i32)) as i32) != 0) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

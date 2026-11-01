@@ -83,24 +83,24 @@ fn main_0() -> i32 {
     let __decomp_3: Value<Two> = Rc::new(RefCell::new((*t.borrow()).clone()));
     assert!((copies_0.with(|rc| *rc.borrow()) == (base_copies + 2)));
     assert!((moves_1.with(|rc| *rc.borrow()) == base_moves));
-    assert!(({ (*__decomp_3.borrow()).a.v } == 101));
-    assert!(({ (*__decomp_3.borrow()).b.v } == 102));
+    assert!(({ ({ (*__decomp_3.borrow()).a.v } == 101) }));
+    assert!(({ ({ (*__decomp_3.borrow()).b.v } == 102) }));
     let __decomp_4: Ptr<Two> = t.as_pointer();
     assert!((copies_0.with(|rc| *rc.borrow()) == (base_copies + 2)));
-    assert!(({ (*__decomp_4.upgrade().deref()).a.v } == 1));
+    assert!(({ ({ (*__decomp_4.upgrade().deref()).a.v } == 1) }));
     field!(field!(__decomp_4, a), v).write(50);
-    assert!(({ (*t.borrow()).a.v } == 50));
+    assert!(({ ({ (*t.borrow()).a.v } == 50) }));
     let __decomp_5: Value<Two> = Rc::new(RefCell::new(Two::move_from({ t.as_pointer() })));
     assert!((moves_1.with(|rc| *rc.borrow()) == (base_moves + 2)));
-    assert!(({ (*__decomp_5.borrow()).a.v } == 1050));
-    assert!(({ (*__decomp_5.borrow()).b.v } == 1002));
-    assert!(({ (*t.borrow()).a.v } == -1_i32));
+    assert!(({ ({ (*__decomp_5.borrow()).a.v } == 1050) }));
+    assert!(({ ({ (*__decomp_5.borrow()).b.v } == 1002) }));
+    assert!(({ ({ (*t.borrow()).a.v } == -1_i32) }));
     let mut before_copies: i32 = copies_0.with(|rc| *rc.borrow());
     let mut before_moves: i32 = moves_1.with(|rc| *rc.borrow());
     let __decomp_6: Value<Two> = Rc::new(RefCell::new(({ make_two_2() })));
     assert!((copies_0.with(|rc| *rc.borrow()) == before_copies));
     assert!((moves_1.with(|rc| *rc.borrow()) == before_moves));
-    assert!(({ (*__decomp_6.borrow()).a.v } == 1));
+    assert!(({ ({ (*__decomp_6.borrow()).a.v } == 1) }));
     let p: Value<(Value<Elem>, Value<Elem>)> = Rc::new(RefCell::new((
         Rc::new(RefCell::new(Elem::new({ 7 }))),
         Rc::new(RefCell::new(Elem::new({ 8 }))),
@@ -113,8 +113,8 @@ fn main_0() -> i32 {
     let x: Ptr<Elem> = (*__decomp_7.borrow()).get_value::<0>().as_pointer();
     let y: Ptr<Elem> = (*__decomp_7.borrow()).get_value::<1>().as_pointer();
     assert!((copies_0.with(|rc| *rc.borrow()) == (before_copies + 2)));
-    assert!(({ (*x.upgrade().deref()).v } == ({ (*(*p.borrow()).0.borrow()).v } + 100)));
-    assert!(({ (*y.upgrade().deref()).v } == ({ (*(*p.borrow()).1.borrow()).v } + 100)));
+    assert!(({ ({ (*x.upgrade().deref()).v } == ({ (*(*p.borrow()).0.borrow()).v } + 100)) }));
+    assert!(({ ({ (*y.upgrade().deref()).v } == ({ (*(*p.borrow()).1.borrow()).v } + 100)) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {

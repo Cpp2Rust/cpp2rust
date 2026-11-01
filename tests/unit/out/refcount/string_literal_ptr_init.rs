@@ -41,66 +41,80 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     assert!(
-        (((((elem!(
-            {
-                (*table_1.with(Value::clone).borrow())[(0) as usize]
-                    .name
-                    .clone()
-            },
-            0
-        )
-        .read()) as i32)
-            == ('f' as i32)) as i32)
-            != 0)
-    );
-    assert!(
-        (((((elem!(
-            {
-                (*table_1.with(Value::clone).borrow())[(0) as usize]
-                    .name
-                    .clone()
-            },
-            4
-        )
-        .read()) as i32)
-            == ('t' as i32)) as i32)
-            != 0)
-    );
-    assert!(
-        (((({
-            (*table_1.with(Value::clone).borrow())[(0) as usize]
-                .probe
-                .clone()
+        ({
+            (((((elem!(
+                {
+                    (*table_1.with(Value::clone).borrow())[(0) as usize]
+                        .name
+                        .clone()
+                },
+                0
+            )
+            .read()) as i32)
+                == ('f' as i32)) as i32)
+                != 0)
         })
-        .is_null()) as i32)
-            != 0)
-    );
-    assert!(((({ (*table_1.with(Value::clone).borrow())[(0) as usize].mask } == 16) as i32) != 0));
-    assert!(
-        (((((elem!(
-            {
-                (*table_1.with(Value::clone).borrow())[(1) as usize]
-                    .name
-                    .clone()
-            },
-            0
-        )
-        .read()) as i32)
-            == ('s' as i32)) as i32)
-            != 0)
     );
     assert!(
-        (((({
-            {
-                (*table_1.with(Value::clone).borrow())[(1) as usize]
+        ({
+            (((((elem!(
+                {
+                    (*table_1.with(Value::clone).borrow())[(0) as usize]
+                        .name
+                        .clone()
+                },
+                4
+            )
+            .read()) as i32)
+                == ('t' as i32)) as i32)
+                != 0)
+        })
+    );
+    assert!(
+        ({
+            (((({
+                (*table_1.with(Value::clone).borrow())[(0) as usize]
                     .probe
                     .clone()
-            }
-            .call()
-        }) == 1) as i32)
-            != 0)
+            })
+            .is_null()) as i32)
+                != 0)
+        })
     );
-    assert!(((({ (*table_1.with(Value::clone).borrow())[(1) as usize].mask } == 32) as i32) != 0));
+    assert!(
+        ({ ((({ (*table_1.with(Value::clone).borrow())[(0) as usize].mask } == 16) as i32) != 0) })
+    );
+    assert!(
+        ({
+            (((((elem!(
+                {
+                    (*table_1.with(Value::clone).borrow())[(1) as usize]
+                        .name
+                        .clone()
+                },
+                0
+            )
+            .read()) as i32)
+                == ('s' as i32)) as i32)
+                != 0)
+        })
+    );
+    assert!(
+        ({
+            (((({
+                {
+                    (*table_1.with(Value::clone).borrow())[(1) as usize]
+                        .probe
+                        .clone()
+                }
+                .call()
+            }) == 1) as i32)
+                != 0)
+        })
+    );
+    assert!(
+        ({ ((({ (*table_1.with(Value::clone).borrow())[(1) as usize].mask } == 32) as i32) != 0) })
+    );
     let mut tail: Ptr<i8> = (Ptr::<i8>::from_string_literal(b"ab.cd").offset(2));
     assert!((((((elem!(tail, 0).read()) as i32) == ('.' as i32)) as i32) != 0));
     assert!((((((elem!(tail, 1).read()) as i32) == ('c' as i32)) as i32) != 0));

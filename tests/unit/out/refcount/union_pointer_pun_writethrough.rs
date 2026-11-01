@@ -15,7 +15,7 @@ fn main_0() -> i32 {
     let pp: Value<anon_0> = <Value<anon_0>>::default();
     anon_0::as_signed(pp.as_pointer()).write((x.as_pointer()));
     (anon_0::as_unsigned(pp.as_pointer()).read()).write(42_u64);
-    assert!(((((*x.borrow()) == 42_i64) as i32) != 0));
+    assert!(({ ((((*x.borrow()) == 42_i64) as i32) != 0) }));
     return 0;
 }
 #[derive(VaArg, FnPtrArg, ByteRepr, Clone)]

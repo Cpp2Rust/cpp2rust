@@ -88,7 +88,7 @@ fn main_0() -> i32 {
         ((({ forward_by_decltype_2(a.as_pointer(),) }) as i32)
             == (Overload_kLvalueOverload as i32))
     );
-    assert!(({ (*a.borrow()).v } == 3));
+    assert!(({ ({ (*a.borrow()).v } == 3) }));
     assert!(
         ((({
             let _x: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 4 })));
@@ -101,7 +101,7 @@ fn main_0() -> i32 {
         ((({ forward_abbreviated_4(b.as_pointer(),) }) as i32)
             == (Overload_kLvalueOverload as i32))
     );
-    assert!(({ (*b.borrow()).v } == 5));
+    assert!(({ ({ (*b.borrow()).v } == 5) }));
     assert!(
         ((({
             let _x: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 6 })));
@@ -116,7 +116,7 @@ fn main_0() -> i32 {
             forward_abbreviated_pack_6(c.as_pointer(), _args_1.as_pointer())
         }) == ((Overload_kLvalueOverload as i32) + (Overload_kRvalueOverload as i32)))
     );
-    assert!(({ (*c.borrow()).v } == 7));
+    assert!(({ ({ (*c.borrow()).v } == 7) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

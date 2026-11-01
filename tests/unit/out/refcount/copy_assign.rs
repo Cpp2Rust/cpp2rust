@@ -150,7 +150,7 @@ fn main_0() -> i32 {
     let b: Value<Partial> = Rc::new(RefCell::new(Partial::new({ 2 }, { 200 })));
     let c: Value<Partial> = Rc::new(RefCell::new(Partial::new({ 3 }, { 300 })));
     ({ PartialImpl::copy_assign(&a.as_pointer(), b.as_pointer()) });
-    assert!(({ (*a.borrow()).v } == 2) && ({ (*a.borrow()).keep } == 100));
+    assert!(({ ({ (*a.borrow()).v } == 2) && ({ (*a.borrow()).keep } == 100) }));
     assert!((assigns_0.with(|rc| *rc.borrow()) == 1));
     ({
         PartialImpl::copy_assign(
@@ -158,7 +158,7 @@ fn main_0() -> i32 {
             ({ PartialImpl::copy_assign(&a.as_pointer(), b.as_pointer()) }),
         )
     });
-    assert!(({ (*c.borrow()).v } == 2) && ({ (*c.borrow()).keep } == 300));
+    assert!(({ ({ (*c.borrow()).v } == 2) && ({ (*c.borrow()).keep } == 300) }));
     assert!((assigns_0.with(|rc| *rc.borrow()) == 3));
     ({
         let _o: Ptr<Partial> = a.as_pointer();
@@ -169,20 +169,20 @@ fn main_0() -> i32 {
         let _o: Value<Partial> = Rc::new(RefCell::new(Partial::new({ 9 }, { 900 })));
         PartialImpl::copy_assign(&a.as_pointer(), _o.as_pointer())
     });
-    assert!(({ (*a.borrow()).v } == 9) && ({ (*a.borrow()).keep } == 100));
+    assert!(({ ({ (*a.borrow()).v } == 9) && ({ (*a.borrow()).keep } == 100) }));
     assert!((assigns_0.with(|rc| *rc.borrow()) == 4));
     let ra: Ptr<Partial> = a.as_pointer();
     ({
         let _o: Ptr<Partial> = c.as_pointer();
         PartialImpl::copy_assign(&ra, _o)
     });
-    assert!(({ (*a.borrow()).v } == 2));
+    assert!(({ ({ (*a.borrow()).v } == 2) }));
     let mut pa: Ptr<Partial> = (a.as_pointer());
     ({
         let _o: Ptr<Partial> = b.as_pointer();
         PartialImpl::copy_assign(&pa, _o)
     });
-    assert!(({ (*a.borrow()).v } == 2));
+    assert!(({ ({ (*a.borrow()).v } == 2) }));
     assert!((assigns_0.with(|rc| *rc.borrow()) == 6));
     let h: Value<Holder> = Rc::new(RefCell::new(Holder {
         p: Partial::new({ 4 }, { 40 }),
@@ -195,7 +195,7 @@ fn main_0() -> i32 {
             c.as_pointer(),
         )
     });
-    assert!(({ (*h.borrow()).p.v } == 2) && ({ (*h.borrow()).p.keep } == 40));
+    assert!(({ ({ (*h.borrow()).p.v } == 2) && ({ (*h.borrow()).p.keep } == 40) }));
     assert!(
         (array_elem!(h.as_pointer(), arr, 1).with(|__s| __s.v) == 2)
             && (array_elem!(h.as_pointer(), arr, 1).with(|__s| __s.keep) == 60)
@@ -207,18 +207,18 @@ fn main_0() -> i32 {
     let cn: Value<NonConstAssign> = Rc::new(RefCell::new(NonConstAssign::new()));
     ({ NonConstAssignImpl::operator_assign_2(&n1.as_pointer(), n.as_pointer()) });
     ({ NonConstAssignImpl::operator_assign_3(&n2.as_pointer(), cn.as_pointer()) });
-    assert!(({ (*n1.borrow()).mark } == 1));
-    assert!(({ (*n2.borrow()).mark } == 10));
+    assert!(({ ({ (*n1.borrow()).mark } == 1) }));
+    assert!(({ ({ (*n2.borrow()).mark } == 10) }));
     let r: Value<RefQualified> = Rc::new(RefCell::new(RefQualified::new()));
     let r1: Value<RefQualified> = Rc::new(RefCell::new(RefQualified::new()));
     ({ RefQualifiedImpl::copy_assign(&r1.as_pointer(), r.as_pointer()) });
-    assert!(({ (*r1.borrow()).mark } == 1));
+    assert!(({ ({ (*r1.borrow()).mark } == 1) }));
     let h2: Value<Holder> = Rc::new(RefCell::new(Holder {
         p: Partial::new({ 7 }, { 70 }),
         arr: Box::new([Partial::new({ 8 }, { 80 }), Partial::new({ 9 }, { 90 })]),
     }));
     ({ HolderImpl::copy_assign(&h2.as_pointer(), h.as_pointer()) });
-    assert!(({ (*h2.borrow()).p.v } == 2) && ({ (*h2.borrow()).p.keep } == 70));
+    assert!(({ ({ (*h2.borrow()).p.v } == 2) && ({ (*h2.borrow()).p.keep } == 70) }));
     assert!(
         (array_elem!(h2.as_pointer(), arr, 1).with(|__s| __s.v) == 2)
             && (array_elem!(h2.as_pointer(), arr, 1).with(|__s| __s.keep) == 90)
@@ -227,7 +227,7 @@ fn main_0() -> i32 {
     let cc1: Value<CopyCounted> = Rc::new(RefCell::new(CopyCounted::new({ 1 })));
     let cc2: Value<CopyCounted> = Rc::new(RefCell::new(CopyCounted::new({ 2 })));
     ({ CopyCountedImpl::copy_assign(&cc1.as_pointer(), cc2.as_pointer()) });
-    assert!(({ (*cc1.borrow()).v } == 2));
+    assert!(({ ({ (*cc1.borrow()).v } == 2) }));
     let hc1: Value<HasCopyCounted> = Rc::new(RefCell::new(HasCopyCounted {
         c: CopyCounted::new({ 1 }),
         arr: Box::new([CopyCounted::new({ 2 }), CopyCounted::new({ 3 })]),
@@ -238,9 +238,11 @@ fn main_0() -> i32 {
     }));
     ({ HasCopyCountedImpl::copy_assign(&hc1.as_pointer(), hc2.as_pointer()) });
     assert!(
-        (({ (*hc1.borrow()).c.v } == 4)
-            && (array_elem!(hc1.as_pointer(), arr, 0).with(|__s| __s.v) == 5))
-            && (array_elem!(hc1.as_pointer(), arr, 1).with(|__s| __s.v) == 6)
+        ({
+            (({ (*hc1.borrow()).c.v } == 4)
+                && (array_elem!(hc1.as_pointer(), arr, 0).with(|__s| __s.v) == 5))
+                && (array_elem!(hc1.as_pointer(), arr, 1).with(|__s| __s.v) == 6)
+        })
     );
     assert!((copies_1.with(|rc| *rc.borrow()) == 0));
     return 0;

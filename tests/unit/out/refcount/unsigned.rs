@@ -12,7 +12,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let x: Value<u32> = Rc::new(RefCell::new((-1_i32 as u32)));
-    assert!(((*x.borrow()) == <u32>::MAX));
+    assert!(({ ((*x.borrow()) == <u32>::MAX) }));
     let mut v1: i32 = (((*x.borrow()) & 1_u32) as i32);
     let mut v2: u32 = ((*x.borrow()) & 1_u32);
     let mut p: Ptr<u32> = (x.as_pointer());

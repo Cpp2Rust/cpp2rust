@@ -36,9 +36,9 @@ fn main_0() -> i32 {
             return ({ (*inner.borrow()).call(1) });
         }
     )));
-    assert!((({ (*outer.borrow()).call(20,) }) == 31));
+    assert!(({ (({ (*outer.borrow()).call(20,) }) == 31) }));
     (*x.borrow_mut()) = 100;
-    assert!((({ (*outer.borrow()).call(20,) }) == 121));
+    assert!(({ (({ (*outer.borrow()).call(20,) }) == 121) }));
     let s: Value<S> = Rc::new(RefCell::new(S { v: 5 }));
     assert!((({ SImpl::nested_this(&s.as_pointer(),) }) == 26));
     return 0;

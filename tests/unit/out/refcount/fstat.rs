@@ -65,7 +65,7 @@ fn main_0() -> i32 {
         } == 0) as i32)
             != 0)
     );
-    assert!(((({ (*st.borrow()).st_size } == (5 as ::libc::off_t)) as i32) != 0));
+    assert!(({ ((({ (*st.borrow()).st_size } == (5 as ::libc::off_t)) as i32) != 0) }));
     assert!((((FdRegistry::close(fd) == 0) as i32) != 0));
     assert!(
         (((match nix::unistd::unlink(path.to_rust_string().as_str()) {

@@ -158,7 +158,7 @@ fn main_0() -> i32 {
     assert!(
         (({ Holder__lambda_at_lambda_as_field_cpp_39_12__Impl::call(&n.as_pointer(), 2,) }) == 3)
     );
-    assert!(({ (*n.borrow()).calls } == 1));
+    assert!(({ ({ (*n.borrow()).calls } == 1) }));
     let cleaned: Value<i32> = Rc::new(RefCell::new(0));
     {
         let g: Value<Guard__lambda_at_lambda_as_field_cpp_45_13__> =
@@ -173,9 +173,9 @@ fn main_0() -> i32 {
                 ),
             }));
         let _dtor_g = ScopedDestructor::new(&g, |__p| __p.destructor());
-        assert!(((*cleaned.borrow()) == 0));
+        assert!(({ ((*cleaned.borrow()) == 0) }));
     }
-    assert!(((*cleaned.borrow()) == 1));
+    assert!(({ ((*cleaned.borrow()) == 1) }));
     let factor: Value<i32> = Rc::new(RefCell::new(3));
     let h: Value<Holder__lambda_at_lambda_as_field_cpp_51_12__> = Rc::new(RefCell::new(
         Holder__lambda_at_lambda_as_field_cpp_51_12__ {
@@ -197,7 +197,7 @@ fn main_0() -> i32 {
     assert!(
         (({ Holder__lambda_at_lambda_as_field_cpp_51_12__Impl::call(&h.as_pointer(), 5,) }) == 15)
     );
-    assert!(({ (*h.borrow()).calls } == 2));
+    assert!(({ ({ (*h.borrow()).calls } == 2) }));
     let w: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(
         ({
             wrap_1(lambda!(
@@ -211,10 +211,10 @@ fn main_0() -> i32 {
         }),
     ));
     (*factor.borrow_mut()) = 7;
-    assert!((({ (*w.borrow()).call(2,) }) == 201));
+    assert!(({ (({ (*w.borrow()).call(2,) }) == 201) }));
     let ww: Value<FnPtr<fn(i32) -> i32>> =
         Rc::new(RefCell::new(({ wrap_2((*w.borrow()).copy_from()) })));
-    assert!((({ (*ww.borrow()).call(2,) }) == 202));
+    assert!(({ (({ (*ww.borrow()).call(2,) }) == 202) }));
     let m: Value<Moving__lambda_at_lambda_as_field_cpp_64_12__> = Rc::new(RefCell::new(
         Moving__lambda_at_lambda_as_field_cpp_64_12__::new({
             FnPtr::<fn(i32) -> i32>::new(|mut x: i32| -> i32 {
@@ -227,8 +227,8 @@ fn main_0() -> i32 {
     let m2: Value<Moving__lambda_at_lambda_as_field_cpp_64_12__> = Rc::new(RefCell::new(
         Moving__lambda_at_lambda_as_field_cpp_64_12__::move_from({ m.as_pointer() }),
     ));
-    assert!((({ (*m2.borrow()).f.call(3,) }) == 6));
-    assert!(({ (*m2.borrow()).moves } == 1));
+    assert!(({ (({ (*m2.borrow()).f.call(3,) }) == 6) }));
+    assert!(({ ({ (*m2.borrow()).moves } == 1) }));
     return 0;
 }
 pub trait Guard__lambda_at_lambda_as_field_cpp_34_13__Impl {

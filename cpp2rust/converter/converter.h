@@ -874,6 +874,10 @@ protected:
   // closure parameter of its with_mut.
   std::vector<std::pair<std::string, std::string>> mut_borrows_;
 
+  // Whether the expression being converted borrows a value in a temporary,
+  // e.g., a guard of a RefCell, which lives until the end of the statement.
+  bool borrows_ = false;
+
   // The variables that arguments of rules are bound to by value, whose
   // address is not taken.
   std::unordered_set<const clang::VarDecl *> bound_values_;

@@ -22,8 +22,10 @@ fn main_0() -> i32 {
     let mut ptr: AnyPtr = ((a1.as_pointer() as Ptr<u32>) as Ptr<u32>).to_any();
     assert!(({ (ptr).clone() } == { ((a1.as_pointer() as Ptr::<u32>) as Ptr<u32>).to_any() }));
     assert!(
-        ({ (elem!((ptr.reinterpret_cast::<u32>()), 0).read()) } == {
-            (*a1.borrow())[(0) as usize]
+        ({
+            ({ (elem!((ptr.reinterpret_cast::<u32>()), 0).read()) } == {
+                (*a1.borrow())[(0) as usize]
+            })
         })
     );
     return 0;

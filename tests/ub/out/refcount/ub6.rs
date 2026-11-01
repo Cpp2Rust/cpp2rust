@@ -61,7 +61,7 @@ fn main_0() -> i32 {
     let n: Value<i32> = Rc::new(RefCell::new(2));
     let arr: Value<Option<Value<Box<[Ptr<i32>]>>>> =
         Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
-            (0..((*n.borrow()) as usize))
+            (0..({ ((*n.borrow()) as usize) }))
                 .map(|_| Ptr::<i32>::null())
                 .collect::<Box<[_]>>(),
         )))));

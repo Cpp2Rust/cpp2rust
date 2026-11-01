@@ -38,7 +38,7 @@ pub fn test_time_0() {
         },
     };
     assert!((((t1 > (1500000000 as ::libc::time_t)) as i32) != 0));
-    assert!(((((*t2.borrow()) == t3) as i32) != 0));
+    assert!(({ ((((*t2.borrow()) == t3) as i32) != 0) }));
     assert!((((t3 >= t1) as i32) != 0));
 }
 pub fn print_tm_1(t: ::libc::time_t) {

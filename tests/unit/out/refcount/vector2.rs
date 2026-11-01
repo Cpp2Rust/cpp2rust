@@ -34,18 +34,18 @@ pub fn fn_0(v: Ptr<Vec<i32>>, v3: Vec<i32>) {
         0_usize
     )
     .write(7);
-    v2.as_pointer().write((*v.upgrade().deref()).clone());
+    v2.as_pointer().write(({ (*v.upgrade().deref()).clone() }));
     index!(v4, 1_usize).write(13);
     assert!((x == 6));
     assert!(((v.decay().read()) == 4));
     assert!(((index!(v, 1_usize).read()) == 5));
     assert!(((index!(v, 2_usize).read()) == 6));
     assert!(((v.decay().to_last().read()) == 20));
-    assert!(({ (*v2.borrow())[0_usize] } == 4));
-    assert!(({ (*v2.borrow())[1_usize] } == 5));
-    assert!(({ (*v2.borrow())[2_usize] } == 6));
-    assert!(({ (*v3.borrow())[0_usize] } == 7));
-    assert!(({ (*v3.borrow())[1_usize] } == 13));
+    assert!(({ ({ (*v2.borrow())[0_usize] } == 4) }));
+    assert!(({ ({ (*v2.borrow())[1_usize] } == 5) }));
+    assert!(({ ({ (*v2.borrow())[2_usize] } == 6) }));
+    assert!(({ ({ (*v3.borrow())[0_usize] } == 7) }));
+    assert!(({ ({ (*v3.borrow())[1_usize] } == 13) }));
     {
         let __a1 = 20;
         v.with_mut(|__v: &mut Vec<i32>| __v.push(__a1))

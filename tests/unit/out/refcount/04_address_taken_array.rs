@@ -19,7 +19,7 @@ fn main_0() -> i32 {
     elem!(arr2_ptr, 1).write(6);
     let arr2_ref1: Ptr<i32> = (arr2.as_pointer() as Ptr<i32>).offset(1);
     arr2_ref1.write(7);
-    assert!((((*arr2.borrow())[(0) as usize] + (*arr2.borrow())[(1) as usize]) == 12));
+    assert!(({ (((*arr2.borrow())[(0) as usize] + (*arr2.borrow())[(1) as usize]) == 12) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

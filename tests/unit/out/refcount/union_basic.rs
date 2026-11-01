@@ -92,7 +92,7 @@ fn main_0() -> i32 {
     pi.write(1065353216);
     assert!(((basic::i(ru.clone()).read()) == 1065353216));
     assert!(((pf.read()) == 1_f32));
-    assert!((((*buf.borrow())[(3) as usize] as i32) == 63));
+    assert!(({ (((*buf.borrow())[(3) as usize] as i32) == 63) }));
     let braced: Value<basic> = Rc::new(RefCell::new({
         let __u: Value<basic> = Rc::new(RefCell::new(<basic>::default()));
         basic::i(__u.as_pointer()).write(5);

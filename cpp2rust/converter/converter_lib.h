@@ -325,6 +325,9 @@ bool ReferencesThis(const clang::Stmt *stmt);
 // Whether evaluating `stmt` reads a value from memory, e.g., a pointer.
 bool ReadsMemory(const clang::Stmt *stmt);
 
+// Whether stmt materializes a temporary, which a value may point to.
+bool CreatesTemporary(const clang::Stmt *stmt);
+
 bool MayCauseBorrowMutError(const clang::Expr *lhs, const clang::Expr *rhs);
 
 bool ArgsMayAlias(const clang::Expr *a, const clang::Expr *b);

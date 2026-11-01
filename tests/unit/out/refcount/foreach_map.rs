@@ -67,7 +67,7 @@ fn main_0() -> i32 {
             ),
         }));
         (*(*i.borrow()).1.borrow_mut()) = (-1_i32 as f64);
-        assert!(((*(*i.borrow()).1.borrow()) == (-1_i32 as f64)));
+        assert!(({ ((*(*i.borrow()).1.borrow()) == (-1_i32 as f64)) }));
     }
     'loop_: for i in IterRange::new(
         m.as_pointer()
@@ -76,7 +76,7 @@ fn main_0() -> i32 {
             .with(|__m: &Map<i32, (Value<i32>, Value<f64>)>| __m.end()),
     ) {
         let i: Ptr<(Value<i32>, Value<f64>)> = i.iter_deref();
-        assert!(((*(*i.upgrade().deref()).1.borrow()) != (-1_i32 as f64)));
+        assert!(({ ((*(*i.upgrade().deref()).1.borrow()) != (-1_i32 as f64)) }));
     }
     return 0;
 }

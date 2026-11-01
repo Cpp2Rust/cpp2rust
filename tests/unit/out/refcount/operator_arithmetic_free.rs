@@ -162,7 +162,7 @@ fn main_0() -> i32 {
             .v
         } == 8)
     );
-    assert!(({ (*a.borrow()).v } == 9));
+    assert!(({ ({ (*a.borrow()).v } == 9) }));
     assert!(
         (({
             let _a: Ptr<S> = a.as_pointer();
@@ -180,7 +180,7 @@ fn main_0() -> i32 {
             .v
         } == 8)
     );
-    assert!(({ (*a.borrow()).v } == 7));
+    assert!(({ ({ (*a.borrow()).v } == 7) }));
     assert!(
         ({
             ({

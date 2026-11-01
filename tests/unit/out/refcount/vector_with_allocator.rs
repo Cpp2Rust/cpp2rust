@@ -47,8 +47,8 @@ pub fn fn_1(v: Ptr<Vec<i32>>, v3: Vec<i32>) {
     assert!(((index!(v, 1_usize).read()) == 5));
     assert!(((index!(v, 2_usize).read()) == 6));
     assert!(((v.decay().to_last().read()) == 20));
-    assert!(({ (*v3.borrow())[0_usize] } == 7));
-    assert!(({ (*v3.borrow())[1_usize] } == 13));
+    assert!(({ ({ (*v3.borrow())[0_usize] } == 7) }));
+    assert!(({ ({ (*v3.borrow())[1_usize] } == 13) }));
     {
         let __a1 = 20;
         v.with_mut(|__v: &mut Vec<i32>| __v.push(__a1))
@@ -81,7 +81,7 @@ fn main_0() -> i32 {
     assert!((v1[0_usize] == 40));
     assert!((v1[99_usize] == 50));
     let v2: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
-    assert!(((*v2.borrow()).len() == 0_usize));
+    assert!(({ ((*v2.borrow()).len() == 0_usize) }));
     {
         let __a1 = 1;
         (*v2.borrow_mut()).push(__a1)
@@ -94,7 +94,7 @@ fn main_0() -> i32 {
         let __a1 = 3;
         (*v2.borrow_mut()).push(__a1)
     };
-    assert!(((*v2.borrow()).len() == 3_usize));
+    assert!(({ ((*v2.borrow()).len() == 3_usize) }));
     match ({ <RandomAccessIterator<i32>>::from(v2.decay().begin()) },) {
         (mut __tmp_0,) => {
             let __off = __tmp_0.index();
@@ -103,9 +103,9 @@ fn main_0() -> i32 {
             (__tmp_0).clone()
         }
     };
-    assert!(((*v2.borrow()).len() == 2_usize));
-    assert!(({ (*v2.borrow())[0_usize] } == 2));
-    assert!(({ (*v2.borrow())[1_usize] } == 3));
+    assert!(({ ((*v2.borrow()).len() == 2_usize) }));
+    assert!(({ ({ (*v2.borrow())[0_usize] } == 2) }));
+    assert!(({ ({ (*v2.borrow())[1_usize] } == 3) }));
     match ({ <RandomAccessIterator<i32>>::from(v2.decay().begin()) },) {
         (mut __tmp_1,) => {
             let __off = __tmp_1.index();
@@ -114,65 +114,65 @@ fn main_0() -> i32 {
         }
     };
     ({ copy_0((*v2.borrow()).clone()) });
-    assert!(((*v2.borrow()).len() == 3_usize));
-    assert!(({ (*v2.borrow())[0_usize] } == 100));
-    assert!(({ (*v2.borrow())[1_usize] } == 2));
-    assert!(({ (*v2.borrow())[2_usize] } == 3));
+    assert!(({ ((*v2.borrow()).len() == 3_usize) }));
+    assert!(({ ({ (*v2.borrow())[0_usize] } == 100) }));
+    assert!(({ ({ (*v2.borrow())[1_usize] } == 2) }));
+    assert!(({ ({ (*v2.borrow())[2_usize] } == 3) }));
     let mut s2: usize = (*v2.borrow()).len();
     let v3: Value<Vec<i32>> = Rc::new(RefCell::new(vec![1; 100_usize as usize]));
-    assert!(((*v3.borrow()).len() == 100_usize));
+    assert!(({ ((*v3.borrow()).len() == 100_usize) }));
     let mut i: i32 = 0;
     'loop_: while (i < 100) {
-        assert!(({ (*v3.borrow())[(i as usize)] } == 1));
+        assert!(({ ({ (*v3.borrow())[(i as usize)] } == 1) }));
         i.prefix_inc();
     }
     let v6: Value<Vec<f64>> = Rc::new(RefCell::new(vec![2_f64; s2 as usize]));
-    assert!(((*v6.borrow()).len() == s2));
+    assert!(({ ((*v6.borrow()).len() == s2) }));
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < s2) {
-        assert!(({ (*v6.borrow())[(i as usize)] } == 2_f64));
+        assert!(({ ({ (*v6.borrow())[(i as usize)] } == 2_f64) }));
         i.prefix_inc();
     }
     let mut p1: Ptr<f64> = v6.decay();
     assert!(((p1.read()) == 2_f64));
     let mut p2: Ptr<i32> = v3.decay();
     assert!(((p2.read()) == 1));
-    assert!(({ (*v3.borrow())[0_usize] } == 1));
-    assert!(({ (*v3.borrow())[1_usize] } == 1));
+    assert!(({ ({ (*v3.borrow())[0_usize] } == 1) }));
+    assert!(({ ({ (*v3.borrow())[1_usize] } == 1) }));
     p2.write((99_f64 as i32));
     assert!(((p2.read()) == 99));
-    assert!(({ (*v3.borrow())[0_usize] } == 99));
-    assert!(({ (*v3.borrow())[1_usize] } == 1));
+    assert!(({ ({ (*v3.borrow())[0_usize] } == 99) }));
+    assert!(({ ({ (*v3.borrow())[1_usize] } == 1) }));
     p2.prefix_inc();
     p2.write(98);
-    assert!(({ (*v3.borrow())[0_usize] } == 99));
-    assert!(({ (*v3.borrow())[1_usize] } == 98));
-    assert!(((*v3.borrow()).capacity() == 100_usize));
-    assert!(((*v3.borrow()).len() == 100_usize));
+    assert!(({ ({ (*v3.borrow())[0_usize] } == 99) }));
+    assert!(({ ({ (*v3.borrow())[1_usize] } == 98) }));
+    assert!(({ ((*v3.borrow()).capacity() == 100_usize) }));
+    assert!(({ ((*v3.borrow()).len() == 100_usize) }));
     if 200_usize as usize > (*v3.borrow()).capacity() as usize {
         let len_0 = (*v3.borrow()).len();
         (*v3.borrow_mut()).reserve_exact(200_usize as usize - len_0 as usize);
     };
-    assert!(((*v3.borrow()).capacity() == 200_usize));
-    assert!(((*v3.borrow()).len() == 100_usize));
+    assert!(({ ((*v3.borrow()).capacity() == 200_usize) }));
+    assert!(({ ((*v3.borrow()).len() == 100_usize) }));
     if 50_usize as usize > (*v3.borrow()).capacity() as usize {
         let len_0 = (*v3.borrow()).len();
         (*v3.borrow_mut()).reserve_exact(50_usize as usize - len_0 as usize);
     };
-    assert!(((*v3.borrow()).capacity() == 200_usize));
-    assert!(((*v3.borrow()).len() == 100_usize));
+    assert!(({ ((*v3.borrow()).capacity() == 200_usize) }));
+    assert!(({ ((*v3.borrow()).len() == 100_usize) }));
     if 200_usize as usize > (*v3.borrow()).capacity() as usize {
         let len_0 = (*v3.borrow()).len();
         (*v3.borrow_mut()).reserve_exact(200_usize as usize - len_0 as usize);
     };
-    assert!(((*v3.borrow()).capacity() == 200_usize));
-    assert!(((*v3.borrow()).len() == 100_usize));
+    assert!(({ ((*v3.borrow()).capacity() == 200_usize) }));
+    assert!(({ ((*v3.borrow()).len() == 100_usize) }));
     if 201_usize as usize > (*v3.borrow()).capacity() as usize {
         let len_0 = (*v3.borrow()).len();
         (*v3.borrow_mut()).reserve_exact(201_usize as usize - len_0 as usize);
     };
-    assert!(((*v3.borrow()).capacity() == 201_usize));
-    assert!(((*v3.borrow()).len() == 100_usize));
+    assert!(({ ((*v3.borrow()).capacity() == 201_usize) }));
+    assert!(({ ((*v3.borrow()).len() == 100_usize) }));
     assert!(((v2.decay().to_last().read()) == 3));
     assert!(((v3.decay().to_last().read()) == 1));
     assert!(((v6.decay().to_last().read()) == 2_f64));

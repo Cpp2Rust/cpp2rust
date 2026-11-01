@@ -79,22 +79,22 @@ fn main_0() -> i32 {
     let __decomp_2: Value<Movable> = Rc::new(RefCell::new(Movable::move_from({ m.as_pointer() })));
     assert!((moves_1.with(|rc| *rc.borrow()) == 1));
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
-    assert!(({ (*__decomp_2.borrow()).x } == 3));
-    assert!(({ (*__decomp_2.borrow()).y } == 4));
-    assert!(({ (*m.borrow()).x } == 0));
-    assert!(({ (*m.borrow()).y } == 0));
+    assert!(({ ({ (*__decomp_2.borrow()).x } == 3) }));
+    assert!(({ ({ (*__decomp_2.borrow()).y } == 4) }));
+    assert!(({ ({ (*m.borrow()).x } == 0) }));
+    assert!(({ ({ (*m.borrow()).y } == 0) }));
     let h: Value<Holder> = Rc::new(RefCell::new(Holder {
         xs: Vec::from([1, 2, 3]),
         ys: Vec::from([4, 5]),
     }));
     let __decomp_3: Value<Holder> =
         Rc::new(RefCell::new(({ HolderImpl::extract(&h.as_pointer()) })));
-    assert!(((*__decomp_3.borrow()).xs.len() == 3_usize));
-    assert!(((*__decomp_3.borrow()).ys.len() == 2_usize));
+    assert!(({ ((*__decomp_3.borrow()).xs.len() == 3_usize) }));
+    assert!(({ ((*__decomp_3.borrow()).ys.len() == 2_usize) }));
     assert!(((elem!(field_ref!(__decomp_3.as_pointer(), xs).decay(), 2_usize).read()) == 3));
     assert!(((elem!(field_ref!(__decomp_3.as_pointer(), ys).decay(), 0_usize).read()) == 4));
-    assert!((*h.borrow()).xs.is_empty());
-    assert!((*h.borrow()).ys.is_empty());
+    assert!(({ (*h.borrow()).xs.is_empty() }));
+    assert!(({ (*h.borrow()).ys.is_empty() }));
     return 0;
 }
 pub trait HolderImpl {

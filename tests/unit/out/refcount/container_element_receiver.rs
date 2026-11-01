@@ -53,10 +53,10 @@ fn main_0() -> i32 {
         ref_: v.as_pointer(),
         vec_: Vec::from([4, 5]),
     }));
-    assert!((({ (*h.borrow()).ref_.clone() }.decay().read()) == 1));
-    { (*h.borrow()).ref_.clone() }.decay().write(9);
-    assert!(({ (*v.borrow())[0_usize] } == 9));
-    { (*h.borrow()).ref_.clone() }.decay().write(1);
+    assert!(((({ { (*h.borrow()).ref_.clone() }.decay() }).read()) == 1));
+    ({ { (*h.borrow()).ref_.clone() }.decay() }).write(9);
+    assert!(({ ({ (*v.borrow())[0_usize] } == 9) }));
+    ({ { (*h.borrow()).ref_.clone() }.decay() }).write(1);
     assert!(((field_ref!(h.as_pointer(), vec_).decay().to_last().read()) == 5));
     let mut p: Ptr<Vec<i32>> = (field_ref!(h.as_pointer(), vec_).as_pointer());
     assert!(((p.decay().read()) == 4));

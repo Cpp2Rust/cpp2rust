@@ -22,9 +22,9 @@ fn main_0() -> i32 {
     )));
     let g: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new((*f.borrow()).copy_from()));
     let h: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new((*f.borrow()).move_from()));
-    assert!((({ (*g.borrow()).call() }) == 2));
-    assert!((({ (*h.borrow()).call() }) == 2));
-    assert!((({ (*f.borrow()).call() }) == 0));
+    assert!(({ (({ (*g.borrow()).call() }) == 2) }));
+    assert!(({ (({ (*h.borrow()).call() }) == 2) }));
+    assert!(({ (({ (*f.borrow()).call() }) == 0) }));
     let p: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new(lambda!(
         {
             let u: Value<Option<Value<i32>>> =
@@ -39,8 +39,8 @@ fn main_0() -> i32 {
         }
     )));
     let q: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new((*p.borrow()).move_from()));
-    assert!((({ (*q.borrow()).call() }) == 5));
-    assert!((({ (*p.borrow()).call() }) == 0));
+    assert!(({ (({ (*q.borrow()).call() }) == 5) }));
+    assert!(({ (({ (*p.borrow()).call() }) == 0) }));
     let n: Value<i32> = Rc::new(RefCell::new(0));
     let inner: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new(lambda!(
         {
@@ -59,12 +59,12 @@ fn main_0() -> i32 {
             return ({ (*inner.borrow()).call() }).clone();
         }
     )));
-    assert!((({ (*outer.borrow()).call() }) == 1));
+    assert!(({ (({ (*outer.borrow()).call() }) == 1) }));
     let outer2: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new((*outer.borrow()).copy_from()));
-    assert!((({ (*outer2.borrow()).call() }) == 2));
-    assert!((({ (*outer.borrow()).call() }) == 2));
+    assert!(({ (({ (*outer2.borrow()).call() }) == 2) }));
+    assert!(({ (({ (*outer.borrow()).call() }) == 2) }));
     let outer3: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new((*outer.borrow()).move_from()));
-    assert!((({ (*outer3.borrow()).call() }) == 3));
+    assert!(({ (({ (*outer3.borrow()).call() }) == 3) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

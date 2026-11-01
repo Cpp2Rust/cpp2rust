@@ -32,14 +32,14 @@ fn main_0() -> i32 {
     assert!(((({ g_0(s.as_pointer(),) }) as i32) == (Overload_kMutableOverload as i32)));
     assert!(((({ g_1(s.as_pointer(),) }) as i32) == (Overload_kConstOverload as i32)));
     ({ SImpl::value_ref_3(&s.as_pointer()) }).write(9);
-    assert!(({ (*s.borrow()).v } == 9));
+    assert!(({ ({ (*s.borrow()).v } == 9) }));
     assert!(((({ SImpl::value_ref_4(&s.as_pointer(),) }).read()) == 9));
     let cs: Ptr<S> = s.as_pointer();
     assert!(((({ SImpl::f_2(&cs,) }) as i32) == (Overload_kConstOverload as i32)));
     assert!((cs.with(|__s| __s.v) == 9));
     let mut p: Ptr<S> = (s.as_pointer());
     field!(p, v).write(11);
-    assert!(({ (*s.borrow()).v } == 11));
+    assert!(({ ({ (*s.borrow()).v } == 11) }));
     assert!(((({ SImpl::f_1(&p,) }) as i32) == (Overload_kMutableOverload as i32)));
     return 0;
 }

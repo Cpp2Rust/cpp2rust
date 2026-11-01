@@ -54,15 +54,17 @@ fn main_0() -> i32 {
     *list.borrow_mut() = list_head {
         next: (list.as_pointer()),
     };
-    assert!(({ { (*list.borrow()).next.clone() } } == { (list.as_pointer()) }));
+    assert!(({ ({ { (*list.borrow()).next.clone() } } == { (list.as_pointer()) }) }));
     let n: Value<node> = <Value<node>>::default();
     *n.borrow_mut() = node {
         value: 42,
         value_ptr: (field_ptr!(n.as_pointer(), value)),
     };
-    assert!(({ { (*n.borrow()).value_ptr.clone() } } == { (field_ptr!(n.as_pointer(), value)) }));
+    assert!(
+        ({ ({ { (*n.borrow()).value_ptr.clone() } } == { (field_ptr!(n.as_pointer(), value)) }) })
+    );
     { (*n.borrow()).value_ptr.clone() }.write(7);
-    assert!(({ (*n.borrow()).value } == 7));
+    assert!(({ ({ (*n.borrow()).value } == 7) }));
     let arr: Value<Box<[list_head]>> = Rc::new(RefCell::new(
         (0..2)
             .map(|_| <list_head>::default())
@@ -77,13 +79,17 @@ fn main_0() -> i32 {
         },
     ]);
     assert!(
-        ({ { (*arr.borrow())[(0) as usize].next.clone() } } == {
-            ((arr.as_pointer() as Ptr<list_head>).offset(1))
+        ({
+            ({ { (*arr.borrow())[(0) as usize].next.clone() } } == {
+                ((arr.as_pointer() as Ptr<list_head>).offset(1))
+            })
         })
     );
     assert!(
-        ({ { (*arr.borrow())[(1) as usize].next.clone() } } == {
-            ((arr.as_pointer() as Ptr<list_head>).offset(0))
+        ({
+            ({ { (*arr.borrow())[(1) as usize].next.clone() } } == {
+                ((arr.as_pointer() as Ptr<list_head>).offset(0))
+            })
         })
     );
     let d: Value<node_with_defaults> = <Value<node_with_defaults>>::default();
@@ -91,13 +97,13 @@ fn main_0() -> i32 {
         next: (d.as_pointer()),
         value: 3,
     };
-    assert!(({ { (*d.borrow()).next.clone() } } == { (d.as_pointer()) }));
-    assert!(({ (*d.borrow()).value } == 3));
+    assert!(({ ({ { (*d.borrow()).next.clone() } } == { (d.as_pointer()) }) }));
+    assert!(({ ({ (*d.borrow()).value } == 3) }));
     let called: Value<list_head> = <Value<list_head>>::default();
     *called.borrow_mut() = list_head {
         next: ({ init_0((called.as_pointer())) }),
     };
-    assert!(({ { (*called.borrow()).next.clone() } } == { (called.as_pointer()) }));
+    assert!(({ ({ { (*called.borrow()).next.clone() } } == { (called.as_pointer()) }) }));
     let mut size: usize = ::std::mem::size_of::<usize>();
     assert!((size == ::std::mem::size_of::<usize>()));
     return 0;

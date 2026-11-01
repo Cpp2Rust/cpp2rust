@@ -33,7 +33,7 @@ fn main_0() -> i32 {
     a.write(10);
     assert!(((a.read()) == 10));
     assert!(((b.read()) == 2));
-    assert!(((*(*p.borrow()).0.borrow()) == 1));
+    assert!(({ ((*(*p.borrow()).0.borrow()) == 1) }));
     let __decomp_3: Ptr<(Value<i32>, Value<i32>)> = p.as_pointer();
     let x: Ptr<i32> = (*__decomp_3.upgrade().deref())
         .get_value::<0>()
@@ -45,8 +45,8 @@ fn main_0() -> i32 {
     {
         y.with_mut(|__v| *__v = *__v + 4)
     };
-    assert!(((*(*p.borrow()).0.borrow()) == 3));
-    assert!(((*(*p.borrow()).1.borrow()) == 6));
+    assert!(({ ((*(*p.borrow()).0.borrow()) == 3) }));
+    assert!(({ ((*(*p.borrow()).1.borrow()) == 6) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

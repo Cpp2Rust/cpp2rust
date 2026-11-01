@@ -20,8 +20,11 @@ fn main_0() -> i32 {
     let mut p: Ptr<i8> = arr.decay().offset((1) as isize);
     assert!((((p.read()) as i32) == (('b' as i8) as i32)));
     assert!(
-        Ptr::<i8>::from_string_literal(b"fbo")
-            .with_c_str(|__s| (*arr.borrow())[..(*arr.borrow()).len().saturating_sub(1)] == *__s)
+        ({
+            Ptr::<i8>::from_string_literal(b"fbo").with_c_str(|__s| {
+                (*arr.borrow())[..(*arr.borrow()).len().saturating_sub(1)] == *__s
+            })
+        })
     );
     let mut names: [Ptr<i8>; 1] = [arr.decay()];
     let mut copy: Vec<i8> = {

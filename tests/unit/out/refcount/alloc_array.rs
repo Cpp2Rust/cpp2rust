@@ -39,7 +39,7 @@ fn main_0() -> i32 {
         (0..(N as usize)).map(|_| 0_i32).collect::<Box<[_]>>(),
     )))));
     ({ All_0(arr.as_pointer(), N, 1) });
-    assert!((({ Consume_1((*arr.borrow_mut()).take(), N,) }) == 10));
+    assert!(({ (({ Consume_1((*arr.borrow_mut()).take(), N,) }) == 10) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

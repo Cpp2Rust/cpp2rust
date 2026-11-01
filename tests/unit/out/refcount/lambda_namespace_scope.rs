@@ -52,18 +52,18 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((({ (*inc_1.with(Value::clone).borrow()).call(41,) }) == 42));
+    assert!(({ (({ (*inc_1.with(Value::clone).borrow()).call(41,) }) == 42) }));
     ({ (*bump_2.with(Value::clone).borrow()).call() });
-    assert!((({ (*bump_2.with(Value::clone).borrow()).call() }) == 2));
+    assert!(({ (({ (*bump_2.with(Value::clone).borrow()).call() }) == 2) }));
     assert!((counter_0.with(|rc| *rc.borrow()) == 2));
-    assert!((({ apply_3((*inc_1.with(Value::clone).borrow()).copy_from(), 1,) }) == 2));
+    assert!(({ (({ apply_3((*inc_1.with(Value::clone).borrow()).copy_from(), 1,) }) == 2) }));
     let copy: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(
         (*inc_1.with(Value::clone).borrow()).copy_from(),
     ));
-    assert!((({ (*copy.borrow()).call(9,) }) == 10));
+    assert!(({ (({ (*copy.borrow()).call(9,) }) == 10) }));
     let mut fp: FnPtr<fn(i32) -> i32> = (*inc_1.with(Value::clone).borrow()).clone();
     assert!((({ fp.call(-1_i32,) }) == 0));
-    assert!((({ (*twice_next_5.with(Value::clone).borrow()).call(4,) }) == 10));
+    assert!(({ (({ (*twice_next_5.with(Value::clone).borrow()).call(4,) }) == 10) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {

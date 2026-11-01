@@ -81,7 +81,7 @@ fn main_0() -> i32 {
         (*counter.borrow())
     };
     assert!((w == 3));
-    assert!(((*counter.borrow()) == 3));
+    assert!(({ ((*counter.borrow()) == 3) }));
     &({ bump_and_return_4() });
     assert!((side_effect_counter_3.with(|rc| *rc.borrow()) == 1));
     let mut v: i32 = {
@@ -129,7 +129,7 @@ fn main_0() -> i32 {
     (&(*g.borrow_mut()));
     &(*g.borrow_mut());
     ({ unused_noncopyable_param_5(g.as_pointer()) });
-    assert!((({ (*g.borrow()).value.clone() }.as_pointer().read()) == 9));
+    assert!(((({ { (*g.borrow()).value.clone() } }).as_pointer().read()) == 9));
     return 0;
 }
 pub trait NonCopyableImpl {

@@ -47,7 +47,7 @@ fn main_0() -> i32 {
     )));
     ({ (*tally.borrow()).spec::<fn()>(0).call() });
     ({ (*tally.borrow()).spec::<fn()>(1).call() });
-    assert!(((*total.borrow()) == 7));
+    assert!(({ ((*total.borrow()) == 7) }));
     let v: Value<Val> = Rc::new(RefCell::new(Val { x: 5 }));
     let acc: Value<i32> = Rc::new(RefCell::new(0));
     let pick: Value<FnPtr<Generic>> = Rc::new(RefCell::new(lambda!(
@@ -90,7 +90,7 @@ fn main_0() -> i32 {
     ({ (*pick.borrow()).spec::<fn()>(0).call() });
     ({ (*pick.borrow()).spec::<fn()>(1).call() });
     ({ (*pick.borrow()).spec::<fn()>(2).call() });
-    assert!(((*acc.borrow()) == 30));
+    assert!(({ ((*acc.borrow()) == 30) }));
     let cast_to: Value<FnPtr<Generic>> = Rc::new(RefCell::new(lambda!(
         Generic,
         {},
@@ -101,8 +101,8 @@ fn main_0() -> i32 {
             return ((x as f64) / 2_f64);
         }
     )));
-    assert!((({ (*cast_to.borrow()).spec::<fn(i32) -> i32>(0).call(5,) }) == 2));
-    assert!((({ (*cast_to.borrow()).spec::<fn(i32) -> f64>(1).call(5,) }) == 2.5_f64));
+    assert!(({ (({ (*cast_to.borrow()).spec::<fn(i32) -> i32>(0).call(5,) }) == 2) }));
+    assert!(({ (({ (*cast_to.borrow()).spec::<fn(i32) -> f64>(1).call(5,) }) == 2.5_f64) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

@@ -29,7 +29,7 @@ pub fn operator_cmp_1(_a0: Ptr<DefaultedOrd>, _a1: Ptr<DefaultedOrd>) -> std::cm
             &(_a0.with(|__s| __s.a)),
             &(_a1.with(|__s| __s.a)),
         )));
-        if !((*cmp.borrow()) == std::cmp::Ordering::Equal) {
+        if !(({ (*cmp.borrow()) }) == std::cmp::Ordering::Equal) {
             return (*cmp.borrow_mut());
         }
     }

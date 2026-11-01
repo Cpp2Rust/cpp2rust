@@ -118,7 +118,7 @@ fn main_0() -> i32 {
     assert!(
         ((({ forward_once_2(lvalue.as_pointer(),) }) as i32) == (Overload_kLvalueOverload as i32))
     );
-    assert!(({ (*lvalue.borrow()).v } == 7));
+    assert!(({ ({ (*lvalue.borrow()).v } == 7) }));
     assert!(
         ((({
             let _x: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 8 })));
@@ -131,7 +131,7 @@ fn main_0() -> i32 {
         ((({ forward_twice_4(relayed.as_pointer(),) }) as i32)
             == (Overload_kLvalueOverload as i32))
     );
-    assert!(({ (*relayed.borrow()).v } == 9));
+    assert!(({ ({ (*relayed.borrow()).v } == 9) }));
     assert!(
         ((({
             let _x: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 10 })));
@@ -144,7 +144,7 @@ fn main_0() -> i32 {
     assert!((from_lvalue.t.v == 11));
     assert!((from_lvalue.t.copies == 1));
     assert!((from_lvalue.t.moves == 0));
-    assert!(({ (*kept.borrow()).v } == 11));
+    assert!(({ ({ (*kept.borrow()).v } == 11) }));
     let mut from_rvalue: Holder = ({
         let _x: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 12 })));
         forward_into_ctor_7(_x.as_pointer())

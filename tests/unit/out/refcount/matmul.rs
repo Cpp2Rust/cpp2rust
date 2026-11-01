@@ -106,14 +106,16 @@ fn main_0() -> i32 {
         matmul_1(_m1, _n1, _p1, _m2, _n2, _p2)
     });
     assert!(
-        ((((*(m3.as_pointer() as Ptr<Option<Value<Box<[i32]>>>>)
-            .offset(0_usize as isize)
-            .upgrade()
-            .deref())
-        .as_pointer() as Ptr<i32>)
-            .offset(0_usize as isize)
-            .read())
-            == 20)
+        ({
+            ((((*(m3.as_pointer() as Ptr<Option<Value<Box<[i32]>>>>)
+                .offset(0_usize as isize)
+                .upgrade()
+                .deref())
+            .as_pointer() as Ptr<i32>)
+                .offset(0_usize as isize)
+                .read())
+                == 20)
+        })
     );
     return 0;
 }

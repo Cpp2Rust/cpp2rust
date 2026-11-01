@@ -30,12 +30,14 @@ fn main_0() -> i32 {
                 }));
         })));
     assert!(
-        (({
-            let _self_: FnPtr<Generic> = (*fact.borrow()).copy_from();
-            (*fact.borrow())
-                .spec::<fn(FnPtr<Generic>, i32) -> i32>(0)
-                .call(_self_, 5)
-        }) == 120)
+        ({
+            (({
+                let _self_: FnPtr<Generic> = (*fact.borrow()).copy_from();
+                (*fact.borrow())
+                    .spec::<fn(FnPtr<Generic>, i32) -> i32>(0)
+                    .call(_self_, 5)
+            }) == 120)
+        })
     );
     let calls: Value<i32> = Rc::new(RefCell::new(0));
     let fib: Value<FnPtr<Generic>> = Rc::new(RefCell::new(lambda!(
@@ -64,14 +66,16 @@ fn main_0() -> i32 {
         }
     )));
     assert!(
-        (({
-            let _self_: Ptr<FnPtr<Generic>> = fib.as_pointer();
-            (*fib.borrow())
-                .spec::<fn(Ptr<FnPtr<Generic>>, i32) -> i32>(0)
-                .call(_self_, 6)
-        }) == 8)
+        ({
+            (({
+                let _self_: Ptr<FnPtr<Generic>> = fib.as_pointer();
+                (*fib.borrow())
+                    .spec::<fn(Ptr<FnPtr<Generic>>, i32) -> i32>(0)
+                    .call(_self_, 6)
+            }) == 8)
+        })
     );
-    assert!(((*calls.borrow()) == 15));
+    assert!(({ ((*calls.borrow()) == 15) }));
     let depth: Value<i32> = Rc::new(RefCell::new(0));
     let count_down: Value<FnPtr<Generic>> = Rc::new(RefCell::new(lambda!(
         Generic,
@@ -98,7 +102,7 @@ fn main_0() -> i32 {
             .spec::<fn(Ptr<FnPtr<Generic>>, i32)>(0)
             .call(_self_, 4)
     });
-    assert!(((*depth.borrow()) == 4));
+    assert!(({ ((*depth.borrow()) == 4) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

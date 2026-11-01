@@ -72,12 +72,12 @@ fn main_0() -> i32 {
     &(::std::mem::size_of::<i32>());
     let addr: Value<i32> = Rc::new(RefCell::new(0));
     ({ set_0((addr.as_pointer()), 5) });
-    assert!(((*addr.borrow()) == 5));
+    assert!(({ ((*addr.borrow()) == 5) }));
     let ref_: Value<i32> = Rc::new(RefCell::new(1));
     ({ inc_1(ref_.as_pointer()) });
     let alias: Ptr<i32> = ref_.as_pointer();
     alias.with_mut(|__v| __v.postfix_inc());
-    assert!(((*ref_.borrow()) == 3));
+    assert!(({ ((*ref_.borrow()) == 3) }));
     let captured: Value<i32> = Rc::new(RefCell::new(7));
     let get: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new(lambda!(
         {
@@ -88,23 +88,23 @@ fn main_0() -> i32 {
         }
     )));
     (*captured.borrow_mut()) = 8;
-    assert!((({ (*get.borrow()).call() }) == 8));
+    assert!(({ (({ (*get.borrow()).call() }) == 8) }));
     let mut arr: [i32; 4] = [1, 2, 3, 4];
     arr[(0) as usize] = { (arr[(3) as usize] * 2) };
     arr[(1) as usize].postfix_inc();
     assert!(((arr[(0) as usize] + arr[(1) as usize]) == 11));
     let elem: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([0, 0])));
     ({ set_0(((elem.as_pointer() as Ptr<i32>).offset(1)), 6) });
-    assert!(((*elem.borrow())[(1) as usize] == 6));
+    assert!(({ ((*elem.borrow())[(1) as usize] == 6) }));
     let decayed: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2, 3])));
     assert!((({ sum_3((decayed.as_pointer() as Ptr::<i32>), 3,) }) == 6));
     let elem_ref: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 1])));
     ({ inc_1((elem_ref.as_pointer() as Ptr<i32>).offset(0)) });
-    assert!(((*elem_ref.borrow())[(0) as usize] == 2));
+    assert!(({ ((*elem_ref.borrow())[(0) as usize] == 2) }));
     let mut p: Ptr<i32> = (addr.as_pointer());
     p = ((elem.as_pointer() as Ptr<i32>).offset(0));
     p.write(9);
-    assert!(((*elem.borrow())[(0) as usize] == 9));
+    assert!(({ ((*elem.borrow())[(0) as usize] == 9) }));
     let mut str: [i8; 8] = b"abc\0\0\0\0\0".map(i8::from_byte);
     str[(0) as usize] = ('x' as i8);
     assert!(
@@ -155,10 +155,10 @@ fn main_0() -> i32 {
     assert!((({ total_2(by_ref.as_pointer(),) }) == 6));
     let elem_ptr: Value<Vec<i32>> = Rc::new(RefCell::new(vec![0; 2_usize as usize]));
     ({ set_0((elem_ptr.decay().offset(1_usize)), 7) });
-    assert!(({ (*elem_ptr.borrow())[1_usize] } == 7));
+    assert!(({ ({ (*elem_ptr.borrow())[1_usize] } == 7) }));
     let data: Value<Vec<i32>> = Rc::new(RefCell::new(vec![0; 2_usize as usize]));
     ({ set_0(data.decay(), 8) });
-    assert!(({ (*data.borrow())[0_usize] } == 8));
+    assert!(({ ({ (*data.borrow())[0_usize] } == 8) }));
     let square: Value<Square> = Rc::new(RefCell::new(<Square>::default()));
     let mut shape: PtrDyn<dyn Shape> = (square.as_pointer()).to_dyn::<dyn Shape>(|w| w);
     assert!((({ (*shape.upgrade().deref_mut()).scale(3,) }) == 6));

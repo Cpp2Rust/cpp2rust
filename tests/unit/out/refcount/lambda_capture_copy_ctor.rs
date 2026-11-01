@@ -90,12 +90,12 @@ fn main_0() -> i32 {
             return (({ (*c.borrow()).copies } * 10) + { (*c.borrow()).moves });
         }
     )));
-    assert!((({ (*f.borrow()).call() }) == 10));
+    assert!(({ (({ (*f.borrow()).call() }) == 10) }));
     let g: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new((*f.borrow()).copy_from()));
-    assert!((({ (*g.borrow()).call() }) == 20));
-    assert!((({ (*f.borrow()).call() }) == 10));
+    assert!(({ (({ (*g.borrow()).call() }) == 20) }));
+    assert!(({ (({ (*f.borrow()).call() }) == 10) }));
     let h: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new((*f.borrow()).move_from()));
-    assert!((({ (*h.borrow()).call() }) == 11));
+    assert!(({ (({ (*h.borrow()).call() }) == 11) }));
     let mut returned: i32 = {
         ({
             lambda!(
@@ -129,11 +129,11 @@ fn main_0() -> i32 {
             });
         }
     )));
-    assert!((({ (*a.borrow()).call() }) == 2));
+    assert!(({ (({ (*a.borrow()).call() }) == 2) }));
     let a2: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new((*a.borrow()).copy_from()));
-    assert!((({ (*a2.borrow()).call() }) == 4));
+    assert!(({ (({ (*a2.borrow()).call() }) == 4) }));
     let a3: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new((*a.borrow()).move_from()));
-    assert!((({ (*a3.borrow()).call() }) == 2));
+    assert!(({ (({ (*a3.borrow()).call() }) == 2) }));
     {
         let m: Value<FnPtr<fn()>> = Rc::new(RefCell::new(lambda!(
             {

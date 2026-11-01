@@ -26,7 +26,7 @@ fn main_0() -> i32 {
     assert!(((elem!(buf, 1).read()) == 2));
     let local: Value<i32> = Rc::new(RefCell::new(4));
     cpp_swap!(buf.offset((1) as isize), local.as_pointer());
-    assert!(((elem!(buf, 1).read()) == 4) && ((*local.borrow()) == 2));
+    assert!(({ ((elem!(buf, 1).read()) == 4) && ((*local.borrow()) == 2) }));
     let mut other: Ptr<i32> =
         libcc2rs::malloc_refcount(::std::mem::size_of::<i32>()).reinterpret_cast::<i32>();
     other.write(5);
@@ -43,8 +43,10 @@ fn main_0() -> i32 {
     let mut halves: Ptr<u16> = (words.as_pointer() as Ptr<u32>).reinterpret_cast::<u16>();
     cpp_swap!(halves.offset((0) as isize), halves.offset((3) as isize));
     assert!(
-        ((*words.borrow())[(0) as usize] == 16909574_u32)
-            && ((*words.borrow())[(1) as usize] == 50595592_u32)
+        ({
+            ((*words.borrow())[(0) as usize] == 16909574_u32)
+                && ((*words.borrow())[(1) as usize] == 50595592_u32)
+        })
     );
     libcc2rs::free_refcount((other).to_any());
     libcc2rs::free_refcount((buf).to_any());

@@ -33,7 +33,7 @@ fn main_0() -> i32 {
     p = (a.as_pointer());
     ({ swap_by_ptr_1((p).clone(), (b.as_pointer())) });
     ({ swap_by_ref_2(a.as_pointer(), c.as_pointer()) });
-    assert!(((*c.borrow()) == 2));
+    assert!(({ ((*c.borrow()) == 2) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

@@ -117,11 +117,13 @@ fn main_0() -> i32 {
         }
     };
     assert!(
-        (((({ (*arr.borrow())[(0) as usize].v } == 1)
-            && ({ (*arr.borrow())[(1) as usize].v } == 1))
-            && ({ (*arr.borrow())[(2) as usize].v } == 3))
-            && ({ (*arr.borrow())[(3) as usize].v } == 4))
-            && ({ (*arr.borrow())[(4) as usize].v } == 5)
+        ({
+            (((({ (*arr.borrow())[(0) as usize].v } == 1)
+                && ({ (*arr.borrow())[(1) as usize].v } == 1))
+                && ({ (*arr.borrow())[(2) as usize].v } == 3))
+                && ({ (*arr.borrow())[(3) as usize].v } == 4))
+                && ({ (*arr.borrow())[(4) as usize].v } == 5)
+        })
     );
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
     let vec_: Value<Vec<Tracked>> = Rc::new(RefCell::new(Vec::new()));
@@ -154,9 +156,11 @@ fn main_0() -> i32 {
         }
     };
     assert!(
-        ((({ (*vec_.borrow())[0_usize].v } == 1) && ({ (*vec_.borrow())[1_usize].v } == 2))
-            && ({ (*vec_.borrow())[2_usize].v } == 7))
-            && ({ (*vec_.borrow())[3_usize].v } == 8)
+        ({
+            ((({ (*vec_.borrow())[0_usize].v } == 1) && ({ (*vec_.borrow())[1_usize].v } == 2))
+                && ({ (*vec_.borrow())[2_usize].v } == 7))
+                && ({ (*vec_.borrow())[3_usize].v } == 8)
+        })
     );
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
     match ({ vec_.decay().begin() },) {
@@ -177,7 +181,7 @@ fn main_0() -> i32 {
             reorder(__order, |__i| __tmp_2.iter_at(__i));
         }
     };
-    assert!(({ (*vec_.borrow())[0_usize].v } == 8) && ({ (*vec_.borrow())[3_usize].v } == 1));
+    assert!(({ ({ (*vec_.borrow())[0_usize].v } == 8) && ({ (*vec_.borrow())[3_usize].v } == 1) }));
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
     match ({ vec_.decay().begin() },) {
         (mut __tmp_3,) => {
@@ -213,7 +217,7 @@ fn main_0() -> i32 {
             reorder(__order, |__i| __tmp_3.iter_at(__i));
         }
     };
-    assert!(({ (*vec_.borrow())[0_usize].v } == 1) && ({ (*vec_.borrow())[3_usize].v } == 8));
+    assert!(({ ({ (*vec_.borrow())[0_usize].v } == 1) && ({ (*vec_.borrow())[3_usize].v } == 8) }));
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
     match ({ vec_.decay().begin().iter_add(1_isize) },) {
         (mut __tmp_4,) => {
@@ -234,8 +238,10 @@ fn main_0() -> i32 {
         }
     };
     assert!(
-        (({ (*vec_.borrow())[0_usize].v } == 1) && ({ (*vec_.borrow())[1_usize].v } == 8))
-            && ({ (*vec_.borrow())[3_usize].v } == 2)
+        ({
+            (({ (*vec_.borrow())[0_usize].v } == 1) && ({ (*vec_.borrow())[1_usize].v } == 8))
+                && ({ (*vec_.borrow())[3_usize].v } == 2)
+        })
     );
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
     let bags: Value<Box<[Bag]>> = Rc::new(RefCell::new(
@@ -264,9 +270,11 @@ fn main_0() -> i32 {
         }
     };
     assert!(
-        (((*bags.borrow())[(0) as usize].items.is_empty())
-            && ((*bags.borrow())[(1) as usize].items.len() == 1_usize))
-            && ((*bags.borrow())[(2) as usize].items.len() == 2_usize)
+        ({
+            (((*bags.borrow())[(0) as usize].items.is_empty())
+                && ((*bags.borrow())[(1) as usize].items.len() == 1_usize))
+                && ((*bags.borrow())[(2) as usize].items.len() == 2_usize)
+        })
     );
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
     let bag_vec: Value<Vec<Bag>> = Rc::new(RefCell::new(
@@ -295,9 +303,12 @@ fn main_0() -> i32 {
         }
     };
     assert!(
-        (((*bag_vec.borrow())[0_usize].items.is_empty())
-            && ((*bag_vec.borrow())[1_usize].items.len() == 1_usize))
-            && (vec_elem!(bag_vec.decay().offset(2_usize), items, 1_usize).with(|__s| __s.v) == 5)
+        ({
+            (((*bag_vec.borrow())[0_usize].items.is_empty())
+                && ((*bag_vec.borrow())[1_usize].items.len() == 1_usize))
+                && (vec_elem!(bag_vec.decay().offset(2_usize), items, 1_usize).with(|__s| __s.v)
+                    == 5)
+        })
     );
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
     assert!(

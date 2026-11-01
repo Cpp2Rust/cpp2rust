@@ -20,27 +20,27 @@ fn main_0() -> i32 {
     let a: Value<S> = Rc::new(RefCell::new(S { v: 6_u32 }));
     let b: Value<S> = Rc::new(RefCell::new(S { v: 4_u32 }));
     ({ SImpl::operator_add_assign(&a.as_pointer(), b.as_pointer()) });
-    assert!(({ (*a.borrow()).v } == 10_u32));
+    assert!(({ ({ (*a.borrow()).v } == 10_u32) }));
     ({ SImpl::operator_sub_assign(&a.as_pointer(), b.as_pointer()) });
-    assert!(({ (*a.borrow()).v } == 6_u32));
+    assert!(({ ({ (*a.borrow()).v } == 6_u32) }));
     ({ SImpl::operator_mul_assign(&a.as_pointer(), b.as_pointer()) });
-    assert!(({ (*a.borrow()).v } == 24_u32));
+    assert!(({ ({ (*a.borrow()).v } == 24_u32) }));
     ({ SImpl::operator_div_assign(&a.as_pointer(), b.as_pointer()) });
-    assert!(({ (*a.borrow()).v } == 6_u32));
+    assert!(({ ({ (*a.borrow()).v } == 6_u32) }));
     ({ SImpl::operator_rem_assign(&a.as_pointer(), b.as_pointer()) });
-    assert!(({ (*a.borrow()).v } == 2_u32));
+    assert!(({ ({ (*a.borrow()).v } == 2_u32) }));
     ({ SImpl::operator_bitor_assign(&a.as_pointer(), b.as_pointer()) });
-    assert!(({ (*a.borrow()).v } == 6_u32));
+    assert!(({ ({ (*a.borrow()).v } == 6_u32) }));
     ({ SImpl::operator_bitand_assign(&a.as_pointer(), b.as_pointer()) });
-    assert!(({ (*a.borrow()).v } == 4_u32));
+    assert!(({ ({ (*a.borrow()).v } == 4_u32) }));
     ({ SImpl::operator_bitxor_assign(&a.as_pointer(), b.as_pointer()) });
-    assert!(({ (*a.borrow()).v } == 0_u32));
+    assert!(({ ({ (*a.borrow()).v } == 0_u32) }));
     ({ SImpl::operator_assign_1(&a.as_pointer(), 3_u32) });
-    assert!(({ (*a.borrow()).v } == 3_u32));
+    assert!(({ ({ (*a.borrow()).v } == 3_u32) }));
     ({ SImpl::operator_shl_assign(&a.as_pointer(), 2) });
-    assert!(({ (*a.borrow()).v } == 12_u32));
+    assert!(({ ({ (*a.borrow()).v } == 12_u32) }));
     ({ SImpl::operator_shr_assign(&a.as_pointer(), 1) });
-    assert!(({ (*a.borrow()).v } == 6_u32));
+    assert!(({ ({ (*a.borrow()).v } == 6_u32) }));
     ({
         let _o: Ptr<S> = b.as_pointer();
         SImpl::operator_add_assign(
@@ -48,13 +48,13 @@ fn main_0() -> i32 {
             _o,
         )
     });
-    assert!(({ (*a.borrow()).v } == 14_u32));
+    assert!(({ ({ (*a.borrow()).v } == 14_u32) }));
     let mut c: S = S { v: 0_u32 };
     c = (*({ SImpl::operator_assign_1(&a.as_pointer(), 1_u32) })
         .upgrade()
         .deref())
     .clone();
-    assert!(({ (*a.borrow()).v } == 1_u32));
+    assert!(({ ({ (*a.borrow()).v } == 1_u32) }));
     assert!((c.v == 1_u32));
     return 0;
 }

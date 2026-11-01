@@ -2010,6 +2010,12 @@ bool ReadsMemory(const clang::Stmt *stmt) {
   });
 }
 
+bool CreatesTemporary(const clang::Stmt *stmt) {
+  return AnyStmt(stmt, [](const clang::Stmt *s) {
+    return clang::isa<clang::MaterializeTemporaryExpr>(s);
+  });
+}
+
 bool ReferencesThis(const clang::Stmt *stmt) {
   return AnyStmt(stmt, [](const clang::Stmt *s) {
     return clang::isa<clang::CXXThisExpr>(s);

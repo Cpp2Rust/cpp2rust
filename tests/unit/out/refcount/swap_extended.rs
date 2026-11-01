@@ -69,7 +69,7 @@ fn main_0() -> i32 {
     let mut l: Option<Value<i32>> = Some(Rc::new(RefCell::new(11)));
     let mut m: Ptr<i32> = l.as_pointer();
     write!(libcc2rs::cout(), "{:}\n", (m.read()),);
-    assert!(((*c.borrow()) == 2));
+    assert!(({ ((*c.borrow()) == 2) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

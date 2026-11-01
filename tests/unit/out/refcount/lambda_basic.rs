@@ -17,7 +17,7 @@ fn main_0() -> i32 {
                 return 42;
             }
         })));
-    assert!((({ (*zero.borrow()).call() }) == 42));
+    assert!(({ (({ (*zero.borrow()).call() }) == 42) }));
     let one: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::new(
         |mut x: i32| -> i32 {
             {
@@ -25,7 +25,7 @@ fn main_0() -> i32 {
             }
         },
     )));
-    assert!((({ (*one.borrow()).call(1,) }) == 2));
+    assert!(({ (({ (*one.borrow()).call(1,) }) == 2) }));
     let three: Value<FnPtr<fn(i32, i32, i32) -> i32>> =
         Rc::new(RefCell::new(FnPtr::<fn(i32, i32, i32) -> i32>::new(
             |mut x: i32, mut y: i32, mut z: i32| -> i32 {
@@ -34,7 +34,7 @@ fn main_0() -> i32 {
                 }
             },
         )));
-    assert!((({ (*three.borrow()).call(1, 2, 3,) }) == 123));
+    assert!(({ (({ (*three.borrow()).call(1, 2, 3,) }) == 123) }));
     let mut k: i32 = 3;
     let mut m: i32 = 4;
     let constants: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(
@@ -44,7 +44,7 @@ fn main_0() -> i32 {
             }
         }),
     ));
-    assert!((({ (*constants.borrow()).call(1,) }) == 8));
+    assert!(({ (({ (*constants.borrow()).call(1,) }) == 8) }));
     let mut n: i32 = (k + m);
     let derived: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(
         FnPtr::<fn(i32) -> i32>::new(|mut x: i32| -> i32 {
@@ -53,7 +53,7 @@ fn main_0() -> i32 {
             }
         }),
     ));
-    assert!((({ (*derived.borrow()).call(1,) }) == 8));
+    assert!(({ (({ (*derived.borrow()).call(1,) }) == 8) }));
     let implicit: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(
         FnPtr::<fn(i32) -> i32>::new(|mut x: i32| -> i32 {
             {
@@ -61,7 +61,7 @@ fn main_0() -> i32 {
             }
         }),
     ));
-    assert!((({ (*implicit.borrow()).call(1,) }) == 4));
+    assert!(({ (({ (*implicit.borrow()).call(1,) }) == 4) }));
     let bump: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::new(
         |mut x: i32| -> i32 {
             {
@@ -70,7 +70,7 @@ fn main_0() -> i32 {
             }
         },
     )));
-    assert!((({ (*bump.borrow()).call(1,) }) == 2));
+    assert!(({ (({ (*bump.borrow()).call(1,) }) == 2) }));
     let through_ptr: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(
         FnPtr::<fn(i32) -> i32>::new(|x: i32| -> i32 {
             {
@@ -81,7 +81,7 @@ fn main_0() -> i32 {
             }
         }),
     ));
-    assert!((({ (*through_ptr.borrow()).call(4,) }) == 8));
+    assert!(({ (({ (*through_ptr.borrow()).call(4,) }) == 8) }));
     let mut seed: i32 = 5;
     let boxed: Value<i32> = Rc::new(RefCell::new(({ (*through_ptr.borrow()).call(seed) })));
     let mut boxed_ptr: Ptr<i32> = (boxed.as_pointer());

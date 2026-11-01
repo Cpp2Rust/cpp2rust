@@ -49,7 +49,9 @@ fn main_0() -> i32 {
     let mut i: i32 = 0;
     'loop_: while (((i < 7) as i32) != 0) {
         assert!(
-            ((((*arr.borrow())[(i) as usize] <= (*arr.borrow())[(i + 1) as usize]) as i32) != 0)
+            ({
+                ((((*arr.borrow())[(i) as usize] <= (*arr.borrow())[(i + 1) as usize]) as i32) != 0)
+            })
         );
         i.prefix_inc();
     }

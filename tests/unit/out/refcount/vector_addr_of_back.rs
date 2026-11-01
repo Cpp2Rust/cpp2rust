@@ -18,10 +18,10 @@ fn main_0() -> i32 {
         (*outer.borrow_mut()).push(a0_clone)
     };
     let mut sink: Ptr<Vec<i32>> = (outer.decay().to_last());
-    assert!(((*sink.upgrade().deref()).len() == 0_usize));
+    assert!(({ ((*sink.upgrade().deref()).len() == 0_usize) }));
     let mut p: Ptr<Vec<Vec<i32>>> = (outer.as_pointer());
     sink = (p.decay().to_last());
-    assert!(((*sink.upgrade().deref()).len() == 0_usize));
+    assert!(({ ((*sink.upgrade().deref()).len() == 0_usize) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

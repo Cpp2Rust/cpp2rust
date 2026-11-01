@@ -78,53 +78,53 @@ fn main_0() -> i32 {
         let _a: Ptr<S> = a.as_pointer();
         operator_add_assign_0(_a, b.as_pointer())
     });
-    assert!(({ (*a.borrow()).v } == 10_u32));
+    assert!(({ ({ (*a.borrow()).v } == 10_u32) }));
     ({
         let _a: Ptr<S> = a.as_pointer();
         operator_sub_assign_1(_a, b.as_pointer())
     });
-    assert!(({ (*a.borrow()).v } == 6_u32));
+    assert!(({ ({ (*a.borrow()).v } == 6_u32) }));
     ({
         let _a: Ptr<S> = a.as_pointer();
         operator_mul_assign_2(_a, b.as_pointer())
     });
-    assert!(({ (*a.borrow()).v } == 24_u32));
+    assert!(({ ({ (*a.borrow()).v } == 24_u32) }));
     ({
         let _a: Ptr<S> = a.as_pointer();
         operator_div_assign_3(_a, b.as_pointer())
     });
-    assert!(({ (*a.borrow()).v } == 6_u32));
+    assert!(({ ({ (*a.borrow()).v } == 6_u32) }));
     ({
         let _a: Ptr<S> = a.as_pointer();
         operator_rem_assign_4(_a, b.as_pointer())
     });
-    assert!(({ (*a.borrow()).v } == 2_u32));
+    assert!(({ ({ (*a.borrow()).v } == 2_u32) }));
     ({
         let _a: Ptr<S> = a.as_pointer();
         operator_bitor_assign_6(_a, b.as_pointer())
     });
-    assert!(({ (*a.borrow()).v } == 6_u32));
+    assert!(({ ({ (*a.borrow()).v } == 6_u32) }));
     ({
         let _a: Ptr<S> = a.as_pointer();
         operator_bitand_assign_5(_a, b.as_pointer())
     });
-    assert!(({ (*a.borrow()).v } == 4_u32));
+    assert!(({ ({ (*a.borrow()).v } == 4_u32) }));
     ({
         let _a: Ptr<S> = a.as_pointer();
         operator_bitxor_assign_7(_a, b.as_pointer())
     });
-    assert!(({ (*a.borrow()).v } == 0_u32));
+    assert!(({ ({ (*a.borrow()).v } == 0_u32) }));
     (*a.borrow_mut()).v = 3_u32;
     ({
         let _a: Ptr<S> = a.as_pointer();
         operator_shl_assign_8(_a, 2)
     });
-    assert!(({ (*a.borrow()).v } == 12_u32));
+    assert!(({ ({ (*a.borrow()).v } == 12_u32) }));
     ({
         let _a: Ptr<S> = a.as_pointer();
         operator_shr_assign_9(_a, 1)
     });
-    assert!(({ (*a.borrow()).v } == 6_u32));
+    assert!(({ ({ (*a.borrow()).v } == 6_u32) }));
     ({
         let _a: Ptr<S> = ({
             let _a: Ptr<S> = a.as_pointer();
@@ -133,7 +133,7 @@ fn main_0() -> i32 {
         let _b: Ptr<S> = b.as_pointer();
         operator_add_assign_0(_a, _b)
     });
-    assert!(({ (*a.borrow()).v } == 14_u32));
+    assert!(({ ({ (*a.borrow()).v } == 14_u32) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

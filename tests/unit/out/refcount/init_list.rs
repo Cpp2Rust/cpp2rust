@@ -51,7 +51,7 @@ fn main_0() -> i32 {
     let p: Value<Pair> = Rc::new(RefCell::new(Pair { a: 1, b: 2 }));
     let h: Value<Holder> = Rc::new(RefCell::new(<Holder>::default()));
     ({ HolderImpl::operator_assign_1(&h.as_pointer(), p.as_pointer()) });
-    assert!(({ (*h.borrow()).p.a } == 1) && ({ (*h.borrow()).p.b } == 2));
+    assert!(({ ({ (*h.borrow()).p.a } == 1) && ({ (*h.borrow()).p.b } == 2) }));
     assert!((({ sum_1(p.as_pointer(),) }) == 3));
     return 0;
 }

@@ -108,17 +108,17 @@ pub fn main() {
 fn main_0() -> i32 {
     let a: Value<NoCopy> = Rc::new(RefCell::new(NoCopy::new({ 1 })));
     let b: Value<NoCopy> = Rc::new(RefCell::new(NoCopy::move_from({ a.as_pointer() })));
-    assert!(({ (*b.borrow()).v } == 1) && ({ (*a.borrow()).v } == 0));
+    assert!(({ ({ (*b.borrow()).v } == 1) && ({ (*a.borrow()).v } == 0) }));
     ({ NoCopyImpl::move_assign(&a.as_pointer(), b.as_pointer()) });
-    assert!(({ (*a.borrow()).v } == 1) && ({ (*b.borrow()).v } == 0));
+    assert!(({ ({ (*a.borrow()).v } == 1) && ({ (*b.borrow()).v } == 0) }));
     ({ bump_0((a.as_pointer())) });
-    assert!(({ (*a.borrow()).v } == 2));
+    assert!(({ ({ (*a.borrow()).v } == 2) }));
     let p: Value<PrivateCopy> = Rc::new(RefCell::new(PrivateCopy::new()));
     (*p.borrow_mut()).v = 3;
     let q: Value<PrivateCopy> = Rc::new(RefCell::new(PrivateCopy::move_from({ p.as_pointer() })));
-    assert!(({ (*q.borrow()).v } == 3) && ({ (*p.borrow()).v } == 0));
+    assert!(({ ({ (*q.borrow()).v } == 3) && ({ (*p.borrow()).v } == 0) }));
     ({ PrivateCopyImpl::move_assign(&p.as_pointer(), q.as_pointer()) });
-    assert!(({ (*p.borrow()).v } == 3) && ({ (*q.borrow()).v } == 0));
+    assert!(({ ({ (*p.borrow()).v } == 3) && ({ (*q.borrow()).v } == 0) }));
     let im: Value<Immovable> = Rc::new(RefCell::new(Immovable::new()));
     (*im.borrow_mut()).v = 4;
     ({ bump_ref_1(im.as_pointer()) });
@@ -129,7 +129,7 @@ fn main_0() -> i32 {
         tag: 7,
     }));
     let mut d: Container = Container::move_from({ c.as_pointer() });
-    assert!(((d.inner.v == 6) && (d.tag == 7)) && ({ (*c.borrow()).inner.v } == 0));
+    assert!(({ ((d.inner.v == 6) && (d.tag == 7)) && ({ (*c.borrow()).inner.v } == 0) }));
     let h: Value<VecHolder> = Rc::new(RefCell::new(<VecHolder>::default()));
     let mut h2: VecHolder = VecHolder::move_from({ h.as_pointer() });
     assert!((h2.items.len() == 0_usize));

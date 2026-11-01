@@ -72,7 +72,7 @@ fn main_0() -> i32 {
             Box::new([(42).into()]),
         )
     });
-    assert!(((({ (*ctx.borrow()).last_error } == 42) as i32) != 0));
+    assert!(({ ((({ (*ctx.borrow()).last_error } == 42) as i32) != 0) }));
     (*ctx.borrow_mut()).verbose = 0;
     ({
         set_error_0(
@@ -81,16 +81,21 @@ fn main_0() -> i32 {
             Box::new([(99).into()]),
         )
     });
-    assert!(((({ (*ctx.borrow()).last_error } == 42) as i32) != 0));
+    assert!(({ ((({ (*ctx.borrow()).last_error } == 42) as i32) != 0) }));
     let v: Value<value> = <Value<value>>::default();
     value::l(v.as_pointer()).write((1_i64 << 40));
     assert!(
-        (((({ pick_1(1, Box::new([((*v.borrow()).clone()).into(),])) }) == (1_i64 << 40)) as i32)
-            != 0)
+        ({
+            (((({ pick_1(1, Box::new([((*v.borrow()).clone()).into()])) }) == (1_i64 << 40))
+                as i32)
+                != 0)
+        })
     );
     value::i(v.as_pointer()).write(7);
     assert!(
-        (((({ pick_1(0, Box::new([((*v.borrow()).clone()).into(),])) }) == 7_i64) as i32) != 0)
+        ({
+            (((({ pick_1(0, Box::new([((*v.borrow()).clone()).into()])) }) == 7_i64) as i32) != 0)
+        })
     );
     return 0;
 }

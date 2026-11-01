@@ -24,9 +24,7 @@ fn f3<T1: CppLess + 'static, T2: 'static>(
     a0: Ptr<Map<T1, (Value<T1>, Value<T2>)>>,
     a1: BidirectionalIterator<(Value<T1>, Value<T2>)>,
 ) -> BidirectionalIterator<(Value<T1>, Value<T2>)> {
-    // The block ends the borrow of the iterator, e.g., in it = m.erase(it).
-    let __it = a1;
-    Map::erase(a0, &__it)
+    Map::erase(a0, &a1)
 }
 
 fn f5<T1, T2>() -> Map<T1, (Value<T1>, Value<T2>)> {
@@ -89,9 +87,7 @@ fn f27<T1: CppLess + 'static, T2: 'static>(
     a0: Ptr<Map<T1, (Value<T1>, Value<T2>)>>,
     a1: BidirectionalIterator<(Value<T1>, Value<T2>)>,
 ) -> BidirectionalIterator<(Value<T1>, Value<T2>)> {
-    // The block ends the borrow of the iterator, e.g., in it = m.erase(it).
-    let __it = a1;
-    Map::erase(a0, &__it)
+    Map::erase(a0, &a1)
 }
 
 fn f28<T1: CppLess + 'static, T2: 'static>(a0: Ptr<Map<T1, (Value<T1>, Value<T2>)>>, a1: Ptr<T1>) -> usize {

@@ -37,7 +37,7 @@ fn main_0() -> i32 {
         }),
     ));
     assert!((*it.borrow()) != v.decay().end());
-    assert!((((*it.borrow()).iter_deref().read()) == 7));
+    assert!(({ (((*it.borrow()).iter_deref().read()) == 7) }));
     match ({ v.decay().begin() },) {
         (mut __tmp_3,) => {
             let __n = v.decay().end().iter_distance(&__tmp_3);
@@ -57,7 +57,7 @@ fn main_0() -> i32 {
             reorder(__order, |__i| __tmp_4.iter_at(__i));
         }
     };
-    assert!(({ (*v.borrow())[0_usize] } == 4) && ({ (*v.borrow())[1_usize] } == 7));
+    assert!(({ ({ (*v.borrow())[0_usize] } == 4) && ({ (*v.borrow())[1_usize] } == 7) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

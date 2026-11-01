@@ -126,15 +126,19 @@ fn main_0() -> i32 {
     assert!(((single_4.with(|rc| *rc.borrow()) as i32) == 18));
     assert!((from_call_5.with(|rc| *rc.borrow()) == 1));
     assert!((depends_on_call_6.with(|rc| *rc.borrow()) == 2));
-    assert!(({ (*default_ctor_7.with(Value::clone).borrow()).v } == 2));
-    assert!(({ (*arg_ctor_8.with(Value::clone).borrow()).v } == 7));
-    assert!(Ptr::<i8>::from_string_literal(b"abc").with_c_str(|__s| {
-        (*str_9.with(Value::clone).borrow())
-            [..(*str_9.with(Value::clone).borrow()).len().saturating_sub(1)]
-            == *__s
-    }));
+    assert!(({ ({ (*default_ctor_7.with(Value::clone).borrow()).v } == 2) }));
+    assert!(({ ({ (*arg_ctor_8.with(Value::clone).borrow()).v } == 7) }));
+    assert!(
+        ({
+            Ptr::<i8>::from_string_literal(b"abc").with_c_str(|__s| {
+                (*str_9.with(Value::clone).borrow())
+                    [..(*str_9.with(Value::clone).borrow()).len().saturating_sub(1)]
+                    == *__s
+            })
+        })
+    );
     assert!((member_10.with(|rc| *rc.borrow()) == 3));
-    assert!(({ (*inline_member_11.with(Value::clone).borrow()).v } == 5));
+    assert!(({ ({ (*inline_member_11.with(Value::clone).borrow()).v } == 5) }));
     assert!((({ local_static_12() }) == 7));
     assert!((({ local_static_12() }) == 7));
     field!(({ Singleton::instance() }), hits).with_mut(|__v| __v.postfix_inc());

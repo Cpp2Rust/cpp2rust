@@ -37,16 +37,20 @@ fn main_0() -> i32 {
     let __rhs = ({ advance_1() });
     elem!((*q.borrow()), 1).write(__rhs);
     assert!(
-        ({ (*q.borrow()).clone() } == { (a.as_pointer() as Ptr::<i32>).offset((1) as isize) })
-            && ((*a.borrow())[(2) as usize] == 10)
+        ({
+            ({ (*q.borrow()).clone() } == { (a.as_pointer() as Ptr<i32>).offset((1) as isize) })
+                && ((*a.borrow())[(2) as usize] == 10)
+        })
     );
     let __rhs = ({ advance_1() });
     {
         elem!((*q.borrow()), 1).with_mut(|__v| *__v = *__v + __rhs)
     };
     assert!(
-        ({ (*q.borrow()).clone() } == { (a.as_pointer() as Ptr::<i32>).offset((2) as isize) })
-            && ((*a.borrow())[(3) as usize] == 14)
+        ({
+            ({ (*q.borrow()).clone() } == { (a.as_pointer() as Ptr<i32>).offset((2) as isize) })
+                && ((*a.borrow())[(3) as usize] == 14)
+        })
     );
     let mut pq: Ptr<Ptr<i32>> = (q.as_pointer());
     let __rhs = ({ advance_1() });
@@ -54,19 +58,25 @@ fn main_0() -> i32 {
         elem!((pq.read()), 1).with_mut(|__v| *__v = *__v + __rhs)
     };
     assert!(
-        ({ (*q.borrow()).clone() } == { (a.as_pointer() as Ptr::<i32>).offset((3) as isize) })
-            && ((*a.borrow())[(4) as usize] == 15)
+        ({
+            ({ (*q.borrow()).clone() } == { (a.as_pointer() as Ptr<i32>).offset((3) as isize) })
+                && ((*a.borrow())[(4) as usize] == 15)
+        })
     );
     let __rhs = ({ advance_1() });
     elem!((pq.read()), 1).write(__rhs);
     assert!(
-        ({ (*q.borrow()).clone() } == { (a.as_pointer() as Ptr::<i32>).offset((4) as isize) })
-            && ((*a.borrow())[(5) as usize] == 10)
+        ({
+            ({ (*q.borrow()).clone() } == { (a.as_pointer() as Ptr<i32>).offset((4) as isize) })
+                && ((*a.borrow())[(5) as usize] == 10)
+        })
     );
     ({ by_ref_2(q.as_pointer()) });
     assert!(
-        ({ (*q.borrow()).clone() } == { (a.as_pointer() as Ptr::<i32>).offset((5) as isize) })
-            && ((*a.borrow())[(6) as usize] == 17)
+        ({
+            ({ (*q.borrow()).clone() } == { (a.as_pointer() as Ptr<i32>).offset((5) as isize) })
+                && ((*a.borrow())[(6) as usize] == 17)
+        })
     );
     let s: Value<S> = Rc::new(RefCell::new(S {
         ptr: (a.as_pointer() as Ptr<i32>),
@@ -77,9 +87,11 @@ fn main_0() -> i32 {
         elem!({ (*s.borrow()).ptr.clone() }, 1).with_mut(|__v| *__v = *__v + __rhs)
     };
     assert!(
-        ({ { (*s.borrow()).ptr.clone() } } == {
-            (a.as_pointer() as Ptr<i32>).offset((1) as isize)
-        }) && ((*a.borrow())[(2) as usize] == 20)
+        ({
+            ({ { (*s.borrow()).ptr.clone() } } == {
+                (a.as_pointer() as Ptr<i32>).offset((1) as isize)
+            }) && ((*a.borrow())[(2) as usize] == 20)
+        })
     );
     let mut sp: Ptr<S> = (s.as_pointer());
     let __rhs = ({ advance_1() });
@@ -87,14 +99,16 @@ fn main_0() -> i32 {
         elem!(sp.with(|__s| __s.ptr.clone()), 1).with_mut(|__v| *__v = *__v + __rhs)
     };
     assert!(
-        ({ { (*s.borrow()).ptr.clone() } } == {
-            (a.as_pointer() as Ptr<i32>).offset((2) as isize)
-        }) && ((*a.borrow())[(3) as usize] == 24)
+        ({
+            ({ { (*s.borrow()).ptr.clone() } } == {
+                (a.as_pointer() as Ptr<i32>).offset((2) as isize)
+            }) && ((*a.borrow())[(3) as usize] == 24)
+        })
     );
     let mut b: Ptr<u8> = (a.as_pointer() as Ptr<i32>).reinterpret_cast::<u8>();
     elem!(b, 0).write(7_u8);
     elem!(b, 4).write({ (((elem!(b, 4).read()) as i32) + 1) as u8 });
-    assert!(((*a.borrow())[(0) as usize] == 7) && ((*a.borrow())[(1) as usize] == 3));
+    assert!(({ ((*a.borrow())[(0) as usize] == 7) && ((*a.borrow())[(1) as usize] == 3) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {

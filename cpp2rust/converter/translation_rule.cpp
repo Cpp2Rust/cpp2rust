@@ -277,8 +277,6 @@ ExprRule::argsToBind(clang::ASTContext &ctx, const clang::Expr *expr,
   // The right operand of an assignment is evaluated before the left one.
   auto *op = clang::dyn_cast<clang::CXXOperatorCallExpr>(expr);
   bool right_to_left = op && op->isAssignmentOp();
-  auto *call = clang::dyn_cast<clang::CallExpr>(expr);
-  unsigned first_arg = clang::isa<clang::CXXMemberCallExpr>(expr);
   std::vector<bool> bind(args.size());
   bool bind_rest = false;
   unsigned next_first = position;
@@ -293,10 +291,7 @@ ExprRule::argsToBind(clang::ASTContext &ctx, const clang::Expr *expr,
     if (arg->HasSideEffects(ctx)) {
       // A temporary that a reference parameter is bound to would be
       // materialized before the call, out of order.
-      bool materialized =
-          call && i >= first_arg && takesAddress(ctx, i, arg) &&
-          GetRefBindingTempType(ctx, call, i - first_arg).has_value();
-      bind_rest |= uses[i] > 1 || materialized ||
+      bind_rest |= uses[i] > 1 || takesTemporaryAddress(ctx, expr, i, arg) ||
                    (uses[i] == 1 && first[i] > next_first);
       bind[i] = bind_rest;
       if (uses[i] == 1) {
@@ -316,6 +311,15 @@ bool ExprRule::takesAddress(clang::ASTContext &ctx, unsigned i,
                             const clang::Expr *arg) const {
   return params[i].is_pointer() && !arg->getType()->isPointerType() &&
          !RuleRegistry::MapsToPointer(ctx, arg->getType());
+}
+
+bool ExprRule::takesTemporaryAddress(clang::ASTContext &ctx,
+                                     const clang::Expr *expr, unsigned i,
+                                     const clang::Expr *arg) const {
+  auto *call = clang::dyn_cast<clang::CallExpr>(expr);
+  unsigned first_arg = clang::isa<clang::CXXMemberCallExpr>(expr);
+  return call && i >= first_arg && takesAddress(ctx, i, arg) &&
+         GetRefBindingTempType(ctx, call, i - first_arg).has_value();
 }
 
 void RefExprFragment::dump() const {

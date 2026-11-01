@@ -8,7 +8,7 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn f_0(bytes: Vec<i32>) -> usize {
     let bytes: Value<Vec<i32>> = Rc::new(RefCell::new(bytes));
-    let mut buf: Ptr<Vec<i32>> = Ptr::alloc((*bytes.borrow()).clone());
+    let mut buf: Ptr<Vec<i32>> = Ptr::alloc(({ (*bytes.borrow()).clone() }));
     let mut n: usize = (*bytes.borrow()).len();
     buf.delete();
     return n;
@@ -23,7 +23,7 @@ fn main_0() -> i32 {
     assert!((v.len() == 3_usize));
     assert!((((v[0_usize] + v[1_usize]) + v[2_usize]) == 15));
     let l: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::from([7, 8])));
-    assert!(((*l.borrow()).len() == 2_usize));
+    assert!(({ ((*l.borrow()).len() == 2_usize) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

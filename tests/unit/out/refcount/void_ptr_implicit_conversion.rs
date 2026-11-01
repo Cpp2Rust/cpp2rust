@@ -24,7 +24,7 @@ fn main_0() -> i32 {
     assert!((((({ bump_0((opaque).clone(),) }) == 42) as i32) != 0));
     assert!(((((typed.read()) == 42) as i32) != 0));
     typed.write(7);
-    assert!(((((*value.borrow()) == 7) as i32) != 0));
+    assert!(({ ((((*value.borrow()) == 7) as i32) != 0) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

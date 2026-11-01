@@ -46,7 +46,7 @@ fn main_0() -> i32 {
     assert!((({ SImpl::operator_eq_3(&s.as_pointer(), 6_f64,) }) == 3));
     assert!((({ SImpl::operator_eq_1(&s.as_pointer(), 7,) }) == 0));
     assert!((({ SImpl::operator_add(&s.as_pointer(), t.as_pointer(),) }) == 10));
-    assert!((({ SImpl::operator_sub(&s.as_pointer(), (*t.borrow()).clone(),) }) == 2));
+    assert!(({ (({ SImpl::operator_sub(&s.as_pointer(), (*t.borrow()).clone(),) }) == 2) }));
     assert!((({ SImpl::operator_mul_6(&s.as_pointer(), t.as_pointer(),) }) == 24));
     assert!((({ SImpl::operator_mul_7(&s.as_pointer(), 2,) }) == 13));
     assert!(
@@ -56,16 +56,20 @@ fn main_0() -> i32 {
         }) == 1)
     );
     assert!(
-        (({
-            let _a: S = (*s.borrow()).clone();
-            operator_div_1(_a, 4)
-        }) == 2)
+        ({
+            (({
+                let _a: S = (*s.borrow()).clone();
+                operator_div_1(_a, 4)
+            }) == 2)
+        })
     );
     assert!(
-        (({
-            let _a: S = (*s.borrow()).clone();
-            operator_rem_2(_a, (*t.borrow()).clone())
-        }) == 2)
+        ({
+            (({
+                let _a: S = (*s.borrow()).clone();
+                operator_rem_2(_a, (*t.borrow()).clone())
+            }) == 2)
+        })
     );
     assert!(
         (({
@@ -73,7 +77,7 @@ fn main_0() -> i32 {
             operator_rem_3(_a, 4)
         }) == 3)
     );
-    assert!((({ operator_eq_4(6, (*s.borrow()).clone(),) }) == 4));
+    assert!(({ (({ operator_eq_4(6, (*s.borrow()).clone(),) }) == 4) }));
     assert!((({ operator_eq_5(6_i64, s.as_pointer(),) }) == 5));
     return 0;
 }

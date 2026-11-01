@@ -27,7 +27,7 @@ fn main_0() -> i32 {
     let a: Value<Option<Rc<dyn std::any::Any>>> = Rc::new(RefCell::new(Some(Rc::new(
         RefCell::new(Point::new({ 3 }, { 4 })),
     ))));
-    assert!((*a.borrow()).is_some());
+    assert!(({ (*a.borrow()).is_some() }));
     let mut p: Ptr<Point> = (a.as_pointer()).with(|__a: &Option<Rc<dyn std::any::Any>>| match __a
         .clone()
         .map(|__r| __r.downcast::<RefCell<Point>>())
@@ -79,7 +79,7 @@ fn main_0() -> i32 {
             == 7)
     );
     (*b.borrow_mut()) = None;
-    assert!(!((*b.borrow()).is_some()));
+    assert!(({ !((*b.borrow()).is_some()) }));
     assert!(
         ((b.as_pointer()).with(|__a: &Option<Rc<dyn std::any::Any>>| {
             match __a.clone().map(|__r| __r.downcast::<RefCell<i32>>()) {

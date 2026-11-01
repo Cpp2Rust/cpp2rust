@@ -9,10 +9,10 @@ use std::rc::{Rc, Weak};
 pub fn sink_0(it: BidirectionalIterator<(Value<i32>, Value<i32>)>) -> i32 {
     let it: Value<BidirectionalIterator<(Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(it));
     let cit: Value<BidirectionalIterator<(Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(
-        <BidirectionalIterator<(Value<i32>, Value<i32>)>>::from((*it.borrow()).clone()),
+        <BidirectionalIterator<(Value<i32>, Value<i32>)>>::from(({ (*it.borrow()).clone() })),
     ));
     return if (*cit.borrow())
-        == <BidirectionalIterator<(Value<i32>, Value<i32>)>>::from((*it.borrow()).clone())
+        == <BidirectionalIterator<(Value<i32>, Value<i32>)>>::from(({ (*it.borrow()).clone() }))
     {
         (*(*(*it.borrow()).iter_deref().upgrade().deref()).1.borrow())
     } else {
@@ -43,10 +43,10 @@ fn main_0() -> i32 {
         }),
     ));
     let const_it: Value<BidirectionalIterator<(Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(
-        <BidirectionalIterator<(Value<i32>, Value<i32>)>>::from((*it0.borrow()).clone()),
+        <BidirectionalIterator<(Value<i32>, Value<i32>)>>::from(({ (*it0.borrow()).clone() })),
     ));
     let mut r: i32 = if (*const_it.borrow())
-        == <BidirectionalIterator<(Value<i32>, Value<i32>)>>::from((*end.borrow()).clone())
+        == <BidirectionalIterator<(Value<i32>, Value<i32>)>>::from(({ (*end.borrow()).clone() }))
     {
         0
     } else {
@@ -63,10 +63,10 @@ fn main_0() -> i32 {
     let middle: Value<RandomAccessIterator<u32>> =
         Rc::new(RefCell::new(values.decay().begin().iter_add(1_isize)));
     let const_middle: Value<RandomAccessIterator<u32>> = Rc::new(RefCell::new(
-        <RandomAccessIterator<u32>>::from((*middle.borrow()).clone()),
+        <RandomAccessIterator<u32>>::from(({ (*middle.borrow()).clone() })),
     ));
-    assert!((((*const_middle.borrow()).iter_deref().read()) == 8_u32));
-    assert!((*const_middle.borrow()) == (*middle.borrow()));
+    assert!(({ (((*const_middle.borrow()).iter_deref().read()) == 8_u32) }));
+    assert!(({ (*const_middle.borrow()) == (*middle.borrow()) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

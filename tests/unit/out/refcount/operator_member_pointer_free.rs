@@ -63,7 +63,7 @@ fn main_0() -> i32 {
         x
     )
     .write(10);
-    assert!(({ (*s.borrow()).inner.x } == 10));
+    assert!(({ ({ (*s.borrow()).inner.x } == 10) }));
     let mut p: Ptr<i32> = ({
         let _s: Ptr<S> = s.as_pointer();
         operator_addr_1(_s)

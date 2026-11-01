@@ -119,31 +119,41 @@ fn main_0() -> i32 {
         let _dtor_c = ScopedDestructor::new(&c, |__p| __p.destructor());
         assert!((alive_0.with(|rc| *rc.borrow()) == 3) && (moves_2.with(|rc| *rc.borrow()) == 1));
         assert!(
-            ({ (*a.borrow()).size } == 0)
-                && ((array_elem!(a.as_pointer(), data, 0).read()) == -1_i32)
+            ({
+                ({ (*a.borrow()).size } == 0)
+                    && ((array_elem!(a.as_pointer(), data, 0).read()) == -1_i32)
+            })
         );
         assert!(
-            ({ (*c.borrow()).size } == 4) && ((array_elem!(c.as_pointer(), data, 3).read()) == 3)
+            ({
+                ({ (*c.borrow()).size } == 4)
+                    && ((array_elem!(c.as_pointer(), data, 3).read()) == 3)
+            })
         );
         let d: Value<Buffer> = Rc::new(RefCell::new(({ make_3(2) })));
         let _dtor_d = ScopedDestructor::new(&d, |__p| __p.destructor());
-        assert!(({ (*d.borrow()).size } == 2) && (moves_2.with(|rc| *rc.borrow()) == 2));
+        assert!(({ ({ (*d.borrow()).size } == 2) && (moves_2.with(|rc| *rc.borrow()) == 2) }));
         ({ BufferImpl::copy_assign(&d.as_pointer(), b.as_pointer()) });
         assert!(
-            (({ (*d.borrow()).size } == 4)
-                && ((array_elem!(d.as_pointer(), data, 0).read()) == 100))
-                && (copies_1.with(|rc| *rc.borrow()) == 2)
+            ({
+                (({ (*d.borrow()).size } == 4)
+                    && ((array_elem!(d.as_pointer(), data, 0).read()) == 100))
+                    && (copies_1.with(|rc| *rc.borrow()) == 2)
+            })
         );
         ({ BufferImpl::move_assign(&d.as_pointer(), c.as_pointer()) });
         assert!(
-            (((array_elem!(d.as_pointer(), data, 0).read()) == 0) && ({ (*c.borrow()).size } == 0))
-                && (moves_2.with(|rc| *rc.borrow()) == 3)
+            ({
+                (((array_elem!(d.as_pointer(), data, 0).read()) == 0)
+                    && ({ (*c.borrow()).size } == 0))
+                    && (moves_2.with(|rc| *rc.borrow()) == 3)
+            })
         );
         ({
             let _o: Ptr<Buffer> = d.as_pointer();
             BufferImpl::move_assign(&d.as_pointer(), _o)
         });
-        assert!(({ (*d.borrow()).size } == 4) && (moves_2.with(|rc| *rc.borrow()) == 3));
+        assert!(({ ({ (*d.borrow()).size } == 4) && (moves_2.with(|rc| *rc.borrow()) == 3) }));
     }
     assert!((alive_0.with(|rc| *rc.borrow()) == 0));
     return 0;

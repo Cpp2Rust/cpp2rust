@@ -86,7 +86,7 @@ fn main_0() -> i32 {
         .call()
     });
     assert!((c == 30));
-    assert!(((*a.borrow()) == 3));
+    assert!(({ ((*a.borrow()) == 3) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {

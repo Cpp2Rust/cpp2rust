@@ -21,14 +21,18 @@ pub fn test_memcpy_0() {
     };
     assert!(({ (r).clone() } == { ((dst.as_pointer() as Ptr::<i8>) as Ptr<i8>).to_any() }));
     assert!(
-        ((((*dst.borrow())[(0) as usize] as i32) == (('h' as i8) as i32))
-            && (((*dst.borrow())[(1) as usize] as i32) == (('e' as i8) as i32)))
-            && (((*dst.borrow())[(2) as usize] as i32) == (('l' as i8) as i32))
+        ({
+            ((((*dst.borrow())[(0) as usize] as i32) == (('h' as i8) as i32))
+                && (((*dst.borrow())[(1) as usize] as i32) == (('e' as i8) as i32)))
+                && (((*dst.borrow())[(2) as usize] as i32) == (('l' as i8) as i32))
+        })
     );
     assert!(
-        ((((*dst.borrow())[(3) as usize] as i32) == (('l' as i8) as i32))
-            && (((*dst.borrow())[(4) as usize] as i32) == (('o' as i8) as i32)))
-            && (((*dst.borrow())[(5) as usize] as i32) == (('\0' as i8) as i32))
+        ({
+            ((((*dst.borrow())[(3) as usize] as i32) == (('l' as i8) as i32))
+                && (((*dst.borrow())[(4) as usize] as i32) == (('o' as i8) as i32)))
+                && (((*dst.borrow())[(5) as usize] as i32) == (('\0' as i8) as i32))
+        })
     );
 }
 pub fn test_memset_1() {
@@ -41,10 +45,12 @@ pub fn test_memset_1() {
     };
     assert!(({ (r).clone() } == { ((buf.as_pointer() as Ptr::<i8>) as Ptr<i8>).to_any() }));
     assert!(
-        (((((*buf.borrow())[(0) as usize] as i32) == (('x' as i8) as i32))
-            && (((*buf.borrow())[(1) as usize] as i32) == (('x' as i8) as i32)))
-            && (((*buf.borrow())[(2) as usize] as i32) == (('x' as i8) as i32)))
-            && (((*buf.borrow())[(3) as usize] as i32) == (('x' as i8) as i32))
+        ({
+            (((((*buf.borrow())[(0) as usize] as i32) == (('x' as i8) as i32))
+                && (((*buf.borrow())[(1) as usize] as i32) == (('x' as i8) as i32)))
+                && (((*buf.borrow())[(2) as usize] as i32) == (('x' as i8) as i32)))
+                && (((*buf.borrow())[(3) as usize] as i32) == (('x' as i8) as i32))
+        })
     );
 }
 pub fn test_memcmp_2() {
@@ -95,14 +101,18 @@ pub fn test_memmove_3() {
         })
     );
     assert!(
-        ((((*buf.borrow())[(0) as usize] as i32) == (('a' as i8) as i32))
-            && (((*buf.borrow())[(1) as usize] as i32) == (('a' as i8) as i32)))
-            && (((*buf.borrow())[(2) as usize] as i32) == (('b' as i8) as i32))
+        ({
+            ((((*buf.borrow())[(0) as usize] as i32) == (('a' as i8) as i32))
+                && (((*buf.borrow())[(1) as usize] as i32) == (('a' as i8) as i32)))
+                && (((*buf.borrow())[(2) as usize] as i32) == (('b' as i8) as i32))
+        })
     );
     assert!(
-        ((((*buf.borrow())[(3) as usize] as i32) == (('c' as i8) as i32))
-            && (((*buf.borrow())[(4) as usize] as i32) == (('d' as i8) as i32)))
-            && (((*buf.borrow())[(5) as usize] as i32) == (('\0' as i8) as i32))
+        ({
+            ((((*buf.borrow())[(3) as usize] as i32) == (('c' as i8) as i32))
+                && (((*buf.borrow())[(4) as usize] as i32) == (('d' as i8) as i32)))
+                && (((*buf.borrow())[(5) as usize] as i32) == (('\0' as i8) as i32))
+        })
     );
 }
 pub fn test_strchr_4() {

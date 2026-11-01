@@ -55,7 +55,7 @@ fn main_0() -> i32 {
     (base.offset((4_usize) as isize))
         .reinterpret_cast::<u32>()
         .write(305419896_u32);
-    assert!(({ (*v.borrow()).b } == 305419896_u32));
+    assert!(({ ({ (*v.borrow()).b } == 305419896_u32) }));
     let mut text: Ptr<i8> = Ptr::<i8>::from_string_literal(b"example-body");
     let mut len: usize = (text.to_c_string_iterator().count()).wrapping_add(1_usize);
     let mut total: usize = ((2_usize as u64).wrapping_add((len as u64)) as usize);

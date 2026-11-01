@@ -37,9 +37,9 @@ fn main_0() -> i32 {
     {
         field!(__decomp_2, c).with_mut(|__v| *__v = *__v + 1)
     };
-    assert!(({ (*t.borrow()).a } == 11));
-    assert!({ (*t.borrow()).b });
-    assert!(({ (*t.borrow()).c } == 21));
+    assert!(({ ({ (*t.borrow()).a } == 11) }));
+    assert!(({ { (*t.borrow()).b } }));
+    assert!(({ ({ (*t.borrow()).c } == 21) }));
     (*t.borrow_mut()).a = 12;
     assert!((__decomp_2.with(|__s| __s.a) == 12));
     let __decomp_3: Ptr<Triple> = t.as_pointer();

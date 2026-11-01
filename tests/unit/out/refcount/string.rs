@@ -30,24 +30,30 @@ fn main_0() -> i32 {
         __bytes.push(0);
         __bytes
     }));
-    assert!((((*s1.borrow()).len() - 1) == 5_usize));
-    assert!((((*s1.borrow()).len() - 1) == ((*s1.borrow()).len() - 1)));
-    assert!((({ (*s1.borrow())[0_usize] } as i32) == (('h' as i8) as i32)));
-    assert!((({ (*s1.borrow())[1_usize] } as i32) == (('e' as i8) as i32)));
-    assert!((({ (*s1.borrow())[2_usize] } as i32) == (('l' as i8) as i32)));
-    assert!((({ (*s1.borrow())[3_usize] } as i32) == (('l' as i8) as i32)));
-    assert!((({ (*s1.borrow())[4_usize] } as i32) == (('o' as i8) as i32)));
+    assert!(({ (((*s1.borrow()).len() - 1) == 5_usize) }));
+    assert!(({ (((*s1.borrow()).len() - 1) == ((*s1.borrow()).len() - 1)) }));
+    assert!(({ (({ (*s1.borrow())[0_usize] } as i32) == (('h' as i8) as i32)) }));
+    assert!(({ (({ (*s1.borrow())[1_usize] } as i32) == (('e' as i8) as i32)) }));
+    assert!(({ (({ (*s1.borrow())[2_usize] } as i32) == (('l' as i8) as i32)) }));
+    assert!(({ (({ (*s1.borrow())[3_usize] } as i32) == (('l' as i8) as i32)) }));
+    assert!(({ (({ (*s1.borrow())[4_usize] } as i32) == (('o' as i8) as i32)) }));
     assert!(
-        Ptr::<i8>::from_string_literal(b"hello")
-            .with_c_str(|__s| (*s1.borrow())[..(*s1.borrow()).len().saturating_sub(1)] == *__s)
+        ({
+            Ptr::<i8>::from_string_literal(b"hello")
+                .with_c_str(|__s| (*s1.borrow())[..(*s1.borrow()).len().saturating_sub(1)] == *__s)
+        })
     );
     assert!(
-        Ptr::<i8>::from_string_literal(b"world")
-            .with_c_str(|__s| (*s1.borrow())[..(*s1.borrow()).len().saturating_sub(1)] != *__s)
+        ({
+            Ptr::<i8>::from_string_literal(b"world")
+                .with_c_str(|__s| (*s1.borrow())[..(*s1.borrow()).len().saturating_sub(1)] != *__s)
+        })
     );
     assert!(
-        !(Ptr::<i8>::from_string_literal(b"hello")
-            .with_c_str(|__s| (*s1.borrow())[..(*s1.borrow()).len().saturating_sub(1)] != *__s))
+        ({
+            !(Ptr::<i8>::from_string_literal(b"hello")
+                .with_c_str(|__s| (*s1.borrow())[..(*s1.borrow()).len().saturating_sub(1)] != *__s))
+        })
     );
     let mut p1: Ptr<i8> = s1.decay();
     assert!((((elem!(p1, 0).read()) as i32) == (('h' as i8) as i32)));
@@ -66,22 +72,26 @@ fn main_0() -> i32 {
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < ((*s2.borrow()).len() - 1)) {
         assert!(
-            (((elem!(p2, i).read()) as i32) == (('a' as i8) as i32))
-                && (({ (*s2.borrow())[(i as usize)] } as i32) == (('a' as i8) as i32))
+            ({
+                (((elem!(p2, i).read()) as i32) == (('a' as i8) as i32))
+                    && (({ (*s2.borrow())[(i as usize)] } as i32) == (('a' as i8) as i32))
+            })
         );
         i.prefix_inc();
     }
-    assert!((((*s2.borrow()).len() - 1) == 10_usize));
-    assert!((((*s2.borrow()).len() - 1) == ((*s2.borrow()).len() - 1)));
+    assert!(({ (((*s2.borrow()).len() - 1) == 10_usize) }));
+    assert!(({ (((*s2.borrow()).len() - 1) == ((*s2.borrow()).len() - 1)) }));
     (*s2.borrow_mut())[0_usize] = ('b' as i8);
     (*s2.borrow_mut())[1_usize] = ('c' as i8);
-    assert!((({ (*s2.borrow())[0_usize] } as i32) == (('b' as i8) as i32)));
-    assert!((({ (*s2.borrow())[1_usize] } as i32) == (('c' as i8) as i32)));
+    assert!(({ (({ (*s2.borrow())[0_usize] } as i32) == (('b' as i8) as i32)) }));
+    assert!(({ (({ (*s2.borrow())[1_usize] } as i32) == (('c' as i8) as i32)) }));
     let mut i: u32 = 2_u32;
     'loop_: while ((i as usize) < ((*s2.borrow()).len() - 1)) {
         assert!(
-            (((elem!(p2, i).read()) as i32) == (('a' as i8) as i32))
-                && (({ (*s2.borrow())[(i as usize)] } as i32) == (('a' as i8) as i32))
+            ({
+                (((elem!(p2, i).read()) as i32) == (('a' as i8) as i32))
+                    && (({ (*s2.borrow())[(i as usize)] } as i32) == (('a' as i8) as i32))
+            })
         );
         i.prefix_inc();
     }
@@ -91,13 +101,17 @@ fn main_0() -> i32 {
         __tmp1.push(0);
         __tmp1
     })));
-    assert!((((*s3.borrow()).len() - 1) == 5_usize));
-    assert!((((*s3.borrow()).len() - 1) == ((*s3.borrow()).len() - 1)));
+    assert!(({ (((*s3.borrow()).len() - 1) == 5_usize) }));
+    assert!(({ (((*s3.borrow()).len() - 1) == ((*s3.borrow()).len() - 1)) }));
     let mut p3: Ptr<i8> = s3.decay();
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < ((*s3.borrow()).len() - 1)) {
         assert!(
-            ({ ((elem!(p3, i).read()) as i32) } == { ({ (*s3.borrow())[(i as usize)] } as i32) })
+            ({
+                ({ ((elem!(p3, i).read()) as i32) } == {
+                    ({ (*s3.borrow())[(i as usize)] } as i32)
+                })
+            })
         );
         i.prefix_inc();
     }
@@ -121,30 +135,38 @@ fn main_0() -> i32 {
             }),
         },
     ));
-    assert!((((*s4.borrow()).len() - 1) == 3_usize));
-    assert!((((*s4.borrow()).len() - 1) == ((*s4.borrow()).len() - 1)));
+    assert!(({ (((*s4.borrow()).len() - 1) == 3_usize) }));
+    assert!(({ (((*s4.borrow()).len() - 1) == ((*s4.borrow()).len() - 1)) }));
     let mut p4: Ptr<i8> = s4.decay();
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < ((*s4.borrow()).len() - 1)) {
         assert!(
-            ({ ((elem!(p4, i).read()) as i32) } == { ({ (*s4.borrow())[(i as usize)] } as i32) })
+            ({
+                ({ ((elem!(p4, i).read()) as i32) } == {
+                    ({ (*s4.borrow())[(i as usize)] } as i32)
+                })
+            })
         );
         i.prefix_inc();
     }
     let s5: Value<Vec<i8>> = Rc::new(RefCell::new({
-        let mut r = (*s1.borrow()).clone();
+        let mut r = ({ (*s1.borrow()).clone() });
         r.pop();
         Ptr::<i8>::from_string_literal(b", world").with_c_str(|__s| r.extend_from_slice(__s));
         r.push(0);
         r
     }));
-    assert!((((*s5.borrow()).len() - 1) == 12_usize));
-    assert!((((*s5.borrow()).len() - 1) == ((*s5.borrow()).len() - 1)));
+    assert!(({ (((*s5.borrow()).len() - 1) == 12_usize) }));
+    assert!(({ (((*s5.borrow()).len() - 1) == ((*s5.borrow()).len() - 1)) }));
     let mut p5: Ptr<i8> = s5.decay();
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < ((*s5.borrow()).len() - 1)) {
         assert!(
-            ({ ((elem!(p5, i).read()) as i32) } == { ({ (*s5.borrow())[(i as usize)] } as i32) })
+            ({
+                ({ ((elem!(p5, i).read()) as i32) } == {
+                    ({ (*s5.borrow())[(i as usize)] } as i32)
+                })
+            })
         );
         i.prefix_inc();
     }
@@ -219,15 +241,15 @@ fn main_0() -> i32 {
         r.push(0);
         r
     }));
-    assert!((((*result.borrow()).len() - 1) == 8_usize));
-    assert!((({ (*result.borrow())[0_usize] } as i32) == (('b' as i8) as i32)));
-    assert!((({ (*result.borrow())[1_usize] } as i32) == (('a' as i8) as i32)));
-    assert!((({ (*result.borrow())[2_usize] } as i32) == (('r' as i8) as i32)));
-    assert!((({ (*result.borrow())[3_usize] } as i32) == 0));
-    assert!((({ (*result.borrow())[4_usize] } as i32) == ((' ' as i8) as i32)));
-    assert!((({ (*result.borrow())[5_usize] } as i32) == (('f' as i8) as i32)));
-    assert!((({ (*result.borrow())[6_usize] } as i32) == (('o' as i8) as i32)));
-    assert!((({ (*result.borrow())[7_usize] } as i32) == (('o' as i8) as i32)));
+    assert!(({ (((*result.borrow()).len() - 1) == 8_usize) }));
+    assert!(({ (({ (*result.borrow())[0_usize] } as i32) == (('b' as i8) as i32)) }));
+    assert!(({ (({ (*result.borrow())[1_usize] } as i32) == (('a' as i8) as i32)) }));
+    assert!(({ (({ (*result.borrow())[2_usize] } as i32) == (('r' as i8) as i32)) }));
+    assert!(({ (({ (*result.borrow())[3_usize] } as i32) == 0) }));
+    assert!(({ (({ (*result.borrow())[4_usize] } as i32) == ((' ' as i8) as i32)) }));
+    assert!(({ (({ (*result.borrow())[5_usize] } as i32) == (('f' as i8) as i32)) }));
+    assert!(({ (({ (*result.borrow())[6_usize] } as i32) == (('o' as i8) as i32)) }));
+    assert!(({ (({ (*result.borrow())[7_usize] } as i32) == (('o' as i8) as i32)) }));
     let mut substr_0: Vec<i8> = result.as_pointer().with(|__s: &Vec<i8>| {
         let mut __tmp1 =
             __s[5_usize..::std::cmp::min(5_usize + 3_usize, __s.len().saturating_sub(1))].to_vec();
@@ -452,7 +474,7 @@ fn main_0() -> i32 {
     let mut t2: usize = (t1).wrapping_add(((*s2.borrow()).len() - 1));
     let mut t3: usize = (t2).wrapping_add(((*s3.borrow()).len() - 1));
     let mut t4: usize = (t3).wrapping_add(((*s4.borrow()).len() - 1));
-    assert!(((t4).wrapping_add(((*s5.borrow()).len() - 1)) == 139_usize));
+    assert!(({ ((t4).wrapping_add(((*s5.borrow()).len() - 1)) == 139_usize) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

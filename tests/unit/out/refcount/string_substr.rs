@@ -166,7 +166,7 @@ fn main_0() -> i32 {
     println!(
         "field: {} {}",
         out.decay(),
-        { (*text.borrow()).value.clone() }.decay()
+        ({ { (*text.borrow()).value.clone() }.decay() })
     );
     let strings: Value<Vec<Vec<i8>>> = Rc::new(RefCell::new(Vec::from([
         {

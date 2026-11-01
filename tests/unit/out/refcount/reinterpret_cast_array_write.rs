@@ -16,19 +16,19 @@ fn main_0() -> i32 {
     assert!((((elem!(words, 0).read()) as i32) == 513));
     assert!((((elem!(words, 1).read()) as i32) == 1027));
     elem!(words, 0).write(48042_u16);
-    assert!((((*arr.borrow())[(0) as usize] as i32) == 170));
-    assert!((((*arr.borrow())[(1) as usize] as i32) == 187));
-    assert!((((*arr.borrow())[(2) as usize] as i32) == 3));
-    assert!((((*arr.borrow())[(3) as usize] as i32) == 4));
+    assert!(({ (((*arr.borrow())[(0) as usize] as i32) == 170) }));
+    assert!(({ (((*arr.borrow())[(1) as usize] as i32) == 187) }));
+    assert!(({ (((*arr.borrow())[(2) as usize] as i32) == 3) }));
+    assert!(({ (((*arr.borrow())[(3) as usize] as i32) == 4) }));
     words = (arr.as_pointer() as Ptr<u8>)
         .offset((1) as isize)
         .reinterpret_cast::<u16>();
     assert!((((elem!(words, 0).read()) as i32) == 955));
     elem!(words, 0).write(0_u16);
-    assert!((((*arr.borrow())[(0) as usize] as i32) == 170));
-    assert!((((*arr.borrow())[(1) as usize] as i32) == 0));
-    assert!((((*arr.borrow())[(2) as usize] as i32) == 0));
-    assert!((((*arr.borrow())[(3) as usize] as i32) == 4));
+    assert!(({ (((*arr.borrow())[(0) as usize] as i32) == 170) }));
+    assert!(({ (((*arr.borrow())[(1) as usize] as i32) == 0) }));
+    assert!(({ (((*arr.borrow())[(2) as usize] as i32) == 0) }));
+    assert!(({ (((*arr.borrow())[(3) as usize] as i32) == 4) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

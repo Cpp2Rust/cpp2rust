@@ -48,7 +48,7 @@ fn main_0() -> i32 {
         };
         (*counter.borrow())
     };
-    assert!(((*counter.borrow()) == 2));
+    assert!(({ ((*counter.borrow()) == 2) }));
     assert!((w == 2));
     let mut a: i32 = 0;
     let mut b: i32 = 0;
@@ -63,17 +63,19 @@ fn main_0() -> i32 {
         assert!((b == 2));
     }
     let v1: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::from([1, 2])));
-    let mut v2: Vec<i32> = {
-        a = 5;
-        (*v1.borrow()).clone()
-    }
+    let mut v2: Vec<i32> = ({
+        {
+            a = 5;
+            (*v1.borrow()).clone()
+        }
+    })
     .clone();
     {
         let __a1 = 3;
         v2.push(__a1)
     };
     assert!((a == 5));
-    assert!(((*v1.borrow()).len() == 2_usize));
+    assert!(({ ((*v1.borrow()).len() == 2_usize) }));
     assert!((v2.len() == 3_usize));
     let p1: Value<Pair> = Rc::new(RefCell::new(Pair {
         first: 1,
@@ -84,7 +86,7 @@ fn main_0() -> i32 {
         (*p1.borrow()).clone()
     };
     p2.first = 10;
-    assert!(({ (*p1.borrow()).first } == 1));
+    assert!(({ ({ (*p1.borrow()).first } == 1) }));
     assert!((p2.first == 10));
     assert!(
         (({

@@ -61,7 +61,7 @@ fn main_0() -> i32 {
     field!(({ SImpl::operator_deref(&s.as_pointer(),) }), x).write(10);
     assert!((({ SImpl::operator_arrow(&s.as_pointer(),) }).with(|__s| __s.x) == 10));
     field!(({ SImpl::operator_arrow(&s.as_pointer(),) }), x).write(11);
-    assert!(({ (*s.borrow()).inner.x } == 11));
+    assert!(({ ({ (*s.borrow()).inner.x } == 11) }));
     let mut p: Ptr<i32> = ({ SImpl::operator_addr(&s.as_pointer()) });
     assert!(((p.read()) == 1));
     p.write(5);

@@ -70,9 +70,9 @@ fn main_0() -> i32 {
     assert!((((flags >= 0) as i32) != 0));
     assert!(((((flags & ::libc::O_NONBLOCK) == 0) as i32) != 0));
     assert!(
-        (((match ({ (*fds.borrow())[(0) as usize] },) {
-            (mut __tmp_2,) => {
-                {
+        ({
+            (((match ({ (*fds.borrow())[(0) as usize] },) {
+                (mut __tmp_2,) => {
                     let __res = match 4 {
                         ::libc::F_GETFL => FdRegistry::with_fd(__tmp_2, |__fd| {
                             nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_GETFL)
@@ -106,9 +106,9 @@ fn main_0() -> i32 {
                         }
                     }
                 }
-            }
-        } == 0) as i32)
-            != 0)
+            } == 0) as i32)
+                != 0)
+        })
     );
     flags = match ({ (*fds.borrow())[(0) as usize] },) {
         (mut __tmp_3,) => {
@@ -151,7 +151,7 @@ fn main_0() -> i32 {
     assert!(
         (((match ({ ((b.as_pointer()) as Ptr<i8>).to_any() },) {
             (mut __tmp_4,) => {
-                match FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
+                match FdRegistry::with_fd(({ (*fds.borrow())[(0) as usize] }), |__fd| {
                     __tmp_4
                         .reinterpret_cast::<u8>()
                         .with_slice_mut(1_usize, |__buf| nix::unistd::read(__fd, __buf))
@@ -167,9 +167,9 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        ((((match ({ (*fds.borrow())[(0) as usize] },) {
-            (mut __tmp_5,) => {
-                {
+        ({
+            ((((match ({ (*fds.borrow())[(0) as usize] },) {
+                (mut __tmp_5,) => {
                     let __res = match 1 {
                         ::libc::F_GETFL => FdRegistry::with_fd(__tmp_5, |__fd| {
                             nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_GETFL)
@@ -203,15 +203,15 @@ fn main_0() -> i32 {
                         }
                     }
                 }
-            }
-        } & 1)
-            == 0) as i32)
-            != 0)
+            } & 1)
+                == 0) as i32)
+                != 0)
+        })
     );
     assert!(
-        (((match ({ (*fds.borrow())[(0) as usize] },) {
-            (mut __tmp_6,) => {
-                {
+        ({
+            (((match ({ (*fds.borrow())[(0) as usize] },) {
+                (mut __tmp_6,) => {
                     let __res = match 2 {
                         ::libc::F_GETFL => FdRegistry::with_fd(__tmp_6, |__fd| {
                             nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_GETFL)
@@ -245,14 +245,14 @@ fn main_0() -> i32 {
                         }
                     }
                 }
-            }
-        } == 0) as i32)
-            != 0)
+            } == 0) as i32)
+                != 0)
+        })
     );
     assert!(
-        ((((match ({ (*fds.borrow())[(0) as usize] },) {
-            (mut __tmp_7,) => {
-                {
+        ({
+            ((((match ({ (*fds.borrow())[(0) as usize] },) {
+                (mut __tmp_7,) => {
                     let __res = match 1 {
                         ::libc::F_GETFL => FdRegistry::with_fd(__tmp_7, |__fd| {
                             nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_GETFL)
@@ -286,13 +286,13 @@ fn main_0() -> i32 {
                         }
                     }
                 }
-            }
-        } & 1)
-            != 0) as i32)
-            != 0)
+            } & 1)
+                != 0) as i32)
+                != 0)
+        })
     );
-    assert!((((FdRegistry::close((*fds.borrow())[(0) as usize]) == 0) as i32) != 0));
-    assert!((((FdRegistry::close((*fds.borrow())[(1) as usize]) == 0) as i32) != 0));
+    assert!((((FdRegistry::close(({ (*fds.borrow())[(0) as usize] })) == 0) as i32) != 0));
+    assert!((((FdRegistry::close(({ (*fds.borrow())[(1) as usize] })) == 0) as i32) != 0));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

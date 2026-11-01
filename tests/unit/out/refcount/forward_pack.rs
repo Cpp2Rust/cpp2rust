@@ -149,7 +149,7 @@ fn main_0() -> i32 {
     assert!((({ forward_pack_4() }) == 0));
     let a: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 1 })));
     assert!((({ forward_pack_5(a.as_pointer(),) }) == (Overload_kLvalueOverload as i32)));
-    assert!(({ (*a.borrow()).v } == 1));
+    assert!(({ ({ (*a.borrow()).v } == 1) }));
     assert!(
         (({
             let _args: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 2 })));
@@ -169,8 +169,8 @@ fn main_0() -> i32 {
             )
         }) == 1234)
     );
-    assert!(({ (*a.borrow()).v } == 1));
-    assert!(((*i.borrow()) == 3));
+    assert!(({ ({ (*a.borrow()).v } == 1) }));
+    assert!(({ ((*i.borrow()) == 3) }));
     let lhs: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 6 })));
     let mut p: Pair = ({
         let _args_1: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 7 })));
@@ -181,7 +181,7 @@ fn main_0() -> i32 {
     assert!((p.b.v == 7));
     assert!((p.b.copies == 0));
     assert!((p.b.moves == 1));
-    assert!(({ (*lhs.borrow()).v } == 6));
+    assert!(({ ({ (*lhs.borrow()).v } == 6) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

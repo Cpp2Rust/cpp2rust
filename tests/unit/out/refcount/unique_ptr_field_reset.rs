@@ -42,7 +42,7 @@ fn main_0() -> i32 {
         field_ptr!(hp, data).write(_p.to_owned_opt())
     };
     assert!(
-        ({ (*h.borrow()).data.clone() }
+        (({ { (*h.borrow()).data.clone() } })
             .as_pointer()
             .with(|__s| __s.v)
             == 3)
@@ -59,7 +59,7 @@ fn main_0() -> i32 {
         field!(hp.with(|__s| __s.data.clone()).as_pointer(), v).with_mut(|__v| *__v = *__v + __rhs)
     };
     assert!(
-        ({ (*h.borrow()).data.clone() }
+        (({ { (*h.borrow()).data.clone() } })
             .as_pointer()
             .with(|__s| __s.v)
             == 5)

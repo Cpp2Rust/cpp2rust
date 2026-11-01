@@ -98,7 +98,10 @@ fn main_0() -> i32 {
         let _dtor_c = ScopedDestructor::new(&c, |__p| __p.destructor());
         ({ BufferImpl::copy_assign(&c.as_pointer(), a.as_pointer()) });
         assert!(
-            ({ (*c.borrow()).size } == 4) && ((array_elem!(c.as_pointer(), data, 3).read()) == 3)
+            ({
+                ({ (*c.borrow()).size } == 4)
+                    && ((array_elem!(c.as_pointer(), data, 3).read()) == 3)
+            })
         );
         assert!((alive_0.with(|rc| *rc.borrow()) == 3) && (copies_1.with(|rc| *rc.borrow()) == 2));
         ({
@@ -112,7 +115,10 @@ fn main_0() -> i32 {
         let _dtor_d = ScopedDestructor::new(&d, |__p| __p.destructor());
         assert!((alive_0.with(|rc| *rc.borrow()) == 4) && (copies_1.with(|rc| *rc.borrow()) == 3));
         assert!(
-            ({ (*a.borrow()).size } == 4) && ((array_elem!(a.as_pointer(), data, 3).read()) == 3)
+            ({
+                ({ (*a.borrow()).size } == 4)
+                    && ((array_elem!(a.as_pointer(), data, 3).read()) == 3)
+            })
         );
         ({ BufferImpl::copy_assign(&d.as_pointer(), b.as_pointer()) });
         assert!((copies_1.with(|rc| *rc.borrow()) == 4));

@@ -16,7 +16,7 @@ fn main_0() -> i32 {
     assert!((((elem!(halves, 0).read()) as i32) == 513));
     assert!((((elem!(halves, 1).read()) as i32) == 1027));
     elem!(halves, 0).write(4112_i16);
-    assert!(((*original.borrow()) == 67309584));
+    assert!(({ ((*original.borrow()) == 67309584) }));
     let arr: Value<Box<[i16]>> = Rc::new(RefCell::new(Box::new([513_i16, 1027_i16])));
     let mut as_int: Ptr<i32> = (arr.as_pointer() as Ptr<i16>).reinterpret_cast::<i32>();
     assert!(((as_int.read()) == 67305985));

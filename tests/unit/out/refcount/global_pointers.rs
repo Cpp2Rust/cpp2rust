@@ -46,16 +46,18 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!(({ (*single_entry_0.with(Value::clone).borrow()).p.clone() }).is_null());
+    assert!(({ ({ (*single_entry_0.with(Value::clone).borrow()).p.clone() }).is_null() }));
     let mut i: i32 = 0;
     'loop_: while (i < 2) {
         assert!(
             ({
-                (*entries_1.with(Value::clone).borrow())[(i) as usize]
-                    .p
-                    .clone()
+                ({
+                    (*entries_1.with(Value::clone).borrow())[(i) as usize]
+                        .p
+                        .clone()
+                })
+                .is_null()
             })
-            .is_null()
         );
         assert!(
             ({

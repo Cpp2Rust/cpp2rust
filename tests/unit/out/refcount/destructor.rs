@@ -151,7 +151,7 @@ fn main_0() -> i32 {
         let _dtor_a = ScopedDestructor::new(&a, |__p| __p.destructor());
         let b: Value<Copied> = Rc::new(RefCell::new((*a.borrow()).clone()));
         let _dtor_b = ScopedDestructor::new(&b, |__p| __p.destructor());
-        assert!(({ (*b.borrow()).v } == 5));
+        assert!(({ ({ (*b.borrow()).v } == 5) }));
     }
     assert!((global_0.with(|rc| *rc.borrow()) == 15));
     {

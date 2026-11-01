@@ -35,7 +35,7 @@ fn main_0() -> i32 {
         (b.as_pointer())
     };
     r.write(10);
-    assert!(((*a.borrow()) == 10));
+    assert!(({ ((*a.borrow()) == 10) }));
     let cr: Ptr<i32> = if ((*a.borrow()) > (*b.borrow())) {
         (a.as_pointer())
     } else {
@@ -62,15 +62,15 @@ fn main_0() -> i32 {
         (b.as_pointer())
     };
     mp.write(20);
-    assert!(((*b.borrow()) == 20));
+    assert!(({ ((*b.borrow()) == 20) }));
     if ((*a.borrow()) < (*b.borrow())) {
         (a.as_pointer())
     } else {
         (b.as_pointer())
     }
     .write(30);
-    assert!(((*a.borrow()) == 30));
-    assert!(((*b.borrow()) == 20));
+    assert!(({ ((*a.borrow()) == 30) }));
+    assert!(({ ((*b.borrow()) == 20) }));
     {
         if ((*a.borrow()) < (*b.borrow())) {
             (a.as_pointer())
@@ -79,14 +79,14 @@ fn main_0() -> i32 {
         }
         .with_mut(|__v| *__v = *__v + 5)
     };
-    assert!(((*b.borrow()) == 25));
+    assert!(({ ((*b.borrow()) == 25) }));
     let mut ap: Ptr<i32> = (if ((*a.borrow()) > (*b.borrow())) {
         (a.as_pointer())
     } else {
         (b.as_pointer())
     });
     ap.write(40);
-    assert!(((*a.borrow()) == 40));
+    assert!(({ ((*a.borrow()) == 40) }));
     if ((*a.borrow()) < (*b.borrow())) {
         ({ inc_1() });
     } else {

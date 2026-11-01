@@ -60,7 +60,7 @@ fn main_0() -> i32 {
         .with(|__s| __s.value)
             == 2)
     );
-    assert!(({ (*obj_4.with(Value::clone).borrow()).p.clone() }.with(|__s| __s.value) == 42));
+    assert!(({ ({ (*obj_4.with(Value::clone).borrow()).p.clone() }.with(|__s| __s.value) == 42) }));
     assert!(
         (({
             let __idx0 = (0) as usize;

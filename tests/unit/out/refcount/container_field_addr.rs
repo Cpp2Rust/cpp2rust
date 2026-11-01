@@ -41,8 +41,11 @@ pub fn run_1(mut h: Ptr<S>) {
         pv.with_mut(|__v: &mut Vec<i32>| __v.push(__a1))
     };
     assert!(
-        (((*h.upgrade().deref()).v.len() == 2_usize) && ((vec_elem!(h, v, 0_usize).read()) == 7))
-            && ((vec_elem!(h, v, 1_usize).read()) == 1)
+        ({
+            (((*h.upgrade().deref()).v.len() == 2_usize)
+                && ((vec_elem!(h, v, 0_usize).read()) == 7))
+                && ((vec_elem!(h, v, 1_usize).read()) == 1)
+        })
     );
     assert!((h.with(|__s| __s.tag) == 7));
 }

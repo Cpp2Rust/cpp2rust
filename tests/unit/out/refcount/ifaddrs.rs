@@ -37,7 +37,7 @@ fn main_0() -> i32 {
         } == 0) as i32)
             != 0)
     );
-    assert!((((!((*list.borrow()).is_null())) as i32) != 0));
+    assert!(({ (((!((*list.borrow()).is_null())) as i32) != 0) }));
     let mut found_loopback: i32 = 0;
     let mut ifa: Ptr<libcc2rs::Ifaddrs> = Ptr::<libcc2rs::Ifaddrs>::null();
     ifa = (*list.borrow()).clone();
@@ -106,7 +106,7 @@ fn main_0() -> i32 {
     }
     assert!((found_loopback != 0));
     {
-        let mut __cur = (*list.borrow()).clone();
+        let mut __cur = ({ (*list.borrow()).clone() });
         while !__cur.is_null() {
             let __next = __cur.with(|__i| {
                 __i.ifa_name.delete();

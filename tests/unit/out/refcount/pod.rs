@@ -43,7 +43,9 @@ fn main_0() -> i32 {
         x3: p1.x3,
     }));
     ({ PODIncrement_0(p2.as_pointer()) });
-    assert!(((({ (*p2.borrow()).x1 } + { (*p2.borrow()).x2 }) + { (*p2.borrow()).x3 }) == 39));
+    assert!(
+        ({ ((({ (*p2.borrow()).x1 } + { (*p2.borrow()).x2 }) + { (*p2.borrow()).x3 }) == 39) })
+    );
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

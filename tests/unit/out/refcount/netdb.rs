@@ -113,11 +113,15 @@ pub fn test_ipv4_literal_0() {
         } == 0) as i32)
             != 0)
     );
-    assert!((((!((*res.borrow()).is_null())) as i32) != 0));
-    assert!(((((*res.borrow()).with(|__s| __s.ai_family) == libc::AF_INET) as i32) != 0));
-    assert!(((((*res.borrow()).with(|__s| __s.ai_socktype) == libc::SOCK_STREAM) as i32) != 0));
-    assert!((((((*res.borrow()).with(|__s| __s.ai_addrlen) as usize) == 16usize) as i32) != 0));
-    assert!((((!(((*res.borrow()).with(|__s| __s.ai_addr.clone())).is_null())) as i32) != 0));
+    assert!(({ (((!((*res.borrow()).is_null())) as i32) != 0) }));
+    assert!(({ ((((*res.borrow()).with(|__s| __s.ai_family) == libc::AF_INET) as i32) != 0) }));
+    assert!(
+        ({ ((((*res.borrow()).with(|__s| __s.ai_socktype) == libc::SOCK_STREAM) as i32) != 0) })
+    );
+    assert!(
+        ({ (((((*res.borrow()).with(|__s| __s.ai_addrlen) as usize) == 16usize) as i32) != 0) })
+    );
+    assert!(({ (((!(((*res.borrow()).with(|__s| __s.ai_addr.clone())).is_null())) as i32) != 0) }));
     let mut sin: Ptr<libcc2rs::SockaddrIn> = (*res.borrow())
         .with(|__s| __s.ai_addr.clone())
         .reinterpret_cast::<libcc2rs::SockaddrIn>();
@@ -148,7 +152,7 @@ pub fn test_ipv4_literal_0() {
             != 0)
     );
     {
-        let mut __cur = (*res.borrow()).clone();
+        let mut __cur = ({ (*res.borrow()).clone() });
         while !__cur.is_null() {
             let __next = __cur.with(|__ai| {
                 if !__ai.ai_addr.is_null() {
@@ -268,10 +272,12 @@ pub fn test_ipv6_literal_1() {
         } == 0) as i32)
             != 0)
     );
-    assert!((((!((*res.borrow()).is_null())) as i32) != 0));
-    assert!(((((*res.borrow()).with(|__s| __s.ai_family) == libc::AF_INET6) as i32) != 0));
-    assert!((((((*res.borrow()).with(|__s| __s.ai_addrlen) as usize) == 28usize) as i32) != 0));
-    assert!((((!(((*res.borrow()).with(|__s| __s.ai_addr.clone())).is_null())) as i32) != 0));
+    assert!(({ (((!((*res.borrow()).is_null())) as i32) != 0) }));
+    assert!(({ ((((*res.borrow()).with(|__s| __s.ai_family) == libc::AF_INET6) as i32) != 0) }));
+    assert!(
+        ({ (((((*res.borrow()).with(|__s| __s.ai_addrlen) as usize) == 28usize) as i32) != 0) })
+    );
+    assert!(({ (((!(((*res.borrow()).with(|__s| __s.ai_addr.clone())).is_null())) as i32) != 0) }));
     let mut sin6: Ptr<libcc2rs::SockaddrIn6> = (*res.borrow())
         .with(|__s| __s.ai_addr.clone())
         .reinterpret_cast::<libcc2rs::SockaddrIn6>();
@@ -305,7 +311,7 @@ pub fn test_ipv6_literal_1() {
             != 0)
     );
     {
-        let mut __cur = (*res.borrow()).clone();
+        let mut __cur = ({ (*res.borrow()).clone() });
         while !__cur.is_null() {
             let __next = __cur.with(|__ai| {
                 if !__ai.ai_addr.is_null() {
@@ -416,8 +422,8 @@ pub fn test_null_hints_2() {
         } == 0) as i32)
             != 0)
     );
-    assert!((((!((*res.borrow()).is_null())) as i32) != 0));
-    assert!(((((*res.borrow()).with(|__s| __s.ai_family) == libc::AF_INET) as i32) != 0));
+    assert!(({ (((!((*res.borrow()).is_null())) as i32) != 0) }));
+    assert!(({ ((((*res.borrow()).with(|__s| __s.ai_family) == libc::AF_INET) as i32) != 0) }));
     let mut sin: Ptr<libcc2rs::SockaddrIn> = (*res.borrow())
         .with(|__s| __s.ai_addr.clone())
         .reinterpret_cast::<libcc2rs::SockaddrIn>();
@@ -433,7 +439,7 @@ pub fn test_null_hints_2() {
             != 0)
     );
     {
-        let mut __cur = (*res.borrow()).clone();
+        let mut __cur = ({ (*res.borrow()).clone() });
         while !__cur.is_null() {
             let __next = __cur.with(|__ai| {
                 if !__ai.ai_addr.is_null() {

@@ -48,10 +48,12 @@ fn main_0() -> i32 {
         }
     };
     assert!(
-        (((((*bytes.borrow())[(0) as usize] as i32) == 8)
-            && (((*bytes.borrow())[(1) as usize] as i32) == 8))
-            && (((*bytes.borrow())[(2) as usize] as i32) == 7))
-            && (((*bytes.borrow())[(3) as usize] as i32) == 7)
+        ({
+            (((((*bytes.borrow())[(0) as usize] as i32) == 8)
+                && (((*bytes.borrow())[(1) as usize] as i32) == 8))
+                && (((*bytes.borrow())[(2) as usize] as i32) == 7))
+                && (((*bytes.borrow())[(3) as usize] as i32) == 7)
+        })
     );
     return 0;
 }

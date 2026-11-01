@@ -42,11 +42,11 @@ fn main_0() -> i32 {
         }
     )));
     let _dtor_f = ScopedDestructor::new(&f, |__p| __p.with(|__f| __f.destroy()));
-    assert!(({ (*o.borrow()).p.clone() }).is_null());
-    assert!((({ (*f.borrow()).call() }) == 5));
+    assert!(({ ({ (*o.borrow()).p.clone() }).is_null() }));
+    assert!(({ (({ (*f.borrow()).call() }) == 5) }));
     let g: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new((*f.borrow()).move_from()));
     let _dtor_g = ScopedDestructor::new(&g, |__p| __p.with(|__f| __f.destroy()));
-    assert!((({ (*g.borrow()).call() }) == 5));
+    assert!(({ (({ (*g.borrow()).call() }) == 5) }));
     let total: Value<i32> = Rc::new(RefCell::new(0));
     let consume: Value<FnPtr<fn()>> = Rc::new(RefCell::new(lambda!(
         {
@@ -64,14 +64,14 @@ fn main_0() -> i32 {
     let _dtor_consume = ScopedDestructor::new(&consume, |__p| __p.with(|__f| __f.destroy()));
     ({ (*consume.borrow()).call() });
     ({ (*consume.borrow()).call() });
-    assert!(((*total.borrow()) == 7));
+    assert!(({ ((*total.borrow()) == 7) }));
     let o2: Value<Owner> = Rc::new(RefCell::new(Owner::new({ 9 })));
     let _dtor_o2 = ScopedDestructor::new(&o2, |__p| __p.destructor());
     let t: Value<FnPtr<fn() -> i32>> =
         Rc::new(RefCell::new(({ OwnerImpl::take(&o2.as_pointer()) })));
     let _dtor_t = ScopedDestructor::new(&t, |__p| __p.with(|__f| __f.destroy()));
-    assert!(({ (*o2.borrow()).p.clone() }).is_null());
-    assert!((({ (*t.borrow()).call() }) == 9));
+    assert!(({ ({ (*o2.borrow()).p.clone() }).is_null() }));
+    assert!(({ (({ (*t.borrow()).call() }) == 9) }));
     return 0;
 }
 pub trait OwnerImpl {

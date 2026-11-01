@@ -98,8 +98,10 @@ fn main_0() -> i32 {
         }
     };
     assert!(
-        (({ (*lts.borrow())[0_usize].v } == 1) && ({ (*lts.borrow())[1_usize].v } == 2))
-            && ({ (*lts.borrow())[2_usize].v } == 3)
+        ({
+            (({ (*lts.borrow())[0_usize].v } == 1) && ({ (*lts.borrow())[1_usize].v } == 2))
+                && ({ (*lts.borrow())[2_usize].v } == 3)
+        })
     );
     let eqs: Value<Vec<Eq>> = Rc::new(RefCell::new(Vec::from([
         Eq { v: 1 },
@@ -150,7 +152,7 @@ fn main_0() -> i32 {
             reorder(__order, |__i| __tmp_5.iter_at(__i));
         }
     };
-    assert!(({ (*cmps.borrow())[0_usize].v } == 1) && ({ (*cmps.borrow())[2_usize].v } == 3));
+    assert!(({ ({ (*cmps.borrow())[0_usize].v } == 1) && ({ (*cmps.borrow())[2_usize].v } == 3) }));
     let three: Value<Cmp> = Rc::new(RefCell::new(Cmp { v: 3 }));
     assert!(
         (match ({ cmps.decay().begin() }, { cmps.decay().end() },) {
@@ -178,7 +180,7 @@ fn main_0() -> i32 {
             reorder(__order, |__i| __tmp_8.iter_at(__i));
         }
     };
-    assert!(({ (*frees.borrow())[0_usize].v } == 1));
+    assert!(({ ({ (*frees.borrow())[0_usize].v } == 1) }));
     let ftwo: Value<Free> = Rc::new(RefCell::new(Free { v: 2 }));
     assert!(
         (match ({ frees.decay().begin() }, { frees.decay().end() },) {

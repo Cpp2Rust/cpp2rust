@@ -64,7 +64,7 @@ fn main_0() -> i32 {
             return (x * (*factor.borrow()));
         }
     )));
-    assert!((({ apply_twice_6((*scale.borrow()).copy_from(), 4,) }) == 36));
+    assert!(({ (({ apply_twice_6((*scale.borrow()).copy_from(), 4,) }) == 36) }));
     assert!(
         (({
             apply_int_0(
@@ -89,8 +89,10 @@ fn main_0() -> i32 {
             return (x * ((*factor.borrow()) as f64));
         }
     )));
-    assert!((({ apply_int_1((*generic_scale.borrow()).copy_from(), 4,) }) == 12));
-    assert!((({ apply_double_4((*generic_scale.borrow()).copy_from(), 1.5_f64,) }) == 4.5_f64));
+    assert!(({ (({ apply_int_1((*generic_scale.borrow()).copy_from(), 4,) }) == 12) }));
+    assert!(
+        ({ (({ apply_double_4((*generic_scale.borrow()).copy_from(), 1.5_f64,) }) == 4.5_f64) })
+    );
     assert!(
         (({
             apply_int_2(
@@ -113,8 +115,8 @@ fn main_0() -> i32 {
             return (x + ((*factor.borrow()) as f64));
         }
     )));
-    assert!((({ apply_int_3((*offset.borrow()).copy_from(), 4,) }) == 7));
-    assert!((({ apply_double_5((*offset.borrow()).copy_from(), 1.5_f64,) }) == 4.5_f64));
+    assert!(({ (({ apply_int_3((*offset.borrow()).copy_from(), 4,) }) == 7) }));
+    assert!(({ (({ apply_double_5((*offset.borrow()).copy_from(), 1.5_f64,) }) == 4.5_f64) }));
     let is_even: Value<FnPtr<fn(i32) -> bool>> = Rc::new(RefCell::new(
         FnPtr::<fn(i32) -> bool>::new(|mut x: i32| -> bool {
             {
@@ -122,8 +124,8 @@ fn main_0() -> i32 {
             }
         }),
     ));
-    assert!(({ none_match_7((*is_even.borrow()).copy_from(), 1, 3,) }));
-    assert!(!({ none_match_7((*is_even.borrow()).copy_from(), 1, 4,) }));
+    assert!(({ ({ none_match_7((*is_even.borrow()).copy_from(), 1, 3,) }) }));
+    assert!(({ !({ none_match_7((*is_even.borrow()).copy_from(), 1, 4,) }) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

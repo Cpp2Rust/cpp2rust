@@ -26,11 +26,13 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!(((({ (*config_0.with(Value::clone).borrow()).count } == 0) as i32) != 0));
+    assert!(({ ((({ (*config_0.with(Value::clone).borrow()).count } == 0) as i32) != 0) }));
     assert!(
-        (((({ (*config_0.with(Value::clone).borrow()).mode } as u32)
-            == ((Mode_MODE_NONE as i32) as u32)) as i32)
-            != 0)
+        ({
+            (((({ (*config_0.with(Value::clone).borrow()).mode } as u32)
+                == ((Mode_MODE_NONE as i32) as u32)) as i32)
+                != 0)
+        })
     );
     return 0;
 }

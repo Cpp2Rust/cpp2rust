@@ -5018,7 +5018,9 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
         [this, arg](clang::QualType type) {
           return MaterializeTemp(NewTempName(), type, arg);
         });
+    // The temporary is initialized in a statement, which ends its borrows.
     if (!materialized.empty()) {
+      borrows_ = false;
       return materialized;
     }
   }
@@ -5246,7 +5248,17 @@ std::string Converter::ConvertIRFragment(
               RuleRegistry::ParamIsPointer(ctx_, expr, arg_idx),
           .is_index_base = ph->is_index_base,
       };
-      result += ConvertPlaceholder(expr, arg, ph_ctx);
+      // A value is read in a block, which ends its borrows before the rule
+      // accesses what they borrow, unless it may point to a temporary, which
+      // would end too.
+      auto outer_borrows = std::exchange(borrows_, false);
+      auto value = ConvertPlaceholder(expr, arg, ph_ctx);
+      if (borrows_ && isFresh() && !CreatesTemporary(arg)) {
+        value = std::format("({{ {} }})", value);
+        borrows_ = false;
+      }
+      borrows_ |= outer_borrows;
+      result += value;
     } else if (std::get_if<TranslationRule::VaArgsFragment>(&frag)) {
       assert(expr && "variadic arguments outside an expression rule");
       result += ConvertVariadicTail(expr, all_args);

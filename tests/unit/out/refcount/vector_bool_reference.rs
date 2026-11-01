@@ -29,7 +29,7 @@ fn main_0() -> i32 {
     match (Rc::new(RefCell::new(v1.decay().offset(0_usize as isize))).as_pointer(),) {
         (__tmp_0,) => {
             (*__tmp_0.upgrade().deref()).write(false);
-            (*__tmp_0.upgrade().deref()).clone()
+            ({ (*__tmp_0.upgrade().deref()).clone() })
         }
     };
     assert!(!(v1.decay().offset(0_usize as isize).read()));
@@ -43,7 +43,7 @@ fn main_0() -> i32 {
         {
             (__tmp_1,) => {
                 (*__tmp_1.upgrade().deref()).write(true);
-                (*__tmp_1.upgrade().deref()).clone()
+                ({ (*__tmp_1.upgrade().deref()).clone() })
             }
         }
         .read();

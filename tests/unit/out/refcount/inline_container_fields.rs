@@ -138,15 +138,17 @@ fn main_0() -> i32 {
     let s: Value<State> = Rc::new(RefCell::new(<State>::default()));
     ({ fill_1((s.as_pointer())) });
     assert!(
-        ((*s.borrow()).grid[(1) as usize][(2) as usize] == 5)
-            && (({
-                sum_0(
-                    (((array_field_ptr!(s.as_pointer(), grid) as Ptr<Box<[i32]>>)
-                        .offset(1)
-                        .as_pointer()) as Ptr<i32>),
-                    3,
-                )
-            }) == 12)
+        ({
+            ((*s.borrow()).grid[(1) as usize][(2) as usize] == 5)
+                && (({
+                    sum_0(
+                        (((array_field_ptr!(s.as_pointer(), grid) as Ptr<Box<[i32]>>)
+                            .offset(1)
+                            .as_pointer()) as Ptr<i32>),
+                        3,
+                    )
+                }) == 12)
+        })
     );
     assert!(((vec_elem!(s.as_pointer(), arr, 1_usize).read()) == 7));
     let mut e: Ptr<Elem> = (field_ref!(s.as_pointer(), elems).decay().offset(2_usize));
@@ -206,9 +208,11 @@ fn main_0() -> i32 {
     (*t.borrow_mut()).grid[(0) as usize][(0) as usize] = 100;
     index!(vec_elem!(t.as_pointer(), rows, 0_usize), 0_usize).write(100);
     assert!(
-        (((index!(field!(vec_elem!(s.as_pointer(), elems, 2_usize), hist), 0).read()) == 0)
-            && ((*s.borrow()).grid[(0) as usize][(0) as usize] == 0))
-            && ((index!(vec_elem!(s.as_pointer(), rows, 0_usize), 0_usize).read()) == 1)
+        ({
+            (((index!(field!(vec_elem!(s.as_pointer(), elems, 2_usize), hist), 0).read()) == 0)
+                && ((*s.borrow()).grid[(0) as usize][(0) as usize] == 0))
+                && ((index!(vec_elem!(s.as_pointer(), rows, 0_usize), 0_usize).read()) == 1)
+        })
     );
     assert!(
         (((index!(
@@ -229,8 +233,10 @@ fn main_0() -> i32 {
         field!(p, elems).with_mut(|__v: &mut Vec<Elem>| __v.push(a0_clone))
     };
     assert!(
-        ((*p.upgrade().deref()).elems.len() == 4_usize)
-            && ((index!(field!(vec_elem!(p, elems, 3_usize), hist), 0).read()) == 100)
+        ({
+            ((*p.upgrade().deref()).elems.len() == 4_usize)
+                && ((index!(field!(vec_elem!(p, elems, 3_usize), hist), 0).read()) == 100)
+        })
     );
     let elems: Value<Vec<Elem>> = Rc::new(RefCell::new(
         (0..(2_usize) as usize)
@@ -253,27 +259,35 @@ fn main_0() -> i32 {
     );
     let moved: Value<State> = Rc::new(RefCell::new(State::move_from({ t.as_pointer() })));
     assert!(
-        ((*moved.borrow()).grid[(0) as usize][(0) as usize] == 100)
-            && ((*moved.borrow()).grid[(1) as usize][(2) as usize] == 5)
+        ({
+            ((*moved.borrow()).grid[(0) as usize][(0) as usize] == 100)
+                && ((*moved.borrow()).grid[(1) as usize][(2) as usize] == 5)
+        })
     );
     assert!(
-        (((*moved.borrow()).elems.len() == 4_usize) && ((*t.borrow()).elems.is_empty()))
-            && ((*t.borrow()).rows.is_empty())
+        ({
+            (((*moved.borrow()).elems.len() == 4_usize) && ((*t.borrow()).elems.is_empty()))
+                && ((*t.borrow()).rows.is_empty())
+        })
     );
     let assigned: Value<State> = Rc::new(RefCell::new(<State>::default()));
     ({ StateImpl::move_assign(&assigned.as_pointer(), moved.as_pointer()) });
     assert!(
-        ((*assigned.borrow()).grid[(0) as usize][(0) as usize] == 100)
-            && ((*assigned.borrow()).grid[(1) as usize][(1) as usize] == 4)
+        ({
+            ((*assigned.borrow()).grid[(0) as usize][(0) as usize] == 100)
+                && ((*assigned.borrow()).grid[(1) as usize][(1) as usize] == 4)
+        })
     );
     assert!(
-        (((index!(
-            field!(vec_elem!(assigned.as_pointer(), elems, 2_usize), coeffs),
-            1_usize
-        )
-        .read()) as i32)
-            == 7)
-            && ((*moved.borrow()).elems.is_empty())
+        ({
+            (((index!(
+                field!(vec_elem!(assigned.as_pointer(), elems, 2_usize), coeffs),
+                1_usize
+            )
+            .read()) as i32)
+                == 7)
+                && ((*moved.borrow()).elems.is_empty())
+        })
     );
     return 0;
 }

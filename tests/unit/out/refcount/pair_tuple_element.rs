@@ -21,7 +21,7 @@ fn main_0() -> i32 {
     ref_.write(7);
     assert!((first == 1.5_f64));
     assert!((second == 2));
-    assert!(((*(*p.borrow()).1.borrow()) == 7));
+    assert!(({ ((*(*p.borrow()).1.borrow()) == 7) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

@@ -47,7 +47,7 @@ fn main_0() -> i32 {
     assert!((v2 == 14));
     (p.offset((5) as isize)).write(99);
     assert!(((elem!(p, 5).read()) == 99));
-    assert!(((*arr.borrow())[(5) as usize] == 99));
+    assert!(({ ((*arr.borrow())[(5) as usize] == 99) }));
     let mut end: Ptr<i32> = p.offset((8) as isize);
     let mut sum: i32 = 0;
     let mut it: Ptr<i32> = (p).clone();

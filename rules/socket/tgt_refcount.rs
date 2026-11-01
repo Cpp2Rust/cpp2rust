@@ -219,12 +219,7 @@ fn f17(a0: i32, a1: i32) -> i32 {
 }
 
 fn f7(a0: i32, a1: i32, a2: i32, a3: AnyPtr, a4: u32) -> i32 {
-    // Computing the arguments first ends their borrows of what the call writes.
-    let __a0 = a0;
-    let __a1 = a1;
-    let __a2 = a2;
-    let __a3 = a3;
-    libcc2rs::setsockopt_refcount(__a0, __a1, __a2, __a3)
+    libcc2rs::setsockopt_refcount(a0, a1, a2, a3)
 }
 
 fn f8(a0: i32, a1: i32, a2: i32, a3: AnyPtr, a4: Ptr<u32>) -> i32 {

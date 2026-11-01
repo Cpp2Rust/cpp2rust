@@ -56,7 +56,7 @@ fn main_0() -> i32 {
     assert!(
         (({ array_ref_0((a1.as_pointer() as Ptr<usize>).reinterpret_cast::<u64>(),) }) == 3_u64)
     );
-    assert!(((*a1.borrow())[(0) as usize] == 2_usize));
+    assert!(({ ((*a1.borrow())[(0) as usize] == 2_usize) }));
     let a2: Value<Box<[usize]>> = Rc::new(RefCell::new(Box::new([4_usize, 5_usize])));
     let mut pc: PtrCtor_unsigned_long_ =
         PtrCtor_unsigned_long_::new({ (a2.as_pointer() as Ptr<usize>).reinterpret_cast::<u64>() });

@@ -95,16 +95,16 @@ fn main_0() -> i32 {
     assert!((({ CounterImpl::Get(&pc,) }) == 3));
     assert!(({ CounterImpl::operator_eq(&c1.as_pointer(), c2.as_pointer(),) }));
     assert!(({ CounterImpl::operator_eq(&c2.as_pointer(), c1.as_pointer(),) }));
-    assert!(({ (*c1.borrow()).calls } == 3));
-    assert!(({ (*c2.borrow()).calls } == 2));
+    assert!(({ ({ (*c1.borrow()).calls } == 3) }));
+    assert!(({ ({ (*c2.borrow()).calls } == 2) }));
     let t: Value<Tally> = Rc::new(RefCell::new(Tally { calls: 0 }));
     let ct: Value<Tally> = Rc::new(RefCell::new(Tally { calls: 0 }));
     let rt: Ptr<Tally> = t.as_pointer();
     assert!((({ TallyImpl::SameNameBetweenConstAndNonConst_1(&t.as_pointer(),) }) == 1));
     assert!((({ TallyImpl::SameNameBetweenConstAndNonConst_2(&ct.as_pointer(),) }) == 2));
     assert!((({ TallyImpl::SameNameBetweenConstAndNonConst_2(&rt,) }) == 2));
-    assert!(({ (*t.borrow()).calls } == 11));
-    assert!(({ (*ct.borrow()).calls } == 10));
+    assert!(({ ({ (*t.borrow()).calls } == 11) }));
+    assert!(({ ({ (*ct.borrow()).calls } == 10) }));
     return 0;
 }
 pub trait CounterImpl {

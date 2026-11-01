@@ -99,8 +99,8 @@ fn main_0() -> i32 {
                 }
             },
         )));
-    assert!((({ (*fresh.borrow()).call(3, 1,) }) as bool));
-    assert!(!({ (*fresh.borrow()).call(1, 3,) }));
+    assert!(({ (({ (*fresh.borrow()).call(3, 1,) }) as bool) }));
+    assert!(({ !({ (*fresh.borrow()).call(1, 3,) }) }));
     let assigned: Value<FnPtr<fn(i32, i32) -> bool>> =
         Rc::new(RefCell::new(FnPtr::<fn(i32, i32) -> bool>::new(
             |mut a: i32, mut b: i32| -> bool {
@@ -110,7 +110,7 @@ fn main_0() -> i32 {
             },
         )));
     (*assigned.borrow_mut()) = (*greater.borrow()).clone();
-    assert!((({ (*assigned.borrow()).call(5, 4,) }) as bool));
+    assert!(({ (({ (*assigned.borrow()).call(5, 4,) }) as bool) }));
     let less: Value<FnPtr<fn(i32, i32) -> bool>> =
         Rc::new(RefCell::new(FnPtr::<fn(i32, i32) -> bool>::new(
             |mut a: i32, mut b: i32| -> bool {
@@ -119,7 +119,7 @@ fn main_0() -> i32 {
                 }
             },
         )));
-    assert!((({ (*less.borrow()).call(1, 3,) }) as bool));
+    assert!(({ (({ (*less.borrow()).call(1, 3,) }) as bool) }));
     return 0;
 }
 pub trait Sorted__lambda_at_lambda_decltype_type_cpp_19_23__Impl {

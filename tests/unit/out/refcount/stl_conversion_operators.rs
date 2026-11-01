@@ -13,7 +13,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let mut n: u32 = 17_u32;
     let d: Value<u32> = Rc::new(RefCell::new(n));
-    assert!(((*d.borrow()) == 17_u32));
+    assert!((({ (*d.borrow()) }) == 17_u32));
     let mut name: Ptr<i8> = Ptr::<i8>::from_string_literal(b"dir/file.txt");
     let p: Value<Vec<i8>> = Rc::new(RefCell::new({
         let mut __v = Vec::new();

@@ -43,7 +43,7 @@ fn main_0() -> i32 {
         arr: Box::new([(x.as_pointer()), (x.as_pointer()), (x.as_pointer())]),
     }));
     ({ IncrementAll_0(s.as_pointer()) });
-    assert!(((*x.borrow()) == 3));
+    assert!(({ ((*x.borrow()) == 3) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

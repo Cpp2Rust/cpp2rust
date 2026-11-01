@@ -17,7 +17,7 @@ fn main_0() -> i32 {
     elem!(bytes, 1).write(190_u8);
     elem!(bytes, 2).write(173_u8);
     elem!(bytes, 3).write(222_u8);
-    assert!(((*val.borrow()) == 3735928559_u32));
+    assert!(({ ((*val.borrow()) == 3735928559_u32) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

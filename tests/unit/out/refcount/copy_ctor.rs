@@ -261,7 +261,7 @@ fn main_0() -> i32 {
     assert!((copies_0.with(|rc| *rc.borrow()) == 10));
     let i1: Value<Ignored> = Rc::new(RefCell::new(Ignored::new({ 1 })));
     let mut i2: Ignored = Ignored::copy_from({ i1.as_pointer() });
-    assert!(({ (*i1.borrow()).v } == 1) && (i2.v == -1_i32));
+    assert!(({ ({ (*i1.borrow()).v } == 1) && (i2.v == -1_i32) }));
     assert!((copies_0.with(|rc| *rc.borrow()) == 11));
     let o: Value<Owner> = Rc::new(RefCell::new(Owner {
         box_: Box_int_::new({ 3 }),
@@ -281,11 +281,11 @@ fn main_0() -> i32 {
     let t1: Value<Tracked> = Rc::new(RefCell::new(<Tracked>::default()));
     let t2: Value<Tracked> = Rc::new(RefCell::new(Tracked::copy_from({ t1.as_pointer() })));
     ({ TrackedImpl::copy_assign(&t2.as_pointer(), t1.as_pointer()) });
-    assert!(({ (*t1.borrow()).copied_from } == 2));
+    assert!(({ ({ (*t1.borrow()).copied_from } == 2) }));
     let ct: Value<Tracked> = Rc::new(RefCell::new(<Tracked>::default()));
     let mut t3: Tracked = Tracked::copy_from({ ct.as_pointer() });
     ({ touch_1((ct.as_pointer())) });
-    assert!(({ (*ct.borrow()).copied_from } == 2));
+    assert!(({ ({ (*ct.borrow()).copied_from } == 2) }));
     return 0;
 }
 pub trait CountedImpl {

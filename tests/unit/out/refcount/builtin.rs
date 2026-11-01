@@ -61,7 +61,7 @@ pub fn test_mul_overflow_long_11() {
         }) as i32)
             != 0)
     );
-    assert!(((((*r.borrow()) == 21_i64) as i32) != 0));
+    assert!(({ ((((*r.borrow()) == 21_i64) as i32) != 0) }));
     assert!({
         let (val, ovf) = 9223372036854775807_i64.overflowing_mul(2_i64);
         (r.as_pointer()).write(val);
@@ -78,7 +78,7 @@ pub fn test_mul_overflow_long_long_12() {
         }) as i32)
             != 0)
     );
-    assert!(((((*r.borrow()) == 1000000_i64) as i32) != 0));
+    assert!(({ ((((*r.borrow()) == 1000000_i64) as i32) != 0) }));
     assert!({
         let (val, ovf) = 9223372036854775807_i64.overflowing_mul(2_i64);
         (r.as_pointer()).write(val);

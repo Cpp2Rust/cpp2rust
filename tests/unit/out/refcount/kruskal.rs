@@ -245,35 +245,35 @@ fn main_0() -> i32 {
         V: V,
         E: E,
     }));
-    ({ (*graph.borrow()).edges.clone() }.as_pointer() as Ptr<Edge>)
+    (({ { (*graph.borrow()).edges.clone() } }).as_pointer() as Ptr<Edge>)
         .offset(0_usize as isize)
         .write(Edge {
             u: 0,
             v: 1,
             weight: 10_f64,
         });
-    ({ (*graph.borrow()).edges.clone() }.as_pointer() as Ptr<Edge>)
+    (({ { (*graph.borrow()).edges.clone() } }).as_pointer() as Ptr<Edge>)
         .offset(1_usize as isize)
         .write(Edge {
             u: 1,
             v: 3,
             weight: 15_f64,
         });
-    ({ (*graph.borrow()).edges.clone() }.as_pointer() as Ptr<Edge>)
+    (({ { (*graph.borrow()).edges.clone() } }).as_pointer() as Ptr<Edge>)
         .offset(2_usize as isize)
         .write(Edge {
             u: 2,
             v: 3,
             weight: 4_f64,
         });
-    ({ (*graph.borrow()).edges.clone() }.as_pointer() as Ptr<Edge>)
+    (({ { (*graph.borrow()).edges.clone() } }).as_pointer() as Ptr<Edge>)
         .offset(3_usize as isize)
         .write(Edge {
             u: 2,
             v: 0,
             weight: 6_f64,
         });
-    ({ (*graph.borrow()).edges.clone() }.as_pointer() as Ptr<Edge>)
+    (({ { (*graph.borrow()).edges.clone() } }).as_pointer() as Ptr<Edge>)
         .offset(4_usize as isize)
         .write(Edge {
             u: 0,

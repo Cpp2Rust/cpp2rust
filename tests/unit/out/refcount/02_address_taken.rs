@@ -19,7 +19,7 @@ fn main_0() -> i32 {
     (*b_ptr.borrow()).write({ ((b_ptr_ptr.read()).read()) });
     let mut offset: usize =
         ((((*b_ptr.borrow()).clone() - (*b_ptr.borrow()).clone()) as i64) as usize);
-    assert!(((*b.borrow()) == 4));
+    assert!(({ ((*b.borrow()) == 4) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

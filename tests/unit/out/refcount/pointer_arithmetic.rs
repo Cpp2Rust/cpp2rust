@@ -16,28 +16,28 @@ fn main_0() -> i32 {
     {
         p.with_mut(|__v| *__v = *__v + 1)
     };
-    assert!(((*x.borrow()) == 2));
+    assert!(({ ((*x.borrow()) == 2) }));
     let a: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2])));
     p = ((a.as_pointer() as Ptr<i32>).offset(1));
     {
         p.with_mut(|__v| *__v = *__v + 1)
     };
-    assert!(((*a.borrow())[(0) as usize] == 1) && ((*a.borrow())[(1) as usize] == 3));
+    assert!(({ ((*a.borrow())[(0) as usize] == 1) && ((*a.borrow())[(1) as usize] == 3) }));
     p.prefix_dec();
     {
         p.with_mut(|__v| *__v = *__v + 1)
     };
-    assert!(((*a.borrow())[(0) as usize] == 2) && ((*a.borrow())[(1) as usize] == 3));
+    assert!(({ ((*a.borrow())[(0) as usize] == 2) && ((*a.borrow())[(1) as usize] == 3) }));
     p = (x.as_pointer());
     {
         p.with_mut(|__v| *__v = *__v + 1)
     };
-    assert!(((*x.borrow()) == 3));
+    assert!(({ ((*x.borrow()) == 3) }));
     let mut p2: Ptr<i32> = (p).clone();
     {
         p2.with_mut(|__v| *__v = *__v + 1)
     };
-    assert!(((*x.borrow()) == 4));
+    assert!(({ ((*x.borrow()) == 4) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

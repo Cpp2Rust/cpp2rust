@@ -407,7 +407,7 @@ fn main_0() -> i32 {
         } == 3) as i32)
             != 0)
     );
-    assert!((((((*buf.borrow())[(0) as usize] as i32) == ('Z' as i32)) as i32) != 0));
+    assert!(({ (((((*buf.borrow())[(0) as usize] as i32) == ('Z' as i32)) as i32) != 0) }));
     let fmt: Value<Box<[i8]>> = Rc::new(RefCell::new((0..8).map(|_| 0_i8).collect::<Box<[i8]>>()));
     (*fmt.borrow_mut())[(0) as usize] = (('%' as i32) as i8);
     (*fmt.borrow_mut())[(1) as usize] = (('5' as i32) as i8);

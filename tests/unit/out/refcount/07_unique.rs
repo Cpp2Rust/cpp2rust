@@ -24,7 +24,7 @@ fn main_0() -> i32 {
     f.as_pointer().write(Some(Rc::new(RefCell::new(9))).take());
     f.as_pointer()
         .write(({ fn_0((*f.borrow_mut()).take()) }).take());
-    assert!((((*f.borrow()).as_pointer().read()) == 10));
+    assert!(({ (((*f.borrow()).as_pointer().read()) == 10) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

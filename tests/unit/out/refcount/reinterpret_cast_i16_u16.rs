@@ -21,7 +21,7 @@ fn main_0() -> i32 {
     assert!((((elem!(uvals, 1).read()) as i32) == 256));
     assert!((((elem!(uvals, 2).read()) as i32) == 32768));
     elem!(uvals, 0).write(42_u16);
-    assert!((((*vals.borrow())[(0) as usize] as i32) == 42));
+    assert!(({ (((*vals.borrow())[(0) as usize] as i32) == 42) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

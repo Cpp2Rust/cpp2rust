@@ -96,7 +96,9 @@ pub fn run_0(mut o: Ptr<S>) {
         field!(o, v).with_mut(|__v: &mut Vec<i32>| __v.push(__a1))
     };
     assert!(
-        ((*o.upgrade().deref()).v.len() == 1_usize) && ((vec_elem!(o, v, 0_usize).read()) == 1)
+        ({
+            ((*o.upgrade().deref()).v.len() == 1_usize) && ((vec_elem!(o, v, 0_usize).read()) == 1)
+        })
     );
     assert!((o.with(|__s| __s.tag) == 1));
 }

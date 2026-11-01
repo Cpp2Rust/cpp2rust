@@ -130,14 +130,18 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        ((((((((((((((*buf.borrow())[(0) as usize] as i32) == 1) as i32) != 0)
-            && (((((*buf.borrow())[(1) as usize] as i32) == 2) as i32) != 0))
-            as i32)
-            != 0)
-            && (((((*buf.borrow())[(2) as usize] as i32) == 3) as i32) != 0)) as i32)
-            != 0)
-            && (((((*buf.borrow())[(3) as usize] as i32) == 4) as i32) != 0)) as i32)
-            != 0)
+        ({
+            ((((((((((((((*buf.borrow())[(0) as usize] as i32) == 1) as i32) != 0)
+                && (((((*buf.borrow())[(1) as usize] as i32) == 2) as i32) != 0))
+                as i32)
+                != 0)
+                && (((((*buf.borrow())[(2) as usize] as i32) == 3) as i32) != 0))
+                as i32)
+                != 0)
+                && (((((*buf.borrow())[(3) as usize] as i32) == 4) as i32) != 0))
+                as i32)
+                != 0)
+        })
     );
     assert!(
         (((match ({ ((buf.as_pointer() as Ptr::<u8>) as Ptr<u8>).to_any() },) {
@@ -251,9 +255,12 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        ((((((((*buf.borrow())[(0) as usize] as i32) == 0) as i32) != 0)
-            && (((((*buf.borrow())[(15) as usize] as i32) == 1) as i32) != 0)) as i32)
-            != 0)
+        ({
+            ((((((((*buf.borrow())[(0) as usize] as i32) == 0) as i32) != 0)
+                && (((((*buf.borrow())[(15) as usize] as i32) == 1) as i32) != 0))
+                as i32)
+                != 0)
+        })
     );
     assert!(
         (((match ({ ((buf.as_pointer() as Ptr::<u8>) as Ptr<u8>).to_any() },) {
@@ -293,11 +300,15 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        (((((((((((*buf.borrow())[(0) as usize] as i32) == 32) as i32) != 0)
-            && (((((*buf.borrow())[(1) as usize] as i32) == 1) as i32) != 0)) as i32)
-            != 0)
-            && (((((*buf.borrow())[(15) as usize] as i32) == 5) as i32) != 0)) as i32)
-            != 0)
+        ({
+            (((((((((((*buf.borrow())[(0) as usize] as i32) == 32) as i32) != 0)
+                && (((((*buf.borrow())[(1) as usize] as i32) == 1) as i32) != 0))
+                as i32)
+                != 0)
+                && (((((*buf.borrow())[(15) as usize] as i32) == 5) as i32) != 0))
+                as i32)
+                != 0)
+        })
     );
     let text: Value<Box<[i8]>> =
         Rc::new(RefCell::new((0..64).map(|_| 0_i8).collect::<Box<[i8]>>()));

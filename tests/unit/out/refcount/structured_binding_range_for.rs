@@ -43,8 +43,8 @@ fn main_0() -> i32 {
             field!(__decomp_0, first).with_mut(|__v| *__v = *__v + __rhs)
         };
     }
-    assert!(({ (*arr.borrow())[(0) as usize].first } == 3));
-    assert!(({ (*arr.borrow())[(2) as usize].first } == 11));
+    assert!(({ ({ (*arr.borrow())[(0) as usize].first } == 3) }));
+    assert!(({ ({ (*arr.borrow())[(2) as usize].first } == 11) }));
     'loop_: for __decomp_1 in IterRange::new(
         (arr.as_pointer() as Ptr<Pair>),
         (arr.as_pointer() as Ptr<Pair>).offset((3_i64) as isize),
@@ -54,8 +54,8 @@ fn main_0() -> i32 {
         (*__decomp_1.borrow_mut()).first = 0;
         (*__decomp_1.borrow_mut()).second = 0;
     }
-    assert!(({ (*arr.borrow())[(1) as usize].first } == 7));
-    assert!(({ (*arr.borrow())[(1) as usize].second } == 4));
+    assert!(({ ({ (*arr.borrow())[(1) as usize].first } == 7) }));
+    assert!(({ ({ (*arr.borrow())[(1) as usize].second } == 4) }));
     let mut sum: i32 = 0;
     'loop_: for __decomp_2 in IterRange::new(
         (arr.as_pointer() as Ptr<Pair>),

@@ -26,10 +26,10 @@ pub fn main() {
 fn main_0() -> i32 {
     let v2: Value<usize> = Rc::new(RefCell::new(0_usize));
     ({ out_param_0(Some((v2.as_pointer()))) });
-    assert!(((*v2.borrow()) == 4_usize));
+    assert!(({ ((*v2.borrow()) == 4_usize) }));
     let pidx: Value<usize> = Rc::new(RefCell::new(0_usize));
     assert!((({ parse_1(1, Some((pidx.as_pointer())),) }) == 1));
-    assert!(((*pidx.borrow()) == 3_usize));
+    assert!(({ ((*pidx.borrow()) == 3_usize) }));
     let sv: Value<usize> = Rc::new(RefCell::new(7_usize));
     let sp: Value<Ptr<usize>> = Rc::new(RefCell::new((sv.as_pointer())));
     let mut spp: Ptr<Ptr<usize>> = (sp.as_pointer());

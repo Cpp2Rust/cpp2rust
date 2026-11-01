@@ -130,6 +130,11 @@ struct ExprRule {
   // pointer.
   bool takesAddress(clang::ASTContext &ctx, unsigned i,
                     const clang::Expr *arg) const;
+
+  // Whether the body takes a pointer to a temporary copy of arg, argument i
+  // of expr, that a reference parameter is bound to.
+  bool takesTemporaryAddress(clang::ASTContext &ctx, const clang::Expr *expr,
+                             unsigned i, const clang::Expr *arg) const;
 };
 
 struct TypeRule {

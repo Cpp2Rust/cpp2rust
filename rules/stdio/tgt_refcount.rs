@@ -32,21 +32,11 @@ fn f4(a0: &mut CFile, a1: i64, a2: i32) -> i32 {
 }
 
 fn f5(a0: AnyPtr, a1: usize, a2: usize, a3: Ptr<CFile>) -> usize {
-    // Computing the arguments first ends their borrows of what the call writes.
-    let __a0 = a0;
-    let __a1 = a1;
-    let __a2 = a2;
-    let __a3 = a3;
-    libcc2rs::fread_refcount(__a0, __a1, __a2, __a3)
+    libcc2rs::fread_refcount(a0, a1, a2, a3)
 }
 
 fn f6(a0: AnyPtr, a1: usize, a2: usize, a3: Ptr<CFile>) -> usize {
-    // Computing the arguments first ends their borrows of what the call writes.
-    let __a0 = a0;
-    let __a1 = a1;
-    let __a2 = a2;
-    let __a3 = a3;
-    libcc2rs::fwrite_refcount(__a0, __a1, __a2, __a3)
+    libcc2rs::fwrite_refcount(a0, a1, a2, a3)
 }
 
 fn f7(a0: Ptr<CFile>) -> i32 {

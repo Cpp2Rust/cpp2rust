@@ -54,8 +54,8 @@ fn main_0() -> i32 {
     let b: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::new({ 2 })));
     let c: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::new({ 3 })));
     ({ MoveOnlyImpl::move_assign(&a.as_pointer(), b.as_pointer()) });
-    assert!(({ (*a.borrow()).v } == 2));
-    assert!(({ (*b.borrow()).v } == 0));
+    assert!(({ ({ (*a.borrow()).v } == 2) }));
+    assert!(({ ({ (*b.borrow()).v } == 0) }));
     ({
         let _o: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::new({ 3 })));
         MoveOnlyImpl::move_assign(&b.as_pointer(), _o.as_pointer())
@@ -67,23 +67,25 @@ fn main_0() -> i32 {
         )
     });
     assert!(
-        (({ (*b.borrow()).v } == 0) && ({ (*a.borrow()).v } == 0)) && ({ (*c.borrow()).v } == 3)
+        ({
+            (({ (*b.borrow()).v } == 0) && ({ (*a.borrow()).v } == 0)) && ({ (*c.borrow()).v } == 3)
+        })
     );
     ({
         let _o: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::new({ 5 })));
         MoveOnlyImpl::move_assign(&a.as_pointer(), _o.as_pointer())
     });
-    assert!(({ (*a.borrow()).v } == 5));
+    assert!(({ ({ (*a.borrow()).v } == 5) }));
     ({
         let _o: Value<MoveOnly> = Rc::new(RefCell::new(({ make_0(6) })));
         MoveOnlyImpl::move_assign(&a.as_pointer(), _o.as_pointer())
     });
-    assert!(({ (*a.borrow()).v } == 6));
+    assert!(({ ({ (*a.borrow()).v } == 6) }));
     ({
         let _o: Ptr<MoveOnly> = a.as_pointer();
         MoveOnlyImpl::move_assign(&a.as_pointer(), _o)
     });
-    assert!(({ (*a.borrow()).v } == 6));
+    assert!(({ ({ (*a.borrow()).v } == 6) }));
     let vec_: Value<Vec<MoveOnly>> = Rc::new(RefCell::new(Vec::new()));
     {
         let __a1 = MoveOnly::new({ 7 });
@@ -91,16 +93,16 @@ fn main_0() -> i32 {
     };
     let d: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::new({ 8 })));
     ({ MoveOnlyImpl::move_assign(&vec_.decay().offset(0_usize), d.as_pointer()) });
-    assert!(({ (*vec_.borrow())[0_usize].v } == 8));
-    assert!(({ (*d.borrow()).v } == 0));
+    assert!(({ ({ (*vec_.borrow())[0_usize].v } == 8) }));
+    assert!(({ ({ (*d.borrow()).v } == 0) }));
     let m: Value<ConstMoveAssign> = Rc::new(RefCell::new(ConstMoveAssign::new()));
     let m1: Value<ConstMoveAssign> = Rc::new(RefCell::new(ConstMoveAssign::new()));
     let m2: Value<ConstMoveAssign> = Rc::new(RefCell::new(ConstMoveAssign::new()));
     let cm: Value<ConstMoveAssign> = Rc::new(RefCell::new(ConstMoveAssign::new()));
     ({ ConstMoveAssignImpl::operator_assign_2(&m1.as_pointer(), m.as_pointer()) });
     ({ ConstMoveAssignImpl::operator_assign_3(&m2.as_pointer(), cm.as_pointer()) });
-    assert!(({ (*m1.borrow()).mark } == 1));
-    assert!(({ (*m2.borrow()).mark } == 10));
+    assert!(({ ({ (*m1.borrow()).mark } == 1) }));
+    assert!(({ ({ (*m2.borrow()).mark } == 10) }));
     return 0;
 }
 pub trait ConstMoveAssignImpl {
