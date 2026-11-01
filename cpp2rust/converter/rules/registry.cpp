@@ -514,7 +514,10 @@ Matcher::Match<TranslationRule::TypeRule> Search(clang::ASTContext &ctx,
   }
   auto bindings = getBindings(match.rule_decl->decl, match.match.args);
   if (auto generic = match.rule_decl->rule.generic) {
-    return Search(ctx, bindings.at(generic - 1).getAsType());
+    if (auto bound = Search(ctx, bindings.at(generic - 1).getAsType());
+        bound.first) {
+      return bound;
+    }
   }
   return {&match.rule_decl->rule, std::move(bindings)};
 }
