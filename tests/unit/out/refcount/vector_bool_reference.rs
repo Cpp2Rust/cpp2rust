@@ -43,7 +43,7 @@ fn main_0() -> i32 {
             __a0
         }
         .read();
-        assert!(b);
+        assert!((b) && (i == 1));
     }
     return 0;
 }

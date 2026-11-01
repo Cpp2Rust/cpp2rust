@@ -17,7 +17,7 @@ int main() {
     std::vector<bool> v = {false, false, false};
     int i = 0;
     bool b = v[i++] = true;
-    assert(b);
+    assert(b && i == 1);
   }
   return 0;
 }

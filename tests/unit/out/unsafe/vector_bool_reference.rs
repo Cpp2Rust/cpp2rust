@@ -44,7 +44,7 @@ unsafe fn main_0() -> i32 {
             *__a0 = true;
             __a0
         };
-        assert!(b);
+        assert!((b) && ((i) == (1)));
     }
     return 0;
 }
