@@ -143,7 +143,7 @@ fn f2(a0: Vec<i8>) -> usize {
     (a0.len() - 1)
 }
 
-fn f8(a0: std::fs::File, a1: std::fs::File) -> Vec<i8> {
+fn f8(a0: libcc2rs::CppStream, a1: libcc2rs::CppStream) -> Vec<i8> {
     use std::io::Read;
     let mut __bytes: Vec<u8> = Vec::new();
     let mut __f = &a0;
