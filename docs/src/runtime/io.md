@@ -42,14 +42,20 @@ through the `CFile`; the unsafe variant forwards to `libc::fread`.
 ## C++ Streams
 
 In the refcount model `cin`, `cout`, and `cerr` are translated as
-`Ptr<std::fs::File>` values over duplicates of the standard descriptors,
-returned by the `cin`, `cout`, and `cerr` functions. `Ptr<T>` implements
-`write_fmt` and `write_all` whenever `T: Write`, forwarding to the pointee
-through `with_mut`, so `cout << x` becomes `write!(cout(), "{}", x)` and a raw
-byte range is written with `cout().write_all(..)`. In the unsafe model
-`cin_unsafe`, `cout_unsafe`, and `cerr_unsafe` return raw pointers to
-thread-local `std::fs::File` values. C++ streams do not map fully onto
-`std::fs::File`, so this translation may change in the future.
+`Ptr<CppStream>` values returned by the `cin`, `cout`, and `cerr` functions.
+`CppStream` uses the original standard descriptor number without owning or
+duplicating it. Its unbuffered reads and writes return an I/O error if the
+descriptor is closed, even when the stream is first used after the close. File
+streams use the same type, wrapping an owned `std::fs::File`; cloning these
+streams still duplicates the owned file handle.
+
+`Ptr<T>` implements `write_fmt` and `write_all` whenever `T: Write`, forwarding
+to the pointee through `with_mut`, so `cout << x` becomes
+`write!(cout(), "{}", x)` and a raw byte range is written with
+`cout().write_all(..)`. In the unsafe model `cin_unsafe`, `cout_unsafe`, and
+`cerr_unsafe` return raw pointers to thread-local `CppStream` values. The
+translation does not yet model the full C++ iostream state, including sticky
+error flags, and insertion expressions discard the returned I/O error.
 
 ## Formatting
 
@@ -94,8 +100,11 @@ The registry follows the descriptor's life. When a rule opens a file,
 raw number. When a rule performs I/O on that number, `FdRegistry::with_fd` looks
 the entry up and lends it out as a `BorrowedFd` for the duration of the call.
 When the program calls `close`, `FdRegistry::close` removes the entry, which
-closes the descriptor. The registry starts out holding the standard descriptors
-0, 1, and 2.
+closes the descriptor. The registry starts out borrowing the live standard
+descriptors 0, 1, and 2 from Rust's standard stream handles, without duplicating
+them. An explicit `close` releases the original descriptor, but dropping the
+thread-local registry does not close these borrowed standard descriptors. A file
+opened at one of these numbers is owned and closed normally.
 
 In the `fstat` rule, the descriptor argument goes through `with_fd`:
 
@@ -127,4 +136,8 @@ FdRegistry::with_fds(&wanted, |borrowed: &[BorrowedFd<'_>]| {
 
 Using a descriptor that was never opened, or using it after it was closed, is a
 bug in the original program. The registry turns such a use into a panic (with a
-message prefixed `ub:`) so the bug surfaces instead of going unnoticed.
+message prefixed `ub:`) so the bug surfaces instead of going unnoticed. This
+policy also applies when another thread has already closed a standard descriptor
+before this thread initializes its registry. The table remains thread-local: it
+does not track descriptor ownership or closure across threads, and does not
+provide native C's `EBADF` behavior for unregistered numbers.
