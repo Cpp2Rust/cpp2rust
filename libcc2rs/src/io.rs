@@ -3,49 +3,92 @@
 
 use crate::{AnyPtr, AsPointer, CFile, Ptr, Value};
 use std::cell::{RefCell, UnsafeCell};
-use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
+use std::io::{self, Read, Write};
 use std::rc::Rc;
 
+enum StreamHandle {
+    File(std::fs::File),
+    Standard(i32),
+}
+
+pub struct CppStream(StreamHandle);
+
+impl From<std::fs::File> for CppStream {
+    fn from(file: std::fs::File) -> Self {
+        Self(StreamHandle::File(file))
+    }
+}
+
+impl CppStream {
+    fn standard(fd: i32) -> Self {
+        Self(StreamHandle::Standard(fd))
+    }
+
+    pub fn try_clone(&self) -> io::Result<Self> {
+        match &self.0 {
+            StreamHandle::File(file) => file.try_clone().map(Self::from),
+            StreamHandle::Standard(fd) => Ok(Self::standard(*fd)),
+        }
+    }
+}
+
+impl Read for &CppStream {
+    fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
+        match &self.0 {
+            StreamHandle::File(file) => (&*file).read(buf),
+            StreamHandle::Standard(fd) => {
+                // A standard descriptor may have been closed. Do not create an
+                // owning File or a BorrowedFd, which requires an open descriptor.
+                let n = unsafe { libc::read(*fd, buf.as_mut_ptr().cast(), buf.len()) };
+                if n < 0 {
+                    Err(io::Error::last_os_error())
+                } else {
+                    Ok(n as usize)
+                }
+            }
+        }
+    }
+}
+
+impl Read for CppStream {
+    fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
+        (&*self).read(buf)
+    }
+}
+
+impl Write for CppStream {
+    fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
+        match &mut self.0 {
+            StreamHandle::File(file) => file.write(buf),
+            StreamHandle::Standard(fd) => {
+                // The slice is valid for the duration of this unbuffered write.
+                let n = unsafe { libc::write(*fd, buf.as_ptr().cast(), buf.len()) };
+                if n < 0 {
+                    Err(io::Error::last_os_error())
+                } else {
+                    Ok(n as usize)
+                }
+            }
+        }
+    }
+
+    fn flush(&mut self) -> io::Result<()> {
+        match &mut self.0 {
+            StreamHandle::File(file) => file.flush(),
+            StreamHandle::Standard(_) => Ok(()),
+        }
+    }
+}
+
+impl crate::ByteRepr for CppStream {}
+
 thread_local! {
-    static SAFE_STDIN: Value<std::fs::File> = Rc::new(RefCell::new(std::fs::File::from(
-        std::io::stdin().as_fd().try_clone_to_owned().unwrap(),
-    )));
-    static SAFE_STDOUT: Value<std::fs::File> = Rc::new(RefCell::new(std::fs::File::from(
-        std::io::stdout().as_fd().try_clone_to_owned().unwrap(),
-    )));
-    static SAFE_STDERR: Value<std::fs::File> = Rc::new(RefCell::new(std::fs::File::from(
-        std::io::stderr().as_fd().try_clone_to_owned().unwrap(),
-    )));
-    static UNSAFE_STDIN: UnsafeCell<std::fs::File> = unsafe {
-        UnsafeCell::new(
-            std::fs::File::from_raw_fd(
-                std::io::stdin()
-                    .as_fd()
-                    .try_clone_to_owned()
-                    .unwrap()
-                    .into_raw_fd(),
-        ))
-    };
-    static UNSAFE_STDOUT: UnsafeCell<std::fs::File> = unsafe {
-        UnsafeCell::new(
-            std::fs::File::from_raw_fd(
-                std::io::stdout()
-                    .as_fd()
-                    .try_clone_to_owned()
-                    .unwrap()
-                    .into_raw_fd(),
-        ))
-    };
-    static UNSAFE_STDERR: UnsafeCell<std::fs::File> = unsafe {
-        UnsafeCell::new(
-            std::fs::File::from_raw_fd(
-                std::io::stderr()
-                    .as_fd()
-                    .try_clone_to_owned()
-                    .unwrap()
-                    .into_raw_fd(),
-        ))
-    };
+    static SAFE_STDIN: Value<CppStream> = Rc::new(RefCell::new(CppStream::standard(0)));
+    static SAFE_STDOUT: Value<CppStream> = Rc::new(RefCell::new(CppStream::standard(1)));
+    static SAFE_STDERR: Value<CppStream> = Rc::new(RefCell::new(CppStream::standard(2)));
+    static UNSAFE_STDIN: UnsafeCell<CppStream> = UnsafeCell::new(CppStream::standard(0));
+    static UNSAFE_STDOUT: UnsafeCell<CppStream> = UnsafeCell::new(CppStream::standard(1));
+    static UNSAFE_STDERR: UnsafeCell<CppStream> = UnsafeCell::new(CppStream::standard(2));
 }
 
 thread_local! {
@@ -66,15 +109,15 @@ pub fn c_stderr() -> Ptr<CFile> {
     C_STDERR.with(AsPointer::as_pointer)
 }
 
-pub fn cin() -> Ptr<std::fs::File> {
+pub fn cin() -> Ptr<CppStream> {
     SAFE_STDIN.with(AsPointer::as_pointer)
 }
 
-pub fn cout() -> Ptr<std::fs::File> {
+pub fn cout() -> Ptr<CppStream> {
     SAFE_STDOUT.with(AsPointer::as_pointer)
 }
 
-pub fn cerr() -> Ptr<std::fs::File> {
+pub fn cerr() -> Ptr<CppStream> {
     SAFE_STDERR.with(AsPointer::as_pointer)
 }
 
@@ -82,7 +125,7 @@ pub fn cerr() -> Ptr<std::fs::File> {
 ///
 /// The caller must ensure that the returned pointer is not used after the
 /// thread finishes.
-pub unsafe fn cin_unsafe() -> *mut std::fs::File {
+pub unsafe fn cin_unsafe() -> *mut CppStream {
     UNSAFE_STDIN.with(UnsafeCell::get)
 }
 
@@ -90,7 +133,7 @@ pub unsafe fn cin_unsafe() -> *mut std::fs::File {
 ///
 /// The caller must ensure that the returned pointer is not used after the
 /// thread finishes.
-pub unsafe fn cout_unsafe() -> *mut std::fs::File {
+pub unsafe fn cout_unsafe() -> *mut CppStream {
     UNSAFE_STDOUT.with(UnsafeCell::get)
 }
 
@@ -98,7 +141,7 @@ pub unsafe fn cout_unsafe() -> *mut std::fs::File {
 ///
 /// The caller must ensure that the returned pointer is not used after the
 /// thread finishes.
-pub unsafe fn cerr_unsafe() -> *mut std::fs::File {
+pub unsafe fn cerr_unsafe() -> *mut CppStream {
     UNSAFE_STDERR.with(UnsafeCell::get)
 }
 
@@ -188,4 +231,28 @@ pub unsafe fn fread_unsafe(
     a3: *mut libc::FILE,
 ) -> usize {
     unsafe { libc::fread(a0, a1, a2, a3) }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn file_stream_io() {
+        let (read, write) = nix::unistd::pipe().unwrap();
+        let mut input = CppStream::from(std::fs::File::from(read));
+        let output = CppStream::from(std::fs::File::from(write));
+        let mut copy = output.try_clone().unwrap();
+        drop(output);
+        copy.write_all(&[0, 127, 255]).unwrap();
+        copy.flush().unwrap();
+        drop(copy);
+
+        let mut first = [9];
+        input.read_exact(&mut first).unwrap();
+        assert_eq!(first, [0]);
+        let mut rest = Vec::new();
+        (&input).read_to_end(&mut rest).unwrap();
+        assert_eq!(rest, [127, 255]);
+    }
 }
