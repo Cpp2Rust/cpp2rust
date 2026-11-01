@@ -175,6 +175,7 @@ impl<T: 'static> ByteRepr for *const T {}
 impl<T: 'static> ByteRepr for *mut T {}
 impl<A: ByteRepr, B: ByteRepr> ByteRepr for (A, B) {}
 impl<K: 'static, V: 'static> ByteRepr for std::collections::BTreeMap<K, V> {}
+impl ByteRepr for std::rc::Rc<dyn std::any::Any> {}
 
 // Runs `f` with a zeroed scratch buffer of `len` elements. Small buffers live
 // on the stack so that accessing memory through a reinterpreted pointer does

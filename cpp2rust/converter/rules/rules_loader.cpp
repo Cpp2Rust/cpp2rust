@@ -27,6 +27,7 @@
 
 #include "converter/converter_lib.h"
 #include "converter/rules/decls.h"
+#include "converter/rules/registry.h"
 #include "logging.h"
 
 namespace cpp2rust::RulesLoader {
@@ -314,6 +315,16 @@ const llvm::json::Object &CxxIndex() {
 std::string WrapRule(const llvm::json::Object &rule, bool is_cxx) {
   auto dir = rule.getString("dir")->str();
   auto text = rule.getString("text")->str();
+  if (auto header = rule.getString("template_header")) {
+    auto name = rule.getString("name")->str();
+    for (auto model : {Model::kUnsafe, Model::kRefCount}) {
+      auto cpp_type = RuleRegistry::InitCppType(model, dir, name);
+      if (!cpp_type.empty()) {
+        text += std::format("{} using {} = {};\n", header->str(),
+                            RuleRegistry::InitAliasName(model, name), cpp_type);
+      }
+    }
+  }
   if (!is_cxx) {
     return std::format("#define {0} cpp2rust_rules_{1}_{0}\n{2}#undef {0}\n",
                        rule.getString("name")->str(), dir, text);

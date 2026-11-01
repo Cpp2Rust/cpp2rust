@@ -899,6 +899,8 @@ protected:
 
   virtual bool IsReferenceType(const clang::Expr *expr) const;
 
+  bool ExprMapsValueToPointer(const clang::CallExpr *expr) const;
+
   virtual bool RecordDerivesDefault(const clang::RecordDecl *decl);
 
   virtual bool TypeDerivesDefault(clang::QualType qual_type);

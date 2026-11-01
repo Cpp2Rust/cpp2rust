@@ -92,6 +92,7 @@ bool AnyFragment(const std::vector<BodyFragment> &body,
 struct TypeInfo {
   std::vector<std::string> derives;
   std::string type;
+  std::string cpp_type;
   bool is_refcount_pointer = false;
   bool is_unsafe_pointer = false;
 
@@ -102,6 +103,7 @@ struct TypeInfo {
 
 struct ExprRule {
   std::vector<TypeInfo> params;
+  TypeInfo init;
   TypeInfo return_type;
   std::vector<std::vector<Bound>> generics; // "T1" -> [Ord, Clone]
   std::vector<BodyFragment> body;

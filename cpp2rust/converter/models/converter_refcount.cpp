@@ -1214,7 +1214,7 @@ void ConverterRefCount::EmitCallResult(clang::CallExpr *expr, std::string str,
   };
   auto ty = GetReturnTypeOfFunction(expr);
   if (auto *ref = ty->getAs<clang::ReferenceType>();
-      ref && !isAddrOf() && !isVoid()) {
+      ref && !isAddrOf() && !isVoid() && !ExprMapsValueToPointer(expr)) {
     if (isLValue()) {
       pending_deref_.set(wrap(std::move(str)), /*fresh=*/true);
       return;

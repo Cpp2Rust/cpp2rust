@@ -160,16 +160,19 @@ fn f118<T1>(a0: Ptr<bool>, a1: usize) -> Ptr<bool> {
 }
 
 fn f119(a0: Ptr<bool>, a1: bool) -> Ptr<bool> {
-    a0.write(a1);
-    a0
+    let __a0 = a0;
+    __a0.write(a1);
+    __a0
 }
 
 fn f120(a0: Ptr<bool>, a1: bool) -> Ptr<bool> {
-    a0.write(a1);
-    a0
+    let __a0 = a0;
+    __a0.write(a1);
+    __a0
 }
 
 fn f121(a0: Ptr<bool>, a1: Ptr<bool>) -> Ptr<bool> {
-    a0.write(a1.read());
-    a0
+    let __a0 = a0;
+    __a0.write(a1.read());
+    __a0
 }

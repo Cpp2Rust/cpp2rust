@@ -4,9 +4,9 @@
 use cfg_expr::Expression;
 use cfg_expr::expr::{Predicate, TargetPredicate};
 use ra_ap_syntax::ast::{
-    HasArgList, HasAttrs, HasGenericArgs, HasGenericParams, HasName, HasTypeBounds,
+    HasArgList, HasAttrs, HasGenericArgs, HasGenericParams, HasName, HasTypeBounds, IsString,
 };
-use ra_ap_syntax::{AstNode, SyntaxKind, ast, match_ast};
+use ra_ap_syntax::{AstNode, AstToken, SyntaxKind, ast, match_ast};
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
@@ -40,6 +40,30 @@ fn pointer_flags(ty: &ast::Type) -> (bool, bool) {
         "type cannot be both refcount and unsafe pointer"
     );
     flags
+}
+
+fn cpp_type_of(ty: &ast::Type) -> Option<String> {
+    let ast::Type::MacroType(macro_type) = ty else {
+        return None;
+    };
+    let call = macro_type.macro_call()?;
+    if call.path()?.segment()?.name_ref()?.text() != "cpp_type" {
+        return None;
+    }
+    let token = call
+        .token_tree()?
+        .syntax()
+        .descendants_with_tokens()
+        .filter_map(|element| element.into_token())
+        .find(|token| token.kind() == SyntaxKind::STRING)
+        .expect("cpp_type! must start with a string literal");
+    let string = ast::String::cast(token).expect("cpp_type! literal is not a string");
+    let text = string.text_without_quotes();
+    assert!(
+        !text.contains('\\'),
+        "cpp_type! literal must not contain escapes"
+    );
+    Some(text.to_string())
 }
 
 fn is_va_args_type(ty: &ast::Type) -> bool {
@@ -341,6 +365,7 @@ struct ParamInfo {
     is_mut_ref: bool,
     is_va_args: bool,
     is_init: bool,
+    cpp_type: Option<String>,
 }
 
 struct FnIrBuilder<'a> {
@@ -376,6 +401,11 @@ impl<'a> FnIrBuilder<'a> {
                 "variadic argument parameter must be named `va`, found `{name}`"
             );
             let is_init = name == "init";
+            let cpp_type = cpp_type_of(&ty);
+            assert!(
+                cpp_type.is_none() || is_init,
+                "cpp_type! is only allowed as the type of `init`, found on `{name}`"
+            );
             params.push(ParamInfo {
                 name,
                 ty: ty.syntax().text().to_string(),
@@ -384,6 +414,7 @@ impl<'a> FnIrBuilder<'a> {
                 is_mut_ref: matches!(&ty, ast::Type::RefType(r) if r.mut_token().is_some()),
                 is_va_args,
                 is_init,
+                cpp_type,
             });
         }
         assert!(
@@ -409,6 +440,7 @@ impl<'a> FnIrBuilder<'a> {
                 is_refcount_pointer,
                 is_unsafe_pointer,
                 derives: Vec::new(),
+                cpp_type: None,
             })
         }
     }
@@ -623,7 +655,7 @@ impl<'a> FnIrBuilder<'a> {
 
         let params_map: BTreeMap<String, TypeInfo> = params
             .iter()
-            .filter(|p| !p.is_va_args && !p.is_init)
+            .filter(|p| !p.is_va_args)
             .map(|p| {
                 (
                     p.name.clone(),
@@ -632,6 +664,7 @@ impl<'a> FnIrBuilder<'a> {
                         is_refcount_pointer: p.is_refcount_pointer,
                         is_unsafe_pointer: p.is_unsafe_pointer,
                         derives: Vec::new(),
+                        cpp_type: p.cpp_type.clone(),
                     },
                 )
             })
@@ -742,6 +775,7 @@ impl<'a> TypeIrBuilder<'a> {
                 is_refcount_pointer,
                 is_unsafe_pointer,
                 derives: Vec::new(),
+                cpp_type: None,
             },
         }
     }

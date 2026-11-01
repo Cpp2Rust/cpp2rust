@@ -70,6 +70,8 @@ pub struct TypeInfo {
     pub is_unsafe_pointer: bool,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub derives: Vec<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cpp_type: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -121,7 +123,12 @@ impl FnIr {
 
     pub fn validate(&self, name: &str) {
         validate_consecutive_keys(
-            self.params.as_ref().map(|p| p.keys()).into_iter().flatten(),
+            self.params
+                .as_ref()
+                .map(|p| p.keys())
+                .into_iter()
+                .flatten()
+                .filter(|key| *key != "init"),
             'a',
             0,
             &format!("Rule {name} params"),

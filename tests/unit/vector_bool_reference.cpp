@@ -13,5 +13,11 @@ int main() {
   assert(v1[0]);
   v1[0] = false;
   assert(!v1[0]);
+  {
+    std::vector<bool> v = {false, false, false};
+    int i = 0;
+    bool b = v[i++] = true;
+    assert(b && i == 1);
+  }
   return 0;
 }
