@@ -6,24 +6,12 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, MoveAssign)]
-#[byte_size(32)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct Text {
     #[offset(0)]
-    #[byte_size(32)]
-    pub value: Vec<i8>,
-}
-impl Text {
-    pub fn move_from(_a0: Ptr<Text>) -> Self {
-        Self {
-            value: field!(_a0, value).with_mut(std::mem::take),
-        }
-    }
-}
-impl Default for Text {
-    fn default() -> Self {
-        { Text { value: vec![0] } }
-    }
+    #[byte_size(8)]
+    pub value: Ptr<Vec<i8>>,
 }
 pub fn receiver_0(s: Ptr<Vec<i8>>, calls: Ptr<i32>) -> Ptr<Vec<i8>> {
     calls.with_mut(|__v| __v.prefix_inc());
@@ -181,16 +169,17 @@ fn main_0() -> i32 {
             }),
         });
     println!("empty: {}", ((*out.borrow()).len() - 1));
+    let field: Value<Vec<i8>> = Rc::new(RefCell::new({
+        let mut __bytes = Ptr::<i8>::from_string_literal(b"hello").to_c_bytes();
+        __bytes.push(0);
+        __bytes
+    }));
     let text: Value<Text> = Rc::new(RefCell::new(Text {
-        value: {
-            let mut __bytes = Ptr::<i8>::from_string_literal(b"hello").to_c_bytes();
-            __bytes.push(0);
-            __bytes
-        },
+        value: field.as_pointer(),
     }));
     out.as_pointer().write(
         match (
-            field_ref!(text.as_pointer(), value).as_pointer(),
+            ({ (*text.borrow()).value.clone() }).clone(),
             1_usize,
             2_usize,
         ) {
@@ -206,7 +195,7 @@ fn main_0() -> i32 {
     println!(
         "field: {} {}",
         out.decay(),
-        field_ref!(text.as_pointer(), value).decay()
+        { (*text.borrow()).value.clone() }.decay()
     );
     let strings: Value<Vec<Vec<i8>>> = Rc::new(RefCell::new(Vec::from([
         {
@@ -238,14 +227,5 @@ fn main_0() -> i32 {
     );
     println!("element: {} {}", out.decay(), index);
     return 0;
-}
-pub trait TextImpl {
-    fn move_assign(&self, _a0: Ptr<Text>) -> Ptr<Text>;
-}
-impl TextImpl for Ptr<Text> {
-    fn move_assign(&self, _a0: Ptr<Text>) -> Ptr<Text> {
-        field!((*self), value).write({ { (*_a0.upgrade().deref()).value.clone() } });
-        return (*self).clone();
-    }
 }
 pub fn __cpp2rust_init_globals() {}

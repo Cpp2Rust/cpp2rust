@@ -7,26 +7,9 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Text {
-    pub value: Vec<libc::c_char>,
-}
-impl Text {
-    pub unsafe fn move_from(_a0: *mut Text) -> Self {
-        let mut this = Self {
-            value: std::mem::take(&mut (*_a0).value),
-        };
-        this
-    }
-    pub unsafe fn move_assign(&mut self, _a0: *mut Text) -> *mut Text {
-        self.value = ((*_a0).value).clone();
-        return &mut (*(self as *mut Text));
-    }
-}
-impl Default for Text {
-    fn default() -> Self {
-        unsafe { Text { value: vec![0] } }
-    }
+    pub value: *mut Vec<libc::c_char>,
 }
 pub unsafe fn receiver_0(s: *mut Vec<libc::c_char>, calls: *mut i32) -> *mut Vec<libc::c_char> {
     (*calls).prefix_inc();
@@ -206,18 +189,12 @@ unsafe fn main_0() -> i32 {
             (out.len() - 1),
         )
     });
-    let mut text: Text = Text {
-        value: {
-            let s = c"hello".as_ptr();
-            std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1)
-                .to_vec()
-        },
+    let mut field: Vec<libc::c_char> = {
+        let s = c"hello".as_ptr();
+        std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1).to_vec()
     };
-    out = match (
-        (&mut text.value as *const Vec<libc::c_char>),
-        1_usize,
-        2_usize,
-    ) {
+    let mut text: Text = Text { value: &mut field };
+    out = match ((text.value as *const Vec<libc::c_char>), 1_usize, 2_usize) {
         (__source, __pos, __count) => {
             let __s = &*__source;
             let mut __tmp1 = __s[__pos..::std::cmp::min(__pos + __count, __s.len() - 1)].to_vec();
@@ -229,7 +206,7 @@ unsafe fn main_0() -> i32 {
         libc::printf(
             c"field: %s %s\n".as_ptr() as *const libc::c_char,
             (out.as_ptr()),
-            (text.value.as_ptr()),
+            ((*text.value).as_ptr()),
         )
     });
     let mut strings: Vec<Vec<libc::c_char>> = Vec::from([

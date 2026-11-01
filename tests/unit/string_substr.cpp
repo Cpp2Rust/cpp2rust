@@ -4,7 +4,7 @@
 #include <vector>
 
 struct Text {
-  std::string value;
+  std::string &value;
 };
 
 std::string &receiver(std::string &s, int &calls) {
@@ -44,7 +44,8 @@ int main() {
   out = s.substr(s.size(), 0);
   printf("empty: %zu\n", out.size());
 
-  Text text{"hello"};
+  std::string field = "hello";
+  Text text{field};
   out = text.value.substr(1, 2);
   printf("field: %s %s\n", out.c_str(), text.value.c_str());
   std::vector<std::string> strings = {"hello", "world"};
