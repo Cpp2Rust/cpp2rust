@@ -1,7 +1,13 @@
 // ADDITIONAL_COMPILE_FLAGS: -std=c++17
 #include <cassert>
 #include <cstdint>
+#include <cstdio>
 #include <string>
+
+std::string counted_string(int &calls) {
+  ++calls;
+  return "hello";
+}
 
 int main() {
   std::string empty;
@@ -142,6 +148,16 @@ int main() {
   assert(diff < 0);
   diff += 6;
   assert(diff == 3);
+
+  std::size_t substr_pos = 1;
+  auto once = s1.substr(substr_pos++, 2);
+  printf("position: %s %zu\n", once.c_str(), substr_pos);
+  std::size_t substr_count = 2;
+  once = s1.substr(1, substr_count++);
+  printf("count: %s %zu\n", once.c_str(), substr_count);
+  int receiver_calls = 0;
+  once = counted_string(receiver_calls).substr(1, 2);
+  printf("receiver: %s %d\n", once.c_str(), receiver_calls);
 
   // FIXME
   auto t0 = s1.length();
