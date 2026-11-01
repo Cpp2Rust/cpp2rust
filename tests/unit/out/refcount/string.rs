@@ -427,6 +427,10 @@ fn main_0() -> i32 {
         target.decay(),
         (*ref_calls.borrow())
     );
+    println!(
+        "copy: {}",
+        Rc::new(RefCell::new((*target.borrow()).clone())).decay()
+    );
     let targets: Value<Box<[Vec<i8>]>> = Rc::new(RefCell::new(Box::new([
         {
             let mut __bytes = Ptr::<i8>::from_string_literal(b"cd").to_c_bytes();

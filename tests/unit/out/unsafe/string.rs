@@ -490,6 +490,12 @@ unsafe fn main_0() -> i32 {
             (ref_calls),
         )
     });
+    (unsafe {
+        libc::printf(
+            c"copy: %s\n".as_ptr() as *const libc::c_char,
+            (target.clone().as_ptr()),
+        )
+    });
     let mut targets: [Vec<libc::c_char>; 2] = [
         std::slice::from_raw_parts(
             c"cd".as_ptr(),

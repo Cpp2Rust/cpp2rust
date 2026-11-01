@@ -2035,14 +2035,15 @@ bool ConverterRefCount::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
 
   if (auto str = GetMappedAsString(expr, expr->getArgs(), expr->getNumArgs());
       !str.empty()) {
+    if (!IsPassThroughRule(expr)) {
+      MarkFresh();
+    }
     if (isAddrOf()) {
-      EmitFresh(std::format("Rc::new(RefCell::new({})){}", std::move(str),
+      EmitFresh(std::format("Rc::new(RefCell::new({})){}",
+                            MakeFresh(std::move(str)),
                             AsPointerMethod(expr->getType())));
     } else {
       StrCat(str);
-      if (!IsPassThroughRule(expr)) {
-        MarkFresh();
-      }
     }
     return false;
   }

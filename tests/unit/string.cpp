@@ -168,6 +168,7 @@ int main() {
   counted_ref(target, ref_calls).resize(1);
   counted_ref(target, ref_calls).at(0) = 'A';
   printf("reference receiver: %s %d\n", target.c_str(), ref_calls);
+  printf("copy: %s\n", std::string(target).c_str());
   std::string targets[2] = {"cd", "ef"};
   int target_index = 0;
   targets[target_index++].resize(1);
