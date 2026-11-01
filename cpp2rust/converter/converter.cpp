@@ -5284,7 +5284,7 @@ Converter::ConvertInitFragment(clang::Expr *expr,
   if (!tgt_ir || !tgt_ir->usesInit()) {
     llvm::report_fatal_error("expression rule does not use Init");
   }
-  auto type = RuleRegistry::GetInitType(expr);
+  auto type = RuleRegistry::GetInitType(ctx_, expr);
 
   Buffer buf(*this);
   PushExprKind push(*this, ExprKind::RValue);
