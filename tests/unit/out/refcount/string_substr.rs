@@ -37,14 +37,12 @@ fn main_0() -> i32 {
     }));
     let calls: Value<i32> = Rc::new(RefCell::new(0));
     let out: Value<Vec<i8>> = Rc::new(RefCell::new(
-        match (
-            ({ receiver_0(s.as_pointer(), calls.as_pointer()) }),
-            ((*calls.borrow()) as usize),
-            2_usize,
-        ) {
-            (__source, __pos, __count) => __source.with(|__s: &Vec<i8>| {
+        match (({ receiver_0(s.as_pointer(), calls.as_pointer()) }), {
+            ((*calls.borrow()) as usize)
+        }) {
+            (__tmp_0, mut __tmp_1) => __tmp_0.with(|__s: &Vec<i8>| {
                 let mut __tmp1 = __s
-                    [__pos..::std::cmp::min(__pos + __count, __s.len().saturating_sub(1))]
+                    [__tmp_1..::std::cmp::min(__tmp_1 + 2_usize, __s.len().saturating_sub(1))]
                     .to_vec();
                 __tmp1.push(0);
                 __tmp1
@@ -54,33 +52,28 @@ fn main_0() -> i32 {
     println!("receiver: {} {}", out.decay(), (*calls.borrow()));
     (*calls.borrow_mut()) = 0;
     out.as_pointer().write(
-        match (
-            Rc::new(RefCell::new(({ temporary_1(calls.as_pointer()) }))).as_pointer(),
-            1_usize,
-            2_usize,
-        ) {
-            (__source, __pos, __count) => __source.with(|__s: &Vec<i8>| {
+        Rc::new(RefCell::new(({ temporary_1(calls.as_pointer()) })))
+            .as_pointer()
+            .with(|__s: &Vec<i8>| {
                 let mut __tmp1 = __s
-                    [__pos..::std::cmp::min(__pos + __count, __s.len().saturating_sub(1))]
+                    [1_usize..::std::cmp::min(1_usize + 2_usize, __s.len().saturating_sub(1))]
                     .to_vec();
                 __tmp1.push(0);
                 __tmp1
             }),
-        },
     );
     println!("temporary: {} {}", out.decay(), (*calls.borrow()));
     out.as_pointer().write(
-        match (
-            s.as_pointer(),
+        match ({
             ({
                 (*s.borrow_mut())[0_usize] = ('j' as i8);
                 0
-            } as usize),
-            2_usize,
-        ) {
-            (__source, __pos, __count) => __source.with(|__s: &Vec<i8>| {
+            } as usize)
+        },)
+        {
+            (mut __tmp_2,) => s.as_pointer().with(|__s: &Vec<i8>| {
                 let mut __tmp1 = __s
-                    [__pos..::std::cmp::min(__pos + __count, __s.len().saturating_sub(1))]
+                    [__tmp_2..::std::cmp::min(__tmp_2 + 2_usize, __s.len().saturating_sub(1))]
                     .to_vec();
                 __tmp1.push(0);
                 __tmp1
@@ -89,17 +82,16 @@ fn main_0() -> i32 {
     );
     println!("position mutation: {} {}", out.decay(), s.decay());
     out.as_pointer().write(
-        match (
-            s.as_pointer(),
-            0_usize,
+        match ({
             ({
                 (*s.borrow_mut())[1_usize] = ('a' as i8);
                 2
-            } as usize),
-        ) {
-            (__source, __pos, __count) => __source.with(|__s: &Vec<i8>| {
+            } as usize)
+        },)
+        {
+            (mut __tmp_3,) => s.as_pointer().with(|__s: &Vec<i8>| {
                 let mut __tmp1 = __s
-                    [__pos..::std::cmp::min(__pos + __count, __s.len().saturating_sub(1))]
+                    [0_usize..::std::cmp::min(0_usize + __tmp_3, __s.len().saturating_sub(1))]
                     .to_vec();
                 __tmp1.push(0);
                 __tmp1
@@ -111,58 +103,44 @@ fn main_0() -> i32 {
     (*s.borrow_mut())[1_usize] = ('b' as i8);
     println!("independent: {} {}", out.decay(), s.decay());
     let mut p: Ptr<Vec<i8>> = (s.as_pointer());
-    out.as_pointer()
-        .write(match ((p).clone(), 1_usize, 2_usize) {
-            (__source, __pos, __count) => __source.with(|__s: &Vec<i8>| {
-                let mut __tmp1 = __s
-                    [__pos..::std::cmp::min(__pos + __count, __s.len().saturating_sub(1))]
-                    .to_vec();
-                __tmp1.push(0);
-                __tmp1
-            }),
-        });
+    out.as_pointer().write(p.with(|__s: &Vec<i8>| {
+        let mut __tmp1 =
+            __s[1_usize..::std::cmp::min(1_usize + 2_usize, __s.len().saturating_sub(1))].to_vec();
+        __tmp1.push(0);
+        __tmp1
+    }));
     println!("pointer: {}", out.decay());
     out.as_pointer().write(
-        match (
-            Rc::new(RefCell::new(
-                match (
-                    Rc::new(RefCell::new({
-                        let mut __bytes = Ptr::<i8>::from_string_literal(b"hello").to_c_bytes();
-                        __bytes.push(0);
-                        __bytes
-                    }))
-                    .as_pointer(),
-                    1_usize,
-                    3_usize,
-                ) {
-                    (__source, __pos, __count) => __source.with(|__s: &Vec<i8>| {
-                        let mut __tmp1 = __s
-                            [__pos..::std::cmp::min(__pos + __count, __s.len().saturating_sub(1))]
-                            .to_vec();
-                        __tmp1.push(0);
-                        __tmp1
-                    }),
-                },
-            ))
-            .as_pointer(),
-            1_usize,
-            1_usize,
-        ) {
-            (__source, __pos, __count) => __source.with(|__s: &Vec<i8>| {
+        Rc::new(RefCell::new(
+            Rc::new(RefCell::new({
+                let mut __bytes = Ptr::<i8>::from_string_literal(b"hello").to_c_bytes();
+                __bytes.push(0);
+                __bytes
+            }))
+            .as_pointer()
+            .with(|__s: &Vec<i8>| {
                 let mut __tmp1 = __s
-                    [__pos..::std::cmp::min(__pos + __count, __s.len().saturating_sub(1))]
+                    [1_usize..::std::cmp::min(1_usize + 3_usize, __s.len().saturating_sub(1))]
                     .to_vec();
                 __tmp1.push(0);
                 __tmp1
             }),
-        },
+        ))
+        .as_pointer()
+        .with(|__s: &Vec<i8>| {
+            let mut __tmp1 = __s
+                [1_usize..::std::cmp::min(1_usize + 1_usize, __s.len().saturating_sub(1))]
+                .to_vec();
+            __tmp1.push(0);
+            __tmp1
+        }),
     );
     println!("nested: {}", out.decay());
     out.as_pointer()
-        .write(match (s.as_pointer(), ((*s.borrow()).len() - 1), 0_usize) {
-            (__source, __pos, __count) => __source.with(|__s: &Vec<i8>| {
+        .write(match ({ ((*s.borrow()).len() - 1) },) {
+            (mut __tmp_4,) => s.as_pointer().with(|__s: &Vec<i8>| {
                 let mut __tmp1 = __s
-                    [__pos..::std::cmp::min(__pos + __count, __s.len().saturating_sub(1))]
+                    [__tmp_4..::std::cmp::min(__tmp_4 + 0_usize, __s.len().saturating_sub(1))]
                     .to_vec();
                 __tmp1.push(0);
                 __tmp1
@@ -177,21 +155,14 @@ fn main_0() -> i32 {
     let text: Value<Text> = Rc::new(RefCell::new(Text {
         value: field.as_pointer(),
     }));
-    out.as_pointer().write(
-        match (
-            ({ (*text.borrow()).value.clone() }).clone(),
-            1_usize,
-            2_usize,
-        ) {
-            (__source, __pos, __count) => __source.with(|__s: &Vec<i8>| {
-                let mut __tmp1 = __s
-                    [__pos..::std::cmp::min(__pos + __count, __s.len().saturating_sub(1))]
-                    .to_vec();
-                __tmp1.push(0);
-                __tmp1
-            }),
-        },
-    );
+    out.as_pointer()
+        .write({ (*text.borrow()).value.clone() }.with(|__s: &Vec<i8>| {
+            let mut __tmp1 = __s
+                [1_usize..::std::cmp::min(1_usize + 2_usize, __s.len().saturating_sub(1))]
+                .to_vec();
+            __tmp1.push(0);
+            __tmp1
+        }));
     println!(
         "field: {} {}",
         out.decay(),
@@ -211,19 +182,16 @@ fn main_0() -> i32 {
     ])));
     let mut index: usize = 0_usize;
     out.as_pointer().write(
-        match (
-            strings.decay().offset(index.postfix_inc()),
-            1_usize,
-            2_usize,
-        ) {
-            (__source, __pos, __count) => __source.with(|__s: &Vec<i8>| {
+        strings
+            .decay()
+            .offset(index.postfix_inc())
+            .with(|__s: &Vec<i8>| {
                 let mut __tmp1 = __s
-                    [__pos..::std::cmp::min(__pos + __count, __s.len().saturating_sub(1))]
+                    [1_usize..::std::cmp::min(1_usize + 2_usize, __s.len().saturating_sub(1))]
                     .to_vec();
                 __tmp1.push(0);
                 __tmp1
             }),
-        },
     );
     println!("element: {} {}", out.decay(), index);
     return 0;

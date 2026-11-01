@@ -41,17 +41,21 @@ pub fn main() {
 fn main_0() -> i32 {
     let mut p: Ptr<S> = libcc2rs::malloc_refcount(32usize).reinterpret_cast::<S>();
     assert!((((!((p).is_null())) as i32) != 0));
-    {
-        (p).to_any().memset((255) as u8, 32usize as usize);
-        (p).to_any()
+    match ({ (p).to_any() },) {
+        (mut __tmp_0,) => {
+            __tmp_0.memset((255) as u8, 32usize as usize);
+            (__tmp_0).clone()
+        }
     };
     field!(p, keep).write(7);
-    {
-        ((field_ptr!(p, a)) as Ptr<i32>).to_any().memset(
-            (0) as u8,
-            (32usize as usize).wrapping_sub((4_usize as usize)) as usize,
-        );
-        ((field_ptr!(p, a)) as Ptr<i32>).to_any()
+    match ({ ((field_ptr!(p, a)) as Ptr<i32>).to_any() },) {
+        (mut __tmp_1,) => {
+            __tmp_1.memset(
+                (0) as u8,
+                (32usize as usize).wrapping_sub((4_usize as usize)) as usize,
+            );
+            (__tmp_1).clone()
+        }
     };
     assert!((((p.with(|__s| __s.keep) == 7) as i32) != 0));
     assert!(
@@ -67,12 +71,14 @@ fn main_0() -> i32 {
     field!(p, b).write(2_i64);
     array_elem!(p, c, 0).write((('x' as i32) as i8));
     field!(p, last).write(3);
-    {
-        ((field_ptr!(p, b)) as Ptr<i64>).to_any().memset(
-            (0) as u8,
-            (24_usize as usize).wrapping_sub((8_usize as usize)) as usize,
-        );
-        ((field_ptr!(p, b)) as Ptr<i64>).to_any()
+    match ({ ((field_ptr!(p, b)) as Ptr<i64>).to_any() },) {
+        (mut __tmp_2,) => {
+            __tmp_2.memset(
+                (0) as u8,
+                (24_usize as usize).wrapping_sub((8_usize as usize)) as usize,
+            );
+            (__tmp_2).clone()
+        }
     };
     assert!(
         ((((((p.with(|__s| __s.keep) == 7) as i32) != 0)

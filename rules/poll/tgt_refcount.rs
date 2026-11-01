@@ -8,7 +8,6 @@ fn t1() -> libcc2rs::Pollfd {
 }
 
 fn f1(a0: Ptr<Pollfd>, a1: u64, a2: i32) -> i32 {
-    let __p = a0;
     let __timeout = match nix::poll::PollTimeout::try_from(a2) {
         Ok(__t) => __t,
         Err(_) => panic!("poll: unsupported timeout {}", a2),
@@ -17,8 +16,8 @@ fn f1(a0: Ptr<Pollfd>, a1: u64, a2: i32) -> i32 {
     let mut __wanted = Vec::new();
     let mut __events = Vec::new();
     for __i in 0..(a1 as usize) {
-        let (__fd, __ev) = __p.offset(__i).with(|__e| (__e.fd, __e.events));
-        __p.offset(__i).with_mut(|__e| __e.revents = 0);
+        let (__fd, __ev) = a0.offset(__i).with(|__e| (__e.fd, __e.events));
+        a0.offset(__i).with_mut(|__e| __e.revents = 0);
         if __fd >= 0 {
             __idx.push(__i);
             __wanted.push(__fd);
@@ -40,7 +39,7 @@ fn f1(a0: Ptr<Pollfd>, a1: u64, a2: i32) -> i32 {
                         Some(__r) => __r.bits(),
                         None => 0,
                     };
-                    __p.offset(__i).with_mut(|__e| __e.revents = __rev);
+                    a0.offset(__i).with_mut(|__e| __e.revents = __rev);
                 }
                 __count
             }

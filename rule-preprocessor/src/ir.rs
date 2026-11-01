@@ -204,6 +204,10 @@ pub struct PlaceholderInner {
     pub access: Access,
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub is_index_base: bool,
+    /// Whether the placeholder is in a loop, a closure or a branch, which may
+    /// evaluate it other than once.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub conditional: bool,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

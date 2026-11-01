@@ -8,7 +8,11 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub static mut calls_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 pub static mut xs_1: std::cell::LazyCell<[i32; 2]> = std::cell::LazyCell::new(|| unsafe { [1, 2] });
-pub unsafe fn pick_2(mut i: i32) -> *mut i32 {
+pub unsafe fn size_of_2(mut i: i32) -> usize {
+    (*std::cell::LazyCell::force_mut(&mut *&raw mut calls_0)).prefix_inc();
+    return (((i) * (3)) as usize);
+}
+pub unsafe fn pick_3(mut i: i32) -> *mut i32 {
     (*std::cell::LazyCell::force_mut(&mut *&raw mut calls_0)).prefix_inc();
     return &mut (*std::cell::LazyCell::force_mut(&mut *&raw mut xs_1))[(i) as usize];
 }
@@ -36,9 +40,9 @@ impl Bag {
 impl std::cmp::Ord for Bag {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         unsafe {
-            if operator_lt_3(self as *const Bag, other as *const Bag) {
+            if operator_lt_4(self as *const Bag, other as *const Bag) {
                 std::cmp::Ordering::Less
-            } else if operator_lt_3(other as *const Bag, self as *const Bag) {
+            } else if operator_lt_4(other as *const Bag, self as *const Bag) {
                 std::cmp::Ordering::Greater
             } else {
                 std::cmp::Ordering::Equal
@@ -54,8 +58,8 @@ impl std::cmp::PartialOrd for Bag {
 impl std::cmp::PartialEq for Bag {
     fn eq(&self, other: &Self) -> bool {
         unsafe {
-            !(operator_lt_3(self as *const Bag, other as *const Bag))
-                && !(operator_lt_3(other as *const Bag, self as *const Bag))
+            !(operator_lt_4(self as *const Bag, other as *const Bag))
+                && !(operator_lt_4(other as *const Bag, self as *const Bag))
         }
     }
 }
@@ -65,10 +69,10 @@ impl Clone for Bag {
         unsafe { Bag::copy_from(self as *const Bag) }
     }
 }
-pub unsafe fn operator_lt_3(a: *const Bag, b: *const Bag) -> bool {
+pub unsafe fn operator_lt_4(a: *const Bag, b: *const Bag) -> bool {
     return (((*a).n) < ((*b).n));
 }
-pub unsafe fn make_4(mut n: i32) -> Bag {
+pub unsafe fn make_5(mut n: i32) -> Bag {
     return Bag::new({ n });
 }
 pub fn main() {
@@ -115,63 +119,90 @@ unsafe fn main_0() -> i32 {
     };
     assert!(((((((r1) + (r2)) + (r3)) + (r4)) + (r5)) == (56)));
     let mut values: [i32; 4] = [1, 7, 7, 3];
-    let mut max: *mut i32 = {
-        let __first = values.as_mut_ptr();
-        let __last = values.as_mut_ptr().offset((4) as isize);
-        let mut __best = __first.clone();
-        if __first != __last {
-            let mut __it = __first;
-            __it.iter_inc();
-            while __it != __last {
-                if *__best.iter_deref() < *__it.iter_deref() {
-                    __best = __it.clone();
-                }
+    let mut max: *mut i32 = match ({ values.as_mut_ptr() }, {
+        values.as_mut_ptr().offset((4) as isize)
+    }) {
+        (mut __tmp_2, mut __tmp_3) => {
+            let mut __best = __tmp_2.clone();
+            if __tmp_2 != __tmp_3 {
+                let mut __it = __tmp_2;
                 __it.iter_inc();
+                while __it != __tmp_3 {
+                    if *__best.iter_deref() < *__it.iter_deref() {
+                        __best = __it.clone();
+                    }
+                    __it.iter_inc();
+                }
             }
+            __best
         }
-        __best
     };
     assert!(((max) == (values.as_mut_ptr().offset((1) as isize))));
     assert!(
         ((*{
-            let __a: *const _ = (unsafe { pick_2(0) });
-            let __b: *const _ = (unsafe { pick_2(1) });
+            let __a: *const _ = (unsafe { pick_3(0) });
+            let __b: *const _ = (unsafe { pick_3(1) });
             if *__a < *__b { __b } else { __a }
         }) == (2))
             && ((*std::cell::LazyCell::force_mut(&mut *&raw mut calls_0)) == (2))
     );
     assert!(
         ((*{
-            let __a: *const _ = (unsafe { pick_2(1) });
-            let __b: *const _ = (unsafe { pick_2(0) });
+            let __a: *const _ = (unsafe { pick_3(1) });
+            let __b: *const _ = (unsafe { pick_3(0) });
             if *__b < *__a { __b } else { __a }
         }) == (1))
             && ((*std::cell::LazyCell::force_mut(&mut *&raw mut calls_0)) == (4))
     );
     (*std::cell::LazyCell::force_mut(&mut *&raw mut calls_0)) = 0;
     assert!(
-        (({
-            let mut __tmp_2: Bag = (unsafe { make_4(1) });
-            let mut __tmp_3: Bag = (unsafe { make_4(2) });
-            (*{
-                let __a: *const _ = &mut __tmp_2;
-                let __b: *const _ = &mut __tmp_3;
-                if *__a < *__b { __b } else { __a }
+        (((*match (
+            (&mut (unsafe { make_5(1,) }) as *const Bag),
+            (&mut (unsafe { make_5(2,) }) as *const Bag),
+        ) {
+            (__tmp_4, __tmp_5) => {
+                {
+                    let __a: *const _ = __tmp_4;
+                    let __b: *const _ = __tmp_5;
+                    if *__a < *__b { __b } else { __a }
+                }
+            }
+        })
+        .n) == (2))
+            && (((*match (
+                (&mut (unsafe { make_5(1,) }) as *const Bag),
+                (&mut (unsafe { make_5(2,) }) as *const Bag),
+            ) {
+                (__tmp_6, __tmp_7) => {
+                    {
+                        let __a: *const _ = __tmp_6;
+                        let __b: *const _ = __tmp_7;
+                        if *__b < *__a { __b } else { __a }
+                    }
+                }
             })
-            .n
-        }) == (2))
-            && (({
-                let mut __tmp_4: Bag = (unsafe { make_4(1) });
-                let mut __tmp_5: Bag = (unsafe { make_4(2) });
-                (*{
-                    let __a: *const _ = &mut __tmp_4;
-                    let __b: *const _ = &mut __tmp_5;
-                    if *__b < *__a { __b } else { __a }
-                })
-                .n
-            }) == (1))
+            .n) == (1))
     );
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut calls_0)) == (0)));
+    let mut largest: usize = 0_usize;
+    let mut i: i32 = 0;
+    'loop_: while ((i) < (3)) {
+        largest = ({
+            let mut __tmp_9: u64 = (largest as u64);
+            (*match ((&mut ((unsafe { size_of_2(i) }) as u64) as *const u64),) {
+                (__tmp_8,) => {
+                    let __a: *const _ = &mut __tmp_9;
+                    let __b: *const _ = __tmp_8;
+                    if *__a < *__b { __b } else { __a }
+                }
+            })
+        } as usize);
+        i.prefix_inc();
+    }
+    assert!(
+        ((largest) == (6_usize))
+            && ((*std::cell::LazyCell::force_mut(&mut *&raw mut calls_0)) == (3))
+    );
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {

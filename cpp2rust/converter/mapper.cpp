@@ -62,8 +62,8 @@ std::string MapInitializer(Converter &converter, clang::QualType qual_type) {
   auto [rule, subs] =
       RuleRegistry::Search(converter.GetASTContext(), qual_type);
   if (rule && !rule->initializer.empty()) {
-    return converter.ConvertIRFragment(rule->initializer, subs, nullptr,
-                                       nullptr, 0, nullptr);
+    return converter.ConvertIRFragment(rule->initializer, subs, nullptr, {},
+                                       nullptr);
   }
   return {};
 }

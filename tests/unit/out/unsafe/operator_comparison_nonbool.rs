@@ -264,17 +264,18 @@ unsafe fn main_0() -> i32 {
         }) == (7))
     );
     let mut xs: [X; 3] = [X { v: 3 }, X { v: 1 }, X { v: 2 }];
-    {
-        let __first = xs.as_mut_ptr();
-        let __n = xs.as_mut_ptr().offset((3) as isize).iter_distance(&__first);
-        let mut __order: Vec<isize> = (0..__n).collect();
-        __order.sort_by(|&__x, &__y| (*__first.iter_at(__x)).cmp(&*__first.iter_at(__y)));
-        let __values: Vec<_> = __order
-            .iter()
-            .map(|&__i| std::ptr::read(__first.iter_at(__i)))
-            .collect();
-        for (__i, __v) in (0..__n).zip(__values) {
-            std::ptr::write(__first.iter_at(__i), __v);
+    match ({ xs.as_mut_ptr() },) {
+        (mut __tmp_0,) => {
+            let __n = xs.as_mut_ptr().offset((3) as isize).iter_distance(&__tmp_0);
+            let mut __order: Vec<isize> = (0..__n).collect();
+            __order.sort_by(|&__x, &__y| (*__tmp_0.iter_at(__x)).cmp(&*__tmp_0.iter_at(__y)));
+            let __values: Vec<_> = __order
+                .iter()
+                .map(|&__i| std::ptr::read(__tmp_0.iter_at(__i)))
+                .collect();
+            for (__i, __v) in (0..__n).zip(__values) {
+                std::ptr::write(__tmp_0.iter_at(__i), __v);
+            }
         }
     };
     assert!(
@@ -290,17 +291,18 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { Mixed::operator_eq(&m, &n,) }) == (9)));
     assert!((((unsafe { Mixed::operator_cmp(&m, &n,) }).r) == (0)));
     let mut ms: [Mixed; 3] = [Mixed { v: 6 }, Mixed { v: 4 }, Mixed { v: 5 }];
-    {
-        let __first = ms.as_mut_ptr();
-        let __n = ms.as_mut_ptr().offset((3) as isize).iter_distance(&__first);
-        let mut __order: Vec<isize> = (0..__n).collect();
-        __order.sort_by(|&__x, &__y| (*__first.iter_at(__x)).cmp(&*__first.iter_at(__y)));
-        let __values: Vec<_> = __order
-            .iter()
-            .map(|&__i| std::ptr::read(__first.iter_at(__i)))
-            .collect();
-        for (__i, __v) in (0..__n).zip(__values) {
-            std::ptr::write(__first.iter_at(__i), __v);
+    match ({ ms.as_mut_ptr() },) {
+        (mut __tmp_1,) => {
+            let __n = ms.as_mut_ptr().offset((3) as isize).iter_distance(&__tmp_1);
+            let mut __order: Vec<isize> = (0..__n).collect();
+            __order.sort_by(|&__x, &__y| (*__tmp_1.iter_at(__x)).cmp(&*__tmp_1.iter_at(__y)));
+            let __values: Vec<_> = __order
+                .iter()
+                .map(|&__i| std::ptr::read(__tmp_1.iter_at(__i)))
+                .collect();
+            for (__i, __v) in (0..__n).zip(__values) {
+                std::ptr::write(__tmp_1.iter_at(__i), __v);
+            }
         }
     };
     assert!(
@@ -341,17 +343,18 @@ unsafe fn main_0() -> i32 {
     });
     assert!(lt.value);
     let mut bs: [Boolish; 3] = [Boolish { v: 3 }, Boolish { v: 1 }, Boolish { v: 2 }];
-    {
-        let __first = bs.as_mut_ptr();
-        let __n = bs.as_mut_ptr().offset((3) as isize).iter_distance(&__first);
-        let mut __order: Vec<isize> = (0..__n).collect();
-        __order.sort_by(|&__x, &__y| (*__first.iter_at(__x)).cmp(&*__first.iter_at(__y)));
-        let __values: Vec<_> = __order
-            .iter()
-            .map(|&__i| std::ptr::read(__first.iter_at(__i)))
-            .collect();
-        for (__i, __v) in (0..__n).zip(__values) {
-            std::ptr::write(__first.iter_at(__i), __v);
+    match ({ bs.as_mut_ptr() },) {
+        (mut __tmp_2,) => {
+            let __n = bs.as_mut_ptr().offset((3) as isize).iter_distance(&__tmp_2);
+            let mut __order: Vec<isize> = (0..__n).collect();
+            __order.sort_by(|&__x, &__y| (*__tmp_2.iter_at(__x)).cmp(&*__tmp_2.iter_at(__y)));
+            let __values: Vec<_> = __order
+                .iter()
+                .map(|&__i| std::ptr::read(__tmp_2.iter_at(__i)))
+                .collect();
+            for (__i, __v) in (0..__n).zip(__values) {
+                std::ptr::write(__tmp_2.iter_at(__i), __v);
+            }
         }
     };
     assert!(
@@ -363,14 +366,16 @@ unsafe fn main_0() -> i32 {
     assert!((unsafe { RefBool::to_bool(&(*(unsafe { RefInt::operator_eq(&ri1, &ri2,) })),) }));
     let mut ris: [RefInt; 2] = [RefInt { v: 1 }, RefInt { v: 2 }];
     assert!(
-        (({
-            let mut __it = ris.as_mut_ptr();
-            let __last = ris.as_mut_ptr().offset((2) as isize);
-            let __value = &ri2;
-            while __it != __last && *__it.iter_deref() != *__value {
-                __it.iter_inc();
+        ((match ({ ris.as_mut_ptr().offset((2) as isize) },) {
+            (mut __tmp_3,) => {
+                {
+                    let mut __it = ris.as_mut_ptr();
+                    while __it != __tmp_3 && *__it.iter_deref() != ri2 {
+                        __it.iter_inc();
+                    }
+                    __it
+                }
             }
-            __it
         }) == (ris.as_mut_ptr()))
     );
     return 0;

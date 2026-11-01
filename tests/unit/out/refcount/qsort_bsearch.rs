@@ -54,57 +54,55 @@ fn main_0() -> i32 {
         i.prefix_inc();
     }
     let key: Value<i32> = Rc::new(RefCell::new(7));
-    let mut hit: Ptr<i32> = {
-        let __base = ((arr.as_pointer() as Ptr<i32>) as Ptr<i32>)
-            .to_any()
-            .reinterpret_cast::<u8>();
-        let mut __lo: isize = 0;
-        let mut __hi: isize = 8_usize as isize - 1;
-        let mut __found = AnyPtr::default();
-        while __lo <= __hi && __found.is_null() {
-            let __mid = __lo + (__hi - __lo) / 2;
-            let __elem = __base.offset(__mid as usize * ::std::mem::size_of::<i32>());
-            let __r = cmp_int_0(
-                ((key.as_pointer()) as Ptr<i32>).to_any().clone(),
-                __elem.to_any(),
-            );
-            if __r == 0 {
-                __found = __elem.to_any();
-            } else if __r < 0 {
-                __hi = __mid - 1;
-            } else {
-                __lo = __mid + 1;
+    let mut hit: Ptr<i32> = match ({ ((key.as_pointer()) as Ptr<i32>).to_any() },) {
+        (mut __tmp_0,) => {
+            let __base = ((arr.as_pointer() as Ptr<i32>) as Ptr<i32>)
+                .to_any()
+                .reinterpret_cast::<u8>();
+            let mut __lo: isize = 0;
+            let mut __hi: isize = 8_usize as isize - 1;
+            let mut __found = AnyPtr::default();
+            while __lo <= __hi && __found.is_null() {
+                let __mid = __lo + (__hi - __lo) / 2;
+                let __elem = __base.offset(__mid as usize * ::std::mem::size_of::<i32>());
+                let __r = cmp_int_0(__tmp_0.clone(), __elem.to_any());
+                if __r == 0 {
+                    __found = __elem.to_any();
+                } else if __r < 0 {
+                    __hi = __mid - 1;
+                } else {
+                    __lo = __mid + 1;
+                }
             }
+            __found
         }
-        __found
     }
     .reinterpret_cast::<i32>();
     assert!((((!((hit).is_null())) as i32) != 0));
     assert!(((((hit.read()) == 7) as i32) != 0));
     let miss_key: Value<i32> = Rc::new(RefCell::new(42));
-    let mut miss: Ptr<i32> = {
-        let __base = ((arr.as_pointer() as Ptr<i32>) as Ptr<i32>)
-            .to_any()
-            .reinterpret_cast::<u8>();
-        let mut __lo: isize = 0;
-        let mut __hi: isize = 8_usize as isize - 1;
-        let mut __found = AnyPtr::default();
-        while __lo <= __hi && __found.is_null() {
-            let __mid = __lo + (__hi - __lo) / 2;
-            let __elem = __base.offset(__mid as usize * ::std::mem::size_of::<i32>());
-            let __r = cmp_int_0(
-                ((miss_key.as_pointer()) as Ptr<i32>).to_any().clone(),
-                __elem.to_any(),
-            );
-            if __r == 0 {
-                __found = __elem.to_any();
-            } else if __r < 0 {
-                __hi = __mid - 1;
-            } else {
-                __lo = __mid + 1;
+    let mut miss: Ptr<i32> = match ({ ((miss_key.as_pointer()) as Ptr<i32>).to_any() },) {
+        (mut __tmp_1,) => {
+            let __base = ((arr.as_pointer() as Ptr<i32>) as Ptr<i32>)
+                .to_any()
+                .reinterpret_cast::<u8>();
+            let mut __lo: isize = 0;
+            let mut __hi: isize = 8_usize as isize - 1;
+            let mut __found = AnyPtr::default();
+            while __lo <= __hi && __found.is_null() {
+                let __mid = __lo + (__hi - __lo) / 2;
+                let __elem = __base.offset(__mid as usize * ::std::mem::size_of::<i32>());
+                let __r = cmp_int_0(__tmp_1.clone(), __elem.to_any());
+                if __r == 0 {
+                    __found = __elem.to_any();
+                } else if __r < 0 {
+                    __hi = __mid - 1;
+                } else {
+                    __lo = __mid + 1;
+                }
             }
+            __found
         }
-        __found
     }
     .reinterpret_cast::<i32>();
     assert!(((((miss).is_null()) as i32) != 0));

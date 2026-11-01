@@ -2276,6 +2276,32 @@ bool NeedsRefBindingTemp(clang::ASTContext &ctx, const clang::Expr *arg,
                                  param_type.getNonReferenceType());
 }
 
+std::optional<clang::QualType>
+GetRefBindingTempType(clang::ASTContext &ctx, const clang::CallExpr *call,
+                      unsigned i) {
+  auto *decl = call->getCalleeDecl();
+  auto *fn = decl ? decl->getAsFunction() : nullptr;
+  if (!fn || i >= call->getNumArgs() || i >= fn->getNumParams()) {
+    return std::nullopt;
+  }
+  auto param_type = fn->getParamDecl(i)->getType();
+  if (!NeedsRefBindingTemp(ctx, call->getArg(i), param_type)) {
+    return std::nullopt;
+  }
+  return param_type;
+}
+
+clang::Expr *IgnoreTransparentUnion(clang::Expr *expr) {
+  auto *literal = clang::dyn_cast<clang::CompoundLiteralExpr>(expr);
+  auto *record = literal ? literal->getType()->getAsRecordDecl() : nullptr;
+  if (!record || !record->hasAttr<clang::TransparentUnionAttr>()) {
+    return expr;
+  }
+  auto *init = clang::cast<clang::InitListExpr>(literal->getInitializer());
+  assert(init->getNumInits() == 1);
+  return init->getInit(0);
+}
+
 bool IsSizeType(clang::ASTContext &ctx, clang::QualType type) {
   auto rust_type = Mapper::Map(ctx, type);
   return rust_type == "usize" || rust_type == "isize";

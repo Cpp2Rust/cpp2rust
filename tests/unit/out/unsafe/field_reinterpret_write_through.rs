@@ -1001,30 +1001,38 @@ pub unsafe fn check_struct_3(mut s: *mut S) {
     (*(v as *mut i32)) = 11;
     assert!((((((*s).in_.b) == (11)) as i32) != 0));
     let mut twelve: i32 = 12;
-    {
-        if ::std::mem::size_of::<i32>() != 0 {
-            ::std::ptr::copy_nonoverlapping(
-                ((&mut twelve as *mut i32) as *const ::libc::c_void),
-                ((&mut (*s).x as *mut i32) as *mut ::libc::c_void),
-                ::std::mem::size_of::<i32>() as usize,
-            )
+    match ({ ((&mut (*s).x as *mut i32) as *mut ::libc::c_void) }, {
+        ((&mut twelve as *mut i32) as *const ::libc::c_void)
+    }) {
+        (mut __tmp_0, mut __tmp_1) => {
+            if ::std::mem::size_of::<i32>() != 0 {
+                ::std::ptr::copy_nonoverlapping(
+                    __tmp_1,
+                    __tmp_0,
+                    ::std::mem::size_of::<i32>() as usize,
+                )
+            }
+            __tmp_0
         }
-        ((&mut (*s).x as *mut i32) as *mut ::libc::c_void)
     };
     assert!((((((*s).x) == (12)) as i32) != 0));
-    {
-        let byte_0 = ((&mut (*s).in_.b as *mut i32) as *mut ::libc::c_void) as *mut u8;
-        for offset in 0..::std::mem::size_of::<i32>() {
-            *byte_0.offset(offset as isize) = 51 as u8;
+    match ({ ((&mut (*s).in_.b as *mut i32) as *mut ::libc::c_void) },) {
+        (mut __tmp_2,) => {
+            let byte_0 = __tmp_2 as *mut u8;
+            for offset in 0..::std::mem::size_of::<i32>() {
+                *byte_0.offset(offset as isize) = 51 as u8;
+            }
+            __tmp_2
         }
-        ((&mut (*s).in_.b as *mut i32) as *mut ::libc::c_void)
     };
-    {
-        let byte_0 = ((&mut (*s).x as *mut i32) as *mut ::libc::c_void) as *mut u8;
-        for offset in 0..::std::mem::size_of::<i32>() {
-            *byte_0.offset(offset as isize) = 19 as u8;
+    match ({ ((&mut (*s).x as *mut i32) as *mut ::libc::c_void) },) {
+        (mut __tmp_3,) => {
+            let byte_0 = __tmp_3 as *mut u8;
+            for offset in 0..::std::mem::size_of::<i32>() {
+                *byte_0.offset(offset as isize) = 19 as u8;
+            }
+            __tmp_3
         }
-        ((&mut (*s).x as *mut i32) as *mut ::libc::c_void)
     };
     (unsafe { check_final_2(s) });
 }
@@ -1036,21 +1044,25 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut local: S = <S>::default();
-    {
-        let byte_0 = ((&mut local as *mut S) as *mut ::libc::c_void) as *mut u8;
-        for offset in 0..::std::mem::size_of::<S>() {
-            *byte_0.offset(offset as isize) = 0 as u8;
+    match ({ ((&mut local as *mut S) as *mut ::libc::c_void) },) {
+        (mut __tmp_4,) => {
+            let byte_0 = __tmp_4 as *mut u8;
+            for offset in 0..::std::mem::size_of::<S>() {
+                *byte_0.offset(offset as isize) = 0 as u8;
+            }
+            __tmp_4
         }
-        ((&mut local as *mut S) as *mut ::libc::c_void)
     };
     (unsafe { check_struct_3((&mut local as *mut S)) });
     let mut arr: [S; 2] = [<S>::default(); 2];
-    {
-        let byte_0 = (arr.as_mut_ptr() as *mut ::libc::c_void) as *mut u8;
-        for offset in 0..::std::mem::size_of::<[S; 2]>() {
-            *byte_0.offset(offset as isize) = 0 as u8;
+    match ({ (arr.as_mut_ptr() as *mut ::libc::c_void) },) {
+        (mut __tmp_5,) => {
+            let byte_0 = __tmp_5 as *mut u8;
+            for offset in 0..::std::mem::size_of::<[S; 2]>() {
+                *byte_0.offset(offset as isize) = 0 as u8;
+            }
+            __tmp_5
         }
-        (arr.as_mut_ptr() as *mut ::libc::c_void)
     };
     (unsafe { check_struct_3((&mut arr[(1) as usize] as *mut S)) });
     assert!(
@@ -1068,12 +1080,14 @@ unsafe fn main_0() -> i32 {
     libcc2rs::free_unsafe((heap as *mut ::libc::c_void));
     let mut raw_: *mut u8 = (libcc2rs::malloc_unsafe(::std::mem::size_of::<S>()) as *mut u8);
     assert!((((!((raw_).is_null())) as i32) != 0));
-    {
-        let byte_0 = (raw_ as *mut ::libc::c_void) as *mut u8;
-        for offset in 0..::std::mem::size_of::<S>() {
-            *byte_0.offset(offset as isize) = 0 as u8;
+    match ({ (raw_ as *mut ::libc::c_void) },) {
+        (mut __tmp_6,) => {
+            let byte_0 = __tmp_6 as *mut u8;
+            for offset in 0..::std::mem::size_of::<S>() {
+                *byte_0.offset(offset as isize) = 0 as u8;
+            }
+            __tmp_6
         }
-        (raw_ as *mut ::libc::c_void)
     };
     let mut view: *mut S = (raw_ as *mut S);
     (unsafe { check_struct_3(view) });

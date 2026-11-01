@@ -60,12 +60,14 @@ unsafe fn main_0() -> i32 {
         let mut stream: *mut ::libc::FILE = libc::fopen(c"/dev/zero".as_ptr(), c"rb".as_ptr());
         assert!(!((stream).is_null()));
         let mut buf: [libc::c_char; 16] = [(0 as libc::c_char); 16];
-        {
-            let byte_0 = (buf.as_mut_ptr() as *mut ::libc::c_void) as *mut u8;
-            for offset in 0..::std::mem::size_of::<[libc::c_char; 16]>() {
-                *byte_0.offset(offset as isize) = (('X' as libc::c_char) as i32) as u8;
+        match ({ (buf.as_mut_ptr() as *mut ::libc::c_void) },) {
+            (mut __tmp_0,) => {
+                let byte_0 = __tmp_0 as *mut u8;
+                for offset in 0..::std::mem::size_of::<[libc::c_char; 16]>() {
+                    *byte_0.offset(offset as isize) = (('X' as libc::c_char) as i32) as u8;
+                }
+                __tmp_0
             }
-            (buf.as_mut_ptr() as *mut ::libc::c_void)
         };
         let mut n: usize = libcc2rs::fread_unsafe(
             (buf.as_mut_ptr() as *mut ::libc::c_void),
@@ -92,12 +94,14 @@ unsafe fn main_0() -> i32 {
         let mut stream: *mut ::libc::FILE = libc::fopen(c"/dev/zero".as_ptr(), c"rb".as_ptr());
         assert!(!((stream).is_null()));
         let mut buf: [libc::c_char; 16] = [(0 as libc::c_char); 16];
-        {
-            let byte_0 = (buf.as_mut_ptr() as *mut ::libc::c_void) as *mut u8;
-            for offset in 0..::std::mem::size_of::<[libc::c_char; 16]>() {
-                *byte_0.offset(offset as isize) = (('X' as libc::c_char) as i32) as u8;
+        match ({ (buf.as_mut_ptr() as *mut ::libc::c_void) },) {
+            (mut __tmp_1,) => {
+                let byte_0 = __tmp_1 as *mut u8;
+                for offset in 0..::std::mem::size_of::<[libc::c_char; 16]>() {
+                    *byte_0.offset(offset as isize) = (('X' as libc::c_char) as i32) as u8;
+                }
+                __tmp_1
             }
-            (buf.as_mut_ptr() as *mut ::libc::c_void)
         };
         let mut n: usize = (unsafe {
             (fn1).unwrap()(
@@ -153,12 +157,14 @@ unsafe fn main_0() -> i32 {
         let mut stream: *mut ::libc::FILE = libc::fopen(c"/dev/null".as_ptr(), c"wb".as_ptr());
         assert!(!((stream).is_null()));
         let mut buf: [libc::c_char; 10] = [(0 as libc::c_char); 10];
-        {
-            let byte_0 = (buf.as_mut_ptr() as *mut ::libc::c_void) as *mut u8;
-            for offset in 0..::std::mem::size_of::<[libc::c_char; 10]>() {
-                *byte_0.offset(offset as isize) = (('Y' as libc::c_char) as i32) as u8;
+        match ({ (buf.as_mut_ptr() as *mut ::libc::c_void) },) {
+            (mut __tmp_2,) => {
+                let byte_0 = __tmp_2 as *mut u8;
+                for offset in 0..::std::mem::size_of::<[libc::c_char; 10]>() {
+                    *byte_0.offset(offset as isize) = (('Y' as libc::c_char) as i32) as u8;
+                }
+                __tmp_2
             }
-            (buf.as_mut_ptr() as *mut ::libc::c_void)
         };
         let mut n: usize = libcc2rs::fwrite_unsafe(
             (buf.as_mut_ptr() as *const ::libc::c_void),
@@ -175,12 +181,14 @@ unsafe fn main_0() -> i32 {
         let mut stream: *mut ::libc::FILE = libc::fopen(c"/dev/null".as_ptr(), c"wb".as_ptr());
         assert!(!((stream).is_null()));
         let mut buf: [libc::c_char; 10] = [(0 as libc::c_char); 10];
-        {
-            let byte_0 = (buf.as_mut_ptr() as *mut ::libc::c_void) as *mut u8;
-            for offset in 0..::std::mem::size_of::<[libc::c_char; 10]>() {
-                *byte_0.offset(offset as isize) = (('Y' as libc::c_char) as i32) as u8;
+        match ({ (buf.as_mut_ptr() as *mut ::libc::c_void) },) {
+            (mut __tmp_3,) => {
+                let byte_0 = __tmp_3 as *mut u8;
+                for offset in 0..::std::mem::size_of::<[libc::c_char; 10]>() {
+                    *byte_0.offset(offset as isize) = (('Y' as libc::c_char) as i32) as u8;
+                }
+                __tmp_3
             }
-            (buf.as_mut_ptr() as *mut ::libc::c_void)
         };
         let mut n: usize = (unsafe {
             (gn1).unwrap()(

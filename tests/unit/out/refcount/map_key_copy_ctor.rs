@@ -197,6 +197,7 @@ fn main_0() -> i32 {
         ok = rhs_0
     };
     {
+        // The block ends the borrow of the iterator, e.g., in it = m.erase(it).
         let __it = m
             .as_pointer()
             .with(|__m: &Map<Key, (Value<Key>, Value<i32>)>| __m.find(&a.as_pointer()));

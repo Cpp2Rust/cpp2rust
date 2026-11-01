@@ -4,7 +4,8 @@
 use cfg_expr::Expression;
 use cfg_expr::expr::{Predicate, TargetPredicate};
 use ra_ap_syntax::ast::{
-    HasArgList, HasAttrs, HasGenericArgs, HasGenericParams, HasName, HasTypeBounds, IsString,
+    HasArgList, HasAttrs, HasGenericArgs, HasGenericParams, HasLoopBody, HasName, HasTypeBounds,
+    IsString,
 };
 use ra_ap_syntax::{AstNode, AstToken, SyntaxKind, ast, match_ast};
 use std::collections::BTreeMap;
@@ -268,6 +269,7 @@ impl<'a> FragmentCtx<'a> {
                         arg: token.text()[1..].parse().unwrap_or(0),
                         access,
                         is_index_base: false,
+                        conditional: Self::is_conditional(token),
                     },
                 });
                 return;
@@ -282,6 +284,35 @@ impl<'a> FragmentCtx<'a> {
             }
         }
         self.text_buf.push_str(token.text());
+    }
+
+    /// Whether a token is in a loop, a closure or a branch, which may evaluate
+    /// it other than once.
+    fn is_conditional(token: &ra_ap_syntax::SyntaxToken) -> bool {
+        fn contains(node: Option<impl AstNode>, token: &ra_ap_syntax::SyntaxToken) -> bool {
+            node.is_some_and(|node| {
+                node.syntax()
+                    .text_range()
+                    .contains_range(token.text_range())
+            })
+        }
+        token.parent_ancestors().any(|node| {
+            match_ast! {
+                match node {
+                    ast::ClosureExpr(_) => true,
+                    ast::LoopExpr(_) => true,
+                    ast::WhileExpr(_) => true,
+                    ast::ForExpr(it) => contains(it.loop_body(), token),
+                    ast::IfExpr(it) => !contains(it.condition(), token),
+                    ast::MatchExpr(it) => !contains(it.expr(), token),
+                    ast::BinExpr(it) => {
+                        matches!(it.op_kind(), Some(ast::BinaryOp::LogicOp(_)))
+                            && contains(it.rhs(), token)
+                    },
+                    _ => false,
+                }
+            }
+        })
     }
 
     fn generic_of_path(&self, path: &ast::Path) -> Option<i32> {

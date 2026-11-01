@@ -363,6 +363,15 @@ bool NeedsImplicitPointeeCast(clang::ASTContext &ctx, const clang::Expr *from,
 bool NeedsRefBindingTemp(clang::ASTContext &ctx, const clang::Expr *arg,
                          clang::QualType param_type);
 
+// The type of the reference parameter that argument i of call is bound to
+// through a temporary, if it is.
+std::optional<clang::QualType>
+GetRefBindingTempType(clang::ASTContext &ctx, const clang::CallExpr *call,
+                      unsigned i);
+
+// The value that a transparent union argument is initialized with, or expr.
+clang::Expr *IgnoreTransparentUnion(clang::Expr *expr);
+
 bool IsSizeType(clang::ASTContext &ctx, clang::QualType type);
 
 std::optional<clang::QualType> GetOperandImplicitConversionTarget(

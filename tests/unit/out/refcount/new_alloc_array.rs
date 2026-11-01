@@ -13,12 +13,14 @@ pub fn main() {
 fn main_0() -> i32 {
     let mut array: Ptr<i32> =
         Ptr::alloc_array((0..100_usize).map(|_| 0_i32).collect::<Box<[i32]>>());
-    {
-        (array).to_any().memset(
-            (0) as u8,
-            (::std::mem::size_of::<i32>() as usize).wrapping_mul(100_usize) as usize,
-        );
-        (array).to_any()
+    match ({ (array).to_any() },) {
+        (mut __tmp_0,) => {
+            __tmp_0.memset(
+                (0) as u8,
+                (::std::mem::size_of::<i32>() as usize).wrapping_mul(100_usize) as usize,
+            );
+            (__tmp_0).clone()
+        }
     };
     elem!(array, 99).write(-1_i32);
     let mut p1: Ptr<i32> = (array).clone();

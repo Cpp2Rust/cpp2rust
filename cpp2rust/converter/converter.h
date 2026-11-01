@@ -301,16 +301,17 @@ public:
     std::vector<std::string> materialized_refs_;
   };
 
+  // args are the arguments of expr, including its receiver.
   std::string
   ConvertIRFragment(const std::vector<TranslationRule::BodyFragment> &fragments,
                     llvm::ArrayRef<clang::TemplateArgument> bindings,
-                    clang::Expr *expr, clang::Expr **args, unsigned num_args,
+                    clang::Expr *expr, llvm::ArrayRef<clang::Expr *> args,
                     TempMaterializationCtx *ctx);
 
   std::string
   ConvertGenericCall(const TranslationRule::GenericCallFragment &call,
                      llvm::ArrayRef<clang::TemplateArgument> bindings,
-                     clang::Expr *expr, clang::Expr **args, unsigned num_args,
+                     clang::Expr *expr, llvm::ArrayRef<clang::Expr *> args,
                      TempMaterializationCtx *ctx);
 
   std::string ConvertConversion(clang::QualType to, clang::QualType from,
@@ -873,11 +874,15 @@ protected:
   // closure parameter of its with_mut.
   std::vector<std::pair<std::string, std::string>> mut_borrows_;
 
+  // The variables that arguments of rules are bound to by value, whose
+  // address is not taken.
+  std::unordered_set<const clang::VarDecl *> bound_values_;
+
   std::string ConvertVariadicTail(clang::Expr *expr,
-                                  const std::vector<clang::Expr *> &all_args);
+                                  llvm::ArrayRef<clang::Expr *> all_args);
 
   std::string ConvertInitFragment(clang::Expr *expr,
-                                  const std::vector<clang::Expr *> &all_args);
+                                  llvm::ArrayRef<clang::Expr *> all_args);
 
   void ConvertConstructFromArgs(clang::QualType type,
                                 llvm::ArrayRef<clang::Expr *> args,
@@ -890,8 +895,8 @@ protected:
 
   virtual std::string ConvertMappedMethodCall(
       clang::Expr *expr, const TranslationRule::MethodCallFragment &mc,
-      llvm::ArrayRef<clang::TemplateArgument> bindings, clang::Expr **args,
-      unsigned num_args, TempMaterializationCtx *ctx);
+      llvm::ArrayRef<clang::TemplateArgument> bindings,
+      llvm::ArrayRef<clang::Expr *> args, TempMaterializationCtx *ctx);
 
   virtual std::string AccessLValueObject(clang::MemberExpr *member);
 
@@ -1160,8 +1165,11 @@ protected:
                       std::optional<clang::QualType> implicit_convert_to = {});
   virtual std::string ConvertFreshObject(clang::Expr *expr);
 
-  virtual std::string ConvertPointerReceiver(clang::Expr *arg,
-                                             std::string_view param_type);
+  // A pointer of param_type to arg, which is converted to implicit_convert_to
+  // if it is a temporary.
+  virtual std::string
+  ConvertPointerReceiver(clang::Expr *arg, std::string_view param_type,
+                         std::optional<clang::QualType> implicit_convert_to);
 
   // A pointer to the elements of the container arg.
   virtual std::string ConvertElementPtr(clang::Expr *arg) {

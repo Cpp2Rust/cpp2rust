@@ -30,9 +30,14 @@ unsafe fn main_0() -> i32 {
     assert!(((s.len() - 1) == (12_usize)));
     assert!(
         s == {
-            let s = c"dir/file.txt".as_ptr();
-            std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1)
-                .to_vec()
+            std::slice::from_raw_parts(
+                c"dir/file.txt".as_ptr(),
+                (0..)
+                    .take_while(|&i| *c"dir/file.txt".as_ptr().add(i) != 0)
+                    .count()
+                    + 1,
+            )
+            .to_vec()
         }
     );
     return 0;

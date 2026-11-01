@@ -56,17 +56,19 @@ fn main_0() -> i32 {
     };
     let a: Value<Elem> = Rc::new(RefCell::new(Elem::new({ 1 })));
     let mut b: Elem = Elem::new({ 2 });
-    {
-        let __it = <RandomAccessIterator<Elem>>::from(v.decay().end());
-        let __off = __it.index();
-        (*v.borrow_mut()).insert(__off, Elem::move_from({ a.as_pointer() }));
-        __it
+    match ({ <RandomAccessIterator<Elem>>::from(v.decay().end()) },) {
+        (mut __tmp_0,) => {
+            let __off = __tmp_0.index();
+            (*v.borrow_mut()).insert(__off, Elem::move_from({ a.as_pointer() }));
+            (__tmp_0).clone()
+        }
     };
-    {
-        let __it = <RandomAccessIterator<Elem>>::from(v.decay().end());
-        let __off = __it.index();
-        (*v.borrow_mut()).insert(__off, (b).clone());
-        __it
+    match ({ <RandomAccessIterator<Elem>>::from(v.decay().end()) },) {
+        (mut __tmp_1,) => {
+            let __off = __tmp_1.index();
+            (*v.borrow_mut()).insert(__off, (b).clone());
+            (__tmp_1).clone()
+        }
     };
     let mut ok: bool = (((copies_0.with(|rc| *rc.borrow()) == 1)
         && (moves_1.with(|rc| *rc.borrow()) == 1))

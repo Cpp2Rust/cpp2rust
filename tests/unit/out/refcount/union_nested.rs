@@ -97,11 +97,11 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let ex: Value<Outer> = <Value<Outer>>::default();
-    {
-        ((ex.as_pointer()) as Ptr<Outer>)
-            .to_any()
-            .memset((0) as u8, 144usize as usize);
-        ((ex.as_pointer()) as Ptr<Outer>).to_any()
+    match ({ ((ex.as_pointer()) as Ptr<Outer>).to_any() },) {
+        (mut __tmp_0,) => {
+            __tmp_0.memset((0) as u8, 144usize as usize);
+            (__tmp_0).clone()
+        }
     };
     (*ex.borrow_mut()).kind = 2;
     (*ex.borrow_mut()).level = 1;

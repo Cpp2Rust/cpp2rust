@@ -1056,25 +1056,27 @@ pub fn check_struct_3(mut s: Ptr<S>) {
     v.reinterpret_cast::<i32>().write(11);
     assert!((((s.with(|__s| __s.in_.b) == 11) as i32) != 0));
     let twelve: Value<i32> = Rc::new(RefCell::new(12));
-    {
-        ((field_ptr!(s, x)) as Ptr<i32>).to_any().memcpy(
-            &((twelve.as_pointer()) as Ptr<i32>).to_any(),
-            ::std::mem::size_of::<i32>() as usize,
-        );
-        ((field_ptr!(s, x)) as Ptr<i32>).to_any()
+    match ({ ((field_ptr!(s, x)) as Ptr<i32>).to_any() },) {
+        (mut __tmp_0,) => {
+            __tmp_0.memcpy(
+                &((twelve.as_pointer()) as Ptr<i32>).to_any(),
+                ::std::mem::size_of::<i32>() as usize,
+            );
+            (__tmp_0).clone()
+        }
     };
     assert!((((s.with(|__s| __s.x) == 12) as i32) != 0));
-    {
-        ((field_ptr!(field_ptr!(s, in_), b)) as Ptr<i32>)
-            .to_any()
-            .memset((51) as u8, ::std::mem::size_of::<i32>() as usize);
-        ((field_ptr!(field_ptr!(s, in_), b)) as Ptr<i32>).to_any()
+    match ({ ((field_ptr!(field_ptr!(s, in_), b)) as Ptr<i32>).to_any() },) {
+        (mut __tmp_1,) => {
+            __tmp_1.memset((51) as u8, ::std::mem::size_of::<i32>() as usize);
+            (__tmp_1).clone()
+        }
     };
-    {
-        ((field_ptr!(s, x)) as Ptr<i32>)
-            .to_any()
-            .memset((19) as u8, ::std::mem::size_of::<i32>() as usize);
-        ((field_ptr!(s, x)) as Ptr<i32>).to_any()
+    match ({ ((field_ptr!(s, x)) as Ptr<i32>).to_any() },) {
+        (mut __tmp_2,) => {
+            __tmp_2.memset((19) as u8, ::std::mem::size_of::<i32>() as usize);
+            (__tmp_2).clone()
+        }
     };
     ({ check_final_2((s).clone()) });
 }
@@ -1084,21 +1086,21 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let local: Value<S> = <Value<S>>::default();
-    {
-        ((local.as_pointer()) as Ptr<S>)
-            .to_any()
-            .memset((0) as u8, 40usize as usize);
-        ((local.as_pointer()) as Ptr<S>).to_any()
+    match ({ ((local.as_pointer()) as Ptr<S>).to_any() },) {
+        (mut __tmp_3,) => {
+            __tmp_3.memset((0) as u8, 40usize as usize);
+            (__tmp_3).clone()
+        }
     };
     ({ check_struct_3((local.as_pointer())) });
     let arr: Value<Box<[S]>> = Rc::new(RefCell::new(
         (0..2).map(|_| <S>::default()).collect::<Box<[S]>>(),
     ));
-    {
-        ((arr.as_pointer() as Ptr<S>) as Ptr<S>)
-            .to_any()
-            .memset((0) as u8, 80usize as usize);
-        ((arr.as_pointer() as Ptr<S>) as Ptr<S>).to_any()
+    match ({ ((arr.as_pointer() as Ptr<S>) as Ptr<S>).to_any() },) {
+        (mut __tmp_4,) => {
+            __tmp_4.memset((0) as u8, 80usize as usize);
+            (__tmp_4).clone()
+        }
     };
     ({ check_struct_3(((arr.as_pointer() as Ptr<S>).offset(1))) });
     assert!(
@@ -1116,9 +1118,11 @@ fn main_0() -> i32 {
     libcc2rs::free_refcount((heap).to_any());
     let mut raw_: Ptr<u8> = libcc2rs::malloc_refcount(40usize).reinterpret_cast::<u8>();
     assert!((((!((raw_).is_null())) as i32) != 0));
-    {
-        (raw_).to_any().memset((0) as u8, 40usize as usize);
-        (raw_).to_any()
+    match ({ (raw_).to_any() },) {
+        (mut __tmp_5,) => {
+            __tmp_5.memset((0) as u8, 40usize as usize);
+            (__tmp_5).clone()
+        }
     };
     let mut view: Ptr<S> = raw_.reinterpret_cast::<S>();
     ({ check_struct_3((view).clone()) });

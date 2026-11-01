@@ -24,6 +24,7 @@ fn f3<T1: CppLess + 'static, T2: 'static>(
     a0: Ptr<Map<T1, (Value<T1>, Value<T2>)>>,
     a1: BidirectionalIterator<(Value<T1>, Value<T2>)>,
 ) -> BidirectionalIterator<(Value<T1>, Value<T2>)> {
+    // The block ends the borrow of the iterator, e.g., in it = m.erase(it).
     let __it = a1;
     Map::erase(a0, &__it)
 }
@@ -88,6 +89,7 @@ fn f27<T1: CppLess + 'static, T2: 'static>(
     a0: Ptr<Map<T1, (Value<T1>, Value<T2>)>>,
     a1: BidirectionalIterator<(Value<T1>, Value<T2>)>,
 ) -> BidirectionalIterator<(Value<T1>, Value<T2>)> {
+    // The block ends the borrow of the iterator, e.g., in it = m.erase(it).
     let __it = a1;
     Map::erase(a0, &__it)
 }
@@ -137,14 +139,13 @@ fn f73<T1: CppLess + Clone + ByteRepr + 'static, T2: Default + ByteRepr + 'stati
     a1: Ptr<T1>,
     init: T2,
 ) -> (Value<BidirectionalIterator<(Value<T1>, Value<T2>)>>, Value<bool>) {
-    let __key = a1;
-    let __inserted = a0.with(|__m: &Map<T1, (Value<T1>, Value<T2>)>| __m.get(&__key).is_none());
+    let __inserted = a0.with(|__m: &Map<T1, (Value<T1>, Value<T2>)>| __m.get(&a1).is_none());
     if __inserted {
-        Map::subscript(a0.clone(), __key.clone()).write(init);
+        Map::subscript(a0.clone(), a1.clone()).write(init);
     }
     (
         Rc::new(RefCell::new(
-            a0.with(|__m: &Map<T1, (Value<T1>, Value<T2>)>| __m.find(&__key)),
+            a0.with(|__m: &Map<T1, (Value<T1>, Value<T2>)>| __m.find(&a1)),
         )),
         Rc::new(RefCell::new(__inserted)),
     )

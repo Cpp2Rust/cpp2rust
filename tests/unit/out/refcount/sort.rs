@@ -52,12 +52,13 @@ fn main_0() -> i32 {
         let __a1 = 6;
         (*v.borrow_mut()).push(__a1)
     };
-    {
-        let __first = v.decay().begin();
-        let __n = v.decay().end().iter_distance(&__first);
-        let mut __order: Vec<isize> = (0..__n).collect();
-        __order.sort_by(|&__x, &__y| cpp_cmp(&__first.iter_at(__x), &__first.iter_at(__y)));
-        reorder(__order, |__i| __first.iter_at(__i));
+    match ({ v.decay().begin() },) {
+        (mut __tmp_0,) => {
+            let __n = v.decay().end().iter_distance(&__tmp_0);
+            let mut __order: Vec<isize> = (0..__n).collect();
+            __order.sort_by(|&__x, &__y| cpp_cmp(&__tmp_0.iter_at(__x), &__tmp_0.iter_at(__y)));
+            reorder(__order, |__i| __tmp_0.iter_at(__i));
+        }
     };
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < ((*v.borrow()).len()).wrapping_sub(1_usize)) {

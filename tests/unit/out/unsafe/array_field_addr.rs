@@ -23,25 +23,31 @@ unsafe fn main_0() -> i32 {
     let mut s: *mut S = (libcc2rs::malloc_unsafe(::std::mem::size_of::<S>()) as *mut S);
     assert!((((!((s).is_null())) as i32) != 0));
     (*s).before = 1;
-    {
-        let byte_0 = ((*s).mask.as_mut_ptr() as *mut ::libc::c_void) as *mut u8;
-        for offset in 0..::std::mem::size_of::<[u8; 4]>() {
-            *byte_0.offset(offset as isize) = 5 as u8;
+    match ({ ((*s).mask.as_mut_ptr() as *mut ::libc::c_void) },) {
+        (mut __tmp_0,) => {
+            let byte_0 = __tmp_0 as *mut u8;
+            for offset in 0..::std::mem::size_of::<[u8; 4]>() {
+                *byte_0.offset(offset as isize) = 5 as u8;
+            }
+            __tmp_0
         }
-        ((*s).mask.as_mut_ptr() as *mut ::libc::c_void)
     };
     (*s).after = 2;
     (*((&mut (*s).mask as *mut [u8; 4]) as *mut u8)) = 7_u8;
     let mut out: [u8; 4] = [0_u8; 4];
-    {
-        if ::std::mem::size_of::<[u8; 4]>() != 0 {
-            ::std::ptr::copy_nonoverlapping(
-                ((&mut (*s).mask as *mut [u8; 4]) as *const ::libc::c_void),
-                (out.as_mut_ptr() as *mut ::libc::c_void),
-                ::std::mem::size_of::<[u8; 4]>() as usize,
-            )
+    match ({ (out.as_mut_ptr() as *mut ::libc::c_void) }, {
+        ((&mut (*s).mask as *mut [u8; 4]) as *const ::libc::c_void)
+    }) {
+        (mut __tmp_1, mut __tmp_2) => {
+            if ::std::mem::size_of::<[u8; 4]>() != 0 {
+                ::std::ptr::copy_nonoverlapping(
+                    __tmp_2,
+                    __tmp_1,
+                    ::std::mem::size_of::<[u8; 4]>() as usize,
+                )
+            }
+            __tmp_1
         }
-        (out.as_mut_ptr() as *mut ::libc::c_void)
     };
     assert!(
         (((((((out[(0) as usize] as i32) == (7)) as i32) != 0)

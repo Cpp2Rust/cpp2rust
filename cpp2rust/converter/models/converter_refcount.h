@@ -323,8 +323,8 @@ public:
 
   std::string ConvertMappedMethodCall(
       clang::Expr *expr, const TranslationRule::MethodCallFragment &mc,
-      llvm::ArrayRef<clang::TemplateArgument> bindings, clang::Expr **args,
-      unsigned num_args, TempMaterializationCtx *ctx) override;
+      llvm::ArrayRef<clang::TemplateArgument> bindings,
+      llvm::ArrayRef<clang::Expr *> args, TempMaterializationCtx *ctx) override;
 
 private:
   void SetUFCSReceiver(clang::Expr *base, bool is_arrow,
@@ -432,8 +432,9 @@ private:
                             ObjectShape shape = ObjectShape::Whole);
   std::string ConvertFreshObject(clang::Expr *expr) override;
 
-  std::string ConvertPointerReceiver(clang::Expr *arg,
-                                     std::string_view param_type) override;
+  std::string ConvertPointerReceiver(
+      clang::Expr *arg, std::string_view param_type,
+      std::optional<clang::QualType> implicit_convert_to) override;
 
   bool ParamIsElementPtr(clang::Expr *expr, clang::Expr *arg,
                          unsigned index) override;

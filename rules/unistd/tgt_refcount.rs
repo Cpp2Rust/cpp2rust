@@ -49,9 +49,8 @@ fn f4(a0: Ptr<i8>) -> i32 {
 fn f5(a0: Ptr<i32>) -> i32 {
     match nix::unistd::pipe() {
         Ok((__r, __w)) => {
-            let __fds = a0;
-            __fds.write(FdRegistry::register(__r));
-            elem!(__fds, 1).write(FdRegistry::register(__w));
+            a0.write(FdRegistry::register(__r));
+            elem!(a0, 1).write(FdRegistry::register(__w));
             0
         }
         Err(__e) => {

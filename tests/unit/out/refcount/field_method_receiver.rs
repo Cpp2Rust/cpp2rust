@@ -155,14 +155,14 @@ impl SImpl for Ptr<S> {
     fn move_assign(&self, _a0: Ptr<S>) -> Ptr<S> {
         field!((*self), tag).write({ { (*_a0.upgrade().deref()).tag } });
         field!((*self), c).write({ { (*_a0.upgrade().deref()).c.clone() } });
-        {
-            ((array_field_ptr!((*self), arr)) as Ptr<Counter>)
-                .to_any()
-                .memcpy(
+        match ({ ((array_field_ptr!((*self), arr)) as Ptr<Counter>).to_any() },) {
+            (mut __tmp_0,) => {
+                __tmp_0.memcpy(
                     &((array_field_ptr!(_a0, arr)) as Ptr<Counter>).to_any(),
                     8_usize as usize,
                 );
-            ((array_field_ptr!((*self), arr)) as Ptr<Counter>).to_any()
+                (__tmp_0).clone()
+            }
         };
         field_ref!((*self), v)
             .as_pointer()

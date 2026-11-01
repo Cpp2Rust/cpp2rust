@@ -88,11 +88,11 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let c: Value<Container> = <Value<Container>>::default();
-    {
-        ((c.as_pointer()) as Ptr<Container>)
-            .to_any()
-            .memset((0) as u8, 256usize as usize);
-        ((c.as_pointer()) as Ptr<Container>).to_any()
+    match ({ ((c.as_pointer()) as Ptr<Container>).to_any() },) {
+        (mut __tmp_0,) => {
+            __tmp_0.memset((0) as u8, 256usize as usize);
+            (__tmp_0).clone()
+        }
     };
     assert!(
         ((((anon_0::a(field_ptr!(c.as_pointer(), view)).with(|__s| __s.code) as i32) == 0) as i32)
@@ -133,15 +133,18 @@ fn main_0() -> i32 {
     (*src.borrow_mut())[(7) as usize] = 1_u8;
     let mut len: usize = 16_usize;
     assert!((((len <= ::std::mem::size_of::<[i8; 256]>()) as i32) != 0));
-    {
+    match ({
         ((anon_0::raw_(field_ptr!(c.as_pointer(), view)).reinterpret_cast::<i8>()) as Ptr<i8>)
             .to_any()
-            .memcpy(
+    },)
+    {
+        (mut __tmp_1,) => {
+            __tmp_1.memcpy(
                 &((src.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
                 len as usize,
             );
-        ((anon_0::raw_(field_ptr!(c.as_pointer(), view)).reinterpret_cast::<i8>()) as Ptr<i8>)
-            .to_any()
+            (__tmp_1).clone()
+        }
     };
     assert!(
         ((((anon_0::b(field_ptr!(c.as_pointer(), view)).with(|__s| __s.code) as i32) == 2) as i32)
@@ -157,11 +160,11 @@ fn main_0() -> i32 {
             == 80) as i32)
             != 0)
     );
-    {
-        ((c.as_pointer()) as Ptr<Container>)
-            .to_any()
-            .memset((0) as u8, 256usize as usize);
-        ((c.as_pointer()) as Ptr<Container>).to_any()
+    match ({ ((c.as_pointer()) as Ptr<Container>).to_any() },) {
+        (mut __tmp_2,) => {
+            __tmp_2.memset((0) as u8, 256usize as usize);
+            (__tmp_2).clone()
+        }
     };
     assert!(
         ((((anon_0::b(field_ptr!(c.as_pointer(), view)).with(|__s| __s.code) as i32) == 0) as i32)

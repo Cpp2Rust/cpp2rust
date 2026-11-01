@@ -10,6 +10,8 @@
 #include <string>
 #include <vector>
 
+#include "converter/converter_lib.h"
+#include "converter/rules/registry.h"
 #include "logging.h"
 
 namespace cpp2rust::TranslationRule {
@@ -59,6 +61,7 @@ ParsePlaceholderFragmentJSON(const llvm::json::Object &obj) {
       (unsigned)*obj.getInteger("arg"),
       ParseAccessJSON(*access),
       obj.getBoolean("is_index_base").value_or(false),
+      obj.getBoolean("conditional").value_or(false),
   };
 }
 
@@ -250,6 +253,69 @@ const std::vector<BodyFragment> *ExprRule::refExprOperand() const {
   }
   auto *re = std::get_if<std::unique_ptr<RefExprFragment>>(&body[0]);
   return re ? &(*re)->inner : nullptr;
+}
+
+std::vector<bool>
+ExprRule::argsToBind(clang::ASTContext &ctx, const clang::Expr *expr,
+                     llvm::ArrayRef<clang::Expr *> args) const {
+  // The number of evaluations of each argument, two standing for any other
+  // than one, and the position of the first.
+  std::vector<unsigned> uses(args.size()), first(args.size());
+  unsigned position = 0;
+  AnyFragment(body, [&](const BodyFragment &frag) {
+    if (auto *ph = std::get_if<PlaceholderFragment>(&frag)) {
+      if (uses[ph->n]++ == 0) {
+        first[ph->n] = position;
+      }
+      if (ph->conditional) {
+        ++uses[ph->n];
+      }
+      ++position;
+    }
+    return false;
+  });
+  // The right operand of an assignment is evaluated before the left one.
+  auto *op = clang::dyn_cast<clang::CXXOperatorCallExpr>(expr);
+  bool right_to_left = op && op->isAssignmentOp();
+  auto *call = clang::dyn_cast<clang::CallExpr>(expr);
+  unsigned first_arg = clang::isa<clang::CXXMemberCallExpr>(expr);
+  std::vector<bool> bind(args.size());
+  bool bind_rest = false;
+  unsigned next_first = position;
+  auto num_args = std::min(args.size(), params.size());
+  for (auto k = num_args; k-- > 0;) {
+    auto i = right_to_left ? num_args - 1 - k : k;
+    auto *arg = args[i];
+    // A bit-field can't be referred to.
+    if (arg->refersToBitField()) {
+      continue;
+    }
+    if (arg->HasSideEffects(ctx)) {
+      // A temporary that a reference parameter is bound to would be
+      // materialized before the call, out of order.
+      bool materialized =
+          call && i >= first_arg && takesAddress(ctx, i, arg) &&
+          GetRefBindingTempType(ctx, call, i - first_arg).has_value();
+      bind_rest |= uses[i] > 1 || materialized ||
+                   (uses[i] == 1 && first[i] > next_first);
+      bind[i] = bind_rest;
+      if (uses[i] == 1) {
+        next_first = std::min(next_first, first[i]);
+      }
+    } else if (uses[i] > 1 && arg->isPRValue() && !arg->isEvaluatable(ctx) &&
+               !clang::isa<clang::DeclRefExpr>(arg->IgnoreParenLValueCasts())) {
+      // A value computed from others is not computed again, nor before the
+      // side effects of the previous arguments.
+      bind[i] = bind_rest = true;
+    }
+  }
+  return bind;
+}
+
+bool ExprRule::takesAddress(clang::ASTContext &ctx, unsigned i,
+                            const clang::Expr *arg) const {
+  return params[i].is_pointer() && !arg->getType()->isPointerType() &&
+         !RuleRegistry::MapsToPointer(ctx, arg->getType());
 }
 
 void RefExprFragment::dump() const {

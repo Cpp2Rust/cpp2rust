@@ -8,7 +8,7 @@ unsafe fn f1(a0: *mut u8, a1: *const u8, a2: usize) -> *mut u8 {
     a0
 }
 
-unsafe fn f2(a0: *mut u8, a1: *const u8, a2: usize) -> *mut u8 {
+unsafe fn f2(a0: *mut u8, a1: i32, a2: usize) -> *mut u8 {
     let byte_0 = a0 as *mut u8;
     for offset in 0..a2 {
         *byte_0.offset(offset as isize) = a1 as u8;

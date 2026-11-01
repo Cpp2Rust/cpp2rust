@@ -202,14 +202,14 @@ fn main_0() -> i32 {
     assert!((((((elem!(p, 0).read()) as i32) == ('t' as i32)) as i32) != 0));
     assert!(((({ (*local.borrow()).count } == 3_usize) as i32) != 0));
     let copy: Value<table> = <Value<table>>::default();
-    {
-        ((array_field_ptr!(copy.as_pointer(), rows)) as Ptr<Box<[i8]>>)
-            .to_any()
-            .memcpy(
+    match ({ ((array_field_ptr!(copy.as_pointer(), rows)) as Ptr<Box<[i8]>>).to_any() },) {
+        (mut __tmp_0,) => {
+            __tmp_0.memcpy(
                 &((array_field_ptr!(local.as_pointer(), rows)) as Ptr<Box<[i8]>>).to_any(),
                 ::std::mem::size_of::<[[i8; 10]; 3]>() as usize,
             );
-        ((array_field_ptr!(copy.as_pointer(), rows)) as Ptr<Box<[i8]>>).to_any()
+            (__tmp_0).clone()
+        }
     };
     assert!(
         (((((({
@@ -267,12 +267,14 @@ fn main_0() -> i32 {
             .map(|_| (0..3).map(|_| 0_i8).collect::<Box<[i8]>>())
             .collect::<Box<[Box<[i8]>]>>(),
     ));
-    {
-        ((other.as_pointer()) as Ptr<Box<[i8]>>).to_any().memcpy(
-            &((grid.as_pointer()) as Ptr<Box<[i8]>>).to_any(),
-            ::std::mem::size_of::<[[i8; 3]; 2]>() as usize,
-        );
-        ((other.as_pointer()) as Ptr<Box<[i8]>>).to_any()
+    match ({ ((other.as_pointer()) as Ptr<Box<[i8]>>).to_any() },) {
+        (mut __tmp_1,) => {
+            __tmp_1.memcpy(
+                &((grid.as_pointer()) as Ptr<Box<[i8]>>).to_any(),
+                ::std::mem::size_of::<[[i8; 3]; 2]>() as usize,
+            );
+            (__tmp_1).clone()
+        }
     };
     assert!(
         ((((((((*other.borrow())[(1) as usize][(2) as usize] as i32) == ('f' as i32)) as i32) != 0)

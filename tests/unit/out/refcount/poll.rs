@@ -14,16 +14,19 @@ fn main_0() -> i32 {
     let fds: Value<Box<[i32]>> =
         Rc::new(RefCell::new((0..2).map(|_| 0_i32).collect::<Box<[i32]>>()));
     assert!(
-        (((match nix::unistd::pipe() {
-            Ok((__r, __w)) => {
-                let __fds = (fds.as_pointer() as Ptr<i32>);
-                __fds.write(FdRegistry::register(__r));
-                elem!(__fds, 1).write(FdRegistry::register(__w));
-                0
-            }
-            Err(__e) => {
-                libcc2rs::cpp2rust_errno().write(__e as i32);
-                -1
+        (((match ({ (fds.as_pointer() as Ptr::<i32>) },) {
+            (mut __tmp_0,) => {
+                match nix::unistd::pipe() {
+                    Ok((__r, __w)) => {
+                        __tmp_0.write(FdRegistry::register(__r));
+                        elem!(__tmp_0, 1).write(FdRegistry::register(__w));
+                        0
+                    }
+                    Err(__e) => {
+                        libcc2rs::cpp2rust_errno().write(__e as i32);
+                        -1
+                    }
+                }
             }
         } == 0) as i32)
             != 0)
@@ -55,49 +58,55 @@ fn main_0() -> i32 {
     (*pfd.borrow_mut())[(1) as usize].events = 1_i16;
     (*pfd.borrow_mut())[(1) as usize].revents = 42_i16;
     assert!(
-        ((({
-            let __p = (pfd.as_pointer() as Ptr<libcc2rs::Pollfd>);
-            let __timeout = match nix::poll::PollTimeout::try_from(0) {
-                Ok(__t) => __t,
-                Err(_) => panic!("poll: unsupported timeout {}", 0),
-            };
-            let mut __idx = Vec::new();
-            let mut __wanted = Vec::new();
-            let mut __events = Vec::new();
-            for __i in 0..((2 as ::libc::nfds_t) as usize) {
-                let (__fd, __ev) = __p.offset(__i).with(|__e| (__e.fd, __e.events));
-                __p.offset(__i).with_mut(|__e| __e.revents = 0);
-                if __fd >= 0 {
-                    __idx.push(__i);
-                    __wanted.push(__fd);
-                    __events.push(__ev);
+        (((match ({ (pfd.as_pointer() as Ptr<libcc2rs::Pollfd>) },) {
+            (mut __tmp_1,) => {
+                {
+                    let __timeout = match nix::poll::PollTimeout::try_from(0) {
+                        Ok(__t) => __t,
+                        Err(_) => panic!("poll: unsupported timeout {}", 0),
+                    };
+                    let mut __idx = Vec::new();
+                    let mut __wanted = Vec::new();
+                    let mut __events = Vec::new();
+                    for __i in 0..((2 as ::libc::nfds_t) as usize) {
+                        let (__fd, __ev) = __tmp_1.offset(__i).with(|__e| (__e.fd, __e.events));
+                        __tmp_1.offset(__i).with_mut(|__e| __e.revents = 0);
+                        if __fd >= 0 {
+                            __idx.push(__i);
+                            __wanted.push(__fd);
+                            __events.push(__ev);
+                        }
+                    }
+                    FdRegistry::with_fds(&__wanted, |__b| {
+                        let mut __pfds: Vec<nix::poll::PollFd> = __b
+                            .iter()
+                            .zip(&__events)
+                            .map(|(&__fd, &__ev)| {
+                                nix::poll::PollFd::new(
+                                    __fd,
+                                    nix::poll::PollFlags::from_bits_truncate(__ev),
+                                )
+                            })
+                            .collect();
+                        match nix::poll::poll(&mut __pfds, __timeout) {
+                            Ok(__count) => {
+                                for (__slot, &__i) in __pfds.iter().zip(&__idx) {
+                                    let __rev = match __slot.revents() {
+                                        Some(__r) => __r.bits(),
+                                        None => 0,
+                                    };
+                                    __tmp_1.offset(__i).with_mut(|__e| __e.revents = __rev);
+                                }
+                                __count
+                            }
+                            Err(__e) => {
+                                libcc2rs::cpp2rust_errno().write(__e as i32);
+                                -1
+                            }
+                        }
+                    })
                 }
             }
-            FdRegistry::with_fds(&__wanted, |__b| {
-                let mut __pfds: Vec<nix::poll::PollFd> = __b
-                    .iter()
-                    .zip(&__events)
-                    .map(|(&__fd, &__ev)| {
-                        nix::poll::PollFd::new(__fd, nix::poll::PollFlags::from_bits_truncate(__ev))
-                    })
-                    .collect();
-                match nix::poll::poll(&mut __pfds, __timeout) {
-                    Ok(__count) => {
-                        for (__slot, &__i) in __pfds.iter().zip(&__idx) {
-                            let __rev = match __slot.revents() {
-                                Some(__r) => __r.bits(),
-                                None => 0,
-                            };
-                            __p.offset(__i).with_mut(|__e| __e.revents = __rev);
-                        }
-                        __count
-                    }
-                    Err(__e) => {
-                        libcc2rs::cpp2rust_errno().write(__e as i32);
-                        -1
-                    }
-                }
-            })
         } == 1) as i32)
             != 0)
     );
@@ -105,16 +114,19 @@ fn main_0() -> i32 {
     assert!((((({ (*pfd.borrow())[(1) as usize].revents } as i32) == 0) as i32) != 0));
     let ch: Value<i8> = Rc::new(RefCell::new(0_i8));
     assert!(
-        (((match FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
-            ((ch.as_pointer()) as Ptr<i8>)
-                .to_any()
-                .reinterpret_cast::<u8>()
-                .with_slice_mut(1_usize, |__buf| nix::unistd::read(__fd, __buf))
-        }) {
-            Ok(__n) => __n as isize,
-            Err(__e) => {
-                libcc2rs::cpp2rust_errno().write(__e as i32);
-                -1
+        (((match ({ ((ch.as_pointer()) as Ptr<i8>).to_any() },) {
+            (mut __tmp_2,) => {
+                match FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
+                    __tmp_2
+                        .reinterpret_cast::<u8>()
+                        .with_slice_mut(1_usize, |__buf| nix::unistd::read(__fd, __buf))
+                }) {
+                    Ok(__n) => __n as isize,
+                    Err(__e) => {
+                        libcc2rs::cpp2rust_errno().write(__e as i32);
+                        -1
+                    }
+                }
             }
         } == 1_isize) as i32)
             != 0)

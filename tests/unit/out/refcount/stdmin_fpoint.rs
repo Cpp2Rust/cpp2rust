@@ -13,10 +13,10 @@ pub fn main() {
 fn main_0() -> i32 {
     let a0: Value<f64> = Rc::new(RefCell::new(3.14_f64));
     let a1: Value<f64> = Rc::new(RefCell::new(2.71_f64));
-    {
-        let __a = a0.as_pointer();
-        let __b = a1.as_pointer();
-        if CppLess::less(&__b, &__a) { __b } else { __a }
+    if CppLess::less(&a1.as_pointer(), &a0.as_pointer()) {
+        a1.as_pointer()
+    } else {
+        a0.as_pointer()
     };
     return 0;
 }

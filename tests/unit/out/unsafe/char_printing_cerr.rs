@@ -15,10 +15,11 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut vec_: Vec<u8> = Vec::from([195_u8, 167_u8]);
     let mut i: i32 = 27;
-    let mut str: Vec<libc::c_char> = {
-        let s = c"bar.".as_ptr();
-        std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1).to_vec()
-    };
+    let mut str: Vec<libc::c_char> = std::slice::from_raw_parts(
+        c"bar.".as_ptr(),
+        (0..).take_while(|&i| *c"bar.".as_ptr().add(i) != 0).count() + 1,
+    )
+    .to_vec();
     write!((*libcc2rs::cerr_unsafe()), "{:} a", i,);
     (*libcc2rs::cerr_unsafe()).write_all(
         &([

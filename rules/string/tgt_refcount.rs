@@ -25,16 +25,12 @@ fn t7() -> i8 {
     0_i8
 }
 
-// Keep temporary receivers alive, but borrow only after evaluating the arguments.
 fn f1(a0: Ptr<Vec<i8>>, a1: usize, a2: usize) -> Vec<i8> {
-    match (a0, a1, a2) {
-        (__source, __pos, __count) => __source.with(|__s: &Vec<i8>| {
-            let mut __tmp1 =
-                __s[__pos..::std::cmp::min(__pos + __count, __s.len().saturating_sub(1))].to_vec();
-            __tmp1.push(0);
-            __tmp1
-        }),
-    }
+    a0.with(|__s: &Vec<i8>| {
+        let mut __tmp1 = __s[a1..::std::cmp::min(a1 + a2, __s.len().saturating_sub(1))].to_vec();
+        __tmp1.push(0);
+        __tmp1
+    })
 }
 
 fn f3(a0: Vec<i8>, a1: Ptr<i8>) -> Vec<i8> {

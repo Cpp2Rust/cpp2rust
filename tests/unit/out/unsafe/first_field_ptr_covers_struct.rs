@@ -33,15 +33,19 @@ unsafe fn main_0() -> i32 {
     };
     let mut p: *mut S = (libcc2rs::malloc_unsafe(::std::mem::size_of::<S>()) as *mut S);
     assert!((((!((p).is_null())) as i32) != 0));
-    {
-        if ::std::mem::size_of::<S>() != 0 {
-            ::std::ptr::copy_nonoverlapping(
-                ((&mut src as *mut S) as *const ::libc::c_void),
-                ((&mut (*p).x as *mut i32) as *mut ::libc::c_void),
-                ::std::mem::size_of::<S>() as usize,
-            )
+    match ({ ((&mut (*p).x as *mut i32) as *mut ::libc::c_void) }, {
+        ((&mut src as *mut S) as *const ::libc::c_void)
+    }) {
+        (mut __tmp_0, mut __tmp_1) => {
+            if ::std::mem::size_of::<S>() != 0 {
+                ::std::ptr::copy_nonoverlapping(
+                    __tmp_1,
+                    __tmp_0,
+                    ::std::mem::size_of::<S>() as usize,
+                )
+            }
+            __tmp_0
         }
-        ((&mut (*p).x as *mut i32) as *mut ::libc::c_void)
     };
     assert!(
         ((((((((((((((*p).x) == (1)) as i32) != 0) && (((((*p).in_.a as i32) == (2)) as i32) != 0))
@@ -53,15 +57,19 @@ unsafe fn main_0() -> i32 {
             != 0)
     );
     let mut n: In = In { a: 5_i16, b: 6_i16 };
-    {
-        if ::std::mem::size_of::<In>() != 0 {
-            ::std::ptr::copy_nonoverlapping(
-                ((&mut n as *mut In) as *const ::libc::c_void),
-                ((&mut (*p).in_ as *mut In) as *mut ::libc::c_void),
-                ::std::mem::size_of::<In>() as usize,
-            )
+    match ({ ((&mut (*p).in_ as *mut In) as *mut ::libc::c_void) }, {
+        ((&mut n as *mut In) as *const ::libc::c_void)
+    }) {
+        (mut __tmp_2, mut __tmp_3) => {
+            if ::std::mem::size_of::<In>() != 0 {
+                ::std::ptr::copy_nonoverlapping(
+                    __tmp_3,
+                    __tmp_2,
+                    ::std::mem::size_of::<In>() as usize,
+                )
+            }
+            __tmp_2
         }
-        ((&mut (*p).in_ as *mut In) as *mut ::libc::c_void)
     };
     assert!(
         ((((((((((((((*p).x) == (1)) as i32) != 0) && (((((*p).in_.a as i32) == (5)) as i32) != 0))

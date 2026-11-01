@@ -30,10 +30,9 @@ fn f47(a0: Ptr<bool>) -> bool {
 }
 
 fn f60<T1: ByteRepr>(a0: Ptr<Vec<T1>>, a1: RandomAccessIterator<T1>) -> RandomAccessIterator<T1> {
-    let __it = a1;
-    let __off = __it.index();
+    let __off = a1.index();
     a0.with_mut(|__v: &mut Vec<T1>| __v.remove(__off));
-    __it
+    a1
 }
 
 fn f65<T1>(a0: Ptr<T1>) -> Ptr<T1> {
@@ -61,17 +60,15 @@ fn f76<T1>(a0: Ptr<T1>) -> RandomAccessIterator<T1> {
 }
 
 fn f77<T1: ByteRepr>(a0: &mut Vec<T1>, a1: RandomAccessIterator<T1>, a2: T1) -> RandomAccessIterator<T1> {
-    let __it = a1;
-    let __off = __it.index();
+    let __off = a1.index();
     a0.insert(__off, a2);
-    __it
+    a1
 }
 
 fn f79<T1: ByteRepr>(a0: &mut Vec<T1>, a1: RandomAccessIterator<T1>, a2: T1) -> RandomAccessIterator<T1> {
-    let __it = a1;
-    let __off = __it.index();
+    let __off = a1.index();
     a0.insert(__off, a2);
-    __it
+    a1
 }
 
 fn f92<T1: CppFrom<T4>, T2, T3: CppInputIterator<T4>, T4: ByteRepr>(a0: T3, a1: T3) -> Vec<T1> {
@@ -97,11 +94,10 @@ fn f96<T1>(a0: Ptr<T1>) -> RandomAccessIterator<T1> {
 }
 
 fn f98<T1: ByteRepr + 'static>(a0: Ptr<Vec<T1>>, a1: usize) -> Ptr<T1> {
-    let __idx = a1;
-    if __idx as usize >= (*a0.upgrade().deref()).len() {
+    if a1 as usize >= (*a0.upgrade().deref()).len() {
         panic!("out of bounds access")
     } else {
-        a0.decay().offset(__idx as isize)
+        a0.decay().offset(a1 as isize)
     }
 }
 
@@ -115,8 +111,7 @@ fn f101<T1: Clone + ByteRepr, T2, T3: CppInputIterator<T1>>(
     a2: T3,
     a3: T3,
 ) -> RandomAccessIterator<T1> {
-    let __pos = a1;
-    let start_idx = __pos.index();
+    let start_idx = a1.index();
     let mut temp_vec: Vec<T1> = Vec::new();
     let mut __it = a2;
     while __it != a3 {
@@ -126,7 +121,7 @@ fn f101<T1: Clone + ByteRepr, T2, T3: CppInputIterator<T1>>(
     a0.with_mut(|v: &mut Vec<T1>| {
         v.splice(start_idx..start_idx, temp_vec);
     });
-    __pos
+    a1
 }
 
 fn f103<T1: ByteRepr + Clone>(a0: Ptr<Vec<T1>>, a1: &mut Vec<T1>) {
@@ -142,17 +137,15 @@ fn f105<T1: Clone + ByteRepr>(a0: Ptr<Vec<T1>>, a1: Vec<T1>) {
 }
 
 fn f115<T1: Clone + ByteRepr>(a0: &mut Vec<T1>, a1: RandomAccessIterator<T1>, a2: usize, a3: T1) -> RandomAccessIterator<T1> {
-    let __it = a1;
-    let __off = __it.index();
+    let __off = a1.index();
     a0.splice(__off..__off, std::iter::repeat_n(a3, a2));
-    __it
+    a1
 }
 
 fn f116<T1: ByteRepr>(a0: &mut Vec<T1>, a1: RandomAccessIterator<T1>, a2: Vec<T1>) -> RandomAccessIterator<T1> {
-    let __it = a1;
-    let __off = __it.index();
+    let __off = a1.index();
     a0.splice(__off..__off, a2);
-    __it
+    a1
 }
 
 fn f118<T1>(a0: Ptr<bool>, a1: usize) -> Ptr<bool> {
@@ -160,19 +153,16 @@ fn f118<T1>(a0: Ptr<bool>, a1: usize) -> Ptr<bool> {
 }
 
 fn f119(a0: Ptr<bool>, a1: bool) -> Ptr<bool> {
-    let __a0 = a0;
-    __a0.write(a1);
-    __a0
+    a0.write(a1);
+    a0
 }
 
 fn f120(a0: Ptr<bool>, a1: bool) -> Ptr<bool> {
-    let __a0 = a0;
-    __a0.write(a1);
-    __a0
+    a0.write(a1);
+    a0
 }
 
 fn f121(a0: Ptr<bool>, a1: Ptr<bool>) -> Ptr<bool> {
-    let __a0 = a0;
-    __a0.write(a1.read());
-    __a0
+    a0.write(a1.read());
+    a0
 }

@@ -16,12 +16,11 @@ fn t3() -> libcc2rs::Timespec {
 }
 
 fn f1(a0: Ptr<::libc::time_t>) -> ::libc::time_t {
-    let __out = a0;
     match nix::time::clock_gettime(nix::time::ClockId::CLOCK_REALTIME) {
         Ok(__ts) => {
             let __s = __ts.tv_sec();
-            if !__out.is_null() {
-                __out.write(__s);
+            if !a0.is_null() {
+                a0.write(__s);
             }
             __s
         }
@@ -49,12 +48,11 @@ fn f2(a0: nix::time::ClockId, a1: Ptr<Timespec>) -> i32 {
 }
 
 fn f4(a0: Ptr<::libc::time_t>, a1: Ptr<Tm>) -> Ptr<Tm> {
-    let __res = a1;
     match jiff::Timestamp::from_second(a0.read()) {
         Ok(__ts) => {
             let __dt = __ts.to_zoned(jiff::tz::TimeZone::UTC);
-            __res.with_mut(|__tm| *__tm = Tm::from_zoned(&__dt));
-            __res
+            a1.with_mut(|__tm| *__tm = Tm::from_zoned(&__dt));
+            a1
         }
         Err(_) => {
             libcc2rs::cpp2rust_errno().write(::libc::EOVERFLOW);
@@ -64,18 +62,17 @@ fn f4(a0: Ptr<::libc::time_t>, a1: Ptr<Tm>) -> Ptr<Tm> {
 }
 
 fn f5(a0: Ptr<::libc::time_t>, a1: Ptr<Tm>) -> Ptr<Tm> {
-    let __res = a1;
     match jiff::Timestamp::from_second(a0.read()) {
         Ok(__ts) => {
             let __dt = __ts.to_zoned(jiff::tz::TimeZone::system());
             let __info = __dt.time_zone().to_offset_info(__ts);
             let __isdst = if __info.dst().is_dst() { 1 } else { 0 };
-            __res.with_mut(|__tm| {
+            a1.with_mut(|__tm| {
                 *__tm = Tm::from_zoned(&__dt);
                 __tm.tm_isdst = __isdst;
                 __tm.tm_zone = Ptr::alloc_c_str(__info.abbreviation().as_bytes());
             });
-            __res
+            a1
         }
         Err(_) => {
             libcc2rs::cpp2rust_errno().write(::libc::EOVERFLOW);
@@ -102,14 +99,13 @@ fn f6(a0: Ptr<i8>, a1: usize, a2: Ptr<i8>, a3: Ptr<Tm>) -> usize {
 }
 
 fn f7(a0: Ptr<i8>, a1: Ptr<Timeval>) -> i32 {
-    let __times = a1;
-    let __at = __times.with(|__tv| {
+    let __at = a1.with(|__tv| {
         nix::sys::time::TimeVal::new(
             __tv.tv_sec as ::libc::time_t,
             __tv.tv_usec as ::libc::suseconds_t,
         )
     });
-    let __mt = __times.offset(1).with(|__tv| {
+    let __mt = a1.offset(1).with(|__tv| {
         nix::sys::time::TimeVal::new(
             __tv.tv_sec as ::libc::time_t,
             __tv.tv_usec as ::libc::suseconds_t,

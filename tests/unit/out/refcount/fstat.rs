@@ -49,14 +49,18 @@ fn main_0() -> i32 {
     );
     let st: Value<libcc2rs::Stat> = Rc::new(RefCell::new(Default::default()));
     assert!(
-        (((match FdRegistry::with_fd(fd, |__fd| nix::sys::stat::fstat(__fd)) {
-            Ok(__s) => {
-                (st.as_pointer()).with_mut(|__st| *__st = Stat::from_libc(&__s));
-                0
-            }
-            Err(__e) => {
-                libcc2rs::cpp2rust_errno().write(__e as i32);
-                -1
+        (((match ({ (st.as_pointer()) },) {
+            (mut __tmp_0,) => {
+                match FdRegistry::with_fd(fd, |__fd| nix::sys::stat::fstat(__fd)) {
+                    Ok(__s) => {
+                        __tmp_0.with_mut(|__st| *__st = Stat::from_libc(&__s));
+                        0
+                    }
+                    Err(__e) => {
+                        libcc2rs::cpp2rust_errno().write(__e as i32);
+                        -1
+                    }
+                }
             }
         } == 0) as i32)
             != 0)

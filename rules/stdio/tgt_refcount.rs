@@ -32,6 +32,7 @@ fn f4(a0: &mut CFile, a1: i64, a2: i32) -> i32 {
 }
 
 fn f5(a0: AnyPtr, a1: usize, a2: usize, a3: Ptr<CFile>) -> usize {
+    // Computing the arguments first ends their borrows of what the call writes.
     let __a0 = a0;
     let __a1 = a1;
     let __a2 = a2;
@@ -40,6 +41,7 @@ fn f5(a0: AnyPtr, a1: usize, a2: usize, a3: Ptr<CFile>) -> usize {
 }
 
 fn f6(a0: AnyPtr, a1: usize, a2: usize, a3: Ptr<CFile>) -> usize {
+    // Computing the arguments first ends their borrows of what the call writes.
     let __a0 = a0;
     let __a1 = a1;
     let __a2 = a2;
@@ -100,13 +102,11 @@ fn f16(a0: Ptr<CFile>) -> i32 {
 }
 
 fn f17(a0: Ptr<i8>, a1: i32, a2: Ptr<CFile>) -> Ptr<i8> {
-    let __buf = a0;
-    let __n = a1;
-    if __n <= 0 {
+    if a1 <= 0 {
         Ptr::null()
     } else {
-        let __max = (__n - 1) as usize;
-        let mut __dst = __buf.clone();
+        let __max = (a1 - 1) as usize;
+        let mut __dst = a0.clone();
         let mut __count: usize = 0;
         let __failed = a2.with_mut(|__f| {
             while __count < __max {
@@ -127,14 +127,13 @@ fn f17(a0: Ptr<i8>, a1: i32, a2: Ptr<CFile>) -> Ptr<i8> {
             Ptr::null()
         } else {
             __dst.write(0);
-            __buf
+            a0
         }
     }
 }
 
 fn f18(a0: Ptr<i8>, a1: Ptr<i8>, a2: Ptr<CFile>) -> Ptr<CFile> {
-    let __stream = a2;
-    let __old = __stream.with(|__f| __f.fd);
+    let __old = a2.with(|__f| __f.fd);
     match __old {
         0..=2 => {}
         __fd => {
@@ -143,8 +142,8 @@ fn f18(a0: Ptr<i8>, a1: Ptr<i8>, a2: Ptr<CFile>) -> Ptr<CFile> {
     }
     match CFile::open(&a0.to_rust_string(), &a1.to_rust_string()) {
         Some(__f) => {
-            __stream.write(__f);
-            __stream
+            a2.write(__f);
+            a2
         }
         None => Ptr::null(),
     }

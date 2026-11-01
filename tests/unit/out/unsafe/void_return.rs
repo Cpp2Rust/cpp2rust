@@ -10,33 +10,33 @@ pub unsafe fn f1_0(
     mut first: UnsafeRandomAccessIterator<i32>,
     mut last: UnsafeRandomAccessIterator<i32>,
 ) {
-    {
-        let __first = (first).clone();
-        let __n = (last).clone().iter_distance(&__first);
-        let mut __order: Vec<isize> = (0..__n).collect();
-        __order.sort_by(|&__x, &__y| (*__first.iter_at(__x)).cmp(&*__first.iter_at(__y)));
-        let __values: Vec<_> = __order
-            .iter()
-            .map(|&__i| std::ptr::read(__first.iter_at(__i)))
-            .collect();
-        for (__i, __v) in (0..__n).zip(__values) {
-            std::ptr::write(__first.iter_at(__i), __v);
+    match ({ (first).clone() },) {
+        (mut __tmp_0,) => {
+            let __n = (last).clone().iter_distance(&__tmp_0);
+            let mut __order: Vec<isize> = (0..__n).collect();
+            __order.sort_by(|&__x, &__y| (*__tmp_0.iter_at(__x)).cmp(&*__tmp_0.iter_at(__y)));
+            let __values: Vec<_> = __order
+                .iter()
+                .map(|&__i| std::ptr::read(__tmp_0.iter_at(__i)))
+                .collect();
+            for (__i, __v) in (0..__n).zip(__values) {
+                std::ptr::write(__tmp_0.iter_at(__i), __v);
+            }
         }
     };
     return;
 }
 pub unsafe fn f1_1(mut first: *mut i32, mut last: *mut i32) {
     {
-        let __first = first;
-        let __n = last.iter_distance(&__first);
+        let __n = last.iter_distance(&first);
         let mut __order: Vec<isize> = (0..__n).collect();
-        __order.sort_by(|&__x, &__y| (*__first.iter_at(__x)).cmp(&*__first.iter_at(__y)));
+        __order.sort_by(|&__x, &__y| (*first.iter_at(__x)).cmp(&*first.iter_at(__y)));
         let __values: Vec<_> = __order
             .iter()
-            .map(|&__i| std::ptr::read(__first.iter_at(__i)))
+            .map(|&__i| std::ptr::read(first.iter_at(__i)))
             .collect();
         for (__i, __v) in (0..__n).zip(__values) {
-            std::ptr::write(__first.iter_at(__i), __v);
+            std::ptr::write(first.iter_at(__i), __v);
         }
     };
     return;

@@ -32,14 +32,18 @@ pub fn test_stat_0() {
     );
     let st: Value<libcc2rs::Stat> = Rc::new(RefCell::new(Default::default()));
     assert!(
-        (((match nix::sys::stat::stat(path.to_rust_string().as_str()) {
-            Ok(__s) => {
-                (st.as_pointer()).with_mut(|__st| *__st = Stat::from_libc(&__s));
-                0
-            }
-            Err(__e) => {
-                libcc2rs::cpp2rust_errno().write(__e as i32);
-                -1
+        (((match ({ (st.as_pointer()) },) {
+            (mut __tmp_0,) => {
+                match nix::sys::stat::stat(path.to_rust_string().as_str()) {
+                    Ok(__s) => {
+                        __tmp_0.with_mut(|__st| *__st = Stat::from_libc(&__s));
+                        0
+                    }
+                    Err(__e) => {
+                        libcc2rs::cpp2rust_errno().write(__e as i32);
+                        -1
+                    }
+                }
             }
         } == 0) as i32)
             != 0)
@@ -76,14 +80,18 @@ pub fn test_fstat_1() {
     let mut fd: i32 = fp.with(|__f| __f.fd);
     let st: Value<libcc2rs::Stat> = Rc::new(RefCell::new(Default::default()));
     assert!(
-        (((match FdRegistry::with_fd(fd, |__fd| nix::sys::stat::fstat(__fd)) {
-            Ok(__s) => {
-                (st.as_pointer()).with_mut(|__st| *__st = Stat::from_libc(&__s));
-                0
-            }
-            Err(__e) => {
-                libcc2rs::cpp2rust_errno().write(__e as i32);
-                -1
+        (((match ({ (st.as_pointer()) },) {
+            (mut __tmp_1,) => {
+                match FdRegistry::with_fd(fd, |__fd| nix::sys::stat::fstat(__fd)) {
+                    Ok(__s) => {
+                        __tmp_1.with_mut(|__st| *__st = Stat::from_libc(&__s));
+                        0
+                    }
+                    Err(__e) => {
+                        libcc2rs::cpp2rust_errno().write(__e as i32);
+                        -1
+                    }
+                }
             }
         } == 0) as i32)
             != 0)

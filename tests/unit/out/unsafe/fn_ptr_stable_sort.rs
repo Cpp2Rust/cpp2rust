@@ -35,28 +35,29 @@ unsafe fn main_0() -> i32 {
         let __a1 = Item { key: 2, value: 20 };
         v.push(__a1)
     };
-    {
-        let __first = v.begin();
-        let __n = v.end().iter_distance(&__first);
-        let __cmp = (Compare_0 as unsafe fn(*const Item, *const Item) -> bool);
-        let mut __order: Vec<isize> = (0..__n).collect();
-        __order.sort_by(|&__x, &__y| {
-            let __a = __first.iter_at(__x) as *const _;
-            let __b = __first.iter_at(__y) as *const _;
-            if __cmp.call(__a, __b) {
-                std::cmp::Ordering::Less
-            } else if __cmp.call(__b, __a) {
-                std::cmp::Ordering::Greater
-            } else {
-                std::cmp::Ordering::Equal
+    match ({ v.begin() },) {
+        (mut __tmp_0,) => {
+            let __n = v.end().iter_distance(&__tmp_0);
+            let mut __order: Vec<isize> = (0..__n).collect();
+            __order.sort_by(|&__x, &__y| {
+                let __a = __tmp_0.iter_at(__x) as *const _;
+                let __b = __tmp_0.iter_at(__y) as *const _;
+                if (Compare_0 as unsafe fn(*const Item, *const Item) -> bool).call(__a, __b) {
+                    std::cmp::Ordering::Less
+                } else if (Compare_0 as unsafe fn(*const Item, *const Item) -> bool).call(__b, __a)
+                {
+                    std::cmp::Ordering::Greater
+                } else {
+                    std::cmp::Ordering::Equal
+                }
+            });
+            let __values: Vec<_> = __order
+                .iter()
+                .map(|&__i| std::ptr::read(__tmp_0.iter_at(__i)))
+                .collect();
+            for (__i, __v) in (0..__n).zip(__values) {
+                std::ptr::write(__tmp_0.iter_at(__i), __v);
             }
-        });
-        let __values: Vec<_> = __order
-            .iter()
-            .map(|&__i| std::ptr::read(__first.iter_at(__i)))
-            .collect();
-        for (__i, __v) in (0..__n).zip(__values) {
-            std::ptr::write(__first.iter_at(__i), __v);
         }
     };
     assert!(((v[(0_usize)].key) == (1)));

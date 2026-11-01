@@ -23,9 +23,12 @@ pub fn main() {
     }
 }
 unsafe fn main_0(mut argc: i32, mut argv: *mut *mut libc::c_char) -> i32 {
-    let mut s: Vec<libc::c_char> = {
-        let s = (*argv.offset((0) as isize)).cast_const();
-        std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1).to_vec()
+    let mut s: Vec<libc::c_char> = match ({ (*argv.offset((0) as isize)).cast_const() },) {
+        (mut __tmp_0,) => std::slice::from_raw_parts(
+            __tmp_0,
+            (0..).take_while(|&i| *__tmp_0.add(i) != 0).count() + 1,
+        )
+        .to_vec(),
     };
     assert!(((argc) == (1)));
     assert!(((s.len() - 1) > (0_usize)));

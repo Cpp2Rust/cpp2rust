@@ -166,13 +166,16 @@ fn main_0() -> i32 {
     );
     assert!((({ OuterImpl::sum(&o.as_pointer(),) }) == 7));
     let y: Value<i32> = Rc::new(RefCell::new(0));
-    {
+    match ({
         ((field_ptr!(
             (array_field_ptr!(o.as_pointer(), items) as Ptr<Inner>).offset((2) as isize),
             a
         )) as Ptr<i32>)
             .to_any()
-            .memcpy(
+    },)
+    {
+        (mut __tmp_2,) => {
+            __tmp_2.memcpy(
                 &((field_ptr!(
                     (array_field_ptr!(o.as_pointer(), items) as Ptr<Inner>).offset((1) as isize),
                     a
@@ -180,22 +183,21 @@ fn main_0() -> i32 {
                     .to_any(),
                 ::std::mem::size_of::<i32>() as usize,
             );
-        ((field_ptr!(
-            (array_field_ptr!(o.as_pointer(), items) as Ptr<Inner>).offset((2) as isize),
-            a
-        )) as Ptr<i32>)
-            .to_any()
+            (__tmp_2).clone()
+        }
     };
-    {
-        ((y.as_pointer()) as Ptr<i32>).to_any().memcpy(
-            &((field_ptr!(
-                (array_field_ptr!(o.as_pointer(), items) as Ptr<Inner>).offset((2) as isize),
-                a
-            )) as Ptr<i32>)
-                .to_any(),
-            ::std::mem::size_of::<i32>() as usize,
-        );
-        ((y.as_pointer()) as Ptr<i32>).to_any()
+    match ({ ((y.as_pointer()) as Ptr<i32>).to_any() },) {
+        (mut __tmp_3,) => {
+            __tmp_3.memcpy(
+                &((field_ptr!(
+                    (array_field_ptr!(o.as_pointer(), items) as Ptr<Inner>).offset((2) as isize),
+                    a
+                )) as Ptr<i32>)
+                    .to_any(),
+                ::std::mem::size_of::<i32>() as usize,
+            );
+            (__tmp_3).clone()
+        }
     };
     assert!(((*y.borrow()) == 4));
     let bytes: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
@@ -246,27 +248,27 @@ impl OuterImpl for Ptr<Outer> {
     fn move_assign(&self, _a0: Ptr<Outer>) -> Ptr<Outer> {
         field!((*self), x).write({ { (*_a0.upgrade().deref()).x } });
         field!((*self), inner).write({ { (*_a0.upgrade().deref()).inner.clone() } });
-        {
-            ((array_field_ptr!((*self), items)) as Ptr<Inner>)
-                .to_any()
-                .memcpy(
+        match ({ ((array_field_ptr!((*self), items)) as Ptr<Inner>).to_any() },) {
+            (mut __tmp_0,) => {
+                __tmp_0.memcpy(
                     &((array_field_ptr!(_a0, items)) as Ptr<Inner>).to_any(),
                     36_usize as usize,
                 );
-            ((array_field_ptr!((*self), items)) as Ptr<Inner>).to_any()
+                (__tmp_0).clone()
+            }
         };
         field_ref!((*self), v)
             .as_pointer()
             .write(field!(_a0, v).with_mut(std::mem::take));
         field!((*self), cursor).write({ { (*_a0.upgrade().deref()).cursor.clone() } });
-        {
-            ((array_field_ptr!((*self), buf)) as Ptr<i32>)
-                .to_any()
-                .memcpy(
+        match ({ ((array_field_ptr!((*self), buf)) as Ptr<i32>).to_any() },) {
+            (mut __tmp_1,) => {
+                __tmp_1.memcpy(
                     &((array_field_ptr!(_a0, buf)) as Ptr<i32>).to_any(),
                     16_usize as usize,
                 );
-            ((array_field_ptr!((*self), buf)) as Ptr<i32>).to_any()
+                (__tmp_1).clone()
+            }
         };
         return (*self).clone();
     }

@@ -36,21 +36,23 @@ fn main_0() -> i32 {
     let mut s: Ptr<S> = libcc2rs::malloc_refcount(12usize).reinterpret_cast::<S>();
     assert!((((!((s).is_null())) as i32) != 0));
     field!(s, before).write(1);
-    {
-        ((array_field_ptr!(s, mask) as Ptr<u8>) as Ptr<u8>)
-            .to_any()
-            .memset((5) as u8, ::std::mem::size_of::<[u8; 4]>() as usize);
-        ((array_field_ptr!(s, mask) as Ptr<u8>) as Ptr<u8>).to_any()
+    match ({ ((array_field_ptr!(s, mask) as Ptr<u8>) as Ptr<u8>).to_any() },) {
+        (mut __tmp_0,) => {
+            __tmp_0.memset((5) as u8, ::std::mem::size_of::<[u8; 4]>() as usize);
+            (__tmp_0).clone()
+        }
     };
     field!(s, after).write(2);
     ((array_field_ptr!(s, mask)) as Ptr<u8>).write(7_u8);
     let out: Value<Box<[u8]>> = Rc::new(RefCell::new((0..4).map(|_| 0_u8).collect::<Box<[u8]>>()));
-    {
-        ((out.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().memcpy(
-            &((array_field_ptr!(s, mask)) as Ptr<u8>).to_any(),
-            ::std::mem::size_of::<[u8; 4]>() as usize,
-        );
-        ((out.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()
+    match ({ ((out.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any() },) {
+        (mut __tmp_1,) => {
+            __tmp_1.memcpy(
+                &((array_field_ptr!(s, mask)) as Ptr<u8>).to_any(),
+                ::std::mem::size_of::<[u8; 4]>() as usize,
+            );
+            (__tmp_1).clone()
+        }
     };
     assert!(
         ((((((((*out.borrow())[(0) as usize] as i32) == 7) as i32) != 0)

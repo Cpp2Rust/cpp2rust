@@ -14,23 +14,31 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut arr1: [i32; 5] = [5, 2, 8, 1, 3];
-    {
-        let __first = arr1.as_mut_ptr();
-        let len = arr1.as_mut_ptr().offset((5) as isize).offset_from(__first) as usize;
-        let __cmp = FnPtr::<fn(i32, i32) -> bool>::new(|mut x: i32, mut y: i32| -> bool {
-            unsafe {
-                return ((x) < (y));
-            }
-        });
-        ::std::slice::from_raw_parts_mut(__first, len).sort_by(|x, y| {
-            if __cmp.call(*x, *y) {
-                std::cmp::Ordering::Less
-            } else if __cmp.call(*y, *x) {
-                std::cmp::Ordering::Greater
-            } else {
-                std::cmp::Ordering::Equal
-            }
-        })
+    match ({ arr1.as_mut_ptr() },) {
+        (mut __tmp_0,) => {
+            let len = arr1.as_mut_ptr().offset((5) as isize).offset_from(__tmp_0) as usize;
+            ::std::slice::from_raw_parts_mut(__tmp_0, len).sort_by(|x, y| {
+                if FnPtr::<fn(i32, i32) -> bool>::new(|mut x: i32, mut y: i32| -> bool {
+                    unsafe {
+                        return ((x) < (y));
+                    }
+                })
+                .call(*x, *y)
+                {
+                    std::cmp::Ordering::Less
+                } else if FnPtr::<fn(i32, i32) -> bool>::new(|mut x: i32, mut y: i32| -> bool {
+                    unsafe {
+                        return ((x) < (y));
+                    }
+                })
+                .call(*y, *x)
+                {
+                    std::cmp::Ordering::Greater
+                } else {
+                    std::cmp::Ordering::Equal
+                }
+            })
+        }
     };
     return 0;
 }

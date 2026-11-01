@@ -15,32 +15,30 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let a1: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2, 3])));
-    let mut vptr1: AnyPtr = {
-        let __base = ((a1.as_pointer() as Ptr<i32>) as Ptr<i32>)
-            .to_any()
-            .reinterpret_cast::<u8>();
-        let mut __lo: isize = 0;
-        let mut __hi: isize = 1_usize as isize - 1;
-        let mut __found = AnyPtr::default();
-        while __lo <= __hi && __found.is_null() {
-            let __mid = __lo + (__hi - __lo) / 2;
-            let __elem = __base.offset(__mid as usize * ::std::mem::size_of::<i32>());
-            let __r = int_cmp_0(
-                (((a1.as_pointer() as Ptr<i32>).offset(0)) as Ptr<i32>)
+    let mut vptr1: AnyPtr =
+        match ({ (((a1.as_pointer() as Ptr<i32>).offset(0)) as Ptr<i32>).to_any() },) {
+            (mut __tmp_0,) => {
+                let __base = ((a1.as_pointer() as Ptr<i32>) as Ptr<i32>)
                     .to_any()
-                    .clone(),
-                __elem.to_any(),
-            );
-            if __r == 0 {
-                __found = __elem.to_any();
-            } else if __r < 0 {
-                __hi = __mid - 1;
-            } else {
-                __lo = __mid + 1;
+                    .reinterpret_cast::<u8>();
+                let mut __lo: isize = 0;
+                let mut __hi: isize = 1_usize as isize - 1;
+                let mut __found = AnyPtr::default();
+                while __lo <= __hi && __found.is_null() {
+                    let __mid = __lo + (__hi - __lo) / 2;
+                    let __elem = __base.offset(__mid as usize * ::std::mem::size_of::<i32>());
+                    let __r = int_cmp_0(__tmp_0.clone(), __elem.to_any());
+                    if __r == 0 {
+                        __found = __elem.to_any();
+                    } else if __r < 0 {
+                        __hi = __mid - 1;
+                    } else {
+                        __lo = __mid + 1;
+                    }
+                }
+                __found
             }
-        }
-        __found
-    };
+        };
     assert!(
         ({ (vptr1).clone() } == {
             (((a1.as_pointer() as Ptr<i32>).offset(0)) as Ptr<i32>).to_any()

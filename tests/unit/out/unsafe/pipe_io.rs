@@ -24,12 +24,14 @@ unsafe fn main_0() -> i32 {
             != 0)
     );
     let mut buf: [libc::c_char; 4] = [(0 as libc::c_char); 4];
-    {
-        let byte_0 = (buf.as_mut_ptr() as *mut ::libc::c_void) as *mut u8;
-        for offset in 0..::std::mem::size_of::<[libc::c_char; 4]>() {
-            *byte_0.offset(offset as isize) = 0 as u8;
+    match ({ (buf.as_mut_ptr() as *mut ::libc::c_void) },) {
+        (mut __tmp_0,) => {
+            let byte_0 = __tmp_0 as *mut u8;
+            for offset in 0..::std::mem::size_of::<[libc::c_char; 4]>() {
+                *byte_0.offset(offset as isize) = 0 as u8;
+            }
+            __tmp_0
         }
-        (buf.as_mut_ptr() as *mut ::libc::c_void)
     };
     assert!(
         ((((libc::read(

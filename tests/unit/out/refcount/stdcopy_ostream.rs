@@ -24,17 +24,20 @@ fn main_0() -> i32 {
             ::std::fs::File::create((file.as_pointer() as Ptr<i8>).to_string())
                 .expect("Failed to open file"),
         ));
-        {
-            let mut __it = RandomAccessIterator::Vec(str.decay());
-            let __last = RandomAccessIterator::Vec(str.decay().to_last());
-            let __out = &mut (*ofs.borrow_mut());
-            let mut __bytes: Vec<u8> = Vec::new();
-            while __it != __last {
-                __bytes.push(__it.iter_deref().read() as u8);
-                __it.iter_inc();
+        match ({ RandomAccessIterator::Vec(str.decay()) }, {
+            RandomAccessIterator::Vec(str.decay().to_last())
+        }) {
+            (mut __tmp_0, mut __tmp_1) => {
+                let mut __it = (__tmp_0).clone();
+                let __out = &mut (*ofs.borrow_mut());
+                let mut __bytes: Vec<u8> = Vec::new();
+                while __it != __tmp_1 {
+                    __bytes.push(__it.iter_deref().read() as u8);
+                    __it.iter_inc();
+                }
+                __out.write_all(&__bytes);
+                __out.try_clone().unwrap()
             }
-            __out.write_all(&__bytes);
-            __out.try_clone().unwrap()
         };
     }
     match nix::unistd::unlink((file.as_pointer() as Ptr<i8>).to_rust_string().as_str()) {

@@ -23,13 +23,12 @@ fn f4(a0: AnyPtr, a1: AnyPtr, a2: usize) -> AnyPtr {
 }
 
 fn f5(a0: Ptr<i8>, a1: i32) -> Ptr<i8> {
-    let __s = a0;
     let __t = a1 as i8;
-    match __s.to_c_string_iterator().position(|__c| __c == __t) {
-        Some(__i) => __s.offset(__i),
+    match a0.to_c_string_iterator().position(|__c| __c == __t) {
+        Some(__i) => a0.offset(__i),
         None => {
             if __t == 0 {
-                __s.offset(__s.to_c_string_iterator().count())
+                a0.offset(a0.to_c_string_iterator().count())
             } else {
                 Ptr::null()
             }
@@ -57,9 +56,8 @@ fn f8(a0: Ptr<i8>, a1: Ptr<i8>) -> i32 {
 }
 
 fn f9(a0: Ptr<i8>, a1: Ptr<i8>, a2: usize) -> i32 {
-    let __n = a2;
-    let mut __it1 = a0.to_c_string_iterator().take(__n);
-    let mut __it2 = a1.to_c_string_iterator().take(__n);
+    let mut __it1 = a0.to_c_string_iterator().take(a2);
+    let mut __it2 = a1.to_c_string_iterator().take(a2);
     loop {
         let __c1 = __it1.next();
         let __c2 = __it2.next();
@@ -88,18 +86,17 @@ fn f10(a0: AnyPtr, a1: i32, a2: usize) -> AnyPtr {
 }
 
 fn f11(a0: Ptr<i8>, a1: i32) -> Ptr<i8> {
-    let __s = a0;
     let __t = a1 as i8;
-    match __s
+    match a0
         .to_c_string_iterator()
         .enumerate()
         .filter(|__e| __e.1 == __t)
         .last()
     {
-        Some((__i, _)) => __s.offset(__i),
+        Some((__i, _)) => a0.offset(__i),
         None => {
             if __t == 0 {
-                __s.offset(__s.to_c_string_iterator().count())
+                a0.offset(a0.to_c_string_iterator().count())
             } else {
                 Ptr::null()
             }
@@ -112,28 +109,22 @@ fn f15(a0: Ptr<i8>) -> Ptr<i8> {
 }
 
 fn f16(a0: Ptr<i8>, a1: Ptr<i8>) -> usize {
-    let __set = a1;
     a0.to_c_string_iterator()
-        .take_while(|__c| !__set.to_c_string_iterator().any(|__r| __r == *__c))
+        .take_while(|__c| !a1.to_c_string_iterator().any(|__r| __r == *__c))
         .count()
 }
 
 fn f17(a0: Ptr<i8>, a1: Ptr<i8>) -> usize {
-    let __set = a1;
     a0.to_c_string_iterator()
-        .take_while(|__c| __set.to_c_string_iterator().any(|__r| __r == *__c))
+        .take_while(|__c| a1.to_c_string_iterator().any(|__r| __r == *__c))
         .count()
 }
 
 fn f18(a0: Ptr<i8>, a1: Ptr<i8>) -> Ptr<i8> {
-    let __needle = a1;
     let mut __p = a0;
     loop {
         let mut __h = __p.to_c_string_iterator();
-        if __needle
-            .to_c_string_iterator()
-            .all(|__c| __h.next() == Some(__c))
-        {
+        if a1.to_c_string_iterator().all(|__c| __h.next() == Some(__c)) {
             break __p;
         }
         if __p.read() == 0 {
@@ -144,13 +135,11 @@ fn f18(a0: Ptr<i8>, a1: Ptr<i8>) -> Ptr<i8> {
 }
 
 fn f21(a0: Ptr<i8>, a1: Ptr<i8>) -> Ptr<i8> {
-    let __s = a0;
-    let __set = a1;
-    match __s
+    match a0
         .to_c_string_iterator()
-        .position(|__c| __set.to_c_string_iterator().any(|__r| __r == __c))
+        .position(|__c| a1.to_c_string_iterator().any(|__r| __r == __c))
     {
-        Some(__i) => __s.offset(__i),
+        Some(__i) => a0.offset(__i),
         None => Ptr::null(),
     }
 }
@@ -221,13 +210,12 @@ fn f28(a0: i32, a1: Ptr<i8>, a2: usize) -> i32 {
 }
 
 fn f6(a0: Ptr<i8>, a1: i32) -> Ptr<i8> {
-    let __s = a0;
     let __t = a1 as i8;
-    match __s.to_c_string_iterator().position(|__c| __c == __t) {
-        Some(__i) => __s.offset(__i),
+    match a0.to_c_string_iterator().position(|__c| __c == __t) {
+        Some(__i) => a0.offset(__i),
         None => {
             if __t == 0 {
-                __s.offset(__s.to_c_string_iterator().count())
+                a0.offset(a0.to_c_string_iterator().count())
             } else {
                 Ptr::null()
             }
@@ -251,18 +239,17 @@ fn f12(a0: AnyPtr, a1: i32, a2: usize) -> AnyPtr {
 }
 
 fn f13(a0: Ptr<i8>, a1: i32) -> Ptr<i8> {
-    let __s = a0;
     let __t = a1 as i8;
-    match __s
+    match a0
         .to_c_string_iterator()
         .enumerate()
         .filter(|__e| __e.1 == __t)
         .last()
     {
-        Some((__i, _)) => __s.offset(__i),
+        Some((__i, _)) => a0.offset(__i),
         None => {
             if __t == 0 {
-                __s.offset(__s.to_c_string_iterator().count())
+                a0.offset(a0.to_c_string_iterator().count())
             } else {
                 Ptr::null()
             }
@@ -271,18 +258,17 @@ fn f13(a0: Ptr<i8>, a1: i32) -> Ptr<i8> {
 }
 
 fn f14(a0: Ptr<i8>, a1: i32) -> Ptr<i8> {
-    let __s = a0;
     let __t = a1 as i8;
-    match __s
+    match a0
         .to_c_string_iterator()
         .enumerate()
         .filter(|__e| __e.1 == __t)
         .last()
     {
-        Some((__i, _)) => __s.offset(__i),
+        Some((__i, _)) => a0.offset(__i),
         None => {
             if __t == 0 {
-                __s.offset(__s.to_c_string_iterator().count())
+                a0.offset(a0.to_c_string_iterator().count())
             } else {
                 Ptr::null()
             }
@@ -291,14 +277,10 @@ fn f14(a0: Ptr<i8>, a1: i32) -> Ptr<i8> {
 }
 
 fn f19(a0: Ptr<i8>, a1: Ptr<i8>) -> Ptr<i8> {
-    let __needle = a1;
     let mut __p = a0;
     loop {
         let mut __h = __p.to_c_string_iterator();
-        if __needle
-            .to_c_string_iterator()
-            .all(|__c| __h.next() == Some(__c))
-        {
+        if a1.to_c_string_iterator().all(|__c| __h.next() == Some(__c)) {
             break __p;
         }
         if __p.read() == 0 {
@@ -309,14 +291,10 @@ fn f19(a0: Ptr<i8>, a1: Ptr<i8>) -> Ptr<i8> {
 }
 
 fn f20(a0: Ptr<i8>, a1: Ptr<i8>) -> Ptr<i8> {
-    let __needle = a1;
     let mut __p = a0;
     loop {
         let mut __h = __p.to_c_string_iterator();
-        if __needle
-            .to_c_string_iterator()
-            .all(|__c| __h.next() == Some(__c))
-        {
+        if a1.to_c_string_iterator().all(|__c| __h.next() == Some(__c)) {
             break __p;
         }
         if __p.read() == 0 {
@@ -327,25 +305,21 @@ fn f20(a0: Ptr<i8>, a1: Ptr<i8>) -> Ptr<i8> {
 }
 
 fn f22(a0: Ptr<i8>, a1: Ptr<i8>) -> Ptr<i8> {
-    let __s = a0;
-    let __set = a1;
-    match __s
+    match a0
         .to_c_string_iterator()
-        .position(|__c| __set.to_c_string_iterator().any(|__r| __r == __c))
+        .position(|__c| a1.to_c_string_iterator().any(|__r| __r == __c))
     {
-        Some(__i) => __s.offset(__i),
+        Some(__i) => a0.offset(__i),
         None => Ptr::null(),
     }
 }
 
 fn f23(a0: Ptr<i8>, a1: Ptr<i8>) -> Ptr<i8> {
-    let __s = a0;
-    let __set = a1;
-    match __s
+    match a0
         .to_c_string_iterator()
-        .position(|__c| __set.to_c_string_iterator().any(|__r| __r == __c))
+        .position(|__c| a1.to_c_string_iterator().any(|__r| __r == __c))
     {
-        Some(__i) => __s.offset(__i),
+        Some(__i) => a0.offset(__i),
         None => Ptr::null(),
     }
 }

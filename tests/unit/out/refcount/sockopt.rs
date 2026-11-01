@@ -42,6 +42,7 @@ fn main_0() -> i32 {
     let on: Value<i32> = Rc::new(RefCell::new(1));
     assert!(
         ((({
+            // Computing the arguments first ends their borrows of what the call writes.
             let __a0 = s;
             let __a1 = libc::SOL_SOCKET;
             let __a2 = libc::SO_KEEPALIVE;
@@ -52,6 +53,7 @@ fn main_0() -> i32 {
     );
     assert!(
         ((({
+            // Computing the arguments first ends their borrows of what the call writes.
             let __a0 = s;
             let __a1 = libc::IPPROTO_TCP;
             let __a2 = libc::TCP_NODELAY;
@@ -65,29 +67,36 @@ fn main_0() -> i32 {
         (::std::mem::size_of::<i32>() as libc::socklen_t),
     ));
     assert!(
-        (((match (libc::SOL_SOCKET, libc::SO_ERROR) {
-            (::libc::SOL_SOCKET, ::libc::SO_ERROR) => {
-                match FdRegistry::with_fd(s, |__fd| {
-                    nix::sys::socket::getsockopt(&__fd, nix::sys::socket::sockopt::SocketError)
-                }) {
-                    Ok(__err) => {
-                        ((err.as_pointer()) as Ptr<i32>)
-                            .to_any()
-                            .reinterpret_cast::<i32>()
-                            .write(__err);
-                        (len.as_pointer()).write(::std::mem::size_of::<i32>() as u32);
-                        0
+        (((match ({ ((err.as_pointer()) as Ptr<i32>).to_any() }, {
+            (len.as_pointer())
+        },)
+        {
+            (mut __tmp_0, mut __tmp_1) => {
+                match (libc::SOL_SOCKET, libc::SO_ERROR) {
+                    (::libc::SOL_SOCKET, ::libc::SO_ERROR) => {
+                        match FdRegistry::with_fd(s, |__fd| {
+                            nix::sys::socket::getsockopt(
+                                &__fd,
+                                nix::sys::socket::sockopt::SocketError,
+                            )
+                        }) {
+                            Ok(__err) => {
+                                __tmp_0.reinterpret_cast::<i32>().write(__err);
+                                __tmp_1.write(::std::mem::size_of::<i32>() as u32);
+                                0
+                            }
+                            Err(__e) => {
+                                libcc2rs::cpp2rust_errno().write(__e as i32);
+                                -1
+                            }
+                        }
                     }
-                    Err(__e) => {
-                        libcc2rs::cpp2rust_errno().write(__e as i32);
-                        -1
-                    }
+                    (__l, __o) => panic!(
+                        "getsockopt: unsupported option (level={}, optname={})",
+                        __l, __o
+                    ),
                 }
             }
-            (__l, __o) => panic!(
-                "getsockopt: unsupported option (level={}, optname={})",
-                __l, __o
-            ),
         } == 0) as i32)
             != 0)
     );

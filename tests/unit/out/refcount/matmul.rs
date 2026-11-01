@@ -16,14 +16,15 @@ pub fn matalloc_0(
     )));
     let mut i: i32 = 0;
     'loop_: while (i < n) {
-        (m.as_pointer() as Ptr<Option<Value<Box<[i32]>>>>)
-            .offset((i as usize) as isize)
-            .write(
-                Some(Rc::new(RefCell::new(
-                    (0..(p as usize)).map(|_| 0_i32).collect::<Box<[_]>>(),
-                )))
-                .take(),
-            );
+        match (Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
+            (0..(p as usize)).map(|_| 0_i32).collect::<Box<[_]>>(),
+        )))))
+        .as_pointer(),)
+        {
+            (__tmp_0,) => (m.as_pointer() as Ptr<Option<Value<Box<[i32]>>>>)
+                .offset((i as usize) as isize)
+                .write(__tmp_0.with_mut(|__v: &mut Option<Value<Box<[i32]>>>| __v.take())),
+        };
         let mut j: i32 = 0;
         'loop_: while (j < p) {
             ((*(m.as_pointer() as Ptr<Option<Value<Box<[i32]>>>>)

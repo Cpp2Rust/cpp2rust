@@ -45,12 +45,14 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut c: Container = <Container>::default();
-    {
-        let byte_0 = ((&mut c as *mut Container) as *mut ::libc::c_void) as *mut u8;
-        for offset in 0..::std::mem::size_of::<Container>() {
-            *byte_0.offset(offset as isize) = 0 as u8;
+    match ({ ((&mut c as *mut Container) as *mut ::libc::c_void) },) {
+        (mut __tmp_0,) => {
+            let byte_0 = __tmp_0 as *mut u8;
+            for offset in 0..::std::mem::size_of::<Container>() {
+                *byte_0.offset(offset as isize) = 0 as u8;
+            }
+            __tmp_0
         }
-        ((&mut c as *mut Container) as *mut ::libc::c_void)
     };
     assert!(((((c.view.a.code as i32) == (0)) as i32) != 0));
     assert!(((((c.view.b.lo as i32) == (0)) as i32) != 0));
@@ -69,15 +71,16 @@ unsafe fn main_0() -> i32 {
     src[(7) as usize] = 1_u8;
     let mut len: usize = 16_usize;
     assert!(((((len) <= (::std::mem::size_of::<[libc::c_char; 256]>())) as i32) != 0));
-    {
-        if len != 0 {
-            ::std::ptr::copy_nonoverlapping(
-                (src.as_mut_ptr() as *const ::libc::c_void),
-                ((&mut c.view.raw_ as *mut [libc::c_char; 256]) as *mut ::libc::c_void),
-                len as usize,
-            )
+    match (
+        { ((&mut c.view.raw_ as *mut [libc::c_char; 256]) as *mut ::libc::c_void) },
+        { (src.as_mut_ptr() as *const ::libc::c_void) },
+    ) {
+        (mut __tmp_1, mut __tmp_2) => {
+            if len != 0 {
+                ::std::ptr::copy_nonoverlapping(__tmp_2, __tmp_1, len as usize)
+            }
+            __tmp_1
         }
-        ((&mut c.view.raw_ as *mut [libc::c_char; 256]) as *mut ::libc::c_void)
     };
     assert!(((((c.view.b.code as i32) == (2)) as i32) != 0));
     assert!(
@@ -85,12 +88,14 @@ unsafe fn main_0() -> i32 {
             as i32)
             != 0)
     );
-    {
-        let byte_0 = ((&mut c as *mut Container) as *mut ::libc::c_void) as *mut u8;
-        for offset in 0..::std::mem::size_of::<Container>() {
-            *byte_0.offset(offset as isize) = 0 as u8;
+    match ({ ((&mut c as *mut Container) as *mut ::libc::c_void) },) {
+        (mut __tmp_3,) => {
+            let byte_0 = __tmp_3 as *mut u8;
+            for offset in 0..::std::mem::size_of::<Container>() {
+                *byte_0.offset(offset as isize) = 0 as u8;
+            }
+            __tmp_3
         }
-        ((&mut c as *mut Container) as *mut ::libc::c_void)
     };
     assert!(((((c.view.b.code as i32) == (0)) as i32) != 0));
     return 0;

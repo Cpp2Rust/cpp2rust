@@ -53,15 +53,16 @@ impl S {
     pub unsafe fn move_assign(&mut self, _a0: *mut S) -> *mut S {
         self.tag = (*_a0).tag;
         self.c = (*_a0).c;
-        {
-            if 8_usize != 0 {
-                ::std::ptr::copy_nonoverlapping(
-                    ((&mut (*_a0).arr as *mut [Counter; 2]) as *const ::libc::c_void),
-                    ((&mut self.arr as *mut [Counter; 2]) as *mut ::libc::c_void),
-                    8_usize as usize,
-                )
+        match (
+            { ((&mut self.arr as *mut [Counter; 2]) as *mut ::libc::c_void) },
+            { ((&mut (*_a0).arr as *mut [Counter; 2]) as *const ::libc::c_void) },
+        ) {
+            (mut __tmp_0, mut __tmp_1) => {
+                if 8_usize != 0 {
+                    ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, 8_usize as usize)
+                }
+                __tmp_0
             }
-            ((&mut self.arr as *mut [Counter; 2]) as *mut ::libc::c_void)
         };
         self.v = std::mem::take(&mut (*_a0).v);
         return &mut (*(self as *mut S));

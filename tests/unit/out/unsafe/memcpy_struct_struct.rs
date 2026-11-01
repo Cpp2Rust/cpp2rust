@@ -54,17 +54,17 @@ unsafe fn main_0() -> i32 {
         },
     ];
     let mut table_size: usize = 4_usize;
-    {
-        if ((table_size as u64).wrapping_mul((::std::mem::size_of::<Entry>() as u64)) as usize) != 0
-        {
-            ::std::ptr::copy_nonoverlapping(
-                ((&mut table[(0) as usize] as *mut Entry) as *const ::libc::c_void),
-                ((&mut table[(table_size)] as *mut Entry) as *mut ::libc::c_void),
-                ((table_size as u64).wrapping_mul((::std::mem::size_of::<Entry>() as u64)) as usize)
-                    as usize,
-            )
+    match (
+        { ((&mut table[(table_size)] as *mut Entry) as *mut ::libc::c_void) },
+        { ((&mut table[(0) as usize] as *mut Entry) as *const ::libc::c_void) },
+        { (table_size as u64).wrapping_mul((::std::mem::size_of::<Entry>() as u64)) },
+    ) {
+        (mut __tmp_0, mut __tmp_1, mut __tmp_2) => {
+            if (__tmp_2 as usize) != 0 {
+                ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, (__tmp_2 as usize) as usize)
+            }
+            __tmp_0
         }
-        ((&mut table[(table_size)] as *mut Entry) as *mut ::libc::c_void)
     };
     assert!(
         ((table[(4) as usize].bits as i32) == (1))

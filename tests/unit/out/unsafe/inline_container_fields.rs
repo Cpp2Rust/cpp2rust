@@ -24,15 +24,16 @@ impl Elem {
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Elem) -> *mut Elem {
         self.id = (*_a0).id;
-        {
-            if 16_usize != 0 {
-                ::std::ptr::copy_nonoverlapping(
-                    ((&mut (*_a0).hist as *mut [i32; 4]) as *const ::libc::c_void),
-                    ((&mut self.hist as *mut [i32; 4]) as *mut ::libc::c_void),
-                    16_usize as usize,
-                )
+        match (
+            { ((&mut self.hist as *mut [i32; 4]) as *mut ::libc::c_void) },
+            { ((&mut (*_a0).hist as *mut [i32; 4]) as *const ::libc::c_void) },
+        ) {
+            (mut __tmp_0, mut __tmp_1) => {
+                if 16_usize != 0 {
+                    ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, 16_usize as usize)
+                }
+                __tmp_0
             }
-            ((&mut self.hist as *mut [i32; 4]) as *mut ::libc::c_void)
         };
         self.coeffs = std::mem::take(&mut (*_a0).coeffs);
         return &mut (*(self as *mut Elem));
@@ -62,15 +63,16 @@ impl State {
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut State) -> *mut State {
         self.count = (*_a0).count;
-        {
-            if 24_usize != 0 {
-                ::std::ptr::copy_nonoverlapping(
-                    ((&mut (*_a0).grid as *mut [[i32; 3]; 2]) as *const ::libc::c_void),
-                    ((&mut self.grid as *mut [[i32; 3]; 2]) as *mut ::libc::c_void),
-                    24_usize as usize,
-                )
+        match (
+            { ((&mut self.grid as *mut [[i32; 3]; 2]) as *mut ::libc::c_void) },
+            { ((&mut (*_a0).grid as *mut [[i32; 3]; 2]) as *const ::libc::c_void) },
+        ) {
+            (mut __tmp_2, mut __tmp_3) => {
+                if 24_usize != 0 {
+                    ::std::ptr::copy_nonoverlapping(__tmp_3, __tmp_2, 24_usize as usize)
+                }
+                __tmp_2
             }
-            ((&mut self.grid as *mut [[i32; 3]; 2]) as *mut ::libc::c_void)
         };
         self.arr = std::mem::take(&mut (*_a0).arr);
         self.elems = std::mem::take(&mut (*_a0).elems);

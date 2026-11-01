@@ -110,15 +110,20 @@ unsafe fn main_0() -> i32 {
     assert!((((((*p.offset((0) as isize)) as i32) == ('t' as i32)) as i32) != 0));
     assert!(((((local.count) == (3_usize)) as i32) != 0));
     let mut copy: table = <table>::default();
-    {
-        if ::std::mem::size_of::<[[libc::c_char; 10]; 3]>() != 0 {
-            ::std::ptr::copy_nonoverlapping(
-                ((&mut local.rows as *mut [[libc::c_char; 10]; 3]) as *const ::libc::c_void),
-                ((&mut copy.rows as *mut [[libc::c_char; 10]; 3]) as *mut ::libc::c_void),
-                ::std::mem::size_of::<[[libc::c_char; 10]; 3]>() as usize,
-            )
+    match (
+        { ((&mut copy.rows as *mut [[libc::c_char; 10]; 3]) as *mut ::libc::c_void) },
+        { ((&mut local.rows as *mut [[libc::c_char; 10]; 3]) as *const ::libc::c_void) },
+    ) {
+        (mut __tmp_0, mut __tmp_1) => {
+            if ::std::mem::size_of::<[[libc::c_char; 10]; 3]>() != 0 {
+                ::std::ptr::copy_nonoverlapping(
+                    __tmp_1,
+                    __tmp_0,
+                    ::std::mem::size_of::<[[libc::c_char; 10]; 3]>() as usize,
+                )
+            }
+            __tmp_0
         }
-        ((&mut copy.rows as *mut [[libc::c_char; 10]; 3]) as *mut ::libc::c_void)
     };
     assert!(
         (((((((libc::strcmp(
@@ -146,15 +151,20 @@ unsafe fn main_0() -> i32 {
         ],
     ];
     let mut other: [[libc::c_char; 3]; 2] = [[(0 as libc::c_char); 3]; 2];
-    {
-        if ::std::mem::size_of::<[[libc::c_char; 3]; 2]>() != 0 {
-            ::std::ptr::copy_nonoverlapping(
-                ((&mut grid as *mut [[libc::c_char; 3]; 2]) as *const ::libc::c_void),
-                ((&mut other as *mut [[libc::c_char; 3]; 2]) as *mut ::libc::c_void),
-                ::std::mem::size_of::<[[libc::c_char; 3]; 2]>() as usize,
-            )
+    match (
+        { ((&mut other as *mut [[libc::c_char; 3]; 2]) as *mut ::libc::c_void) },
+        { ((&mut grid as *mut [[libc::c_char; 3]; 2]) as *const ::libc::c_void) },
+    ) {
+        (mut __tmp_2, mut __tmp_3) => {
+            if ::std::mem::size_of::<[[libc::c_char; 3]; 2]>() != 0 {
+                ::std::ptr::copy_nonoverlapping(
+                    __tmp_3,
+                    __tmp_2,
+                    ::std::mem::size_of::<[[libc::c_char; 3]; 2]>() as usize,
+                )
+            }
+            __tmp_2
         }
-        ((&mut other as *mut [[libc::c_char; 3]; 2]) as *mut ::libc::c_void)
     };
     assert!(
         (((((((other[(1) as usize][(2) as usize] as i32) == ('f' as i32)) as i32) != 0)

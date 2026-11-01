@@ -1,8 +1,15 @@
 #include <algorithm>
 #include <cassert>
+#include <cstddef>
+#include <cstdint>
 
 static int calls = 0;
 static int xs[2] = {1, 2};
+
+std::size_t size_of(int i) {
+  ++calls;
+  return i * 3;
+}
 
 int &pick(int i) {
   ++calls;
@@ -39,5 +46,12 @@ int main() {
   assert(std::max(make(1), make(2)).n == 2 &&
          std::min(make(1), make(2)).n == 1);
   assert(calls == 0);
+
+  // A temporary converted to the type of a parameter that the rule takes a
+  // pointer to.
+  std::size_t largest = 0;
+  for (int i = 0; i < 3; ++i)
+    largest = std::max<std::uint64_t>(largest, size_of(i));
+  assert(largest == 6 && calls == 3);
   return 0;
 }

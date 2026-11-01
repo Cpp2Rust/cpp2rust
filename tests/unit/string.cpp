@@ -9,6 +9,11 @@ std::string counted_string(int &calls) {
   return "hello";
 }
 
+std::string &counted_ref(std::string &s, int &calls) {
+  ++calls;
+  return s;
+}
+
 int main() {
   std::string empty;
   assert(empty.length() == 0);
@@ -158,6 +163,19 @@ int main() {
   int receiver_calls = 0;
   once = counted_string(receiver_calls).substr(1, 2);
   printf("receiver: %s %d\n", once.c_str(), receiver_calls);
+  int ref_calls = 0;
+  std::string target = "ab";
+  counted_ref(target, ref_calls).resize(1);
+  counted_ref(target, ref_calls).at(0) = 'A';
+  printf("reference receiver: %s %d\n", target.c_str(), ref_calls);
+  std::string targets[2] = {"cd", "ef"};
+  int target_index = 0;
+  targets[target_index++].resize(1);
+  printf("element receiver: %s %s %d\n", targets[0].c_str(), targets[1].c_str(),
+         target_index);
+  receiver_calls = 0;
+  char before_end = *(counted_string(receiver_calls).end() - 2);
+  printf("temporary end: %c %d\n", before_end, receiver_calls);
 
   // FIXME
   auto t0 = s1.length();

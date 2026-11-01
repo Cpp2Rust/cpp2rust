@@ -89,12 +89,13 @@ fn main_0() -> i32 {
         Lt { v: 1 },
         Lt { v: 2 },
     ])));
-    {
-        let __first = lts.decay().begin();
-        let __n = lts.decay().end().iter_distance(&__first);
-        let mut __order: Vec<isize> = (0..__n).collect();
-        __order.sort_by(|&__x, &__y| cpp_cmp(&__first.iter_at(__x), &__first.iter_at(__y)));
-        reorder(__order, |__i| __first.iter_at(__i));
+    match ({ lts.decay().begin() },) {
+        (mut __tmp_0,) => {
+            let __n = lts.decay().end().iter_distance(&__tmp_0);
+            let mut __order: Vec<isize> = (0..__n).collect();
+            __order.sort_by(|&__x, &__y| cpp_cmp(&__tmp_0.iter_at(__x), &__tmp_0.iter_at(__y)));
+            reorder(__order, |__i| __tmp_0.iter_at(__i));
+        }
     };
     assert!(
         (({ (*lts.borrow())[0_usize].v } == 1) && ({ (*lts.borrow())[1_usize].v } == 2))
@@ -108,28 +109,32 @@ fn main_0() -> i32 {
     let two: Value<Eq> = Rc::new(RefCell::new(Eq { v: 2 }));
     let nine: Value<Eq> = Rc::new(RefCell::new(Eq { v: 9 }));
     assert!(
-        ({
-            let mut __it = eqs.decay().begin();
-            let __last = eqs.decay().end();
-            let __value = two.as_pointer();
-            while __it != __last && !CppEq::equal(&__it.iter_deref(), &__value) {
-                __it.iter_inc();
+        (match ({ eqs.decay().begin() }, { eqs.decay().end() },) {
+            (mut __tmp_1, mut __tmp_2) => {
+                {
+                    let mut __it = (__tmp_1).clone();
+                    while __it != __tmp_2 && !CppEq::equal(&__it.iter_deref(), &two.as_pointer()) {
+                        __it.iter_inc();
+                    }
+                    __it
+                }
             }
-            __it
         }
         .iter_deref()
         .with(|__s| __s.v)
             == 2)
     );
     assert!(
-        {
-            let mut __it = eqs.decay().begin();
-            let __last = eqs.decay().end();
-            let __value = nine.as_pointer();
-            while __it != __last && !CppEq::equal(&__it.iter_deref(), &__value) {
-                __it.iter_inc();
+        match ({ eqs.decay().begin() }, { eqs.decay().end() },) {
+            (mut __tmp_3, mut __tmp_4) => {
+                {
+                    let mut __it = (__tmp_3).clone();
+                    while __it != __tmp_4 && !CppEq::equal(&__it.iter_deref(), &nine.as_pointer()) {
+                        __it.iter_inc();
+                    }
+                    __it
+                }
             }
-            __it
         } == eqs.decay().end()
     );
     let cmps: Value<Vec<Cmp>> = Rc::new(RefCell::new(Vec::from([
@@ -137,48 +142,56 @@ fn main_0() -> i32 {
         Cmp { v: 1 },
         Cmp { v: 2 },
     ])));
-    {
-        let __first = cmps.decay().begin();
-        let __n = cmps.decay().end().iter_distance(&__first);
-        let mut __order: Vec<isize> = (0..__n).collect();
-        __order.sort_by(|&__x, &__y| cpp_cmp(&__first.iter_at(__x), &__first.iter_at(__y)));
-        reorder(__order, |__i| __first.iter_at(__i));
+    match ({ cmps.decay().begin() },) {
+        (mut __tmp_5,) => {
+            let __n = cmps.decay().end().iter_distance(&__tmp_5);
+            let mut __order: Vec<isize> = (0..__n).collect();
+            __order.sort_by(|&__x, &__y| cpp_cmp(&__tmp_5.iter_at(__x), &__tmp_5.iter_at(__y)));
+            reorder(__order, |__i| __tmp_5.iter_at(__i));
+        }
     };
     assert!(({ (*cmps.borrow())[0_usize].v } == 1) && ({ (*cmps.borrow())[2_usize].v } == 3));
     let three: Value<Cmp> = Rc::new(RefCell::new(Cmp { v: 3 }));
     assert!(
-        ({
-            let mut __it = cmps.decay().begin();
-            let __last = cmps.decay().end();
-            let __value = three.as_pointer();
-            while __it != __last && !CppEq::equal(&__it.iter_deref(), &__value) {
-                __it.iter_inc();
+        (match ({ cmps.decay().begin() }, { cmps.decay().end() },) {
+            (mut __tmp_6, mut __tmp_7) => {
+                {
+                    let mut __it = (__tmp_6).clone();
+                    while __it != __tmp_7 && !CppEq::equal(&__it.iter_deref(), &three.as_pointer())
+                    {
+                        __it.iter_inc();
+                    }
+                    __it
+                }
             }
-            __it
         }
         .iter_deref()
         .with(|__s| __s.v)
             == 3)
     );
     let frees: Value<Vec<Free>> = Rc::new(RefCell::new(Vec::from([Free { v: 2 }, Free { v: 1 }])));
-    {
-        let __first = frees.decay().begin();
-        let __n = frees.decay().end().iter_distance(&__first);
-        let mut __order: Vec<isize> = (0..__n).collect();
-        __order.sort_by(|&__x, &__y| cpp_cmp(&__first.iter_at(__x), &__first.iter_at(__y)));
-        reorder(__order, |__i| __first.iter_at(__i));
+    match ({ frees.decay().begin() },) {
+        (mut __tmp_8,) => {
+            let __n = frees.decay().end().iter_distance(&__tmp_8);
+            let mut __order: Vec<isize> = (0..__n).collect();
+            __order.sort_by(|&__x, &__y| cpp_cmp(&__tmp_8.iter_at(__x), &__tmp_8.iter_at(__y)));
+            reorder(__order, |__i| __tmp_8.iter_at(__i));
+        }
     };
     assert!(({ (*frees.borrow())[0_usize].v } == 1));
     let ftwo: Value<Free> = Rc::new(RefCell::new(Free { v: 2 }));
     assert!(
-        ({
-            let mut __it = frees.decay().begin();
-            let __last = frees.decay().end();
-            let __value = ftwo.as_pointer();
-            while __it != __last && !CppEq::equal(&__it.iter_deref(), &__value) {
-                __it.iter_inc();
+        (match ({ frees.decay().begin() }, { frees.decay().end() },) {
+            (mut __tmp_9, mut __tmp_10) => {
+                {
+                    let mut __it = (__tmp_9).clone();
+                    while __it != __tmp_10 && !CppEq::equal(&__it.iter_deref(), &ftwo.as_pointer())
+                    {
+                        __it.iter_inc();
+                    }
+                    __it
+                }
             }
-            __it
         }
         .iter_deref()
         .with(|__s| __s.v)

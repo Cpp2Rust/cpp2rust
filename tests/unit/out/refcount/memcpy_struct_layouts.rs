@@ -84,12 +84,14 @@ fn main_0() -> i32 {
             d: 8_i16,
         },
     ])));
-    {
-        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().memcpy(
-            &((p.as_pointer() as Ptr<packed>) as Ptr<packed>).to_any(),
-            16usize as usize,
-        );
-        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()
+    match ({ ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any() },) {
+        (mut __tmp_0,) => {
+            __tmp_0.memcpy(
+                &((p.as_pointer() as Ptr<packed>) as Ptr<packed>).to_any(),
+                16usize as usize,
+            );
+            (__tmp_0).clone()
+        }
     };
     assert!(
         (((((*buf.borrow())[((8usize as usize).wrapping_add(4_usize)) as usize] as i32) == 6)
@@ -101,14 +103,14 @@ fn main_0() -> i32 {
             .map(|_| <packed>::default())
             .collect::<Box<[packed]>>(),
     ));
-    {
-        ((p2.as_pointer() as Ptr<packed>) as Ptr<packed>)
-            .to_any()
-            .memcpy(
+    match ({ ((p2.as_pointer() as Ptr<packed>) as Ptr<packed>).to_any() },) {
+        (mut __tmp_1,) => {
+            __tmp_1.memcpy(
                 &((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
                 16usize as usize,
             );
-        ((p2.as_pointer() as Ptr<packed>) as Ptr<packed>).to_any()
+            (__tmp_1).clone()
+        }
     };
     assert!(
         (((((((((((({ (*p2.borrow())[(1) as usize].a } == 5) as i32) != 0)
@@ -134,12 +136,14 @@ fn main_0() -> i32 {
             c: 6_i8,
         },
     ])));
-    {
-        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().memcpy(
-            &((r.as_pointer() as Ptr<reordered>) as Ptr<reordered>).to_any(),
-            24usize as usize,
-        );
-        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()
+    match ({ ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any() },) {
+        (mut __tmp_2,) => {
+            __tmp_2.memcpy(
+                &((r.as_pointer() as Ptr<reordered>) as Ptr<reordered>).to_any(),
+                24usize as usize,
+            );
+            (__tmp_2).clone()
+        }
     };
     assert!(
         (((((*buf.borrow())[((12usize as usize).wrapping_add(8_usize)) as usize] as i32) == 6)
@@ -151,14 +155,14 @@ fn main_0() -> i32 {
             .map(|_| <reordered>::default())
             .collect::<Box<[reordered]>>(),
     ));
-    {
-        ((r2.as_pointer() as Ptr<reordered>) as Ptr<reordered>)
-            .to_any()
-            .memcpy(
+    match ({ ((r2.as_pointer() as Ptr<reordered>) as Ptr<reordered>).to_any() },) {
+        (mut __tmp_3,) => {
+            __tmp_3.memcpy(
                 &((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
                 24usize as usize,
             );
-        ((r2.as_pointer() as Ptr<reordered>) as Ptr<reordered>).to_any()
+            (__tmp_3).clone()
+        }
     };
     assert!(
         (((((((((({ (*r2.borrow())[(1) as usize].a } as i32) == 4) as i32) != 0)
@@ -184,12 +188,14 @@ fn main_0() -> i32 {
             c: 6_i8,
         },
     ])));
-    {
-        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().memcpy(
-            &((n.as_pointer() as Ptr<nested>) as Ptr<nested>).to_any(),
-            48usize as usize,
-        );
-        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()
+    match ({ ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any() },) {
+        (mut __tmp_4,) => {
+            __tmp_4.memcpy(
+                &((n.as_pointer() as Ptr<nested>) as Ptr<nested>).to_any(),
+                48usize as usize,
+            );
+            (__tmp_4).clone()
+        }
     };
     assert!(
         (((((*buf.borrow())[((24usize as usize).wrapping_add(16_usize)) as usize] as i32) == 6)
@@ -201,14 +207,14 @@ fn main_0() -> i32 {
             .map(|_| <nested>::default())
             .collect::<Box<[nested]>>(),
     ));
-    {
-        ((n2.as_pointer() as Ptr<nested>) as Ptr<nested>)
-            .to_any()
-            .memcpy(
+    match ({ ((n2.as_pointer() as Ptr<nested>) as Ptr<nested>).to_any() },) {
+        (mut __tmp_5,) => {
+            __tmp_5.memcpy(
                 &((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
                 48usize as usize,
             );
-        ((n2.as_pointer() as Ptr<nested>) as Ptr<nested>).to_any()
+            (__tmp_5).clone()
+        }
     };
     assert!(
         (((((((((({ (*n2.borrow())[(1) as usize].t.a } as i32) == 4) as i32) != 0)
@@ -229,12 +235,14 @@ fn main_0() -> i32 {
             x: 2,
         },
     ])));
-    {
-        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().memcpy(
-            &((a.as_pointer() as Ptr<array>) as Ptr<array>).to_any(),
-            16usize as usize,
-        );
-        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()
+    match ({ ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any() },) {
+        (mut __tmp_6,) => {
+            __tmp_6.memcpy(
+                &((a.as_pointer() as Ptr<array>) as Ptr<array>).to_any(),
+                16usize as usize,
+            );
+            (__tmp_6).clone()
+        }
     };
     assert!(
         (((((*buf.borrow())[((8usize as usize).wrapping_add(1_usize)) as usize] as i32)
@@ -244,14 +252,14 @@ fn main_0() -> i32 {
     let a2: Value<Box<[array]>> = Rc::new(RefCell::new(
         (0..2).map(|_| <array>::default()).collect::<Box<[array]>>(),
     ));
-    {
-        ((a2.as_pointer() as Ptr<array>) as Ptr<array>)
-            .to_any()
-            .memcpy(
+    match ({ ((a2.as_pointer() as Ptr<array>) as Ptr<array>).to_any() },) {
+        (mut __tmp_7,) => {
+            __tmp_7.memcpy(
                 &((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
                 16usize as usize,
             );
-        ((a2.as_pointer() as Ptr<array>) as Ptr<array>).to_any()
+            (__tmp_7).clone()
+        }
     };
     assert!(
         (((((((((((array_elem!((a2.as_pointer() as Ptr<array>).offset(1), name, 1).read()) as i32)

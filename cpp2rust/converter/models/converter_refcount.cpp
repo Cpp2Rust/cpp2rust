@@ -179,7 +179,7 @@ bool ConverterRefCount::NeedsMut(const clang::VarDecl *decl,
 
 bool ConverterRefCount::IsUnboxedVar(const clang::ValueDecl *decl) const {
   auto *var = clang::dyn_cast<clang::VarDecl>(decl);
-  return var && !boxed_vars_->contains(var);
+  return var && (bound_values_.contains(var) || !boxed_vars_->contains(var));
 }
 
 bool ConverterRefCount::IsUnboxedPlace(const clang::Expr *expr) const {
@@ -400,8 +400,12 @@ std::string ConverterRefCount::AsPointerMethod(clang::QualType type) {
   return ".as_pointer()";
 }
 
-std::string ConverterRefCount::ConvertPointerReceiver(clang::Expr *arg,
-                                                      std::string_view) {
+std::string ConverterRefCount::ConvertPointerReceiver(
+    clang::Expr *arg, std::string_view,
+    std::optional<clang::QualType> implicit_convert_to) {
+  if (clang::isa<clang::MaterializeTemporaryExpr>(arg->IgnoreImpCasts())) {
+    return ConvertTemporaryPointer(arg, implicit_convert_to);
+  }
   return isObject() ? ConvertObject(arg) : ConvertFreshObject(arg);
 }
 
@@ -2963,17 +2967,16 @@ std::string ConverterRefCount::ConvertTake(clang::Expr *arg) {
 
 std::string ConverterRefCount::ConvertMappedMethodCall(
     clang::Expr *expr, const TranslationRule::MethodCallFragment &mc,
-    llvm::ArrayRef<clang::TemplateArgument> bindings, clang::Expr **args,
-    unsigned num_args, TempMaterializationCtx *ctx) {
+    llvm::ArrayRef<clang::TemplateArgument> bindings,
+    llvm::ArrayRef<clang::Expr *> args, TempMaterializationCtx *ctx) {
   auto receiver_ph = mc.getReceiverPlaceholder();
   if (!receiver_ph || receiver_ph->access == TranslationRule::Access::kBorrow ||
       receiver_ph->access == TranslationRule::Access::kMove) {
-    return Converter::ConvertMappedMethodCall(expr, mc, bindings, args,
-                                              num_args, ctx);
+    return Converter::ConvertMappedMethodCall(expr, mc, bindings, args, ctx);
   }
 
   auto arg_idx = receiver_ph->n;
-  auto *arg = BuildUnifiedArgs(expr, args, num_args)[arg_idx];
+  auto *arg = args[arg_idx];
   if (auto *call = clang::dyn_cast<clang::CallExpr>(arg->IgnoreCasts());
       call && IsTransparentStdCall(call)) {
     arg = call->getArg(0);
@@ -2982,9 +2985,9 @@ std::string ConverterRefCount::ConvertMappedMethodCall(
   auto param_type = Mapper::GetParamType(*this, expr, arg_idx);
 
   if (arg->getType()->isPointerType()) {
-    return std::format(
-        "{}.with_mut(|__v: {}| __v{})", ConvertPointer(arg), param_type,
-        ConvertIRFragment(mc.body, bindings, expr, args, num_args, ctx));
+    return std::format("{}.with_mut(|__v: {}| __v{})", ConvertPointer(arg),
+                       param_type,
+                       ConvertIRFragment(mc.body, bindings, expr, args, ctx));
   }
 
   // A receiver reached through a pointer is modified through it, only for
@@ -2992,16 +2995,14 @@ std::string ConverterRefCount::ConvertMappedMethodCall(
   std::string receiver;
   {
     ScopedValue in_receiver(in_receiver_, true);
-    receiver =
-        ConvertIRFragment(mc.receiver, bindings, expr, args, num_args, ctx);
+    receiver = ConvertIRFragment(mc.receiver, bindings, expr, args, ctx);
   }
   if (pending_deref_.empty()) {
-    return receiver +
-           ConvertIRFragment(mc.body, bindings, expr, args, num_args, ctx);
+    return receiver + ConvertIRFragment(mc.body, bindings, expr, args, ctx);
   }
 
   auto ptr = pending_deref_.take();
-  auto body = ConvertIRFragment(mc.body, bindings, expr, args, num_args, ctx);
+  auto body = ConvertIRFragment(mc.body, bindings, expr, args, ctx);
   MarkFresh();
 
   return std::format("{}.with_mut(|__v: {}| __v{})", ptr, param_type, body);

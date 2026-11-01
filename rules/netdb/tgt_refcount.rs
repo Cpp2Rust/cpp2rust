@@ -8,39 +8,35 @@ fn t1() -> libcc2rs::Addrinfo {
 }
 
 fn f1(a0: Ptr<i8>, a1: Ptr<i8>, a2: Ptr<Addrinfo>, a3: Ptr<Ptr<Addrinfo>>) -> i32 {
-    let __node = a0;
-    let __service = a1;
-    let __hints = a2;
-    let __out = a3;
-    let __family = if __hints.is_null() {
+    let __family = if a2.is_null() {
         ::libc::AF_UNSPEC
     } else {
-        __hints.with(|__h| __h.ai_family)
+        a2.with(|__h| __h.ai_family)
     };
-    let __socktype = if __hints.is_null() {
+    let __socktype = if a2.is_null() {
         0
     } else {
-        __hints.with(|__h| __h.ai_socktype)
+        a2.with(|__h| __h.ai_socktype)
     };
-    let __protocol = if __hints.is_null() {
+    let __protocol = if a2.is_null() {
         0
     } else {
-        __hints.with(|__h| __h.ai_protocol)
+        a2.with(|__h| __h.ai_protocol)
     };
-    let __port: u16 = if __service.is_null() {
+    let __port: u16 = if a1.is_null() {
         0
     } else {
-        __service.to_rust_string().parse().unwrap_or(0)
+        a1.to_rust_string().parse().unwrap_or(0)
     };
     let mut __addrs: Vec<::std::net::IpAddr> = Vec::new();
-    if __node.is_null() {
+    if a0.is_null() {
         if __family == ::libc::AF_INET6 {
             __addrs.push(::std::net::IpAddr::V6(::std::net::Ipv6Addr::UNSPECIFIED));
         } else {
             __addrs.push(::std::net::IpAddr::V4(::std::net::Ipv4Addr::UNSPECIFIED));
         }
     } else {
-        let __host = __node.to_rust_string();
+        let __host = a0.to_rust_string();
         match __host.parse::<::std::net::IpAddr>() {
             Ok(__ip) => __addrs.push(__ip),
             Err(_) => {
@@ -90,7 +86,7 @@ fn f1(a0: Ptr<i8>, a1: Ptr<i8>, a2: Ptr<Addrinfo>, a3: Ptr<Ptr<Addrinfo>>) -> i3
             __ai.ai_next = __next.clone();
             __next = Ptr::alloc(__ai);
         }
-        __out.write(__next);
+        a3.write(__next);
         0
     }
 }

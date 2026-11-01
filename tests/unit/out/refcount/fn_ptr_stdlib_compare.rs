@@ -49,14 +49,17 @@ fn main_0() -> i32 {
         assert!(!((stream).is_null()));
         let buf: Value<Box<[i8]>> =
             Rc::new(RefCell::new((0..16).map(|_| 0_i8).collect::<Box<[i8]>>()));
-        {
-            ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any().memset(
-                (('X' as i8) as i32) as u8,
-                ::std::mem::size_of::<[i8; 16]>() as usize,
-            );
-            ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any()
+        match ({ ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any() },) {
+            (mut __tmp_0,) => {
+                __tmp_0.memset(
+                    (('X' as i8) as i32) as u8,
+                    ::std::mem::size_of::<[i8; 16]>() as usize,
+                );
+                (__tmp_0).clone()
+            }
         };
         let mut n: usize = {
+            // Computing the arguments first ends their borrows of what the call writes.
             let __a0 = ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any();
             let __a1 = 1_usize;
             let __a2 = 10_usize;
@@ -93,12 +96,14 @@ fn main_0() -> i32 {
         assert!(!((stream).is_null()));
         let buf: Value<Box<[i8]>> =
             Rc::new(RefCell::new((0..16).map(|_| 0_i8).collect::<Box<[i8]>>()));
-        {
-            ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any().memset(
-                (('X' as i8) as i32) as u8,
-                ::std::mem::size_of::<[i8; 16]>() as usize,
-            );
-            ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any()
+        match ({ ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any() },) {
+            (mut __tmp_1,) => {
+                __tmp_1.memset(
+                    (('X' as i8) as i32) as u8,
+                    ::std::mem::size_of::<[i8; 16]>() as usize,
+                );
+                (__tmp_1).clone()
+            }
         };
         let mut n: usize = ({
             (fn1).call(
@@ -154,14 +159,17 @@ fn main_0() -> i32 {
         assert!(!((stream).is_null()));
         let buf: Value<Box<[i8]>> =
             Rc::new(RefCell::new((0..10).map(|_| 0_i8).collect::<Box<[i8]>>()));
-        {
-            ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any().memset(
-                (('Y' as i8) as i32) as u8,
-                ::std::mem::size_of::<[i8; 10]>() as usize,
-            );
-            ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any()
+        match ({ ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any() },) {
+            (mut __tmp_2,) => {
+                __tmp_2.memset(
+                    (('Y' as i8) as i32) as u8,
+                    ::std::mem::size_of::<[i8; 10]>() as usize,
+                );
+                (__tmp_2).clone()
+            }
         };
         let mut n: usize = {
+            // Computing the arguments first ends their borrows of what the call writes.
             let __a0 = ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any();
             let __a1 = 1_usize;
             let __a2 = 10_usize;
@@ -188,12 +196,14 @@ fn main_0() -> i32 {
         assert!(!((stream).is_null()));
         let buf: Value<Box<[i8]>> =
             Rc::new(RefCell::new((0..10).map(|_| 0_i8).collect::<Box<[i8]>>()));
-        {
-            ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any().memset(
-                (('Y' as i8) as i32) as u8,
-                ::std::mem::size_of::<[i8; 10]>() as usize,
-            );
-            ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any()
+        match ({ ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any() },) {
+            (mut __tmp_3,) => {
+                __tmp_3.memset(
+                    (('Y' as i8) as i32) as u8,
+                    ::std::mem::size_of::<[i8; 10]>() as usize,
+                );
+                (__tmp_3).clone()
+            }
         };
         let mut n: usize = ({
             (gn1).call(

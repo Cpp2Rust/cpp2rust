@@ -8,6 +8,7 @@ fn t1() -> libcc2rs::Passwd {
 }
 
 fn f2(a0: u32, a1: Ptr<Passwd>, a2: Ptr<i8>, a3: usize, a4: Ptr<Ptr<Passwd>>) -> i32 {
+    // Computing the arguments first ends their borrows of what the call writes.
     let __pwbuf = a1;
     let __buf = a2;
     let __buflen = a3;

@@ -128,10 +128,9 @@ unsafe fn f73<T1: Ord + Clone, T2: Default>(
     a1: T1,
     init: T2,
 ) -> (UnsafeBidirectionalIterator<(T1, T2)>, bool) {
-    let __key = a1;
-    let __inserted = a0.get(&__key).is_none();
+    let __inserted = a0.get(&a1).is_none();
     if __inserted {
-        *a0.subscript(&__key) = init;
+        *a0.subscript(&a1) = init;
     }
-    (a0.find(&__key), __inserted)
+    (a0.find(&a1), __inserted)
 }

@@ -14,16 +14,19 @@ fn main_0() -> i32 {
     let fds: Value<Box<[i32]>> =
         Rc::new(RefCell::new((0..2).map(|_| 0_i32).collect::<Box<[i32]>>()));
     assert!(
-        (((match nix::unistd::pipe() {
-            Ok((__r, __w)) => {
-                let __fds = (fds.as_pointer() as Ptr<i32>);
-                __fds.write(FdRegistry::register(__r));
-                elem!(__fds, 1).write(FdRegistry::register(__w));
-                0
-            }
-            Err(__e) => {
-                libcc2rs::cpp2rust_errno().write(__e as i32);
-                -1
+        (((match ({ (fds.as_pointer() as Ptr::<i32>) },) {
+            (mut __tmp_0,) => {
+                match nix::unistd::pipe() {
+                    Ok((__r, __w)) => {
+                        __tmp_0.write(FdRegistry::register(__r));
+                        elem!(__tmp_0, 1).write(FdRegistry::register(__w));
+                        0
+                    }
+                    Err(__e) => {
+                        libcc2rs::cpp2rust_errno().write(__e as i32);
+                        -1
+                    }
+                }
             }
         } == 0) as i32)
             != 0)
@@ -44,25 +47,28 @@ fn main_0() -> i32 {
             != 0)
     );
     let buf: Value<Box<[i8]>> = Rc::new(RefCell::new((0..4).map(|_| 0_i8).collect::<Box<[i8]>>()));
-    {
-        ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>)
-            .to_any()
-            .memset((0) as u8, ::std::mem::size_of::<[i8; 4]>() as usize);
-        ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any()
+    match ({ ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any() },) {
+        (mut __tmp_1,) => {
+            __tmp_1.memset((0) as u8, ::std::mem::size_of::<[i8; 4]>() as usize);
+            (__tmp_1).clone()
+        }
     };
     assert!(
-        (((match FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
-            ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>)
-                .to_any()
-                .reinterpret_cast::<u8>()
-                .with_slice_mut(::std::mem::size_of::<[i8; 4]>(), |__buf| {
-                    nix::unistd::read(__fd, __buf)
-                })
-        }) {
-            Ok(__n) => __n as isize,
-            Err(__e) => {
-                libcc2rs::cpp2rust_errno().write(__e as i32);
-                -1
+        (((match ({ ((buf.as_pointer() as Ptr::<i8>) as Ptr<i8>).to_any() },) {
+            (mut __tmp_2,) => {
+                match FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
+                    __tmp_2
+                        .reinterpret_cast::<u8>()
+                        .with_slice_mut(::std::mem::size_of::<[i8; 4]>(), |__buf| {
+                            nix::unistd::read(__fd, __buf)
+                        })
+                }) {
+                    Ok(__n) => __n as isize,
+                    Err(__e) => {
+                        libcc2rs::cpp2rust_errno().write(__e as i32);
+                        -1
+                    }
+                }
             }
         } == 2_isize) as i32)
             != 0)
@@ -86,18 +92,21 @@ fn main_0() -> i32 {
     );
     assert!((((FdRegistry::close((*fds.borrow())[(1) as usize]) == 0) as i32) != 0));
     assert!(
-        (((match FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
-            ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>)
-                .to_any()
-                .reinterpret_cast::<u8>()
-                .with_slice_mut(::std::mem::size_of::<[i8; 4]>(), |__buf| {
-                    nix::unistd::read(__fd, __buf)
-                })
-        }) {
-            Ok(__n) => __n as isize,
-            Err(__e) => {
-                libcc2rs::cpp2rust_errno().write(__e as i32);
-                -1
+        (((match ({ ((buf.as_pointer() as Ptr::<i8>) as Ptr<i8>).to_any() },) {
+            (mut __tmp_3,) => {
+                match FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
+                    __tmp_3
+                        .reinterpret_cast::<u8>()
+                        .with_slice_mut(::std::mem::size_of::<[i8; 4]>(), |__buf| {
+                            nix::unistd::read(__fd, __buf)
+                        })
+                }) {
+                    Ok(__n) => __n as isize,
+                    Err(__e) => {
+                        libcc2rs::cpp2rust_errno().write(__e as i32);
+                        -1
+                    }
+                }
             }
         } == 0_isize) as i32)
             != 0)

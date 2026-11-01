@@ -53,6 +53,7 @@ pub fn test_getpwuid_r_2() {
         Rc::new(RefCell::new(Ptr::<libcc2rs::Passwd>::null()));
     assert!(
         ((({
+            // Computing the arguments first ends their borrows of what the call writes.
             let __pwbuf = (pw.as_pointer());
             let __buf = (buf.as_pointer() as Ptr<i8>);
             let __buflen = ::std::mem::size_of::<[i8; 4096]>();
@@ -145,6 +146,7 @@ pub fn test_getpwuid_r_erange_3() {
         Rc::new(RefCell::new(Ptr::<libcc2rs::Passwd>::null()));
     assert!(
         ((({
+            // Computing the arguments first ends their borrows of what the call writes.
             let __pwbuf = (pw.as_pointer());
             let __buf = (tiny.as_pointer() as Ptr<i8>);
             let __buflen = ::std::mem::size_of::<[i8; 1]>();

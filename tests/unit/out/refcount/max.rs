@@ -12,7 +12,11 @@ thread_local!(
 thread_local!(
     pub static xs_1: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2])));
 );
-pub fn pick_2(mut i: i32) -> Ptr<i32> {
+pub fn size_of_2(mut i: i32) -> usize {
+    (*calls_0.with(Value::clone).borrow_mut()).prefix_inc();
+    return ((i * 3) as usize);
+}
+pub fn pick_3(mut i: i32) -> Ptr<i32> {
     (*calls_0.with(Value::clone).borrow_mut()).prefix_inc();
     return (xs_1.with(|v| v.as_pointer()) as Ptr<i32>).offset(i);
 }
@@ -37,13 +41,13 @@ impl Bag {
 }
 impl CppLess for Bag {
     fn less(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
-        operator_lt_3(__lhs.clone(), __rhs.clone())
+        operator_lt_4(__lhs.clone(), __rhs.clone())
     }
 }
 impl CppEq for Bag {
     fn equal(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
-        !(operator_lt_3(__lhs.clone(), __rhs.clone()))
-            && !(operator_lt_3(__rhs.clone(), __lhs.clone()))
+        !(operator_lt_4(__lhs.clone(), __rhs.clone()))
+            && !(operator_lt_4(__rhs.clone(), __lhs.clone()))
     }
 }
 impl Clone for Bag {
@@ -52,10 +56,10 @@ impl Clone for Bag {
         Bag::copy_from(__src.as_pointer())
     }
 }
-pub fn operator_lt_3(a: Ptr<Bag>, b: Ptr<Bag>) -> bool {
+pub fn operator_lt_4(a: Ptr<Bag>, b: Ptr<Bag>) -> bool {
     return ({ a.with(|__s| __s.n) } < { b.with(|__s| __s.n) });
 }
-pub fn make_4(mut n: i32) -> Bag {
+pub fn make_5(mut n: i32) -> Bag {
     return Bag::new({ n });
 }
 pub fn main() {
@@ -69,74 +73,84 @@ fn main_0() -> i32 {
     let x4: Value<i32> = Rc::new(RefCell::new(20));
     let mut p1: Ptr<i32> = (x1.as_pointer());
     let mut p2: Ptr<i32> = (x2.as_pointer());
-    let mut r1: i32 = ({
-        let __a = x1.as_pointer();
-        let __b = x2.as_pointer();
-        if CppLess::less(&__a, &__b) { __b } else { __a }
+    let mut r1: i32 = (if CppLess::less(&x1.as_pointer(), &x2.as_pointer()) {
+        x2.as_pointer()
+    } else {
+        x1.as_pointer()
     }
     .read());
-    let mut r2: i32 = ({
-        let __a = x3.as_pointer();
-        let __b = x4.as_pointer();
-        if CppLess::less(&__b, &__a) { __b } else { __a }
+    let mut r2: i32 = (if CppLess::less(&x4.as_pointer(), &x3.as_pointer()) {
+        x4.as_pointer()
+    } else {
+        x3.as_pointer()
     }
     .read());
-    let mut r3: i32 = ({
-        let __a = (p1).clone();
-        let __b = x2.as_pointer();
-        if CppLess::less(&__a, &__b) { __b } else { __a }
+    let mut r3: i32 = (if CppLess::less(&(p1).clone(), &x2.as_pointer()) {
+        x2.as_pointer()
+    } else {
+        (p1).clone()
     }
     .read());
-    let mut r4: i32 = ({
-        let __a = (p2).clone();
-        let __b = x3.as_pointer();
-        if CppLess::less(&__b, &__a) { __b } else { __a }
+    let mut r4: i32 = (if CppLess::less(&x3.as_pointer(), &(p2).clone()) {
+        x3.as_pointer()
+    } else {
+        (p2).clone()
     }
     .read());
     let mut r5: i32 = {
         let __tmp_0: Value<i32> = Rc::new(RefCell::new(30));
         let __tmp_1: Value<i32> = Rc::new(RefCell::new(40));
-        ({
-            let __a = __tmp_0.as_pointer();
-            let __b = __tmp_1.as_pointer();
-            if CppLess::less(&__a, &__b) { __b } else { __a }
+        (if CppLess::less(&__tmp_0.as_pointer(), &__tmp_1.as_pointer()) {
+            __tmp_1.as_pointer()
+        } else {
+            __tmp_0.as_pointer()
         }
         .read())
     };
     assert!((((((r1 + r2) + r3) + r4) + r5) == 56));
     let values: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 7, 7, 3])));
-    let mut max: Ptr<i32> = {
-        let __first = (values.as_pointer() as Ptr<i32>);
-        let __last = (values.as_pointer() as Ptr<i32>).offset((4) as isize);
-        let mut __best = __first.clone();
-        if __first != __last {
-            let mut __it = __first;
-            __it.iter_inc();
-            while __it != __last {
-                if CppLess::less(&__best.iter_deref(), &__it.iter_deref()) {
-                    __best = __it.clone();
-                }
+    let mut max: Ptr<i32> = match ({ (values.as_pointer() as Ptr<i32>) }, {
+        (values.as_pointer() as Ptr<i32>).offset((4) as isize)
+    }) {
+        (mut __tmp_2, mut __tmp_3) => {
+            let mut __best = __tmp_2.clone();
+            if __tmp_2 != __tmp_3 {
+                let mut __it = (__tmp_2).clone();
                 __it.iter_inc();
+                while __it != __tmp_3 {
+                    if CppLess::less(&__best.iter_deref(), &__it.iter_deref()) {
+                        __best = __it.clone();
+                    }
+                    __it.iter_inc();
+                }
             }
+            __best
         }
-        __best
     };
     assert!(({ (max).clone() } == { (values.as_pointer() as Ptr::<i32>).offset((1) as isize) }));
     assert!(
-        (({
-            let __a = ({ pick_2(0) });
-            let __b = ({ pick_2(1) });
-            if CppLess::less(&__a, &__b) { __b } else { __a }
+        ((match (({ pick_3(0,) }), ({ pick_3(1,) }),) {
+            (__tmp_4, __tmp_5) => {
+                if CppLess::less(&(__tmp_4).clone(), &(__tmp_5).clone()) {
+                    (__tmp_5).clone()
+                } else {
+                    (__tmp_4).clone()
+                }
+            }
         }
         .read())
             == 2)
             && (calls_0.with(|rc| *rc.borrow()) == 2)
     );
     assert!(
-        (({
-            let __a = ({ pick_2(1) });
-            let __b = ({ pick_2(0) });
-            if CppLess::less(&__b, &__a) { __b } else { __a }
+        ((match (({ pick_3(1,) }), ({ pick_3(0,) }),) {
+            (__tmp_6, __tmp_7) => {
+                if CppLess::less(&(__tmp_7).clone(), &(__tmp_6).clone()) {
+                    (__tmp_7).clone()
+                } else {
+                    (__tmp_6).clone()
+                }
+            }
         }
         .read())
             == 1)
@@ -144,28 +158,56 @@ fn main_0() -> i32 {
     );
     calls_0.with(|rc| *rc.borrow_mut() = 0);
     assert!(
-        ({
-            let __tmp_2: Value<Bag> = Rc::new(RefCell::new(({ make_4(1) })));
-            let __tmp_3: Value<Bag> = Rc::new(RefCell::new(({ make_4(2) })));
-            {
-                let __a = __tmp_2.as_pointer();
-                let __b = __tmp_3.as_pointer();
-                if CppLess::less(&__a, &__b) { __b } else { __a }
+        (match (
+            Rc::new(RefCell::new(({ make_5(1,) }))).as_pointer(),
+            Rc::new(RefCell::new(({ make_5(2,) }))).as_pointer(),
+        ) {
+            (__tmp_8, __tmp_9) => {
+                if CppLess::less(&(__tmp_8).clone(), &(__tmp_9).clone()) {
+                    (__tmp_9).clone()
+                } else {
+                    (__tmp_8).clone()
+                }
+            }
+        }
+        .with(|__s| __s.n)
+            == 2)
+            && (match (
+                Rc::new(RefCell::new(({ make_5(1,) }))).as_pointer(),
+                Rc::new(RefCell::new(({ make_5(2,) }))).as_pointer(),
+            ) {
+                (__tmp_10, __tmp_11) => {
+                    if CppLess::less(&(__tmp_11).clone(), &(__tmp_10).clone()) {
+                        (__tmp_11).clone()
+                    } else {
+                        (__tmp_10).clone()
+                    }
+                }
             }
             .with(|__s| __s.n)
-        } == 2)
-            && ({
-                let __tmp_4: Value<Bag> = Rc::new(RefCell::new(({ make_4(1) })));
-                let __tmp_5: Value<Bag> = Rc::new(RefCell::new(({ make_4(2) })));
-                {
-                    let __a = __tmp_4.as_pointer();
-                    let __b = __tmp_5.as_pointer();
-                    if CppLess::less(&__b, &__a) { __b } else { __a }
-                }
-                .with(|__s| __s.n)
-            } == 1)
+                == 1)
     );
     assert!((calls_0.with(|rc| *rc.borrow()) == 0));
+    let largest: Value<usize> = Rc::new(RefCell::new(0_usize));
+    let mut i: i32 = 0;
+    'loop_: while (i < 3) {
+        let __rhs = ({
+            let __tmp_13: Value<u64> = Rc::new(RefCell::new(((*largest.borrow()) as u64)));
+            (match (Rc::new(RefCell::new((({ size_of_2(i) }) as u64))).as_pointer(),) {
+                (__tmp_12,) => {
+                    if CppLess::less(&__tmp_13.as_pointer(), &(__tmp_12).clone()) {
+                        (__tmp_12).clone()
+                    } else {
+                        __tmp_13.as_pointer()
+                    }
+                }
+            }
+            .read())
+        } as usize);
+        (*largest.borrow_mut()) = __rhs;
+        i.prefix_inc();
+    }
+    assert!(((*largest.borrow()) == 6_usize) && (calls_0.with(|rc| *rc.borrow()) == 3));
     return 0;
 }
 pub trait BagImpl {

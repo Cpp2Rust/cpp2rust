@@ -32,13 +32,10 @@ pub unsafe fn sum_1(v: *const Vec<i32>) -> i32 {
         it.iter_inc();
     }
     return ((total)
-        + (*{
-            let __idx = 0_usize;
-            if __idx as usize >= (*v).len() {
-                panic!("out of bounds access")
-            } else {
-                (*v).as_ptr().add(__idx as usize)
-            }
+        + (*if 0_usize as usize >= (*v).len() {
+            panic!("out of bounds access")
+        } else {
+            (*v).as_ptr().add(0_usize as usize)
         }));
 }
 pub fn main() {
@@ -77,13 +74,10 @@ unsafe fn main_0() -> i32 {
     );
     let c: *const Vec<i32> = &v;
     assert!(
-        ((*{
-            let __idx = 2_usize;
-            if __idx as usize >= (*c).len() {
-                panic!("out of bounds access")
-            } else {
-                (*c).as_ptr().add(__idx as usize)
-            }
+        ((*if 2_usize as usize >= (*c).len() {
+            panic!("out of bounds access")
+        } else {
+            (*c).as_ptr().add(2_usize as usize)
         }) == (3))
     );
     assert!(((unsafe { sum_1(&v,) }) == (7)));

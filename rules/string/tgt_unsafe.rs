@@ -27,16 +27,11 @@ fn t7() -> libc::c_char {
     0 as libc::c_char
 }
 
-// Keep temporary receivers alive, but borrow only after evaluating the arguments.
 unsafe fn f1(a0: *const Vec<libc::c_char>, a1: usize, a2: usize) -> Vec<libc::c_char> {
-    match (a0, a1, a2) {
-        (__source, __pos, __count) => {
-            let __s = &*__source;
-            let mut __tmp1 = __s[__pos..::std::cmp::min(__pos + __count, __s.len() - 1)].to_vec();
-            __tmp1.push(0);
-            __tmp1
-        }
-    }
+    let __range = a1..::std::cmp::min(a1 + a2, (*a0).len() - 1);
+    let mut __tmp1 = (&*a0)[__range].to_vec();
+    __tmp1.push(0);
+    __tmp1
 }
 unsafe fn f2(a0: Vec<libc::c_char>) -> usize {
     (a0.len() - 1)
@@ -44,10 +39,9 @@ unsafe fn f2(a0: Vec<libc::c_char>) -> usize {
 unsafe fn f3(a0: Vec<libc::c_char>, a1: *const libc::c_char) -> Vec<libc::c_char> {
     let mut __tmp2 = a0.clone();
     __tmp2.pop();
-    let __from = a1;
     __tmp2.extend_from_slice(::std::slice::from_raw_parts(
-        __from,
-        (0..).position(|i| *__from.add(i) == 0).unwrap(),
+        a1,
+        (0..).position(|i| *a1.add(i) == 0).unwrap(),
     ));
     __tmp2.push(0);
     __tmp2
@@ -94,8 +88,7 @@ unsafe fn f9(a0: usize, a1: libc::c_char) -> Vec<libc::c_char> {
         .collect()
 }
 unsafe fn f10(a0: *const libc::c_char) -> Vec<libc::c_char> {
-    let s = a0;
-    std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1).to_vec()
+    std::slice::from_raw_parts(a0, (0..).take_while(|&i| *a0.add(i) != 0).count() + 1).to_vec()
 }
 unsafe fn f11(a0: Vec<libc::c_char>) -> *const libc::c_char {
     a0.as_ptr()
@@ -137,18 +130,16 @@ unsafe fn f16(a0: Vec<libc::c_char>, a1: *const libc::c_char) -> usize {
 unsafe fn f17(a0: Vec<libc::c_char>, a1: *const libc::c_char) -> Vec<libc::c_char> {
     let mut __tmp2 = a0.clone();
     __tmp2.pop();
-    let __from = a1;
     __tmp2.extend_from_slice(::std::slice::from_raw_parts(
-        __from,
-        (0..).position(|i| *__from.add(i) == 0).unwrap(),
+        a1,
+        (0..).position(|i| *a1.add(i) == 0).unwrap(),
     ));
     __tmp2.push(0);
     __tmp2
 }
 unsafe fn f18(a0: Vec<libc::c_char>, a1: *const libc::c_char) -> bool {
     a0 == {
-        let s = a1;
-        std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1).to_vec()
+        std::slice::from_raw_parts(a1, (0..).take_while(|&i| *a1.add(i) != 0).count() + 1).to_vec()
     }
 }
 unsafe fn f19(a0: Vec<libc::c_char>) -> usize {
@@ -204,8 +195,7 @@ unsafe fn f30(a0: &mut Vec<libc::c_char>, a1: &mut Vec<libc::c_char>) {
 
 unsafe fn f31(a0: Vec<libc::c_char>, a1: *const libc::c_char) -> bool {
     a0 != {
-        let s = a1;
-        std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1).to_vec()
+        std::slice::from_raw_parts(a1, (0..).take_while(|&i| *a1.add(i) != 0).count() + 1).to_vec()
     }
 }
 

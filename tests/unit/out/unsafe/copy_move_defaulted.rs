@@ -140,15 +140,16 @@ impl Buffer {
         self.data = std::mem::take(&mut (*_a0).data);
         self.rows = std::mem::take(&mut (*_a0).rows);
         self.n = (*_a0).n;
-        {
-            if 8_usize != 0 {
-                ::std::ptr::copy_nonoverlapping(
-                    ((&mut (*_a0).arr as *mut [i32; 2]) as *const ::libc::c_void),
-                    ((&mut self.arr as *mut [i32; 2]) as *mut ::libc::c_void),
-                    8_usize as usize,
-                )
+        match (
+            { ((&mut self.arr as *mut [i32; 2]) as *mut ::libc::c_void) },
+            { ((&mut (*_a0).arr as *mut [i32; 2]) as *const ::libc::c_void) },
+        ) {
+            (mut __tmp_0, mut __tmp_1) => {
+                if 8_usize != 0 {
+                    ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, 8_usize as usize)
+                }
+                __tmp_0
             }
-            ((&mut self.arr as *mut [i32; 2]) as *mut ::libc::c_void)
         };
         return &mut (*(self as *mut Buffer));
     }
@@ -174,15 +175,16 @@ impl Owner {
     pub unsafe fn move_assign(&mut self, _a0: *mut Owner) -> *mut Owner {
         self.data = std::mem::take(&mut (*_a0).data);
         self.n = (*_a0).n;
-        {
-            if 8_usize != 0 {
-                ::std::ptr::copy_nonoverlapping(
-                    ((&mut (*_a0).arr as *mut [i32; 2]) as *const ::libc::c_void),
-                    ((&mut self.arr as *mut [i32; 2]) as *mut ::libc::c_void),
-                    8_usize as usize,
-                )
+        match (
+            { ((&mut self.arr as *mut [i32; 2]) as *mut ::libc::c_void) },
+            { ((&mut (*_a0).arr as *mut [i32; 2]) as *const ::libc::c_void) },
+        ) {
+            (mut __tmp_2, mut __tmp_3) => {
+                if 8_usize != 0 {
+                    ::std::ptr::copy_nonoverlapping(__tmp_3, __tmp_2, 8_usize as usize)
+                }
+                __tmp_2
             }
-            ((&mut self.arr as *mut [i32; 2]) as *mut ::libc::c_void)
         };
         self.p = (*_a0).p.take();
         return &mut (*(self as *mut Owner));

@@ -34,14 +34,18 @@ fn main_0() -> i32 {
     assert!((((fd >= 0) as i32) != 0));
     let tio: Value<libcc2rs::Termios> = Rc::new(RefCell::new(Default::default()));
     assert!(
-        (((match FdRegistry::with_fd(fd, |__fd| nix::sys::termios::tcgetattr(__fd)) {
-            Ok(__t) => {
-                (tio.as_pointer()).with_mut(|__dst| *__dst = Termios::from_libc(&__t.into()));
-                0
-            }
-            Err(__e) => {
-                libcc2rs::cpp2rust_errno().write(__e as i32);
-                -1
+        (((match ({ (tio.as_pointer()) },) {
+            (mut __tmp_0,) => {
+                match FdRegistry::with_fd(fd, |__fd| nix::sys::termios::tcgetattr(__fd)) {
+                    Ok(__t) => {
+                        __tmp_0.with_mut(|__dst| *__dst = Termios::from_libc(&__t.into()));
+                        0
+                    }
+                    Err(__e) => {
+                        libcc2rs::cpp2rust_errno().write(__e as i32);
+                        -1
+                    }
+                }
             }
         } == -1_i32) as i32)
             != 0)

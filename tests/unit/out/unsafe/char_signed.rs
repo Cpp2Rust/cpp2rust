@@ -71,10 +71,14 @@ unsafe fn main_0() -> i32 {
             (((libc::strcmp(c"\x80".as_ptr(), c"a".as_ptr())) > (0)) as i32),
         )
     });
-    let mut s: Vec<libc::c_char> = {
-        let s = c"\xfe!".as_ptr();
-        std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1).to_vec()
-    };
+    let mut s: Vec<libc::c_char> = std::slice::from_raw_parts(
+        c"\xfe!".as_ptr(),
+        (0..)
+            .take_while(|&i| *c"\xfe!".as_ptr().add(i) != 0)
+            .count()
+            + 1,
+    )
+    .to_vec();
     (unsafe {
         libc::printf(
             c"%d %d\n".as_ptr() as *const libc::c_char,

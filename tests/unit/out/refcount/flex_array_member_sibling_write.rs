@@ -63,14 +63,14 @@ fn main_0() -> i32 {
     let mut s: Ptr<S> = libcc2rs::calloc_refcount(1_usize, (8usize as usize).wrapping_add(8_usize))
         .reinterpret_cast::<S>();
     assert!((((!((s).is_null())) as i32) != 0));
-    {
-        ((array_field_ptr!(s, name) as Ptr<i8>) as Ptr<i8>)
-            .to_any()
-            .memcpy(
+    match ({ ((array_field_ptr!(s, name) as Ptr<i8>) as Ptr<i8>).to_any() },) {
+        (mut __tmp_0,) => {
+            __tmp_0.memcpy(
                 &Ptr::<i8>::from_string_literal(b"abcdefg").to_any(),
                 8_usize as usize,
             );
-        ((array_field_ptr!(s, name) as Ptr<i8>) as Ptr<i8>).to_any()
+            (__tmp_0).clone()
+        }
     };
     field!(s, n).write(5);
     assert!((((s.with(|__s| __s.n) == 5) as i32) != 0));

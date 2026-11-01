@@ -53,12 +53,14 @@ unsafe fn main_0() -> i32 {
     u.f = 3.14_f32;
     assert!(((u.f) == (3.14_f32)));
     let mut buf: [u8; 4] = [0_u8; 4];
-    {
-        let byte_0 = (buf.as_mut_ptr() as *mut ::libc::c_void) as *mut u8;
-        for offset in 0..::std::mem::size_of::<[u8; 4]>() {
-            *byte_0.offset(offset as isize) = 0 as u8;
+    match ({ (buf.as_mut_ptr() as *mut ::libc::c_void) },) {
+        (mut __tmp_0,) => {
+            let byte_0 = __tmp_0 as *mut u8;
+            for offset in 0..::std::mem::size_of::<[u8; 4]>() {
+                *byte_0.offset(offset as isize) = 0 as u8;
+            }
+            __tmp_0
         }
-        (buf.as_mut_ptr() as *mut ::libc::c_void)
     };
     let mut ru: *mut basic = (buf.as_mut_ptr() as *mut basic);
     let mut pi: *mut i32 = (&mut (*ru).i as *mut i32);

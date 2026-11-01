@@ -37,14 +37,16 @@ fn main_0() -> i32 {
         m.as_pointer()
             .with(|__m: &Map<i32, (Value<i32>, Value<f64>)>| __m.end()),
     ) {
-        let i: Value<(Value<i32>, Value<f64>)> = Rc::new(RefCell::new((
-            Rc::new(RefCell::new(
-                (*i.iter_deref().upgrade().deref()).0.borrow().clone(),
-            )),
-            Rc::new(RefCell::new(
-                (*i.iter_deref().upgrade().deref()).1.borrow().clone(),
-            )),
-        )));
+        let i: Value<(Value<i32>, Value<f64>)> = Rc::new(RefCell::new(match (i.iter_deref(),) {
+            (__tmp_0,) => (
+                Rc::new(RefCell::new(
+                    (*__tmp_0.upgrade().deref()).0.borrow().clone(),
+                )),
+                Rc::new(RefCell::new(
+                    (*__tmp_0.upgrade().deref()).1.borrow().clone(),
+                )),
+            ),
+        }));
         sum += ((*(*i.borrow()).0.borrow()) as f64);
     }
     assert!((sum == 7475_f64));
@@ -54,14 +56,16 @@ fn main_0() -> i32 {
         m.as_pointer()
             .with(|__m: &Map<i32, (Value<i32>, Value<f64>)>| __m.end()),
     ) {
-        let i: Value<(Value<i32>, Value<f64>)> = Rc::new(RefCell::new((
-            Rc::new(RefCell::new(
-                (*i.iter_deref().upgrade().deref()).0.borrow().clone(),
-            )),
-            Rc::new(RefCell::new(
-                (*i.iter_deref().upgrade().deref()).1.borrow().clone(),
-            )),
-        )));
+        let i: Value<(Value<i32>, Value<f64>)> = Rc::new(RefCell::new(match (i.iter_deref(),) {
+            (__tmp_1,) => (
+                Rc::new(RefCell::new(
+                    (*__tmp_1.upgrade().deref()).0.borrow().clone(),
+                )),
+                Rc::new(RefCell::new(
+                    (*__tmp_1.upgrade().deref()).1.borrow().clone(),
+                )),
+            ),
+        }));
         (*(*i.borrow()).1.borrow_mut()) = (-1_i32 as f64);
         assert!(((*(*i.borrow()).1.borrow()) == (-1_i32 as f64)));
     }

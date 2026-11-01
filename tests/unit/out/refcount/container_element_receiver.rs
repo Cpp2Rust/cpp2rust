@@ -35,13 +35,10 @@ pub fn sum_1(v: Ptr<Vec<i32>>) -> i32 {
         (*it.borrow_mut()).iter_inc();
     }
     return ({ total } + {
-        ({
-            let __idx = 0_usize;
-            if __idx as usize >= (*v.upgrade().deref()).len() {
-                panic!("out of bounds access")
-            } else {
-                v.decay().offset(__idx as isize)
-            }
+        (if 0_usize as usize >= (*v.upgrade().deref()).len() {
+            panic!("out of bounds access")
+        } else {
+            v.decay().offset(0_usize as isize)
         }
         .read())
     });
@@ -97,13 +94,10 @@ fn main_0() -> i32 {
     );
     let c: Ptr<Vec<i32>> = v.as_pointer();
     assert!(
-        (({
-            let __idx = 2_usize;
-            if __idx as usize >= (*c.upgrade().deref()).len() {
-                panic!("out of bounds access")
-            } else {
-                c.decay().offset(__idx as isize)
-            }
+        ((if 2_usize as usize >= (*c.upgrade().deref()).len() {
+            panic!("out of bounds access")
+        } else {
+            c.decay().offset(2_usize as isize)
         }
         .read())
             == 3)

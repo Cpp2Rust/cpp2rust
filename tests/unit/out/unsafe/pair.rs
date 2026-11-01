@@ -19,9 +19,8 @@ unsafe fn main_0() -> i32 {
     let mut p2: (f64, i32) = ((3 as f64), 4);
     assert!(((p2.0) == (3_f64)));
     assert!(((p2.1) == (4)));
-    let mut p3: (f64, i32) = {
-        let mut __a0 = (5, 6);
-        (((*&mut __a0.0) as f64), (*&mut __a0.1))
+    let mut p3: (f64, i32) = match ((&mut (5, 6) as *mut (i32, i32)),) {
+        (__tmp_0,) => (((*&mut (*__tmp_0).0) as f64), (*&mut (*__tmp_0).1)),
     };
     assert!(((p3.0) == (5_f64)));
     assert!(((p3.1) == (6)));
@@ -30,12 +29,13 @@ unsafe fn main_0() -> i32 {
     let mut const_ptr_pairs: Vec<(*const i32, u64)> = (0..(1_usize) as usize)
         .map(|_| <(*const i32, u64)>::default())
         .collect::<Vec<_>>();
-    {
-        let mut __a1 = (arr.as_ptr().offset((1) as isize), n);
-        const_ptr_pairs[(0_usize)] = (
-            <*const i32 as CppFromUnsafe<*const i32>>::cpp_from_move(&mut __a1.0),
-            ((*&mut __a1.1) as u64),
-        )
+    match ((&mut (arr.as_ptr().offset((1) as isize), n) as *mut (*const i32, u32)),) {
+        (__tmp_1,) => {
+            const_ptr_pairs[(0_usize)] = (
+                <*const i32 as CppFromUnsafe<*const i32>>::cpp_from_move(&mut (*__tmp_1).0),
+                ((*&mut (*__tmp_1).1) as u64),
+            )
+        }
     };
     assert!(
         ((*const_ptr_pairs[(0_usize)].0) == (2)) && ((const_ptr_pairs[(0_usize)].1) == (2_u64))

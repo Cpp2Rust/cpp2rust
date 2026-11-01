@@ -52,14 +52,16 @@ pub unsafe fn push_local_from_field_1(mut jpg: *mut JPEGData, mut cond: bool) {
         dest = (&mut (*jpg).app_data as *mut Vec<Vec<u8>>);
     }
     {
-        let __a1 = {
-            let mut __v = Vec::new();
-            let mut __it = head.as_mut_ptr();
-            while __it != head.as_mut_ptr().offset((3) as isize) {
-                __v.push((*__it.iter_deref()));
-                __it.iter_inc();
+        let __a1 = match ({ head.as_mut_ptr().offset((3) as isize) },) {
+            (mut __tmp_0,) => {
+                let mut __v = Vec::new();
+                let mut __it = head.as_mut_ptr();
+                while __it != __tmp_0 {
+                    __v.push((*__it.iter_deref()));
+                    __it.iter_inc();
+                }
+                __v
             }
-            __v
         };
         (*dest).push(__a1)
     };
@@ -82,14 +84,16 @@ pub unsafe fn emplace_local_from_field_4(mut jpg: *mut JPEGData, mut cond: bool)
         dest = (&mut (*jpg).app_data as *mut Vec<Vec<u8>>);
     }
     {
-        let __init = {
-            let mut __v = Vec::new();
-            let mut __it = head.as_mut_ptr();
-            while __it != head.as_mut_ptr().offset((3) as isize) {
-                __v.push((*__it.iter_deref()));
-                __it.iter_inc();
+        let __init = match ({ head.as_mut_ptr().offset((3) as isize) },) {
+            (mut __tmp_1,) => {
+                let mut __v = Vec::new();
+                let mut __it = head.as_mut_ptr();
+                while __it != __tmp_1 {
+                    __v.push((*__it.iter_deref()));
+                    __it.iter_inc();
+                }
+                __v
             }
-            __v
         };
         (*dest).push(__init)
     };

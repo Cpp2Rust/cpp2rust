@@ -24,21 +24,17 @@ fn f5(a0: Ptr<CFdSet>) {
 }
 
 fn f1(a0: i32, a1: Ptr<CFdSet>, a2: Ptr<CFdSet>, a3: Ptr<CFdSet>, a4: Ptr<Timeval>) -> i32 {
-    let __rp = a1;
-    let __wp = a2;
-    let __ep = a3;
-    let __tp = a4;
-    let __r_fds: Vec<i32> = match __rp.is_null() {
+    let __r_fds: Vec<i32> = match a1.is_null() {
         true => Vec::new(),
-        false => __rp.with(|__s| (0..a0).filter(|&__fd| __s.isset(__fd)).collect()),
+        false => a1.with(|__s| (0..a0).filter(|&__fd| __s.isset(__fd)).collect()),
     };
-    let __w_fds: Vec<i32> = match __wp.is_null() {
+    let __w_fds: Vec<i32> = match a2.is_null() {
         true => Vec::new(),
-        false => __wp.with(|__s| (0..a0).filter(|&__fd| __s.isset(__fd)).collect()),
+        false => a2.with(|__s| (0..a0).filter(|&__fd| __s.isset(__fd)).collect()),
     };
-    let __e_fds: Vec<i32> = match __ep.is_null() {
+    let __e_fds: Vec<i32> = match a3.is_null() {
         true => Vec::new(),
-        false => __ep.with(|__s| (0..a0).filter(|&__fd| __s.isset(__fd)).collect()),
+        false => a3.with(|__s| (0..a0).filter(|&__fd| __s.isset(__fd)).collect()),
     };
     let mut __wanted = Vec::new();
     __wanted.extend(&__r_fds);
@@ -59,31 +55,31 @@ fn f1(a0: i32, a1: Ptr<CFdSet>, a2: Ptr<CFdSet>, a3: Ptr<CFdSet>, a4: Ptr<Timeva
         for __bfd in &__b[__rn + __wn..] {
             __es.insert(*__bfd);
         }
-        let mut __tv = match __tp.is_null() {
+        let mut __tv = match a4.is_null() {
             true => None,
-            false => Some(
-                __tp.with(|__t| nix::sys::time::TimeVal::new(__t.tv_sec as _, __t.tv_usec as _)),
-            ),
+            false => {
+                Some(a4.with(|__t| nix::sys::time::TimeVal::new(__t.tv_sec as _, __t.tv_usec as _)))
+            }
         };
         match nix::sys::select::select(
             a0,
-            match __rp.is_null() {
+            match a1.is_null() {
                 true => None,
                 false => Some(&mut __rs),
             },
-            match __wp.is_null() {
+            match a2.is_null() {
                 true => None,
                 false => Some(&mut __ws),
             },
-            match __ep.is_null() {
+            match a3.is_null() {
                 true => None,
                 false => Some(&mut __es),
             },
             __tv.as_mut(),
         ) {
             Ok(__n) => {
-                if !__rp.is_null() {
-                    __rp.with_mut(|__s| {
+                if !a1.is_null() {
+                    a1.with_mut(|__s| {
                         __s.zero();
                         for (__fd, __bfd) in __r_fds.iter().zip(&__b[..__rn]) {
                             if __rs.contains(*__bfd) {
@@ -92,8 +88,8 @@ fn f1(a0: i32, a1: Ptr<CFdSet>, a2: Ptr<CFdSet>, a3: Ptr<CFdSet>, a4: Ptr<Timeva
                         }
                     });
                 }
-                if !__wp.is_null() {
-                    __wp.with_mut(|__s| {
+                if !a2.is_null() {
+                    a2.with_mut(|__s| {
                         __s.zero();
                         for (__fd, __bfd) in __w_fds.iter().zip(&__b[__rn..__rn + __wn]) {
                             if __ws.contains(*__bfd) {
@@ -102,8 +98,8 @@ fn f1(a0: i32, a1: Ptr<CFdSet>, a2: Ptr<CFdSet>, a3: Ptr<CFdSet>, a4: Ptr<Timeva
                         }
                     });
                 }
-                if !__ep.is_null() {
-                    __ep.with_mut(|__s| {
+                if !a3.is_null() {
+                    a3.with_mut(|__s| {
                         __s.zero();
                         for (__fd, __bfd) in __e_fds.iter().zip(&__b[__rn + __wn..]) {
                             if __es.contains(*__bfd) {
@@ -112,8 +108,8 @@ fn f1(a0: i32, a1: Ptr<CFdSet>, a2: Ptr<CFdSet>, a3: Ptr<CFdSet>, a4: Ptr<Timeva
                         }
                     });
                 }
-                match (__tp.is_null(), __tv.as_ref()) {
-                    (false, Some(__t)) => __tp.with_mut(|__dst| {
+                match (a4.is_null(), __tv.as_ref()) {
+                    (false, Some(__t)) => a4.with_mut(|__dst| {
                         __dst.tv_sec = __t.tv_sec() as i64;
                         __dst.tv_usec = __t.tv_usec() as i64;
                     }),

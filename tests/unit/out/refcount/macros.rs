@@ -8,18 +8,17 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn base_name_0(mut path: Ptr<i8>) -> Ptr<i8> {
     let mut slash: Ptr<i8> = {
-        let __s = (path).clone();
         let __t = (('/' as i8) as i32) as i8;
-        match __s
+        match path
             .to_c_string_iterator()
             .enumerate()
             .filter(|__e| __e.1 == __t)
             .last()
         {
-            Some((__i, _)) => __s.offset(__i),
+            Some((__i, _)) => path.offset(__i),
             None => {
                 if __t == 0 {
-                    __s.offset(__s.to_c_string_iterator().count())
+                    path.offset(path.to_c_string_iterator().count())
                 } else {
                     Ptr::null()
                 }

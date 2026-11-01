@@ -130,20 +130,24 @@ unsafe fn main_0() -> i32 {
         v2.push(__a1)
     };
     assert!(((v2.len()) == (3_usize)));
-    {
-        let __it = <UnsafeRandomAccessIterator<i32>>::from(v2.begin());
-        let pos = __it.iter_distance(&UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr())) as usize;
-        v2.remove(pos);
-        __it
+    match ({ <UnsafeRandomAccessIterator<i32>>::from(v2.begin()) },) {
+        (mut __tmp_0,) => {
+            let pos =
+                __tmp_0.iter_distance(&UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr())) as usize;
+            v2.remove(pos);
+            (__tmp_0).clone()
+        }
     };
     assert!(((v2.len()) == (2_usize)));
     assert!(((v2[(0_usize)]) == (2)));
     assert!(((v2[(1_usize)]) == (3)));
-    {
-        let __it = <UnsafeRandomAccessIterator<i32>>::from(v2.begin());
-        let pos = __it.iter_distance(&UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr())) as usize;
-        v2.insert(pos, 100);
-        __it
+    match ({ <UnsafeRandomAccessIterator<i32>>::from(v2.begin()) },) {
+        (mut __tmp_1,) => {
+            let pos =
+                __tmp_1.iter_distance(&UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr())) as usize;
+            v2.insert(pos, 100);
+            (__tmp_1).clone()
+        }
     };
     (unsafe { copy_0(v2.clone()) });
     assert!(((v2.len()) == (3_usize)));
@@ -249,54 +253,62 @@ unsafe fn main_0() -> i32 {
     };
     (unsafe { fn_1(&mut v7, v8.clone()) });
     let mut src: [u32; 3] = [1_u32, 2_u32, 3_u32];
-    let mut v9: Vec<u32> = {
-        let mut __v = Vec::new();
-        let mut __it = src.as_mut_ptr();
-        while __it != src.as_mut_ptr().offset((3) as isize) {
-            __v.push((*__it.iter_deref()));
-            __it.iter_inc();
+    let mut v9: Vec<u32> = match ({ src.as_mut_ptr().offset((3) as isize) },) {
+        (mut __tmp_2,) => {
+            let mut __v = Vec::new();
+            let mut __it = src.as_mut_ptr();
+            while __it != __tmp_2 {
+                __v.push((*__it.iter_deref()));
+                __it.iter_inc();
+            }
+            __v
         }
-        __v
     };
     assert!(((v9.len()) == (3_usize)));
     assert!(
         (((v9[(0_usize)]) == (1_u32)) && ((v9[(1_usize)]) == (2_u32)))
             && ((v9[(2_usize)]) == (3_u32))
     );
-    let mut v10: Vec<u64> = {
-        let mut __v = Vec::new();
-        let mut __it = src.as_mut_ptr();
-        while __it != src.as_mut_ptr().offset((3) as isize) {
-            __v.push(((*__it.iter_deref()) as u64));
-            __it.iter_inc();
+    let mut v10: Vec<u64> = match ({ src.as_mut_ptr().offset((3) as isize) },) {
+        (mut __tmp_3,) => {
+            let mut __v = Vec::new();
+            let mut __it = src.as_mut_ptr();
+            while __it != __tmp_3 {
+                __v.push(((*__it.iter_deref()) as u64));
+                __it.iter_inc();
+            }
+            __v
         }
-        __v
     };
     assert!(((v10.len()) == (3_usize)));
     assert!(
         (((v10[(0_usize)]) == (1_u64)) && ((v10[(1_usize)]) == (2_u64)))
             && ((v10[(2_usize)]) == (3_u64))
     );
-    let mut v11: Vec<i32> = {
-        let mut __v = Vec::new();
-        let mut __it = src.as_mut_ptr();
-        while __it != src.as_mut_ptr().offset((3) as isize) {
-            __v.push(((*__it.iter_deref()) as i32));
-            __it.iter_inc();
+    let mut v11: Vec<i32> = match ({ src.as_mut_ptr().offset((3) as isize) },) {
+        (mut __tmp_4,) => {
+            let mut __v = Vec::new();
+            let mut __it = src.as_mut_ptr();
+            while __it != __tmp_4 {
+                __v.push(((*__it.iter_deref()) as i32));
+                __it.iter_inc();
+            }
+            __v
         }
-        __v
     };
     assert!(((v11.len()) == (3_usize)));
     assert!((((v11[(0_usize)]) == (1)) && ((v11[(1_usize)]) == (2))) && ((v11[(2_usize)]) == (3)));
     let src1: [u32; 3] = [1_u32, 2_u32, 3_u32];
-    let mut v12: Vec<u32> = {
-        let mut __v = Vec::new();
-        let mut __it = src1.as_ptr();
-        while __it != src1.as_ptr().add(src1.len()) {
-            __v.push((*__it.iter_deref()));
-            __it.iter_inc();
+    let mut v12: Vec<u32> = match ({ src1.as_ptr().add(src1.len()) },) {
+        (mut __tmp_5,) => {
+            let mut __v = Vec::new();
+            let mut __it = src1.as_ptr();
+            while __it != __tmp_5 {
+                __v.push((*__it.iter_deref()));
+                __it.iter_inc();
+            }
+            __v
         }
-        __v
     };
     assert!(((v12.len()) == (3_usize)));
     assert!(
@@ -306,14 +318,16 @@ unsafe fn main_0() -> i32 {
     let mut buf: [u8; 5] = [10_u8, 20_u8, 30_u8, 40_u8, 50_u8];
     let mut start: *const u8 = (buf.as_mut_ptr()).cast_const();
     let mut len: usize = 5_usize;
-    let mut v13: Vec<u8> = {
-        let mut __v = Vec::new();
-        let mut __it = start;
-        while __it != start.offset((len) as isize) {
-            __v.push((*__it.iter_deref()));
-            __it.iter_inc();
+    let mut v13: Vec<u8> = match ({ start.offset((len) as isize) },) {
+        (mut __tmp_6,) => {
+            let mut __v = Vec::new();
+            let mut __it = start;
+            while __it != __tmp_6 {
+                __v.push((*__it.iter_deref()));
+                __it.iter_inc();
+            }
+            __v
         }
-        __v
     };
     assert!(((v13.len()) == (5_usize)));
     assert!(((v13[(0_usize)] as i32) == (10)) && ((v13[(4_usize)] as i32) == (50)));
