@@ -133,6 +133,12 @@ Converter::GetTemplateArgumentAsString(const clang::TemplateArgument &arg) {
   case clang::TemplateArgument::Type:
     return GetUnboxedTypeAsString(arg.getAsType());
   case clang::TemplateArgument::Integral:
+    if (!arg.getIntegralType()->isBooleanType()) {
+      llvm::SmallString<16> value;
+      arg.getAsIntegral().toString(value);
+      return std::string(value);
+    }
+    [[fallthrough]];
   case clang::TemplateArgument::NullPtr:
   case clang::TemplateArgument::Declaration:
   case clang::TemplateArgument::StructuralValue: {
@@ -5113,8 +5119,6 @@ std::string Converter::GetMappedAsString(clang::Expr *expr, clang::Expr **args,
   auto [tgt_ir, bindings] = RuleRegistry::Search(ctx_, expr);
   if (!tgt_ir)
     return {};
-
-  CheckRuleReturnType(expr);
 
   auto saved_borrows = std::exchange(mut_borrows_, {});
   auto *operand = tgt_ir->refExprOperand();

@@ -23,6 +23,10 @@ fn t5<T1>() -> *const T1 {
     ::std::ptr::null()
 }
 
+fn t6<T2>() -> T2 {
+    unimplemented!()
+}
+
 unsafe fn f1<T1>(a0: Vec<T1>) -> *const T1 {
     a0.as_ptr()
 }
@@ -53,4 +57,20 @@ unsafe fn f7<T1: Clone>(a0: &mut Vec<T1>, a1: Vec<T1>) {
 
 unsafe fn f8<T1, const T2: usize>(a0: [T1; T2]) -> Vec<T1> {
     Vec::from(a0)
+}
+
+unsafe fn f9<const T1: usize, T2>(a0: &mut Vec<T2>) -> *mut T2 {
+    a0.as_mut_ptr().offset(T1 as isize)
+}
+
+unsafe fn f10<const T1: usize, T2>(a0: &Vec<T2>) -> *const T2 {
+    a0.as_ptr().offset(T1 as isize)
+}
+
+unsafe fn f11<const T1: usize, T2>(a0: &mut Vec<T2>) -> *mut T2 {
+    a0.as_mut_ptr().offset(T1 as isize)
+}
+
+unsafe fn f12<const T1: usize, T2>(a0: &Vec<T2>) -> *const T2 {
+    a0.as_ptr().offset(T1 as isize)
 }

@@ -481,9 +481,16 @@ impl<'a> FnIrBuilder<'a> {
 
         if let Some(gpl) = self.fn_item.generic_param_list() {
             for param in gpl.generic_params() {
-                if let ast::GenericParam::TypeParam(tp) = param {
-                    let name = tp.name().map(|n| n.text().to_string()).unwrap_or_default();
-                    generics.insert(name, extract_bounds(tp.type_bound_list()));
+                match param {
+                    ast::GenericParam::TypeParam(tp) => {
+                        let name = tp.name().map(|n| n.text().to_string()).unwrap_or_default();
+                        generics.insert(name, extract_bounds(tp.type_bound_list()));
+                    }
+                    ast::GenericParam::ConstParam(cp) => {
+                        let name = cp.name().map(|n| n.text().to_string()).unwrap_or_default();
+                        generics.insert(name, Vec::new());
+                    }
+                    _ => {}
                 }
             }
         }

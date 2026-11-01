@@ -29,6 +29,20 @@ fn main_0() -> i32 {
     };
     assert!(((*arr.borrow())[(0) as usize] == 7));
     assert!(((*arr.borrow())[(2) as usize] == 5));
+    let std_arr: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::from([4, 5, 6])));
+    let mut last: i32 = (std_arr.decay().offset(2 as isize).read());
+    std_arr.decay().offset(0 as isize).write(8);
+    let __decomp_2: Ptr<Vec<i32>> = std_arr.as_pointer();
+    let p: Ptr<i32> = __decomp_2.decay().offset(0 as isize);
+    let q: Ptr<i32> = __decomp_2.decay().offset(1 as isize);
+    let r: Ptr<i32> = __decomp_2.decay().offset(2 as isize);
+    {
+        q.with_mut(|__v| *__v = *__v + 10)
+    };
+    assert!((last == 6));
+    assert!(({ (*std_arr.borrow())[0_usize] } == 8));
+    assert!(({ (*std_arr.borrow())[1_usize] } == 15));
+    assert!(((r.read()) == 6));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

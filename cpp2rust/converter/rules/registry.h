@@ -50,8 +50,6 @@ clang::QualType GetGenericType(clang::ASTContext &ctx, const clang::Expr *expr,
 clang::QualType GetConversionSourceType(clang::ASTContext &ctx,
                                         const clang::Expr *expr, unsigned to);
 
-clang::QualType GetDeclaredReturnType(const clang::Expr *expr);
-
 bool HasExprRule(const clang::FunctionDecl *decl);
 bool IsLibcPassthrough(clang::ASTContext &ctx, const clang::Expr *expr);
 bool ReturnsPointer(clang::ASTContext &ctx, const clang::Expr *expr);

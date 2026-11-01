@@ -298,6 +298,32 @@ getExplicitTemplateArgs(const clang::Expr *expr) {
   return {};
 }
 
+void deduceNonTypeFromExplicitArg(
+    clang::ASTContext &ctx, const clang::TemplateArgument &rule_arg,
+    const clang::Expr *use, unsigned i,
+    std::vector<clang::TemplateArgument> &deduced) {
+  auto ref = llvm::dyn_cast<clang::DeclRefExpr>(
+      rule_arg.getAsExpr()->IgnoreParenImpCasts());
+  auto nttp =
+      ref ? llvm::dyn_cast<clang::NonTypeTemplateParmDecl>(ref->getDecl())
+          : nullptr;
+  if (!nttp) {
+    return;
+  }
+  auto call = llvm::cast<clang::CallExpr>(RuleDecls::SkipImplicit(use));
+  auto callee = call->getDirectCallee();
+  auto spec = callee ? callee->getTemplateSpecializationArgs() : nullptr;
+  assert(spec && i < spec->size() &&
+         "explicit template argument of a non-specialized callee");
+  const auto &value = spec->get(i);
+  assert(value.getKind() == clang::TemplateArgument::Integral &&
+         "non-type template argument is not an integral");
+  auto &slot = deduced[nttp->getIndex()];
+  if (slot.isNull()) {
+    slot = clang::TemplateArgument(ctx, value.getAsIntegral(), nttp->getType());
+  }
+}
+
 void deduceFromExplicitArgs(clang::Sema &sema,
                             clang::FunctionTemplateDecl *rule,
                             const clang::Expr *use,
@@ -308,6 +334,10 @@ void deduceFromExplicitArgs(clang::Sema &sema,
   for (unsigned i = 0; i < rule_args.size() && i < use_args.size(); ++i) {
     const auto &rule_arg = rule_args[i].getArgument();
     const auto &use_arg = use_args[i].getArgument();
+    if (rule_arg.getKind() == clang::TemplateArgument::Expression) {
+      deduceNonTypeFromExplicitArg(sema.Context, rule_arg, use, i, deduced);
+      continue;
+    }
     if (rule_arg.getKind() != clang::TemplateArgument::Type ||
         use_arg.getKind() != clang::TemplateArgument::Type) {
       continue;

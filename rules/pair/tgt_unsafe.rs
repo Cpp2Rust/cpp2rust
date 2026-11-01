@@ -48,28 +48,25 @@ unsafe fn f16<T1, T2>(a0: (T1, T2)) -> T1 {
     a0.0
 }
 
-unsafe fn f17<T1, T2>(a0: &mut (T1, T2)) -> *mut T1 {
-    &mut a0.0
+unsafe fn f17<const T1: usize, T2, T3>(a0: &mut (T2, T3)) -> *mut <(T2, T3) as TupleElement<T1>>::Type
+where
+    (T2, T3): TupleElement<T1>,
+{
+    &mut *a0.get_mut::<T1>()
 }
 
-unsafe fn f18<T1, T2>(a0: &mut (T1, T2)) -> *mut T2 {
-    &mut a0.1
+unsafe fn f19<const T1: usize, T2, T3>(a0: &(T2, T3)) -> *const <(T2, T3) as TupleElement<T1>>::Type
+where
+    (T2, T3): TupleElement<T1>,
+{
+    &*a0.get::<T1>()
 }
 
-unsafe fn f19<T1, T2>(a0: &(T1, T2)) -> *const T1 {
-    &a0.0
-}
-
-unsafe fn f20<T1, T2>(a0: &(T1, T2)) -> *const T2 {
-    &a0.1
-}
-
-unsafe fn f21<T1, T2>(a0: &mut (T1, T2)) -> *mut T1 {
-    &mut a0.0
-}
-
-unsafe fn f22<T1, T2>(a0: &mut (T1, T2)) -> *mut T2 {
-    &mut a0.1
+unsafe fn f21<const T1: usize, T2, T3>(a0: &mut (T2, T3)) -> *mut <(T2, T3) as TupleElement<T1>>::Type
+where
+    (T2, T3): TupleElement<T1>,
+{
+    &mut *a0.get_mut::<T1>()
 }
 
 unsafe fn f23<T1: CppFromUnsafe<T3>, T2: CppFromUnsafe<T4>, T3, T4>(a0: &mut (T3, T4)) -> (T1, T2) {
@@ -90,4 +87,11 @@ unsafe fn f25<T1: CppFromUnsafe<T3>, T2: CppFromUnsafe<T4>, T3, T4>(a0: &mut (T1
 unsafe fn f26<T1: CppFromUnsafe<T3>, T2: CppFromUnsafe<T4>, T3, T4>(a0: &mut (T1, T2), a1: &mut (T3, T4)) {
     let mut __a1 = a1;
     *a0 = (T1::cpp_from_move(&mut __a1.0), T2::cpp_from_move(&mut __a1.1))
+}
+
+unsafe fn f27<const T1: usize, T2, T3>(a0: &(T2, T3)) -> *const <(T2, T3) as TupleElement<T1>>::Type
+where
+    (T2, T3): TupleElement<T1>,
+{
+    &*a0.get::<T1>()
 }

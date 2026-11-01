@@ -74,9 +74,4 @@ std::string GetParamType(Converter &converter, const clang::Expr *expr,
   return Matcher::InstantiateTgt(converter, subs, rule->params.at(index).type);
 }
 
-std::string GetReturnType(Converter &converter, const clang::Expr *expr) {
-  auto [rule, subs] = RuleRegistry::Search(converter.GetASTContext(), expr);
-  return Matcher::InstantiateTgt(converter, subs, rule->return_type.type);
-}
-
 } // namespace cpp2rust::Mapper
