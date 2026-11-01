@@ -122,7 +122,8 @@ fn f18(a0: Vec<i8>, a1: Ptr<i8>) -> bool {
 // TODO: This should return a0
 fn f21(a0: &mut Vec<i8>, a1: usize, a2: i8) -> Vec<i8> {
     a0.pop();
-    a0.resize(a0.len() + (a1) as usize, a2);
+    let __len = a0.len() + (a1) as usize;
+    a0.resize(__len, a2);
     a0.push(0);
     a0.clone()
 }

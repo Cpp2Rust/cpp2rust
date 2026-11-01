@@ -9,12 +9,8 @@ use std::rc::{Rc, Weak};
 pub fn append_to_reference_0(s: Ptr<Vec<i8>>) {
     {
         s.with_mut(|__v: &mut Vec<i8>| __v.pop());
-        s.with_mut(|__v: &mut Vec<i8>| {
-            __v.resize(
-                (*s.upgrade().deref()).len() + (1_usize) as usize,
-                ('r' as i8),
-            )
-        });
+        let __len = (*s.upgrade().deref()).len() + (1_usize) as usize;
+        s.with_mut(|__v: &mut Vec<i8>| __v.resize(__len, ('r' as i8)));
         s.with_mut(|__v: &mut Vec<i8>| __v.push(0));
         (*s.upgrade().deref()).clone()
     };
@@ -98,10 +94,8 @@ fn main_0() -> i32 {
                     }
                     {
                         (*s.borrow_mut()).pop();
-                        (*s.borrow_mut()).resize(
-                            (*s.borrow()).len() + (count) as usize,
-                            ({ (*character.borrow()) }),
-                        );
+                        let __len = (*s.borrow()).len() + (count) as usize;
+                        (*s.borrow_mut()).resize(__len, ({ (*character.borrow()) }));
                         (*s.borrow_mut()).push(0);
                         (*s.borrow()).clone()
                     };
@@ -138,7 +132,8 @@ fn main_0() -> i32 {
     };
     {
         unboxed.pop();
-        unboxed.resize(unboxed.len() + (2_usize) as usize, ('b' as i8));
+        let __len = unboxed.len() + (2_usize) as usize;
+        unboxed.resize(__len, ('b' as i8));
         unboxed.push(0);
         unboxed.clone()
     };
@@ -162,12 +157,8 @@ fn main_0() -> i32 {
     let mut pointer: Ptr<Vec<i8>> = (indirect.as_pointer());
     {
         pointer.with_mut(|__v: &mut Vec<i8>| __v.pop());
-        pointer.with_mut(|__v: &mut Vec<i8>| {
-            __v.resize(
-                (*pointer.upgrade().deref()).len() + (0_usize) as usize,
-                ('\0' as i8),
-            )
-        });
+        let __len = (*pointer.upgrade().deref()).len() + (0_usize) as usize;
+        pointer.with_mut(|__v: &mut Vec<i8>| __v.resize(__len, ('\0' as i8)));
         pointer.with_mut(|__v: &mut Vec<i8>| __v.push(0));
         (*pointer.upgrade().deref()).clone()
     };
