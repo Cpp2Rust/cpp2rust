@@ -248,6 +248,7 @@ impl<'a> FragmentCtx<'a> {
                     self.flush_text();
                     self.fragments.push(BodyFragment::Init {
                         init: std::marker::PhantomData,
+                        conditional: Self::is_conditional(token),
                     });
                     return;
                 }

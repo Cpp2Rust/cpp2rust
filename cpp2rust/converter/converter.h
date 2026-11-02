@@ -506,6 +506,7 @@ public:
   virtual bool VisitBinaryOperator(clang::BinaryOperator *expr);
   bool VisitCXXRewrittenBinaryOperator(clang::CXXRewrittenBinaryOperator *expr);
 
+  void ConvertAssignmentRef(clang::BinaryOperator *expr);
   virtual void ConvertBinaryOperator(clang::BinaryOperator *expr);
 
   // The value that the compound assignment expr assigns to its left operand,
