@@ -70,10 +70,9 @@ unsafe fn f7(a0: *const libc::c_char, a1: usize) -> Vec<libc::c_char> {
 // TODO: this does not care for a1
 use std::io::Read;
 
-unsafe fn f8(a0: std::fs::File, a1: std::fs::File) -> Vec<libc::c_char> {
+unsafe fn f8(a0: *mut libcc2rs::CppStream, a1: *mut libcc2rs::CppStream) -> Vec<libc::c_char> {
     let mut __bytes: Vec<u8> = Vec::new();
-    let mut __f = &a0;
-    __f.read_to_end(&mut __bytes)
+    (*a0).read_to_end(&mut __bytes)
         .expect("couldn't read the file");
     let mut __buf: Vec<libc::c_char> = __bytes.iter().map(|&b| b as libc::c_char).collect();
     __buf.push(0);

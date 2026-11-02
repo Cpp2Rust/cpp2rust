@@ -115,17 +115,16 @@ unsafe fn f12<T1: UnsafeCppInputIterator<T2>, T2: Clone>(a0: T1, a1: T1, a2: T2)
 unsafe fn f13<T1: UnsafeCppInputIterator<libc::c_char>>(
     a0: T1,
     a1: T1,
-    a2: &mut ::std::fs::File,
-) -> ::std::fs::File {
+    a2: *mut libcc2rs::CppStream,
+) -> *mut libcc2rs::CppStream {
     let mut __it = a0;
-    let __out = &mut *a2;
     let mut __bytes: Vec<u8> = Vec::new();
     while __it != a1 {
         __bytes.push(*__it.iter_deref() as u8);
         __it.iter_inc();
     }
-    __out.write_all(&__bytes);
-    __out.try_clone().unwrap()
+    (*a2).write_all(&__bytes);
+    a2
 }
 
 unsafe fn f14<T1: Ord + Copy, T2>(a0: *mut T1, a1: *mut T1, a2: T2)
