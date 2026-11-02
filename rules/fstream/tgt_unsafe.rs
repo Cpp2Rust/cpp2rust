@@ -29,6 +29,10 @@ unsafe fn f1(a0: *const libc::c_char) -> libcc2rs::CppStream {
         .unwrap()
 }
 
+fn t5<T1>() -> *mut libcc2rs::CppStream {
+    std::ptr::null_mut()
+}
+
 unsafe fn f2(a0: *mut libcc2rs::CppStream) -> *mut libcc2rs::CppStream {
     a0
 }

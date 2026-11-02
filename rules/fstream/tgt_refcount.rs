@@ -21,6 +21,10 @@ fn t3<T1>() -> Ptr<libcc2rs::CppStream> {
     Ptr::null()
 }
 
+fn t5<T1>() -> Ptr<libcc2rs::CppStream> {
+    Ptr::null()
+}
+
 fn f2<T1>(a0: Ptr<libcc2rs::CppStream>) -> Ptr<libcc2rs::CppStream> {
     a0
 }
