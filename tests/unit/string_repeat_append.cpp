@@ -17,15 +17,16 @@ int main() {
         for (int shrink = 0; shrink < 2; ++shrink) {
           std::string s(length, 'x');
           for (std::size_t i = 0; i < length; ++i)
-            s[i] = initial[i % sizeof(initial)];
+            s[i] = initial[i % std::size_t(sizeof(initial))];
           if (shrink)
             s.shrink_to_fit();
           s.append(count, character);
           assert(s.size() == length + count);
           const char *data = s.data();
           for (std::size_t i = 0; i < length + count; ++i)
-            assert(data[i] ==
-                   (i < length ? initial[i % sizeof(initial)] : character));
+            assert(data[i] == (i < length
+                                   ? initial[i % std::size_t(sizeof(initial))]
+                                   : character));
           assert(data[s.size()] == 0);
           ++cases;
         }

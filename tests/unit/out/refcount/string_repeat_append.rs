@@ -83,8 +83,8 @@ fn main_0() -> i32 {
                     ));
                     let mut i: usize = 0_usize;
                     'loop_: while (i < length) {
-                        let __rhs = initial[((i as u64)
-                            .wrapping_rem((::std::mem::size_of::<[i8; 5]>() as u64)))
+                        let __rhs = initial[((i)
+                            .wrapping_rem((::std::mem::size_of::<[i8; 5]>() as usize)))
                             as usize];
                         (*s.borrow_mut())[i] = __rhs;
                         i.prefix_inc();
@@ -107,8 +107,8 @@ fn main_0() -> i32 {
                             ({
                                 ({ ((elem!(data, i).read()) as i32) } == {
                                     ((if (i < length) {
-                                        initial[((i as u64).wrapping_rem(
-                                            (::std::mem::size_of::<[i8; 5]>() as u64),
+                                        initial[((i).wrapping_rem(
+                                            (::std::mem::size_of::<[i8; 5]>() as usize),
                                         )) as usize]
                                     } else {
                                         (*character.borrow())

@@ -76,9 +76,8 @@ unsafe fn main_0() -> i32 {
                         .collect();
                     let mut i: usize = 0_usize;
                     'loop_: while ((i) < (length)) {
-                        s[(i)] = initial[((i as u64)
-                            .wrapping_rem((::std::mem::size_of::<[libc::c_char; 5]>() as u64)))
-                            as usize];
+                        s[(i)] = initial[((i)
+                            .wrapping_rem((::std::mem::size_of::<[libc::c_char; 5]>() as usize)))];
                         i.prefix_inc();
                     }
                     if (shrink != 0) {
@@ -95,9 +94,9 @@ unsafe fn main_0() -> i32 {
                         assert!(
                             (((*data.offset((i) as isize)) as i32)
                                 == ((if ((i) < (length)) {
-                                    initial[((i as u64).wrapping_rem(
-                                        (::std::mem::size_of::<[libc::c_char; 5]>() as u64),
-                                    )) as usize]
+                                    initial[((i).wrapping_rem(
+                                        (::std::mem::size_of::<[libc::c_char; 5]>() as usize),
+                                    ))]
                                 } else {
                                     character
                                 }) as i32))
