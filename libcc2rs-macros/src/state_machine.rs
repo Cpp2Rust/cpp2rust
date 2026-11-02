@@ -189,10 +189,7 @@ impl GotoRewriter<'_> {
 
     fn recurse_into_inner_goto_block(&mut self, mac: &mut syn::Macro) -> bool {
         if mac.path.is_ident("switch") || mac.path.is_ident("goto_block") {
-            if let Ok(mut inner) = syn::parse2::<Expr>(mac.tokens.clone()) {
-                self.visit_expr_mut(&mut inner);
-                mac.tokens = quote!(#inner);
-            }
+            visit_control_flow_macro(self, mac, true);
             return true;
         }
         false
@@ -284,12 +281,47 @@ impl StateMachine for SwitchStateMachine {
     }
 }
 
+// Macro tokens are opaque to syn's normal traversal. A nested goto block is
+// transparent to exits; a nested switch owns breaks in its arms, but not in
+// its condition or guards. Neither macro owns continues.
+fn visit_control_flow_macro(
+    visitor: &mut impl VisitMut,
+    mac: &mut syn::Macro,
+    visit_switch_arms: bool,
+) {
+    let Some(name) = mac.path.segments.last().map(|s| &s.ident) else {
+        return;
+    };
+    if name == "goto_block"
+        && let Ok(mut body) = syn::parse2::<Expr>(mac.tokens.clone())
+    {
+        visitor.visit_expr_mut(&mut body);
+        mac.tokens = quote!(#body);
+    } else if name == "switch"
+        && let Ok(mut body) = syn::parse2::<syn::ExprMatch>(mac.tokens.clone())
+    {
+        visitor.visit_expr_mut(&mut body.expr);
+        for arm in &mut body.arms {
+            if let Some((_, guard)) = &mut arm.guard {
+                visitor.visit_expr_mut(guard);
+            }
+            if visit_switch_arms {
+                visitor.visit_expr_mut(&mut arm.body);
+            }
+        }
+        mac.tokens = quote!(#body);
+    }
+}
+
 // Rewrite break into break '__sm
 struct ExitSwitchRewriter {
     label: Lifetime,
 }
 
 impl VisitMut for ExitSwitchRewriter {
+    fn visit_macro_mut(&mut self, mac: &mut syn::Macro) {
+        visit_control_flow_macro(self, mac, false);
+    }
     fn visit_expr_break_mut(&mut self, node: &mut ExprBreak) {
         if node.label.is_none() {
             node.label = Some(self.label.clone());
@@ -333,6 +365,9 @@ impl PropagateRewriter {
 }
 
 impl VisitMut for PropagateRewriter {
+    fn visit_macro_mut(&mut self, mac: &mut syn::Macro) {
+        visit_control_flow_macro(self, mac, matches!(self.kind, ControlKind::Continue));
+    }
     fn visit_expr_mut(&mut self, expr: &mut Expr) {
         let hit = match self.kind {
             ControlKind::Break => {
