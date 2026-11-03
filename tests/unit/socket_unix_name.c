@@ -1,26 +1,25 @@
 #include <assert.h>
 #include <stddef.h>
-#include <stdio.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <unistd.h>
 
 static void check_name(int fd, const char *path) {
-  struct sockaddr_un full;
+  struct sockaddr_storage full;
   memset(&full, 0xa5, sizeof(full));
   socklen_t actual = sizeof(full);
   assert(getsockname(fd, (struct sockaddr *)&full, &actual) == 0);
-  assert(full.sun_family == AF_UNIX);
+  assert(full.ss_family == AF_UNIX);
+  assert(actual >= offsetof(struct sockaddr_un, sun_path));
+  assert(actual < sizeof(full));
   if (path)
-    assert(memcmp(full.sun_path, path, strlen(path)) == 0);
-  else
-    assert(actual == offsetof(struct sockaddr_un, sun_path));
-  printf("%u\n", (unsigned)actual);
+    assert(memcmp(((struct sockaddr_un *)&full)->sun_path, path,
+                  strlen(path)) == 0);
 
   socklen_t capacities[] = {0, 1, 2, actual - 1, actual, actual + 1};
   for (unsigned i = 0; i < sizeof(capacities) / sizeof(capacities[0]); ++i) {
-    unsigned char out[sizeof(struct sockaddr_un) + 8];
+    unsigned char out[sizeof(struct sockaddr_storage) + 8];
     memset(out, 0xa5, sizeof(out));
     socklen_t len = capacities[i];
     assert(getsockname(fd, (struct sockaddr *)out, &len) == 0);
@@ -37,15 +36,17 @@ int main(void) {
   assert(fd >= 0);
   check_name(fd, NULL);
 
-  struct sockaddr_un addr;
+  struct sockaddr_storage addr;
   memset(&addr, 0, sizeof(addr));
-  addr.sun_family = AF_UNIX;
-  memcpy(addr.sun_path, "socket-unix-name", sizeof("socket-unix-name"));
+  socklen_t len = sizeof(addr);
+  assert(getsockname(fd, (struct sockaddr *)&addr, &len) == 0);
+  struct sockaddr_un *un = (struct sockaddr_un *)&addr;
+  memcpy(un->sun_path, "socket-unix-name", sizeof("socket-unix-name"));
   assert(bind(fd, (struct sockaddr *)&addr,
-              offsetof(struct sockaddr_un, sun_path) + strlen(addr.sun_path)) ==
+              offsetof(struct sockaddr_un, sun_path) + strlen(un->sun_path)) ==
          0);
-  check_name(fd, addr.sun_path);
+  check_name(fd, un->sun_path);
   assert(close(fd) == 0);
-  assert(unlink(addr.sun_path) == 0);
+  assert(unlink(un->sun_path) == 0);
   return 0;
 }
