@@ -256,6 +256,23 @@ impl Sockaddr {
                 out.reinterpret_cast::<SockaddrIn6>()
                     .write(SockaddrIn6::from_libc(&l));
             }
+            Some(AddressFamily::Unix) => {
+                if let Some(addr) = ss.as_unix_addr() {
+                    let l: &::libc::sockaddr_un = addr.as_ref();
+                    let len = out_len.read().min(ss.len()) as usize;
+                    if len != 0 {
+                        let bytes = (::libc::AF_UNIX as u16)
+                            .to_ne_bytes()
+                            .into_iter()
+                            .chain(l.sun_path.iter().map(|&b| b as u8));
+                        out.reinterpret_cast::<u8>().with_slice_mut(len, |buf| {
+                            for (dst, src) in buf.iter_mut().zip(bytes) {
+                                *dst = src;
+                            }
+                        });
+                    }
+                }
+            }
             _ => {}
         }
         out_len.write(ss.len());
