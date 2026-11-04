@@ -484,7 +484,8 @@ where
 {
     #[inline]
     fn decay(&self) -> Ptr<T> {
-        self.base.array_field_ptr(self.get, self.get_mut, self.offset)
+        self.base
+            .array_field_ptr(self.get, self.get_mut, self.offset)
     }
 }
 
