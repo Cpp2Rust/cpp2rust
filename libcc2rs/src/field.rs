@@ -462,6 +462,32 @@ where
     }
 }
 
+impl<S, T, G, M> AsPointer<Box<[T]>> for FieldRef<S, Box<[T]>, G, M>
+where
+    S: Record,
+    T: ByteRepr,
+    G: Fn(&S) -> &Box<[T]> + Copy + 'static,
+    M: Fn(&mut S) -> &mut Box<[T]> + Copy + 'static,
+{
+    #[inline]
+    fn as_pointer(&self) -> Ptr<Box<[T]>> {
+        self.base.field_ptr(self.get, self.get_mut, self.offset)
+    }
+}
+
+impl<S, T, G, M> Decay<T> for FieldRef<S, Box<[T]>, G, M>
+where
+    S: Record,
+    T: ByteRepr,
+    G: Fn(&S) -> &Box<[T]> + Copy + 'static,
+    M: Fn(&mut S) -> &mut Box<[T]> + Copy + 'static,
+{
+    #[inline]
+    fn decay(&self) -> Ptr<T> {
+        self.base.array_field_ptr(self.get, self.get_mut, self.offset)
+    }
+}
+
 // The sequence that `get` gives in the struct that `base` points to, which is
 // reached through `base`: a field, as a sequence of one element, or the
 // elements of an array or vector field. It is the parent of the pointers into
