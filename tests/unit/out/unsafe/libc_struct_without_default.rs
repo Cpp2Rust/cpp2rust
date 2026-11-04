@@ -9,19 +9,21 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe)]
 pub struct UserDefined {
-    pub a: Vec<i32>,
+    pub a: [i32; 1],
     pub v: Vec<i32>,
 }
 impl UserDefined {
     pub unsafe fn move_from(_a0: *mut UserDefined) -> Self {
         let mut this = Self {
-            a: std::mem::take(&mut (*_a0).a),
+            a: std::array::from_fn(|__i| (*&mut (&mut (*_a0)).a[__i])),
             v: std::mem::take(&mut (*_a0).v),
         };
         this
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut UserDefined) -> *mut UserDefined {
-        self.a = std::mem::take(&mut (*_a0).a);
+        for __i in 0..1 {
+            *&mut self.a[__i] = (*&mut (&mut (*_a0)).a[__i]);
+        }
         self.v = std::mem::take(&mut (*_a0).v);
         return &mut (*(self as *mut UserDefined));
     }
@@ -30,7 +32,7 @@ impl Default for UserDefined {
     fn default() -> Self {
         unsafe {
             UserDefined {
-                a: std::array::from_fn::<_, 1, _>(|_| 0_i32).to_vec(),
+                a: std::array::from_fn::<_, 1, _>(|_| 0_i32),
                 v: Default::default(),
             }
         }

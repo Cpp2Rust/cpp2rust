@@ -11,7 +11,7 @@ use std::rc::{Rc, Weak};
 pub struct UserDefined {
     #[offset(0)]
     #[byte_size(4)]
-    pub a: Vec<i32>,
+    pub a: Box<[i32]>,
     #[offset(8)]
     #[byte_size(24)]
     pub v: Vec<i32>,
@@ -19,7 +19,9 @@ pub struct UserDefined {
 impl UserDefined {
     pub fn move_from(_a0: Ptr<UserDefined>) -> Self {
         Self {
-            a: field!(_a0, a).with_mut(std::mem::take),
+            a: (0..1)
+                .map(|__i| field_ref!(_a0, a).decay().offset(__i).read())
+                .collect(),
             v: field!(_a0, v).with_mut(std::mem::take),
         }
     }
@@ -28,7 +30,7 @@ impl Default for UserDefined {
     fn default() -> Self {
         {
             UserDefined {
-                a: std::array::from_fn::<_, 1, _>(|_| 0_i32).to_vec(),
+                a: Box::<[i32]>::from(std::array::from_fn::<_, 1, _>(|_| 0_i32)),
                 v: Default::default(),
             }
         }
@@ -76,7 +78,7 @@ fn main_0() -> i32 {
     (*st.borrow_mut()).st_size = (1024 as ::libc::off_t);
     assert!(({ ({ (*st.borrow()).st_size } == (1024 as ::libc::off_t)) }));
     let ud: Value<UserDefined> = Rc::new(RefCell::new(<UserDefined>::default()));
-    assert!(((vec_elem!(ud.as_pointer(), a, 0_usize).read()) == 0));
+    assert!(((elem!(field_ref!(ud.as_pointer(), a).decay(), 0_usize).read()) == 0));
     assert!(({ ((*ud.borrow()).v.len() == 0_usize) }));
     let mut filt: FieldIsLibcType = <FieldIsLibcType>::default();
     assert!(((filt.addr.sa_family as i32) == 0));
@@ -87,9 +89,12 @@ pub trait UserDefinedImpl {
 }
 impl UserDefinedImpl for Ptr<UserDefined> {
     fn move_assign(&self, _a0: Ptr<UserDefined>) -> Ptr<UserDefined> {
-        field_ref!((*self), a)
-            .as_pointer()
-            .write(field!(_a0, a).with_mut(std::mem::take));
+        for __i in 0..1 {
+            &field_ref!((*self), a)
+                .decay()
+                .offset(__i)
+                .write(field_ref!(_a0, a).decay().offset(__i).read());
+        }
         field_ref!((*self), v)
             .as_pointer()
             .write(field!(_a0, v).with_mut(std::mem::take));

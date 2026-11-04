@@ -119,8 +119,11 @@ fn main_0() -> i32 {
         let _dtor_s = ScopedDestructor::new(&s, |__p| __p.destructor());
         (*s.borrow_mut()) = ({ make_2(13) });
         assert!(
-            ((destroyed_0.with(|rc| *rc.borrow()) == 1) && (last_1.with(|rc| *rc.borrow()) == 13))
-                && ({ (*s.borrow()).v } == 13)
+            ({
+                ((destroyed_0.with(|rc| *rc.borrow()) == 1)
+                    && (last_1.with(|rc| *rc.borrow()) == 13))
+                    && ({ (*s.borrow()).v } == 13)
+            })
         );
     }
     assert!((destroyed_0.with(|rc| *rc.borrow()) == 2) && (last_1.with(|rc| *rc.borrow()) == 13));

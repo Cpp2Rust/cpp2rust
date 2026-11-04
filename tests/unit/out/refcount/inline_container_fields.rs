@@ -50,7 +50,7 @@ pub struct State {
     pub grid: Box<[Box<[i32]>]>,
     #[offset(28)]
     #[byte_size(12)]
-    pub arr: Vec<i32>,
+    pub arr: Box<[i32]>,
     #[offset(40)]
     #[byte_size(24)]
     pub elems: Vec<Elem>,
@@ -67,7 +67,9 @@ impl State {
                     (*_a0.upgrade().deref()).grid[(__i) as usize][(__i2) as usize]
                 }))
             })),
-            arr: field!(_a0, arr).with_mut(std::mem::take),
+            arr: (0..3)
+                .map(|__i| field_ref!(_a0, arr).decay().offset(__i).read())
+                .collect(),
             elems: field!(_a0, elems).with_mut(std::mem::take),
             rows: field!(_a0, rows).with_mut(std::mem::take),
         }
@@ -81,7 +83,7 @@ impl Default for State {
                 grid: (0..2)
                     .map(|_| (0..3).map(|_| 0_i32).collect::<Box<[i32]>>())
                     .collect::<Box<[Box<[i32]>]>>(),
-                arr: std::array::from_fn::<_, 3, _>(|_| 0_i32).to_vec(),
+                arr: Box::<[i32]>::from(std::array::from_fn::<_, 3, _>(|_| 0_i32)),
                 elems: Default::default(),
                 rows: Default::default(),
             }
@@ -107,7 +109,7 @@ pub fn fill_1(mut s: Ptr<State>) {
         }
         i.prefix_inc();
     }
-    vec_elem!(s, arr, 1_usize).write(7);
+    elem!(field_ref!(s, arr).decay(), 1_usize).write(7);
     {
         let __a0 = 3_usize as usize;
         field!(s, elems).with_mut(|__v: &mut Vec<Elem>| __v.resize_with(__a0, || <Elem>::default()))
@@ -130,6 +132,52 @@ pub fn fill_1(mut s: Ptr<State>) {
         field!(s, rows).with_mut(|__v: &mut Vec<Vec<i32>>| __v.push(__a1))
     };
 }
+thread_local!(
+    pub static copies_2: Value<i32> = Rc::new(RefCell::new(0));
+);
+thread_local!(
+    pub static moves_3: Value<i32> = Rc::new(RefCell::new(0));
+);
+thread_local!(
+    pub static copy_assigns_4: Value<i32> = Rc::new(RefCell::new(0));
+);
+thread_local!(
+    pub static move_assigns_5: Value<i32> = Rc::new(RefCell::new(0));
+);
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, CopyAssign, MoveAssign)]
+#[byte_size(4)]
+pub struct Counted {
+    #[offset(0)]
+    pub v: i32,
+}
+impl Counted {
+    pub fn copy_from(o: Ptr<Counted>) -> Self {
+        let __this: Counted = Self {
+            v: o.with(|__s| __s.v),
+        };
+        (*copies_2.with(Value::clone).borrow_mut()).prefix_inc();
+        __this
+    }
+    pub fn move_from(o: Ptr<Counted>) -> Self {
+        let __this: Counted = Self {
+            v: o.with(|__s| __s.v),
+        };
+        field!(o, v).write(-1_i32);
+        (*moves_3.with(Value::clone).borrow_mut()).prefix_inc();
+        __this
+    }
+}
+impl Clone for Counted {
+    fn clone(&self) -> Self {
+        let __src: Value<Counted> = Rc::new(RefCell::new(Counted { v: self.v.clone() }));
+        Counted::copy_from(__src.as_pointer())
+    }
+}
+impl Default for Counted {
+    fn default() -> Self {
+        { Counted { v: 0 } }
+    }
+}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
@@ -150,7 +198,7 @@ fn main_0() -> i32 {
                 }) == 12)
         })
     );
-    assert!(((vec_elem!(s.as_pointer(), arr, 1_usize).read()) == 7));
+    assert!(((elem!(field_ref!(s.as_pointer(), arr).decay(), 1_usize).read()) == 7));
     let mut e: Ptr<Elem> = (field_ref!(s.as_pointer(), elems).decay().offset(2_usize));
     let mut h: Ptr<i32> = (array_field_ptr!(e, hist) as Ptr<i32>);
     let mut c: Ptr<i16> = (field_ref!(e, coeffs).decay().offset(1_usize));
@@ -224,7 +272,7 @@ fn main_0() -> i32 {
     );
     let mut p: Ptr<State> = (t.as_pointer());
     let __rhs = ({ (*p.upgrade().deref()).grid[(1) as usize][(1) as usize] } + {
-        (vec_elem!(p, arr, 1_usize).read())
+        (elem!(field_ref!(p, arr).decay(), 1_usize).read())
     });
     index!(field!(vec_elem!(p, elems, 0_usize), hist), 3).write(__rhs);
     assert!(((index!(field!(vec_elem!(t.as_pointer(), elems, 0_usize), hist), 3).read()) == 11));
@@ -270,6 +318,10 @@ fn main_0() -> i32 {
                 && ((*t.borrow()).rows.is_empty())
         })
     );
+    assert!(
+        ((elem!(field_ref!(moved.as_pointer(), arr).decay(), 1_usize).read()) == 7)
+            && ((elem!(field_ref!(t.as_pointer(), arr).decay(), 1_usize).read()) == 7)
+    );
     let assigned: Value<State> = Rc::new(RefCell::new(<State>::default()));
     ({ StateImpl::move_assign(&assigned.as_pointer(), moved.as_pointer()) });
     assert!(
@@ -289,7 +341,112 @@ fn main_0() -> i32 {
                 && ((*moved.borrow()).elems.is_empty())
         })
     );
+    assert!(
+        ((elem!(field_ref!(assigned.as_pointer(), arr).decay(), 1_usize).read()) == 7)
+            && ((elem!(field_ref!(moved.as_pointer(), arr).decay(), 1_usize).read()) == 7)
+    );
+    let ca: Value<Box<[Counted]>> =
+        Rc::new(RefCell::new(Box::<[Counted]>::from(std::array::from_fn::<
+            _,
+            3,
+            _,
+        >(|_| {
+            <Counted>::default()
+        }))));
+    (*ca.borrow_mut())[1_usize].v = 5;
+    let cb: Value<Box<[Counted]>> = Rc::new(RefCell::new(
+        (0..3)
+            .map(|__i| Counted::move_from(ca.decay().offset(__i)))
+            .collect(),
+    ));
+    assert!(
+        ({
+            (((moves_3.with(|rc| *rc.borrow()) == 3) && (copies_2.with(|rc| *rc.borrow()) == 0))
+                && ({ (*cb.borrow())[1_usize].v } == 5))
+                && ({ (*ca.borrow())[1_usize].v } == -1_i32)
+        })
+    );
+    let cc: Value<Box<[Counted]>> = Rc::new(RefCell::new((*cb.borrow()).clone()));
+    assert!(
+        ({
+            ((copies_2.with(|rc| *rc.borrow()) == 3) && ({ (*cc.borrow())[1_usize].v } == 5))
+                && ({ (*cb.borrow())[1_usize].v } == 5)
+        })
+    );
+    (*cc.borrow_mut())[2_usize].v = 8;
+    for __i in 0..3 {
+        &cb.decay().offset(__i).copy_assign(cc.decay().offset(__i));
+    }
+    assert!(
+        ({
+            ((copy_assigns_4.with(|rc| *rc.borrow()) == 3)
+                && (move_assigns_5.with(|rc| *rc.borrow()) == 0))
+                && ({ (*cb.borrow())[2_usize].v } == 8)
+        })
+    );
+    for __i in 0..3 {
+        &ca.decay().offset(__i).move_assign(cb.decay().offset(__i));
+    }
+    assert!(
+        ({
+            ((move_assigns_5.with(|rc| *rc.borrow()) == 3) && ({ (*ca.borrow())[2_usize].v } == 8))
+                && ({ (*cb.borrow())[2_usize].v } == -1_i32)
+        })
+    );
+    assert!(
+        ((moves_3.with(|rc| *rc.borrow()) == 3) && (copies_2.with(|rc| *rc.borrow()) == 3))
+            && (copy_assigns_4.with(|rc| *rc.borrow()) == 3)
+    );
+    let va: Value<Box<[Vec<i32>]>> = Rc::new(RefCell::new(Box::<[Vec<i32>]>::from(
+        std::array::from_fn::<_, 2, _>(|_| Default::default()),
+    )));
+    {
+        let __a1 = 1;
+        elem!(va.decay(), 0_usize).with_mut(|__v: &mut Vec<i32>| __v.push(__a1))
+    };
+    let vb: Value<Box<[Vec<i32>]>> = Rc::new(RefCell::new(
+        (0..2)
+            .map(|__i| <Vec<i32> as MoveCtor>::move_ctor(va.decay().offset(__i)))
+            .collect(),
+    ));
+    assert!(
+        ({
+            ((*vb.decay().offset(0_usize).upgrade().deref()).len() == 1_usize)
+                && ((*va.decay().offset(0_usize).upgrade().deref()).is_empty())
+        })
+    );
+    let vc: Value<Box<[Vec<i32>]>> = Rc::new(RefCell::new(Box::<[Vec<i32>]>::from(
+        std::array::from_fn::<_, 2, _>(|_| Default::default()),
+    )));
+    for __i in 0..2 {
+        &vc.decay()
+            .offset(__i)
+            .write(<Vec<i32> as MoveCtor>::move_ctor(vb.decay().offset(__i)));
+    }
+    assert!(
+        ({
+            ((*vc.decay().offset(0_usize).upgrade().deref()).len() == 1_usize)
+                && ((*vb.decay().offset(0_usize).upgrade().deref()).is_empty())
+        })
+    );
     return 0;
+}
+pub trait CountedImpl {
+    fn copy_assign(&self, o: Ptr<Counted>) -> Ptr<Counted>;
+    fn move_assign(&self, o: Ptr<Counted>) -> Ptr<Counted>;
+}
+impl CountedImpl for Ptr<Counted> {
+    fn copy_assign(&self, o: Ptr<Counted>) -> Ptr<Counted> {
+        field!((*self), v).write({ o.with(|__s| __s.v) });
+        (*copy_assigns_4.with(Value::clone).borrow_mut()).prefix_inc();
+        return (*self).clone();
+    }
+    fn move_assign(&self, o: Ptr<Counted>) -> Ptr<Counted> {
+        field!((*self), v).write({ o.with(|__s| __s.v) });
+        field!(o, v).write(-1_i32);
+        (*move_assigns_5.with(Value::clone).borrow_mut()).prefix_inc();
+        return (*self).clone();
+    }
 }
 pub trait ElemImpl {
     fn move_assign(&self, _a0: Ptr<Elem>) -> Ptr<Elem>;
@@ -327,9 +484,12 @@ impl StateImpl for Ptr<State> {
                 (__tmp_1).clone()
             }
         };
-        field_ref!((*self), arr)
-            .as_pointer()
-            .write(field!(_a0, arr).with_mut(std::mem::take));
+        for __i in 0..3 {
+            &field_ref!((*self), arr)
+                .decay()
+                .offset(__i)
+                .write(field_ref!(_a0, arr).decay().offset(__i).read());
+        }
         field_ref!((*self), elems)
             .as_pointer()
             .write(field!(_a0, elems).with_mut(std::mem::take));
@@ -339,4 +499,9 @@ impl StateImpl for Ptr<State> {
         return (*self).clone();
     }
 }
-pub fn __cpp2rust_init_globals() {}
+pub fn __cpp2rust_init_globals() {
+    let _ = copies_2.with(|_| ());
+    let _ = moves_3.with(|_| ());
+    let _ = copy_assigns_4.with(|_| ());
+    let _ = move_assigns_5.with(|_| ());
+}

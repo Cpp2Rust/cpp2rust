@@ -5301,6 +5301,42 @@ std::string Converter::ConvertGenericCall(
     assert(call_args.empty() && "default takes no arguments");
     return GetUnboxedDefaultAsString(type);
   }
+  if (call.method == "move_ctor") {
+    assert(call_args.size() == 1 && "move_ctor takes one argument");
+    auto *record = type->getAsCXXRecordDecl();
+    if (record && HasMoveFromConstructor(record)) {
+      return std::format("{}::move_from({})", GetUnboxedTypeAsString(type),
+                         call_args[0]);
+    }
+    if (record && !IsUserDefinedDecl(record) &&
+        !record->hasTrivialMoveConstructor()) {
+      return std::format("<{} as {}>::move_ctor({})",
+                         GetUnboxedTypeAsString(type), GetMoveCtorTraitName(),
+                         call_args[0]);
+    }
+    return ConvertPtrRead(type, call_args[0]);
+  }
+  if (call.method == "move_assign" || call.method == "copy_assign") {
+    assert(call_args.size() == 2 && "assignments take two arguments");
+    bool is_move = call.method == "move_assign";
+    auto *record = type->getAsCXXRecordDecl();
+    if (record && is_move && HasMoveAssignOperator(record)) {
+      return ConvertPointeeMethodCall("move_assign", call_args[0],
+                                      call_args[1]);
+    }
+    if (record && HasCopyAssignOperator(record)) {
+      return ConvertPointeeMethodCall("copy_assign", call_args[0],
+                                      call_args[1]);
+    }
+    if (is_move && record && !IsUserDefinedDecl(record) &&
+        !record->hasTrivialMoveAssignment()) {
+      return ConvertPtrWrite(call_args[0],
+                             std::format("<{} as {}>::move_ctor({})",
+                                         GetUnboxedTypeAsString(type),
+                                         GetMoveCtorTraitName(), call_args[1]));
+    }
+    return ConvertPtrWrite(call_args[0], ConvertPtrRead(type, call_args[1]));
+  }
   if (call.method == "cpp_from" || call.method == "cpp_from_move") {
     assert(call_args.size() == 1 && "cpp_from takes one argument");
     return ConvertConversion(
@@ -5336,6 +5372,27 @@ std::string Converter::ConvertConversion(clang::QualType to,
 const char *Converter::GetConversionTraitName() const {
   return "CppFromUnsafe";
 }
+
+std::string Converter::ConvertPtrRead(clang::QualType type,
+                                      const std::string &src) {
+  if (type->isScalarType()) {
+    return std::format("(*{})", src);
+  }
+  return std::format("(*{}).clone()", src);
+}
+
+std::string Converter::ConvertPtrWrite(const std::string &dst,
+                                       const std::string &value) {
+  return std::format("*{} = {}", dst, value);
+}
+
+std::string Converter::ConvertPointeeMethodCall(const char *method,
+                                                const std::string &dst,
+                                                const std::string &src) {
+  return std::format("(*{}).{}({})", dst, method, src);
+}
+
+const char *Converter::GetMoveCtorTraitName() const { return "MoveCtorUnsafe"; }
 
 std::string Converter::DerefPtrExpr(std::string_view ptr_expr,
                                     clang::QualType pointee_type) {

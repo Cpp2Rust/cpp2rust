@@ -52,12 +52,13 @@ use std::rc::{Rc, Weak};
 )");
 }
 
-static bool IsBoxedType(std::string_view type) {
-  return type.starts_with("Vec<") || type.starts_with("Box<");
+bool ConverterRefCount::IsBoxedType(clang::QualType type) {
+  return Mapper::Elems(*this, type.getUnqualifiedType()).has_value();
 }
 
-static bool IsBoxedType(clang::ASTContext &ctx, clang::QualType type) {
-  return IsBoxedType(Mapper::Map(ctx, type.getUnqualifiedType()));
+bool ConverterRefCount::IsVecType(clang::QualType type) {
+  auto elems = Mapper::Elems(*this, type.getUnqualifiedType());
+  return elems && elems->kind == TranslationRule::ElemsKind::kVec;
 }
 
 // A Rust type without whitespace, and with the paths into libcc2rs, which the
@@ -73,11 +74,9 @@ static std::string NormalizeType(std::string type) {
 
 // Virtual methods take &mut self, as the fields of the struct are stored in
 // it.
-static bool NeedsMutAccess(clang::ASTContext &ctx,
-                           const clang::CXXMethodDecl *method,
-                           clang::QualType base_type) {
-  return !method->isConst() &&
-         (IsBoxedType(ctx, base_type) || method->isVirtual());
+bool ConverterRefCount::NeedsMutAccess(const clang::CXXMethodDecl *method,
+                                       clang::QualType base_type) {
+  return !method->isConst() && (IsBoxedType(base_type) || method->isVirtual());
 }
 
 // Whether `expr` is an array field whose elements are accessed through
@@ -133,19 +132,6 @@ void ConverterRefCount::PendingDeref::set_unchecked(std::string str,
   value = std::move(str);
   ptr_is_fresh = fresh;
   type = ComputedExprType::Pending;
-}
-
-std::string ConverterRefCount::GetInnerType(clang::QualType type) {
-  PushConversionKind push(*this, ConversionKind::Unboxed);
-  auto str = ToString(type);
-  auto pos = str.find('<');
-  auto end = str.rfind('>');
-  if (str[pos + 1] == '[' && str[end - 1] == ']') {
-    // Unwrap inner array type
-    pos++;
-    end--;
-  }
-  return std::move(str).substr(pos + 1, end - pos - 1);
 }
 
 std::string
@@ -383,7 +369,7 @@ std::string ConverterRefCount::ConvertObject(clang::Expr *expr,
     if (is_ptr) {
       type = type->getPointeeType();
     }
-    if (IsBoxedType(ctx_, type) || (is_ptr && type->isArrayType())) {
+    if (IsBoxedType(type) || (is_ptr && type->isArrayType())) {
       MarkFresh();
       return std::move(str) + ".decay()";
     }
@@ -393,7 +379,7 @@ std::string ConverterRefCount::ConvertObject(clang::Expr *expr,
 
 std::string ConverterRefCount::AsPointerMethod(clang::QualType type) {
   if (isObject() && object_shape_ == ObjectShape::Element &&
-      type->isRecordType() && IsBoxedType(ctx_, type)) {
+      type->isRecordType() && IsBoxedType(type)) {
     object_shape_ = ObjectShape::Whole;
     return ".decay()";
   }
@@ -419,7 +405,7 @@ bool ConverterRefCount::ParamIsElementPtr(clang::Expr *expr, clang::Expr *arg,
     type = type->getPointeeType();
   }
   type = type.getUnqualifiedType();
-  if (!IsBoxedType(ctx_, type)) {
+  if (!IsBoxedType(type)) {
     return false;
   }
   // The C++ parameter is a reference or pointer to the container, which the
@@ -531,9 +517,9 @@ ConverterRefCount::MaterializeTemp(const std::string &binding_name,
 
 std::string ConverterRefCount::ConvertPtrType(clang::QualType type) {
   std::string str;
-  // decays into Ptr; remove the outer type Vec<>
-  if (IsBoxedType(ctx_, type)) {
-    str = GetInnerType(type);
+  if (auto elems = Mapper::Elems(*this, type.getUnqualifiedType())) {
+    PushConversionKind push(*this, ConversionKind::Unboxed);
+    str = std::move(elems->type);
   } else {
     PushConversionKind push(*this, ConversionKind::Ptr);
     str = ToString(type);
@@ -768,7 +754,7 @@ void ConverterRefCount::EmitByteSizeAttr(const clang::RecordDecl *decl) {
 
 std::string
 ConverterRefCount::GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl) {
-  return NeedsMutAccess(ctx_, decl, decl->getThisType()->getPointeeType())
+  return NeedsMutAccess(decl, decl->getThisType()->getPointeeType())
              ? "&mut self"
              : "&self";
 }
@@ -1776,7 +1762,7 @@ bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
     if (base_type->isPointerType()) {
       base_type = base_type->getPointeeType();
     }
-    bool needs_mut = NeedsMutAccess(ctx_, method, base_type);
+    bool needs_mut = NeedsMutAccess(method, base_type);
     PushExprKind push(*this, needs_mut ? ExprKind::LValue : ExprKind::RValue);
     Converter::ConvertMemberExpr(expr);
     MarkFresh();
@@ -1845,7 +1831,7 @@ void ConverterRefCount::ConvertInlineField(clang::MemberExpr *expr) {
     if (type->isArrayType()) {
       StrCat(std::format("array_field_ptr!({}, {})", ConvertRecordPtr(expr),
                          name));
-    } else if (IsBoxedType(ctx_, type)) {
+    } else if (IsBoxedType(type)) {
       StrCat(std::format("field_ref!({}, {}){}", ConvertRecordPtr(expr), name,
                          AsPointerMethod(type)));
     } else {
@@ -2271,6 +2257,25 @@ const char *ConverterRefCount::GetConversionTraitName() const {
   return "CppFrom";
 }
 
+std::string ConverterRefCount::ConvertPtrRead(clang::QualType,
+                                              const std::string &src) {
+  return std::format("{}.read()", src);
+}
+
+std::string ConverterRefCount::ConvertPtrWrite(const std::string &dst,
+                                               const std::string &value) {
+  return std::format("{}.write({})", dst, value);
+}
+
+std::string ConverterRefCount::ConvertPointeeMethodCall(
+    const char *method, const std::string &dst, const std::string &src) {
+  return std::format("{}.{}({})", dst, method, src);
+}
+
+const char *ConverterRefCount::GetMoveCtorTraitName() const {
+  return "MoveCtor";
+}
+
 bool ConverterRefCount::TypeDerivesDefault(clang::QualType qual_type) {
   // Arrays are translated to Value<Box<[T]>>, whose Default is empty
   return !qual_type->isArrayType() && Converter::TypeDerivesDefault(qual_type);
@@ -2483,8 +2488,8 @@ bool ConverterRefCount::ConvertCXXOperatorCallExpr(
 
   case clang::OverloadedOperatorKind::OO_Subscript: {
     bool is_inner_boxed =
-        IsBoxedType(ctx_, expr->getType().getNonReferenceType()) &&
-        IsBoxedType(ctx_, expr->getArg(0)->getType().getNonReferenceType());
+        IsBoxedType(expr->getType().getNonReferenceType()) &&
+        IsBoxedType(expr->getArg(0)->getType().getNonReferenceType());
 
     // An element of an unboxed container is accessed directly, as is one of
     // a container stored in a Value that can be borrowed.
@@ -2583,9 +2588,7 @@ std::string ConverterRefCount::ConvertElemPlace(clang::Expr *container,
                     : nullptr;
   if (field && !field->getType()->isReferenceType() &&
       !field->getParent()->isUnion() && !Mapper::Contains(ctx_, member) &&
-      !IsUnboxedPlace(member) &&
-      Mapper::Map(ctx_, field->getType().getUnqualifiedType())
-          .starts_with("Vec<")) {
+      !IsUnboxedPlace(member) && IsVecType(field->getType())) {
     if (IsFieldOfVectorElem(member)) {
       return std::format("index!({}, {})", ConvertPlace(member),
                          ConvertSubscriptIndex(idx));
@@ -2600,8 +2603,7 @@ std::string ConverterRefCount::ConvertElemPlace(clang::Expr *container,
       container->IgnoreParenNoopCasts(ctx_));
   if ((IsReferenceType(container) ||
        (deref && deref->getOpcode() == clang::UO_Deref)) &&
-      Mapper::Map(ctx_, container->getType().getUnqualifiedType())
-          .starts_with("Vec<")) {
+      IsVecType(container->getType())) {
     ConvertLValue(container);
     if (!pending_deref_.empty()) {
       auto place = pending_deref_.take();

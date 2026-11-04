@@ -72,6 +72,22 @@ pub struct TypeInfo {
     pub derives: Vec<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cpp_type: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub elems: Option<Elems>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Elems {
+    pub kind: ElemsKind,
+    #[serde(rename = "type")]
+    pub ty: String,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ElemsKind {
+    Vec,
+    Array,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

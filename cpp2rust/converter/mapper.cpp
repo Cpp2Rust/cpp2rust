@@ -58,6 +58,18 @@ std::string Map(Converter &converter, clang::QualType qual_type) {
   return {};
 }
 
+std::optional<TranslationRule::Elems> Elems(Converter &converter,
+                                            clang::QualType qual_type) {
+  auto [rule, subs] =
+      RuleRegistry::Search(converter.GetASTContext(), qual_type);
+  if (!rule || !rule->type_info.elems) {
+    return std::nullopt;
+  }
+  auto &elems = *rule->type_info.elems;
+  return TranslationRule::Elems{
+      elems.kind, Matcher::InstantiateTgt(converter, subs, elems.type)};
+}
+
 std::string MapInitializer(Converter &converter, clang::QualType qual_type) {
   auto [rule, subs] =
       RuleRegistry::Search(converter.GetASTContext(), qual_type);

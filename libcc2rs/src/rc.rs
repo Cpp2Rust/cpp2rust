@@ -1381,6 +1381,13 @@ impl<T: 'static> Decay<T> for Rc<RefCell<Vec<T>>> {
     }
 }
 
+impl<T> Decay<T> for Rc<RefCell<Box<[T]>>> {
+    #[inline]
+    fn decay(&self) -> Ptr<T> {
+        AsPointer::<T>::as_pointer(self)
+    }
+}
+
 pub struct ScopedDestructor<T> {
     owner: Rc<RefCell<T>>,
     destroy: fn(Ptr<T>),

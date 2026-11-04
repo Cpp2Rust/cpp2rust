@@ -9,6 +9,7 @@
 #include <llvm/Support/JSON.h>
 
 #include <filesystem>
+#include <optional>
 #include <string>
 #include <variant>
 #include <vector>
@@ -93,12 +94,20 @@ struct Bound {
 bool AnyFragment(const std::vector<BodyFragment> &body,
                  llvm::function_ref<bool(const BodyFragment &)> pred);
 
+enum class ElemsKind { kVec, kArray };
+
+struct Elems {
+  ElemsKind kind;
+  std::string type;
+};
+
 struct TypeInfo {
   std::vector<std::string> derives;
   std::string type;
   std::string cpp_type;
   bool is_refcount_pointer = false;
   bool is_unsafe_pointer = false;
+  std::optional<Elems> elems;
 
   bool is_pointer() const { return is_refcount_pointer || is_unsafe_pointer; }
 

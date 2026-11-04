@@ -136,7 +136,7 @@ fn main_0() -> i32 {
         ((index!(elem!(grid.decay(), 0_usize), 1_usize).read()) == 8)
             && ((index!(elem!(grid.decay(), 1_usize), 0_usize).read()) == 8)
     );
-    let a: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::from([4, 5, 6])));
+    let a: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::<[i32]>::from([4, 5, 6])));
     let __rhs = ({ (*a.borrow())[0_usize] } + { (*a.borrow())[2_usize] });
     (*a.borrow_mut())[1_usize] = __rhs;
     assert!(({ ({ (*a.borrow())[1_usize] } == 10) }));

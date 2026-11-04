@@ -422,7 +422,23 @@ private:
 
   const char *GetConversionTraitName() const override;
 
-  std::string GetInnerType(clang::QualType type);
+  std::string ConvertPtrRead(clang::QualType type,
+                             const std::string &src) override;
+
+  std::string ConvertPtrWrite(const std::string &dst,
+                              const std::string &value) override;
+
+  std::string ConvertPointeeMethodCall(const char *method,
+                                       const std::string &dst,
+                                       const std::string &src) override;
+
+  const char *GetMoveCtorTraitName() const override;
+
+  bool IsBoxedType(clang::QualType type);
+  bool IsVecType(clang::QualType type);
+
+  bool NeedsMutAccess(const clang::CXXMethodDecl *method,
+                      clang::QualType base_type);
 
   // What an Object-kind conversion of a boxed container/array should yield:
   // a pointer to the whole object (Ptr<Vec<T>>), or one to its first
