@@ -212,7 +212,7 @@ impl MethodResolver {
             Some(RuleIr::Fn(fn_ir)) => f.resolve_unknowns(tcx, fn_ir),
             Some(RuleIr::Type(type_ir)) => {
                 let ret_ty = tcx.fn_sig(f.def_id).skip_binder().output().skip_binder();
-                type_ir.type_info.derives = type_derives(tcx, ret_ty);
+                type_ir.type_info.derives = type_derives(tcx, tcx.param_env(f.def_id), ret_ty);
             }
             None => {}
         }
@@ -292,7 +292,11 @@ fn decl_source_file(
     )
 }
 
-fn is_copy<'tcx>(tcx: rustc_middle::ty::TyCtxt<'tcx>, ty: rustc_middle::ty::Ty<'tcx>) -> bool {
+fn is_copy<'tcx>(
+    tcx: rustc_middle::ty::TyCtxt<'tcx>,
+    param_env: rustc_middle::ty::ParamEnv<'tcx>,
+    ty: rustc_middle::ty::Ty<'tcx>,
+) -> bool {
     use rustc_infer::infer::TyCtxtInferExt;
     use rustc_trait_selection::infer::InferCtxtExt;
 
@@ -303,12 +307,13 @@ fn is_copy<'tcx>(tcx: rustc_middle::ty::TyCtxt<'tcx>, ty: rustc_middle::ty::Ty<'
         .infer_ctxt()
         .build(rustc_middle::ty::TypingMode::non_body_analysis());
     infcx
-        .type_implements_trait(copy_trait, [ty], rustc_middle::ty::ParamEnv::empty())
+        .type_implements_trait(copy_trait, [ty], param_env)
         .must_apply_modulo_regions()
 }
 
 fn type_derives<'tcx>(
     tcx: rustc_middle::ty::TyCtxt<'tcx>,
+    param_env: rustc_middle::ty::ParamEnv<'tcx>,
     ty: rustc_middle::ty::Ty<'tcx>,
 ) -> Vec<String> {
     use rustc_infer::infer::TyCtxtInferExt;
@@ -338,7 +343,7 @@ fn type_derives<'tcx>(
         .filter(|&trait_def_id| {
             let args = vec![ty; tcx.generics_of(trait_def_id).count()];
             infcx
-                .type_implements_trait(trait_def_id, args, rustc_middle::ty::ParamEnv::empty())
+                .type_implements_trait(trait_def_id, args, param_env)
                 .must_apply_modulo_regions()
         })
         .map(|trait_def_id| tcx.item_name(trait_def_id).to_string())
@@ -545,7 +550,8 @@ impl<'a, 'tcx> AstVisitor<'a, 'tcx> {
             .expr_adjustments(expr)
             .iter()
             .any(|adj| matches!(adj.kind, rustc_middle::ty::adjustment::Adjust::Borrow(_)));
-        !borrowed && !is_copy(self.tcx, results.expr_ty(expr))
+        let param_env = self.tcx.param_env(expr.hir_id.owner.to_def_id());
+        !borrowed && !is_copy(self.tcx, param_env, results.expr_ty(expr))
     }
 
     fn expr_as_decl_ref(&self, expr: &rustc_hir::Expr<'_>) -> Option<String> {
