@@ -319,6 +319,18 @@ public:
 
   virtual const char *GetConversionTraitName() const;
 
+  virtual std::string ConvertPtrRead(clang::QualType type,
+                                     const std::string &src);
+
+  virtual std::string ConvertPtrWrite(const std::string &dst,
+                                      const std::string &value);
+
+  virtual std::string ConvertPointeeMethodCall(const char *method,
+                                               const std::string &dst,
+                                               const std::string &src);
+
+  virtual const char *GetMoveCtorTraitName() const;
+
   virtual std::string DerefPtrExpr(std::string_view ptr_expr,
                                    clang::QualType pointee_type);
 

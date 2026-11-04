@@ -2258,6 +2258,25 @@ const char *ConverterRefCount::GetConversionTraitName() const {
   return "CppFrom";
 }
 
+std::string ConverterRefCount::ConvertPtrRead(clang::QualType,
+                                              const std::string &src) {
+  return std::format("{}.read()", src);
+}
+
+std::string ConverterRefCount::ConvertPtrWrite(const std::string &dst,
+                                               const std::string &value) {
+  return std::format("{}.write({})", dst, value);
+}
+
+std::string ConverterRefCount::ConvertPointeeMethodCall(
+    const char *method, const std::string &dst, const std::string &src) {
+  return std::format("{}.{}({})", dst, method, src);
+}
+
+const char *ConverterRefCount::GetMoveCtorTraitName() const {
+  return "MoveCtor";
+}
+
 bool ConverterRefCount::TypeDerivesDefault(clang::QualType qual_type) {
   // Arrays are translated to Value<Box<[T]>>, whose Default is empty
   return !qual_type->isArrayType() && Converter::TypeDerivesDefault(qual_type);
