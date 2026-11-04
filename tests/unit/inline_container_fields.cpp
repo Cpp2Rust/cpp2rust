@@ -41,6 +41,32 @@ static void fill(State *s) {
   s->rows.push_back({1, 2, 3});
 }
 
+static int copies = 0;
+static int moves = 0;
+static int copy_assigns = 0;
+static int move_assigns = 0;
+
+struct Counted {
+  int v = 0;
+  Counted() = default;
+  Counted(const Counted &o) : v(o.v) { ++copies; }
+  Counted(Counted &&o) : v(o.v) {
+    o.v = -1;
+    ++moves;
+  }
+  Counted &operator=(const Counted &o) {
+    v = o.v;
+    ++copy_assigns;
+    return *this;
+  }
+  Counted &operator=(Counted &&o) {
+    v = o.v;
+    o.v = -1;
+    ++move_assigns;
+    return *this;
+  }
+};
+
 int main() {
   State s{};
   fill(&s);
@@ -92,9 +118,32 @@ int main() {
   State moved(std::move(t));
   assert(moved.grid[0][0] == 100 && moved.grid[1][2] == 5);
   assert(moved.elems.size() == 4 && t.elems.empty() && t.rows.empty());
+  assert(moved.arr[1] == 7 && t.arr[1] == 7);
   State assigned{};
   assigned = std::move(moved);
   assert(assigned.grid[0][0] == 100 && assigned.grid[1][1] == 4);
   assert(assigned.elems[2].coeffs[1] == 7 && moved.elems.empty());
+  assert(assigned.arr[1] == 7 && moved.arr[1] == 7);
+
+  std::array<Counted, 3> ca{};
+  ca[1].v = 5;
+  std::array<Counted, 3> cb(std::move(ca));
+  assert(moves == 3 && copies == 0 && cb[1].v == 5 && ca[1].v == -1);
+  std::array<Counted, 3> cc(cb);
+  assert(copies == 3 && cc[1].v == 5 && cb[1].v == 5);
+  cc[2].v = 8;
+  cb = cc;
+  assert(copy_assigns == 3 && move_assigns == 0 && cb[2].v == 8);
+  ca = std::move(cb);
+  assert(move_assigns == 3 && ca[2].v == 8 && cb[2].v == -1);
+  assert(moves == 3 && copies == 3 && copy_assigns == 3);
+
+  std::array<std::vector<int>, 2> va{};
+  va[0].push_back(1);
+  std::array<std::vector<int>, 2> vb(std::move(va));
+  assert(vb[0].size() == 1 && va[0].empty());
+  std::array<std::vector<int>, 2> vc{};
+  vc = std::move(vb);
+  assert(vc[0].size() == 1 && vb[0].empty());
   return 0;
 }

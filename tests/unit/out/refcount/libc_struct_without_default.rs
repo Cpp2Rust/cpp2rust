@@ -19,7 +19,7 @@ pub struct UserDefined {
 impl UserDefined {
     pub fn move_from(_a0: Ptr<UserDefined>) -> Self {
         Self {
-            a: std::array::from_fn(|__i| field!(_a0, a).with_mut(std::mem::take)[__i]),
+            a: cpp_move!(field_ref!(_a0, a).as_pointer()),
             v: field!(_a0, v).with_mut(std::mem::take),
         }
     }
@@ -87,11 +87,10 @@ pub trait UserDefinedImpl {
 }
 impl UserDefinedImpl for Ptr<UserDefined> {
     fn move_assign(&self, _a0: Ptr<UserDefined>) -> Ptr<UserDefined> {
-        field_ref!((*self), a)
-            .as_pointer()
-            .write(std::array::from_fn(|__i| {
-                field!(_a0, a).with_mut(std::mem::take)[__i]
-            }));
+        cpp_move_assign!(
+            field_ref!((*self), a).as_pointer(),
+            field_ref!(_a0, a).as_pointer()
+        );
         field_ref!((*self), v)
             .as_pointer()
             .write(field!(_a0, v).with_mut(std::mem::take));
