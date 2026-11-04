@@ -39,20 +39,24 @@ unsafe fn f3<T1, const T2: usize>(a0: &mut [T1; T2]) -> *mut T1 {
     a0.as_mut_ptr()
 }
 
-unsafe fn f4<T1: Default, const T2: usize>(a0: &mut [T1; T2]) -> [T1; T2] {
-    std::array::from_fn(|__i| std::mem::take(&mut a0[__i]))
+unsafe fn f4<T1: MoveCtorUnsafe, const T2: usize>(a0: &mut [T1; T2]) -> [T1; T2] {
+    std::array::from_fn(|__i| T1::move_ctor(&mut a0[__i]))
 }
 
-unsafe fn f5<T1: Default, const T2: usize>(a0: &mut [T1; T2], a1: &mut [T1; T2]) {
-    *a0 = std::array::from_fn(|__i| std::mem::take(&mut a1[__i]))
+unsafe fn f5<T1: MoveAssignUnsafe, const T2: usize>(a0: &mut [T1; T2], a1: &mut [T1; T2]) {
+    for __i in 0..T2 {
+        T1::move_assign(&mut a0[__i], &mut a1[__i]);
+    }
 }
 
 unsafe fn f6<T1: Clone, const T2: usize>(a0: [T1; T2]) -> [T1; T2] {
     a0.clone()
 }
 
-unsafe fn f7<T1: Clone, const T2: usize>(a0: &mut [T1; T2], a1: [T1; T2]) {
-    *a0 = a1.clone()
+unsafe fn f7<T1: CopyAssignUnsafe, const T2: usize>(a0: &mut [T1; T2], a1: &[T1; T2]) {
+    for __i in 0..T2 {
+        T1::copy_assign(&mut a0[__i], &a1[__i]);
+    }
 }
 
 unsafe fn f8<T1, const T2: usize>(a0: [T1; T2]) -> [T1; T2] {
