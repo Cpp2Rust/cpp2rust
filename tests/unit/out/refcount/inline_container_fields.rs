@@ -67,7 +67,9 @@ impl State {
                     (*_a0.upgrade().deref()).grid[(__i) as usize][(__i2) as usize]
                 }))
             })),
-            arr: cpp_move!(field_ref!(_a0, arr).as_pointer()),
+            arr: (0..3)
+                .map(|__i| field_ref!(_a0, arr).decay().offset(__i).read())
+                .collect(),
             elems: field!(_a0, elems).with_mut(std::mem::take),
             rows: field!(_a0, rows).with_mut(std::mem::take),
         }
@@ -352,7 +354,11 @@ fn main_0() -> i32 {
             <Counted>::default()
         }))));
     (*ca.borrow_mut())[1_usize].v = 5;
-    let cb: Value<Box<[Counted]>> = Rc::new(RefCell::new(cpp_move!(ca.as_pointer())));
+    let cb: Value<Box<[Counted]>> = Rc::new(RefCell::new(
+        (0..3)
+            .map(|__i| Counted::move_from(ca.decay().offset(__i)))
+            .collect(),
+    ));
     assert!(
         ({
             (((moves_3.with(|rc| *rc.borrow()) == 3) && (copies_2.with(|rc| *rc.borrow()) == 0))
@@ -368,7 +374,9 @@ fn main_0() -> i32 {
         })
     );
     (*cc.borrow_mut())[2_usize].v = 8;
-    cpp_copy_assign!(cb.as_pointer(), cc.as_pointer());
+    for __i in 0..3 {
+        &cb.decay().offset(__i).copy_assign(cc.decay().offset(__i));
+    }
     assert!(
         ({
             ((copy_assigns_4.with(|rc| *rc.borrow()) == 3)
@@ -376,7 +384,9 @@ fn main_0() -> i32 {
                 && ({ (*cb.borrow())[2_usize].v } == 8)
         })
     );
-    cpp_move_assign!(ca.as_pointer(), cb.as_pointer());
+    for __i in 0..3 {
+        &ca.decay().offset(__i).move_assign(cb.decay().offset(__i));
+    }
     assert!(
         ({
             ((move_assigns_5.with(|rc| *rc.borrow()) == 3) && ({ (*ca.borrow())[2_usize].v } == 8))
@@ -394,7 +404,11 @@ fn main_0() -> i32 {
         let __a1 = 1;
         elem!(va.decay(), 0_usize).with_mut(|__v: &mut Vec<i32>| __v.push(__a1))
     };
-    let vb: Value<Box<[Vec<i32>]>> = Rc::new(RefCell::new(cpp_move!(va.as_pointer())));
+    let vb: Value<Box<[Vec<i32>]>> = Rc::new(RefCell::new(
+        (0..2)
+            .map(|__i| <Vec<i32> as MoveCtor>::move_ctor(va.decay().offset(__i)))
+            .collect(),
+    ));
     assert!(
         ({
             ((*vb.decay().offset(0_usize).upgrade().deref()).len() == 1_usize)
@@ -404,7 +418,11 @@ fn main_0() -> i32 {
     let vc: Value<Box<[Vec<i32>]>> = Rc::new(RefCell::new(Box::<[Vec<i32>]>::from(
         std::array::from_fn::<_, 2, _>(|_| Default::default()),
     )));
-    cpp_move_assign!(vc.as_pointer(), vb.as_pointer());
+    for __i in 0..2 {
+        &vc.decay()
+            .offset(__i)
+            .write(<Vec<i32> as MoveCtor>::move_ctor(vb.decay().offset(__i)));
+    }
     assert!(
         ({
             ((*vc.decay().offset(0_usize).upgrade().deref()).len() == 1_usize)
@@ -466,10 +484,12 @@ impl StateImpl for Ptr<State> {
                 (__tmp_1).clone()
             }
         };
-        cpp_move_assign!(
-            field_ref!((*self), arr).as_pointer(),
-            field_ref!(_a0, arr).as_pointer()
-        );
+        for __i in 0..3 {
+            &field_ref!((*self), arr)
+                .decay()
+                .offset(__i)
+                .write(field_ref!(_a0, arr).decay().offset(__i).read());
+        }
         field_ref!((*self), elems)
             .as_pointer()
             .write(field!(_a0, elems).with_mut(std::mem::take));

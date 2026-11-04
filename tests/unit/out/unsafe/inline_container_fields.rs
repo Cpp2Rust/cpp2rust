@@ -55,7 +55,7 @@ impl State {
             grid: std::array::from_fn::<_, 2, _>(|__i: usize| {
                 std::array::from_fn::<_, 3, _>(|__i2: usize| (*_a0).grid[(__i)][(__i2)])
             }),
-            arr: cpp_move_unsafe!(&mut (*_a0).arr),
+            arr: std::array::from_fn(|__i| (*&mut (&mut (*_a0)).arr[__i])),
             elems: std::mem::take(&mut (*_a0).elems),
             rows: std::mem::take(&mut (*_a0).rows),
         };
@@ -74,7 +74,9 @@ impl State {
                 __tmp_2
             }
         };
-        cpp_move_assign_unsafe!(&mut self.arr, &mut (*_a0).arr);
+        for __i in 0..3 {
+            *&mut self.arr[__i] = (*&mut (&mut (*_a0)).arr[__i]);
+        }
         self.elems = std::mem::take(&mut (*_a0).elems);
         self.rows = std::mem::take(&mut (*_a0).rows);
         return &mut (*(self as *mut State));
@@ -269,7 +271,7 @@ unsafe fn main_0() -> i32 {
     assert!(((assigned.arr[(1_usize)]) == (7)) && ((moved.arr[(1_usize)]) == (7)));
     let mut ca: [Counted; 3] = std::array::from_fn::<_, 3, _>(|_| <Counted>::default());
     ca[(1_usize)].v = 5;
-    let mut cb: [Counted; 3] = cpp_move_unsafe!(&mut ca);
+    let mut cb: [Counted; 3] = std::array::from_fn(|__i| Counted::move_from(&mut ca[__i]));
     assert!(
         ((((*std::cell::LazyCell::force_mut(&mut *&raw mut moves_3)) == (3))
             && ((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_2)) == (0)))
@@ -283,13 +285,17 @@ unsafe fn main_0() -> i32 {
             && ((cb[(1_usize)].v) == (5))
     );
     cc[(2_usize)].v = 8;
-    cpp_copy_assign_unsafe!(&mut cb, &cc);
+    for __i in 0..3 {
+        (*&mut cb[__i]).copy_assign(&cc[__i]);
+    }
     assert!(
         (((*std::cell::LazyCell::force_mut(&mut *&raw mut copy_assigns_4)) == (3))
             && ((*std::cell::LazyCell::force_mut(&mut *&raw mut move_assigns_5)) == (0)))
             && ((cb[(2_usize)].v) == (8))
     );
-    cpp_move_assign_unsafe!(&mut ca, &mut cb);
+    for __i in 0..3 {
+        (*&mut ca[__i]).move_assign(&mut cb[__i]);
+    }
     assert!(
         (((*std::cell::LazyCell::force_mut(&mut *&raw mut move_assigns_5)) == (3))
             && ((ca[(2_usize)].v) == (8)))
@@ -305,10 +311,13 @@ unsafe fn main_0() -> i32 {
         let __a1 = 1;
         va[(0_usize)].push(__a1)
     };
-    let mut vb: [Vec<i32>; 2] = cpp_move_unsafe!(&mut va);
+    let mut vb: [Vec<i32>; 2] =
+        std::array::from_fn(|__i| <Vec<i32> as MoveCtorUnsafe>::move_ctor(&mut va[__i]));
     assert!(((vb[(0_usize)].len()) == (1_usize)) && (va[(0_usize)].is_empty()));
     let mut vc: [Vec<i32>; 2] = std::array::from_fn::<_, 2, _>(|_| Default::default());
-    cpp_move_assign_unsafe!(&mut vc, &mut vb);
+    for __i in 0..2 {
+        *&mut vc[__i] = <Vec<i32> as MoveCtorUnsafe>::move_ctor(&mut vb[__i]);
+    }
     assert!(((vc[(0_usize)].len()) == (1_usize)) && (vb[(0_usize)].is_empty()));
     return 0;
 }
