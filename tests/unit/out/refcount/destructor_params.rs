@@ -49,7 +49,7 @@ fn main_0() -> i32 {
     {
         let s: Value<S> = Rc::new(RefCell::new(S { v: 1 }));
         let _dtor_s = ScopedDestructor::new(&s, |__p| __p.destructor());
-        assert!((({ by_value_2((*s.borrow()).clone(),) }) == 1));
+        assert!(({ (({ by_value_2((*s.borrow()).clone(),) }) == 1) }));
         assert!(
             (destroyed_0.with(|rc| *rc.borrow()) == 1) && (last_1.with(|rc| *rc.borrow()) == 1)
         );

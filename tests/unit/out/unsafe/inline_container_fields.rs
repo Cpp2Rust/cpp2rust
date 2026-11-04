@@ -44,7 +44,7 @@ impl Elem {
 pub struct State {
     pub count: i32,
     pub grid: [[i32; 3]; 2],
-    pub arr: Vec<i32>,
+    pub arr: [i32; 3],
     pub elems: Vec<Elem>,
     pub rows: Vec<Vec<i32>>,
 }
@@ -55,7 +55,7 @@ impl State {
             grid: std::array::from_fn::<_, 2, _>(|__i: usize| {
                 std::array::from_fn::<_, 3, _>(|__i2: usize| (*_a0).grid[(__i)][(__i2)])
             }),
-            arr: std::mem::take(&mut (*_a0).arr),
+            arr: std::array::from_fn(|__i| std::mem::take(&mut (&(*_a0)).arr)[__i]),
             elems: std::mem::take(&mut (*_a0).elems),
             rows: std::mem::take(&mut (*_a0).rows),
         };
@@ -74,7 +74,7 @@ impl State {
                 __tmp_2
             }
         };
-        self.arr = std::mem::take(&mut (*_a0).arr);
+        self.arr = std::array::from_fn(|__i| std::mem::take(&mut (&(*_a0)).arr)[__i]);
         self.elems = std::mem::take(&mut (*_a0).elems);
         self.rows = std::mem::take(&mut (*_a0).rows);
         return &mut (*(self as *mut State));
@@ -86,7 +86,7 @@ impl Default for State {
             State {
                 count: 0_i32,
                 grid: [[0_i32; 3]; 2],
-                arr: std::array::from_fn::<_, 3, _>(|_| 0_i32).to_vec(),
+                arr: std::array::from_fn::<_, 3, _>(|_| 0_i32),
                 elems: Default::default(),
                 rows: Default::default(),
             }

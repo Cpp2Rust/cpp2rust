@@ -25,10 +25,10 @@ unsafe fn main_0() -> i32 {
     (*__decomp_1)[(2) as usize] += (*__decomp_1)[(1) as usize];
     assert!(((arr[(0) as usize]) == (7)));
     assert!(((arr[(2) as usize]) == (5)));
-    let mut std_arr: Vec<i32> = Vec::from([4, 5, 6]);
+    let mut std_arr: [i32; 3] = [4, 5, 6];
     let mut last: i32 = (*std_arr.as_mut_ptr().offset(2 as isize));
     (*std_arr.as_mut_ptr().offset(0 as isize)) = 8;
-    let __decomp_2: *mut Vec<i32> = &mut std_arr;
+    let __decomp_2: *mut [i32; 3] = &mut std_arr;
     let p: *mut i32 = (*__decomp_2).as_mut_ptr().offset(0 as isize);
     let q: *mut i32 = (*__decomp_2).as_mut_ptr().offset(1 as isize);
     let r: *mut i32 = (*__decomp_2).as_mut_ptr().offset(2 as isize);

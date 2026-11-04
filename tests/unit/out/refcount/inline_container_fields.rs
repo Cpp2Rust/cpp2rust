@@ -50,7 +50,7 @@ pub struct State {
     pub grid: Box<[Box<[i32]>]>,
     #[offset(28)]
     #[byte_size(12)]
-    pub arr: Vec<i32>,
+    pub arr: [i32; 3],
     #[offset(40)]
     #[byte_size(24)]
     pub elems: Vec<Elem>,
@@ -67,7 +67,7 @@ impl State {
                     (*_a0.upgrade().deref()).grid[(__i) as usize][(__i2) as usize]
                 }))
             })),
-            arr: field!(_a0, arr).with_mut(std::mem::take),
+            arr: std::array::from_fn(|__i| field!(_a0, arr).with_mut(std::mem::take)[__i]),
             elems: field!(_a0, elems).with_mut(std::mem::take),
             rows: field!(_a0, rows).with_mut(std::mem::take),
         }
@@ -81,7 +81,7 @@ impl Default for State {
                 grid: (0..2)
                     .map(|_| (0..3).map(|_| 0_i32).collect::<Box<[i32]>>())
                     .collect::<Box<[Box<[i32]>]>>(),
-                arr: std::array::from_fn::<_, 3, _>(|_| 0_i32).to_vec(),
+                arr: std::array::from_fn::<_, 3, _>(|_| 0_i32),
                 elems: Default::default(),
                 rows: Default::default(),
             }
@@ -107,7 +107,7 @@ pub fn fill_1(mut s: Ptr<State>) {
         }
         i.prefix_inc();
     }
-    vec_elem!(s, arr, 1_usize).write(7);
+    elem!(field_ref!(s, arr).decay(), 1_usize).write(7);
     {
         let __a0 = 3_usize as usize;
         field!(s, elems).with_mut(|__v: &mut Vec<Elem>| __v.resize_with(__a0, || <Elem>::default()))
@@ -150,7 +150,7 @@ fn main_0() -> i32 {
                 }) == 12)
         })
     );
-    assert!(((vec_elem!(s.as_pointer(), arr, 1_usize).read()) == 7));
+    assert!(((elem!(field_ref!(s.as_pointer(), arr).decay(), 1_usize).read()) == 7));
     let mut e: Ptr<Elem> = (field_ref!(s.as_pointer(), elems).decay().offset(2_usize));
     let mut h: Ptr<i32> = (array_field_ptr!(e, hist) as Ptr<i32>);
     let mut c: Ptr<i16> = (field_ref!(e, coeffs).decay().offset(1_usize));
@@ -224,7 +224,7 @@ fn main_0() -> i32 {
     );
     let mut p: Ptr<State> = (t.as_pointer());
     let __rhs = ({ (*p.upgrade().deref()).grid[(1) as usize][(1) as usize] } + {
-        (vec_elem!(p, arr, 1_usize).read())
+        (elem!(field_ref!(p, arr).decay(), 1_usize).read())
     });
     index!(field!(vec_elem!(p, elems, 0_usize), hist), 3).write(__rhs);
     assert!(((index!(field!(vec_elem!(t.as_pointer(), elems, 0_usize), hist), 3).read()) == 11));
@@ -329,7 +329,9 @@ impl StateImpl for Ptr<State> {
         };
         field_ref!((*self), arr)
             .as_pointer()
-            .write(field!(_a0, arr).with_mut(std::mem::take));
+            .write(std::array::from_fn(|__i| {
+                field!(_a0, arr).with_mut(std::mem::take)[__i]
+            }));
         field_ref!((*self), elems)
             .as_pointer()
             .write(field!(_a0, elems).with_mut(std::mem::take));

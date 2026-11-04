@@ -29,10 +29,10 @@ fn main_0() -> i32 {
     };
     assert!(({ ((*arr.borrow())[(0) as usize] == 7) }));
     assert!(({ ((*arr.borrow())[(2) as usize] == 5) }));
-    let std_arr: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::from([4, 5, 6])));
+    let std_arr: Value<[i32; 3]> = Rc::new(RefCell::new([4, 5, 6]));
     let mut last: i32 = (std_arr.decay().offset(2 as isize).read());
     std_arr.decay().offset(0 as isize).write(8);
-    let __decomp_2: Ptr<Vec<i32>> = std_arr.as_pointer();
+    let __decomp_2: Ptr<[i32; 3]> = std_arr.as_pointer();
     let p: Ptr<i32> = __decomp_2.decay().offset(0 as isize);
     let q: Ptr<i32> = __decomp_2.decay().offset(1 as isize);
     let r: Ptr<i32> = __decomp_2.decay().offset(2 as isize);
