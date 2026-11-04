@@ -76,8 +76,7 @@ static std::string NormalizeType(std::string type) {
 // it.
 bool ConverterRefCount::NeedsMutAccess(const clang::CXXMethodDecl *method,
                                        clang::QualType base_type) {
-  return !method->isConst() &&
-         (IsBoxedType(base_type) || method->isVirtual());
+  return !method->isConst() && (IsBoxedType(base_type) || method->isVirtual());
 }
 
 // Whether `expr` is an array field whose elements are accessed through

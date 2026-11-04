@@ -440,7 +440,6 @@ private:
   bool NeedsMutAccess(const clang::CXXMethodDecl *method,
                       clang::QualType base_type);
 
-
   // What an Object-kind conversion of a boxed container/array should yield:
   // a pointer to the whole object (Ptr<Vec<T>>), or one to its first
   // element (Ptr<T>).
