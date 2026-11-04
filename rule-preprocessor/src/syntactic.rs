@@ -51,17 +51,21 @@ fn elems(ty: &ast::Type) -> Option<Elems> {
         }),
         ast::Type::PathType(path) => {
             let segment = path.path()?.segment()?;
-            if segment.name_ref()?.text() != "Vec" {
-                return None;
-            }
             let ast::GenericArg::TypeArg(arg) = segment.generic_arg_list()?.generic_args().next()?
             else {
                 return None;
             };
-            Some(Elems {
-                kind: ElemsKind::Vec,
-                ty: arg.ty()?.syntax().text().to_string(),
-            })
+            match (segment.name_ref()?.text().as_str(), arg.ty()?) {
+                ("Vec", elem) => Some(Elems {
+                    kind: ElemsKind::Vec,
+                    ty: elem.syntax().text().to_string(),
+                }),
+                ("Box", ast::Type::SliceType(slice)) => Some(Elems {
+                    kind: ElemsKind::Array,
+                    ty: slice.ty()?.syntax().text().to_string(),
+                }),
+                _ => None,
+            }
         }
         _ => None,
     }
