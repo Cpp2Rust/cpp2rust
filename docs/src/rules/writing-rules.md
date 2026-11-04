@@ -102,9 +102,24 @@ std::string f9(std::size_t n, char ch) { return std::string(n, ch); }
 Overloads that differ in value category are distinct rules too: `rules/vector`
 has separate rules for `push_back(const T1 &)` and `push_back(T1 &&)`.
 
-No destructor rules exist so far: the STL and libc APIs covered by the current
-rules have not needed any, since their types map to Rust types whose `Drop`
-implementations already do the right thing.
+Destruction of a translated record uses the explicit `Destructor` trait, not
+Rust's `Drop`. Container rules must therefore distinguish releasing Rust storage
+from calling a contained record's C++ destructor. For example, the refcount map
+iterator-erase rules (`f3` and `f27` in
+[`rules/map/tgt_refcount.rs`](https://github.com/Cpp2Rust/cpp2rust/blob/master/rules/map/tgt_refcount.rs))
+use `Map::erase` to unlink the entry and remove its key from the index. The
+runtime returns the successor and a strong owner of the erased entry. After its
+borrows have ended, the rule calls the key and mapped-value destructors before
+yielding the successor. Keeping that owner alive during destruction is necessary
+even if no iterator copy retains the erased node.
+
+The rules reuse the `__swap::Destroy` dispatch to call each type's destructor if
+it has one, and do nothing for trivial types. This dispatch is in the expanded
+rule, where the concrete types are known; a `Destructor` bound on the generic
+runtime method would exclude trivial types. No finalizer is passed to the
+runtime or stored in the map, so default construction, copying and moving do not
+need to carry destructor hooks. Iterator copies may retain the Rust storage, but
+do not delay or repeat these explicit destructor calls.
 
 ## Operators
 

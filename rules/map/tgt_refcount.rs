@@ -24,7 +24,15 @@ fn f3<T1: CppLess + 'static, T2: 'static>(
     a0: Ptr<Map<T1, (Value<T1>, Value<T2>)>>,
     a1: BidirectionalIterator<(Value<T1>, Value<T2>)>,
 ) -> BidirectionalIterator<(Value<T1>, Value<T2>)> {
-    Map::erase(a0, &a1)
+    let (__next, __entry) = Map::erase(a0, &a1);
+    let (__key, __value) = {
+        let __entry_ref = __entry.borrow();
+        (__entry_ref.0.as_pointer(), __entry_ref.1.as_pointer())
+    };
+    use libcc2rs::__swap::{Destroy, DestroyNone, DestroyWithDtor};
+    (&&Destroy(&__value)).destroy();
+    (&&Destroy(&__key)).destroy();
+    __next
 }
 
 fn f5<T1, T2>() -> Map<T1, (Value<T1>, Value<T2>)> {
@@ -87,7 +95,15 @@ fn f27<T1: CppLess + 'static, T2: 'static>(
     a0: Ptr<Map<T1, (Value<T1>, Value<T2>)>>,
     a1: BidirectionalIterator<(Value<T1>, Value<T2>)>,
 ) -> BidirectionalIterator<(Value<T1>, Value<T2>)> {
-    Map::erase(a0, &a1)
+    let (__next, __entry) = Map::erase(a0, &a1);
+    let (__key, __value) = {
+        let __entry_ref = __entry.borrow();
+        (__entry_ref.0.as_pointer(), __entry_ref.1.as_pointer())
+    };
+    use libcc2rs::__swap::{Destroy, DestroyNone, DestroyWithDtor};
+    (&&Destroy(&__value)).destroy();
+    (&&Destroy(&__key)).destroy();
+    __next
 }
 
 fn f28<T1: CppLess + 'static, T2: 'static>(a0: Ptr<Map<T1, (Value<T1>, Value<T2>)>>, a1: Ptr<T1>) -> usize {

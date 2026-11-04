@@ -145,6 +145,7 @@ impl<K, T> Map<K, T> {
 
 type Entry<K, V> = (Value<K>, Value<V>);
 type EntryNode<K, V> = Value<MapNode<Entry<K, V>>>;
+type EraseResult<K, V> = (BidirectionalIterator<Entry<K, V>>, Value<Entry<K, V>>);
 
 impl<K: CppLess + 'static, V> Map<K, Entry<K, V>> {
     fn link_after(
@@ -252,22 +253,23 @@ impl<K: CppLess + 'static, V: 'static> Map<K, Entry<K, V>> {
         })
     }
 
+    // Return ownership of the erased entry so the rule can call its C++
+    // destructors with concrete types, after all map borrows have ended.
     pub fn erase(
         map: Ptr<Self>,
         it: &BidirectionalIterator<Entry<K, V>>,
-    ) -> BidirectionalIterator<Entry<K, V>> {
+    ) -> EraseResult<K, V> {
         let BidirectionalIterator::Map(node) = it;
-        let key = node
+        let entry = node
             .borrow()
             .value
             .as_ref()
             .expect("ub: erase of end iterator")
-            .borrow()
-            .0
-            .as_pointer();
+            .clone();
+        let key = entry.borrow().0.as_pointer();
         let next = Self::unlink(node);
         map.with_mut(|map| map.nodes.remove(&MapKey(key)));
-        BidirectionalIterator::Map(next)
+        (BidirectionalIterator::Map(next), entry)
     }
 
     pub fn erase_key(map: Ptr<Self>, key: &Ptr<K>) -> usize {

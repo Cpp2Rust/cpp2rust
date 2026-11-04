@@ -315,7 +315,17 @@ fn main_0() -> i32 {
             .as_pointer()
             .with(|__m: &Map<i16, (Value<i16>, Value<u32>)>| __m.end())
     );
-    Map::erase((r).clone(), &({ (*it4.borrow()).clone() }));
+    {
+        let (__next, __entry) = Map::erase((r).clone(), &({ (*it4.borrow()).clone() }));
+        let (__key, __value) = {
+            let __entry_ref = __entry.borrow();
+            (__entry_ref.0.as_pointer(), __entry_ref.1.as_pointer())
+        };
+        use libcc2rs::__swap::{Destroy, DestroyNone, DestroyWithDtor};
+        (&&Destroy(&__value)).destroy();
+        (&&Destroy(&__key)).destroy();
+        __next
+    };
     assert!(({ ((*r.upgrade().deref()).len() == 3_usize) }));
     assert!(
         ({
@@ -370,9 +380,17 @@ fn main_0() -> i32 {
             }),
         ),
     ));
-    let next: Value<BidirectionalIterator<(Value<i16>, Value<u32>)>> = Rc::new(RefCell::new(
-        Map::erase(m.as_pointer(), &({ (*cit.borrow()).clone() })),
-    ));
+    let next: Value<BidirectionalIterator<(Value<i16>, Value<u32>)>> = Rc::new(RefCell::new({
+        let (__next, __entry) = Map::erase(m.as_pointer(), &({ (*cit.borrow()).clone() }));
+        let (__key, __value) = {
+            let __entry_ref = __entry.borrow();
+            (__entry_ref.0.as_pointer(), __entry_ref.1.as_pointer())
+        };
+        use libcc2rs::__swap::{Destroy, DestroyNone, DestroyWithDtor};
+        (&&Destroy(&__value)).destroy();
+        (&&Destroy(&__key)).destroy();
+        __next
+    }));
     assert!(
         (*next.borrow())
             == ({
@@ -383,7 +401,17 @@ fn main_0() -> i32 {
                     })
             })
     );
-    (*next.borrow_mut()) = Map::erase(m.as_pointer(), &({ (*next.borrow()).clone() }));
+    (*next.borrow_mut()) = {
+        let (__next, __entry) = Map::erase(m.as_pointer(), &({ (*next.borrow()).clone() }));
+        let (__key, __value) = {
+            let __entry_ref = __entry.borrow();
+            (__entry_ref.0.as_pointer(), __entry_ref.1.as_pointer())
+        };
+        use libcc2rs::__swap::{Destroy, DestroyNone, DestroyWithDtor};
+        (&&Destroy(&__value)).destroy();
+        (&&Destroy(&__key)).destroy();
+        __next
+    };
     assert!(
         (*next.borrow())
             == m.as_pointer()

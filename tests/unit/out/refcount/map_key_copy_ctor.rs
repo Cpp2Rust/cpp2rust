@@ -196,11 +196,21 @@ fn main_0() -> i32 {
             != 0;
         ok = rhs_0
     };
-    Map::erase(
-        m.as_pointer(),
-        &m.as_pointer()
-            .with(|__m: &Map<Key, (Value<Key>, Value<i32>)>| __m.find(&a.as_pointer())),
-    );
+    {
+        let (__next, __entry) = Map::erase(
+            m.as_pointer(),
+            &m.as_pointer()
+                .with(|__m: &Map<Key, (Value<Key>, Value<i32>)>| __m.find(&a.as_pointer())),
+        );
+        let (__key, __value) = {
+            let __entry_ref = __entry.borrow();
+            (__entry_ref.0.as_pointer(), __entry_ref.1.as_pointer())
+        };
+        use libcc2rs::__swap::{Destroy, DestroyNone, DestroyWithDtor};
+        (&&Destroy(&__value)).destroy();
+        (&&Destroy(&__key)).destroy();
+        __next
+    };
     {
         let rhs_0 = ((ok as i32)
             & ((Map::erase_key(m.as_pointer(), &b.as_pointer()) == 1_usize) as i32))
