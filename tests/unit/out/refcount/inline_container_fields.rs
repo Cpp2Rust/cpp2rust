@@ -50,7 +50,7 @@ pub struct State {
     pub grid: Box<[Box<[i32]>]>,
     #[offset(28)]
     #[byte_size(12)]
-    pub arr: [i32; 3],
+    pub arr: Box<[i32]>,
     #[offset(40)]
     #[byte_size(24)]
     pub elems: Vec<Elem>,
@@ -81,7 +81,7 @@ impl Default for State {
                 grid: (0..2)
                     .map(|_| (0..3).map(|_| 0_i32).collect::<Box<[i32]>>())
                     .collect::<Box<[Box<[i32]>]>>(),
-                arr: std::array::from_fn::<_, 3, _>(|_| 0_i32),
+                arr: Box::<[i32]>::from(std::array::from_fn::<_, 3, _>(|_| 0_i32)),
                 elems: Default::default(),
                 rows: Default::default(),
             }
@@ -343,11 +343,16 @@ fn main_0() -> i32 {
         ((elem!(field_ref!(assigned.as_pointer(), arr).decay(), 1_usize).read()) == 7)
             && ((elem!(field_ref!(moved.as_pointer(), arr).decay(), 1_usize).read()) == 7)
     );
-    let ca: Value<[Counted; 3]> = Rc::new(RefCell::new(std::array::from_fn::<_, 3, _>(|_| {
-        <Counted>::default()
-    })));
+    let ca: Value<Box<[Counted]>> =
+        Rc::new(RefCell::new(Box::<[Counted]>::from(std::array::from_fn::<
+            _,
+            3,
+            _,
+        >(|_| {
+            <Counted>::default()
+        }))));
     (*ca.borrow_mut())[1_usize].v = 5;
-    let cb: Value<[Counted; 3]> = Rc::new(RefCell::new(cpp_move!(ca.as_pointer())));
+    let cb: Value<Box<[Counted]>> = Rc::new(RefCell::new(cpp_move!(ca.as_pointer())));
     assert!(
         ({
             (((moves_3.with(|rc| *rc.borrow()) == 3) && (copies_2.with(|rc| *rc.borrow()) == 0))
@@ -355,7 +360,7 @@ fn main_0() -> i32 {
                 && ({ (*ca.borrow())[1_usize].v } == -1_i32)
         })
     );
-    let cc: Value<[Counted; 3]> = Rc::new(RefCell::new((*cb.borrow()).clone()));
+    let cc: Value<Box<[Counted]>> = Rc::new(RefCell::new((*cb.borrow()).clone()));
     assert!(
         ({
             ((copies_2.with(|rc| *rc.borrow()) == 3) && ({ (*cc.borrow())[1_usize].v } == 5))
@@ -382,23 +387,23 @@ fn main_0() -> i32 {
         ((moves_3.with(|rc| *rc.borrow()) == 3) && (copies_2.with(|rc| *rc.borrow()) == 3))
             && (copy_assigns_4.with(|rc| *rc.borrow()) == 3)
     );
-    let va: Value<[Vec<i32>; 2]> = Rc::new(RefCell::new(std::array::from_fn::<_, 2, _>(|_| {
-        Default::default()
-    })));
+    let va: Value<Box<[Vec<i32>]>> = Rc::new(RefCell::new(Box::<[Vec<i32>]>::from(
+        std::array::from_fn::<_, 2, _>(|_| Default::default()),
+    )));
     {
         let __a1 = 1;
         elem!(va.decay(), 0_usize).with_mut(|__v: &mut Vec<i32>| __v.push(__a1))
     };
-    let vb: Value<[Vec<i32>; 2]> = Rc::new(RefCell::new(cpp_move!(va.as_pointer())));
+    let vb: Value<Box<[Vec<i32>]>> = Rc::new(RefCell::new(cpp_move!(va.as_pointer())));
     assert!(
         ({
             ((*vb.decay().offset(0_usize).upgrade().deref()).len() == 1_usize)
                 && ((*va.decay().offset(0_usize).upgrade().deref()).is_empty())
         })
     );
-    let vc: Value<[Vec<i32>; 2]> = Rc::new(RefCell::new(std::array::from_fn::<_, 2, _>(|_| {
-        Default::default()
-    })));
+    let vc: Value<Box<[Vec<i32>]>> = Rc::new(RefCell::new(Box::<[Vec<i32>]>::from(
+        std::array::from_fn::<_, 2, _>(|_| Default::default()),
+    )));
     cpp_move_assign!(vc.as_pointer(), vb.as_pointer());
     assert!(
         ({

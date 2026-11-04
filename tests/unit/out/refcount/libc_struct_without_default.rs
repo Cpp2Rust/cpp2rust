@@ -11,7 +11,7 @@ use std::rc::{Rc, Weak};
 pub struct UserDefined {
     #[offset(0)]
     #[byte_size(4)]
-    pub a: [i32; 1],
+    pub a: Box<[i32]>,
     #[offset(8)]
     #[byte_size(24)]
     pub v: Vec<i32>,
@@ -28,7 +28,7 @@ impl Default for UserDefined {
     fn default() -> Self {
         {
             UserDefined {
-                a: std::array::from_fn::<_, 1, _>(|_| 0_i32),
+                a: Box::<[i32]>::from(std::array::from_fn::<_, 1, _>(|_| 0_i32)),
                 v: Default::default(),
             }
         }
