@@ -35,6 +35,14 @@ TypeInfo ParseTypeInfoJSON(const llvm::json::Object &obj) {
         info.derives.emplace_back(s->str());
     }
   }
+  if (auto *elems = obj.getObject("elems")) {
+    auto kind = elems->getString("kind");
+    auto type = elems->getString("type");
+    assert(kind && type);
+    assert(*kind == "vec" || *kind == "array");
+    info.elems = Elems{*kind == "vec" ? ElemsKind::kVec : ElemsKind::kArray,
+                       type->str()};
+  }
   return info;
 }
 
@@ -346,6 +354,8 @@ void TypeInfo::dump() const {
     log() << " [rc_ptr]";
   if (is_unsafe_pointer)
     log() << " [unsafe_ptr]";
+  if (elems)
+    log() << " [elems " << elems->type << ']';
   for (const auto &d : derives)
     log() << " +" << d;
 }

@@ -422,7 +422,12 @@ private:
 
   const char *GetConversionTraitName() const override;
 
-  std::string GetInnerType(clang::QualType type);
+  bool IsBoxedType(clang::QualType type);
+  bool IsVecType(clang::QualType type);
+
+  bool NeedsMutAccess(const clang::CXXMethodDecl *method,
+                      clang::QualType base_type);
+
 
   // What an Object-kind conversion of a boxed container/array should yield:
   // a pointer to the whole object (Ptr<Vec<T>>), or one to its first

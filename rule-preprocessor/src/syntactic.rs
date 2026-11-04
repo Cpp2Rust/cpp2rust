@@ -12,8 +12,8 @@ use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
 use crate::ir::{
-    Access, BodyFragment, Bound, FileIr, FnIr, GenericCallInner, MethodCallInner, Model,
-    PlaceholderInner, RefExprInner, RuleIr, RulesIR, TypeInfo, TypeIr,
+    Access, BodyFragment, Bound, Elems, ElemsKind, FileIr, FnIr, GenericCallInner,
+    MethodCallInner, Model, PlaceholderInner, RefExprInner, RuleIr, RulesIR, TypeInfo, TypeIr,
 };
 
 /// Classify a type AST node as refcount pointer (`Ptr<T>`), unsafe pointer
@@ -41,6 +41,30 @@ fn pointer_flags(ty: &ast::Type) -> (bool, bool) {
         "type cannot be both refcount and unsafe pointer"
     );
     flags
+}
+
+fn elems(ty: &ast::Type) -> Option<Elems> {
+    match ty {
+        ast::Type::ArrayType(array) => Some(Elems {
+            kind: ElemsKind::Array,
+            ty: array.ty()?.syntax().text().to_string(),
+        }),
+        ast::Type::PathType(path) => {
+            let segment = path.path()?.segment()?;
+            if segment.name_ref()?.text() != "Vec" {
+                return None;
+            }
+            let ast::GenericArg::TypeArg(arg) = segment.generic_arg_list()?.generic_args().next()?
+            else {
+                return None;
+            };
+            Some(Elems {
+                kind: ElemsKind::Vec,
+                ty: arg.ty()?.syntax().text().to_string(),
+            })
+        }
+        _ => None,
+    }
 }
 
 fn cpp_type_of(ty: &ast::Type) -> Option<String> {
@@ -472,6 +496,7 @@ impl<'a> FnIrBuilder<'a> {
                 is_unsafe_pointer,
                 derives: Vec::new(),
                 cpp_type: None,
+                elems: None,
             })
         }
     }
@@ -696,6 +721,7 @@ impl<'a> FnIrBuilder<'a> {
                         is_unsafe_pointer: p.is_unsafe_pointer,
                         derives: Vec::new(),
                         cpp_type: p.cpp_type.clone(),
+                        elems: None,
                     },
                 )
             })
@@ -807,6 +833,7 @@ impl<'a> TypeIrBuilder<'a> {
                 is_unsafe_pointer,
                 derives: Vec::new(),
                 cpp_type: None,
+                elems: elems(&ty),
             },
         }
     }

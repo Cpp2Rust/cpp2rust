@@ -7,6 +7,7 @@
 #include <clang/AST/Expr.h>
 #include <clang/AST/Type.h>
 
+#include <optional>
 #include <string>
 
 #include "converter/translation_rule.h"
@@ -22,6 +23,8 @@ bool IsRefExpr(clang::ASTContext &ctx, const clang::Expr *expr);
 
 std::string Map(clang::ASTContext &ctx, clang::QualType qual_type);
 std::string Map(Converter &converter, clang::QualType qual_type);
+std::optional<TranslationRule::Elems> Elems(Converter &converter,
+                                            clang::QualType qual_type);
 std::string MapInitializer(Converter &converter, clang::QualType qual_type);
 std::string MapFunctionName(clang::ASTContext &ctx,
                             const clang::FunctionDecl *decl);
