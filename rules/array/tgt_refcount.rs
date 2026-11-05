@@ -21,6 +21,10 @@ fn f1<T1>(a0: Ptr<T1>) -> Ptr<T1> {
     a0
 }
 
+fn f2<T1, const T2: usize>(a0: Ptr<T1>) -> usize {
+    T2
+}
+
 fn f3<T1>(a0: Ptr<T1>) -> Ptr<T1> {
     a0
 }
@@ -33,6 +37,10 @@ fn f5<T1: MoveAssign, const T2: usize>(a0: Ptr<T1>, a1: Ptr<T1>) {
     for __i in 0..T2 {
         T1::move_assign(&a0.offset(__i), a1.offset(__i));
     }
+}
+
+fn f6<T1: Clone + ByteRepr, const T2: usize>(a0: Ptr<T1>) -> Box<[T1]> {
+    (0..T2).map(|__i| a0.read_at(__i)).collect()
 }
 
 fn f7<T1: CopyAssign, const T2: usize>(a0: Ptr<T1>, a1: Ptr<T1>) {

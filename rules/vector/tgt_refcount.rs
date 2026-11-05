@@ -93,6 +93,10 @@ fn f96<T1>(a0: Ptr<T1>) -> RandomAccessIterator<T1> {
     a0.end()
 }
 
+fn f97<T1: ByteRepr>(a0: Ptr<Vec<T1>>, a1: Ptr<Vec<T1>>) {
+    a0.swap_with(&a1, |__v| __v.with_mut(std::mem::take))
+}
+
 fn f98<T1: ByteRepr + 'static>(a0: Ptr<Vec<T1>>, a1: usize) -> Ptr<T1> {
     if a1 as usize >= (*a0.upgrade().deref()).len() {
         panic!("out of bounds access")
