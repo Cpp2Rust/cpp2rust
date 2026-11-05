@@ -29,10 +29,14 @@ fn f14<T1: 'static>(a0: &mut Option<Rc<dyn std::any::Any>>, init: cpp_type!("std
 }
 
 fn f19<T1: 'static>(a0: Ptr<Option<Rc<dyn std::any::Any>>>) -> Ptr<T1> {
-    a0.with(|__a: &Option<Rc<dyn std::any::Any>>| match __a.clone().map(|__r| __r.downcast::<RefCell<T1>>()) {
-        Some(Ok(__v)) => __v.as_pointer(),
-        _ => Ptr::null(),
-    })
+    if a0.is_null() {
+        Ptr::null()
+    } else {
+        a0.with(|__a: &Option<Rc<dyn std::any::Any>>| match __a.clone().map(|__r| __r.downcast::<RefCell<T1>>()) {
+            Some(Ok(__v)) => __v.as_pointer(),
+            _ => Ptr::null(),
+        })
+    }
 }
 
 fn f27<T1: 'static>(init: cpp_type!("std::decay_t<T1>", T1)) -> Option<Rc<dyn std::any::Any>> {
