@@ -8,7 +8,7 @@ fn t1() -> Ptr<CFile> {
 }
 
 fn t2() -> CFile {
-    CFile::new(-1)
+    unimplemented!()
 }
 
 fn f1(a0: Ptr<i8>, a1: Ptr<i8>) -> Ptr<CFile> {
