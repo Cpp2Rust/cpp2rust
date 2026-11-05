@@ -402,7 +402,7 @@ bool Converter::VisitFunctionDecl(clang::FunctionDecl *decl) {
   }
   // main_0 should be static
   if (!decl->isMain()) {
-    StrCat(AccessSpecifierAsString(decl->getAccess()));
+    StrCat(InlineAttribute(decl), AccessSpecifierAsString(decl->getAccess()));
   }
   StrCat(keyword_unsafe_, keyword::kFn, std::move(function_name));
   {
@@ -1143,11 +1143,20 @@ Converter::GetConversionName(const clang::CXXConversionDecl *decl) const {
                                                  : name;
 }
 
+std::string Converter::InlineAttribute(const clang::FunctionDecl *decl) {
+  return decl->isInlined() && decl->doesThisDeclarationHaveABody()
+             ? "#[inline] "
+             : "";
+}
+
 bool Converter::ConvertCXXMethodDecl(clang::CXXMethodDecl *decl) {
   if (auto *ctor = clang::dyn_cast<clang::CXXConstructorDecl>(decl)) {
     return VisitCXXConstructorDecl(ctor);
   }
 
+  if (method_target_ != MethodTarget::TraitDecl) {
+    StrCat(InlineAttribute(decl));
+  }
   if (method_target_ == MethodTarget::ValueImpl &&
       (decl->isStatic() ||
        (!decl->isVirtual() && !decl->getParent()->isAbstract()))) {
@@ -1204,8 +1213,8 @@ bool Converter::VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl) {
     return false;
   }
 
-  StrCat(AccessSpecifierAsString(decl->getAccess()), keyword_unsafe_,
-         keyword::kFn, GetCtorName(decl));
+  StrCat(InlineAttribute(decl), AccessSpecifierAsString(decl->getAccess()),
+         keyword_unsafe_, keyword::kFn, GetCtorName(decl));
   {
     PushParen paren(*this);
     ConvertFunctionParameters(decl);

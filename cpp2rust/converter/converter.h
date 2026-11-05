@@ -197,6 +197,8 @@ public:
 
   virtual bool ConvertOutOfLineMethod(clang::CXXMethodDecl *decl);
 
+  std::string InlineAttribute(const clang::FunctionDecl *decl);
+
   bool ConvertCXXMethodDecl(clang::CXXMethodDecl *decl);
 
   std::string GetMethodName(const clang::CXXMethodDecl *decl);
