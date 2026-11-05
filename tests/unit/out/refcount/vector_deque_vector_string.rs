@@ -179,6 +179,15 @@ fn main_0() -> i32 {
     );
     assert!(({ ((*copy.decay().offset(1_usize).decay().upgrade().deref()).len() == 3_usize) }));
     assert!(({ ((*row.borrow()).len() == 3_usize) }));
+    let d: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
+    let mut first: i32 = 1;
+    let mut last: i32 = 2;
+    (*d.borrow_mut()).push(first);
+    (*d.borrow_mut()).push(last);
+    let r: Ptr<i32> = d.decay();
+    r.write(5);
+    let c: Ptr<i32> = d.decay().to_last();
+    assert!(((d.decay().read()) == 5) && ((c.read()) == 2));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}
