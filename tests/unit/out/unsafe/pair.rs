@@ -40,6 +40,37 @@ unsafe fn main_0() -> i32 {
     assert!(
         ((*const_ptr_pairs[(0_usize)].0) == (2)) && ((const_ptr_pairs[(0_usize)].1) == (2_u64))
     );
+    let mut p: (i32, i32) = (1, 2);
+    let mut q: (i32, i32) = (3, 4);
+    let mut f: *mut i32 = (&mut p.0 as *mut i32);
+    p = q.clone();
+    assert!(((*f) == (3)));
+    let alias: *mut (i32, i32) = &mut p;
+    p = (*alias).clone();
+    assert!(((*f) == (3)));
+    let mut a: (i32, i32) = (1, 2);
+    let mut pa: *mut i32 = (&mut a.0 as *mut i32);
+    let mut b: (i32, i32) = std::mem::take(&mut a);
+    (*pa) = 9;
+    assert!(((b.0) == (1)));
+    assert!(((a.0) == (9)));
+    let mut d: (i32, i32) = (1, 2);
+    let mut s: (i32, i32) = (3, 4);
+    let mut pd: *mut i32 = (&mut d.0 as *mut i32);
+    let mut ps: *mut i32 = (&mut s.0 as *mut i32);
+    d = std::mem::take(&mut s);
+    assert!(((*pd) == (3)));
+    (*ps) = 5;
+    assert!(((d.0) == (3)));
+    assert!(((s.0) == (5)));
+    let mut w: (i64, i64) = ((1 as i64), (2 as i64));
+    let mut narrow: (i32, i32) = (3, 4);
+    let mut pw: *mut i64 = (&mut w.0 as *mut i64);
+    w = (((*&narrow.0) as i64), ((*&narrow.1) as i64));
+    assert!(((*pw) == (3_i64)));
+    let mut m: (i32, i32) = (5, 6);
+    w = (((*&mut m.0) as i64), ((*&mut m.1) as i64));
+    assert!(((*pw) == (5_i64)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}
