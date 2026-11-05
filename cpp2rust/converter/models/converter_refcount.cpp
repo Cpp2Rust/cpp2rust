@@ -895,6 +895,16 @@ bool ConverterRefCount::ConvertIncAndDec(clang::UnaryOperator *expr) {
     return false;
   }
 
+  if (expr->isPrefix() && isAddrOf()) {
+    auto ptr = ConvertFreshObject(sub_expr);
+    auto name = NewTempName();
+    StrCat(
+        std::format("{{ let {0} = {1}; {0}.with_mut(|__v| __v.{2}()); {0} }}",
+                    name, ptr, method));
+    MarkFresh();
+    return true;
+  }
+
   auto str = ConvertLValue(sub_expr);
   if (!pending_deref_.empty()) {
     StrCat(pending_deref_.take(), ".with_mut(|__v| __v.", method, "())");

@@ -241,11 +241,17 @@ private:
     if (!rule) {
       return;
     }
-    // Variadic arguments are not considered.
     auto all_args = BuildUnifiedArgs(expr, args, num_args);
     auto bound = rule->argsToBind(ctx_, expr, all_args);
-    for (unsigned i = 0; i < all_args.size() && i < rule->params.size(); ++i) {
+    for (unsigned i = 0; i < all_args.size(); ++i) {
       if (bound[i]) {
+        if (all_args[i]->isGLValue()) {
+          AddAddressUse(all_args[i]);
+        }
+        continue;
+      }
+      // Unbound variadic arguments are not considered.
+      if (i >= rule->params.size()) {
         continue;
       }
       auto *arg = IgnoreNoOpCasts(all_args[i]);
@@ -280,6 +286,29 @@ private:
       if (!write || !op || !ReferToCommonVar(object, op->getArg(1))) {
         AddValueUse(object, write);
       }
+    }
+  }
+
+  // A bound lvalue must stay addressable even when its evaluation also writes
+  // it, as in ++counter or counter = value.
+  void AddAddressUse(const clang::Expr *expr) {
+    expr = expr->IgnoreParenImpCasts();
+    if (auto *ref = clang::dyn_cast<clang::DeclRefExpr>(expr)) {
+      AddressTaken(ref->getDecl());
+    } else if (auto *object = GetEnclosingObject(expr)) {
+      AddAddressUse(object);
+    } else if (auto *unary = clang::dyn_cast<clang::UnaryOperator>(expr);
+               unary && unary->isIncrementDecrementOp()) {
+      AddAddressUse(unary->getSubExpr());
+    } else if (auto *binary = clang::dyn_cast<clang::BinaryOperator>(expr)) {
+      if (binary->isAssignmentOp()) {
+        AddAddressUse(binary->getLHS());
+      } else if (binary->getOpcode() == clang::BO_Comma) {
+        AddAddressUse(binary->getRHS());
+      }
+    } else if (auto *cond = clang::dyn_cast<clang::ConditionalOperator>(expr)) {
+      AddAddressUse(cond->getTrueExpr());
+      AddAddressUse(cond->getFalseExpr());
     }
   }
 

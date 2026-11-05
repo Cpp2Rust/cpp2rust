@@ -198,6 +198,8 @@ pub enum BodyFragment {
     },
     Init {
         init: std::marker::PhantomData<()>,
+        #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+        conditional: bool,
     },
     GenericCall {
         generic_call: GenericCallInner,
