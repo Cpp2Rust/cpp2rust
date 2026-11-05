@@ -12,6 +12,29 @@ pub struct S {
     pub x: i32,
 }
 pub unsafe fn copy_0(mut copy_vector: Vec<i32>) {}
+#[repr(C)]
+#[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
+pub struct Foo {
+    pub a: Vec<i32>,
+    pub b: Vec<i32>,
+}
+impl Foo {
+    pub unsafe fn move_from(_a0: *mut Foo) -> Self {
+        let mut this = Self {
+            a: std::mem::take(&mut (*_a0).a),
+            b: std::mem::take(&mut (*_a0).b),
+        };
+        this
+    }
+    pub unsafe fn move_assign(&mut self, _a0: *mut Foo) -> *mut Foo {
+        self.a = std::mem::take(&mut (*_a0).a);
+        self.b = std::mem::take(&mut (*_a0).b);
+        return &mut (*(self as *mut Foo));
+    }
+}
+pub unsafe fn exchange_1(x: *mut Vec<i32>, y: *mut Vec<i32>) {
+    std::mem::swap(&mut (*x), &mut (*y));
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -298,6 +321,35 @@ unsafe fn main_0() -> i32 {
     };
     (*(*(*v9[(0_usize)]))).x = 2;
     assert!(((a.x) == (2)));
+    let mut v10: Vec<i32> = Vec::from([1, 2, 3]);
+    let mut v11: Vec<i32> = Vec::from([4]);
+    std::mem::swap(&mut v10, &mut v11);
+    assert!(
+        ((((v10.len()) == (1_usize)) && ((v10[(0_usize)]) == (4))) && ((v11.len()) == (3_usize)))
+            && ((v11[(2_usize)]) == (3))
+    );
+    let mut foo: Foo = <Foo>::default();
+    {
+        let __a1 = 5;
+        foo.a.push(__a1)
+    };
+    {
+        let __a1 = 6;
+        foo.b.push(__a1)
+    };
+    {
+        let __a1 = 7;
+        foo.b.push(__a1)
+    };
+    std::mem::swap(&mut foo.a, &mut foo.b);
+    assert!(
+        (((foo.a.len()) == (2_usize)) && ((foo.a[(1_usize)]) == (7)))
+            && ((foo.b[(0_usize)]) == (5))
+    );
+    (unsafe { exchange_1(&mut foo.a, &mut v10) });
+    assert!(
+        (((foo.a.len()) == (1_usize)) && ((foo.a[(0_usize)]) == (4))) && ((v10[(1_usize)]) == (7))
+    );
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}
