@@ -24,5 +24,7 @@ int main() {
   b.reset();
   assert(!b.has_value());
   assert(std::any_cast<int>(&b) == nullptr);
+  std::any *n = nullptr;
+  assert(std::any_cast<int>(n) == nullptr);
   return 0;
 }
