@@ -48,6 +48,27 @@ static void test_fgets_getc(void) {
   assert(unlink(path) == 0);
 }
 
+static void test_fgets_size_one_and_error_flag(void) {
+  const char *path = "cpp2rust_stdio_nofd_gets_flag.tmp";
+  FILE *fp = fopen(path, "wb");
+  assert(fp != NULL);
+  assert(fputs("line1\n", fp) >= 0);
+  assert(fclose(fp) == 0);
+  fp = fopen(path, "rb");
+  assert(fp != NULL);
+  char buf[8];
+  buf[0] = 'x';
+  assert(fgets(buf, 1, fp) == buf);
+  assert(buf[0] == '\0');
+  assert(fputs("x", fp) == EOF);
+  assert(ferror(fp) != 0);
+  assert(fgets(buf, 8, fp) == buf);
+  assert(memcmp(buf, "line1\n", 7) == 0);
+  assert(ferror(fp) != 0);
+  assert(fclose(fp) == 0);
+  assert(unlink(path) == 0);
+}
+
 static void test_freopen(void) {
   const char *path = "cpp2rust_stdio_nofd_reopen.tmp";
   FILE *fp = fopen(path, "wb");
@@ -112,6 +133,7 @@ int main(void) {
   test_fputc_fputs();
   test_puts();
   test_fgets_getc();
+  test_fgets_size_one_and_error_flag();
   test_freopen();
   test_fseeko();
   test_rename();
