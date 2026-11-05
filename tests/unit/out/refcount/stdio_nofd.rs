@@ -173,6 +173,8 @@ pub fn test_fgets_getc_2() {
                     let mut __dst = __tmp_0.clone();
                     let mut __count: usize = 0;
                     let __failed = fp.with_mut(|__f| {
+                        let __prev_err = __f.err;
+                        __f.err = false;
                         while __count < __max {
                             let __c = __f.getc();
                             if __c < 0 {
@@ -185,9 +187,11 @@ pub fn test_fgets_getc_2() {
                                 break;
                             }
                         }
-                        __f.err
+                        let __read_err = __f.err;
+                        __f.err |= __prev_err;
+                        __read_err
                     });
-                    if __failed || __count == 0 {
+                    if __failed || (__max > 0 && __count == 0) {
                         Ptr::null()
                     } else {
                         __dst.write(0);
@@ -220,6 +224,8 @@ pub fn test_fgets_getc_2() {
                     let mut __dst = __tmp_1.clone();
                     let mut __count: usize = 0;
                     let __failed = fp.with_mut(|__f| {
+                        let __prev_err = __f.err;
+                        __f.err = false;
                         while __count < __max {
                             let __c = __f.getc();
                             if __c < 0 {
@@ -232,9 +238,11 @@ pub fn test_fgets_getc_2() {
                                 break;
                             }
                         }
-                        __f.err
+                        let __read_err = __f.err;
+                        __f.err |= __prev_err;
+                        __read_err
                     });
-                    if __failed || __count == 0 {
+                    if __failed || (__max > 0 && __count == 0) {
                         Ptr::null()
                     } else {
                         __dst.write(0);
@@ -263,6 +271,8 @@ pub fn test_fgets_getc_2() {
                     let mut __dst = __tmp_2.clone();
                     let mut __count: usize = 0;
                     let __failed = fp.with_mut(|__f| {
+                        let __prev_err = __f.err;
+                        __f.err = false;
                         while __count < __max {
                             let __c = __f.getc();
                             if __c < 0 {
@@ -275,9 +285,11 @@ pub fn test_fgets_getc_2() {
                                 break;
                             }
                         }
-                        __f.err
+                        let __read_err = __f.err;
+                        __f.err |= __prev_err;
+                        __read_err
                     });
-                    if __failed || __count == 0 {
+                    if __failed || (__max > 0 && __count == 0) {
                         Ptr::null()
                     } else {
                         __dst.write(0);
@@ -306,6 +318,8 @@ pub fn test_fgets_getc_2() {
                     let mut __dst = __tmp_3.clone();
                     let mut __count: usize = 0;
                     let __failed = fp.with_mut(|__f| {
+                        let __prev_err = __f.err;
+                        __f.err = false;
                         while __count < __max {
                             let __c = __f.getc();
                             if __c < 0 {
@@ -318,9 +332,11 @@ pub fn test_fgets_getc_2() {
                                 break;
                             }
                         }
-                        __f.err
+                        let __read_err = __f.err;
+                        __f.err |= __prev_err;
+                        __read_err
                     });
-                    if __failed || __count == 0 {
+                    if __failed || (__max > 0 && __count == 0) {
                         Ptr::null()
                     } else {
                         __dst.write(0);
@@ -352,7 +368,167 @@ pub fn test_fgets_getc_2() {
             != 0)
     );
 }
-pub fn test_freopen_3() {
+pub fn test_fgets_size_one_and_error_flag_3() {
+    let mut path: Ptr<i8> = Ptr::<i8>::from_string_literal(b"cpp2rust_stdio_nofd_gets_flag.tmp");
+    let mut fp: Ptr<CFile> = match CFile::open(
+        &path.to_rust_string(),
+        &Ptr::<i8>::from_string_literal(b"wb").to_rust_string(),
+    ) {
+        Some(__f) => Ptr::alloc(__f),
+        None => Ptr::null(),
+    };
+    assert!((((!((fp).is_null())) as i32) != 0));
+    assert!(
+        (((match Ptr::<i8>::from_string_literal(b"line1\n")
+            .with_c_bytes(|__bytes| fp.with_mut(|__f| __f.write(__bytes)) == __bytes.len())
+        {
+            true => 0,
+            false => -1,
+        } >= 0) as i32)
+            != 0)
+    );
+    assert!(
+        ((({
+            let __r = fp.with(|__f| __f.close());
+            fp.delete();
+            __r
+        } == 0) as i32)
+            != 0)
+    );
+    fp = match CFile::open(
+        &path.to_rust_string(),
+        &Ptr::<i8>::from_string_literal(b"rb").to_rust_string(),
+    ) {
+        Some(__f) => Ptr::alloc(__f),
+        None => Ptr::null(),
+    };
+    assert!((((!((fp).is_null())) as i32) != 0));
+    let buf: Value<Box<[i8]>> = Rc::new(RefCell::new((0..8).map(|_| 0_i8).collect::<Box<[i8]>>()));
+    (*buf.borrow_mut())[(0) as usize] = (('x' as i32) as i8);
+    assert!(
+        ((({
+            match ({ (buf.as_pointer() as Ptr<i8>) },) {
+                (mut __tmp_4,) => {
+                    if 1 <= 0 {
+                        Ptr::null()
+                    } else {
+                        let __max = (1 - 1) as usize;
+                        let mut __dst = __tmp_4.clone();
+                        let mut __count: usize = 0;
+                        let __failed = fp.with_mut(|__f| {
+                            let __prev_err = __f.err;
+                            __f.err = false;
+                            while __count < __max {
+                                let __c = __f.getc();
+                                if __c < 0 {
+                                    break;
+                                }
+                                __dst.write(__c as i8);
+                                __dst += 1;
+                                __count += 1;
+                                if __c as u8 == b'\n' {
+                                    break;
+                                }
+                            }
+                            let __read_err = __f.err;
+                            __f.err |= __prev_err;
+                            __read_err
+                        });
+                        if __failed || (__max > 0 && __count == 0) {
+                            Ptr::null()
+                        } else {
+                            __dst.write(0);
+                            (__tmp_4).clone()
+                        }
+                    }
+                }
+            }
+        } == { (buf.as_pointer() as Ptr::<i8>) }) as i32)
+            != 0)
+    );
+    assert!(({ (((((*buf.borrow())[(0) as usize] as i32) == ('\0' as i32)) as i32) != 0) }));
+    assert!(
+        (((match Ptr::<i8>::from_string_literal(b"x")
+            .with_c_bytes(|__bytes| fp.with_mut(|__f| __f.write(__bytes)) == __bytes.len())
+        {
+            true => 0,
+            false => -1,
+        } == (-1_i32)) as i32)
+            != 0)
+    );
+    assert!((((fp.with(|__f| __f.err) as i32 != 0) as i32) != 0));
+    assert!(
+        ((({
+            match ({ (buf.as_pointer() as Ptr<i8>) },) {
+                (mut __tmp_5,) => {
+                    if 8 <= 0 {
+                        Ptr::null()
+                    } else {
+                        let __max = (8 - 1) as usize;
+                        let mut __dst = __tmp_5.clone();
+                        let mut __count: usize = 0;
+                        let __failed = fp.with_mut(|__f| {
+                            let __prev_err = __f.err;
+                            __f.err = false;
+                            while __count < __max {
+                                let __c = __f.getc();
+                                if __c < 0 {
+                                    break;
+                                }
+                                __dst.write(__c as i8);
+                                __dst += 1;
+                                __count += 1;
+                                if __c as u8 == b'\n' {
+                                    break;
+                                }
+                            }
+                            let __read_err = __f.err;
+                            __f.err |= __prev_err;
+                            __read_err
+                        });
+                        if __failed || (__max > 0 && __count == 0) {
+                            Ptr::null()
+                        } else {
+                            __dst.write(0);
+                            (__tmp_5).clone()
+                        }
+                    }
+                }
+            }
+        } == { (buf.as_pointer() as Ptr::<i8>) }) as i32)
+            != 0)
+    );
+    assert!(
+        (((((buf.as_pointer() as Ptr::<i8>) as Ptr<i8>)
+            .to_any()
+            .memcmp(
+                &Ptr::<i8>::from_string_literal(b"line1\n").to_any(),
+                7_usize
+            )
+            == 0) as i32)
+            != 0)
+    );
+    assert!((((fp.with(|__f| __f.err) as i32 != 0) as i32) != 0));
+    assert!(
+        ((({
+            let __r = fp.with(|__f| __f.close());
+            fp.delete();
+            __r
+        } == 0) as i32)
+            != 0)
+    );
+    assert!(
+        (((match nix::unistd::unlink(path.to_rust_string().as_str()) {
+            Ok(()) => 0,
+            Err(__e) => {
+                libcc2rs::cpp2rust_errno().write(__e as i32);
+                -1
+            }
+        } == 0) as i32)
+            != 0)
+    );
+}
+pub fn test_freopen_4() {
     let mut path: Ptr<i8> = Ptr::<i8>::from_string_literal(b"cpp2rust_stdio_nofd_reopen.tmp");
     let mut fp: Ptr<CFile> = match CFile::open(
         &path.to_rust_string(),
@@ -429,7 +605,7 @@ pub fn test_freopen_3() {
             != 0)
     );
 }
-pub fn test_fseeko_4() {
+pub fn test_fseeko_5() {
     let mut path: Ptr<i8> = Ptr::<i8>::from_string_literal(b"cpp2rust_stdio_nofd_seek.tmp");
     let mut fp: Ptr<CFile> = match CFile::open(
         &path.to_rust_string(),
@@ -525,7 +701,7 @@ pub fn test_fseeko_4() {
             != 0)
     );
 }
-pub fn test_rename_5() {
+pub fn test_rename_6() {
     let mut from: Ptr<i8> = Ptr::<i8>::from_string_literal(b"cpp2rust_stdio_nofd_from.tmp");
     let mut to: Ptr<i8> = Ptr::<i8>::from_string_literal(b"cpp2rust_stdio_nofd_to.tmp");
     let mut fp: Ptr<CFile> = match CFile::open(
@@ -611,7 +787,7 @@ pub fn test_rename_5() {
             != 0)
     );
 }
-pub fn test_setvbuf_6() {
+pub fn test_setvbuf_7() {
     let mut path: Ptr<i8> = Ptr::<i8>::from_string_literal(b"cpp2rust_stdio_nofd_vbuf.tmp");
     let mut fp: Ptr<CFile> = match CFile::open(
         &path.to_rust_string(),
@@ -658,10 +834,11 @@ fn main_0() -> i32 {
     ({ test_fputc_fputs_0() });
     ({ test_puts_1() });
     ({ test_fgets_getc_2() });
-    ({ test_freopen_3() });
-    ({ test_fseeko_4() });
-    ({ test_rename_5() });
-    ({ test_setvbuf_6() });
+    ({ test_fgets_size_one_and_error_flag_3() });
+    ({ test_freopen_4() });
+    ({ test_fseeko_5() });
+    ({ test_rename_6() });
+    ({ test_setvbuf_7() });
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

@@ -494,6 +494,27 @@ pub unsafe fn test_strcasecmp_14() {
     let mut q: *const libc::c_char = (c"foo".as_ptr().cast_mut()).cast_const();
     assert!(((((libc::strcasecmp(p, q)) == (0)) as i32) != 0));
 }
+pub unsafe fn test_strerror_r_15() {
+    let mut buf: [libc::c_char; 64] = [(0 as libc::c_char); 64];
+    let mut msg: *const libc::c_char = (match ({ buf.as_mut_ptr() },) {
+        (mut __tmp_5,) => {
+            libc::strerror_r(
+                libc::ENOENT,
+                __tmp_5,
+                ::std::mem::size_of::<[libc::c_char; 64]>() as usize,
+            );
+            __tmp_5
+        }
+    })
+    .cast_const();
+    assert!(
+        ((((libc::strcmp(
+            msg,
+            (c"No such file or directory".as_ptr().cast_mut()).cast_const()
+        )) == (0)) as i32)
+            != 0)
+    );
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -516,6 +537,7 @@ unsafe fn main_0() -> i32 {
     (unsafe { test_strstr_12() });
     (unsafe { test_strpbrk_13() });
     (unsafe { test_strcasecmp_14() });
+    (unsafe { test_strerror_r_15() });
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}
