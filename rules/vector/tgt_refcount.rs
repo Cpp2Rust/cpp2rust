@@ -40,7 +40,11 @@ fn f65<T1>(a0: Ptr<T1>) -> Ptr<T1> {
 }
 
 fn f66<T1>(a0: Ptr<T1>, a1: usize) -> Ptr<T1> {
-    a0.offset(a1 as isize)
+    if a1 as usize >= a0.len() {
+        panic!("out of bounds access")
+    } else {
+        a0.offset(a1 as isize)
+    }
 }
 
 fn f68<T1>(a0: Ptr<T1>) -> Ptr<T1> {
