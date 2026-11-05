@@ -14,16 +14,16 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut cond: bool = true;
-    let mut os1: *mut std::fs::File = if cond {
-        (&raw mut (*libcc2rs::cout_unsafe()) as *mut std::fs::File)
+    let mut os1: *mut libcc2rs::CppStream = if cond {
+        (&raw mut (*libcc2rs::cout_unsafe()) as *mut libcc2rs::CppStream)
     } else {
-        (&raw mut (*libcc2rs::cerr_unsafe()) as *mut std::fs::File)
+        (&raw mut (*libcc2rs::cerr_unsafe()) as *mut libcc2rs::CppStream)
     };
     write!((*os1), "hello\n",);
-    let os2: *mut std::fs::File = if cond {
-        (&raw mut (*libcc2rs::cout_unsafe()) as *mut std::fs::File)
+    let os2: *mut libcc2rs::CppStream = if cond {
+        (&raw mut (*libcc2rs::cout_unsafe()) as *mut libcc2rs::CppStream)
     } else {
-        (&raw mut (*libcc2rs::cerr_unsafe()) as *mut std::fs::File)
+        (&raw mut (*libcc2rs::cerr_unsafe()) as *mut libcc2rs::CppStream)
     };
     write!((*os2), "hello\n",);
     return 0;
