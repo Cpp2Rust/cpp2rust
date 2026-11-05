@@ -119,13 +119,16 @@ fn f18(a0: Vec<i8>, a1: Ptr<i8>) -> bool {
     a1.with_c_str(|__s| a0[..a0.len().saturating_sub(1)] == *__s)
 }
 
-// TODO: This should return a0
-fn f21(a0: &mut Vec<i8>, a1: usize, a2: i8) -> Vec<i8> {
-    a0.pop();
-    let __len = a0.len() + (a1) as usize;
-    a0.resize(__len, a2);
-    a0.push(0);
-    a0.clone()
+fn f21(a0: Ptr<Vec<i8>>, a1: usize, a2: i8) -> Ptr<Vec<i8>> {
+    let __count = a1 as usize;
+    let __ch = a2;
+    a0.with_mut(|__v: &mut Vec<i8>| {
+        __v.pop();
+        let __len = __v.len() + __count;
+        __v.resize(__len, __ch);
+        __v.push(0);
+    });
+    a0
 }
 
 fn f26(a0: Ptr<Vec<i8>>, a1: usize) -> Ptr<i8> {

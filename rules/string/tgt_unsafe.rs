@@ -145,15 +145,16 @@ unsafe fn f18(a0: Vec<libc::c_char>, a1: *const libc::c_char) -> bool {
 unsafe fn f19(a0: Vec<libc::c_char>) -> usize {
     (a0.len() - 1)
 }
-unsafe fn f21(a0: &mut Vec<libc::c_char>, a1: usize, a2: libc::c_char) {
-    a0.splice(
-        a0.len() - 1..a0.len() - 1,
+unsafe fn f21(a0: *mut Vec<libc::c_char>, a1: usize, a2: libc::c_char) -> *mut Vec<libc::c_char> {
+    (*a0).splice(
+        (*a0).len() - 1..(*a0).len() - 1,
         ::std::vec::from_elem(a2, a1 as usize),
     );
 }
 
 unsafe fn f22(a0: Vec<libc::c_char>) -> bool {
     a0.len() <= 1
+    a0
 }
 
 unsafe fn f23() -> Vec<libc::c_char> {
