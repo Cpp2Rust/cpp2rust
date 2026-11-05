@@ -175,7 +175,7 @@ unsafe fn f96<T1>(a0: Vec<T1>) -> UnsafeRandomAccessIterator<T1> {
     a0.end()
 }
 
-unsafe fn f97(a0: &mut Vec<bool>, a1: &mut Vec<bool>) {
+unsafe fn f97<T1>(a0: &mut Vec<T1>, a1: &mut Vec<T1>) {
     std::mem::swap(&mut *a0, &mut *a1)
 }
 
