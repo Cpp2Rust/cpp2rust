@@ -153,6 +153,15 @@ unsafe fn main_0() -> i32 {
     );
     assert!((((*((copy[(1_usize)]).first_mut().unwrap())).len()) == (3_usize)));
     assert!(((row.len()) == (3_usize)));
+    let mut d: Vec<i32> = Vec::new();
+    let mut first: i32 = 1;
+    let mut last: i32 = 2;
+    d.push(first);
+    d.push(last);
+    let r: *mut i32 = ((d).first_mut().unwrap());
+    (*r) = 5;
+    let c: *const i32 = (d.last_mut().unwrap());
+    assert!(((*((d).first_mut().unwrap())) == (5)) && ((*c) == (2)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}
