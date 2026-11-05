@@ -7,6 +7,10 @@ fn t1() -> Ptr<CFile> {
     Ptr::null()
 }
 
+fn t2() -> CFile {
+    unimplemented!()
+}
+
 fn f1(a0: Ptr<i8>, a1: Ptr<i8>) -> Ptr<CFile> {
     match CFile::open(&a0.to_rust_string(), &a1.to_rust_string()) {
         Some(__f) => Ptr::alloc(__f),
