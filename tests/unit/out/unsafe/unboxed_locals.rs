@@ -69,6 +69,8 @@ unsafe fn main_0() -> i32 {
     plain.postfix_inc();
     assert!(((plain) == (4)));
     &(::std::mem::size_of::<i32>());
+    let mut typed: i32 = ((plain) + (1));
+    assert!(((typed) == (5)));
     let mut addr: i32 = 0;
     (unsafe { set_0((&mut addr as *mut i32), 5) });
     assert!(((addr) == (5)));
