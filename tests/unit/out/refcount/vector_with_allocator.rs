@@ -184,33 +184,80 @@ fn main_0() -> i32 {
     x0 = 6_f64;
     assert!(((v6.decay().to_last().read()) == 5_f64));
     let mut idx: i32 = 0;
-    assert!(((v6.decay().offset((idx as usize) as isize).read()) == 2_f64));
     assert!(
-        ((v6.decay()
-            .offset((s2).wrapping_sub(1_usize) as isize)
-            .read())
+        ((match ({ (idx as usize) },) {
+            (mut __tmp_2,) => {
+                if __tmp_2 as usize >= v6.decay().len() {
+                    panic!("out of bounds access")
+                } else {
+                    v6.decay().offset(__tmp_2 as isize)
+                }
+            }
+        }
+        .read())
+            == 2_f64)
+    );
+    assert!(
+        ((match ({ (s2).wrapping_sub(1_usize) },) {
+            (mut __tmp_3,) => {
+                if __tmp_3 as usize >= v6.decay().len() {
+                    panic!("out of bounds access")
+                } else {
+                    v6.decay().offset(__tmp_3 as isize)
+                }
+            }
+        }
+        .read())
             == 5_f64)
     );
-    let ref1: Ptr<f64> = v6.decay().offset((s2).wrapping_sub(1_usize) as isize);
+    let ref1: Ptr<f64> = match ({ (s2).wrapping_sub(1_usize) },) {
+        (mut __tmp_4,) => {
+            if __tmp_4 as usize >= v6.decay().len() {
+                panic!("out of bounds access")
+            } else {
+                v6.decay().offset(__tmp_4 as isize)
+            }
+        }
+    };
     {
         ref1.with_mut(|__v| *__v = *__v + 1.5_f64)
     };
     assert!(
-        ((v6.decay()
-            .offset((s2).wrapping_sub(1_usize) as isize)
-            .read())
+        ((match ({ (s2).wrapping_sub(1_usize) },) {
+            (mut __tmp_5,) => {
+                if __tmp_5 as usize >= v6.decay().len() {
+                    panic!("out of bounds access")
+                } else {
+                    v6.decay().offset(__tmp_5 as isize)
+                }
+            }
+        }
+        .read())
             == 6.5_f64)
     );
-    let mut x1: f64 = (v6
-        .decay()
-        .offset((s2).wrapping_sub(1_usize) as isize)
-        .read());
+    let mut x1: f64 = (match ({ (s2).wrapping_sub(1_usize) },) {
+        (mut __tmp_6,) => {
+            if __tmp_6 as usize >= v6.decay().len() {
+                panic!("out of bounds access")
+            } else {
+                v6.decay().offset(__tmp_6 as isize)
+            }
+        }
+    }
+    .read());
     assert!((x1 == 6.5_f64));
     x1 -= 1.5_f64;
     assert!(
-        ((v6.decay()
-            .offset((s2).wrapping_sub(1_usize) as isize)
-            .read())
+        ((match ({ (s2).wrapping_sub(1_usize) },) {
+            (mut __tmp_7,) => {
+                if __tmp_7 as usize >= v6.decay().len() {
+                    panic!("out of bounds access")
+                } else {
+                    v6.decay().offset(__tmp_7 as isize)
+                }
+            }
+        }
+        .read())
             == 6.5_f64)
     );
     let v7: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
@@ -238,10 +285,10 @@ fn main_0() -> i32 {
     ({ fn_1(v7.as_pointer(), v8.clone()) });
     let src: Value<Box<[u32]>> = Rc::new(RefCell::new(Box::new([1_u32, 2_u32, 3_u32])));
     let mut v9: Vec<u32> = match ({ (src.as_pointer() as Ptr<u32>).offset((3) as isize) },) {
-        (mut __tmp_2,) => {
+        (mut __tmp_8,) => {
             let mut __v = Vec::new();
             let mut __it = (src.as_pointer() as Ptr<u32>);
-            while __it != __tmp_2 {
+            while __it != __tmp_8 {
                 __v.push((__it.iter_deref().read()));
                 __it.iter_inc();
             }
@@ -251,10 +298,10 @@ fn main_0() -> i32 {
     assert!((v9.len() == 3_usize));
     assert!(((v9[0_usize] == 1_u32) && (v9[1_usize] == 2_u32)) && (v9[2_usize] == 3_u32));
     let mut v10: Vec<u64> = match ({ (src.as_pointer() as Ptr<u32>).offset((3) as isize) },) {
-        (mut __tmp_3,) => {
+        (mut __tmp_9,) => {
             let mut __v = Vec::new();
             let mut __it = (src.as_pointer() as Ptr<u32>);
-            while __it != __tmp_3 {
+            while __it != __tmp_9 {
                 __v.push(((__it.iter_deref().read()) as u64));
                 __it.iter_inc();
             }
@@ -264,10 +311,10 @@ fn main_0() -> i32 {
     assert!((v10.len() == 3_usize));
     assert!(((v10[0_usize] == 1_u64) && (v10[1_usize] == 2_u64)) && (v10[2_usize] == 3_u64));
     let mut v11: Vec<i32> = match ({ (src.as_pointer() as Ptr<u32>).offset((3) as isize) },) {
-        (mut __tmp_4,) => {
+        (mut __tmp_10,) => {
             let mut __v = Vec::new();
             let mut __it = (src.as_pointer() as Ptr<u32>);
-            while __it != __tmp_4 {
+            while __it != __tmp_10 {
                 __v.push(((__it.iter_deref().read()) as i32));
                 __it.iter_inc();
             }
@@ -278,10 +325,10 @@ fn main_0() -> i32 {
     assert!(((v11[0_usize] == 1) && (v11[1_usize] == 2)) && (v11[2_usize] == 3));
     let src1: Value<Box<[u32]>> = Rc::new(RefCell::new(Box::new([1_u32, 2_u32, 3_u32])));
     let mut v12: Vec<u32> = match ({ (src1.as_pointer() as Ptr<u32>).to_end() },) {
-        (mut __tmp_5,) => {
+        (mut __tmp_11,) => {
             let mut __v = Vec::new();
             let mut __it = (src1.as_pointer() as Ptr<u32>);
-            while __it != __tmp_5 {
+            while __it != __tmp_11 {
                 __v.push((__it.iter_deref().read()));
                 __it.iter_inc();
             }
@@ -295,10 +342,10 @@ fn main_0() -> i32 {
     let mut start: Ptr<u8> = (buf.as_pointer() as Ptr<u8>);
     let mut len: usize = 5_usize;
     let mut v13: Vec<u8> = match ({ start.offset((len) as isize) },) {
-        (mut __tmp_6,) => {
+        (mut __tmp_12,) => {
             let mut __v = Vec::new();
             let mut __it = (start).clone();
-            while __it != __tmp_6 {
+            while __it != __tmp_12 {
                 __v.push((__it.iter_deref().read()));
                 __it.iter_inc();
             }
@@ -308,9 +355,14 @@ fn main_0() -> i32 {
     assert!((v13.len() == 5_usize));
     assert!(((v13[0_usize] as i32) == 10) && ((v13[4_usize] as i32) == 50));
     assert!(
-        (((s1).wrapping_add(s2))
-            .wrapping_add(((v2.decay().offset(0_usize as isize).read()) as usize))
-            == 103_usize)
+        (((s1).wrapping_add(s2)).wrapping_add(
+            ((if 0_usize as usize >= v2.decay().len() {
+                panic!("out of bounds access")
+            } else {
+                v2.decay().offset(0_usize as isize)
+            }
+            .read()) as usize)
+        ) == 103_usize)
     );
     return 0;
 }

@@ -282,39 +282,91 @@ fn main_0() -> i32 {
     x0 = 6_f64;
     assert!(((v6.decay().to_last().read()) == 5_f64));
     let mut idx: i32 = 0;
-    assert!(((v6.decay().offset((idx as usize) as isize).read()) == 2_f64));
     assert!(
-        ((v6.decay()
-            .offset((s2).wrapping_sub(1_usize) as isize)
-            .read())
+        ((match ({ (idx as usize) },) {
+            (mut __tmp_11,) => {
+                if __tmp_11 as usize >= v6.decay().len() {
+                    panic!("out of bounds access")
+                } else {
+                    v6.decay().offset(__tmp_11 as isize)
+                }
+            }
+        }
+        .read())
+            == 2_f64)
+    );
+    assert!(
+        ((match ({ (s2).wrapping_sub(1_usize) },) {
+            (mut __tmp_12,) => {
+                if __tmp_12 as usize >= v6.decay().len() {
+                    panic!("out of bounds access")
+                } else {
+                    v6.decay().offset(__tmp_12 as isize)
+                }
+            }
+        }
+        .read())
             == 5_f64)
     );
-    let ref1: Ptr<f64> = v6.decay().offset((s2).wrapping_sub(1_usize) as isize);
+    let ref1: Ptr<f64> = match ({ (s2).wrapping_sub(1_usize) },) {
+        (mut __tmp_13,) => {
+            if __tmp_13 as usize >= v6.decay().len() {
+                panic!("out of bounds access")
+            } else {
+                v6.decay().offset(__tmp_13 as isize)
+            }
+        }
+    };
     {
         ref1.with_mut(|__v| *__v = *__v + 1.5_f64)
     };
     assert!(
-        ((v6.decay()
-            .offset((s2).wrapping_sub(1_usize) as isize)
-            .read())
+        ((match ({ (s2).wrapping_sub(1_usize) },) {
+            (mut __tmp_14,) => {
+                if __tmp_14 as usize >= v6.decay().len() {
+                    panic!("out of bounds access")
+                } else {
+                    v6.decay().offset(__tmp_14 as isize)
+                }
+            }
+        }
+        .read())
             == 6.5_f64)
     );
-    let mut x1: f64 = (v6
-        .decay()
-        .offset((s2).wrapping_sub(1_usize) as isize)
-        .read());
+    let mut x1: f64 = (match ({ (s2).wrapping_sub(1_usize) },) {
+        (mut __tmp_15,) => {
+            if __tmp_15 as usize >= v6.decay().len() {
+                panic!("out of bounds access")
+            } else {
+                v6.decay().offset(__tmp_15 as isize)
+            }
+        }
+    }
+    .read());
     assert!((x1 == 6.5_f64));
     x1 -= 1.5_f64;
     assert!(
-        ((v6.decay()
-            .offset((s2).wrapping_sub(1_usize) as isize)
-            .read())
+        ((match ({ (s2).wrapping_sub(1_usize) },) {
+            (mut __tmp_16,) => {
+                if __tmp_16 as usize >= v6.decay().len() {
+                    panic!("out of bounds access")
+                } else {
+                    v6.decay().offset(__tmp_16 as isize)
+                }
+            }
+        }
+        .read())
             == 6.5_f64)
     );
     assert!(
-        (((s1).wrapping_add(s2))
-            .wrapping_add(((v2.decay().offset(0_usize as isize).read()) as usize))
-            == 103_usize)
+        (((s1).wrapping_add(s2)).wrapping_add(
+            ((if 0_usize as usize >= v2.decay().len() {
+                panic!("out of bounds access")
+            } else {
+                v2.decay().offset(0_usize as isize)
+            }
+            .read()) as usize)
+        ) == 103_usize)
     );
     let a: Value<S> = Rc::new(RefCell::new(S { x: 1 }));
     let pa: Value<Ptr<S>> = Rc::new(RefCell::new((a.as_pointer())));
