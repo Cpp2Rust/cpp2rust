@@ -284,6 +284,7 @@ unsafe fn main_0() -> i32 {
             && ((cc[(1_usize)].v) == (5)))
             && ((cb[(1_usize)].v) == (5))
     );
+    assert!(((3) == (3_usize)));
     cc[(2_usize)].v = 8;
     for __i in 0..3 {
         (*&mut cb[__i]).copy_assign(&cc[__i]);

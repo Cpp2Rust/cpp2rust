@@ -131,6 +131,7 @@ int main() {
   assert(moves == 3 && copies == 0 && cb[1].v == 5 && ca[1].v == -1);
   std::array<Counted, 3> cc(cb);
   assert(copies == 3 && cc[1].v == 5 && cb[1].v == 5);
+  assert(cc.size() == 3);
   cc[2].v = 8;
   cb = cc;
   assert(copy_assigns == 3 && move_assigns == 0 && cb[2].v == 8);
