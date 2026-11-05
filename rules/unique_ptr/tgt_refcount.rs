@@ -27,7 +27,7 @@ fn f1<T1: CppArray<T2>, T2: Default>(a0: usize) -> Option<Value<Box<[T2]>>> {
     )))
 }
 
-fn f2<T1>(a0: Value<T1>) -> Ptr<T1> {
+fn f2<T1>(a0: Option<Value<T1>>) -> Ptr<T1> {
     a0.as_pointer()
 }
 
@@ -88,11 +88,11 @@ fn f15<T1: ByteRepr>(a0: Ptr<Option<Value<Box<[T1]>>>>, a1: &mut Option<Value<Bo
     a0.write(a1.take())
 }
 
-fn f17<T1>(a0: Value<T1>) -> Ptr<T1> {
+fn f17<T1>(a0: Option<Value<T1>>) -> Ptr<T1> {
     a0.as_pointer()
 }
 
-fn f18<T1>(a0: Value<T1>) -> Ptr<T1> {
+fn f18<T1>(a0: Option<Value<T1>>) -> Ptr<T1> {
     a0.as_pointer()
 }
 
