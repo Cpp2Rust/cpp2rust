@@ -17,7 +17,19 @@ fn main_0() -> i32 {
         let a0_clone = v2.clone();
         (*v1.borrow_mut()).push(a0_clone)
     };
-    assert!(((v1.decay().to_last().decay().offset(0_usize as isize).read()) == 1));
+    assert!(
+        ((match (v1.decay().to_last(),) {
+            (__tmp_0,) => {
+                if 0_usize as usize >= __tmp_0.decay().len() {
+                    panic!("out of bounds access")
+                } else {
+                    __tmp_0.decay().offset(0_usize as isize)
+                }
+            }
+        }
+        .read())
+            == 1)
+    );
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}
