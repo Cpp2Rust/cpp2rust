@@ -7,6 +7,13 @@ struct S {
 
 void copy(std::vector<int> copy_vector) {}
 
+struct Foo {
+  std::vector<int> a;
+  std::vector<int> b;
+};
+
+static void exchange(std::vector<int> &x, std::vector<int> &y) { x.swap(y); }
+
 int main() {
   std::vector<int> v1;
   assert(v1.size() == 0);
@@ -157,5 +164,18 @@ int main() {
   v9.push_back(&ppa);
   (**v9[0])->x = 2;
   assert(a.x == 2);
+
+  std::vector<int> v10 = {1, 2, 3};
+  std::vector<int> v11 = {4};
+  v10.swap(v11);
+  assert(v10.size() == 1 && v10[0] == 4 && v11.size() == 3 && v11[2] == 3);
+  Foo foo;
+  foo.a.push_back(5);
+  foo.b.push_back(6);
+  foo.b.push_back(7);
+  foo.a.swap(foo.b);
+  assert(foo.a.size() == 2 && foo.a[1] == 7 && foo.b[0] == 5);
+  exchange(foo.a, v10);
+  assert(foo.a.size() == 1 && foo.a[0] == 4 && v10[1] == 7);
   return 0;
 }
