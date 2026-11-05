@@ -150,11 +150,11 @@ unsafe fn f21(a0: *mut Vec<libc::c_char>, a1: usize, a2: libc::c_char) -> *mut V
         (*a0).len() - 1..(*a0).len() - 1,
         ::std::vec::from_elem(a2, a1 as usize),
     );
+    a0
 }
 
 unsafe fn f22(a0: Vec<libc::c_char>) -> bool {
     a0.len() <= 1
-    a0
 }
 
 unsafe fn f23() -> Vec<libc::c_char> {
