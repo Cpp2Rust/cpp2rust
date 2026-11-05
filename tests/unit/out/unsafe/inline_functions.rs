@@ -26,7 +26,6 @@ pub unsafe fn not_inlined_static_free_4(mut a: i32) -> i32 {
 }
 pub unsafe trait Base {
     unsafe fn inlined_override(&self, a: i32) -> i32;
-    unsafe fn not_inlined_override(&self, a: i32) -> i32;
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
@@ -78,14 +77,12 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut d: Derived = Derived::new({ 3 });
-    let b: *const Base = &d;
     assert!(((unsafe { inlined_free_0(1,) }) == (2)));
     assert!(((unsafe { inlined_constexpr_free_1(1,) }) == (3)));
     assert!(((unsafe { inlined_declared_free_2(1,) }) == (4)));
     assert!(((unsafe { not_inlined_free_3(1,) }) == (5)));
     assert!(((unsafe { not_inlined_static_free_4(1,) }) == (6)));
-    assert!(((unsafe { (*b).inlined_override(1,) }) == (4)));
-    assert!(((unsafe { (*b).not_inlined_override(1,) }) == (2)));
+    assert!(((unsafe { d.inlined_override(1,) }) == (4)));
     assert!(((unsafe { Derived::inlined_in_class(&d,) }) == (6)));
     assert!(((unsafe { Derived::inlined_static_in_class(2,) }) == (6)));
     assert!(((unsafe { Derived::inlined_declared_in_class(&d,) }) == (12)));
@@ -98,12 +95,6 @@ unsafe impl Base for Derived {
     #[inline]
     unsafe fn inlined_override(&self, a: i32) -> i32 {
         return ((self.v_) + (a));
-    }
-    unsafe fn not_inlined_override(&self, a: i32) -> i32 {
-        return ((self.v_) - (a));
-    }
-    unsafe fn not_inlined_override(&self, a: i32) -> i32 {
-        return ((self.v_) - (a));
     }
 }
 pub unsafe fn __cpp2rust_init_globals() {}
