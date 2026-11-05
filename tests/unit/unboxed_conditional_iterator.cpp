@@ -14,6 +14,11 @@ int median(int w, int n, int nw) {
   return n + w - nw;
 }
 
+int at_least(int w, int lo) {
+  const int bound = lo;
+  return w > bound ? w : bound;
+}
+
 // a and b are written through the conditional.
 int assign(bool c, int v) {
   int a = 1;
@@ -48,6 +53,8 @@ int main() {
   assert(median(1, 5, 7) == 1);
   assert(median(1, 5, 0) == 5);
   assert(median(1, 5, 3) == 3);
+  assert(at_least(1, 3) == 3);
+  assert(at_least(4, 3) == 4);
   assert(assign(true, 5) == 62);
   assert(assign(false, 5) == 16);
   unsigned sigma[] = {2, 0, 3, 1};

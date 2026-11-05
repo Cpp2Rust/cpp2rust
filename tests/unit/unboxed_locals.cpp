@@ -54,6 +54,8 @@ int main() {
   plain++;
   assert(plain == 4);
   (void)sizeof(plain);
+  decltype(plain) typed = plain + 1;
+  assert(typed == 5);
 
   // Boxed: its address is taken.
   int addr = 0;

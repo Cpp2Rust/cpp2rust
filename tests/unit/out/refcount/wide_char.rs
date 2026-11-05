@@ -6,25 +6,20 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn get_0(s: Ptr<i8>) -> Ptr<i8> {
-    let s: Value<Ptr<i8>> = Rc::new(RefCell::new(s));
-    return (*s.borrow()).clone();
+pub fn get_0(mut s: Ptr<i8>) -> Ptr<i8> {
+    return (s).clone();
 }
-pub fn get_1(s: Ptr<i32>) -> Ptr<i32> {
-    let s: Value<Ptr<i32>> = Rc::new(RefCell::new(s));
-    return (*s.borrow()).clone();
+pub fn get_1(mut s: Ptr<i32>) -> Ptr<i32> {
+    return (s).clone();
 }
-pub fn get_2(s: Ptr<u8>) -> Ptr<u8> {
-    let s: Value<Ptr<u8>> = Rc::new(RefCell::new(s));
-    return (*s.borrow()).clone();
+pub fn get_2(mut s: Ptr<u8>) -> Ptr<u8> {
+    return (s).clone();
 }
-pub fn get_3(s: Ptr<u16>) -> Ptr<u16> {
-    let s: Value<Ptr<u16>> = Rc::new(RefCell::new(s));
-    return (*s.borrow()).clone();
+pub fn get_3(mut s: Ptr<u16>) -> Ptr<u16> {
+    return (s).clone();
 }
-pub fn get_4(s: Ptr<u32>) -> Ptr<u32> {
-    let s: Value<Ptr<u32>> = Rc::new(RefCell::new(s));
-    return (*s.borrow()).clone();
+pub fn get_4(mut s: Ptr<u32>) -> Ptr<u32> {
+    return (s).clone();
 }
 pub fn second_5(s: Ptr<i8>) -> i8 {
     return (elem!((s), 1).read());

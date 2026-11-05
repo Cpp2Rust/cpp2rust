@@ -71,7 +71,7 @@ fn main_0() -> i32 {
                 (characters.as_pointer() as Ptr<i8>),
                 (characters.as_pointer() as Ptr<i8>).offset((20_i64) as isize),
             ) {
-                let character: Value<i8> = Rc::new(RefCell::new((character.read())));
+                let mut character: i8 = (character.read());
                 let mut shrink: i32 = 0;
                 'loop_: while (shrink < 2) {
                     let s: Value<Vec<i8>> = Rc::new(RefCell::new(
@@ -95,7 +95,7 @@ fn main_0() -> i32 {
                     {
                         (*s.borrow_mut()).pop();
                         let __len = (*s.borrow()).len() + (count) as usize;
-                        (*s.borrow_mut()).resize(__len, ({ (*character.borrow()) }));
+                        (*s.borrow_mut()).resize(__len, character);
                         (*s.borrow_mut()).push(0);
                         (*s.borrow()).clone()
                     };
@@ -104,16 +104,14 @@ fn main_0() -> i32 {
                     let mut i: usize = 0_usize;
                     'loop_: while (i < (length).wrapping_add(count)) {
                         assert!(
-                            ({
-                                ({ ((elem!(data, i).read()) as i32) } == {
-                                    ((if (i < length) {
-                                        initial[((i).wrapping_rem(
-                                            (::std::mem::size_of::<[i8; 5]>() as usize),
-                                        )) as usize]
-                                    } else {
-                                        (*character.borrow())
-                                    }) as i32)
-                                })
+                            ({ ((elem!(data, i).read()) as i32) } == {
+                                ((if (i < length) {
+                                    initial[((i)
+                                        .wrapping_rem((::std::mem::size_of::<[i8; 5]>() as usize)))
+                                        as usize]
+                                } else {
+                                    character
+                                }) as i32)
                             })
                         );
                         i.prefix_inc();
