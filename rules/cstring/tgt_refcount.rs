@@ -181,7 +181,7 @@ fn f27(a0: Ptr<i8>, a1: Ptr<i8>) -> i32 {
 
 #[cfg(target_os = "linux")]
 fn f28(a0: i32, a1: Ptr<i8>, a2: usize) -> Ptr<i8> {
-    let __msg = std::io::Error::from_raw_os_error(a0).to_string();
+    let __msg = nix::errno::Errno::from_raw(a0).desc();
     let __len = __msg.len().min(a2.saturating_sub(1));
     let mut __p = a1.clone();
     for __i in 0..__len {
@@ -196,7 +196,7 @@ fn f28(a0: i32, a1: Ptr<i8>, a2: usize) -> Ptr<i8> {
 
 #[cfg(target_os = "macos")]
 fn f28(a0: i32, a1: Ptr<i8>, a2: usize) -> i32 {
-    let __msg = std::io::Error::from_raw_os_error(a0).to_string();
+    let __msg = nix::errno::Errno::from_raw(a0).desc();
     let __len = __msg.len().min(a2.saturating_sub(1));
     let mut __p = a1.clone();
     for __i in 0..__len {
