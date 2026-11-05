@@ -30,28 +30,28 @@ fn t9() -> usize {
 }
 
 fn f1(a0: &mut u8, a1: u32) -> u8 {
-    *a0 << a1
+    ((*a0 as u32) << a1) as u8
 }
 
 fn f2(a0: &mut u8, a1: u32) -> u8 {
-    *a0 >> a1
+    ((*a0 as u32) >> a1) as u8
 }
 
 fn f3(a0: &mut u8, a1: u32) -> u8 {
-    let n_ = *a0 << a1;
-    *a0 = n_;
+    let __n = ((*a0 as u32) << a1) as u8;
+    *a0 = __n;
     *a0
 }
 
 fn f4(a0: &mut u8, a1: u32) -> u8 {
-    let n_ = *a0 >> a1;
-    *a0 = n_;
+    let __n = ((*a0 as u32) >> a1) as u8;
+    *a0 = __n;
     *a0
 }
 
 fn f5<T1>(a0: u8, a1: T1) -> u8
 where
-    u8: ::std::ops::Shl<T1, Output = u8>,
+    u32: ::std::ops::Shl<T1, Output = u32>,
 {
-    a0 << a1
+    ((a0 as u32) << a1) as u8
 }
