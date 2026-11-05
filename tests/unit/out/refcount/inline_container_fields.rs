@@ -366,13 +366,16 @@ fn main_0() -> i32 {
                 && ({ (*ca.borrow())[1_usize].v } == -1_i32)
         })
     );
-    let cc: Value<Box<[Counted]>> = Rc::new(RefCell::new((*cb.borrow()).clone()));
+    let cc: Value<Box<[Counted]>> = Rc::new(RefCell::new(
+        (0..3).map(|__i| cb.decay().read_at(__i)).collect(),
+    ));
     assert!(
         ({
             ((copies_2.with(|rc| *rc.borrow()) == 3) && ({ (*cc.borrow())[1_usize].v } == 5))
                 && ({ (*cb.borrow())[1_usize].v } == 5)
         })
     );
+    assert!((3 == 3_usize));
     (*cc.borrow_mut())[2_usize].v = 8;
     for __i in 0..3 {
         &cb.decay().offset(__i).copy_assign(cc.decay().offset(__i));
