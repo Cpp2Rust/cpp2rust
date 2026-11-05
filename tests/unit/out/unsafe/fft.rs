@@ -266,6 +266,16 @@ unsafe fn main_0() -> i32 {
                 .add(3_usize))
                 == (-2_i32))
     );
+    let mut l: i64 = -5000000000_i64;
+    let mut ll: i64 = -6000000000_i64;
+    assert!(((l.abs()) == (5000000000_i64)));
+    assert!(((ll.abs()) == (6000000000_i64)));
+    let mut small: i64 = (-7_i32 as i64);
+    let mut small_ll: i64 = (-8_i32 as i64);
+    let mut narrowed: i32 = (small.abs() as i32);
+    let mut narrowed_ll: i32 = (small_ll.abs() as i32);
+    assert!(((narrowed) == (7)));
+    assert!(((narrowed_ll) == (8)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}
