@@ -35,7 +35,7 @@ fn f3<T1>(a0: Ptr<T1>) -> Option<Value<T1>> {
     a0.to_owned_opt()
 }
 
-fn f4<T1>(a0: Ptr<T1>) -> Option<Value<T1>> {
+fn f4<T1>(a0: Ptr<T1>) -> Option<Value<Box<[T1]>>> {
     a0.to_owned_opt()
 }
 
@@ -48,7 +48,7 @@ fn f6<T1: ByteRepr>(a0: Ptr<Option<Value<Box<[T1]>>>>, a1: Ptr<T1>) {
     a0.write(a1.to_owned_opt())
 }
 
-fn f7<T1>(a0: Value<T1>) -> Ptr<T1> {
+fn f7<T1>(a0: Option<Value<Box<[T1]>>>) -> Ptr<T1> {
     a0.as_pointer()
 }
 
@@ -96,7 +96,7 @@ fn f18<T1>(a0: Option<Value<T1>>) -> Ptr<T1> {
     a0.as_pointer()
 }
 
-fn f19<T1>(a0: Value<T1>, a1: usize) -> Ptr<T1> {
+fn f19<T1>(a0: Option<Value<Box<[T1]>>>, a1: usize) -> Ptr<T1> {
     (a0.as_pointer() as Ptr<T1>).offset(a1 as isize)
 }
 
