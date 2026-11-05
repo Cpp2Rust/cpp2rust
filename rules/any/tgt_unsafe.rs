@@ -25,7 +25,7 @@ unsafe fn f14<T1: 'static>(a0: &mut Option<Box<dyn std::any::Any>>, init: cpp_ty
 }
 
 unsafe fn f19<T1: 'static>(a0: *mut Option<Box<dyn std::any::Any>>) -> *mut T1 {
-    match (*a0).as_mut().and_then(|__b| __b.downcast_mut::<T1>()) {
+    match a0.as_mut().and_then(|__a| __a.as_mut()).and_then(|__b| __b.downcast_mut::<T1>()) {
         Some(__v) => __v as *mut T1,
         None => std::ptr::null_mut(),
     }
