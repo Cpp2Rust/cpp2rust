@@ -21,6 +21,7 @@ pub const anon_3_kValue: anon_3 = 3;
 #[byte_size(1)]
 pub struct S {}
 impl S {
+    #[inline]
     pub fn f() -> i32 {
         return counter_2.with(|rc| *rc.borrow());
     }
@@ -55,6 +56,7 @@ pub trait CImpl {
     fn get(&self) -> i32;
 }
 impl CImpl for Ptr<C> {
+    #[inline]
     fn get(&self) -> i32 {
         return inner_const_0.with(|rc| *rc.borrow());
     }

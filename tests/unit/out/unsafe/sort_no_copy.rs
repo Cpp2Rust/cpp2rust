@@ -14,28 +14,34 @@ pub struct Tracked {
     pub v: i32,
 }
 impl Tracked {
+    #[inline]
     pub unsafe fn new_2() -> Self {
         let mut this = Self { v: 0 };
         this
     }
+    #[inline]
     pub unsafe fn new_1(mut v: i32) -> Self {
         let mut this = Self { v: v };
         this
     }
+    #[inline]
     pub unsafe fn copy_from(o: *const Tracked) -> Self {
         let mut this = Self { v: (*o).v };
         (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)).prefix_inc();
         this
     }
+    #[inline]
     pub unsafe fn move_from(o: *mut Tracked) -> Self {
         let mut this = Self { v: (*o).v };
         this
     }
+    #[inline]
     pub unsafe fn copy_assign(&mut self, o: *const Tracked) -> *mut Tracked {
         self.v = (*o).v;
         (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)).prefix_inc();
         return &mut (*(self as *mut Tracked));
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, o: *mut Tracked) -> *mut Tracked {
         self.v = (*o).v;
         return &mut (*(self as *mut Tracked));
@@ -90,12 +96,14 @@ pub struct Bag {
     pub items: Vec<Tracked>,
 }
 impl Bag {
+    #[inline]
     pub unsafe fn move_from(_a0: *mut Bag) -> Self {
         let mut this = Self {
             items: std::mem::take(&mut (*_a0).items),
         };
         this
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, _a0: *mut Bag) -> *mut Bag {
         self.items = std::mem::take(&mut (*_a0).items);
         return &mut (*(self as *mut Bag));

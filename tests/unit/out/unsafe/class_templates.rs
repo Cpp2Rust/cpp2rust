@@ -12,31 +12,38 @@ pub struct MyContainer_int_ {
     vec_: Vec<i32>,
 }
 impl MyContainer_int_ {
+    #[inline]
     pub unsafe fn empty(&self) -> bool {
         return self.vec_.is_empty();
     }
+    #[inline]
     pub unsafe fn size(&self) -> usize {
         return self.vec_.len();
     }
+    #[inline]
     pub unsafe fn back_4(&mut self) -> *mut i32 {
         return ((self.vec_).last_mut().unwrap());
     }
+    #[inline]
     pub unsafe fn pop_back(&mut self) {
         self.vec_.pop();
         return;
     }
+    #[inline]
     pub unsafe fn push_back(&mut self, item: *const i32) {
         {
             let a0_clone = (*item).clone();
             self.vec_.push(a0_clone)
         };
     }
+    #[inline]
     pub unsafe fn move_from(_a0: *mut MyContainer_int_) -> Self {
         let mut this = Self {
             vec_: std::mem::take(&mut (*_a0).vec_),
         };
         this
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, _a0: *mut MyContainer_int_) -> *mut MyContainer_int_ {
         self.vec_ = std::mem::take(&mut (*_a0).vec_);
         return &mut (*(self as *mut MyContainer_int_));
@@ -48,31 +55,38 @@ pub struct MyContainer_char_ {
     vec_: Vec<libc::c_char>,
 }
 impl MyContainer_char_ {
+    #[inline]
     pub unsafe fn empty(&self) -> bool {
         return self.vec_.is_empty();
     }
+    #[inline]
     pub unsafe fn size(&self) -> usize {
         return self.vec_.len();
     }
+    #[inline]
     pub unsafe fn back_4(&mut self) -> *mut libc::c_char {
         return ((self.vec_).last_mut().unwrap());
     }
+    #[inline]
     pub unsafe fn pop_back(&mut self) {
         self.vec_.pop();
         return;
     }
+    #[inline]
     pub unsafe fn push_back(&mut self, item: *const libc::c_char) {
         {
             let a0_clone = (*item).clone();
             self.vec_.push(a0_clone)
         };
     }
+    #[inline]
     pub unsafe fn move_from(_a0: *mut MyContainer_char_) -> Self {
         let mut this = Self {
             vec_: std::mem::take(&mut (*_a0).vec_),
         };
         this
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, _a0: *mut MyContainer_char_) -> *mut MyContainer_char_ {
         self.vec_ = std::mem::take(&mut (*_a0).vec_);
         return &mut (*(self as *mut MyContainer_char_));
@@ -84,31 +98,38 @@ pub struct MyContainer_float_ {
     vec_: Vec<f32>,
 }
 impl MyContainer_float_ {
+    #[inline]
     pub unsafe fn empty(&self) -> bool {
         return self.vec_.is_empty();
     }
+    #[inline]
     pub unsafe fn size(&self) -> usize {
         return self.vec_.len();
     }
+    #[inline]
     pub unsafe fn back_4(&mut self) -> *mut f32 {
         return ((self.vec_).last_mut().unwrap());
     }
+    #[inline]
     pub unsafe fn pop_back(&mut self) {
         self.vec_.pop();
         return;
     }
+    #[inline]
     pub unsafe fn push_back(&mut self, item: *const f32) {
         {
             let a0_clone = (*item).clone();
             self.vec_.push(a0_clone)
         };
     }
+    #[inline]
     pub unsafe fn move_from(_a0: *mut MyContainer_float_) -> Self {
         let mut this = Self {
             vec_: std::mem::take(&mut (*_a0).vec_),
         };
         this
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, _a0: *mut MyContainer_float_) -> *mut MyContainer_float_ {
         self.vec_ = std::mem::take(&mut (*_a0).vec_);
         return &mut (*(self as *mut MyContainer_float_));
@@ -160,6 +181,7 @@ pub struct Outer_int__Inner_int_ {
     pub u: i32,
 }
 impl Outer_int__Inner_int_ {
+    #[inline]
     pub unsafe fn sum(&self) -> i32 {
         return ((self.t as i32) + (self.u as i32));
     }
@@ -170,6 +192,7 @@ pub struct Outer_int_ {
     pub v: i32,
 }
 impl Outer_int_ {
+    #[inline]
     pub unsafe fn with(&self, mut n: i32) -> Outer_int__Inner_int_ {
         return Outer_int__Inner_int_ { t: self.v, u: n };
     }
@@ -181,6 +204,7 @@ pub struct Outer_long__Inner_int_ {
     pub u: i32,
 }
 impl Outer_long__Inner_int_ {
+    #[inline]
     pub unsafe fn sum(&self) -> i32 {
         return ((self.t as i32) + (self.u as i32));
     }
@@ -192,6 +216,7 @@ pub struct Outer_long__Inner_char_ {
     pub u: libc::c_char,
 }
 impl Outer_long__Inner_char_ {
+    #[inline]
     pub unsafe fn sum(&self) -> i32 {
         return ((self.t as i32) + (self.u as i32));
     }
@@ -202,6 +227,7 @@ pub struct Outer_long_ {
     pub v: i64,
 }
 impl Outer_long_ {
+    #[inline]
     pub unsafe fn with(&self, mut n: i32) -> Outer_long__Inner_int_ {
         return Outer_long__Inner_int_ { t: self.v, u: n };
     }

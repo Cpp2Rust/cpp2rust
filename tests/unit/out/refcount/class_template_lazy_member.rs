@@ -64,6 +64,7 @@ pub trait Box_Point_Impl {
     }
 }
 impl Box_Point_Impl for Ptr<Box_Point_> {
+    #[inline]
     fn get(&self) -> Point {
         return (*self).with(|__s| __s.val.clone());
     }
@@ -75,6 +76,7 @@ pub trait Box_int_Impl {
     fn twice(&self) -> i32;
 }
 impl Box_int_Impl for Ptr<Box_int_> {
+    #[inline]
     fn twice(&self) -> i32 {
         return ((*self).with(|__s| __s.val) + (*self).with(|__s| __s.val));
     }
@@ -83,6 +85,7 @@ pub trait Deduced_Point_Impl {
     fn get(&self) -> Point;
 }
 impl Deduced_Point_Impl for Ptr<Deduced_Point_> {
+    #[inline]
     fn get(&self) -> Point {
         return (*self).with(|__s| __s.val.clone());
     }
@@ -91,6 +94,7 @@ pub trait Deduced_int_Impl {
     fn twice(&self) -> i32;
 }
 impl Deduced_int_Impl for Ptr<Deduced_int_> {
+    #[inline]
     fn twice(&self) -> i32 {
         return ((*self).with(|__s| __s.val) + (*self).with(|__s| __s.val));
     }

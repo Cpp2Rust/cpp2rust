@@ -55,6 +55,7 @@ pub trait S_1_Impl {
     fn get(&self) -> i32;
 }
 impl S_1_Impl for Ptr<S_1_> {
+    #[inline]
     fn get(&self) -> i32 {
         return ((*self).with(|__s| __s.v) * 1);
     }
@@ -63,6 +64,7 @@ pub trait S_2_Impl {
     fn get(&self) -> i32;
 }
 impl S_2_Impl for Ptr<S_2_> {
+    #[inline]
     fn get(&self) -> i32 {
         return ((*self).with(|__s| __s.v) - (*self).with(|__s| __s.w));
     }
@@ -71,6 +73,7 @@ pub trait S_3_Impl {
     fn get(&self) -> i32;
 }
 impl S_3_Impl for Ptr<S_3_> {
+    #[inline]
     fn get(&self) -> i32 {
         return ((*self).with(|__s| __s.v) * 3);
     }

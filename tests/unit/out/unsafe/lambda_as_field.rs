@@ -12,6 +12,7 @@ pub struct Guard__lambda_at_lambda_as_field_cpp_34_13__ {
     pub f: FnPtr<fn()>,
 }
 impl Guard__lambda_at_lambda_as_field_cpp_34_13__ {
+    #[inline]
     pub unsafe fn destructor(&mut self) {
         (unsafe { self.f.call() });
     }
@@ -33,6 +34,7 @@ pub struct Guard__lambda_at_lambda_as_field_cpp_45_13__ {
     pub f: FnPtr<fn()>,
 }
 impl Guard__lambda_at_lambda_as_field_cpp_45_13__ {
+    #[inline]
     pub unsafe fn destructor(&mut self) {
         (unsafe { self.f.call() });
     }
@@ -44,6 +46,7 @@ pub struct Holder__lambda_at_lambda_as_field_cpp_39_12__ {
     pub calls: i32,
 }
 impl Holder__lambda_at_lambda_as_field_cpp_39_12__ {
+    #[inline]
     pub unsafe fn call(&mut self, mut x: i32) -> i32 {
         self.calls.postfix_inc();
         return (unsafe { self.f.call(x) });
@@ -70,6 +73,7 @@ pub struct Holder__lambda_at_lambda_as_field_cpp_51_12__ {
     pub calls: i32,
 }
 impl Holder__lambda_at_lambda_as_field_cpp_51_12__ {
+    #[inline]
     pub unsafe fn call(&mut self, mut x: i32) -> i32 {
         self.calls.postfix_inc();
         return (unsafe { self.f.call(x) });
@@ -83,6 +87,7 @@ pub struct Moving__lambda_at_lambda_as_field_cpp_64_12__ {
     pub moves: i32,
 }
 impl Moving__lambda_at_lambda_as_field_cpp_64_12__ {
+    #[inline]
     pub unsafe fn new(mut f: FnPtr<fn(i32) -> i32>) -> Self {
         let mut this = Self {
             f: f.copy_from(),
@@ -90,6 +95,7 @@ impl Moving__lambda_at_lambda_as_field_cpp_64_12__ {
         };
         this
     }
+    #[inline]
     pub unsafe fn move_from(o: *mut Moving__lambda_at_lambda_as_field_cpp_64_12__) -> Self {
         let mut this = Self {
             f: (*o).f.move_from(),

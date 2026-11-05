@@ -34,6 +34,7 @@ pub struct Holder {
     pub v: i32,
 }
 impl Holder {
+    #[inline]
     pub fn new(s: S) -> Self {
         let s: Value<S> = Rc::new(RefCell::new(s));
         Self {
@@ -79,6 +80,7 @@ pub trait HolderImpl {
     fn add(&self, s: S) -> i32;
 }
 impl HolderImpl for Ptr<Holder> {
+    #[inline]
     fn add(&self, s: S) -> i32 {
         let s: Value<S> = Rc::new(RefCell::new(s));
         return ((*self).with(|__s| __s.v) + { (*s.borrow()).v });
@@ -88,6 +90,7 @@ pub trait SImpl {
     fn destructor(&self);
 }
 impl SImpl for Ptr<S> {
+    #[inline]
     fn destructor(&self) {
         (*destroyed_0.with(Value::clone).borrow_mut()).postfix_inc();
         last_1.with(|rc| *rc.borrow_mut() = (*self).with(|__s| __s.v));

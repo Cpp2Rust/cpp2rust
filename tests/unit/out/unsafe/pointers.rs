@@ -12,15 +12,19 @@ pub struct Test {
     pub x: i32,
 }
 impl Test {
+    #[inline]
     pub unsafe fn inc(&mut self) {
         self.x.postfix_inc();
     }
+    #[inline]
     pub unsafe fn dec(&mut self) {
         self.x.postfix_dec();
     }
+    #[inline]
     pub unsafe fn as_ptr(&mut self) -> *mut i32 {
         return (&mut self.x as *mut i32);
     }
+    #[inline]
     pub unsafe fn update(&mut self, mut x: i32, mut y: i32) {
         self.x = ((x) + (y));
     }

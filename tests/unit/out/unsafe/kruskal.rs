@@ -182,6 +182,7 @@ pub struct DisjointSet {
     pub n: i32,
 }
 impl DisjointSet {
+    #[inline]
     pub unsafe fn makeSet(&mut self) {
         let mut i: i32 = 0;
         'loop_: while ((i) < (self.n)) {
@@ -198,6 +199,7 @@ impl DisjointSet {
             i.postfix_inc();
         }
     }
+    #[inline]
     pub unsafe fn find(&mut self, mut x: i32) -> i32 {
         if ((*self
             .parent
@@ -225,6 +227,7 @@ impl DisjointSet {
             .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
             .add((x as usize)));
     }
+    #[inline]
     pub unsafe fn merge(&mut self, mut x: i32, mut y: i32) {
         let mut xset: i32 = (unsafe { DisjointSet::find(self, x) });
         let mut yset: i32 = (unsafe { DisjointSet::find(self, y) });
@@ -281,6 +284,7 @@ impl DisjointSet {
                 + (1));
         }
     }
+    #[inline]
     pub unsafe fn move_from(_a0: *mut DisjointSet) -> Self {
         let mut this = Self {
             rank: (*_a0).rank.take(),
@@ -289,6 +293,7 @@ impl DisjointSet {
         };
         this
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, _a0: *mut DisjointSet) -> *mut DisjointSet {
         self.rank = (*_a0).rank.take();
         self.parent = (*_a0).parent.take();
@@ -304,6 +309,7 @@ pub struct Graph {
     pub E: i32,
 }
 impl Graph {
+    #[inline]
     pub unsafe fn move_from(_a0: *mut Graph) -> Self {
         let mut this = Self {
             edges: (*_a0).edges.take(),
@@ -312,6 +318,7 @@ impl Graph {
         };
         this
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, _a0: *mut Graph) -> *mut Graph {
         self.edges = (*_a0).edges.take();
         self.V = (*_a0).V;

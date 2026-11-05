@@ -12,15 +12,19 @@ pub struct Counter {
     pub n: i32,
 }
 impl Counter {
+    #[inline]
     pub unsafe fn get(&self) -> i32 {
         return self.n;
     }
+    #[inline]
     pub unsafe fn add(&mut self, mut k: i32) {
         self.n += k;
     }
+    #[inline]
     pub unsafe fn self_(&mut self) -> *mut Counter {
         return (self as *mut Counter);
     }
+    #[inline]
     pub unsafe fn take(&mut self, mut other: *mut Counter) {
         self.n += (*other).n;
         (*other).n = 0;
@@ -35,12 +39,14 @@ pub struct S {
     pub v: Vec<i32>,
 }
 impl S {
+    #[inline]
     pub unsafe fn bump(&mut self) {
         (unsafe {
             let _k: i32 = self.tag;
             Counter::add(&mut self.c, _k)
         });
     }
+    #[inline]
     pub unsafe fn move_from(_a0: *mut S) -> Self {
         let mut this = Self {
             tag: (*_a0).tag,
@@ -50,6 +56,7 @@ impl S {
         };
         this
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, _a0: *mut S) -> *mut S {
         self.tag = (*_a0).tag;
         self.c = (*_a0).c;

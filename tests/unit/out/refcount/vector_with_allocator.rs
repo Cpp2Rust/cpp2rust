@@ -319,9 +319,11 @@ pub trait TestAllocator_double_Impl {
     fn deallocate(&self, p: Ptr<f64>, _a1: usize);
 }
 impl TestAllocator_double_Impl for Ptr<TestAllocator_double_> {
+    #[inline]
     fn allocate(&self, mut n: usize) -> Ptr<f64> {
         return Ptr::alloc_array((0..n).map(|_| 0_f64).collect::<Box<[f64]>>());
     }
+    #[inline]
     fn deallocate(&self, mut p: Ptr<f64>, mut _a1: usize) {
         p.delete();
     }
@@ -331,9 +333,11 @@ pub trait TestAllocator_int_Impl {
     fn deallocate(&self, p: Ptr<i32>, _a1: usize);
 }
 impl TestAllocator_int_Impl for Ptr<TestAllocator_int_> {
+    #[inline]
     fn allocate(&self, mut n: usize) -> Ptr<i32> {
         return Ptr::alloc_array((0..n).map(|_| 0_i32).collect::<Box<[i32]>>());
     }
+    #[inline]
     fn deallocate(&self, mut p: Ptr<i32>, mut _a1: usize) {
         p.delete();
     }

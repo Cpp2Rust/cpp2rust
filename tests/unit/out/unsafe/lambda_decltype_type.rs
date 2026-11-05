@@ -14,6 +14,7 @@ pub struct Sorted__lambda_at_lambda_decltype_type_cpp_22_18__ {
     pub cmp: FnPtr<fn(i32, i32) -> bool>,
 }
 impl Sorted__lambda_at_lambda_decltype_type_cpp_22_18__ {
+    #[inline]
     pub unsafe fn insert(&mut self, mut v: i32) {
         let mut i: i32 = self.size;
         'loop_: while ((i) > (0))
@@ -52,6 +53,7 @@ pub struct Sorted__lambda_at_lambda_decltype_type_cpp_19_23__ {
     pub cmp: FnPtr<fn(i32, i32) -> bool>,
 }
 impl Sorted__lambda_at_lambda_decltype_type_cpp_19_23__ {
+    #[inline]
     pub unsafe fn insert(&mut self, mut v: i32) {
         let mut i: i32 = self.size;
         'loop_: while ((i) > (0))

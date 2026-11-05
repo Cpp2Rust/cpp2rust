@@ -17,9 +17,11 @@ pub struct Counted {
     pub v: i32,
 }
 impl Counted {
+    #[inline]
     pub fn new(mut v: i32) -> Self {
         Self { v: v }
     }
+    #[inline]
     pub fn copy_from(o: Ptr<Counted>) -> Self {
         let __this: Counted = Self {
             v: o.with(|__s| __s.v),
@@ -41,14 +43,17 @@ pub struct NonConst {
     pub mark: i32,
 }
 impl NonConst {
+    #[inline]
     pub fn new() -> Self {
         Self { mark: 0 }
     }
+    #[inline]
     pub fn new_1(o: Ptr<NonConst>) -> Self {
         Self {
             mark: (o.with(|__s| __s.mark) + 1),
         }
     }
+    #[inline]
     pub fn new_2(o: Ptr<NonConst>) -> Self {
         Self {
             mark: (o.with(|__s| __s.mark) + 10),
@@ -76,9 +81,11 @@ pub struct Ignored {
     pub v: i32,
 }
 impl Ignored {
+    #[inline]
     pub fn new(mut v: i32) -> Self {
         Self { v: v }
     }
+    #[inline]
     pub fn copy_from(_a0: Ptr<Ignored>) -> Self {
         let __this: Ignored = Self { v: -1_i32 };
         (*copies_0.with(Value::clone).borrow_mut()).prefix_inc();
@@ -121,15 +128,18 @@ pub struct Box_int_ {
     pub val: i32,
 }
 impl Box_int_ {
+    #[inline]
     pub fn new(v: i32) -> Self {
         let v: Value<i32> = Rc::new(RefCell::new(v));
         Self { val: (*v.borrow()) }
     }
+    #[inline]
     pub fn copy_from(o: Ptr<Box_int_>) -> Self {
         Self {
             val: o.with(|__s| __s.val),
         }
     }
+    #[inline]
     pub fn move_from(_a0: Ptr<Box_int_>) -> Self {
         Self {
             val: { (*_a0.upgrade().deref()).val },
@@ -152,6 +162,7 @@ pub struct Owner {
     pub box_: Box_int_,
 }
 impl Owner {
+    #[inline]
     pub fn move_from(_a0: Ptr<Owner>) -> Self {
         Self {
             box_: Box_int_::move_from({ field_ptr!(_a0, box_) }),
@@ -166,6 +177,7 @@ pub struct OutOfLine {
     pub v: i32,
 }
 impl OutOfLine {
+    #[inline]
     pub fn new(mut v: i32) -> Self {
         Self { v: v }
     }
@@ -191,6 +203,7 @@ pub struct Tracked {
     pub copied_from: i32,
 }
 impl Tracked {
+    #[inline]
     pub fn copy_from(o: Ptr<Tracked>) -> Self {
         let __this: Tracked = Self { copied_from: 0 };
         field!(o, copied_from).with_mut(|__v| __v.prefix_inc());
@@ -292,6 +305,7 @@ pub trait CountedImpl {
     fn copy_assign(&self, _a0: Ptr<Counted>) -> Ptr<Counted>;
 }
 impl CountedImpl for Ptr<Counted> {
+    #[inline]
     fn copy_assign(&self, _a0: Ptr<Counted>) -> Ptr<Counted> {
         field!((*self), v).write({ _a0.with(|__s| __s.v) });
         return (*self).clone();
@@ -301,6 +315,7 @@ pub trait HolderImpl {
     fn copy_assign(&self, _a0: Ptr<Holder>) -> Ptr<Holder>;
 }
 impl HolderImpl for Ptr<Holder> {
+    #[inline]
     fn copy_assign(&self, _a0: Ptr<Holder>) -> Ptr<Holder> {
         ({
             let _arg0: Ptr<Counted> = field_ptr!(_a0, c);
@@ -322,6 +337,7 @@ pub trait IgnoredImpl {
     fn copy_assign(&self, _a0: Ptr<Ignored>) -> Ptr<Ignored>;
 }
 impl IgnoredImpl for Ptr<Ignored> {
+    #[inline]
     fn copy_assign(&self, _a0: Ptr<Ignored>) -> Ptr<Ignored> {
         field!((*self), v).write({ _a0.with(|__s| __s.v) });
         return (*self).clone();
@@ -331,6 +347,7 @@ pub trait NonConstImpl {
     fn copy_assign(&self, _a0: Ptr<NonConst>) -> Ptr<NonConst>;
 }
 impl NonConstImpl for Ptr<NonConst> {
+    #[inline]
     fn copy_assign(&self, _a0: Ptr<NonConst>) -> Ptr<NonConst> {
         field!((*self), mark).write({ _a0.with(|__s| __s.mark) });
         return (*self).clone();
@@ -340,6 +357,7 @@ pub trait OutOfLineImpl {
     fn copy_assign(&self, _a0: Ptr<OutOfLine>) -> Ptr<OutOfLine>;
 }
 impl OutOfLineImpl for Ptr<OutOfLine> {
+    #[inline]
     fn copy_assign(&self, _a0: Ptr<OutOfLine>) -> Ptr<OutOfLine> {
         field!((*self), v).write({ _a0.with(|__s| __s.v) });
         return (*self).clone();
@@ -349,6 +367,7 @@ pub trait TrackedImpl {
     fn copy_assign(&self, o: Ptr<Tracked>) -> Ptr<Tracked>;
 }
 impl TrackedImpl for Ptr<Tracked> {
+    #[inline]
     fn copy_assign(&self, o: Ptr<Tracked>) -> Ptr<Tracked> {
         field!(o, copied_from).with_mut(|__v| __v.prefix_inc());
         return (*self).clone();

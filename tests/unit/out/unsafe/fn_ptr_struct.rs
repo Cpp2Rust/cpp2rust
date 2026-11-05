@@ -22,12 +22,15 @@ pub unsafe fn negate_1(mut x: i32) -> i32 {
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S {}
 impl S {
+    #[inline]
     pub unsafe fn pick_1(mut x: i32) -> i32 {
         return ((x) + (1));
     }
+    #[inline]
     pub unsafe fn pick_2(mut x: i64) -> i32 {
         return ((x as i32) + (2));
     }
+    #[inline]
     pub unsafe fn solo(mut x: i32) -> i32 {
         return ((x) + (3));
     }
@@ -39,15 +42,18 @@ pub struct MoveOnly {
     pub data_: i32,
 }
 impl MoveOnly {
+    #[inline]
     pub unsafe fn new(mut data: i32) -> Self {
         let mut this = Self { data_: data };
         this
     }
+    #[inline]
     pub unsafe fn move_from(x: *mut MoveOnly) -> Self {
         let mut this = Self { data_: (*x).data_ };
         (*x).data_ = 0;
         this
     }
+    #[inline]
     pub unsafe fn get(&self) -> i32 {
         return self.data_;
     }

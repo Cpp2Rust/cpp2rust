@@ -20,9 +20,11 @@ pub struct Elem {
     pub v: i32,
 }
 impl Elem {
+    #[inline]
     pub fn new(mut v: i32) -> Self {
         Self { v: v }
     }
+    #[inline]
     pub fn copy_from(o: Ptr<Elem>) -> Self {
         let __this: Elem = Self {
             v: o.with(|__s| __s.v),
@@ -30,6 +32,7 @@ impl Elem {
         (*copies_0.with(Value::clone).borrow_mut()).prefix_inc();
         __this
     }
+    #[inline]
     pub fn move_from(o: Ptr<Elem>) -> Self {
         let __this: Elem = Self {
             v: o.with(|__s| __s.v),
@@ -87,6 +90,7 @@ pub trait ElemImpl {
     fn copy_assign(&self, _a0: Ptr<Elem>) -> Ptr<Elem>;
 }
 impl ElemImpl for Ptr<Elem> {
+    #[inline]
     fn copy_assign(&self, _a0: Ptr<Elem>) -> Ptr<Elem> {
         field!((*self), v).write({ _a0.with(|__s| __s.v) });
         return (*self).clone();

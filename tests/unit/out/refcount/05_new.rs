@@ -34,6 +34,7 @@ pub trait DImpl {
     fn operator_call(&self, ptr: Ptr<A>);
 }
 impl DImpl for Ptr<D> {
+    #[inline]
     fn operator_call(&self, mut ptr: Ptr<A>) {
         ptr.delete();
     }

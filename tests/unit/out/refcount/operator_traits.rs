@@ -239,9 +239,11 @@ pub trait CmpImpl {
     fn operator_eq(&self, o: Ptr<Cmp>) -> bool;
 }
 impl CmpImpl for Ptr<Cmp> {
+    #[inline]
     fn operator_cmp(&self, o: Ptr<Cmp>) -> std::cmp::Ordering {
         return std::cmp::Ord::cmp(&((*self).with(|__s| __s.v)), &(o.with(|__s| __s.v)));
     }
+    #[inline]
     fn operator_eq(&self, o: Ptr<Cmp>) -> bool {
         return ({ (*self).with(|__s| __s.v) } == { o.with(|__s| __s.v) });
     }
@@ -250,6 +252,7 @@ pub trait EqImpl {
     fn operator_eq(&self, o: Ptr<Eq>) -> bool;
 }
 impl EqImpl for Ptr<Eq> {
+    #[inline]
     fn operator_eq(&self, o: Ptr<Eq>) -> bool {
         return ({ (*self).with(|__s| __s.v) } == { o.with(|__s| __s.v) });
     }
@@ -258,6 +261,7 @@ pub trait LtImpl {
     fn operator_lt(&self, o: Ptr<Lt>) -> bool;
 }
 impl LtImpl for Ptr<Lt> {
+    #[inline]
     fn operator_lt(&self, o: Ptr<Lt>) -> bool {
         return ({ (*self).with(|__s| __s.v) } < { o.with(|__s| __s.v) });
     }

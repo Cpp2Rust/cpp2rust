@@ -15,6 +15,7 @@ pub struct S {
     pub r: Ptr<i32>,
 }
 impl S {
+    #[inline]
     pub fn new(x: Ptr<i32>) -> Self {
         Self { r: (x).clone() }
     }

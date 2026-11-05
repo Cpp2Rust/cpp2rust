@@ -10,9 +10,11 @@ use std::rc::Rc;
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct TestAllocator_int_ {}
 impl TestAllocator_int_ {
+    #[inline]
     pub unsafe fn allocate(&mut self, mut n: usize) -> *mut i32 {
         return Box::leak((0..n).map(|_| 0_i32).collect::<Box<[i32]>>()).as_mut_ptr();
     }
+    #[inline]
     pub unsafe fn deallocate(&mut self, mut p: *mut i32, mut _a1: usize) {
         {
             let __p = p;
@@ -30,9 +32,11 @@ impl TestAllocator_int_ {
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct TestAllocator_double_ {}
 impl TestAllocator_double_ {
+    #[inline]
     pub unsafe fn allocate(&mut self, mut n: usize) -> *mut f64 {
         return Box::leak((0..n).map(|_| 0_f64).collect::<Box<[f64]>>()).as_mut_ptr();
     }
+    #[inline]
     pub unsafe fn deallocate(&mut self, mut p: *mut f64, mut _a1: usize) {
         {
             let __p = p;

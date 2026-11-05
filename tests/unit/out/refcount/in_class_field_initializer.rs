@@ -54,6 +54,7 @@ pub struct Boxed_int_ {
     pub tag: i32,
 }
 impl Boxed_int_ {
+    #[inline]
     pub fn new(mut x: i32, mut t: i32) -> Self {
         Self { v: x, tag: t }
     }

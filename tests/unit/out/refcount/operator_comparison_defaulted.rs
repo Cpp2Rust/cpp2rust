@@ -242,9 +242,11 @@ pub trait BothImpl {
     fn operator_cmp(&self, _a0: Ptr<Both>) -> std::cmp::Ordering;
 }
 impl BothImpl for Ptr<Both> {
+    #[inline]
     fn operator_eq(&self, _a0: Ptr<Both>) -> bool {
         return ({ (*self).with(|__s| __s.a) } == { _a0.with(|__s| __s.a) });
     }
+    #[inline]
     fn operator_cmp(&self, _a0: Ptr<Both>) -> std::cmp::Ordering {
         {
             let cmp: Value<std::cmp::Ordering> = Rc::new(RefCell::new(std::cmp::Ord::cmp(
@@ -263,6 +265,7 @@ pub trait CmpImpl {
     fn operator_eq(&self, _a0: Ptr<Cmp>) -> bool;
 }
 impl CmpImpl for Ptr<Cmp> {
+    #[inline]
     fn operator_cmp(&self, _a0: Ptr<Cmp>) -> std::cmp::Ordering {
         {
             let cmp: Value<std::cmp::Ordering> = Rc::new(RefCell::new(std::cmp::Ord::cmp(
@@ -284,6 +287,7 @@ impl CmpImpl for Ptr<Cmp> {
         }
         return std::cmp::Ordering::Equal;
     }
+    #[inline]
     fn operator_eq(&self, _a0: Ptr<Cmp>) -> bool {
         return ({ (*self).with(|__s| __s.a) } == { _a0.with(|__s| __s.a) })
             && ({ (*self).with(|__s| __s.b) } == { _a0.with(|__s| __s.b) });
@@ -293,6 +297,7 @@ pub trait EqImpl {
     fn operator_eq(&self, _a0: Ptr<Eq>) -> bool;
 }
 impl EqImpl for Ptr<Eq> {
+    #[inline]
     fn operator_eq(&self, _a0: Ptr<Eq>) -> bool {
         return ({ (*self).with(|__s| __s.a) } == { _a0.with(|__s| __s.a) })
             && ({ (*self).with(|__s| __s.b) } == { _a0.with(|__s| __s.b) });
@@ -303,6 +308,7 @@ pub trait InnerImpl {
     fn operator_eq(&self, _a0: Ptr<Inner>) -> bool;
 }
 impl InnerImpl for Ptr<Inner> {
+    #[inline]
     fn operator_cmp(&self, _a0: Ptr<Inner>) -> std::cmp::Ordering {
         {
             let cmp: Value<std::cmp::Ordering> = Rc::new(RefCell::new(std::cmp::Ord::cmp(
@@ -315,6 +321,7 @@ impl InnerImpl for Ptr<Inner> {
         }
         return std::cmp::Ordering::Equal;
     }
+    #[inline]
     fn operator_eq(&self, _a0: Ptr<Inner>) -> bool {
         return ({ (*self).with(|__s| __s.x) } == { _a0.with(|__s| __s.x) });
     }
@@ -323,6 +330,7 @@ pub trait OrdOnlyImpl {
     fn operator_cmp(&self, _a0: Ptr<OrdOnly>) -> std::cmp::Ordering;
 }
 impl OrdOnlyImpl for Ptr<OrdOnly> {
+    #[inline]
     fn operator_cmp(&self, _a0: Ptr<OrdOnly>) -> std::cmp::Ordering {
         {
             let cmp: Value<std::cmp::Ordering> = Rc::new(RefCell::new(std::cmp::Ord::cmp(
@@ -341,6 +349,7 @@ pub trait OuterImpl {
     fn operator_eq(&self, _a0: Ptr<Outer>) -> bool;
 }
 impl OuterImpl for Ptr<Outer> {
+    #[inline]
     fn operator_cmp(&self, _a0: Ptr<Outer>) -> std::cmp::Ordering {
         {
             let cmp: Value<std::cmp::Ordering> = Rc::new(RefCell::new(
@@ -364,6 +373,7 @@ impl OuterImpl for Ptr<Outer> {
         }
         return std::cmp::Ordering::Equal;
     }
+    #[inline]
     fn operator_eq(&self, _a0: Ptr<Outer>) -> bool {
         return ({
             let _arg0: Ptr<Inner> = field_ptr!(_a0, i);
@@ -376,6 +386,7 @@ pub trait PtrMemberImpl {
     fn operator_eq(&self, _a0: Ptr<PtrMember>) -> bool;
 }
 impl PtrMemberImpl for Ptr<PtrMember> {
+    #[inline]
     fn operator_cmp(&self, _a0: Ptr<PtrMember>) -> std::cmp::Ordering {
         {
             let cmp: Value<std::cmp::Ordering> = Rc::new(RefCell::new(std::cmp::Ord::cmp(
@@ -388,6 +399,7 @@ impl PtrMemberImpl for Ptr<PtrMember> {
         }
         return std::cmp::Ordering::Equal;
     }
+    #[inline]
     fn operator_eq(&self, _a0: Ptr<PtrMember>) -> bool {
         return ({ (*self).with(|__s| __s.p.clone()) } == { _a0.with(|__s| __s.p.clone()) });
     }
@@ -400,15 +412,18 @@ pub trait SecondaryImpl {
     fn operator_ge(&self, _a0: Ptr<Secondary>) -> bool;
 }
 impl SecondaryImpl for Ptr<Secondary> {
+    #[inline]
     fn operator_eq(&self, _a0: Ptr<Secondary>) -> bool {
         return ({ (*self).with(|__s| __s.a) } == { _a0.with(|__s| __s.a) });
     }
+    #[inline]
     fn operator_ne(&self, _a0: Ptr<Secondary>) -> bool {
         return !({
             let _arg0: Ptr<Secondary> = (_a0).clone();
             SecondaryImpl::operator_eq(&(*self), _arg0)
         });
     }
+    #[inline]
     fn operator_cmp(&self, _a0: Ptr<Secondary>) -> std::cmp::Ordering {
         {
             let cmp: Value<std::cmp::Ordering> = Rc::new(RefCell::new(std::cmp::Ord::cmp(
@@ -421,12 +436,14 @@ impl SecondaryImpl for Ptr<Secondary> {
         }
         return std::cmp::Ordering::Equal;
     }
+    #[inline]
     fn operator_lt(&self, _a0: Ptr<Secondary>) -> bool {
         return ({
             let _arg0: Ptr<Secondary> = (_a0).clone();
             SecondaryImpl::operator_cmp(&(*self), _arg0)
         }) == std::cmp::Ordering::Less;
     }
+    #[inline]
     fn operator_ge(&self, _a0: Ptr<Secondary>) -> bool {
         return ({
             let _arg0: Ptr<Secondary> = (_a0).clone();

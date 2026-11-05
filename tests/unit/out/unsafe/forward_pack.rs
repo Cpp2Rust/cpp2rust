@@ -20,6 +20,7 @@ pub struct Tracked {
     pub moves: i32,
 }
 impl Tracked {
+    #[inline]
     pub unsafe fn new(mut v: i32) -> Self {
         let mut this = Self {
             v: v,
@@ -28,6 +29,7 @@ impl Tracked {
         };
         this
     }
+    #[inline]
     pub unsafe fn copy_from(o: *const Tracked) -> Self {
         let mut this = Self {
             v: (*o).v,
@@ -36,6 +38,7 @@ impl Tracked {
         };
         this
     }
+    #[inline]
     pub unsafe fn move_from(o: *mut Tracked) -> Self {
         let mut this = Self {
             v: (*o).v,
@@ -98,6 +101,7 @@ pub unsafe fn forward_pack_7(
     return digits;
 }
 impl Pair {
+    #[inline]
     pub unsafe fn new(x: *mut Tracked, y: *mut Tracked) -> Self {
         let mut this = Self {
             a: Tracked::copy_from({ x }),
@@ -113,6 +117,7 @@ pub struct Pair {
     pub b: Tracked,
 }
 impl Pair {
+    #[inline]
     pub unsafe fn move_from(_a0: *mut Pair) -> Self {
         let mut this = Self {
             a: Tracked::move_from({ &mut (*_a0).a }),

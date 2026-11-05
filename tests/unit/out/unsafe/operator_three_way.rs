@@ -12,6 +12,7 @@ pub struct S {
     pub v: i32,
 }
 impl S {
+    #[inline]
     pub unsafe fn operator_cmp(&self, o: *const S) -> std::cmp::Ordering {
         if ((self.v) < ((*o).v)) {
             return std::cmp::Ordering::Less;
@@ -21,6 +22,7 @@ impl S {
         }
         return std::cmp::Ordering::Equal;
     }
+    #[inline]
     pub unsafe fn operator_eq(&self, o: *const S) -> bool {
         return ((self.v) == ((*o).v));
     }

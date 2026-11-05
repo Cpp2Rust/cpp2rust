@@ -12,12 +12,15 @@ pub struct S {
     pub v: i32,
 }
 impl S {
+    #[inline]
     pub unsafe fn operator_not(&self) -> bool {
         return ((self.v) == (0));
     }
+    #[inline]
     pub unsafe fn operator_and(&self, o: *const S) -> bool {
         return ((self.v) != (0)) && (((*o).v) != (0));
     }
+    #[inline]
     pub unsafe fn operator_or(&self, o: *const S) -> bool {
         return ((self.v) != (0)) || (((*o).v) != (0));
     }

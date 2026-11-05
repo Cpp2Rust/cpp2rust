@@ -13,15 +13,18 @@ pub struct MoveOnly {
     pub v: i32,
 }
 impl MoveOnly {
+    #[inline]
     pub unsafe fn new(mut v: i32) -> Self {
         let mut this = Self { v: v };
         this
     }
+    #[inline]
     pub unsafe fn move_from(o: *mut MoveOnly) -> Self {
         let mut this = Self { v: (*o).v };
         (*o).v = 0;
         this
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, o: *mut MoveOnly) -> *mut MoveOnly {
         if ((self as *mut MoveOnly) == (o)) {
             return &mut (*(self as *mut MoveOnly));
@@ -37,14 +40,17 @@ pub struct ConstMoveAssign {
     pub mark: i32,
 }
 impl ConstMoveAssign {
+    #[inline]
     pub unsafe fn new() -> Self {
         let mut this = Self { mark: 0 };
         this
     }
+    #[inline]
     pub unsafe fn operator_assign_2(&mut self, o: *mut ConstMoveAssign) -> *mut ConstMoveAssign {
         self.mark = (((*o).mark) + (1));
         return &mut (*(self as *mut ConstMoveAssign));
     }
+    #[inline]
     pub unsafe fn operator_assign_3(&mut self, o: *const ConstMoveAssign) -> *mut ConstMoveAssign {
         self.mark = (((*o).mark) + (10));
         return &mut (*(self as *mut ConstMoveAssign));

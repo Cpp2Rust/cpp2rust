@@ -13,6 +13,7 @@ pub struct S {
     pub v: Vec<i32>,
 }
 impl S {
+    #[inline]
     pub unsafe fn move_from(_a0: *mut S) -> Self {
         let mut this = Self {
             tag: (*_a0).tag,
@@ -20,6 +21,7 @@ impl S {
         };
         this
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, _a0: *mut S) -> *mut S {
         self.tag = (*_a0).tag;
         self.v = std::mem::take(&mut (*_a0).v);

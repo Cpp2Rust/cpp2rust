@@ -25,12 +25,15 @@ pub fn negate_1(mut x: i32) -> i32 {
 #[byte_size(1)]
 pub struct S {}
 impl S {
+    #[inline]
     pub fn pick_1(mut x: i32) -> i32 {
         return (x + 1);
     }
+    #[inline]
     pub fn pick_2(mut x: i64) -> i32 {
         return ((x as i32) + 2);
     }
+    #[inline]
     pub fn solo(mut x: i32) -> i32 {
         return (x + 3);
     }
@@ -43,9 +46,11 @@ pub struct MoveOnly {
     pub data_: i32,
 }
 impl MoveOnly {
+    #[inline]
     pub fn new(mut data: i32) -> Self {
         Self { data_: data }
     }
+    #[inline]
     pub fn move_from(x: Ptr<MoveOnly>) -> Self {
         let __this: MoveOnly = Self {
             data_: x.with(|__s| __s.data_),
@@ -106,6 +111,7 @@ pub trait MoveOnlyImpl {
     fn get(&self) -> i32;
 }
 impl MoveOnlyImpl for Ptr<MoveOnly> {
+    #[inline]
     fn get(&self) -> i32 {
         return (*self).with(|__s| __s.data_);
     }

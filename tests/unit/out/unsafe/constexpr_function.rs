@@ -9,15 +9,18 @@ use std::rc::Rc;
 pub unsafe fn runtime_only_0(mut x: i32) -> i32 {
     return ((x) * (2));
 }
+#[inline]
 pub unsafe fn first_1(mut p: *const i32) -> i32 {
     return (*p);
 }
+#[inline]
 pub unsafe fn scaled_2(mut x: i32) -> i32 {
     if ((x) < (0)) {
         return (unsafe { runtime_only_0(-x) });
     }
     return x;
 }
+#[inline]
 pub unsafe fn half_3(mut x: f64) -> f64 {
     return ((x) / (2_f64));
 }
@@ -27,18 +30,22 @@ pub struct Flag {
     pub v: i32,
 }
 impl Flag {
+    #[inline]
     pub unsafe fn to_bool(&self) -> bool {
         return ((self.v) != (0));
     }
 }
+#[inline]
 pub unsafe fn use_4(mut f: Flag) -> i32 {
     assert!((unsafe { Flag::to_bool(&f,) }));
     return f.v;
 }
+#[inline]
 pub unsafe fn checked_5(mut x: i32) -> i32 {
     assert!(((x) > (0)));
     return ((x) + (1));
 }
+#[inline]
 pub unsafe fn in_constant_context_6() -> bool {
     {}
     return ((unsafe { runtime_only_0(1) }) == (0));
@@ -50,6 +57,7 @@ pub struct P {
     pub v: i32,
 }
 impl P {
+    #[inline]
     pub unsafe fn get(&self) -> i32 {
         return self.v;
     }

@@ -27,6 +27,7 @@ pub struct Counter {
     pub n: i32,
 }
 impl Counter {
+    #[inline]
     pub unsafe fn inc(&mut self) {
         self.n.prefix_inc();
     }

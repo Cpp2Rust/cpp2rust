@@ -29,18 +29,22 @@ pub struct Outer {
     pub buf: [i32; 4],
 }
 impl Outer {
+    #[inline]
     pub unsafe fn next(&mut self) -> i32 {
         return self.buf[(self.x.postfix_inc()) as usize];
     }
+    #[inline]
     pub unsafe fn sum(&self) -> i32 {
         return ((self.x) + (self.inner.a));
     }
+    #[inline]
     pub unsafe fn push(&mut self, mut k: i32) {
         {
             let __a1 = ((k) + (self.x));
             self.v.push(__a1)
         };
     }
+    #[inline]
     pub unsafe fn move_from(_a0: *mut Outer) -> Self {
         let mut this = Self {
             x: (*_a0).x,
@@ -52,6 +56,7 @@ impl Outer {
         };
         this
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, _a0: *mut Outer) -> *mut Outer {
         self.x = (*_a0).x;
         self.inner = (*_a0).inner;

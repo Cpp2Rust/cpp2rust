@@ -26,6 +26,7 @@ pub struct X2 {
     pub v: *mut X1,
 }
 impl X2 {
+    #[inline]
     pub unsafe fn get(&mut self) -> *mut X1 {
         return self.v;
     }
@@ -36,6 +37,7 @@ pub struct X3 {
     pub v: *mut X2,
 }
 impl X3 {
+    #[inline]
     pub unsafe fn get(&mut self) -> *mut X2 {
         return self.v;
     }
@@ -46,6 +48,7 @@ pub struct X4 {
     pub v: X3,
 }
 impl X4 {
+    #[inline]
     pub unsafe fn get(&mut self) -> *mut X3 {
         return &mut self.v;
     }

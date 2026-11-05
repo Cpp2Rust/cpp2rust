@@ -21,6 +21,7 @@ pub struct Tracked {
     pub moves: i32,
 }
 impl Tracked {
+    #[inline]
     pub fn new(mut v: i32) -> Self {
         Self {
             v: v,
@@ -28,6 +29,7 @@ impl Tracked {
             moves: 0,
         }
     }
+    #[inline]
     pub fn copy_from(o: Ptr<Tracked>) -> Self {
         Self {
             v: o.with(|__s| __s.v),
@@ -35,6 +37,7 @@ impl Tracked {
             moves: o.with(|__s| __s.moves),
         }
     }
+    #[inline]
     pub fn move_from(o: Ptr<Tracked>) -> Self {
         let __this: Tracked = Self {
             v: o.with(|__s| __s.v),
@@ -62,6 +65,7 @@ pub fn chosen_overload_1(_a0: Ptr<Tracked>) -> Overload {
     return Overload_kRvalueOverload;
 }
 impl Holder {
+    #[inline]
     pub fn new_1(x: Ptr<Tracked>) -> Self {
         Self {
             t: Tracked::copy_from({ (x).clone() }),
@@ -69,6 +73,7 @@ impl Holder {
     }
 }
 impl Holder {
+    #[inline]
     pub fn new_2(x: Ptr<Tracked>) -> Self {
         Self {
             t: Tracked::move_from({ (x).clone() }),
@@ -85,6 +90,7 @@ pub struct Holder {
     pub t: Tracked,
 }
 impl Holder {
+    #[inline]
     pub fn move_from(_a0: Ptr<Holder>) -> Self {
         Self {
             t: Tracked::move_from({ field_ptr!(_a0, t) }),

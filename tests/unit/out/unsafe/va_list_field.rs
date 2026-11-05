@@ -27,6 +27,7 @@ pub struct Guard_1 {
     pub active: bool,
 }
 impl Guard_1 {
+    #[inline]
     pub unsafe fn new(val: *mut *const VaArg) -> Self {
         let mut this = Self {
             ap: val,
@@ -34,6 +35,7 @@ impl Guard_1 {
         };
         this
     }
+    #[inline]
     pub unsafe fn destructor(&mut self) {
         if self.active {}
     }

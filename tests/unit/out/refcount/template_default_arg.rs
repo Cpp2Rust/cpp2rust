@@ -14,9 +14,11 @@ pub struct A {
     pub v: i32,
 }
 impl A {
+    #[inline]
     pub fn new_2() -> Self {
         Self { v: 1 }
     }
+    #[inline]
     pub fn new_1(mut v: i32) -> Self {
         Self { v: v }
     }
@@ -33,6 +35,7 @@ pub struct B {
     pub v: i32,
 }
 impl B {
+    #[inline]
     pub fn new() -> Self {
         Self { v: 2 }
     }
@@ -50,6 +53,7 @@ pub struct NoDefault {
     pub v: i32,
 }
 impl NoDefault {
+    #[inline]
     pub fn new(mut v: i32) -> Self {
         Self { v: v }
     }
@@ -77,6 +81,7 @@ pub struct S_NoDefault_ {
     pub v: i32,
 }
 impl S_NoDefault_ {
+    #[inline]
     pub fn new(mut v: i32) -> Self {
         Self { v: v }
     }
@@ -100,6 +105,7 @@ pub trait S_NoDefault_Impl {
     fn get(&self, t: NoDefault) -> i32;
 }
 impl S_NoDefault_Impl for Ptr<S_NoDefault_> {
+    #[inline]
     fn get(&self, mut t: NoDefault) -> i32 {
         return ((*self).with(|__s| __s.v) + t.v);
     }

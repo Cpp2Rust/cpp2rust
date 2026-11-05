@@ -141,6 +141,7 @@ pub trait NodeImpl {
     fn SetNext(&self, next: Ptr<Node>);
 }
 impl NodeImpl for Ptr<Node> {
+    #[inline]
     fn SetNext(&self, mut next: Ptr<Node>) {
         field!((*self), next).write((next).clone());
     }

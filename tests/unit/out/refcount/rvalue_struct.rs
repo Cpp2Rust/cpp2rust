@@ -15,6 +15,7 @@ pub struct S {
     pub b: i32,
 }
 impl S {
+    #[inline]
     pub fn new(mut a: i32, mut b: i32) -> Self {
         Self { a: a, b: b }
     }

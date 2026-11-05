@@ -67,9 +67,11 @@ pub trait YImpl {
     fn ptr(&self) -> Ptr<X>;
 }
 impl YImpl for Ptr<Y> {
+    #[inline]
     fn foo(&self) -> Ptr<X> {
         return field_ptr!((*self), x);
     }
+    #[inline]
     fn ptr(&self) -> Ptr<X> {
         return (field_ptr!((*self), x));
     }

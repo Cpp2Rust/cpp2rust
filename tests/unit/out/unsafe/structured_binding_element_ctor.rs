@@ -15,10 +15,12 @@ pub struct Elem {
     pub v: i32,
 }
 impl Elem {
+    #[inline]
     pub unsafe fn new(mut v: i32) -> Self {
         let mut this = Self { v: v };
         this
     }
+    #[inline]
     pub unsafe fn copy_from(other: *const Elem) -> Self {
         let mut this = Self {
             v: (((*other).v) + (100)),
@@ -26,6 +28,7 @@ impl Elem {
         (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)).prefix_inc();
         this
     }
+    #[inline]
     pub unsafe fn move_from(other: *mut Elem) -> Self {
         let mut this = Self {
             v: (((*other).v) + (1000)),
@@ -47,6 +50,7 @@ pub struct Two {
     pub b: Elem,
 }
 impl Two {
+    #[inline]
     pub unsafe fn move_from(_a0: *mut Two) -> Self {
         let mut this = Self {
             a: Elem::move_from({ &mut (*_a0).a }),

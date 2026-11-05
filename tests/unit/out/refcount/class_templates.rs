@@ -14,6 +14,7 @@ pub struct MyContainer_int_ {
     vec_: Vec<i32>,
 }
 impl MyContainer_int_ {
+    #[inline]
     pub fn move_from(_a0: Ptr<MyContainer_int_>) -> Self {
         Self {
             vec_: field!(_a0, vec_).with_mut(std::mem::take),
@@ -28,6 +29,7 @@ pub struct MyContainer_char_ {
     vec_: Vec<i8>,
 }
 impl MyContainer_char_ {
+    #[inline]
     pub fn move_from(_a0: Ptr<MyContainer_char_>) -> Self {
         Self {
             vec_: field!(_a0, vec_).with_mut(std::mem::take),
@@ -42,6 +44,7 @@ pub struct MyContainer_float_ {
     vec_: Vec<f32>,
 }
 impl MyContainer_float_ {
+    #[inline]
     pub fn move_from(_a0: Ptr<MyContainer_float_>) -> Self {
         Self {
             vec_: field!(_a0, vec_).with_mut(std::mem::take),
@@ -246,25 +249,31 @@ pub trait MyContainer_char_Impl {
     fn move_assign(&self, _a0: Ptr<MyContainer_char_>) -> Ptr<MyContainer_char_>;
 }
 impl MyContainer_char_Impl for Ptr<MyContainer_char_> {
+    #[inline]
     fn empty(&self) -> bool {
         return (*(*self).upgrade().deref()).vec_.is_empty();
     }
+    #[inline]
     fn size(&self) -> usize {
         return (*(*self).upgrade().deref()).vec_.len();
     }
+    #[inline]
     fn back_4(&self) -> Ptr<i8> {
         return field_ref!((*self), vec_).decay().to_last();
     }
+    #[inline]
     fn pop_back(&self) {
         field!((*self), vec_).with_mut(|__v: &mut Vec<i8>| __v.pop());
         return;
     }
+    #[inline]
     fn push_back(&self, item: Ptr<i8>) {
         {
             let a0_clone = (item.read()).clone();
             field!((*self), vec_).with_mut(|__v: &mut Vec<i8>| __v.push(a0_clone))
         };
     }
+    #[inline]
     fn move_assign(&self, _a0: Ptr<MyContainer_char_>) -> Ptr<MyContainer_char_> {
         field_ref!((*self), vec_)
             .as_pointer()
@@ -284,25 +293,31 @@ pub trait MyContainer_float_Impl {
     fn move_assign(&self, _a0: Ptr<MyContainer_float_>) -> Ptr<MyContainer_float_>;
 }
 impl MyContainer_float_Impl for Ptr<MyContainer_float_> {
+    #[inline]
     fn empty(&self) -> bool {
         return (*(*self).upgrade().deref()).vec_.is_empty();
     }
+    #[inline]
     fn size(&self) -> usize {
         return (*(*self).upgrade().deref()).vec_.len();
     }
+    #[inline]
     fn back_4(&self) -> Ptr<f32> {
         return field_ref!((*self), vec_).decay().to_last();
     }
+    #[inline]
     fn pop_back(&self) {
         field!((*self), vec_).with_mut(|__v: &mut Vec<f32>| __v.pop());
         return;
     }
+    #[inline]
     fn push_back(&self, item: Ptr<f32>) {
         {
             let a0_clone = (item.read()).clone();
             field!((*self), vec_).with_mut(|__v: &mut Vec<f32>| __v.push(a0_clone))
         };
     }
+    #[inline]
     fn move_assign(&self, _a0: Ptr<MyContainer_float_>) -> Ptr<MyContainer_float_> {
         field_ref!((*self), vec_)
             .as_pointer()
@@ -322,25 +337,31 @@ pub trait MyContainer_int_Impl {
     fn move_assign(&self, _a0: Ptr<MyContainer_int_>) -> Ptr<MyContainer_int_>;
 }
 impl MyContainer_int_Impl for Ptr<MyContainer_int_> {
+    #[inline]
     fn empty(&self) -> bool {
         return (*(*self).upgrade().deref()).vec_.is_empty();
     }
+    #[inline]
     fn size(&self) -> usize {
         return (*(*self).upgrade().deref()).vec_.len();
     }
+    #[inline]
     fn back_4(&self) -> Ptr<i32> {
         return field_ref!((*self), vec_).decay().to_last();
     }
+    #[inline]
     fn pop_back(&self) {
         field!((*self), vec_).with_mut(|__v: &mut Vec<i32>| __v.pop());
         return;
     }
+    #[inline]
     fn push_back(&self, item: Ptr<i32>) {
         {
             let a0_clone = (item.read()).clone();
             field!((*self), vec_).with_mut(|__v: &mut Vec<i32>| __v.push(a0_clone))
         };
     }
+    #[inline]
     fn move_assign(&self, _a0: Ptr<MyContainer_int_>) -> Ptr<MyContainer_int_> {
         field_ref!((*self), vec_)
             .as_pointer()
@@ -352,6 +373,7 @@ pub trait Outer_int_Impl {
     fn with(&self, n: i32) -> Outer_int__Inner_int_;
 }
 impl Outer_int_Impl for Ptr<Outer_int_> {
+    #[inline]
     fn with(&self, mut n: i32) -> Outer_int__Inner_int_ {
         return Outer_int__Inner_int_ {
             t: (*self).with(|__s| __s.v),
@@ -363,6 +385,7 @@ pub trait Outer_int__Inner_int_Impl {
     fn sum(&self) -> i32;
 }
 impl Outer_int__Inner_int_Impl for Ptr<Outer_int__Inner_int_> {
+    #[inline]
     fn sum(&self) -> i32 {
         return (((*self).with(|__s| __s.t) as i32) + ((*self).with(|__s| __s.u) as i32));
     }
@@ -371,6 +394,7 @@ pub trait Outer_long_Impl {
     fn with(&self, n: i32) -> Outer_long__Inner_int_;
 }
 impl Outer_long_Impl for Ptr<Outer_long_> {
+    #[inline]
     fn with(&self, mut n: i32) -> Outer_long__Inner_int_ {
         return Outer_long__Inner_int_ {
             t: (*self).with(|__s| __s.v),
@@ -382,6 +406,7 @@ pub trait Outer_long__Inner_char_Impl {
     fn sum(&self) -> i32;
 }
 impl Outer_long__Inner_char_Impl for Ptr<Outer_long__Inner_char_> {
+    #[inline]
     fn sum(&self) -> i32 {
         return (((*self).with(|__s| __s.t) as i32) + ((*self).with(|__s| __s.u) as i32));
     }
@@ -390,6 +415,7 @@ pub trait Outer_long__Inner_int_Impl {
     fn sum(&self) -> i32;
 }
 impl Outer_long__Inner_int_Impl for Ptr<Outer_long__Inner_int_> {
+    #[inline]
     fn sum(&self) -> i32 {
         return (((*self).with(|__s| __s.t) as i32) + ((*self).with(|__s| __s.u) as i32));
     }

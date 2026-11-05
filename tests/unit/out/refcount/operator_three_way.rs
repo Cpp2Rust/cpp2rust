@@ -52,6 +52,7 @@ pub trait SImpl {
     fn operator_eq(&self, o: Ptr<S>) -> bool;
 }
 impl SImpl for Ptr<S> {
+    #[inline]
     fn operator_cmp(&self, o: Ptr<S>) -> std::cmp::Ordering {
         if ({ (*self).with(|__s| __s.v) } < { o.with(|__s| __s.v) }) {
             return std::cmp::Ordering::Less;
@@ -61,6 +62,7 @@ impl SImpl for Ptr<S> {
         }
         return std::cmp::Ordering::Equal;
     }
+    #[inline]
     fn operator_eq(&self, o: Ptr<S>) -> bool {
         return ({ (*self).with(|__s| __s.v) } == { o.with(|__s| __s.v) });
     }

@@ -16,6 +16,7 @@ pub struct NonCopy {
     pub tag: i32,
 }
 impl NonCopy {
+    #[inline]
     pub fn move_from(_a0: Ptr<NonCopy>) -> Self {
         Self {
             data: field!(_a0, data).with_mut(std::mem::take),
@@ -55,6 +56,7 @@ pub trait NonCopyImpl {
     fn move_assign(&self, _a0: Ptr<NonCopy>) -> Ptr<NonCopy>;
 }
 impl NonCopyImpl for Ptr<NonCopy> {
+    #[inline]
     fn move_assign(&self, _a0: Ptr<NonCopy>) -> Ptr<NonCopy> {
         field_ref!((*self), data)
             .as_pointer()

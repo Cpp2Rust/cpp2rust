@@ -16,6 +16,7 @@ pub struct Dog {}
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Cat {}
 impl Cat {
+    #[inline]
     unsafe fn meow(&self) -> bool {
         return true;
     }
@@ -37,11 +38,13 @@ unsafe fn main_0() -> i32 {
     return 0;
 }
 unsafe impl Animal for Cat {
+    #[inline]
     unsafe fn bark(&self) -> bool {
         return false;
     }
 }
 unsafe impl Animal for Dog {
+    #[inline]
     unsafe fn bark(&self) -> bool {
         return true;
     }

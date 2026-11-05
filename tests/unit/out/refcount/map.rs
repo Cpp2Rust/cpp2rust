@@ -21,9 +21,11 @@ pub struct Point {
     pub y: i32,
 }
 impl Point {
+    #[inline]
     pub fn new_1() -> Self {
         Self { x: 0, y: 0 }
     }
+    #[inline]
     pub fn new_2(mut x: i32, mut y: i32) -> Self {
         Self { x: x, y: y }
     }

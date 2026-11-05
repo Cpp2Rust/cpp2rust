@@ -13,10 +13,12 @@ pub struct MoveOnly {
     pub v: i32,
 }
 impl MoveOnly {
+    #[inline]
     pub unsafe fn new(mut v: i32) -> Self {
         let mut this = Self { v: v };
         this
     }
+    #[inline]
     pub unsafe fn move_from(o: *mut MoveOnly) -> Self {
         let mut this = Self { v: (*o).v };
         (*o).v = 0;
@@ -29,16 +31,19 @@ pub struct ConstMove {
     pub mark: i32,
 }
 impl ConstMove {
+    #[inline]
     pub unsafe fn new() -> Self {
         let mut this = Self { mark: 0 };
         this
     }
+    #[inline]
     pub unsafe fn new_1(o: *mut ConstMove) -> Self {
         let mut this = Self {
             mark: (((*o).mark) + (1)),
         };
         this
     }
+    #[inline]
     pub unsafe fn new_2(o: *const ConstMove) -> Self {
         let mut this = Self {
             mark: (((*o).mark) + (10)),
@@ -60,6 +65,7 @@ pub struct ThrowingMove {
     pub moves: i32,
 }
 impl ThrowingMove {
+    #[inline]
     pub unsafe fn new(mut v: i32) -> Self {
         let mut this = Self {
             v: v,
@@ -68,6 +74,7 @@ impl ThrowingMove {
         };
         this
     }
+    #[inline]
     pub unsafe fn copy_from(o: *const ThrowingMove) -> Self {
         let mut this = Self {
             v: (*o).v,
@@ -76,6 +83,7 @@ impl ThrowingMove {
         };
         this
     }
+    #[inline]
     pub unsafe fn move_from(o: *mut ThrowingMove) -> Self {
         let mut this = Self {
             v: (*o).v,
@@ -100,6 +108,7 @@ pub struct NoexceptMove {
     pub moves: i32,
 }
 impl NoexceptMove {
+    #[inline]
     pub unsafe fn new(mut v: i32) -> Self {
         let mut this = Self {
             v: v,
@@ -108,6 +117,7 @@ impl NoexceptMove {
         };
         this
     }
+    #[inline]
     pub unsafe fn copy_from(o: *const NoexceptMove) -> Self {
         let mut this = Self {
             v: (*o).v,
@@ -116,6 +126,7 @@ impl NoexceptMove {
         };
         this
     }
+    #[inline]
     pub unsafe fn move_from(o: *mut NoexceptMove) -> Self {
         let mut this = Self {
             v: (*o).v,

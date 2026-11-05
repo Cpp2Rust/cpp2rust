@@ -18,6 +18,7 @@ pub struct Pair {
     pub ap: [*mut i32; 2],
 }
 impl Pair {
+    #[inline]
     pub unsafe fn method(&mut self) {
         self.x.postfix_inc();
         self.y.prefix_inc();
@@ -27,12 +28,15 @@ impl Pair {
         self.pair = std::ptr::null_mut();
         self.ap[(0) as usize] = std::ptr::null_mut();
     }
+    #[inline]
     pub unsafe fn as_val(&mut self) -> i32 {
         return self.x;
     }
+    #[inline]
     pub unsafe fn as_ref(&mut self) -> *mut i32 {
         return &mut self.x;
     }
+    #[inline]
     pub unsafe fn as_ptr(&mut self) -> *mut i32 {
         return (&mut self.x as *mut i32);
     }

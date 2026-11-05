@@ -18,9 +18,11 @@ pub struct Counted {
     pub y: i32,
 }
 impl Counted {
+    #[inline]
     pub fn new(mut x: i32, mut y: i32) -> Self {
         Self { x: x, y: y }
     }
+    #[inline]
     pub fn copy_from(other: Ptr<Counted>) -> Self {
         let __this: Counted = Self {
             x: (other.with(|__s| __s.x) * 2),
@@ -69,6 +71,7 @@ pub trait CountedImpl {
     fn copy_assign(&self, _a0: Ptr<Counted>) -> Ptr<Counted>;
 }
 impl CountedImpl for Ptr<Counted> {
+    #[inline]
     fn copy_assign(&self, _a0: Ptr<Counted>) -> Ptr<Counted> {
         field!((*self), x).write({ _a0.with(|__s| __s.x) });
         field!((*self), y).write({ _a0.with(|__s| __s.y) });

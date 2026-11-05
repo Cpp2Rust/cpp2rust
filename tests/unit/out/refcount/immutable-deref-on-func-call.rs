@@ -38,6 +38,7 @@ pub trait ItemImpl {
     fn foo(&self, other: Ptr<Item>);
 }
 impl ItemImpl for Ptr<Item> {
+    #[inline]
     fn foo(&self, mut other: Ptr<Item>) {
         field!(other, value).write(10);
     }

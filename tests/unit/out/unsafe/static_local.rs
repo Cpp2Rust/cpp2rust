@@ -25,6 +25,7 @@ static mut x_7: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S_8 {}
 impl S_8 {
+    #[inline]
     pub unsafe fn get(&self) -> i32 {
         return (*std::cell::LazyCell::force_mut(&mut *&raw mut x_7)).prefix_inc();
     }

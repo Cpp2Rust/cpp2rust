@@ -14,6 +14,7 @@ thread_local!(
 #[byte_size(1)]
 pub struct S {}
 impl S {
+    #[inline]
     pub fn new(mut x: i32) -> Self {
         let __this: S = Self {};
         total_0.with(|rc| *rc.borrow_mut() += x);

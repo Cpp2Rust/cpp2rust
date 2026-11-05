@@ -12,6 +12,7 @@ pub fn next_0() -> i32 {
 thread_local!(
     static counter_1: Value<i32> = Rc::new(RefCell::new(0));
 );
+#[inline]
 pub fn marker_2(mut tag: u8) -> u8 {
     return ((((tag as i32) << 3) | 2) as u8);
 }
@@ -39,9 +40,11 @@ pub struct Ctor {
     pub v: i32,
 }
 impl Ctor {
+    #[inline]
     pub fn new_1() -> Self {
         Self { v: ({ next_0() }) }
     }
+    #[inline]
     pub fn new_2(mut x: i32) -> Self {
         Self { v: x }
     }
@@ -89,9 +92,11 @@ pub struct Singleton {
     pub hits: i32,
 }
 impl Singleton {
+    #[inline]
     pub fn new() -> Self {
         Self { hits: 0 }
     }
+    #[inline]
     pub fn instance() -> Ptr<Singleton> {
         return s_15.with(|v| v.as_pointer());
     }

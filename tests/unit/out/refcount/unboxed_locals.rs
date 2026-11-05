@@ -165,6 +165,7 @@ fn main_0() -> i32 {
     return 0;
 }
 impl Shape for Square {
+    #[inline]
     fn scale(&mut self, mut factor: i32) -> i32 {
         return (factor * { self.side });
     }

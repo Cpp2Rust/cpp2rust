@@ -39,6 +39,7 @@ pub trait PairImpl {
     fn operator_lt(&self, other: Ptr<Pair>) -> bool;
 }
 impl PairImpl for Ptr<Pair> {
+    #[inline]
     fn operator_lt(&self, other: Ptr<Pair>) -> bool {
         return ({ (*self).with(|__s| __s.x) } < { other.with(|__s| __s.x) })
             || (({ (*self).with(|__s| __s.x) } == { other.with(|__s| __s.x) })

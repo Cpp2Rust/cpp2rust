@@ -71,11 +71,17 @@ pub trait FooImpl {
     fn method2_6(&self, x: f64, y: f64);
 }
 impl FooImpl for Ptr<Foo> {
+    #[inline]
     fn foo_1(&self) {}
+    #[inline]
     fn foo_2(&self) {}
+    #[inline]
     fn method_3(&self, mut x: i32) {}
+    #[inline]
     fn method_4(&self, mut x: i32) {}
+    #[inline]
     fn method2_5(&self, mut x: i32, mut y: i32) {}
+    #[inline]
     fn method2_6(&self, mut x: f64, mut y: f64) {}
 }
 pub fn __cpp2rust_init_globals() {}

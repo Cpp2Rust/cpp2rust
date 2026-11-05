@@ -19,6 +19,7 @@ pub struct Holder {
     pub p: Pair,
 }
 impl Holder {
+    #[inline]
     pub unsafe fn operator_assign_1(&mut self, o: *mut Pair) -> *mut Holder {
         self.p = (*o);
         return &mut (*(self as *mut Holder));

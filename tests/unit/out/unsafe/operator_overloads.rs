@@ -12,24 +12,31 @@ pub struct S {
     pub v: i32,
 }
 impl S {
+    #[inline]
     pub unsafe fn operator_eq_1(&self, mut o: i32) -> i32 {
         return if ((self.v) == (o)) { 1 } else { 0 };
     }
+    #[inline]
     pub unsafe fn operator_eq_2(&self, mut o: i64) -> i32 {
         return if ((self.v as i64) == (o)) { 2 } else { 0 };
     }
+    #[inline]
     pub unsafe fn operator_eq_3(&self, mut o: f64) -> i32 {
         return if ((self.v as f64) == (o)) { 3 } else { 0 };
     }
+    #[inline]
     pub unsafe fn operator_add(&self, o: *const S) -> i32 {
         return ((self.v) + ((*o).v));
     }
+    #[inline]
     pub unsafe fn operator_sub(&self, mut o: S) -> i32 {
         return ((self.v) - (o.v));
     }
+    #[inline]
     pub unsafe fn operator_mul_6(&self, o: *const S) -> i32 {
         return ((self.v) * ((*o).v));
     }
+    #[inline]
     pub unsafe fn operator_mul_7(&self, mut o: i32) -> i32 {
         return (((self.v) * (o)) + (1));
     }

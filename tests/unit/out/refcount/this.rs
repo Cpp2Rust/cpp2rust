@@ -17,12 +17,14 @@ pub struct S {
     pub self__: Ptr<S>,
 }
 impl S {
+    #[inline]
     pub fn new_1(mut a: i32) -> Self {
         Self {
             a_: a,
             self__: Ptr::<S>::null(),
         }
     }
+    #[inline]
     pub fn new_2(mut a: i32, mut other: Ptr<S>) -> Self {
         let __this: Value<S> = Rc::new(RefCell::new(Self {
             a_: a,
@@ -36,6 +38,7 @@ impl S {
         }
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
+    #[inline]
     pub fn new_3(mut a: i32, mut other: Ptr<S>) -> Self {
         let __this: Value<S> = Rc::new(RefCell::new(Self {
             a_: a,
@@ -59,6 +62,7 @@ pub struct D {
     pub a_: i32,
 }
 impl D {
+    #[inline]
     pub fn new(mut a: i32) -> Self {
         let __this: Value<D> = Rc::new(RefCell::new(Self { a_: a }));
         let this: Ptr<D> = __this.as_pointer();
@@ -160,43 +164,56 @@ pub trait SImpl {
     fn copy_if_different(&self, other: Ptr<S>) -> bool;
 }
 impl SImpl for Ptr<S> {
+    #[inline]
     fn returns_this_reference(&self) -> Ptr<S> {
         return (*self).clone();
     }
+    #[inline]
     fn returns_this_pointer(&self) -> Ptr<S> {
         return (*self).clone();
     }
+    #[inline]
     fn inc(&self) -> Ptr<S> {
         field!((*self), a_).with_mut(|__v| __v.postfix_inc());
         return (*self).clone();
     }
+    #[inline]
     fn set_from_this(&self) {
         field!((*self), a_).write({ ((*self).with(|__s| __s.a_) + 1) });
     }
+    #[inline]
     fn get(&self) -> i32 {
         return (*self).with(|__s| __s.a_);
     }
+    #[inline]
     fn twice(&self) -> i32 {
         return (({ SImpl::get(self) }) * 2);
     }
+    #[inline]
     fn link(&self) {
         field!((*self), self__).write((*self).clone());
     }
+    #[inline]
     fn bump_me(&self) {
         ({ bump_0((*self).clone()) });
     }
+    #[inline]
     fn cref(&self) -> Ptr<S> {
         return (*self).clone();
     }
+    #[inline]
     fn is(&self, mut o: Ptr<S>) -> bool {
         return (o == (*self));
     }
+    #[inline]
     fn destroy(&self) {
         (*self).delete();
     }
+    #[inline]
     fn reset(&self) {
         (*self).write(S::new_1({ 0 }));
     }
+    #[inline]
     fn copy_if_different_const(&self, mut other: Ptr<S>) -> bool {
         if ((*self) == other) {
             return false;
@@ -205,6 +222,7 @@ impl SImpl for Ptr<S> {
         field!((*self), self__).write({ other.with(|__s| __s.self__.clone()) });
         return true;
     }
+    #[inline]
     fn copy_if_different(&self, mut other: Ptr<S>) -> bool {
         if ((*self) == other) {
             return false;

@@ -257,6 +257,7 @@ pub trait X2Impl {
     fn get(&self) -> Ptr<X1>;
 }
 impl X2Impl for Ptr<X2> {
+    #[inline]
     fn get(&self) -> Ptr<X1> {
         return ((*self).with(|__s| __s.v.clone())).clone();
     }
@@ -265,6 +266,7 @@ pub trait X3Impl {
     fn get(&self) -> Ptr<X2>;
 }
 impl X3Impl for Ptr<X3> {
+    #[inline]
     fn get(&self) -> Ptr<X2> {
         return (*self).with(|__s| __s.v.clone());
     }
@@ -273,6 +275,7 @@ pub trait X4Impl {
     fn get(&self) -> Ptr<X3>;
 }
 impl X4Impl for Ptr<X4> {
+    #[inline]
     fn get(&self) -> Ptr<X3> {
         return field_ptr!((*self), v);
     }

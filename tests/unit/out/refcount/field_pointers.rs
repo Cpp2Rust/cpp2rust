@@ -55,6 +55,7 @@ pub struct Outer {
     pub buf: Box<[i32]>,
 }
 impl Outer {
+    #[inline]
     pub fn move_from(_a0: Ptr<Outer>) -> Self {
         Self {
             x: { (*_a0.upgrade().deref()).x },
@@ -239,6 +240,7 @@ pub trait OuterImpl {
     fn move_assign(&self, _a0: Ptr<Outer>) -> Ptr<Outer>;
 }
 impl OuterImpl for Ptr<Outer> {
+    #[inline]
     fn next(&self) -> i32 {
         return (array_elem!(
             (*self),
@@ -247,15 +249,18 @@ impl OuterImpl for Ptr<Outer> {
         )
         .read());
     }
+    #[inline]
     fn sum(&self) -> i32 {
         return ((*self).with(|__s| __s.x) + (*self).with(|__s| __s.inner.a));
     }
+    #[inline]
     fn push(&self, mut k: i32) {
         {
             let __a1 = (k + (*self).with(|__s| __s.x));
             field!((*self), v).with_mut(|__v: &mut Vec<i32>| __v.push(__a1))
         };
     }
+    #[inline]
     fn move_assign(&self, _a0: Ptr<Outer>) -> Ptr<Outer> {
         field!((*self), x).write({ { (*_a0.upgrade().deref()).x } });
         field!((*self), inner).write({ { (*_a0.upgrade().deref()).inner.clone() } });

@@ -50,6 +50,7 @@ pub struct Mapped {
     pub value: i32,
 }
 impl Mapped {
+    #[inline]
     pub unsafe fn new() -> Self {
         let mut this = Self { value: 0 };
         (*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0)).prefix_inc();

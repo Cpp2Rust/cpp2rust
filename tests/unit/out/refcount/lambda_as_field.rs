@@ -74,6 +74,7 @@ pub struct Moving__lambda_at_lambda_as_field_cpp_64_12__ {
     pub moves: i32,
 }
 impl Moving__lambda_at_lambda_as_field_cpp_64_12__ {
+    #[inline]
     pub fn new(f: FnPtr<fn(i32) -> i32>) -> Self {
         let f: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(f));
         Self {
@@ -81,6 +82,7 @@ impl Moving__lambda_at_lambda_as_field_cpp_64_12__ {
             moves: 0,
         }
     }
+    #[inline]
     pub fn move_from(o: Ptr<Moving__lambda_at_lambda_as_field_cpp_64_12__>) -> Self {
         Self {
             f: (*o.upgrade().deref()).f.move_from(),
@@ -237,6 +239,7 @@ pub trait Guard__lambda_at_lambda_as_field_cpp_34_13__Impl {
 impl Guard__lambda_at_lambda_as_field_cpp_34_13__Impl
     for Ptr<Guard__lambda_at_lambda_as_field_cpp_34_13__>
 {
+    #[inline]
     fn destructor(&self) {
         ({ (*(*self).upgrade().deref()).f.call() });
     }
@@ -247,6 +250,7 @@ pub trait Guard__lambda_at_lambda_as_field_cpp_45_13__Impl {
 impl Guard__lambda_at_lambda_as_field_cpp_45_13__Impl
     for Ptr<Guard__lambda_at_lambda_as_field_cpp_45_13__>
 {
+    #[inline]
     fn destructor(&self) {
         ({ (*(*self).upgrade().deref()).f.call() });
     }
@@ -257,6 +261,7 @@ pub trait Holder__lambda_at_lambda_as_field_cpp_39_12__Impl {
 impl Holder__lambda_at_lambda_as_field_cpp_39_12__Impl
     for Ptr<Holder__lambda_at_lambda_as_field_cpp_39_12__>
 {
+    #[inline]
     fn call(&self, mut x: i32) -> i32 {
         field!((*self), calls).with_mut(|__v| __v.postfix_inc());
         return ({ (*(*self).upgrade().deref()).f.call(x) });
@@ -268,6 +273,7 @@ pub trait Holder__lambda_at_lambda_as_field_cpp_51_12__Impl {
 impl Holder__lambda_at_lambda_as_field_cpp_51_12__Impl
     for Ptr<Holder__lambda_at_lambda_as_field_cpp_51_12__>
 {
+    #[inline]
     fn call(&self, mut x: i32) -> i32 {
         field!((*self), calls).with_mut(|__v| __v.postfix_inc());
         return ({ (*(*self).upgrade().deref()).f.call(x) });

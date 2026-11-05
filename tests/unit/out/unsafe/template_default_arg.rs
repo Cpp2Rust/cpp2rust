@@ -13,10 +13,12 @@ pub struct A {
     pub v: i32,
 }
 impl A {
+    #[inline]
     pub unsafe fn new_2() -> Self {
         let mut this = Self { v: 1 };
         this
     }
+    #[inline]
     pub unsafe fn new_1(mut v: i32) -> Self {
         let mut this = Self { v: v };
         this
@@ -33,6 +35,7 @@ pub struct B {
     pub v: i32,
 }
 impl B {
+    #[inline]
     pub unsafe fn new() -> Self {
         let mut this = Self { v: 2 };
         this
@@ -50,6 +53,7 @@ pub struct NoDefault {
     pub v: i32,
 }
 impl NoDefault {
+    #[inline]
     pub unsafe fn new(mut v: i32) -> Self {
         let mut this = Self { v: v };
         this
@@ -77,10 +81,12 @@ pub struct S_NoDefault_ {
     pub v: i32,
 }
 impl S_NoDefault_ {
+    #[inline]
     pub unsafe fn new(mut v: i32) -> Self {
         let mut this = Self { v: v };
         this
     }
+    #[inline]
     pub unsafe fn get(&self, mut t: NoDefault) -> i32 {
         return ((self.v) + (t.v));
     }

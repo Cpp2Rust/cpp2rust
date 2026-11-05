@@ -16,6 +16,7 @@ pub struct Buffer {
     pub size: i32,
 }
 impl Buffer {
+    #[inline]
     pub unsafe fn new(mut size: i32) -> Self {
         let mut this = Self {
             data: [0_i32; 4],
@@ -29,9 +30,11 @@ impl Buffer {
         (*std::cell::LazyCell::force_mut(&mut *&raw mut alive_0)).prefix_inc();
         this
     }
+    #[inline]
     pub unsafe fn destructor(&mut self) {
         (*std::cell::LazyCell::force_mut(&mut *&raw mut alive_0)).prefix_dec();
     }
+    #[inline]
     pub unsafe fn copy_from(o: *const Buffer) -> Self {
         let mut this = Self {
             data: [0_i32; 4],
@@ -46,6 +49,7 @@ impl Buffer {
         (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_1)).prefix_inc();
         this
     }
+    #[inline]
     pub unsafe fn copy_assign(&mut self, o: *const Buffer) -> *mut Buffer {
         if (((self as *mut Buffer).cast_const()) == (o)) {
             return &mut (*(self as *mut Buffer));

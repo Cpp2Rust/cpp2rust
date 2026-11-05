@@ -22,6 +22,7 @@ pub struct Outer {
     pub runs: Vec<Outer_RunInfo>,
 }
 impl Outer {
+    #[inline]
     pub fn move_from(_a0: Ptr<Outer>) -> Self {
         Self {
             runs: field!(_a0, runs).with_mut(std::mem::take),
@@ -50,6 +51,7 @@ pub trait OuterImpl {
     fn move_assign(&self, _a0: Ptr<Outer>) -> Ptr<Outer>;
 }
 impl OuterImpl for Ptr<Outer> {
+    #[inline]
     fn move_assign(&self, _a0: Ptr<Outer>) -> Ptr<Outer> {
         field_ref!((*self), runs)
             .as_pointer()

@@ -40,6 +40,7 @@ pub struct Mapped {
     pub value: i32,
 }
 impl Mapped {
+    #[inline]
     pub fn new() -> Self {
         let __this: Mapped = Self { value: 0 };
         (*default_constructions_0.with(Value::clone).borrow_mut()).prefix_inc();

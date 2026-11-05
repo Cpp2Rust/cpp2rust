@@ -32,6 +32,7 @@ pub struct Partial {
     pub p: Ptr<i32>,
 }
 impl Partial {
+    #[inline]
     pub fn new_1(mut q: Ptr<i32>) -> Self {
         Self { p: (q).clone() }
     }
@@ -89,6 +90,7 @@ pub trait GraphImpl {
     fn push(&self, src: u32, dst: u32);
 }
 impl GraphImpl for Ptr<Graph> {
+    #[inline]
     fn push(&self, mut src: u32, mut dst: u32) {
         let __rhs = Ptr::alloc(GraphNode {
             dst: dst,

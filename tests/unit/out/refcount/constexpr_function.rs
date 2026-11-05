@@ -9,15 +9,18 @@ use std::rc::{Rc, Weak};
 pub fn runtime_only_0(mut x: i32) -> i32 {
     return (x * 2);
 }
+#[inline]
 pub fn first_1(mut p: Ptr<i32>) -> i32 {
     return (p.read());
 }
+#[inline]
 pub fn scaled_2(mut x: i32) -> i32 {
     if (x < 0) {
         return ({ runtime_only_0(-x) });
     }
     return x;
 }
+#[inline]
 pub fn half_3(mut x: f64) -> f64 {
     return (x / 2_f64);
 }
@@ -27,15 +30,18 @@ pub struct Flag {
     #[offset(0)]
     pub v: i32,
 }
+#[inline]
 pub fn use_4(f: Flag) -> i32 {
     let f: Value<Flag> = Rc::new(RefCell::new(f));
     assert!(({ FlagImpl::to_bool(&f.as_pointer(),) }));
     return { (*f.borrow()).v };
 }
+#[inline]
 pub fn checked_5(mut x: i32) -> i32 {
     assert!((x > 0));
     return (x + 1);
 }
+#[inline]
 pub fn in_constant_context_6() -> bool {
     {}
     return (({ runtime_only_0(1) }) == 0);
@@ -78,6 +84,7 @@ pub trait FlagImpl {
     fn to_bool(&self) -> bool;
 }
 impl FlagImpl for Ptr<Flag> {
+    #[inline]
     fn to_bool(&self) -> bool {
         return ((*self).with(|__s| __s.v) != 0);
     }
@@ -86,6 +93,7 @@ pub trait PImpl {
     fn get(&self) -> i32;
 }
 impl PImpl for Ptr<P> {
+    #[inline]
     fn get(&self) -> i32 {
         return (*self).with(|__s| __s.v);
     }

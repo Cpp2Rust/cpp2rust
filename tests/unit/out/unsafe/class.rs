@@ -13,19 +13,24 @@ pub struct Pair {
     pub second: i32,
 }
 impl Pair {
+    #[inline]
     pub unsafe fn NOP(&mut self) {}
+    #[inline]
     pub unsafe fn GetFirst(&self) -> i32 {
         return self.first;
     }
+    #[inline]
     pub unsafe fn GetSecond(&self) -> i32 {
         return self.second;
     }
+    #[inline]
     pub unsafe fn Set(&mut self, field: *mut i32, mut new_val: i32) -> i32 {
         (unsafe { Pair::NOP(self) });
         let mut old_val: i32 = (*field);
         (*field) = new_val;
         return old_val;
     }
+    #[inline]
     pub unsafe fn SetFirst(&mut self, mut new_first: i32) -> i32 {
         return ((unsafe { Pair::GetFirst(self) })
             + (unsafe {
@@ -33,6 +38,7 @@ impl Pair {
                 Pair::Set(self, _field, new_first)
             }));
     }
+    #[inline]
     pub unsafe fn SetSecond(&mut self, mut new_second: i32) -> i32 {
         return ((unsafe { Pair::GetSecond(self) })
             + (unsafe {
@@ -48,6 +54,7 @@ pub struct Route {
     pub cost: f64,
 }
 impl Route {
+    #[inline]
     pub unsafe fn SetCost(&mut self, mut new_cost: f64) -> f64 {
         let mut old_cost: f64 = self.cost;
         self.cost = new_cost;
@@ -61,10 +68,12 @@ pub struct Counter {
     pub calls: i32,
 }
 impl Counter {
+    #[inline]
     pub unsafe fn Get(&self) -> i32 {
         (*(&raw const self.calls).cast_mut()).prefix_inc();
         return self.v;
     }
+    #[inline]
     pub unsafe fn operator_eq(&self, o: *const Counter) -> bool {
         (*(&raw const self.calls).cast_mut()).prefix_inc();
         return ((self.v) == ((*o).v));
@@ -82,10 +91,12 @@ pub struct Tally {
     pub calls: i32,
 }
 impl Tally {
+    #[inline]
     pub unsafe fn SameNameBetweenConstAndNonConst_1(&mut self) -> i32 {
         self.calls += 1;
         return 1;
     }
+    #[inline]
     pub unsafe fn SameNameBetweenConstAndNonConst_2(&self) -> i32 {
         (*(&raw const self.calls).cast_mut()) += 10;
         return 2;

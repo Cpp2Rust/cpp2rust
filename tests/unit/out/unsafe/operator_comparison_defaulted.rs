@@ -13,6 +13,7 @@ pub struct Eq {
     pub b: i32,
 }
 impl Eq {
+    #[inline]
     pub unsafe fn operator_eq(&self, _a0: *const Eq) -> bool {
         return (((*(self as *const Eq)).a) == ((*_a0).a))
             && (((*(self as *const Eq)).b) == ((*_a0).b));
@@ -31,6 +32,7 @@ pub struct Cmp {
     pub b: i32,
 }
 impl Cmp {
+    #[inline]
     pub unsafe fn operator_cmp(&self, _a0: *const Cmp) -> std::cmp::Ordering {
         {
             let mut cmp: std::cmp::Ordering =
@@ -48,6 +50,7 @@ impl Cmp {
         }
         return std::cmp::Ordering::Equal;
     }
+    #[inline]
     pub unsafe fn operator_eq(&self, _a0: *const Cmp) -> bool {
         return (((*(self as *const Cmp)).a) == ((*_a0).a))
             && (((*(self as *const Cmp)).b) == ((*_a0).b));
@@ -75,9 +78,11 @@ pub struct Both {
     pub a: i32,
 }
 impl Both {
+    #[inline]
     pub unsafe fn operator_eq(&self, _a0: *const Both) -> bool {
         return (((*(self as *const Both)).a) == ((*_a0).a));
     }
+    #[inline]
     pub unsafe fn operator_cmp(&self, _a0: *const Both) -> std::cmp::Ordering {
         {
             let mut cmp: std::cmp::Ordering =
@@ -111,6 +116,7 @@ pub struct OrdOnly {
     pub a: i32,
 }
 impl OrdOnly {
+    #[inline]
     pub unsafe fn operator_cmp(&self, _a0: *const OrdOnly) -> std::cmp::Ordering {
         {
             let mut cmp: std::cmp::Ordering =
@@ -144,6 +150,7 @@ pub struct Inner {
     pub x: i32,
 }
 impl Inner {
+    #[inline]
     pub unsafe fn operator_cmp(&self, _a0: *const Inner) -> std::cmp::Ordering {
         {
             let mut cmp: std::cmp::Ordering =
@@ -154,6 +161,7 @@ impl Inner {
         }
         return std::cmp::Ordering::Equal;
     }
+    #[inline]
     pub unsafe fn operator_eq(&self, _a0: *const Inner) -> bool {
         return (((*(self as *const Inner)).x) == ((*_a0).x));
     }
@@ -181,6 +189,7 @@ pub struct Outer {
     pub y: i32,
 }
 impl Outer {
+    #[inline]
     pub unsafe fn operator_cmp(&self, _a0: *const Outer) -> std::cmp::Ordering {
         {
             let mut cmp: std::cmp::Ordering = (unsafe {
@@ -200,6 +209,7 @@ impl Outer {
         }
         return std::cmp::Ordering::Equal;
     }
+    #[inline]
     pub unsafe fn operator_eq(&self, _a0: *const Outer) -> bool {
         return (unsafe {
             let _arg0: *const Inner = &(*_a0).i;
@@ -229,15 +239,18 @@ pub struct Secondary {
     pub a: i32,
 }
 impl Secondary {
+    #[inline]
     pub unsafe fn operator_eq(&self, _a0: *const Secondary) -> bool {
         return (((*(self as *const Secondary)).a) == ((*_a0).a));
     }
+    #[inline]
     pub unsafe fn operator_ne(&self, _a0: *const Secondary) -> bool {
         return !(unsafe {
             let _arg0: *const Secondary = _a0;
             Secondary::operator_eq(&(*(self as *const Secondary)), _arg0)
         });
     }
+    #[inline]
     pub unsafe fn operator_cmp(&self, _a0: *const Secondary) -> std::cmp::Ordering {
         {
             let mut cmp: std::cmp::Ordering =
@@ -248,12 +261,14 @@ impl Secondary {
         }
         return std::cmp::Ordering::Equal;
     }
+    #[inline]
     pub unsafe fn operator_lt(&self, _a0: *const Secondary) -> bool {
         return (unsafe {
             let _arg0: *const Secondary = _a0;
             Secondary::operator_cmp(&(*(self as *const Secondary)), _arg0)
         }) == std::cmp::Ordering::Less;
     }
+    #[inline]
     pub unsafe fn operator_ge(&self, _a0: *const Secondary) -> bool {
         return (unsafe {
             let _arg0: *const Secondary = _a0;
@@ -283,6 +298,7 @@ pub struct PtrMember {
     pub p: *mut i32,
 }
 impl PtrMember {
+    #[inline]
     pub unsafe fn operator_cmp(&self, _a0: *const PtrMember) -> std::cmp::Ordering {
         {
             let mut cmp: std::cmp::Ordering =
@@ -293,6 +309,7 @@ impl PtrMember {
         }
         return std::cmp::Ordering::Equal;
     }
+    #[inline]
     pub unsafe fn operator_eq(&self, _a0: *const PtrMember) -> bool {
         return (((*(self as *const PtrMember)).p) == ((*_a0).p));
     }

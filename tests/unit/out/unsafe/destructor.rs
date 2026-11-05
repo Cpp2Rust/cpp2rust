@@ -11,6 +11,7 @@ pub static mut global_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| 
 #[derive(Clone, VaArg, FnPtrArg, DestructorUnsafe, Default)]
 pub struct S {}
 impl S {
+    #[inline]
     pub unsafe fn destructor(&mut self) {
         (*std::cell::LazyCell::force_mut(&mut *&raw mut global_0)).postfix_inc();
     }
@@ -63,6 +64,7 @@ pub struct EmptyBody {
     pub s: S,
 }
 impl EmptyBody {
+    #[inline]
     pub unsafe fn destructor(&mut self) {
         S::destructor(&mut self.s);
     }
@@ -73,6 +75,7 @@ pub struct Templated_char_ {
     pub v: libc::c_char,
 }
 impl Templated_char_ {
+    #[inline]
     pub unsafe fn destructor(&mut self) {
         (*std::cell::LazyCell::force_mut(&mut *&raw mut global_0)) =
             (((*std::cell::LazyCell::force_mut(&mut *&raw mut global_0)) as usize)
@@ -85,6 +88,7 @@ pub struct Templated_int_ {
     pub v: i32,
 }
 impl Templated_int_ {
+    #[inline]
     pub unsafe fn destructor(&mut self) {
         (*std::cell::LazyCell::force_mut(&mut *&raw mut global_0)) =
             (((*std::cell::LazyCell::force_mut(&mut *&raw mut global_0)) as usize)
@@ -97,6 +101,7 @@ pub struct Copied {
     pub v: i32,
 }
 impl Copied {
+    #[inline]
     pub unsafe fn destructor(&mut self) {
         (*std::cell::LazyCell::force_mut(&mut *&raw mut global_0)).postfix_inc();
     }
@@ -110,6 +115,7 @@ pub struct Tagged {
     pub tag: i32,
 }
 impl Tagged {
+    #[inline]
     pub unsafe fn destructor(&mut self) {
         (*std::cell::LazyCell::force_mut(&mut *&raw mut order_1))
             [((*std::cell::LazyCell::force_mut(&mut *&raw mut order_count_2)).postfix_inc())

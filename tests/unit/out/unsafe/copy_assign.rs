@@ -14,10 +14,12 @@ pub struct Partial {
     pub keep: i32,
 }
 impl Partial {
+    #[inline]
     pub unsafe fn new(mut v: i32, mut keep: i32) -> Self {
         let mut this = Self { v: v, keep: keep };
         this
     }
+    #[inline]
     pub unsafe fn copy_from(o: *const Partial) -> Self {
         let mut this = Self {
             v: (*o).v,
@@ -25,6 +27,7 @@ impl Partial {
         };
         this
     }
+    #[inline]
     pub unsafe fn copy_assign(&mut self, o: *const Partial) -> *mut Partial {
         if (((self as *mut Partial).cast_const()) == (o)) {
             return &mut (*(self as *mut Partial));
@@ -45,14 +48,17 @@ pub struct NonConstAssign {
     pub mark: i32,
 }
 impl NonConstAssign {
+    #[inline]
     pub unsafe fn new() -> Self {
         let mut this = Self { mark: 0 };
         this
     }
+    #[inline]
     pub unsafe fn operator_assign_2(&mut self, o: *mut NonConstAssign) -> *mut NonConstAssign {
         self.mark = (((*o).mark) + (1));
         return &mut (*(self as *mut NonConstAssign));
     }
+    #[inline]
     pub unsafe fn operator_assign_3(&mut self, o: *const NonConstAssign) -> *mut NonConstAssign {
         self.mark = (((*o).mark) + (10));
         return &mut (*(self as *mut NonConstAssign));
@@ -69,10 +75,12 @@ pub struct RefQualified {
     pub mark: i32,
 }
 impl RefQualified {
+    #[inline]
     pub unsafe fn new() -> Self {
         let mut this = Self { mark: 0 };
         this
     }
+    #[inline]
     pub unsafe fn copy_assign(&mut self, o: *const RefQualified) -> *mut RefQualified {
         self.mark = (((*o).mark) + (1));
         return &mut (*(self as *mut RefQualified));
@@ -90,6 +98,7 @@ pub struct Holder {
     pub arr: [Partial; 2],
 }
 impl Holder {
+    #[inline]
     pub unsafe fn copy_assign(&mut self, _a0: *const Holder) -> *mut Holder {
         (unsafe {
             let _o: *const Partial = &(*_a0).p;
@@ -114,15 +123,18 @@ pub struct CopyCounted {
     pub v: i32,
 }
 impl CopyCounted {
+    #[inline]
     pub unsafe fn new(mut v: i32) -> Self {
         let mut this = Self { v: v };
         this
     }
+    #[inline]
     pub unsafe fn copy_from(o: *const CopyCounted) -> Self {
         let mut this = Self { v: (*o).v };
         (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_1)).prefix_inc();
         this
     }
+    #[inline]
     pub unsafe fn copy_assign(&mut self, _a0: *const CopyCounted) -> *mut CopyCounted {
         self.v = (*_a0).v;
         return &mut (*(self as *mut CopyCounted));
@@ -140,6 +152,7 @@ pub struct HasCopyCounted {
     pub arr: [CopyCounted; 2],
 }
 impl HasCopyCounted {
+    #[inline]
     pub unsafe fn copy_assign(&mut self, _a0: *const HasCopyCounted) -> *mut HasCopyCounted {
         (unsafe {
             let _arg0: *const CopyCounted = &(*_a0).c;

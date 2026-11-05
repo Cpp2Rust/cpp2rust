@@ -15,6 +15,7 @@ pub struct Point {
     pub y: i32,
 }
 impl Point {
+    #[inline]
     pub fn new(mut x: i32, mut y: i32) -> Self {
         Self { x: x, y: y }
     }

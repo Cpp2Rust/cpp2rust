@@ -169,6 +169,7 @@ unsafe fn main_0() -> i32 {
     return 0;
 }
 unsafe impl Shape for Square {
+    #[inline]
     unsafe fn scale(&mut self, factor: i32) -> i32 {
         return ((factor) * (self.side));
     }

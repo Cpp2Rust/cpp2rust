@@ -12,6 +12,7 @@ pub struct S_int_ {
     pub x: i32,
 }
 impl S_int_ {
+    #[inline]
     pub unsafe fn set(&mut self, mut v: i32) {
         self.x = v;
     }
@@ -34,6 +35,7 @@ unsafe fn main_0() -> i32 {
     return 0;
 }
 impl S_int_ {
+    #[inline]
     pub unsafe fn get(&mut self) -> i32 {
         return self.x;
     }

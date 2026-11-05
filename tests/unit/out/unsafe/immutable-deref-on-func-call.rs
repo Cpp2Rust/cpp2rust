@@ -12,6 +12,7 @@ pub struct Item {
     pub value: i32,
 }
 impl Item {
+    #[inline]
     pub unsafe fn foo(&mut self, mut other: *mut Item) {
         (*other).value = 10;
     }

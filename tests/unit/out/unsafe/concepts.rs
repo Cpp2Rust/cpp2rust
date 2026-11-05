@@ -15,6 +15,7 @@ const _: () = assert!(
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Sized {}
 impl Sized {
+    #[inline]
     pub unsafe fn size(&mut self) -> i32 {
         return 4;
     }

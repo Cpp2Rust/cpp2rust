@@ -6,6 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+#[inline]
 pub fn operator_eq_0(_a0: Ptr<Defaulted>, _a1: Ptr<Defaulted>) -> bool {
     return ({ _a0.with(|__s| __s.a) } == { _a1.with(|__s| __s.a) })
         && ({ _a0.with(|__s| __s.b) } == { _a1.with(|__s| __s.b) });
@@ -23,6 +24,7 @@ impl CppEq for Defaulted {
         operator_eq_0(__lhs.clone(), __rhs.clone())
     }
 }
+#[inline]
 pub fn operator_cmp_1(_a0: Ptr<DefaultedOrd>, _a1: Ptr<DefaultedOrd>) -> std::cmp::Ordering {
     {
         let cmp: Value<std::cmp::Ordering> = Rc::new(RefCell::new(std::cmp::Ord::cmp(
@@ -35,6 +37,7 @@ pub fn operator_cmp_1(_a0: Ptr<DefaultedOrd>, _a1: Ptr<DefaultedOrd>) -> std::cm
     }
     return std::cmp::Ordering::Equal;
 }
+#[inline]
 pub fn operator_eq_2(_a0: Ptr<DefaultedOrd>, _a1: Ptr<DefaultedOrd>) -> bool {
     return ({ _a0.with(|__s| __s.a) } == { _a1.with(|__s| __s.a) });
 }
@@ -54,12 +57,15 @@ impl CppEq for DefaultedOrd {
         operator_eq_2(__lhs.clone(), __rhs.clone())
     }
 }
+#[inline]
 pub fn operator_eq_3(x: Ptr<Inline>, y: Ptr<Inline>) -> bool {
     return ({ x.with(|__s| __s.a) } == { y.with(|__s| __s.a) });
 }
+#[inline]
 pub fn operator_lt_4(x: Ptr<Inline>, y: Ptr<Inline>) -> bool {
     return ({ x.with(|__s| __s.a) } < { y.with(|__s| __s.a) });
 }
+#[inline]
 pub fn operator_add_5(x: Ptr<Inline>, y: Ptr<Inline>) -> Inline {
     return Inline {
         a: ({ x.with(|__s| __s.a) } + { y.with(|__s| __s.a) }),
@@ -102,12 +108,15 @@ pub fn operator_ne_7(x: Ptr<OutOfLine>, y: Ptr<OutOfLine>) -> bool {
         operator_eq_6(_x, _y)
     });
 }
+#[inline]
 pub fn operator_eq_8(x: Ptr<Tmpl_int_>, y: Ptr<Tmpl_int_>) -> bool {
     return ({ x.with(|__s| __s.v) } == { y.with(|__s| __s.v) });
 }
+#[inline]
 pub fn operator_lt_9(x: Ptr<Tmpl_int_>, y: Ptr<Tmpl_int_>) -> bool {
     return ({ x.with(|__s| __s.v) } < { y.with(|__s| __s.v) });
 }
+#[inline]
 pub fn operator_eq_10(x: Ptr<Tmpl_int_>, y: Ptr<Tmpl_long_>) -> bool {
     return ({ (x.with(|__s| __s.v) as i64) } == { y.with(|__s| __s.v) });
 }
@@ -133,6 +142,7 @@ pub struct Tmpl_long_ {
     #[offset(0)]
     pub v: i64,
 }
+#[inline]
 pub fn operator_eq_11(_a0: Ptr<TmplDefaulted_int_>, _a1: Ptr<TmplDefaulted_int_>) -> bool {
     return ({ _a0.with(|__s| __s.v) } == { _a1.with(|__s| __s.v) });
 }

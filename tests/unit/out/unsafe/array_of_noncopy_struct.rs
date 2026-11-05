@@ -13,6 +13,7 @@ pub struct NonCopy {
     pub tag: i32,
 }
 impl NonCopy {
+    #[inline]
     pub unsafe fn move_from(_a0: *mut NonCopy) -> Self {
         let mut this = Self {
             data: std::mem::take(&mut (*_a0).data),
@@ -20,6 +21,7 @@ impl NonCopy {
         };
         this
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, _a0: *mut NonCopy) -> *mut NonCopy {
         self.data = std::mem::take(&mut (*_a0).data);
         self.tag = (*_a0).tag;

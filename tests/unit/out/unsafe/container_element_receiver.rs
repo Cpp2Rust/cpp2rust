@@ -13,6 +13,7 @@ pub struct Holder {
     pub vec_: Vec<i32>,
 }
 impl Holder {
+    #[inline]
     pub unsafe fn move_from(_a0: *mut Holder) -> Self {
         let mut this = Self {
             ref_: (*_a0).ref_,

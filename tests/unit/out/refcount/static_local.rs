@@ -50,6 +50,7 @@ pub trait S_8Impl {
     fn get(&self) -> i32;
 }
 impl S_8Impl for Ptr<S_8> {
+    #[inline]
     fn get(&self) -> i32 {
         return (*x_7.with(Value::clone).borrow_mut()).prefix_inc();
     }

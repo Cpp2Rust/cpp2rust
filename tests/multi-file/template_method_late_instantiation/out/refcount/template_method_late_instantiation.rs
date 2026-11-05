@@ -37,9 +37,11 @@ pub trait S_int_Impl {
     }
 }
 impl S_int_Impl for Ptr<S_int_> {
+    #[inline]
     fn set(&self, mut v: i32) {
         field!((*self), x).write(v);
     }
+    #[inline]
     fn get(&self) -> i32 {
         return (*self).with(|__s| __s.x);
     }

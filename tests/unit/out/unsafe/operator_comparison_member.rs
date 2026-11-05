@@ -12,24 +12,31 @@ pub struct S {
     pub v: i32,
 }
 impl S {
+    #[inline]
     pub unsafe fn operator_eq(&self, o: *const S) -> bool {
         return ((self.v) == ((*o).v));
     }
+    #[inline]
     pub unsafe fn operator_ne(&self, o: *const S) -> bool {
         return ((self.v) != ((*o).v));
     }
+    #[inline]
     pub unsafe fn operator_lt_3(&self, o: *const S) -> bool {
         return ((self.v) < ((*o).v));
     }
+    #[inline]
     pub unsafe fn operator_gt(&self, o: *const S) -> bool {
         return ((self.v) > ((*o).v));
     }
+    #[inline]
     pub unsafe fn operator_le(&self, o: *const S) -> bool {
         return ((self.v) <= ((*o).v));
     }
+    #[inline]
     pub unsafe fn operator_ge(&self, o: *const S) -> bool {
         return ((self.v) >= ((*o).v));
     }
+    #[inline]
     pub unsafe fn operator_lt_7(&self, mut o: i32) -> bool {
         return ((self.v) < (o));
     }

@@ -14,9 +14,11 @@ pub struct NoCopy {
     pub v: i32,
 }
 impl NoCopy {
+    #[inline]
     pub fn new(mut v: i32) -> Self {
         Self { v: v }
     }
+    #[inline]
     pub fn move_from(o: Ptr<NoCopy>) -> Self {
         let __this: NoCopy = Self {
             v: o.with(|__s| __s.v),
@@ -32,9 +34,11 @@ pub struct PrivateCopy {
     pub v: i32,
 }
 impl PrivateCopy {
+    #[inline]
     pub fn new() -> Self {
         Self { v: 0 }
     }
+    #[inline]
     pub fn move_from(o: Ptr<PrivateCopy>) -> Self {
         let __this: PrivateCopy = Self {
             v: o.with(|__s| __s.v),
@@ -55,6 +59,7 @@ pub struct Immovable {
     pub v: i32,
 }
 impl Immovable {
+    #[inline]
     pub fn new() -> Self {
         Self { v: 0 }
     }
@@ -74,6 +79,7 @@ pub struct Container {
     pub tag: i32,
 }
 impl Container {
+    #[inline]
     pub fn move_from(_a0: Ptr<Container>) -> Self {
         Self {
             inner: NoCopy::move_from({ field_ptr!(_a0, inner) }),
@@ -89,6 +95,7 @@ pub struct VecHolder {
     pub items: Vec<NoCopy>,
 }
 impl VecHolder {
+    #[inline]
     pub fn move_from(_a0: Ptr<VecHolder>) -> Self {
         Self {
             items: field!(_a0, items).with_mut(std::mem::take),
@@ -139,6 +146,7 @@ pub trait ContainerImpl {
     fn move_assign(&self, _a0: Ptr<Container>) -> Ptr<Container>;
 }
 impl ContainerImpl for Ptr<Container> {
+    #[inline]
     fn move_assign(&self, _a0: Ptr<Container>) -> Ptr<Container> {
         ({
             let _o: Ptr<NoCopy> = field_ptr!(_a0, inner);
@@ -152,6 +160,7 @@ pub trait NoCopyImpl {
     fn move_assign(&self, o: Ptr<NoCopy>) -> Ptr<NoCopy>;
 }
 impl NoCopyImpl for Ptr<NoCopy> {
+    #[inline]
     fn move_assign(&self, o: Ptr<NoCopy>) -> Ptr<NoCopy> {
         field!((*self), v).write({ o.with(|__s| __s.v) });
         field!(o, v).write(0);
@@ -165,6 +174,7 @@ pub trait PrivateCopyImpl {
     fn move_assign(&self, o: Ptr<PrivateCopy>) -> Ptr<PrivateCopy>;
 }
 impl PrivateCopyImpl for Ptr<PrivateCopy> {
+    #[inline]
     fn move_assign(&self, o: Ptr<PrivateCopy>) -> Ptr<PrivateCopy> {
         field!((*self), v).write({ o.with(|__s| __s.v) });
         field!(o, v).write(0);
@@ -175,6 +185,7 @@ pub trait VecHolderImpl {
     fn move_assign(&self, _a0: Ptr<VecHolder>) -> Ptr<VecHolder>;
 }
 impl VecHolderImpl for Ptr<VecHolder> {
+    #[inline]
     fn move_assign(&self, _a0: Ptr<VecHolder>) -> Ptr<VecHolder> {
         field_ref!((*self), items)
             .as_pointer()

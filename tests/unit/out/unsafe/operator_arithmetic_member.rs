@@ -12,50 +12,61 @@ pub struct S {
     pub v: i32,
 }
 impl S {
+    #[inline]
     pub unsafe fn operator_add_1(&self, o: *const S) -> S {
         return S {
             v: ((self.v) + ((*o).v)),
         };
     }
+    #[inline]
     pub unsafe fn operator_sub_2(&self, o: *const S) -> S {
         return S {
             v: ((self.v) - ((*o).v)),
         };
     }
+    #[inline]
     pub unsafe fn operator_mul(&self, o: *const S) -> S {
         return S {
             v: ((self.v) * ((*o).v)),
         };
     }
+    #[inline]
     pub unsafe fn operator_div(&self, o: *const S) -> S {
         return S {
             v: ((self.v) / ((*o).v)),
         };
     }
+    #[inline]
     pub unsafe fn operator_rem(&self, o: *const S) -> S {
         return S {
             v: ((self.v) % ((*o).v)),
         };
     }
+    #[inline]
     pub unsafe fn operator_pos_6(&self) -> S {
         return S { v: self.v };
     }
+    #[inline]
     pub unsafe fn operator_neg_7(&self) -> S {
         return S { v: -self.v };
     }
+    #[inline]
     pub unsafe fn operator_inc_8(&mut self) -> *mut S {
         self.v.prefix_inc();
         return &mut (*(self as *mut S));
     }
+    #[inline]
     pub unsafe fn operator_post_inc_9(&mut self, mut _a0: i32) -> S {
         let mut old: S = (*(self as *mut S));
         self.v.prefix_inc();
         return old;
     }
+    #[inline]
     pub unsafe fn operator_dec_10(&mut self) -> *mut S {
         self.v.prefix_dec();
         return &mut (*(self as *mut S));
     }
+    #[inline]
     pub unsafe fn operator_post_dec_11(&mut self, mut _a0: i32) -> S {
         let mut old: S = (*(self as *mut S));
         self.v.prefix_dec();

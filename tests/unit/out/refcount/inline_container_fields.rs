@@ -19,6 +19,7 @@ pub struct Elem {
     pub coeffs: Vec<i16>,
 }
 impl Elem {
+    #[inline]
     pub fn move_from(_a0: Ptr<Elem>) -> Self {
         Self {
             id: { (*_a0.upgrade().deref()).id },
@@ -59,6 +60,7 @@ pub struct State {
     pub rows: Vec<Vec<i32>>,
 }
 impl State {
+    #[inline]
     pub fn move_from(_a0: Ptr<State>) -> Self {
         Self {
             count: { (*_a0.upgrade().deref()).count },
@@ -151,6 +153,7 @@ pub struct Counted {
     pub v: i32,
 }
 impl Counted {
+    #[inline]
     pub fn copy_from(o: Ptr<Counted>) -> Self {
         let __this: Counted = Self {
             v: o.with(|__s| __s.v),
@@ -158,6 +161,7 @@ impl Counted {
         (*copies_2.with(Value::clone).borrow_mut()).prefix_inc();
         __this
     }
+    #[inline]
     pub fn move_from(o: Ptr<Counted>) -> Self {
         let __this: Counted = Self {
             v: o.with(|__s| __s.v),
@@ -436,11 +440,13 @@ pub trait CountedImpl {
     fn move_assign(&self, o: Ptr<Counted>) -> Ptr<Counted>;
 }
 impl CountedImpl for Ptr<Counted> {
+    #[inline]
     fn copy_assign(&self, o: Ptr<Counted>) -> Ptr<Counted> {
         field!((*self), v).write({ o.with(|__s| __s.v) });
         (*copy_assigns_4.with(Value::clone).borrow_mut()).prefix_inc();
         return (*self).clone();
     }
+    #[inline]
     fn move_assign(&self, o: Ptr<Counted>) -> Ptr<Counted> {
         field!((*self), v).write({ o.with(|__s| __s.v) });
         field!(o, v).write(-1_i32);
@@ -452,6 +458,7 @@ pub trait ElemImpl {
     fn move_assign(&self, _a0: Ptr<Elem>) -> Ptr<Elem>;
 }
 impl ElemImpl for Ptr<Elem> {
+    #[inline]
     fn move_assign(&self, _a0: Ptr<Elem>) -> Ptr<Elem> {
         field!((*self), id).write({ { (*_a0.upgrade().deref()).id } });
         match ({ ((array_field_ptr!((*self), hist)) as Ptr<i32>).to_any() },) {
@@ -473,6 +480,7 @@ pub trait StateImpl {
     fn move_assign(&self, _a0: Ptr<State>) -> Ptr<State>;
 }
 impl StateImpl for Ptr<State> {
+    #[inline]
     fn move_assign(&self, _a0: Ptr<State>) -> Ptr<State> {
         field!((*self), count).write({ { (*_a0.upgrade().deref()).count } });
         match ({ ((array_field_ptr!((*self), grid)) as Ptr<Box<[i32]>>).to_any() },) {

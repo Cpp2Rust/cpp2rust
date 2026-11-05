@@ -16,6 +16,7 @@ pub struct S {
     pub v: Vec<i32>,
 }
 impl S {
+    #[inline]
     pub fn move_from(_a0: Ptr<S>) -> Self {
         Self {
             tag: { (*_a0.upgrade().deref()).tag },
@@ -67,6 +68,7 @@ pub trait SImpl {
     fn move_assign(&self, _a0: Ptr<S>) -> Ptr<S>;
 }
 impl SImpl for Ptr<S> {
+    #[inline]
     fn move_assign(&self, _a0: Ptr<S>) -> Ptr<S> {
         field!((*self), tag).write({ { (*_a0.upgrade().deref()).tag } });
         field_ref!((*self), v)

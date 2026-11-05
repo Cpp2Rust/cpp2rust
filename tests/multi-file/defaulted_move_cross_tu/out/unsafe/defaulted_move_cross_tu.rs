@@ -14,6 +14,7 @@ pub struct S {
     pub n: [i32; 2],
 }
 impl S {
+    #[inline]
     pub unsafe fn new(mut x: i32) -> Self {
         let mut this = Self {
             v: vec![x; (x as usize) as usize],
@@ -21,6 +22,7 @@ impl S {
         };
         this
     }
+    #[inline]
     pub unsafe fn move_from(_a0: *mut S) -> Self {
         let mut this = Self {
             v: std::mem::take(&mut (*_a0).v),
@@ -28,6 +30,7 @@ impl S {
         };
         this
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, _a0: *mut S) -> *mut S {
         self.v = std::mem::take(&mut (*_a0).v);
         match (
@@ -50,15 +53,18 @@ pub struct T {
     pub v: Vec<i32>,
 }
 impl T {
+    #[inline]
     pub unsafe fn size(&self) -> i32 {
         return (self.v.len() as i32);
     }
+    #[inline]
     pub unsafe fn move_from(_a0: *mut T) -> Self {
         let mut this = Self {
             v: std::mem::take(&mut (*_a0).v),
         };
         this
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, _a0: *mut T) -> *mut T {
         self.v = std::mem::take(&mut (*_a0).v);
         return &mut (*(self as *mut T));

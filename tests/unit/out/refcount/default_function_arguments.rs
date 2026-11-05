@@ -22,6 +22,7 @@ pub struct Bar {
     pub v: i32,
 }
 impl Bar {
+    #[inline]
     pub fn new(v: Option<i32>) -> Self {
         let mut v: i32 = v.unwrap_or_else(|| 1);
         Self { v: v }
@@ -72,6 +73,7 @@ pub struct Holder_int_ {
     pub v: i32,
 }
 impl Holder_int_ {
+    #[inline]
     pub fn new(mut v: i32) -> Self {
         Self { v: v }
     }

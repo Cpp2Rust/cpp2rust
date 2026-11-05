@@ -6,9 +6,11 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+#[inline]
 pub fn operator_eq_0(x: Ptr<S>, y: Ptr<S>) -> bool {
     return ({ x.with(|__s| __s.data_) } == { y.with(|__s| __s.data_) });
 }
+#[inline]
 pub fn operator_lt_1(x: Ptr<S>, y: Ptr<S>) -> bool {
     return ({ x.with(|__s| __s.data_) } < { y.with(|__s| __s.data_) });
 }
@@ -20,9 +22,11 @@ pub struct S {
     data_: i32,
 }
 impl S {
+    #[inline]
     pub fn new(mut data: i32) -> Self {
         Self { data_: data }
     }
+    #[inline]
     pub fn move_from(_a0: Ptr<S>) -> Self {
         Self {
             data_: { (*_a0.upgrade().deref()).data_ },

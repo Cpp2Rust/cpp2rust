@@ -43,12 +43,15 @@ pub trait SImpl {
     fn operator_or(&self, o: Ptr<S>) -> bool;
 }
 impl SImpl for Ptr<S> {
+    #[inline]
     fn operator_not(&self) -> bool {
         return ((*self).with(|__s| __s.v) == 0);
     }
+    #[inline]
     fn operator_and(&self, o: Ptr<S>) -> bool {
         return ((*self).with(|__s| __s.v) != 0) && (o.with(|__s| __s.v) != 0);
     }
+    #[inline]
     fn operator_or(&self, o: Ptr<S>) -> bool {
         return ((*self).with(|__s| __s.v) != 0) || (o.with(|__s| __s.v) != 0);
     }

@@ -17,12 +17,15 @@ pub struct Tracked {
     pub v: i32,
 }
 impl Tracked {
+    #[inline]
     pub fn new_2() -> Self {
         Self { v: 0 }
     }
+    #[inline]
     pub fn new_1(mut v: i32) -> Self {
         Self { v: v }
     }
+    #[inline]
     pub fn copy_from(o: Ptr<Tracked>) -> Self {
         let __this: Tracked = Self {
             v: o.with(|__s| __s.v),
@@ -30,6 +33,7 @@ impl Tracked {
         (*copies_0.with(Value::clone).borrow_mut()).prefix_inc();
         __this
     }
+    #[inline]
     pub fn move_from(o: Ptr<Tracked>) -> Self {
         Self {
             v: o.with(|__s| __s.v),
@@ -58,6 +62,7 @@ pub struct Pair {
     pub y: Tracked,
 }
 impl Pair {
+    #[inline]
     pub fn move_from(_a0: Ptr<Pair>) -> Self {
         Self {
             x: Tracked::move_from({ field_ptr!(_a0, x) }),
@@ -76,6 +81,7 @@ pub struct Arrays {
     pub b: Box<[Tracked]>,
 }
 impl Arrays {
+    #[inline]
     pub fn move_from(_a0: Ptr<Arrays>) -> Self {
         Self {
             a: Box::new(std::array::from_fn::<_, 2, _>(|__i: usize| {
@@ -115,9 +121,11 @@ pub struct CopyOnly {
     pub v: i32,
 }
 impl CopyOnly {
+    #[inline]
     pub fn new(mut v: i32) -> Self {
         Self { v: v }
     }
+    #[inline]
     pub fn copy_from(o: Ptr<CopyOnly>) -> Self {
         let __this: CopyOnly = Self {
             v: o.with(|__s| __s.v),
@@ -170,9 +178,11 @@ pub struct Moved {
     pub v: i32,
 }
 impl Moved {
+    #[inline]
     pub fn new(mut v: i32) -> Self {
         Self { v: v }
     }
+    #[inline]
     pub fn copy_from(o: Ptr<Moved>) -> Self {
         let __this: Moved = Self {
             v: o.with(|__s| __s.v),
@@ -180,6 +190,7 @@ impl Moved {
         (*copies_0.with(Value::clone).borrow_mut()).prefix_inc();
         __this
     }
+    #[inline]
     pub fn move_from(o: Ptr<Moved>) -> Self {
         let __this: Moved = Self {
             v: o.with(|__s| __s.v),
@@ -208,6 +219,7 @@ pub struct MovedPair {
     pub y: Moved,
 }
 impl MovedPair {
+    #[inline]
     pub fn move_from(_a0: Ptr<MovedPair>) -> Self {
         Self {
             x: Moved::move_from({ field_ptr!(_a0, x) }),
@@ -240,6 +252,7 @@ pub struct Owner {
     pub p: Option<Value<i32>>,
 }
 impl Owner {
+    #[inline]
     pub fn move_from(_a0: Ptr<Owner>) -> Self {
         Self {
             p: field!(_a0, p).with_mut(|__v: &mut Option<Value<i32>>| __v.take()),
@@ -627,6 +640,7 @@ pub trait ArraysImpl {
     fn move_assign(&self, _a0: Ptr<Arrays>) -> Ptr<Arrays>;
 }
 impl ArraysImpl for Ptr<Arrays> {
+    #[inline]
     fn copy_assign(&self, _a0: Ptr<Arrays>) -> Ptr<Arrays> {
         let mut __i0: usize = 0_usize;
         'loop_: while (__i0 != 2_usize) {
@@ -654,6 +668,7 @@ impl ArraysImpl for Ptr<Arrays> {
         }
         return (*self).clone();
     }
+    #[inline]
     fn move_assign(&self, _a0: Ptr<Arrays>) -> Ptr<Arrays> {
         let mut __i0: usize = 0_usize;
         'loop_: while (__i0 != 2_usize) {
@@ -687,9 +702,11 @@ pub trait CopyOnlyImpl {
     fn copy_assign(&self, o: Ptr<CopyOnly>) -> Ptr<CopyOnly>;
 }
 impl CopyOnlyImpl for Ptr<CopyOnly> {
+    #[inline]
     fn destructor(&self) {
         (*copy_only_dtors_2.with(Value::clone).borrow_mut()).prefix_inc();
     }
+    #[inline]
     fn copy_assign(&self, o: Ptr<CopyOnly>) -> Ptr<CopyOnly> {
         field!((*self), v).write({ o.with(|__s| __s.v) });
         (*copy_only_copies_1.with(Value::clone).borrow_mut()).prefix_inc();
@@ -701,6 +718,7 @@ pub trait CopyOnlyPairImpl {
     fn destructor(&self);
 }
 impl CopyOnlyPairImpl for Ptr<CopyOnlyPair> {
+    #[inline]
     fn copy_assign(&self, _a0: Ptr<CopyOnlyPair>) -> Ptr<CopyOnlyPair> {
         ({
             let _o: Ptr<CopyOnly> = field_ptr!(_a0, x);
@@ -723,17 +741,20 @@ pub trait MovedImpl {
     fn destructor(&self);
 }
 impl MovedImpl for Ptr<Moved> {
+    #[inline]
     fn copy_assign(&self, o: Ptr<Moved>) -> Ptr<Moved> {
         field!((*self), v).write({ o.with(|__s| __s.v) });
         (*copies_0.with(Value::clone).borrow_mut()).prefix_inc();
         return (*self).clone();
     }
+    #[inline]
     fn move_assign(&self, o: Ptr<Moved>) -> Ptr<Moved> {
         field!((*self), v).write({ o.with(|__s| __s.v) });
         field!(o, v).write(-1_i32);
         (*move_assigns_4.with(Value::clone).borrow_mut()).prefix_inc();
         return (*self).clone();
     }
+    #[inline]
     fn destructor(&self) {
         (*moved_dtors_5.with(Value::clone).borrow_mut()).prefix_inc();
     }
@@ -744,6 +765,7 @@ pub trait MovedPairImpl {
     fn destructor(&self);
 }
 impl MovedPairImpl for Ptr<MovedPair> {
+    #[inline]
     fn copy_assign(&self, _a0: Ptr<MovedPair>) -> Ptr<MovedPair> {
         ({
             let _o: Ptr<Moved> = field_ptr!(_a0, x);
@@ -755,6 +777,7 @@ impl MovedPairImpl for Ptr<MovedPair> {
         });
         return (*self).clone();
     }
+    #[inline]
     fn move_assign(&self, _a0: Ptr<MovedPair>) -> Ptr<MovedPair> {
         ({
             let _o: Ptr<Moved> = field_ptr!(_a0, x);
@@ -775,6 +798,7 @@ pub trait OwnerImpl {
     fn move_assign(&self, _a0: Ptr<Owner>) -> Ptr<Owner>;
 }
 impl OwnerImpl for Ptr<Owner> {
+    #[inline]
     fn move_assign(&self, _a0: Ptr<Owner>) -> Ptr<Owner> {
         field_ptr!((*self), p)
             .write(field!(_a0, p).with_mut(|__v: &mut Option<Value<i32>>| __v.take()));
@@ -786,6 +810,7 @@ pub trait PairImpl {
     fn move_assign(&self, _a0: Ptr<Pair>) -> Ptr<Pair>;
 }
 impl PairImpl for Ptr<Pair> {
+    #[inline]
     fn copy_assign(&self, _a0: Ptr<Pair>) -> Ptr<Pair> {
         ({
             let _o: Ptr<Tracked> = field_ptr!(_a0, x);
@@ -797,6 +822,7 @@ impl PairImpl for Ptr<Pair> {
         });
         return (*self).clone();
     }
+    #[inline]
     fn move_assign(&self, _a0: Ptr<Pair>) -> Ptr<Pair> {
         ({
             let _o: Ptr<Tracked> = field_ptr!(_a0, x);
@@ -814,11 +840,13 @@ pub trait TrackedImpl {
     fn move_assign(&self, o: Ptr<Tracked>) -> Ptr<Tracked>;
 }
 impl TrackedImpl for Ptr<Tracked> {
+    #[inline]
     fn copy_assign(&self, o: Ptr<Tracked>) -> Ptr<Tracked> {
         field!((*self), v).write({ o.with(|__s| __s.v) });
         (*copies_0.with(Value::clone).borrow_mut()).prefix_inc();
         return (*self).clone();
     }
+    #[inline]
     fn move_assign(&self, o: Ptr<Tracked>) -> Ptr<Tracked> {
         field!((*self), v).write({ o.with(|__s| __s.v) });
         return (*self).clone();

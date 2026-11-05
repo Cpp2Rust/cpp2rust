@@ -13,6 +13,7 @@ pub struct A {}
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct D {}
 impl D {
+    #[inline]
     pub unsafe fn operator_call(&self, mut ptr: *const A) {
         {
             let __p = ptr;

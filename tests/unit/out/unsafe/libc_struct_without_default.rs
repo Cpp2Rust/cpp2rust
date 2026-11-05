@@ -13,6 +13,7 @@ pub struct UserDefined {
     pub v: Vec<i32>,
 }
 impl UserDefined {
+    #[inline]
     pub unsafe fn move_from(_a0: *mut UserDefined) -> Self {
         let mut this = Self {
             a: std::array::from_fn(|__i| (*&mut (&mut (*_a0)).a[__i])),
@@ -20,6 +21,7 @@ impl UserDefined {
         };
         this
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, _a0: *mut UserDefined) -> *mut UserDefined {
         for __i in 0..1 {
             *&mut self.a[__i] = (*&mut (&mut (*_a0)).a[__i]);

@@ -17,12 +17,15 @@ pub struct Tracked {
     pub v: i32,
 }
 impl Tracked {
+    #[inline]
     pub fn new_2() -> Self {
         Self { v: 0 }
     }
+    #[inline]
     pub fn new_1(mut v: i32) -> Self {
         Self { v: v }
     }
+    #[inline]
     pub fn copy_from(o: Ptr<Tracked>) -> Self {
         let __this: Tracked = Self {
             v: o.with(|__s| __s.v),
@@ -30,6 +33,7 @@ impl Tracked {
         (*copies_0.with(Value::clone).borrow_mut()).prefix_inc();
         __this
     }
+    #[inline]
     pub fn move_from(o: Ptr<Tracked>) -> Self {
         Self {
             v: o.with(|__s| __s.v),
@@ -72,6 +76,7 @@ pub struct Bag {
     pub items: Vec<Tracked>,
 }
 impl Bag {
+    #[inline]
     pub fn move_from(_a0: Ptr<Bag>) -> Self {
         Self {
             items: field!(_a0, items).with_mut(std::mem::take),
@@ -411,6 +416,7 @@ pub trait BagImpl {
     fn move_assign(&self, _a0: Ptr<Bag>) -> Ptr<Bag>;
 }
 impl BagImpl for Ptr<Bag> {
+    #[inline]
     fn move_assign(&self, _a0: Ptr<Bag>) -> Ptr<Bag> {
         field_ref!((*self), items)
             .as_pointer()
@@ -423,11 +429,13 @@ pub trait TrackedImpl {
     fn move_assign(&self, o: Ptr<Tracked>) -> Ptr<Tracked>;
 }
 impl TrackedImpl for Ptr<Tracked> {
+    #[inline]
     fn copy_assign(&self, o: Ptr<Tracked>) -> Ptr<Tracked> {
         field!((*self), v).write({ o.with(|__s| __s.v) });
         (*copies_0.with(Value::clone).borrow_mut()).prefix_inc();
         return (*self).clone();
     }
+    #[inline]
     fn move_assign(&self, o: Ptr<Tracked>) -> Ptr<Tracked> {
         field!((*self), v).write({ o.with(|__s| __s.v) });
         return (*self).clone();

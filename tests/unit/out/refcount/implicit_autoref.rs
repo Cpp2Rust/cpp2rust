@@ -14,6 +14,7 @@ pub struct Holder {
     pub v: Vec<i32>,
 }
 impl Holder {
+    #[inline]
     pub fn move_from(_a0: Ptr<Holder>) -> Self {
         Self {
             v: field!(_a0, v).with_mut(std::mem::take),
@@ -64,6 +65,7 @@ pub trait HolderImpl {
     fn move_assign(&self, _a0: Ptr<Holder>) -> Ptr<Holder>;
 }
 impl HolderImpl for Ptr<Holder> {
+    #[inline]
     fn move_assign(&self, _a0: Ptr<Holder>) -> Ptr<Holder> {
         field_ref!((*self), v)
             .as_pointer()

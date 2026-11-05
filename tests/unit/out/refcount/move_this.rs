@@ -14,14 +14,17 @@ pub struct Chain {
     pub v: i32,
 }
 impl Chain {
+    #[inline]
     pub fn new(mut v: i32) -> Self {
         Self { v: v }
     }
+    #[inline]
     pub fn copy_from(o: Ptr<Chain>) -> Self {
         Self {
             v: (o.with(|__s| __s.v) + 100),
         }
     }
+    #[inline]
     pub fn move_from(o: Ptr<Chain>) -> Self {
         let __this: Chain = Self {
             v: (o.with(|__s| __s.v) + 1),
@@ -79,6 +82,7 @@ pub trait ChainImpl {
     fn self_(&self) -> Ptr<Chain>;
 }
 impl ChainImpl for Ptr<Chain> {
+    #[inline]
     fn add_4(&self, mut n: i32) -> Ptr<Chain> {
         {
             let __rhs = n;
@@ -86,6 +90,7 @@ impl ChainImpl for Ptr<Chain> {
         };
         return (*self).clone();
     }
+    #[inline]
     fn add_5(&self, mut n: i32) -> Ptr<Chain> {
         {
             let __rhs = n;
@@ -93,12 +98,15 @@ impl ChainImpl for Ptr<Chain> {
         };
         return (*self).clone();
     }
+    #[inline]
     fn take(&self) -> Chain {
         return Chain::move_from({ (*self).clone() });
     }
+    #[inline]
     fn copy(&self) -> Chain {
         return Chain::copy_from({ (*self).clone() });
     }
+    #[inline]
     fn self_(&self) -> Ptr<Chain> {
         return (*self).clone();
     }

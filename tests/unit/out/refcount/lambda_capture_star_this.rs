@@ -33,9 +33,11 @@ pub trait SImpl {
     fn mixed(&self, k: i32) -> i32;
 }
 impl SImpl for Ptr<S> {
+    #[inline]
     fn twice(&self) -> i32 {
         return ((*self).with(|__s| __s.n) * 2);
     }
+    #[inline]
     fn modify_copy(&self) -> i32 {
         let f: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new(lambda!(
             {
@@ -51,6 +53,7 @@ impl SImpl for Ptr<S> {
         let mut r: i32 = ({ (*f.borrow()).call() }).clone();
         return ((r * 100) + (*self).with(|__s| __s.n));
     }
+    #[inline]
     fn snapshot(&self) -> i32 {
         let f: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new(lambda!(
             {
@@ -63,6 +66,7 @@ impl SImpl for Ptr<S> {
         field!((*self), n).write(99);
         return ({ (*f.borrow()).call() }).clone();
     }
+    #[inline]
     fn mixed(&self, k: i32) -> i32 {
         let k: Value<i32> = Rc::new(RefCell::new(k));
         let f: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new(lambda!(

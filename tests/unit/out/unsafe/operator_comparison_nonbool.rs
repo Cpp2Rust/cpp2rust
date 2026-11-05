@@ -64,6 +64,7 @@ pub struct Custom {
     pub v: i32,
 }
 impl Custom {
+    #[inline]
     pub unsafe fn operator_cmp(&self, o: *const Custom) -> Result {
         return Result {
             r: ((self.v) - ((*o).v)),
@@ -76,14 +77,17 @@ pub struct Mixed {
     pub v: i32,
 }
 impl Mixed {
+    #[inline]
     pub unsafe fn operator_cmp(&self, o: *const Mixed) -> Result {
         return Result {
             r: ((self.v) - ((*o).v)),
         };
     }
+    #[inline]
     pub unsafe fn operator_lt(&self, o: *const Mixed) -> i32 {
         return if ((self.v) < ((*o).v)) { 8 } else { 0 };
     }
+    #[inline]
     pub unsafe fn operator_eq(&self, o: *const Mixed) -> i32 {
         return if ((self.v) == ((*o).v)) { 9 } else { 0 };
     }
@@ -119,10 +123,12 @@ pub struct MyBool {
     pub value: bool,
 }
 impl MyBool {
+    #[inline]
     pub unsafe fn new(mut v: bool) -> Self {
         let mut this = Self { value: v };
         this
     }
+    #[inline]
     pub unsafe fn to_bool(&self) -> bool {
         return self.value;
     }
@@ -180,10 +186,12 @@ pub struct RefBool {
     pub value: bool,
 }
 impl RefBool {
+    #[inline]
     pub unsafe fn new(mut v: bool) -> Self {
         let mut this = Self { value: v };
         this
     }
+    #[inline]
     pub unsafe fn to_bool(&self) -> bool {
         return self.value;
     }
@@ -196,6 +204,7 @@ pub struct RefInt {
     pub v: i32,
 }
 impl RefInt {
+    #[inline]
     pub unsafe fn operator_eq(&self, _a0: *const RefInt) -> *mut RefBool {
         return &mut (*std::cell::LazyCell::force_mut(&mut *&raw mut ref_true_8));
     }

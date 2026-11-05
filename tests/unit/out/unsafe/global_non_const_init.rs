@@ -10,6 +10,7 @@ pub unsafe fn next_0() -> i32 {
     return (*std::cell::LazyCell::force_mut(&mut *&raw mut counter_1)).prefix_inc();
 }
 static mut counter_1: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
+#[inline]
 pub unsafe fn marker_2(mut tag: u8) -> u8 {
     return ((((tag as i32) << (3)) | (2)) as u8);
 }
@@ -33,12 +34,14 @@ pub struct Ctor {
     pub v: i32,
 }
 impl Ctor {
+    #[inline]
     pub unsafe fn new_1() -> Self {
         let mut this = Self {
             v: (unsafe { next_0() }),
         };
         this
     }
+    #[inline]
     pub unsafe fn new_2(mut x: i32) -> Self {
         let mut this = Self { v: x };
         this
@@ -82,10 +85,12 @@ pub struct Singleton {
     pub hits: i32,
 }
 impl Singleton {
+    #[inline]
     pub unsafe fn new() -> Self {
         let mut this = Self { hits: 0 };
         this
     }
+    #[inline]
     pub unsafe fn instance() -> *mut Singleton {
         return &mut (*std::cell::LazyCell::force_mut(&mut *&raw mut s_15));
     }

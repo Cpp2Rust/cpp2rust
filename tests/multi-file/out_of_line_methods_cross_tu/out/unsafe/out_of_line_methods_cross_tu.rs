@@ -12,6 +12,7 @@ pub struct S {
     pub v: i32,
 }
 impl S {
+    #[inline]
     pub unsafe fn get(&self) -> i32 {
         return self.v;
     }
@@ -31,6 +32,7 @@ pub struct Pair {
     pub first: i32,
     pub second: i32,
 }
+#[inline]
 pub unsafe fn pair_diff_0(mut p: *const Pair) -> i32 {
     return (((*p).first) - ((*p).second));
 }

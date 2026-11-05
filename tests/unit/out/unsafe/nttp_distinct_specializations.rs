@@ -13,6 +13,7 @@ pub struct S_2_ {
     pub w: i32,
 }
 impl S_2_ {
+    #[inline]
     pub unsafe fn get(&self) -> i32 {
         return ((self.v) - (self.w));
     }
@@ -23,6 +24,7 @@ pub struct S_1_ {
     pub v: i32,
 }
 impl S_1_ {
+    #[inline]
     pub unsafe fn get(&self) -> i32 {
         return ((self.v) * (1));
     }
@@ -33,6 +35,7 @@ pub struct S_3_ {
     pub v: i32,
 }
 impl S_3_ {
+    #[inline]
     pub unsafe fn get(&self) -> i32 {
         return ((self.v) * (3));
     }

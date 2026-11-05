@@ -6,15 +6,19 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+#[inline]
 pub fn get_0(v: Ptr<V>) -> i32 {
     return v.with(|__s| __s.x);
 }
+#[inline]
 pub fn operator_eq_1(a: Ptr<V>, b: Ptr<V>) -> bool {
     return ({ a.with(|__s| __s.x) } == { b.with(|__s| __s.x) });
 }
+#[inline]
 pub fn scaled_2(v: Ptr<V>, mut k: i32) -> i32 {
     return ({ v.with(|__s| __s.x) } * { k });
 }
+#[inline]
 pub fn scaled_3(v: Ptr<V>, mut k: f64) -> f64 {
     return ({ (v.with(|__s| __s.x) as f64) } * { k });
 }
@@ -29,6 +33,7 @@ impl CppEq for V {
         operator_eq_1(__lhs.clone(), __rhs.clone())
     }
 }
+#[inline]
 pub fn get_4(w: Ptr<W_int_>) -> i32 {
     return w.with(|__s| __s.x);
 }
@@ -38,6 +43,7 @@ pub struct W_int_ {
     #[offset(0)]
     pub x: i32,
 }
+#[inline]
 pub fn get_5(w: Ptr<W_long_>) -> i64 {
     return w.with(|__s| __s.x);
 }

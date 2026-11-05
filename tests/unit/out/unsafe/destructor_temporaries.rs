@@ -14,10 +14,12 @@ pub struct S {
     pub v: i32,
 }
 impl S {
+    #[inline]
     pub unsafe fn destructor(&mut self) {
         (*std::cell::LazyCell::force_mut(&mut *&raw mut destroyed_0)).postfix_inc();
         (*std::cell::LazyCell::force_mut(&mut *&raw mut last_1)) = self.v;
     }
+    #[inline]
     pub unsafe fn get(&self) -> i32 {
         return self.v;
     }

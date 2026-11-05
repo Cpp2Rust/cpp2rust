@@ -124,6 +124,7 @@ pub trait CounterImpl {
     fn inc(&self);
 }
 impl CounterImpl for Ptr<Counter> {
+    #[inline]
     fn inc(&self) {
         field!((*self), n).with_mut(|__v| __v.prefix_inc());
     }

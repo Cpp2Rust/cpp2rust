@@ -13,12 +13,15 @@ pub struct S {
     pub step: i32,
 }
 impl S {
+    #[inline]
     pub unsafe fn add(&mut self, mut k: i32) {
         self.n += k;
     }
+    #[inline]
     pub unsafe fn scaled(&self) -> i32 {
         return ((self.n) * (self.step));
     }
+    #[inline]
     pub unsafe fn bump(&mut self, mut by: i32) {
         let mut inc: FnPtr<fn(i32)> = lambda_unsafe!(
             {
@@ -31,6 +34,7 @@ impl S {
         (unsafe { inc.call(by) });
         (unsafe { inc.call(by) });
     }
+    #[inline]
     pub unsafe fn bump_via_method(&mut self, mut by: i32) {
         let mut inc: FnPtr<fn(i32)> = lambda_unsafe!(
             {
@@ -42,6 +46,7 @@ impl S {
         );
         (unsafe { inc.call(by) });
     }
+    #[inline]
     pub unsafe fn read_scaled(&self) -> i32 {
         let mut get: FnPtr<fn() -> i32> = lambda_unsafe!(
             {

@@ -14,12 +14,15 @@ pub struct S {
     pub v: i32,
 }
 impl S {
+    #[inline]
     pub unsafe fn const_method(&self) -> i32 {
         return ((self.v) * (2));
     }
+    #[inline]
     pub unsafe fn mut_method(&mut self) {
         self.v += 1;
     }
+    #[inline]
     pub unsafe fn new(mut init: i32) -> Self {
         let mut this = Self { v: init };
         (unsafe { S::mut_method(&mut this) });
@@ -27,6 +30,7 @@ impl S {
             (unsafe { S::const_method(&mut this) });
         this
     }
+    #[inline]
     pub unsafe fn destructor(&mut self) {
         (unsafe { S::mut_method(self) });
         (*std::cell::LazyCell::force_mut(&mut *&raw mut total_0)) +=
@@ -41,15 +45,18 @@ pub struct Point {
     pub y: i32,
 }
 impl Point {
+    #[inline]
     pub unsafe fn new_2(mut x: i32, mut y: i32) -> Self {
         let mut this = Self { x: x, y: y };
         this
     }
+    #[inline]
     pub unsafe fn new_1(mut v: i32) -> Self {
         let mut this = Point::new_2({ v }, { ((v) + (1)) });
         this.y *= 10;
         this
     }
+    #[inline]
     pub unsafe fn new_3() -> Self {
         let mut this = Point::new_1({ 4 });
         this.x += 100;

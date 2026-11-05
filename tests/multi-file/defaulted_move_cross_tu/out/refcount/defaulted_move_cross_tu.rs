@@ -18,12 +18,14 @@ pub struct S {
     pub n: Box<[i32]>,
 }
 impl S {
+    #[inline]
     pub fn new(mut x: i32) -> Self {
         Self {
             v: vec![x; (x as usize) as usize],
             n: Box::new([x, (x + 1)]),
         }
     }
+    #[inline]
     pub fn move_from(_a0: Ptr<S>) -> Self {
         Self {
             v: field!(_a0, v).with_mut(std::mem::take),
@@ -51,6 +53,7 @@ pub struct T {
     pub v: Vec<i32>,
 }
 impl T {
+    #[inline]
     pub fn move_from(_a0: Ptr<T>) -> Self {
         Self {
             v: field!(_a0, v).with_mut(std::mem::take),
@@ -96,6 +99,7 @@ pub trait SImpl {
     fn move_assign(&self, _a0: Ptr<S>) -> Ptr<S>;
 }
 impl SImpl for Ptr<S> {
+    #[inline]
     fn move_assign(&self, _a0: Ptr<S>) -> Ptr<S> {
         field_ref!((*self), v)
             .as_pointer()
@@ -117,9 +121,11 @@ pub trait TImpl {
     fn move_assign(&self, _a0: Ptr<T>) -> Ptr<T>;
 }
 impl TImpl for Ptr<T> {
+    #[inline]
     fn size(&self) -> i32 {
         return ((*(*self).upgrade().deref()).v.len() as i32);
     }
+    #[inline]
     fn move_assign(&self, _a0: Ptr<T>) -> Ptr<T> {
         field_ref!((*self), v)
             .as_pointer()

@@ -14,6 +14,7 @@ pub struct Degrees {
     pub value: i32,
 }
 impl Degrees {
+    #[inline]
     pub fn new(mut v: i32) -> Self {
         Self { value: v }
     }

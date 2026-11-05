@@ -12,30 +12,39 @@ pub struct S {
     pub v: i32,
 }
 impl S {
+    #[inline]
     pub unsafe fn operator_add_1(&mut self, mut a: i32) -> i32 {
         return ((self.v) + (a));
     }
+    #[inline]
     pub unsafe fn operator_add_2(&self, mut a: i32) -> i32 {
         return (((self.v) + (a)) + (1));
     }
+    #[inline]
     pub unsafe fn operator_add_3(&mut self, mut a: i32) -> i32 {
         return (((self.v) + (a)) + (2));
     }
+    #[inline]
     pub unsafe fn operator_sub_4(&mut self, mut a: i32) -> i32 {
         return ((self.v) - (a));
     }
+    #[inline]
     pub unsafe fn operator_sub_5(&mut self, mut a: i32) -> i32 {
         return (((self.v) - (a)) - (1));
     }
+    #[inline]
     pub unsafe fn operator_mul_6(&self, mut a: i32) -> i32 {
         return ((self.v) * (a));
     }
+    #[inline]
     pub unsafe fn operator_mul_7(&self, mut a: i32) -> i32 {
         return (((self.v) * (a)) * (2));
     }
+    #[inline]
     pub unsafe fn operator_index_8(&mut self, mut i: i32) -> i32 {
         return ((self.v) + (i));
     }
+    #[inline]
     pub unsafe fn operator_index_9(&self, mut i: i32) -> i32 {
         return (((self.v) + (i)) + (100));
     }

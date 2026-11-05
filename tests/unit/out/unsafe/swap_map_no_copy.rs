@@ -14,28 +14,34 @@ pub struct Tracked {
     pub v: i32,
 }
 impl Tracked {
+    #[inline]
     pub unsafe fn new_2() -> Self {
         let mut this = Self { v: 0 };
         this
     }
+    #[inline]
     pub unsafe fn new_1(mut v: i32) -> Self {
         let mut this = Self { v: v };
         this
     }
+    #[inline]
     pub unsafe fn copy_from(o: *const Tracked) -> Self {
         let mut this = Self { v: (*o).v };
         (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)).prefix_inc();
         this
     }
+    #[inline]
     pub unsafe fn move_from(o: *mut Tracked) -> Self {
         let mut this = Self { v: (*o).v };
         this
     }
+    #[inline]
     pub unsafe fn copy_assign(&mut self, o: *const Tracked) -> *mut Tracked {
         self.v = (*o).v;
         (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)).prefix_inc();
         return &mut (*(self as *mut Tracked));
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, o: *mut Tracked) -> *mut Tracked {
         self.v = (*o).v;
         return &mut (*(self as *mut Tracked));
@@ -58,6 +64,7 @@ pub struct Pair {
     pub y: Tracked,
 }
 impl Pair {
+    #[inline]
     pub unsafe fn move_from(_a0: *mut Pair) -> Self {
         let mut this = Self {
             x: Tracked::move_from({ &mut (*_a0).x }),
@@ -65,6 +72,7 @@ impl Pair {
         };
         this
     }
+    #[inline]
     pub unsafe fn copy_assign(&mut self, _a0: *const Pair) -> *mut Pair {
         (unsafe {
             let _o: *const Tracked = &(*_a0).x;
@@ -76,6 +84,7 @@ impl Pair {
         });
         return &mut (*(self as *mut Pair));
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, _a0: *mut Pair) -> *mut Pair {
         (unsafe {
             let _o: *mut Tracked = &mut (*_a0).x;
@@ -95,6 +104,7 @@ pub struct Arrays {
     pub b: [Tracked; 2],
 }
 impl Arrays {
+    #[inline]
     pub unsafe fn move_from(_a0: *mut Arrays) -> Self {
         let mut this = Self {
             a: std::array::from_fn::<_, 2, _>(|__i: usize| {
@@ -106,6 +116,7 @@ impl Arrays {
         };
         this
     }
+    #[inline]
     pub unsafe fn copy_assign(&mut self, _a0: *const Arrays) -> *mut Arrays {
         let mut __i0: usize = 0_usize;
         'loop_: while ((__i0) != (2_usize)) {
@@ -125,6 +136,7 @@ impl Arrays {
         }
         return &mut (*(self as *mut Arrays));
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, _a0: *mut Arrays) -> *mut Arrays {
         let mut __i0: usize = 0_usize;
         'loop_: while ((__i0) != (2_usize)) {
@@ -156,18 +168,22 @@ pub struct CopyOnly {
     pub v: i32,
 }
 impl CopyOnly {
+    #[inline]
     pub unsafe fn new(mut v: i32) -> Self {
         let mut this = Self { v: v };
         this
     }
+    #[inline]
     pub unsafe fn copy_from(o: *const CopyOnly) -> Self {
         let mut this = Self { v: (*o).v };
         (*std::cell::LazyCell::force_mut(&mut *&raw mut copy_only_copies_1)).prefix_inc();
         this
     }
+    #[inline]
     pub unsafe fn destructor(&mut self) {
         (*std::cell::LazyCell::force_mut(&mut *&raw mut copy_only_dtors_2)).prefix_inc();
     }
+    #[inline]
     pub unsafe fn copy_assign(&mut self, o: *const CopyOnly) -> *mut CopyOnly {
         self.v = (*o).v;
         (*std::cell::LazyCell::force_mut(&mut *&raw mut copy_only_copies_1)).prefix_inc();
@@ -186,6 +202,7 @@ pub struct CopyOnlyPair {
     pub y: CopyOnly,
 }
 impl CopyOnlyPair {
+    #[inline]
     pub unsafe fn copy_assign(&mut self, _a0: *const CopyOnlyPair) -> *mut CopyOnlyPair {
         (unsafe {
             let _o: *const CopyOnly = &(*_a0).x;
@@ -223,32 +240,38 @@ pub struct Moved {
     pub v: i32,
 }
 impl Moved {
+    #[inline]
     pub unsafe fn new(mut v: i32) -> Self {
         let mut this = Self { v: v };
         this
     }
+    #[inline]
     pub unsafe fn copy_from(o: *const Moved) -> Self {
         let mut this = Self { v: (*o).v };
         (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)).prefix_inc();
         this
     }
+    #[inline]
     pub unsafe fn move_from(o: *mut Moved) -> Self {
         let mut this = Self { v: (*o).v };
         (*o).v = -1_i32;
         (*std::cell::LazyCell::force_mut(&mut *&raw mut moves_3)).prefix_inc();
         this
     }
+    #[inline]
     pub unsafe fn copy_assign(&mut self, o: *const Moved) -> *mut Moved {
         self.v = (*o).v;
         (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)).prefix_inc();
         return &mut (*(self as *mut Moved));
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, o: *mut Moved) -> *mut Moved {
         self.v = (*o).v;
         (*o).v = -1_i32;
         (*std::cell::LazyCell::force_mut(&mut *&raw mut move_assigns_4)).prefix_inc();
         return &mut (*(self as *mut Moved));
     }
+    #[inline]
     pub unsafe fn destructor(&mut self) {
         (*std::cell::LazyCell::force_mut(&mut *&raw mut moved_dtors_5)).prefix_inc();
     }
@@ -274,6 +297,7 @@ pub struct MovedPair {
     pub y: Moved,
 }
 impl MovedPair {
+    #[inline]
     pub unsafe fn move_from(_a0: *mut MovedPair) -> Self {
         let mut this = Self {
             x: Moved::move_from({ &mut (*_a0).x }),
@@ -281,6 +305,7 @@ impl MovedPair {
         };
         this
     }
+    #[inline]
     pub unsafe fn copy_assign(&mut self, _a0: *const MovedPair) -> *mut MovedPair {
         (unsafe {
             let _o: *const Moved = &(*_a0).x;
@@ -292,6 +317,7 @@ impl MovedPair {
         });
         return &mut (*(self as *mut MovedPair));
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, _a0: *mut MovedPair) -> *mut MovedPair {
         (unsafe {
             let _o: *mut Moved = &mut (*_a0).x;
@@ -329,10 +355,12 @@ pub struct Owner {
     pub p: Option<Box<i32>>,
 }
 impl Owner {
+    #[inline]
     pub unsafe fn move_from(_a0: *mut Owner) -> Self {
         let mut this = Self { p: (*_a0).p.take() };
         this
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, _a0: *mut Owner) -> *mut Owner {
         self.p = (*_a0).p.take();
         return &mut (*(self as *mut Owner));

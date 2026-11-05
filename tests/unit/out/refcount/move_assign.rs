@@ -14,9 +14,11 @@ pub struct MoveOnly {
     pub v: i32,
 }
 impl MoveOnly {
+    #[inline]
     pub fn new(mut v: i32) -> Self {
         Self { v: v }
     }
+    #[inline]
     pub fn move_from(o: Ptr<MoveOnly>) -> Self {
         let __this: MoveOnly = Self {
             v: o.with(|__s| __s.v),
@@ -32,6 +34,7 @@ pub struct ConstMoveAssign {
     pub mark: i32,
 }
 impl ConstMoveAssign {
+    #[inline]
     pub fn new() -> Self {
         Self { mark: 0 }
     }
@@ -110,10 +113,12 @@ pub trait ConstMoveAssignImpl {
     fn operator_assign_3(&self, o: Ptr<ConstMoveAssign>) -> Ptr<ConstMoveAssign>;
 }
 impl ConstMoveAssignImpl for Ptr<ConstMoveAssign> {
+    #[inline]
     fn operator_assign_2(&self, o: Ptr<ConstMoveAssign>) -> Ptr<ConstMoveAssign> {
         field!((*self), mark).write({ (o.with(|__s| __s.mark) + 1) });
         return (*self).clone();
     }
+    #[inline]
     fn operator_assign_3(&self, o: Ptr<ConstMoveAssign>) -> Ptr<ConstMoveAssign> {
         field!((*self), mark).write({ (o.with(|__s| __s.mark) + 10) });
         return (*self).clone();
@@ -123,6 +128,7 @@ pub trait MoveOnlyImpl {
     fn move_assign(&self, o: Ptr<MoveOnly>) -> Ptr<MoveOnly>;
 }
 impl MoveOnlyImpl for Ptr<MoveOnly> {
+    #[inline]
     fn move_assign(&self, o: Ptr<MoveOnly>) -> Ptr<MoveOnly> {
         if ((*self) == (o)) {
             return (*self).clone();

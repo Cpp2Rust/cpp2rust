@@ -10,6 +10,7 @@ use std::rc::Rc;
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Static {}
 impl Static {
+    #[inline]
     pub unsafe fn operator_call(mut a: i32, mut b: i32) -> i32 {
         return ((a) * (b));
     }
@@ -21,23 +22,29 @@ pub struct S {
     pub v: i32,
 }
 impl S {
+    #[inline]
     pub unsafe fn operator_call_1(&self) -> i32 {
         return self.v;
     }
+    #[inline]
     pub unsafe fn operator_call_2(&self, mut a: i32) -> i32 {
         return ((self.v) + (a));
     }
+    #[inline]
     pub unsafe fn operator_call_3(&self, mut a: i32, mut b: i32) -> i32 {
         return (((self.v) + (a)) + (b));
     }
+    #[inline]
     pub unsafe fn operator_comma(&self, o: *const S) -> S {
         return S {
             v: (((self.v) * (10)) + ((*o).v)),
         };
     }
+    #[inline]
     pub unsafe fn to_i32(&self) -> i32 {
         return self.v;
     }
+    #[inline]
     pub unsafe fn to_bool(&self) -> bool {
         return ((self.v) != (0));
     }

@@ -47,6 +47,7 @@ pub trait SImpl {
     fn nested_this(&self) -> i32;
 }
 impl SImpl for Ptr<S> {
+    #[inline]
     fn nested_this(&self) -> i32 {
         let outer: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(lambda!(
             {

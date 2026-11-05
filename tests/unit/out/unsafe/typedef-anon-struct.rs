@@ -18,12 +18,14 @@ pub struct Outer {
     pub runs: Vec<Outer_RunInfo>,
 }
 impl Outer {
+    #[inline]
     pub unsafe fn move_from(_a0: *mut Outer) -> Self {
         let mut this = Self {
             runs: std::mem::take(&mut (*_a0).runs),
         };
         this
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, _a0: *mut Outer) -> *mut Outer {
         self.runs = std::mem::take(&mut (*_a0).runs);
         return &mut (*(self as *mut Outer));

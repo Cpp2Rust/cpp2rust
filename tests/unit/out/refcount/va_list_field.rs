@@ -32,6 +32,7 @@ pub struct Guard_1 {
     pub active: bool,
 }
 impl Guard_1 {
+    #[inline]
     pub fn new(val: Ptr<Ptr<VaArg>>) -> Self {
         Self {
             ap: (val).clone(),
@@ -75,6 +76,7 @@ pub trait Guard_1Impl {
     fn destructor(&self);
 }
 impl Guard_1Impl for Ptr<Guard_1> {
+    #[inline]
     fn destructor(&self) {
         if (*self).with(|__s| __s.active) {}
     }

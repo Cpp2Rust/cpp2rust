@@ -12,6 +12,7 @@ pub static mut total_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| u
 #[cpp_from(i32, new, value)]
 pub struct S {}
 impl S {
+    #[inline]
     pub unsafe fn new(mut x: i32) -> Self {
         let mut this = Self {};
         (*std::cell::LazyCell::force_mut(&mut *&raw mut total_0)) += x;

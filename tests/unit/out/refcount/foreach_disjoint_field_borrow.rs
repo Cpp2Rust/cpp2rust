@@ -16,6 +16,7 @@ pub struct S {
     pub a: i32,
 }
 impl S {
+    #[inline]
     pub fn move_from(_a0: Ptr<S>) -> Self {
         Self {
             v: field!(_a0, v).with_mut(std::mem::take),
@@ -46,6 +47,7 @@ pub trait SImpl {
     fn move_assign(&self, _a0: Ptr<S>) -> Ptr<S>;
 }
 impl SImpl for Ptr<S> {
+    #[inline]
     fn move_assign(&self, _a0: Ptr<S>) -> Ptr<S> {
         field_ref!((*self), v)
             .as_pointer()

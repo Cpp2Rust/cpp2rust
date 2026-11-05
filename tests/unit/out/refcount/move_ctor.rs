@@ -14,9 +14,11 @@ pub struct MoveOnly {
     pub v: i32,
 }
 impl MoveOnly {
+    #[inline]
     pub fn new(mut v: i32) -> Self {
         Self { v: v }
     }
+    #[inline]
     pub fn move_from(o: Ptr<MoveOnly>) -> Self {
         let __this: MoveOnly = Self {
             v: o.with(|__s| __s.v),
@@ -32,14 +34,17 @@ pub struct ConstMove {
     pub mark: i32,
 }
 impl ConstMove {
+    #[inline]
     pub fn new() -> Self {
         Self { mark: 0 }
     }
+    #[inline]
     pub fn new_1(o: Ptr<ConstMove>) -> Self {
         Self {
             mark: (o.with(|__s| __s.mark) + 1),
         }
     }
+    #[inline]
     pub fn new_2(o: Ptr<ConstMove>) -> Self {
         Self {
             mark: (o.with(|__s| __s.mark) + 10),
@@ -63,6 +68,7 @@ pub struct ThrowingMove {
     pub moves: i32,
 }
 impl ThrowingMove {
+    #[inline]
     pub fn new(mut v: i32) -> Self {
         Self {
             v: v,
@@ -70,6 +76,7 @@ impl ThrowingMove {
             moves: 0,
         }
     }
+    #[inline]
     pub fn copy_from(o: Ptr<ThrowingMove>) -> Self {
         Self {
             v: o.with(|__s| __s.v),
@@ -77,6 +84,7 @@ impl ThrowingMove {
             moves: o.with(|__s| __s.moves),
         }
     }
+    #[inline]
     pub fn move_from(o: Ptr<ThrowingMove>) -> Self {
         let __this: ThrowingMove = Self {
             v: o.with(|__s| __s.v),
@@ -109,6 +117,7 @@ pub struct NoexceptMove {
     pub moves: i32,
 }
 impl NoexceptMove {
+    #[inline]
     pub fn new(mut v: i32) -> Self {
         Self {
             v: v,
@@ -116,6 +125,7 @@ impl NoexceptMove {
             moves: 0,
         }
     }
+    #[inline]
     pub fn copy_from(o: Ptr<NoexceptMove>) -> Self {
         Self {
             v: o.with(|__s| __s.v),
@@ -123,6 +133,7 @@ impl NoexceptMove {
             moves: o.with(|__s| __s.moves),
         }
     }
+    #[inline]
     pub fn move_from(o: Ptr<NoexceptMove>) -> Self {
         let __this: NoexceptMove = Self {
             v: o.with(|__s| __s.v),

@@ -20,6 +20,7 @@ pub struct Explicit {
     pub arr: [i32; 2],
 }
 impl Explicit {
+    #[inline]
     pub unsafe fn new(mut v: i32) -> Self {
         let mut this = Self {
             v: v,
@@ -28,6 +29,7 @@ impl Explicit {
         };
         this
     }
+    #[inline]
     pub unsafe fn destructor(&mut self) {}
 }
 #[repr(C)]
@@ -46,15 +48,18 @@ pub struct DefaultCopyUserMove {
     pub v: i32,
 }
 impl DefaultCopyUserMove {
+    #[inline]
     pub unsafe fn new(mut v: i32) -> Self {
         let mut this = Self { v: v };
         this
     }
+    #[inline]
     pub unsafe fn move_from(o: *mut DefaultCopyUserMove) -> Self {
         let mut this = Self { v: (*o).v };
         (*o).v = 0;
         this
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, o: *mut DefaultCopyUserMove) -> *mut DefaultCopyUserMove {
         self.v = (*o).v;
         (*o).v = 0;
@@ -70,20 +75,24 @@ pub struct UserCopyDefaultMove {
     pub v: i32,
 }
 impl UserCopyDefaultMove {
+    #[inline]
     pub unsafe fn new(mut v: i32) -> Self {
         let mut this = Self { v: v };
         this
     }
+    #[inline]
     pub unsafe fn copy_from(o: *const UserCopyDefaultMove) -> Self {
         let mut this = Self {
             v: (((*o).v) + (100)),
         };
         this
     }
+    #[inline]
     pub unsafe fn move_from(_a0: *mut UserCopyDefaultMove) -> Self {
         let mut this = Self { v: (*_a0).v };
         this
     }
+    #[inline]
     pub unsafe fn copy_assign(
         &mut self,
         o: *const UserCopyDefaultMove,
@@ -91,6 +100,7 @@ impl UserCopyDefaultMove {
         self.v = (((*o).v) + (100));
         return &mut (*(self as *mut UserCopyDefaultMove));
     }
+    #[inline]
     pub unsafe fn move_assign(
         &mut self,
         _a0: *mut UserCopyDefaultMove,
@@ -114,6 +124,7 @@ pub struct Buffer {
     pub arr: [i32; 2],
 }
 impl Buffer {
+    #[inline]
     pub unsafe fn new(mut n: i32) -> Self {
         let mut this = Self {
             data: vec![n; (n as usize) as usize],
@@ -127,6 +138,7 @@ impl Buffer {
         };
         this
     }
+    #[inline]
     pub unsafe fn move_from(_a0: *mut Buffer) -> Self {
         let mut this = Self {
             data: std::mem::take(&mut (*_a0).data),
@@ -136,6 +148,7 @@ impl Buffer {
         };
         this
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, _a0: *mut Buffer) -> *mut Buffer {
         self.data = std::mem::take(&mut (*_a0).data);
         self.rows = std::mem::take(&mut (*_a0).rows);
@@ -163,6 +176,7 @@ pub struct Owner {
     pub p: Option<Box<i32>>,
 }
 impl Owner {
+    #[inline]
     pub unsafe fn move_from(_a0: *mut Owner) -> Self {
         let mut this = Self {
             data: std::mem::take(&mut (*_a0).data),
@@ -172,6 +186,7 @@ impl Owner {
         };
         this
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, _a0: *mut Owner) -> *mut Owner {
         self.data = std::mem::take(&mut (*_a0).data);
         self.n = (*_a0).n;
@@ -196,12 +211,14 @@ pub struct Copyable {
     pub data: Vec<i32>,
 }
 impl Copyable {
+    #[inline]
     pub unsafe fn move_from(_a0: *mut Copyable) -> Self {
         let mut this = Self {
             data: std::mem::take(&mut (*_a0).data),
         };
         this
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, _a0: *mut Copyable) -> *mut Copyable {
         self.data = std::mem::take(&mut (*_a0).data);
         return &mut (*(self as *mut Copyable));
@@ -216,6 +233,7 @@ pub struct Holder {
     pub p: Option<Box<i32>>,
 }
 impl Holder {
+    #[inline]
     pub unsafe fn new(mut v: i32) -> Self {
         let mut this = Self {
             inner: Inner { x: v },
@@ -224,6 +242,7 @@ impl Holder {
         };
         this
     }
+    #[inline]
     pub unsafe fn move_from(_a0: *mut Holder) -> Self {
         let mut this = Self {
             inner: (*_a0).inner,
@@ -232,6 +251,7 @@ impl Holder {
         };
         this
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, _a0: *mut Holder) -> *mut Holder {
         self.inner = (*_a0).inner;
         self.e = ((*_a0).e).clone();

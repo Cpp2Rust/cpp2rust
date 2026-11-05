@@ -23,15 +23,18 @@ pub struct Bag {
     pub n: i32,
 }
 impl Bag {
+    #[inline]
     pub unsafe fn new(mut n: i32) -> Self {
         let mut this = Self { n: n };
         this
     }
+    #[inline]
     pub unsafe fn copy_from(o: *const Bag) -> Self {
         let mut this = Self { n: (*o).n };
         (*std::cell::LazyCell::force_mut(&mut *&raw mut calls_0)).prefix_inc();
         this
     }
+    #[inline]
     pub unsafe fn copy_assign(&mut self, _a0: *const Bag) -> *mut Bag {
         self.n = (*_a0).n;
         return &mut (*(self as *mut Bag));

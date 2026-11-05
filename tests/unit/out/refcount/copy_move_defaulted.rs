@@ -26,6 +26,7 @@ pub struct Explicit {
     pub arr: Box<[i32]>,
 }
 impl Explicit {
+    #[inline]
     pub fn new(mut v: i32) -> Self {
         Self {
             v: v,
@@ -76,9 +77,11 @@ pub struct DefaultCopyUserMove {
     pub v: i32,
 }
 impl DefaultCopyUserMove {
+    #[inline]
     pub fn new(mut v: i32) -> Self {
         Self { v: v }
     }
+    #[inline]
     pub fn move_from(o: Ptr<DefaultCopyUserMove>) -> Self {
         let __this: DefaultCopyUserMove = Self {
             v: o.with(|__s| __s.v),
@@ -95,14 +98,17 @@ pub struct UserCopyDefaultMove {
     pub v: i32,
 }
 impl UserCopyDefaultMove {
+    #[inline]
     pub fn new(mut v: i32) -> Self {
         Self { v: v }
     }
+    #[inline]
     pub fn copy_from(o: Ptr<UserCopyDefaultMove>) -> Self {
         Self {
             v: (o.with(|__s| __s.v) + 100),
         }
     }
+    #[inline]
     pub fn move_from(_a0: Ptr<UserCopyDefaultMove>) -> Self {
         Self {
             v: { (*_a0.upgrade().deref()).v },
@@ -133,6 +139,7 @@ pub struct Buffer {
     pub arr: Box<[i32]>,
 }
 impl Buffer {
+    #[inline]
     pub fn new(mut n: i32) -> Self {
         let __this: Value<Buffer> = Rc::new(RefCell::new(Self {
             data: vec![n; (n as usize) as usize],
@@ -147,6 +154,7 @@ impl Buffer {
         };
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
+    #[inline]
     pub fn move_from(_a0: Ptr<Buffer>) -> Self {
         Self {
             data: field!(_a0, data).with_mut(std::mem::take),
@@ -186,6 +194,7 @@ pub struct Owner {
     pub p: Option<Value<i32>>,
 }
 impl Owner {
+    #[inline]
     pub fn move_from(_a0: Ptr<Owner>) -> Self {
         Self {
             data: field!(_a0, data).with_mut(std::mem::take),
@@ -217,6 +226,7 @@ pub struct Copyable {
     pub data: Vec<i32>,
 }
 impl Copyable {
+    #[inline]
     pub fn move_from(_a0: Ptr<Copyable>) -> Self {
         Self {
             data: field!(_a0, data).with_mut(std::mem::take),
@@ -238,6 +248,7 @@ pub struct Holder {
     pub p: Option<Value<i32>>,
 }
 impl Holder {
+    #[inline]
     pub fn new(mut v: i32) -> Self {
         Self {
             inner: Inner { x: v },
@@ -245,6 +256,7 @@ impl Holder {
             p: None,
         }
     }
+    #[inline]
     pub fn move_from(_a0: Ptr<Holder>) -> Self {
         Self {
             inner: { (*_a0.upgrade().deref()).inner.clone() },
@@ -479,6 +491,7 @@ pub trait BufferImpl {
     fn move_assign(&self, _a0: Ptr<Buffer>) -> Ptr<Buffer>;
 }
 impl BufferImpl for Ptr<Buffer> {
+    #[inline]
     fn move_assign(&self, _a0: Ptr<Buffer>) -> Ptr<Buffer> {
         field_ref!((*self), data)
             .as_pointer()
@@ -503,6 +516,7 @@ pub trait CopyableImpl {
     fn move_assign(&self, _a0: Ptr<Copyable>) -> Ptr<Copyable>;
 }
 impl CopyableImpl for Ptr<Copyable> {
+    #[inline]
     fn move_assign(&self, _a0: Ptr<Copyable>) -> Ptr<Copyable> {
         field_ref!((*self), data)
             .as_pointer()
@@ -514,6 +528,7 @@ pub trait DefaultCopyUserMoveImpl {
     fn move_assign(&self, o: Ptr<DefaultCopyUserMove>) -> Ptr<DefaultCopyUserMove>;
 }
 impl DefaultCopyUserMoveImpl for Ptr<DefaultCopyUserMove> {
+    #[inline]
     fn move_assign(&self, o: Ptr<DefaultCopyUserMove>) -> Ptr<DefaultCopyUserMove> {
         field!((*self), v).write({ o.with(|__s| __s.v) });
         field!(o, v).write(0);
@@ -524,6 +539,7 @@ pub trait ExplicitImpl {
     fn destructor(&self);
 }
 impl ExplicitImpl for Ptr<Explicit> {
+    #[inline]
     fn destructor(&self) {}
 }
 pub trait HolderImpl {
@@ -531,6 +547,7 @@ pub trait HolderImpl {
     fn destructor(&self);
 }
 impl HolderImpl for Ptr<Holder> {
+    #[inline]
     fn move_assign(&self, _a0: Ptr<Holder>) -> Ptr<Holder> {
         field!((*self), inner).write({ { (*_a0.upgrade().deref()).inner.clone() } });
         field!((*self), e).write({ { (*_a0.upgrade().deref()).e.clone() } });
@@ -546,6 +563,7 @@ pub trait OwnerImpl {
     fn move_assign(&self, _a0: Ptr<Owner>) -> Ptr<Owner>;
 }
 impl OwnerImpl for Ptr<Owner> {
+    #[inline]
     fn move_assign(&self, _a0: Ptr<Owner>) -> Ptr<Owner> {
         field_ref!((*self), data)
             .as_pointer()
@@ -570,10 +588,12 @@ pub trait UserCopyDefaultMoveImpl {
     fn move_assign(&self, _a0: Ptr<UserCopyDefaultMove>) -> Ptr<UserCopyDefaultMove>;
 }
 impl UserCopyDefaultMoveImpl for Ptr<UserCopyDefaultMove> {
+    #[inline]
     fn copy_assign(&self, o: Ptr<UserCopyDefaultMove>) -> Ptr<UserCopyDefaultMove> {
         field!((*self), v).write({ (o.with(|__s| __s.v) + 100) });
         return (*self).clone();
     }
+    #[inline]
     fn move_assign(&self, _a0: Ptr<UserCopyDefaultMove>) -> Ptr<UserCopyDefaultMove> {
         field!((*self), v).write({ { (*_a0.upgrade().deref()).v } });
         return (*self).clone();

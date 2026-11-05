@@ -17,6 +17,7 @@ pub struct UserDefined {
     pub v: Vec<i32>,
 }
 impl UserDefined {
+    #[inline]
     pub fn move_from(_a0: Ptr<UserDefined>) -> Self {
         Self {
             a: (0..1)
@@ -88,6 +89,7 @@ pub trait UserDefinedImpl {
     fn move_assign(&self, _a0: Ptr<UserDefined>) -> Ptr<UserDefined>;
 }
 impl UserDefinedImpl for Ptr<UserDefined> {
+    #[inline]
     fn move_assign(&self, _a0: Ptr<UserDefined>) -> Ptr<UserDefined> {
         for __i in 0..1 {
             &field_ref!((*self), a)

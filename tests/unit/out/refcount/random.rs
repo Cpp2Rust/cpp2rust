@@ -239,6 +239,7 @@ pub trait PairImpl {
     fn as_ptr(&self) -> Ptr<i32>;
 }
 impl PairImpl for Ptr<Pair> {
+    #[inline]
     fn method(&self) {
         field!((*self), x).with_mut(|__v| __v.postfix_inc());
         field!((*self), y).with_mut(|__v| __v.prefix_inc());
@@ -248,12 +249,15 @@ impl PairImpl for Ptr<Pair> {
         field!((*self), pair).write(Ptr::<Pair>::null());
         array_elem!((*self), ap, 0).write(Ptr::<i32>::null());
     }
+    #[inline]
     fn as_val(&self) -> i32 {
         return (*self).with(|__s| __s.x);
     }
+    #[inline]
     fn as_ref(&self) -> Ptr<i32> {
         return field_ptr!((*self), x);
     }
+    #[inline]
     fn as_ptr(&self) -> Ptr<i32> {
         return (field_ptr!((*self), x));
     }

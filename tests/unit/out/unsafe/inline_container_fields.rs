@@ -14,6 +14,7 @@ pub struct Elem {
     pub coeffs: Vec<i16>,
 }
 impl Elem {
+    #[inline]
     pub unsafe fn move_from(_a0: *mut Elem) -> Self {
         let mut this = Self {
             id: (*_a0).id,
@@ -22,6 +23,7 @@ impl Elem {
         };
         this
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, _a0: *mut Elem) -> *mut Elem {
         self.id = (*_a0).id;
         match (
@@ -49,6 +51,7 @@ pub struct State {
     pub rows: Vec<Vec<i32>>,
 }
 impl State {
+    #[inline]
     pub unsafe fn move_from(_a0: *mut State) -> Self {
         let mut this = Self {
             count: (*_a0).count,
@@ -61,6 +64,7 @@ impl State {
         };
         this
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, _a0: *mut State) -> *mut State {
         self.count = (*_a0).count;
         match (
@@ -146,22 +150,26 @@ pub struct Counted {
     pub v: i32,
 }
 impl Counted {
+    #[inline]
     pub unsafe fn copy_from(o: *const Counted) -> Self {
         let mut this = Self { v: (*o).v };
         (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_2)).prefix_inc();
         this
     }
+    #[inline]
     pub unsafe fn move_from(o: *mut Counted) -> Self {
         let mut this = Self { v: (*o).v };
         (*o).v = -1_i32;
         (*std::cell::LazyCell::force_mut(&mut *&raw mut moves_3)).prefix_inc();
         this
     }
+    #[inline]
     pub unsafe fn copy_assign(&mut self, o: *const Counted) -> *mut Counted {
         self.v = (*o).v;
         (*std::cell::LazyCell::force_mut(&mut *&raw mut copy_assigns_4)).prefix_inc();
         return &mut (*(self as *mut Counted));
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, o: *mut Counted) -> *mut Counted {
         self.v = (*o).v;
         (*o).v = -1_i32;

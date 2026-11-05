@@ -17,6 +17,7 @@ pub struct Box_int_ {
     pub val: i32,
 }
 impl Box_int_ {
+    #[inline]
     pub unsafe fn twice(&mut self) -> i32 {
         return ((self.val) + (self.val));
     }
@@ -27,6 +28,7 @@ pub struct Box_Point_ {
     pub val: Point,
 }
 impl Box_Point_ {
+    #[inline]
     pub unsafe fn get(&mut self) -> Point {
         return self.val;
     }
@@ -37,6 +39,7 @@ pub struct Deduced_int_ {
     pub val: i32,
 }
 impl Deduced_int_ {
+    #[inline]
     pub unsafe fn twice(&mut self) -> i32 {
         return ((self.val) + (self.val));
     }
@@ -47,6 +50,7 @@ pub struct Deduced_Point_ {
     pub val: Point,
 }
 impl Deduced_Point_ {
+    #[inline]
     pub unsafe fn get(&mut self) -> Point {
         return self.val;
     }

@@ -15,15 +15,19 @@ pub struct S {
     pub v: i32,
 }
 impl S {
+    #[inline]
     pub unsafe fn f_1(&mut self) -> Overload {
         return Overload_kMutableOverload;
     }
+    #[inline]
     pub unsafe fn f_2(&self) -> Overload {
         return Overload_kConstOverload;
     }
+    #[inline]
     pub unsafe fn value_ref_3(&mut self) -> *mut i32 {
         return &mut self.v;
     }
+    #[inline]
     pub unsafe fn value_ref_4(&self) -> *const i32 {
         return &self.v;
     }

@@ -91,6 +91,7 @@ pub trait SImpl {
     fn operator_mul_7(&self, o: i32) -> i32;
 }
 impl SImpl for Ptr<S> {
+    #[inline]
     fn operator_eq_1(&self, mut o: i32) -> i32 {
         return if ((*self).with(|__s| __s.v) == o) {
             1
@@ -98,6 +99,7 @@ impl SImpl for Ptr<S> {
             0
         };
     }
+    #[inline]
     fn operator_eq_2(&self, mut o: i64) -> i32 {
         return if (((*self).with(|__s| __s.v) as i64) == o) {
             2
@@ -105,6 +107,7 @@ impl SImpl for Ptr<S> {
             0
         };
     }
+    #[inline]
     fn operator_eq_3(&self, mut o: f64) -> i32 {
         return if (((*self).with(|__s| __s.v) as f64) == o) {
             3
@@ -112,15 +115,19 @@ impl SImpl for Ptr<S> {
             0
         };
     }
+    #[inline]
     fn operator_add(&self, o: Ptr<S>) -> i32 {
         return ({ (*self).with(|__s| __s.v) } + { o.with(|__s| __s.v) });
     }
+    #[inline]
     fn operator_sub(&self, mut o: S) -> i32 {
         return ((*self).with(|__s| __s.v) - o.v);
     }
+    #[inline]
     fn operator_mul_6(&self, o: Ptr<S>) -> i32 {
         return ({ (*self).with(|__s| __s.v) } * { o.with(|__s| __s.v) });
     }
+    #[inline]
     fn operator_mul_7(&self, mut o: i32) -> i32 {
         return (((*self).with(|__s| __s.v) * o) + 1);
     }

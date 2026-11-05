@@ -19,15 +19,19 @@ pub unsafe fn twice_2(mut n: i32) -> i32 {
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Access_S_ {}
 impl Access_S_ {
+    #[inline]
     pub unsafe fn get_1(&mut self, mut p: *mut S) -> i32 {
         return (*p).base;
     }
+    #[inline]
     pub unsafe fn get_2(&mut self, mut p: *const S) -> i32 {
         return (((*p).base) + (1));
     }
+    #[inline]
     pub unsafe fn ref_3(&mut self, r: *mut S) -> i32 {
         return (((*r).base) + (2));
     }
+    #[inline]
     pub unsafe fn ref_4(&mut self, r: *const S) -> i32 {
         return (((*r).base) + (3));
     }
@@ -38,35 +42,45 @@ pub struct S {
     pub base: i32,
 }
 impl S {
+    #[inline]
     pub unsafe fn plain_4(&self, mut x: i32) -> i32 {
         return ((self.base) + (x));
     }
+    #[inline]
     pub unsafe fn plain_5(&self, mut x: i64) -> i32 {
         return (((self.base) + (x as i32)) + (1));
     }
+    #[inline]
     pub unsafe fn take_6(&self, x: *mut i32) -> i32 {
         return (((self.base) + (*x)) + (1));
     }
+    #[inline]
     pub unsafe fn take_7(&self, x: *mut i32) -> i32 {
         return (((self.base) + (*x)) + (2));
     }
+    #[inline]
     pub unsafe fn pick_8(&self, mut p: (i32, i32)) -> i32 {
         return ((self.base) + (p.0));
     }
+    #[inline]
     pub unsafe fn pick_9(&self, mut p: (i32, i64)) -> i32 {
         return ((self.base) + (p.1 as i32));
     }
+    #[inline]
     pub unsafe fn apply_10(&self, mut f: Option<unsafe fn(*mut i32)>, mut x: i32) -> i32 {
         (unsafe { (f).unwrap()((&mut x as *mut i32)) });
         return ((self.base) + (x));
     }
+    #[inline]
     pub unsafe fn apply_11(&self, mut f: Option<unsafe fn(*mut i32, i32)>, mut x: i32) -> i32 {
         (unsafe { (f).unwrap()((&mut x as *mut i32), 10) });
         return ((self.base) + (x));
     }
+    #[inline]
     pub unsafe fn apply_12(&self, mut f: Option<unsafe fn(i32) -> i32>, mut x: i32) -> i32 {
         return ((self.base) + (unsafe { (f).unwrap()(x) }));
     }
+    #[inline]
     pub unsafe fn combine_13(
         &self,
         p: *const (i32, i64),
@@ -76,6 +90,7 @@ impl S {
     ) -> i32 {
         return ((((self.base) + ((*p).1 as i32)) + (unsafe { (f).unwrap()((*q)) })) + (n as i32));
     }
+    #[inline]
     pub unsafe fn combine_14(
         &self,
         p: *const (i32, i32),
@@ -90,21 +105,27 @@ impl S {
         });
         return (((self.base) + ((*p).0)) + (*q));
     }
+    #[inline]
     pub unsafe fn width_1_char(&self, mut x: i32) -> i32 {
         return ((self.base) + ((x) * (::std::mem::size_of::<libc::c_char>() as i32)));
     }
+    #[inline]
     pub unsafe fn width_1_int(&self, mut x: i32) -> i32 {
         return ((self.base) + ((x) * (::std::mem::size_of::<i32>() as i32)));
     }
+    #[inline]
     pub unsafe fn scale_2_2(&self, mut x: i32) -> i32 {
         return ((self.base) + ((x) * (2)));
     }
+    #[inline]
     pub unsafe fn scale_2_3(&self, mut x: i32) -> i32 {
         return ((self.base) + ((x) * (3)));
     }
+    #[inline]
     pub unsafe fn count_3(&self, mut x: i32) -> i32 {
         return (((self.base) + (x)) + (0 as i32));
     }
+    #[inline]
     pub unsafe fn count_3_int_long(&self, mut x: i32) -> i32 {
         return (((self.base) + (x)) + (2 as i32));
     }

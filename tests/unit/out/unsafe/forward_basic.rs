@@ -18,6 +18,7 @@ pub struct Tracked {
     pub moves: i32,
 }
 impl Tracked {
+    #[inline]
     pub unsafe fn new(mut v: i32) -> Self {
         let mut this = Self {
             v: v,
@@ -26,6 +27,7 @@ impl Tracked {
         };
         this
     }
+    #[inline]
     pub unsafe fn copy_from(o: *const Tracked) -> Self {
         let mut this = Self {
             v: (*o).v,
@@ -34,6 +36,7 @@ impl Tracked {
         };
         this
     }
+    #[inline]
     pub unsafe fn move_from(o: *mut Tracked) -> Self {
         let mut this = Self {
             v: (*o).v,
@@ -56,6 +59,7 @@ pub unsafe fn chosen_overload_1(_a0: *mut Tracked) -> Overload {
     return Overload_kRvalueOverload;
 }
 impl Holder {
+    #[inline]
     pub unsafe fn new_1(x: *mut Tracked) -> Self {
         let mut this = Self {
             t: Tracked::copy_from({ x }),
@@ -64,6 +68,7 @@ impl Holder {
     }
 }
 impl Holder {
+    #[inline]
     pub unsafe fn new_2(x: *mut Tracked) -> Self {
         let mut this = Self {
             t: Tracked::move_from({ x }),
@@ -79,6 +84,7 @@ pub struct Holder {
     pub t: Tracked,
 }
 impl Holder {
+    #[inline]
     pub unsafe fn move_from(_a0: *mut Holder) -> Self {
         let mut this = Self {
             t: Tracked::move_from({ &mut (*_a0).t }),

@@ -142,10 +142,12 @@ pub trait SImpl {
     fn get(&self) -> i32;
 }
 impl SImpl for Ptr<S> {
+    #[inline]
     fn destructor(&self) {
         (*destroyed_0.with(Value::clone).borrow_mut()).postfix_inc();
         last_1.with(|rc| *rc.borrow_mut() = (*self).with(|__s| __s.v));
     }
+    #[inline]
     fn get(&self) -> i32 {
         return (*self).with(|__s| __s.v);
     }

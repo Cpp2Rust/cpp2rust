@@ -15,18 +15,21 @@ pub struct Counted {
     pub moves: i32,
 }
 impl Counted {
+    #[inline]
     pub fn new() -> Self {
         Self {
             copies: 0,
             moves: 0,
         }
     }
+    #[inline]
     pub fn copy_from(o: Ptr<Counted>) -> Self {
         Self {
             copies: (o.with(|__s| __s.copies) + 1),
             moves: o.with(|__s| __s.moves),
         }
     }
+    #[inline]
     pub fn move_from(o: Ptr<Counted>) -> Self {
         Self {
             copies: o.with(|__s| __s.copies),
@@ -55,12 +58,15 @@ thread_local!(
 #[byte_size(1)]
 pub struct Dropped {}
 impl Dropped {
+    #[inline]
     pub fn new() -> Self {
         Self {}
     }
+    #[inline]
     pub fn copy_from(_a0: Ptr<Dropped>) -> Self {
         Self {}
     }
+    #[inline]
     pub fn move_from(_a0: Ptr<Dropped>) -> Self {
         Self {}
     }
@@ -182,6 +188,7 @@ pub trait DroppedImpl {
     fn destructor(&self);
 }
 impl DroppedImpl for Ptr<Dropped> {
+    #[inline]
     fn destructor(&self) {
         (*drops_0.with(Value::clone).borrow_mut()).postfix_inc();
     }

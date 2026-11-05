@@ -13,6 +13,7 @@ pub struct Point {
     pub y: i32,
 }
 impl Point {
+    #[inline]
     pub unsafe fn sum(&self) -> i32 {
         return ((self.x) + (self.y));
     }
@@ -24,6 +25,7 @@ pub struct Holder {
     pub points: Vec<Point>,
 }
 impl Holder {
+    #[inline]
     pub unsafe fn move_from(_a0: *mut Holder) -> Self {
         let mut this = Self {
             values: std::mem::take(&mut (*_a0).values),
@@ -31,6 +33,7 @@ impl Holder {
         };
         this
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, _a0: *mut Holder) -> *mut Holder {
         self.values = std::mem::take(&mut (*_a0).values);
         self.points = std::mem::take(&mut (*_a0).points);

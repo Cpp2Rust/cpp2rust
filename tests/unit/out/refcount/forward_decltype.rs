@@ -21,6 +21,7 @@ pub struct Tracked {
     pub moves: i32,
 }
 impl Tracked {
+    #[inline]
     pub fn new(mut v: i32) -> Self {
         Self {
             v: v,
@@ -28,6 +29,7 @@ impl Tracked {
             moves: 0,
         }
     }
+    #[inline]
     pub fn copy_from(o: Ptr<Tracked>) -> Self {
         Self {
             v: o.with(|__s| __s.v),
@@ -35,6 +37,7 @@ impl Tracked {
             moves: o.with(|__s| __s.moves),
         }
     }
+    #[inline]
     pub fn move_from(o: Ptr<Tracked>) -> Self {
         let __this: Tracked = Self {
             v: o.with(|__s| __s.v),

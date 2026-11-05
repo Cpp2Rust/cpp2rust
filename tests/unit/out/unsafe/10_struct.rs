@@ -19,6 +19,7 @@ pub struct Graph {
     pub adj: *mut *mut GraphNode,
 }
 impl Graph {
+    #[inline]
     pub unsafe fn push(&self, mut src: u32, mut dst: u32) {
         (*self.adj.offset((src) as isize)) = (Box::leak(Box::new(GraphNode {
             dst: dst,
@@ -36,6 +37,7 @@ pub struct Partial {
     pub p: *mut i32,
 }
 impl Partial {
+    #[inline]
     pub unsafe fn new_1(mut q: *mut i32) -> Self {
         let mut this = Self { p: q };
         this

@@ -50,6 +50,7 @@ pub trait HolderImpl {
     fn run(&self, x: i32) -> i32;
 }
 impl HolderImpl for Ptr<Holder> {
+    #[inline]
     fn run(&self, mut x: i32) -> i32 {
         return ({ (*self).with(|__s| __s.f.clone()).call(x) });
     }

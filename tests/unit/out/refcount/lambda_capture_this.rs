@@ -35,15 +35,18 @@ pub trait SImpl {
     fn read_scaled(&self) -> i32;
 }
 impl SImpl for Ptr<S> {
+    #[inline]
     fn add(&self, mut k: i32) {
         {
             let __rhs = k;
             field!((*self), n).with_mut(|__v| *__v = *__v + __rhs)
         };
     }
+    #[inline]
     fn scaled(&self) -> i32 {
         return ((*self).with(|__s| __s.n) * (*self).with(|__s| __s.step));
     }
+    #[inline]
     fn bump(&self, mut by: i32) {
         let inc: Value<FnPtr<fn(i32)>> = Rc::new(RefCell::new(lambda!(
             {
@@ -59,6 +62,7 @@ impl SImpl for Ptr<S> {
         ({ (*inc.borrow()).call(by) });
         ({ (*inc.borrow()).call(by) });
     }
+    #[inline]
     fn bump_via_method(&self, mut by: i32) {
         let inc: Value<FnPtr<fn(i32)>> = Rc::new(RefCell::new(lambda!(
             {
@@ -70,6 +74,7 @@ impl SImpl for Ptr<S> {
         )));
         ({ (*inc.borrow()).call(by) });
     }
+    #[inline]
     fn read_scaled(&self) -> i32 {
         let get: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new(lambda!(
             {

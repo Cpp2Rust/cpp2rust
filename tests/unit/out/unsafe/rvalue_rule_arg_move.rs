@@ -15,20 +15,24 @@ pub struct Elem {
     pub v: i32,
 }
 impl Elem {
+    #[inline]
     pub unsafe fn new(mut v: i32) -> Self {
         let mut this = Self { v: v };
         this
     }
+    #[inline]
     pub unsafe fn copy_from(o: *const Elem) -> Self {
         let mut this = Self { v: (*o).v };
         (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)).prefix_inc();
         this
     }
+    #[inline]
     pub unsafe fn move_from(o: *mut Elem) -> Self {
         let mut this = Self { v: (*o).v };
         (*std::cell::LazyCell::force_mut(&mut *&raw mut moves_1)).prefix_inc();
         this
     }
+    #[inline]
     pub unsafe fn copy_assign(&mut self, _a0: *const Elem) -> *mut Elem {
         self.v = (*_a0).v;
         return &mut (*(self as *mut Elem));

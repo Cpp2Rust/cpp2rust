@@ -14,6 +14,7 @@ pub struct Holder {
     pub val: Option<Value<i32>>,
 }
 impl Holder {
+    #[inline]
     pub fn move_from(_a0: Ptr<Holder>) -> Self {
         Self {
             val: field!(_a0, val).with_mut(|__v: &mut Option<Value<i32>>| __v.take()),
@@ -41,6 +42,7 @@ pub trait HolderImpl {
     fn move_assign(&self, _a0: Ptr<Holder>) -> Ptr<Holder>;
 }
 impl HolderImpl for Ptr<Holder> {
+    #[inline]
     fn move_assign(&self, _a0: Ptr<Holder>) -> Ptr<Holder> {
         field_ptr!((*self), val)
             .write(field!(_a0, val).with_mut(|__v: &mut Option<Value<i32>>| __v.take()));

@@ -13,6 +13,7 @@ pub struct S {
     pub r: *const i32,
 }
 impl S {
+    #[inline]
     pub unsafe fn new(x: *const i32) -> Self {
         let mut this = Self { r: x };
         this

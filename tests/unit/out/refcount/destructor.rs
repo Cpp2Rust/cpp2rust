@@ -209,6 +209,7 @@ pub trait CopiedImpl {
     fn destructor(&self);
 }
 impl CopiedImpl for Ptr<Copied> {
+    #[inline]
     fn destructor(&self) {
         (*global_0.with(Value::clone).borrow_mut()).postfix_inc();
     }
@@ -225,6 +226,7 @@ pub trait EmptyBodyImpl {
     fn destructor(&self);
 }
 impl EmptyBodyImpl for Ptr<EmptyBody> {
+    #[inline]
     fn destructor(&self) {
         field_ptr!(self, s).destructor();
     }
@@ -259,6 +261,7 @@ pub trait SImpl {
     fn destructor(&self);
 }
 impl SImpl for Ptr<S> {
+    #[inline]
     fn destructor(&self) {
         (*global_0.with(Value::clone).borrow_mut()).postfix_inc();
     }
@@ -267,6 +270,7 @@ pub trait TaggedImpl {
     fn destructor(&self);
 }
 impl TaggedImpl for Ptr<Tagged> {
+    #[inline]
     fn destructor(&self) {
         (*order_1.with(Value::clone).borrow_mut())
             [((*order_count_2.with(Value::clone).borrow_mut()).postfix_inc()) as usize] =
@@ -277,6 +281,7 @@ pub trait Templated_char_Impl {
     fn destructor(&self);
 }
 impl Templated_char_Impl for Ptr<Templated_char_> {
+    #[inline]
     fn destructor(&self) {
         global_0.with(|rc| {
             *rc.borrow_mut() = {
@@ -290,6 +295,7 @@ pub trait Templated_int_Impl {
     fn destructor(&self);
 }
 impl Templated_int_Impl for Ptr<Templated_int_> {
+    #[inline]
     fn destructor(&self) {
         global_0.with(|rc| {
             *rc.borrow_mut() = {

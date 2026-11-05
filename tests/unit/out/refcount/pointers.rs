@@ -54,15 +54,19 @@ pub trait TestImpl {
     fn update(&self, x: i32, y: i32);
 }
 impl TestImpl for Ptr<Test> {
+    #[inline]
     fn inc(&self) {
         field!((*self), x).with_mut(|__v| __v.postfix_inc());
     }
+    #[inline]
     fn dec(&self) {
         field!((*self), x).with_mut(|__v| __v.postfix_dec());
     }
+    #[inline]
     fn as_ptr(&self) -> Ptr<i32> {
         return (field_ptr!((*self), x));
     }
+    #[inline]
     fn update(&self, mut x: i32, mut y: i32) {
         field!((*self), x).write((x + y));
     }

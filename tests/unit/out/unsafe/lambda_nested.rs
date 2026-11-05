@@ -12,6 +12,7 @@ pub struct S {
     pub v: i32,
 }
 impl S {
+    #[inline]
     pub unsafe fn nested_this(&mut self) -> i32 {
         let mut outer: FnPtr<fn(i32) -> i32> = lambda_unsafe!(
             {

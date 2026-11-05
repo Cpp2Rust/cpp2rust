@@ -15,6 +15,7 @@ pub struct S {
     pub b: bool,
 }
 impl S {
+    #[inline]
     pub fn new() -> Self {
         Self { a: 11, b: true }
     }

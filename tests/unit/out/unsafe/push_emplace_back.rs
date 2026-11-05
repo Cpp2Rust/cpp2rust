@@ -24,6 +24,7 @@ pub struct JPEGData {
     pub app_data: Vec<Vec<u8>>,
 }
 impl JPEGData {
+    #[inline]
     pub unsafe fn move_from(_a0: *mut JPEGData) -> Self {
         let mut this = Self {
             com_data: std::mem::take(&mut (*_a0).com_data),
@@ -31,6 +32,7 @@ impl JPEGData {
         };
         this
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, _a0: *mut JPEGData) -> *mut JPEGData {
         self.com_data = std::mem::take(&mut (*_a0).com_data);
         self.app_data = std::mem::take(&mut (*_a0).app_data);
@@ -118,6 +120,7 @@ pub struct Pair {
     pub second: i32,
 }
 impl Pair {
+    #[inline]
     pub unsafe fn new_2() -> Self {
         let mut this = Self {
             first: -1_i32,
@@ -125,6 +128,7 @@ impl Pair {
         };
         this
     }
+    #[inline]
     pub unsafe fn new_1(mut a: i32) -> Self {
         let mut this = Self {
             first: a,
@@ -132,6 +136,7 @@ impl Pair {
         };
         this
     }
+    #[inline]
     pub unsafe fn new_3(mut a: i32, mut b: i32) -> Self {
         let mut this = Self {
             first: a,

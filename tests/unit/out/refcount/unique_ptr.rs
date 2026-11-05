@@ -14,6 +14,7 @@ pub struct SafePointer {
     pub ptr: Option<Value<i32>>,
 }
 impl SafePointer {
+    #[inline]
     pub fn move_from(_a0: Ptr<SafePointer>) -> Self {
         Self {
             ptr: field!(_a0, ptr).with_mut(|__v: &mut Option<Value<i32>>| __v.take()),
@@ -243,12 +244,14 @@ pub trait SafePointerImpl {
     fn move_assign(&self, _a0: Ptr<SafePointer>) -> Ptr<SafePointer>;
 }
 impl SafePointerImpl for Ptr<SafePointer> {
+    #[inline]
     fn inc(&self) {
         (*self)
             .with(|__s| __s.ptr.clone())
             .as_pointer()
             .with_mut(|__v| __v.prefix_inc());
     }
+    #[inline]
     fn move_assign(&self, _a0: Ptr<SafePointer>) -> Ptr<SafePointer> {
         field_ptr!((*self), ptr)
             .write(field!(_a0, ptr).with_mut(|__v: &mut Option<Value<i32>>| __v.take()));

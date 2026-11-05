@@ -76,6 +76,7 @@ pub struct MyBool {
     pub value: bool,
 }
 impl MyBool {
+    #[inline]
     pub fn new(mut v: bool) -> Self {
         Self { value: v }
     }
@@ -116,6 +117,7 @@ pub struct RefBool {
     pub value: bool,
 }
 impl RefBool {
+    #[inline]
     pub fn new(mut v: bool) -> Self {
         Self { value: v }
     }
@@ -323,6 +325,7 @@ pub trait CustomImpl {
     fn operator_cmp(&self, o: Ptr<Custom>) -> Result;
 }
 impl CustomImpl for Ptr<Custom> {
+    #[inline]
     fn operator_cmp(&self, o: Ptr<Custom>) -> Result {
         return Result {
             r: ({ (*self).with(|__s| __s.v) } - { o.with(|__s| __s.v) }),
@@ -335,11 +338,13 @@ pub trait MixedImpl {
     fn operator_eq(&self, o: Ptr<Mixed>) -> i32;
 }
 impl MixedImpl for Ptr<Mixed> {
+    #[inline]
     fn operator_cmp(&self, o: Ptr<Mixed>) -> Result {
         return Result {
             r: ({ (*self).with(|__s| __s.v) } - { o.with(|__s| __s.v) }),
         };
     }
+    #[inline]
     fn operator_lt(&self, o: Ptr<Mixed>) -> i32 {
         return if ({ (*self).with(|__s| __s.v) } < { o.with(|__s| __s.v) }) {
             8
@@ -347,6 +352,7 @@ impl MixedImpl for Ptr<Mixed> {
             0
         };
     }
+    #[inline]
     fn operator_eq(&self, o: Ptr<Mixed>) -> i32 {
         return if ({ (*self).with(|__s| __s.v) } == { o.with(|__s| __s.v) }) {
             9
@@ -359,6 +365,7 @@ pub trait MyBoolImpl {
     fn to_bool(&self) -> bool;
 }
 impl MyBoolImpl for Ptr<MyBool> {
+    #[inline]
     fn to_bool(&self) -> bool {
         return (*self).with(|__s| __s.value);
     }
@@ -367,6 +374,7 @@ pub trait RefBoolImpl {
     fn to_bool(&self) -> bool;
 }
 impl RefBoolImpl for Ptr<RefBool> {
+    #[inline]
     fn to_bool(&self) -> bool {
         return (*self).with(|__s| __s.value);
     }
@@ -375,6 +383,7 @@ pub trait RefIntImpl {
     fn operator_eq(&self, _a0: Ptr<RefInt>) -> Ptr<RefBool>;
 }
 impl RefIntImpl for Ptr<RefInt> {
+    #[inline]
     fn operator_eq(&self, _a0: Ptr<RefInt>) -> Ptr<RefBool> {
         return ref_true_8.with(|v| v.as_pointer());
     }

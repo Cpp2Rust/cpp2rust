@@ -12,6 +12,7 @@ pub struct SafePointer {
     pub ptr: Option<Box<i32>>,
 }
 impl SafePointer {
+    #[inline]
     pub unsafe fn inc(&mut self) {
         (*self
             .ptr
@@ -19,12 +20,14 @@ impl SafePointer {
             .map_or(::std::ptr::null_mut(), |v| v as *const i32 as *mut i32))
         .prefix_inc();
     }
+    #[inline]
     pub unsafe fn move_from(_a0: *mut SafePointer) -> Self {
         let mut this = Self {
             ptr: (*_a0).ptr.take(),
         };
         this
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, _a0: *mut SafePointer) -> *mut SafePointer {
         self.ptr = (*_a0).ptr.take();
         return &mut (*(self as *mut SafePointer));

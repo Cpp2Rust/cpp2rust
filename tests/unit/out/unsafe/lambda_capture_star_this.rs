@@ -12,9 +12,11 @@ pub struct S {
     pub n: i32,
 }
 impl S {
+    #[inline]
     pub unsafe fn twice(&self) -> i32 {
         return ((self.n) * (2));
     }
+    #[inline]
     pub unsafe fn modify_copy(&mut self) -> i32 {
         let mut f: FnPtr<fn() -> i32> = lambda_unsafe!(
             {
@@ -28,6 +30,7 @@ impl S {
         let mut r: i32 = (unsafe { f.call() });
         return (((r) * (100)) + (self.n));
     }
+    #[inline]
     pub unsafe fn snapshot(&mut self) -> i32 {
         let mut f: FnPtr<fn() -> i32> = lambda_unsafe!(
             {
@@ -40,6 +43,7 @@ impl S {
         self.n = 99;
         return (unsafe { f.call() });
     }
+    #[inline]
     pub unsafe fn mixed(&mut self, mut k: i32) -> i32 {
         let mut f: FnPtr<fn() -> i32> = lambda_unsafe!(
             {

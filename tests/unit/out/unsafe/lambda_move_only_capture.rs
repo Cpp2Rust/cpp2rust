@@ -13,17 +13,20 @@ pub struct Owner {
     pub p: *mut i32,
 }
 impl Owner {
+    #[inline]
     pub unsafe fn new(mut v: i32) -> Self {
         let mut this = Self {
             p: (Box::leak(Box::new(v)) as *mut i32),
         };
         this
     }
+    #[inline]
     pub unsafe fn move_from(o: *mut Owner) -> Self {
         let mut this = Self { p: (*o).p };
         (*o).p = std::ptr::null_mut();
         this
     }
+    #[inline]
     pub unsafe fn destructor(&mut self) {
         {
             let __p = self.p;
@@ -32,6 +35,7 @@ impl Owner {
             }
         };
     }
+    #[inline]
     pub unsafe fn take(&mut self) -> FnPtr<fn() -> i32> {
         return lambda_unsafe!(
             {

@@ -14,6 +14,7 @@ pub struct S {
     pub self__: *mut S,
 }
 impl S {
+    #[inline]
     pub unsafe fn new_1(mut a: i32) -> Self {
         let mut this = Self {
             a_: a,
@@ -21,6 +22,7 @@ impl S {
         };
         this
     }
+    #[inline]
     pub unsafe fn new_2(mut a: i32, mut other: *mut S) -> Self {
         let mut this = Self {
             a_: a,
@@ -33,6 +35,7 @@ impl S {
         }
         this
     }
+    #[inline]
     pub unsafe fn new_3(mut a: i32, mut other: *const S) -> Self {
         let mut this = Self {
             a_: a,
@@ -43,37 +46,48 @@ impl S {
         }
         this
     }
+    #[inline]
     pub unsafe fn returns_this_reference(&mut self) -> *mut S {
         return &mut (*(self as *mut S));
     }
+    #[inline]
     pub unsafe fn returns_this_pointer(&mut self) -> *mut S {
         return (self as *mut S);
     }
+    #[inline]
     pub unsafe fn inc(&mut self) -> *mut S {
         self.a_.postfix_inc();
         return &mut (*(self as *mut S));
     }
+    #[inline]
     pub unsafe fn set_from_this(&mut self) {
         self.a_ = ((self.a_) + (1));
     }
+    #[inline]
     pub unsafe fn get(&mut self) -> i32 {
         return self.a_;
     }
+    #[inline]
     pub unsafe fn twice(&mut self) -> i32 {
         return ((unsafe { S::get(self) }) * (2));
     }
+    #[inline]
     pub unsafe fn link(&mut self) {
         self.self__ = (self as *mut S);
     }
+    #[inline]
     pub unsafe fn bump_me(&mut self) {
         (unsafe { bump_0((self as *mut S)) });
     }
+    #[inline]
     pub unsafe fn cref(&self) -> *const S {
         return &(*(self as *const S));
     }
+    #[inline]
     pub unsafe fn is(&self, mut o: *const S) -> bool {
         return ((o) == (self as *const S));
     }
+    #[inline]
     pub unsafe fn destroy(&mut self) {
         {
             let __p = (self as *mut S);
@@ -82,9 +96,11 @@ impl S {
             }
         };
     }
+    #[inline]
     pub unsafe fn reset(&mut self) {
         (*(self as *mut S)) = S::new_1({ 0 });
     }
+    #[inline]
     pub unsafe fn copy_if_different_const(&mut self, mut other: *const S) -> bool {
         if (((self as *mut S).cast_const()) == (other)) {
             return false;
@@ -93,6 +109,7 @@ impl S {
         self.self__ = (*other).self__;
         return true;
     }
+    #[inline]
     pub unsafe fn copy_if_different(&mut self, mut other: *mut S) -> bool {
         if ((self as *mut S) == (other)) {
             return false;
@@ -112,6 +129,7 @@ pub struct D {
     pub a_: i32,
 }
 impl D {
+    #[inline]
     pub unsafe fn new(mut a: i32) -> Self {
         let mut this = Self { a_: a };
         this.a_ *= 2;

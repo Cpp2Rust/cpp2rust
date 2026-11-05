@@ -14,10 +14,12 @@ pub struct Counted {
     pub y: i32,
 }
 impl Counted {
+    #[inline]
     pub unsafe fn new(mut x: i32, mut y: i32) -> Self {
         let mut this = Self { x: x, y: y };
         this
     }
+    #[inline]
     pub unsafe fn copy_from(other: *const Counted) -> Self {
         let mut this = Self {
             x: (((*other).x) * (2)),
@@ -26,6 +28,7 @@ impl Counted {
         (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)).prefix_inc();
         this
     }
+    #[inline]
     pub unsafe fn copy_assign(&mut self, _a0: *const Counted) -> *mut Counted {
         self.x = (*_a0).x;
         self.y = (*_a0).y;

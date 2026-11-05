@@ -13,6 +13,7 @@ pub struct Counted {
     pub moves: i32,
 }
 impl Counted {
+    #[inline]
     pub unsafe fn new() -> Self {
         let mut this = Self {
             copies: 0,
@@ -20,6 +21,7 @@ impl Counted {
         };
         this
     }
+    #[inline]
     pub unsafe fn copy_from(o: *const Counted) -> Self {
         let mut this = Self {
             copies: (((*o).copies) + (1)),
@@ -27,6 +29,7 @@ impl Counted {
         };
         this
     }
+    #[inline]
     pub unsafe fn move_from(o: *mut Counted) -> Self {
         let mut this = Self {
             copies: (*o).copies,
@@ -50,18 +53,22 @@ pub static mut drops_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| u
 #[derive(VaArg, FnPtrArg, MoveCtorUnsafe, DestructorUnsafe)]
 pub struct Dropped {}
 impl Dropped {
+    #[inline]
     pub unsafe fn new() -> Self {
         let mut this = Self {};
         this
     }
+    #[inline]
     pub unsafe fn copy_from(_a0: *const Dropped) -> Self {
         let mut this = Self {};
         this
     }
+    #[inline]
     pub unsafe fn move_from(_a0: *mut Dropped) -> Self {
         let mut this = Self {};
         this
     }
+    #[inline]
     pub unsafe fn destructor(&mut self) {
         (*std::cell::LazyCell::force_mut(&mut *&raw mut drops_0)).postfix_inc();
     }

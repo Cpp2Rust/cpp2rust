@@ -6,15 +6,19 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+#[inline]
 pub unsafe fn get_0(v: *const V) -> i32 {
     return (*v).x;
 }
+#[inline]
 pub unsafe fn operator_eq_1(a: *const V, b: *const V) -> bool {
     return (((*a).x) == ((*b).x));
 }
+#[inline]
 pub unsafe fn scaled_2(v: *const V, mut k: i32) -> i32 {
     return (((*v).x) * (k));
 }
+#[inline]
 pub unsafe fn scaled_3(v: *const V, mut k: f64) -> f64 {
     return (((*v).x as f64) * (k));
 }
@@ -29,6 +33,7 @@ impl std::cmp::PartialEq for V {
     }
 }
 impl std::cmp::Eq for V {}
+#[inline]
 pub unsafe fn get_4(w: *const W_int_) -> i32 {
     return (*w).x;
 }
@@ -37,6 +42,7 @@ pub unsafe fn get_4(w: *const W_int_) -> i32 {
 pub struct W_int_ {
     pub x: i32,
 }
+#[inline]
 pub unsafe fn get_5(w: *const W_long_) -> i64 {
     return (*w).x;
 }

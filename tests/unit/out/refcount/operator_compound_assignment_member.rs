@@ -72,30 +72,37 @@ pub trait SImpl {
     fn operator_shr_assign(&self, n: i32) -> Ptr<S>;
 }
 impl SImpl for Ptr<S> {
+    #[inline]
     fn operator_assign_1(&self, mut n: u32) -> Ptr<S> {
         field!((*self), v).write(n);
         return (*self).clone();
     }
+    #[inline]
     fn operator_add_assign(&self, o: Ptr<S>) -> Ptr<S> {
         field!((*self), v).write({ ((*self).with(|__s| __s.v)).wrapping_add(o.with(|__s| __s.v)) });
         return (*self).clone();
     }
+    #[inline]
     fn operator_sub_assign(&self, o: Ptr<S>) -> Ptr<S> {
         field!((*self), v).write({ ((*self).with(|__s| __s.v)).wrapping_sub(o.with(|__s| __s.v)) });
         return (*self).clone();
     }
+    #[inline]
     fn operator_mul_assign(&self, o: Ptr<S>) -> Ptr<S> {
         field!((*self), v).write({ ((*self).with(|__s| __s.v)).wrapping_mul(o.with(|__s| __s.v)) });
         return (*self).clone();
     }
+    #[inline]
     fn operator_div_assign(&self, o: Ptr<S>) -> Ptr<S> {
         field!((*self), v).write({ ((*self).with(|__s| __s.v)).wrapping_div(o.with(|__s| __s.v)) });
         return (*self).clone();
     }
+    #[inline]
     fn operator_rem_assign(&self, o: Ptr<S>) -> Ptr<S> {
         field!((*self), v).write({ ((*self).with(|__s| __s.v)).wrapping_rem(o.with(|__s| __s.v)) });
         return (*self).clone();
     }
+    #[inline]
     fn operator_bitand_assign(&self, o: Ptr<S>) -> Ptr<S> {
         {
             let __rhs = { o.with(|__s| __s.v) };
@@ -103,6 +110,7 @@ impl SImpl for Ptr<S> {
         };
         return (*self).clone();
     }
+    #[inline]
     fn operator_bitor_assign(&self, o: Ptr<S>) -> Ptr<S> {
         {
             let __rhs = { o.with(|__s| __s.v) };
@@ -110,6 +118,7 @@ impl SImpl for Ptr<S> {
         };
         return (*self).clone();
     }
+    #[inline]
     fn operator_bitxor_assign(&self, o: Ptr<S>) -> Ptr<S> {
         {
             let __rhs = { o.with(|__s| __s.v) };
@@ -117,6 +126,7 @@ impl SImpl for Ptr<S> {
         };
         return (*self).clone();
     }
+    #[inline]
     fn operator_shl_assign(&self, mut n: i32) -> Ptr<S> {
         {
             let __rhs = n;
@@ -124,6 +134,7 @@ impl SImpl for Ptr<S> {
         };
         return (*self).clone();
     }
+    #[inline]
     fn operator_shr_assign(&self, mut n: i32) -> Ptr<S> {
         {
             let __rhs = n;

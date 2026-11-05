@@ -48,30 +48,39 @@ pub trait SImpl {
     fn operator_index_9(&self, i: i32) -> i32;
 }
 impl SImpl for Ptr<S> {
+    #[inline]
     fn operator_add_1(&self, mut a: i32) -> i32 {
         return ((*self).with(|__s| __s.v) + a);
     }
+    #[inline]
     fn operator_add_2(&self, mut a: i32) -> i32 {
         return (((*self).with(|__s| __s.v) + a) + 1);
     }
+    #[inline]
     fn operator_add_3(&self, mut a: i32) -> i32 {
         return (((*self).with(|__s| __s.v) + a) + 2);
     }
+    #[inline]
     fn operator_sub_4(&self, mut a: i32) -> i32 {
         return ((*self).with(|__s| __s.v) - a);
     }
+    #[inline]
     fn operator_sub_5(&self, mut a: i32) -> i32 {
         return (((*self).with(|__s| __s.v) - a) - 1);
     }
+    #[inline]
     fn operator_mul_6(&self, mut a: i32) -> i32 {
         return ((*self).with(|__s| __s.v) * a);
     }
+    #[inline]
     fn operator_mul_7(&self, mut a: i32) -> i32 {
         return (((*self).with(|__s| __s.v) * a) * 2);
     }
+    #[inline]
     fn operator_index_8(&self, mut i: i32) -> i32 {
         return ((*self).with(|__s| __s.v) + i);
     }
+    #[inline]
     fn operator_index_9(&self, mut i: i32) -> i32 {
         return (((*self).with(|__s| __s.v) + i) + 100);
     }

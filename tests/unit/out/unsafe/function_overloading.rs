@@ -25,11 +25,17 @@ pub unsafe fn bar_4(x: *mut i32) -> i32 {
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Foo {}
 impl Foo {
+    #[inline]
     pub unsafe fn foo_1(&self) {}
+    #[inline]
     pub unsafe fn foo_2(&mut self) {}
+    #[inline]
     pub unsafe fn method_3(&mut self, mut x: i32) {}
+    #[inline]
     pub unsafe fn method_4(&self, mut x: i32) {}
+    #[inline]
     pub unsafe fn method2_5(&self, mut x: i32, mut y: i32) {}
+    #[inline]
     pub unsafe fn method2_6(&self, mut x: f64, mut y: f64) {}
 }
 pub unsafe fn func_5(mut x: i32) -> i32 {

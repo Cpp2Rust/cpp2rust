@@ -13,6 +13,7 @@ pub struct Degrees {
     pub value: i32,
 }
 impl Degrees {
+    #[inline]
     pub unsafe fn new(mut v: i32) -> Self {
         let mut this = Self { value: v };
         this

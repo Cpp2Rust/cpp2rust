@@ -16,20 +16,24 @@ pub struct Key {
     pub k: i32,
 }
 impl Key {
+    #[inline]
     pub unsafe fn new(mut k: i32) -> Self {
         let mut this = Self { k: k };
         this
     }
+    #[inline]
     pub unsafe fn copy_from(o: *const Key) -> Self {
         let mut this = Self { k: (*o).k };
         (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)).prefix_inc();
         this
     }
+    #[inline]
     pub unsafe fn move_from(o: *mut Key) -> Self {
         let mut this = Self { k: (*o).k };
         (*std::cell::LazyCell::force_mut(&mut *&raw mut moves_1)).prefix_inc();
         this
     }
+    #[inline]
     pub unsafe fn operator_lt(&self, o: *const Key) -> bool {
         return ((self.k) < ((*o).k));
     }

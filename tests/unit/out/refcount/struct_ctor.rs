@@ -15,6 +15,7 @@ pub struct StructWithCtor {
     x2_: i32,
 }
 impl StructWithCtor {
+    #[inline]
     pub fn new(mut x1: i32, mut x2: i32) -> Self {
         let __this: Value<StructWithCtor> = Rc::new(RefCell::new(Self { x1_: x1, x2_: x2 }));
         let this: Ptr<StructWithCtor> = __this.as_pointer();
@@ -34,6 +35,7 @@ pub struct Value_ {
     pub v: i32,
 }
 impl Value_ {
+    #[inline]
     pub fn new(mut u: i32) -> Self {
         Self { v: u }
     }
@@ -49,6 +51,7 @@ pub struct Ptr_ {
     pub v2: Value_,
 }
 impl Ptr_ {
+    #[inline]
     pub fn new() -> Self {
         Self {
             v1: Value_::new({ 11 }),
@@ -84,9 +87,11 @@ pub trait StructWithCtorImpl {
     fn x2(&self) -> Ptr<i32>;
 }
 impl StructWithCtorImpl for Ptr<StructWithCtor> {
+    #[inline]
     fn x1(&self) -> Ptr<i32> {
         return field_ptr!((*self), x1_);
     }
+    #[inline]
     fn x2(&self) -> Ptr<i32> {
         return field_ptr!((*self), x2_);
     }

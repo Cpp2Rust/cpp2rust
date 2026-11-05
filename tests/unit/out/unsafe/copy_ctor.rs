@@ -14,15 +14,18 @@ pub struct Counted {
     pub v: i32,
 }
 impl Counted {
+    #[inline]
     pub unsafe fn new(mut v: i32) -> Self {
         let mut this = Self { v: v };
         this
     }
+    #[inline]
     pub unsafe fn copy_from(o: *const Counted) -> Self {
         let mut this = Self { v: (*o).v };
         (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)).prefix_inc();
         this
     }
+    #[inline]
     pub unsafe fn copy_assign(&mut self, _a0: *const Counted) -> *mut Counted {
         self.v = (*_a0).v;
         return &mut (*(self as *mut Counted));
@@ -39,22 +42,26 @@ pub struct NonConst {
     pub mark: i32,
 }
 impl NonConst {
+    #[inline]
     pub unsafe fn new() -> Self {
         let mut this = Self { mark: 0 };
         this
     }
+    #[inline]
     pub unsafe fn new_1(o: *mut NonConst) -> Self {
         let mut this = Self {
             mark: (((*o).mark) + (1)),
         };
         this
     }
+    #[inline]
     pub unsafe fn new_2(o: *const NonConst) -> Self {
         let mut this = Self {
             mark: (((*o).mark) + (10)),
         };
         this
     }
+    #[inline]
     pub unsafe fn copy_assign(&mut self, _a0: *const NonConst) -> *mut NonConst {
         self.mark = (*_a0).mark;
         return &mut (*(self as *mut NonConst));
@@ -77,15 +84,18 @@ pub struct Ignored {
     pub v: i32,
 }
 impl Ignored {
+    #[inline]
     pub unsafe fn new(mut v: i32) -> Self {
         let mut this = Self { v: v };
         this
     }
+    #[inline]
     pub unsafe fn copy_from(_a0: *const Ignored) -> Self {
         let mut this = Self { v: -1_i32 };
         (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)).prefix_inc();
         this
     }
+    #[inline]
     pub unsafe fn copy_assign(&mut self, _a0: *const Ignored) -> *mut Ignored {
         self.v = (*_a0).v;
         return &mut (*(self as *mut Ignored));
@@ -103,6 +113,7 @@ pub struct Holder {
     pub arr: [Counted; 2],
 }
 impl Holder {
+    #[inline]
     pub unsafe fn copy_assign(&mut self, _a0: *const Holder) -> *mut Holder {
         (unsafe {
             let _arg0: *const Counted = &(*_a0).c;
@@ -129,14 +140,17 @@ pub struct Box_int_ {
     pub val: i32,
 }
 impl Box_int_ {
+    #[inline]
     pub unsafe fn new(mut v: i32) -> Self {
         let mut this = Self { val: v };
         this
     }
+    #[inline]
     pub unsafe fn copy_from(o: *const Box_int_) -> Self {
         let mut this = Self { val: (*o).val };
         this
     }
+    #[inline]
     pub unsafe fn move_from(_a0: *mut Box_int_) -> Self {
         let mut this = Self { val: (*_a0).val };
         this
@@ -153,6 +167,7 @@ pub struct Owner {
     pub box_: Box_int_,
 }
 impl Owner {
+    #[inline]
     pub unsafe fn move_from(_a0: *mut Owner) -> Self {
         let mut this = Self {
             box_: Box_int_::move_from({ &mut (*_a0).box_ }),
@@ -167,6 +182,7 @@ pub struct OutOfLine {
     pub v: i32,
 }
 impl OutOfLine {
+    #[inline]
     pub unsafe fn new(mut v: i32) -> Self {
         let mut this = Self { v: v };
         this
@@ -178,6 +194,7 @@ impl OutOfLine {
         (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)).prefix_inc();
         this
     }
+    #[inline]
     pub unsafe fn copy_assign(&mut self, _a0: *const OutOfLine) -> *mut OutOfLine {
         self.v = (*_a0).v;
         return &mut (*(self as *mut OutOfLine));
@@ -195,11 +212,13 @@ pub struct Tracked {
     pub copied_from: i32,
 }
 impl Tracked {
+    #[inline]
     pub unsafe fn copy_from(o: *const Tracked) -> Self {
         let mut this = Self { copied_from: 0 };
         (*(&raw const (*o).copied_from).cast_mut()).prefix_inc();
         this
     }
+    #[inline]
     pub unsafe fn copy_assign(&mut self, o: *const Tracked) -> *mut Tracked {
         (*(&raw const (*o).copied_from).cast_mut()).prefix_inc();
         return &mut (*(self as *mut Tracked));

@@ -18,6 +18,7 @@ pub struct Holder {
     pub n: i32,
 }
 impl Holder {
+    #[inline]
     pub unsafe fn set(&mut self, mut p: *mut Data) {
         {
             let _a0: *mut Data = p;
@@ -28,6 +29,7 @@ impl Holder {
             }
         };
     }
+    #[inline]
     pub unsafe fn move_from(_a0: *mut Holder) -> Self {
         let mut this = Self {
             data: (*_a0).data.take(),
@@ -35,6 +37,7 @@ impl Holder {
         };
         this
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, _a0: *mut Holder) -> *mut Holder {
         self.data = (*_a0).data.take();
         self.n = (*_a0).n;

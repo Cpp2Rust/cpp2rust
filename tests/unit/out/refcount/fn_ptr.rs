@@ -37,6 +37,7 @@ pub struct HashHolder_unsigned_long__ptr__bool__ {
     pub h: FnPtr<fn(bool) -> u64>,
 }
 impl HashHolder_unsigned_long__ptr__bool__ {
+    #[inline]
     pub fn new(h: Ptr<FnPtr<fn(bool) -> u64>>) -> Self {
         Self { h: (h.read()) }
     }

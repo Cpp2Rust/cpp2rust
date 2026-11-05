@@ -50,15 +50,19 @@ pub trait SImpl {
     fn value_ref_4(&self) -> Ptr<i32>;
 }
 impl SImpl for Ptr<S> {
+    #[inline]
     fn f_1(&self) -> Overload {
         return Overload_kMutableOverload;
     }
+    #[inline]
     fn f_2(&self) -> Overload {
         return Overload_kConstOverload;
     }
+    #[inline]
     fn value_ref_3(&self) -> Ptr<i32> {
         return field_ptr!((*self), v);
     }
+    #[inline]
     fn value_ref_4(&self) -> Ptr<i32> {
         return field_ptr!((*self), v);
     }

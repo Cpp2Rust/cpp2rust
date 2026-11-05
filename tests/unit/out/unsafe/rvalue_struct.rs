@@ -13,6 +13,7 @@ pub struct S {
     pub b: i32,
 }
 impl S {
+    #[inline]
     pub unsafe fn new(mut a: i32, mut b: i32) -> Self {
         let mut this = Self { a: a, b: b };
         this

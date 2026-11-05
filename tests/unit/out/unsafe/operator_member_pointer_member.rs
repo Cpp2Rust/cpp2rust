@@ -15,6 +15,7 @@ pub struct Inner {
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Table {}
 impl Table {
+    #[inline]
     pub unsafe fn operator_index(mut i: i32) -> *mut i32 {
         return &mut (*std::cell::LazyCell::force_mut(&mut *&raw mut table_0))[(i) as usize];
     }
@@ -28,18 +29,23 @@ pub struct S {
     pub inner: Inner,
 }
 impl S {
+    #[inline]
     pub unsafe fn operator_index_1(&mut self, mut i: i32) -> *mut i32 {
         return &mut self.data[(i) as usize];
     }
+    #[inline]
     pub unsafe fn operator_index_2(&self, mut i: i32) -> *const i32 {
         return &self.data[(i) as usize];
     }
+    #[inline]
     pub unsafe fn operator_deref(&mut self) -> *mut Inner {
         return &mut self.inner;
     }
+    #[inline]
     pub unsafe fn operator_arrow(&mut self) -> *mut Inner {
         return (&mut self.inner as *mut Inner);
     }
+    #[inline]
     pub unsafe fn operator_addr(&mut self) -> *mut i32 {
         return (&mut self.data[(0) as usize] as *mut i32);
     }

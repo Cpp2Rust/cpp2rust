@@ -23,6 +23,7 @@ pub struct Tracked {
     pub moves: i32,
 }
 impl Tracked {
+    #[inline]
     pub fn new(mut v: i32) -> Self {
         Self {
             v: v,
@@ -30,6 +31,7 @@ impl Tracked {
             moves: 0,
         }
     }
+    #[inline]
     pub fn copy_from(o: Ptr<Tracked>) -> Self {
         Self {
             v: o.with(|__s| __s.v),
@@ -37,6 +39,7 @@ impl Tracked {
             moves: o.with(|__s| __s.moves),
         }
     }
+    #[inline]
     pub fn move_from(o: Ptr<Tracked>) -> Self {
         let __this: Tracked = Self {
             v: o.with(|__s| __s.v),
@@ -113,6 +116,7 @@ pub fn forward_pack_7(
     return digits;
 }
 impl Pair {
+    #[inline]
     pub fn new(x: Ptr<Tracked>, y: Ptr<Tracked>) -> Self {
         Self {
             a: Tracked::copy_from({ (x).clone() }),
@@ -131,6 +135,7 @@ pub struct Pair {
     pub b: Tracked,
 }
 impl Pair {
+    #[inline]
     pub fn move_from(_a0: Ptr<Pair>) -> Self {
         Self {
             a: Tracked::move_from({ field_ptr!(_a0, a) }),

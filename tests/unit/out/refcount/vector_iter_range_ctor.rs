@@ -14,6 +14,7 @@ pub struct Degrees {
     pub value: i32,
 }
 impl Degrees {
+    #[inline]
     pub fn new(mut v: i32) -> Self {
         Self { value: v }
     }
@@ -232,6 +233,7 @@ pub trait ReadingImpl {
     fn to_i64(&self) -> i64;
 }
 impl ReadingImpl for Ptr<Reading> {
+    #[inline]
     fn to_i64(&self) -> i64 {
         return (((*self).with(|__s| __s.raw_) as i64) * 10_i64);
     }

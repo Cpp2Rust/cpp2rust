@@ -15,9 +15,11 @@ pub struct Owner {
     pub p: Ptr<i32>,
 }
 impl Owner {
+    #[inline]
     pub fn new(mut v: i32) -> Self {
         Self { p: Ptr::alloc(v) }
     }
+    #[inline]
     pub fn move_from(o: Ptr<Owner>) -> Self {
         let __this: Owner = Self {
             p: o.with(|__s| __s.p.clone()),
@@ -79,9 +81,11 @@ pub trait OwnerImpl {
     fn take(&self) -> FnPtr<fn() -> i32>;
 }
 impl OwnerImpl for Ptr<Owner> {
+    #[inline]
     fn destructor(&self) {
         (*self).with(|__s| __s.p.clone()).delete();
     }
+    #[inline]
     fn take(&self) -> FnPtr<fn() -> i32> {
         return lambda!(
             {

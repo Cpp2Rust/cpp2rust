@@ -13,6 +13,7 @@ pub struct Node {
     pub next: *mut Node,
 }
 impl Node {
+    #[inline]
     pub unsafe fn SetNext(&mut self, mut next: *mut Node) {
         self.next = next;
     }

@@ -14,9 +14,11 @@ pub struct S {
     pub v: i32,
 }
 impl S {
+    #[inline]
     pub unsafe fn to_libcc_char(&self) -> libc::c_char {
         return (self.v as libc::c_char);
     }
+    #[inline]
     pub unsafe fn to_u8(&self) -> u8 {
         return (((self.v) + (1)) as u8);
     }
@@ -28,9 +30,11 @@ pub struct T {
     pub v: i32,
 }
 impl T {
+    #[inline]
     pub unsafe fn to_i64_1(&self) -> i64 {
         return (self.v as i64);
     }
+    #[inline]
     pub unsafe fn to_i64_2(&self) -> i64 {
         return (((self.v) + (1)) as i64);
     }

@@ -13,6 +13,7 @@ pub struct Degrees {
     pub value: i32,
 }
 impl Degrees {
+    #[inline]
     pub unsafe fn new(mut v: i32) -> Self {
         let mut this = Self { value: v };
         this
@@ -25,6 +26,7 @@ pub struct Reading {
     pub raw_: i32,
 }
 impl Reading {
+    #[inline]
     pub unsafe fn to_i64(&self) -> i64 {
         return ((self.raw_ as i64) * (10_i64));
     }

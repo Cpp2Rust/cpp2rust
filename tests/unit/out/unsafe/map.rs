@@ -19,10 +19,12 @@ pub struct Point {
     pub y: i32,
 }
 impl Point {
+    #[inline]
     pub unsafe fn new_1() -> Self {
         let mut this = Self { x: 0, y: 0 };
         this
     }
+    #[inline]
     pub unsafe fn new_2(mut x: i32, mut y: i32) -> Self {
         let mut this = Self { x: x, y: y };
         this

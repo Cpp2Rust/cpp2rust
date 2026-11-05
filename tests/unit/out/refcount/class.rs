@@ -112,10 +112,12 @@ pub trait CounterImpl {
     fn operator_eq(&self, o: Ptr<Counter>) -> bool;
 }
 impl CounterImpl for Ptr<Counter> {
+    #[inline]
     fn Get(&self) -> i32 {
         field!((*self), calls).with_mut(|__v| __v.prefix_inc());
         return (*self).with(|__s| __s.v);
     }
+    #[inline]
     fn operator_eq(&self, o: Ptr<Counter>) -> bool {
         field!((*self), calls).with_mut(|__v| __v.prefix_inc());
         return ({ (*self).with(|__s| __s.v) } == { o.with(|__s| __s.v) });
@@ -130,19 +132,24 @@ pub trait PairImpl {
     fn SetSecond(&self, new_second: i32) -> i32;
 }
 impl PairImpl for Ptr<Pair> {
+    #[inline]
     fn NOP(&self) {}
+    #[inline]
     fn GetFirst(&self) -> i32 {
         return (*self).with(|__s| __s.first);
     }
+    #[inline]
     fn GetSecond(&self) -> i32 {
         return (*self).with(|__s| __s.second);
     }
+    #[inline]
     fn Set(&self, field: Ptr<i32>, mut new_val: i32) -> i32 {
         ({ PairImpl::NOP(self) });
         let mut old_val: i32 = (field.read());
         field.write({ new_val });
         return old_val;
     }
+    #[inline]
     fn SetFirst(&self, mut new_first: i32) -> i32 {
         return (({ PairImpl::GetFirst(self) })
             + ({
@@ -150,6 +157,7 @@ impl PairImpl for Ptr<Pair> {
                 PairImpl::Set(self, _field, new_first)
             }));
     }
+    #[inline]
     fn SetSecond(&self, mut new_second: i32) -> i32 {
         return (({ PairImpl::GetSecond(self) })
             + ({
@@ -162,6 +170,7 @@ pub trait RouteImpl {
     fn SetCost(&self, new_cost: f64) -> f64;
 }
 impl RouteImpl for Ptr<Route> {
+    #[inline]
     fn SetCost(&self, mut new_cost: f64) -> f64 {
         let mut old_cost: f64 = (*self).with(|__s| __s.cost);
         field!((*self), cost).write(new_cost);
@@ -173,12 +182,14 @@ pub trait TallyImpl {
     fn SameNameBetweenConstAndNonConst_2(&self) -> i32;
 }
 impl TallyImpl for Ptr<Tally> {
+    #[inline]
     fn SameNameBetweenConstAndNonConst_1(&self) -> i32 {
         {
             field!((*self), calls).with_mut(|__v| *__v = *__v + 1)
         };
         return 1;
     }
+    #[inline]
     fn SameNameBetweenConstAndNonConst_2(&self) -> i32 {
         {
             field!((*self), calls).with_mut(|__v| *__v = *__v + 10)

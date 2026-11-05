@@ -28,9 +28,11 @@ pub struct Bag {
     pub n: i32,
 }
 impl Bag {
+    #[inline]
     pub fn new(mut n: i32) -> Self {
         Self { n: n }
     }
+    #[inline]
     pub fn copy_from(o: Ptr<Bag>) -> Self {
         let __this: Bag = Self {
             n: o.with(|__s| __s.n),
@@ -214,6 +216,7 @@ pub trait BagImpl {
     fn copy_assign(&self, _a0: Ptr<Bag>) -> Ptr<Bag>;
 }
 impl BagImpl for Ptr<Bag> {
+    #[inline]
     fn copy_assign(&self, _a0: Ptr<Bag>) -> Ptr<Bag> {
         field!((*self), n).write({ _a0.with(|__s| __s.n) });
         return (*self).clone();

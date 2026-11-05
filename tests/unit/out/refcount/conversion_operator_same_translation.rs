@@ -48,9 +48,11 @@ pub trait SImpl {
     fn to_u8(&self) -> u8;
 }
 impl SImpl for Ptr<S> {
+    #[inline]
     fn to_i8(&self) -> i8 {
         return ((*self).with(|__s| __s.v) as i8);
     }
+    #[inline]
     fn to_u8(&self) -> u8 {
         return (((*self).with(|__s| __s.v) + 1) as u8);
     }
@@ -60,9 +62,11 @@ pub trait TImpl {
     fn to_i64_2(&self) -> i64;
 }
 impl TImpl for Ptr<T> {
+    #[inline]
     fn to_i64_1(&self) -> i64 {
         return ((*self).with(|__s| __s.v) as i64);
     }
+    #[inline]
     fn to_i64_2(&self) -> i64 {
         return (((*self).with(|__s| __s.v) + 1) as i64);
     }

@@ -6,38 +6,48 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+#[inline]
 pub fn get_0(s: Ptr<i8>) -> Ptr<i8> {
     let s: Value<Ptr<i8>> = Rc::new(RefCell::new(s));
     return (*s.borrow()).clone();
 }
+#[inline]
 pub fn get_1(s: Ptr<i32>) -> Ptr<i32> {
     let s: Value<Ptr<i32>> = Rc::new(RefCell::new(s));
     return (*s.borrow()).clone();
 }
+#[inline]
 pub fn get_2(s: Ptr<u8>) -> Ptr<u8> {
     let s: Value<Ptr<u8>> = Rc::new(RefCell::new(s));
     return (*s.borrow()).clone();
 }
+#[inline]
 pub fn get_3(s: Ptr<u16>) -> Ptr<u16> {
     let s: Value<Ptr<u16>> = Rc::new(RefCell::new(s));
     return (*s.borrow()).clone();
 }
+#[inline]
 pub fn get_4(s: Ptr<u32>) -> Ptr<u32> {
     let s: Value<Ptr<u32>> = Rc::new(RefCell::new(s));
     return (*s.borrow()).clone();
 }
+#[inline]
 pub fn second_5(s: Ptr<i8>) -> i8 {
     return (elem!((s), 1).read());
 }
+#[inline]
 pub fn second_6(s: Ptr<i32>) -> i32 {
     return (elem!((s), 1).read());
 }
+#[inline]
 pub fn second_7(s: Ptr<u8>) -> u8 {
     return (elem!((s), 1).read());
 }
+#[inline]
 pub fn second_8(s: Ptr<u16>) -> u16 {
     return (elem!((s), 1).read());
 }
+#[inline]
 pub fn second_9(s: Ptr<u32>) -> u32 {
     return (elem!((s), 1).read());
 }

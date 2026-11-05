@@ -18,6 +18,7 @@ pub struct PtrCtor_unsigned_long_ {
     pub v: u64,
 }
 impl PtrCtor_unsigned_long_ {
+    #[inline]
     pub fn new(mut p: Ptr<u64>) -> Self {
         Self {
             v: (elem!(p, 1).read()),
@@ -32,6 +33,7 @@ pub struct RefCtor_unsigned_long_ {
     pub v: u64,
 }
 impl RefCtor_unsigned_long_ {
+    #[inline]
     pub fn new(x: Ptr<u64>) -> Self {
         Self {
             v: (x.read()).wrapping_add(1_u64),

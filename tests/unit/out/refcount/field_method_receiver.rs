@@ -28,6 +28,7 @@ pub struct S {
     pub v: Vec<i32>,
 }
 impl S {
+    #[inline]
     pub fn move_from(_a0: Ptr<S>) -> Self {
         Self {
             tag: { (*_a0.upgrade().deref()).tag },
@@ -123,18 +124,22 @@ pub trait CounterImpl {
     fn take(&self, other: Ptr<Counter>);
 }
 impl CounterImpl for Ptr<Counter> {
+    #[inline]
     fn get(&self) -> i32 {
         return (*self).with(|__s| __s.n);
     }
+    #[inline]
     fn add(&self, mut k: i32) {
         {
             let __rhs = k;
             field!((*self), n).with_mut(|__v| *__v = *__v + __rhs)
         };
     }
+    #[inline]
     fn self_(&self) -> Ptr<Counter> {
         return (*self).clone();
     }
+    #[inline]
     fn take(&self, mut other: Ptr<Counter>) {
         {
             let __rhs = { other.with(|__s| __s.n) };
@@ -148,12 +153,14 @@ pub trait SImpl {
     fn move_assign(&self, _a0: Ptr<S>) -> Ptr<S>;
 }
 impl SImpl for Ptr<S> {
+    #[inline]
     fn bump(&self) {
         ({
             let _k: i32 = (*self).with(|__s| __s.tag);
             CounterImpl::add(&field_ptr!((*self), c), _k)
         });
     }
+    #[inline]
     fn move_assign(&self, _a0: Ptr<S>) -> Ptr<S> {
         field!((*self), tag).write({ { (*_a0.upgrade().deref()).tag } });
         field!((*self), c).write({ { (*_a0.upgrade().deref()).c.clone() } });

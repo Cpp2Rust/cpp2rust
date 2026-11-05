@@ -30,11 +30,13 @@ fn main_0() -> i32 {
     return 0;
 }
 impl Animal for Cat {
+    #[inline]
     fn bark(&self) -> bool {
         return false;
     }
 }
 impl Animal for Dog {
+    #[inline]
     fn bark(&self) -> bool {
         return true;
     }
@@ -43,6 +45,7 @@ pub trait CatImpl {
     fn meow(&self) -> bool;
 }
 impl CatImpl for Ptr<Cat> {
+    #[inline]
     fn meow(&self) -> bool {
         return true;
     }

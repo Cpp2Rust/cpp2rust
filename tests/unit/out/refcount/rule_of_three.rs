@@ -23,6 +23,7 @@ pub struct Buffer {
     pub size: i32,
 }
 impl Buffer {
+    #[inline]
     pub fn new(mut size: i32) -> Self {
         let __this: Value<Buffer> = Rc::new(RefCell::new(Self {
             data: (0..4).map(|_| 0_i32).collect::<Box<[i32]>>(),
@@ -37,6 +38,7 @@ impl Buffer {
         (*alive_0.with(Value::clone).borrow_mut()).prefix_inc();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
+    #[inline]
     pub fn copy_from(o: Ptr<Buffer>) -> Self {
         let __this: Value<Buffer> = Rc::new(RefCell::new(Self {
             data: (0..4).map(|_| 0_i32).collect::<Box<[i32]>>(),
@@ -135,9 +137,11 @@ pub trait BufferImpl {
     fn copy_assign(&self, o: Ptr<Buffer>) -> Ptr<Buffer>;
 }
 impl BufferImpl for Ptr<Buffer> {
+    #[inline]
     fn destructor(&self) {
         (*alive_0.with(Value::clone).borrow_mut()).prefix_dec();
     }
+    #[inline]
     fn copy_assign(&self, o: Ptr<Buffer>) -> Ptr<Buffer> {
         if ((*self) == (o)) {
             return (*self).clone();

@@ -6,6 +6,7 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+#[inline]
 pub unsafe fn operator_eq_0(_a0: *const Defaulted, _a1: *const Defaulted) -> bool {
     return (((*_a0).a) == ((*_a1).a)) && (((*_a0).b) == ((*_a1).b));
 }
@@ -21,6 +22,7 @@ impl std::cmp::PartialEq for Defaulted {
     }
 }
 impl std::cmp::Eq for Defaulted {}
+#[inline]
 pub unsafe fn operator_cmp_1(
     _a0: *const DefaultedOrd,
     _a1: *const DefaultedOrd,
@@ -33,6 +35,7 @@ pub unsafe fn operator_cmp_1(
     }
     return std::cmp::Ordering::Equal;
 }
+#[inline]
 pub unsafe fn operator_eq_2(_a0: *const DefaultedOrd, _a1: *const DefaultedOrd) -> bool {
     return (((*_a0).a) == ((*_a1).a));
 }
@@ -57,12 +60,15 @@ impl std::cmp::PartialEq for DefaultedOrd {
     }
 }
 impl std::cmp::Eq for DefaultedOrd {}
+#[inline]
 pub unsafe fn operator_eq_3(x: *const Inline, y: *const Inline) -> bool {
     return (((*x).a) == ((*y).a));
 }
+#[inline]
 pub unsafe fn operator_lt_4(x: *const Inline, y: *const Inline) -> bool {
     return (((*x).a) < ((*y).a));
 }
+#[inline]
 pub unsafe fn operator_add_5(x: *const Inline, y: *const Inline) -> Inline {
     return Inline {
         a: (((*x).a) + ((*y).a)),
@@ -118,12 +124,15 @@ pub unsafe fn operator_ne_7(x: *const OutOfLine, y: *const OutOfLine) -> bool {
         operator_eq_6(_x, _y)
     });
 }
+#[inline]
 pub unsafe fn operator_eq_8(x: *const Tmpl_int_, y: *const Tmpl_int_) -> bool {
     return (((*x).v) == ((*y).v));
 }
+#[inline]
 pub unsafe fn operator_lt_9(x: *const Tmpl_int_, y: *const Tmpl_int_) -> bool {
     return (((*x).v) < ((*y).v));
 }
+#[inline]
 pub unsafe fn operator_eq_10(x: *const Tmpl_int_, y: *const Tmpl_long_) -> bool {
     return (((*x).v as i64) == ((*y).v));
 }
@@ -161,6 +170,7 @@ impl std::cmp::Eq for Tmpl_int_ {}
 pub struct Tmpl_long_ {
     pub v: i64,
 }
+#[inline]
 pub unsafe fn operator_eq_11(
     _a0: *const TmplDefaulted_int_,
     _a1: *const TmplDefaulted_int_,

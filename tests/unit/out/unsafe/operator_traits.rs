@@ -12,6 +12,7 @@ pub struct Lt {
     pub v: i32,
 }
 impl Lt {
+    #[inline]
     pub unsafe fn operator_lt(&self, o: *const Lt) -> bool {
         return ((self.v) < ((*o).v));
     }
@@ -49,6 +50,7 @@ pub struct Eq {
     pub v: i32,
 }
 impl Eq {
+    #[inline]
     pub unsafe fn operator_eq(&self, o: *const Eq) -> bool {
         return ((self.v) == ((*o).v));
     }
@@ -65,9 +67,11 @@ pub struct Cmp {
     pub v: i32,
 }
 impl Cmp {
+    #[inline]
     pub unsafe fn operator_cmp(&self, o: *const Cmp) -> std::cmp::Ordering {
         return std::cmp::Ord::cmp(&(self.v), &((*o).v));
     }
+    #[inline]
     pub unsafe fn operator_eq(&self, o: *const Cmp) -> bool {
         return ((self.v) == ((*o).v));
     }

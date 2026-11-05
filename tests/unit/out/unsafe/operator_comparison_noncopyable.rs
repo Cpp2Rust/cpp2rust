@@ -6,9 +6,11 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+#[inline]
 pub unsafe fn operator_eq_0(x: *const S, y: *const S) -> bool {
     return (((*x).data_) == ((*y).data_));
 }
+#[inline]
 pub unsafe fn operator_lt_1(x: *const S, y: *const S) -> bool {
     return (((*x).data_) < ((*y).data_));
 }
@@ -19,10 +21,12 @@ pub struct S {
     data_: i32,
 }
 impl S {
+    #[inline]
     pub unsafe fn new(mut data: i32) -> Self {
         let mut this = Self { data_: data };
         this
     }
+    #[inline]
     pub unsafe fn move_from(_a0: *mut S) -> Self {
         let mut this = Self {
             data_: (*_a0).data_,

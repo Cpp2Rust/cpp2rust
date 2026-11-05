@@ -10,6 +10,7 @@ use std::rc::{Rc, Weak};
 #[byte_size(1)]
 pub struct Static {}
 impl Static {
+    #[inline]
     pub fn operator_call(mut a: i32, mut b: i32) -> i32 {
         return (a * b);
     }
@@ -61,23 +62,29 @@ pub trait SImpl {
     fn to_bool(&self) -> bool;
 }
 impl SImpl for Ptr<S> {
+    #[inline]
     fn operator_call_1(&self) -> i32 {
         return (*self).with(|__s| __s.v);
     }
+    #[inline]
     fn operator_call_2(&self, mut a: i32) -> i32 {
         return ((*self).with(|__s| __s.v) + a);
     }
+    #[inline]
     fn operator_call_3(&self, mut a: i32, mut b: i32) -> i32 {
         return (((*self).with(|__s| __s.v) + a) + b);
     }
+    #[inline]
     fn operator_comma(&self, o: Ptr<S>) -> S {
         return S {
             v: ({ ((*self).with(|__s| __s.v) * 10) } + { o.with(|__s| __s.v) }),
         };
     }
+    #[inline]
     fn to_i32(&self) -> i32 {
         return (*self).with(|__s| __s.v);
     }
+    #[inline]
     fn to_bool(&self) -> bool {
         return ((*self).with(|__s| __s.v) != 0);
     }

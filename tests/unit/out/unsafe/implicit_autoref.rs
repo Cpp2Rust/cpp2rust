@@ -12,12 +12,14 @@ pub struct Holder {
     pub v: Vec<i32>,
 }
 impl Holder {
+    #[inline]
     pub unsafe fn move_from(_a0: *mut Holder) -> Self {
         let mut this = Self {
             v: std::mem::take(&mut (*_a0).v),
         };
         this
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, _a0: *mut Holder) -> *mut Holder {
         self.v = std::mem::take(&mut (*_a0).v);
         return &mut (*(self as *mut Holder));

@@ -15,6 +15,7 @@ pub struct MinHeapNode {
     pub right: *mut MinHeapNode,
 }
 impl MinHeapNode {
+    #[inline]
     pub unsafe fn IsLeaf(&self) -> bool {
         return ((self.left).is_null()) && ((self.right).is_null());
     }
@@ -49,6 +50,7 @@ pub struct MinHeap {
     pub alloc: Option<Box<[MinHeapNode]>>,
 }
 impl MinHeap {
+    #[inline]
     pub unsafe fn Alloc(&mut self, mut data: libc::c_char, mut freq: i32) -> *mut MinHeapNode {
         (*self
             .alloc
@@ -66,6 +68,7 @@ impl MinHeap {
             .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut MinHeapNode)
             .add((self.next.postfix_inc() as usize))) as *mut MinHeapNode);
     }
+    #[inline]
     pub unsafe fn Heapify(&mut self, mut idx: i32) {
         let mut smallest: i32 = idx;
         let mut left: i32 = (((2) * (idx)) + (1));
@@ -131,6 +134,7 @@ impl MinHeap {
             (unsafe { MinHeap::Heapify(self, smallest) });
         }
     }
+    #[inline]
     pub unsafe fn ExtractMin(&mut self) -> *mut MinHeapNode {
         let mut out: *mut MinHeapNode = (*self
             .arr
@@ -156,6 +160,7 @@ impl MinHeap {
         (unsafe { MinHeap::Heapify(self, 0) });
         return out;
     }
+    #[inline]
     pub unsafe fn Insert(&mut self, mut node: *mut MinHeapNode) {
         self.size.prefix_inc();
         let mut i: i32 = ((self.size) - (1));
@@ -193,6 +198,7 @@ impl MinHeap {
             })
             .add((i as usize))) = node;
     }
+    #[inline]
     pub unsafe fn Build(
         &mut self,
         data: *mut Option<Box<[libc::c_char]>>,
@@ -226,6 +232,7 @@ impl MinHeap {
             i.prefix_dec();
         }
     }
+    #[inline]
     pub unsafe fn move_from(_a0: *mut MinHeap) -> Self {
         let mut this = Self {
             size: (*_a0).size,
@@ -236,6 +243,7 @@ impl MinHeap {
         };
         this
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, _a0: *mut MinHeap) -> *mut MinHeap {
         self.size = (*_a0).size;
         self.capacity = (*_a0).capacity;

@@ -20,9 +20,11 @@ pub struct Elem {
     pub v: i32,
 }
 impl Elem {
+    #[inline]
     pub fn new(mut v: i32) -> Self {
         Self { v: v }
     }
+    #[inline]
     pub fn copy_from(other: Ptr<Elem>) -> Self {
         let __this: Elem = Self {
             v: (other.with(|__s| __s.v) + 100),
@@ -30,6 +32,7 @@ impl Elem {
         (*copies_0.with(Value::clone).borrow_mut()).prefix_inc();
         __this
     }
+    #[inline]
     pub fn move_from(other: Ptr<Elem>) -> Self {
         let __this: Elem = Self {
             v: (other.with(|__s| __s.v) + 1000),
@@ -56,6 +59,7 @@ pub struct Two {
     pub b: Elem,
 }
 impl Two {
+    #[inline]
     pub fn move_from(_a0: Ptr<Two>) -> Self {
         Self {
             a: Elem::move_from({ field_ptr!(_a0, a) }),

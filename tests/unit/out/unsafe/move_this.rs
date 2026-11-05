@@ -13,16 +13,19 @@ pub struct Chain {
     pub v: i32,
 }
 impl Chain {
+    #[inline]
     pub unsafe fn new(mut v: i32) -> Self {
         let mut this = Self { v: v };
         this
     }
+    #[inline]
     pub unsafe fn copy_from(o: *const Chain) -> Self {
         let mut this = Self {
             v: (((*o).v) + (100)),
         };
         this
     }
+    #[inline]
     pub unsafe fn move_from(o: *mut Chain) -> Self {
         let mut this = Self {
             v: (((*o).v) + (1)),
@@ -30,20 +33,25 @@ impl Chain {
         (*o).v = 0;
         this
     }
+    #[inline]
     pub unsafe fn add_4(&mut self, mut n: i32) -> *mut Chain {
         self.v += n;
         return &mut (*(self as *mut Chain));
     }
+    #[inline]
     pub unsafe fn add_5(&mut self, mut n: i32) -> *mut Chain {
         self.v += n;
         return &mut (*(self as *mut Chain));
     }
+    #[inline]
     pub unsafe fn take(&mut self) -> Chain {
         return Chain::move_from({ &mut (*(self as *mut Chain)) });
     }
+    #[inline]
     pub unsafe fn copy(&self) -> Chain {
         return Chain::copy_from({ &(*(self as *const Chain)) });
     }
+    #[inline]
     pub unsafe fn self_(&mut self) -> *mut Chain {
         return &mut (*(self as *mut Chain));
     }

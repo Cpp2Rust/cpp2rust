@@ -12,29 +12,35 @@ pub struct S {
     pub v: u32,
 }
 impl S {
+    #[inline]
     pub unsafe fn operator_bitnot(&self) -> S {
         return S { v: !self.v };
     }
+    #[inline]
     pub unsafe fn operator_bitand(&self, o: *const S) -> S {
         return S {
             v: ((self.v) & ((*o).v)),
         };
     }
+    #[inline]
     pub unsafe fn operator_bitor(&self, o: *const S) -> S {
         return S {
             v: ((self.v) | ((*o).v)),
         };
     }
+    #[inline]
     pub unsafe fn operator_bitxor(&self, o: *const S) -> S {
         return S {
             v: ((self.v) ^ ((*o).v)),
         };
     }
+    #[inline]
     pub unsafe fn operator_shl(&self, mut n: i32) -> S {
         return S {
             v: ((self.v) << (n)),
         };
     }
+    #[inline]
     pub unsafe fn operator_shr(&self, mut n: i32) -> S {
         return S {
             v: ((self.v) >> (n)),

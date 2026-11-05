@@ -33,6 +33,7 @@ pub struct JPEGData {
     pub app_data: Vec<Vec<u8>>,
 }
 impl JPEGData {
+    #[inline]
     pub fn move_from(_a0: Ptr<JPEGData>) -> Self {
         Self {
             com_data: field!(_a0, com_data).with_mut(std::mem::take),
@@ -125,18 +126,21 @@ pub struct Pair {
     pub second: i32,
 }
 impl Pair {
+    #[inline]
     pub fn new_2() -> Self {
         Self {
             first: -1_i32,
             second: -1_i32,
         }
     }
+    #[inline]
     pub fn new_1(mut a: i32) -> Self {
         Self {
             first: a,
             second: 0,
         }
     }
+    #[inline]
     pub fn new_3(mut a: i32, mut b: i32) -> Self {
         Self {
             first: a,
@@ -295,6 +299,7 @@ pub trait JPEGDataImpl {
     fn move_assign(&self, _a0: Ptr<JPEGData>) -> Ptr<JPEGData>;
 }
 impl JPEGDataImpl for Ptr<JPEGData> {
+    #[inline]
     fn move_assign(&self, _a0: Ptr<JPEGData>) -> Ptr<JPEGData> {
         field_ref!((*self), com_data)
             .as_pointer()

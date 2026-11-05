@@ -11,6 +11,7 @@ static mut inner_const_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(||
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct C {}
 impl C {
+    #[inline]
     pub unsafe fn get(&mut self) -> i32 {
         return (*std::cell::LazyCell::force_mut(&mut *&raw mut inner_const_0));
     }
@@ -22,6 +23,7 @@ pub const anon_3_kValue: anon_3 = 3;
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S {}
 impl S {
+    #[inline]
     pub unsafe fn f() -> i32 {
         return (*std::cell::LazyCell::force_mut(&mut *&raw mut counter_2));
     }

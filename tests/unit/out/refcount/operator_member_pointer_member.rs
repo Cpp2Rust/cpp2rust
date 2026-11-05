@@ -16,6 +16,7 @@ pub struct Inner {
 #[byte_size(1)]
 pub struct Table {}
 impl Table {
+    #[inline]
     pub fn operator_index(mut i: i32) -> Ptr<i32> {
         return (table_0.with(|v| v.as_pointer()) as Ptr<i32>).offset(i);
     }
@@ -85,18 +86,23 @@ pub trait SImpl {
     fn operator_addr(&self) -> Ptr<i32>;
 }
 impl SImpl for Ptr<S> {
+    #[inline]
     fn operator_index_1(&self, mut i: i32) -> Ptr<i32> {
         return (array_field_ptr!((*self), data) as Ptr<i32>).offset((i) as isize);
     }
+    #[inline]
     fn operator_index_2(&self, mut i: i32) -> Ptr<i32> {
         return (array_field_ptr!((*self), data) as Ptr<i32>).offset((i) as isize);
     }
+    #[inline]
     fn operator_deref(&self) -> Ptr<Inner> {
         return field_ptr!((*self), inner);
     }
+    #[inline]
     fn operator_arrow(&self) -> Ptr<Inner> {
         return (field_ptr!((*self), inner));
     }
+    #[inline]
     fn operator_addr(&self) -> Ptr<i32> {
         return ((array_field_ptr!((*self), data) as Ptr<i32>).offset((0) as isize));
     }

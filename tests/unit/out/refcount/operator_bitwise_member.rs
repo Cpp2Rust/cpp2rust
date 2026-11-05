@@ -36,31 +36,37 @@ pub trait SImpl {
     fn operator_shr(&self, n: i32) -> S;
 }
 impl SImpl for Ptr<S> {
+    #[inline]
     fn operator_bitnot(&self) -> S {
         return S {
             v: !(*self).with(|__s| __s.v),
         };
     }
+    #[inline]
     fn operator_bitand(&self, o: Ptr<S>) -> S {
         return S {
             v: ({ (*self).with(|__s| __s.v) } & { o.with(|__s| __s.v) }),
         };
     }
+    #[inline]
     fn operator_bitor(&self, o: Ptr<S>) -> S {
         return S {
             v: ({ (*self).with(|__s| __s.v) } | { o.with(|__s| __s.v) }),
         };
     }
+    #[inline]
     fn operator_bitxor(&self, o: Ptr<S>) -> S {
         return S {
             v: ({ (*self).with(|__s| __s.v) } ^ { o.with(|__s| __s.v) }),
         };
     }
+    #[inline]
     fn operator_shl(&self, mut n: i32) -> S {
         return S {
             v: ((*self).with(|__s| __s.v) << n),
         };
     }
+    #[inline]
     fn operator_shr(&self, mut n: i32) -> S {
         return S {
             v: ((*self).with(|__s| __s.v) >> n),

@@ -159,6 +159,7 @@ pub struct DisjointSet {
     pub n: i32,
 }
 impl DisjointSet {
+    #[inline]
     pub fn move_from(_a0: Ptr<DisjointSet>) -> Self {
         Self {
             rank: field!(_a0, rank).with_mut(|__v: &mut Option<Value<Box<[i32]>>>| __v.take()),
@@ -179,6 +180,7 @@ pub struct Graph {
     pub E: i32,
 }
 impl Graph {
+    #[inline]
     pub fn move_from(_a0: Ptr<Graph>) -> Self {
         Self {
             edges: field!(_a0, edges).with_mut(|__v: &mut Option<Value<Box<[Edge]>>>| __v.take()),
@@ -291,6 +293,7 @@ pub trait DisjointSetImpl {
     fn move_assign(&self, _a0: Ptr<DisjointSet>) -> Ptr<DisjointSet>;
 }
 impl DisjointSetImpl for Ptr<DisjointSet> {
+    #[inline]
     fn makeSet(&self) {
         let mut i: i32 = 0;
         'loop_: while (i < (*self).with(|__s| __s.n)) {
@@ -304,6 +307,7 @@ impl DisjointSetImpl for Ptr<DisjointSet> {
             i.postfix_inc();
         }
     }
+    #[inline]
     fn find(&self, mut x: i32) -> i32 {
         if ((((*self).with(|__s| __s.parent.clone()).as_pointer() as Ptr<i32>)
             .offset((x as usize) as isize)
@@ -324,6 +328,7 @@ impl DisjointSetImpl for Ptr<DisjointSet> {
             .offset((x as usize) as isize)
             .read());
     }
+    #[inline]
     fn merge(&self, mut x: i32, mut y: i32) {
         let mut xset: i32 = ({ DisjointSetImpl::find(self, x) });
         let mut yset: i32 = ({ DisjointSetImpl::find(self, y) });
@@ -363,6 +368,7 @@ impl DisjointSetImpl for Ptr<DisjointSet> {
                 .write(__rhs);
         }
     }
+    #[inline]
     fn move_assign(&self, _a0: Ptr<DisjointSet>) -> Ptr<DisjointSet> {
         field_ptr!((*self), rank)
             .write(field!(_a0, rank).with_mut(|__v: &mut Option<Value<Box<[i32]>>>| __v.take()));
@@ -376,6 +382,7 @@ pub trait GraphImpl {
     fn move_assign(&self, _a0: Ptr<Graph>) -> Ptr<Graph>;
 }
 impl GraphImpl for Ptr<Graph> {
+    #[inline]
     fn move_assign(&self, _a0: Ptr<Graph>) -> Ptr<Graph> {
         field_ptr!((*self), edges)
             .write(field!(_a0, edges).with_mut(|__v: &mut Option<Value<Box<[Edge]>>>| __v.take()));

@@ -128,6 +128,7 @@ pub trait Sorted__lambda_at_lambda_decltype_type_cpp_19_23__Impl {
 impl Sorted__lambda_at_lambda_decltype_type_cpp_19_23__Impl
     for Ptr<Sorted__lambda_at_lambda_decltype_type_cpp_19_23__>
 {
+    #[inline]
     fn insert(&self, mut v: i32) {
         let mut i: i32 = (*self).with(|__s| __s.size);
         'loop_: while (i > 0)
@@ -149,6 +150,7 @@ pub trait Sorted__lambda_at_lambda_decltype_type_cpp_22_18__Impl {
 impl Sorted__lambda_at_lambda_decltype_type_cpp_22_18__Impl
     for Ptr<Sorted__lambda_at_lambda_decltype_type_cpp_22_18__>
 {
+    #[inline]
     fn insert(&self, mut v: i32) {
         let mut i: i32 = (*self).with(|__s| __s.size);
         'loop_: while (i > 0)

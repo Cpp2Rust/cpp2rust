@@ -12,21 +12,27 @@ pub struct S {
     pub v: i32,
 }
 impl S {
+    #[inline]
     pub unsafe fn operator_eq(&self, mut o: i32) -> bool {
         return ((self.v) == (o));
     }
+    #[inline]
     pub unsafe fn operator_ne(&self, mut o: i32) -> bool {
         return ((self.v) != (o));
     }
+    #[inline]
     pub unsafe fn operator_lt(&self, mut o: i32) -> bool {
         return ((self.v) < (o));
     }
+    #[inline]
     pub unsafe fn operator_gt(&self, mut o: f64) -> bool {
         return ((self.v as f64) > (o));
     }
+    #[inline]
     pub unsafe fn operator_le(&self, mut o: i64) -> bool {
         return ((self.v as i64) <= (o));
     }
+    #[inline]
     pub unsafe fn operator_ge(&self, mut o: *const libc::c_char) -> bool {
         return ((self.v) >= (((*o) as i32) - (('0' as libc::c_char) as i32)));
     }

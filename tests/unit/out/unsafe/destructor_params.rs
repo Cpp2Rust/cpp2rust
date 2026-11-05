@@ -14,6 +14,7 @@ pub struct S {
     pub v: i32,
 }
 impl S {
+    #[inline]
     pub unsafe fn destructor(&mut self) {
         (*std::cell::LazyCell::force_mut(&mut *&raw mut destroyed_0)).postfix_inc();
         (*std::cell::LazyCell::force_mut(&mut *&raw mut last_1)) = self.v;
@@ -33,10 +34,12 @@ pub struct Holder {
     pub v: i32,
 }
 impl Holder {
+    #[inline]
     pub unsafe fn new(mut s: S) -> Self {
         let mut this = Self { v: s.v };
         this
     }
+    #[inline]
     pub unsafe fn add(&self, mut s: S) -> i32 {
         return ((self.v) + (s.v));
     }

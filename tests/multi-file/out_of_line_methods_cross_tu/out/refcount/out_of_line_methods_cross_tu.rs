@@ -31,6 +31,7 @@ pub struct Pair {
     #[offset(4)]
     pub second: i32,
 }
+#[inline]
 pub fn pair_diff_0(mut p: Ptr<Pair>) -> i32 {
     return ({ p.with(|__s| __s.first) } - { p.with(|__s| __s.second) });
 }
@@ -88,6 +89,7 @@ pub trait SImpl {
     }
 }
 impl SImpl for Ptr<S> {
+    #[inline]
     fn get(&self) -> i32 {
         return (*self).with(|__s| __s.v);
     }

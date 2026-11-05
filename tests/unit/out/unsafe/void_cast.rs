@@ -15,12 +15,14 @@ pub struct NonTrivial {
     pub data: Vec<i32>,
 }
 impl NonTrivial {
+    #[inline]
     pub unsafe fn move_from(_a0: *mut NonTrivial) -> Self {
         let mut this = Self {
             data: std::mem::take(&mut (*_a0).data),
         };
         this
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, _a0: *mut NonTrivial) -> *mut NonTrivial {
         self.data = std::mem::take(&mut (*_a0).data);
         return &mut (*(self as *mut NonTrivial));
@@ -49,12 +51,14 @@ pub struct NonCopyable {
     pub value: Option<Box<i32>>,
 }
 impl NonCopyable {
+    #[inline]
     pub unsafe fn move_from(_a0: *mut NonCopyable) -> Self {
         let mut this = Self {
             value: (*_a0).value.take(),
         };
         this
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, _a0: *mut NonCopyable) -> *mut NonCopyable {
         self.value = (*_a0).value.take();
         return &mut (*(self as *mut NonCopyable));

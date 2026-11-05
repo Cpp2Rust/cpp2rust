@@ -59,6 +59,7 @@ pub trait HolderImpl {
     fn operator_assign_1(&self, o: Ptr<Pair>) -> Ptr<Holder>;
 }
 impl HolderImpl for Ptr<Holder> {
+    #[inline]
     fn operator_assign_1(&self, o: Ptr<Pair>) -> Ptr<Holder> {
         field!((*self), p).write({ (*o.upgrade().deref()).clone() });
         return (*self).clone();

@@ -61,6 +61,7 @@ pub struct MinHeap {
     pub alloc: Option<Value<Box<[MinHeapNode]>>>,
 }
 impl MinHeap {
+    #[inline]
     pub fn move_from(_a0: Ptr<MinHeap>) -> Self {
         Self {
             size: { (*_a0.upgrade().deref()).size },
@@ -304,6 +305,7 @@ pub trait MinHeapImpl {
     fn move_assign(&self, _a0: Ptr<MinHeap>) -> Ptr<MinHeap>;
 }
 impl MinHeapImpl for Ptr<MinHeap> {
+    #[inline]
     fn Alloc(&self, mut data: i8, mut freq: i32) -> Ptr<MinHeapNode> {
         ((*self).with(|__s| __s.alloc.clone()).as_pointer() as Ptr<MinHeapNode>)
             .offset(((*self).with(|__s| __s.next) as usize) as isize)
@@ -316,6 +318,7 @@ impl MinHeapImpl for Ptr<MinHeap> {
         return (((*self).with(|__s| __s.alloc.clone()).as_pointer() as Ptr<MinHeapNode>)
             .offset((field!((*self), next).with_mut(|__v| __v.postfix_inc()) as usize) as isize));
     }
+    #[inline]
     fn Heapify(&self, mut idx: i32) {
         let mut smallest: i32 = idx;
         let mut left: i32 = ((2 * idx) + 1);
@@ -359,6 +362,7 @@ impl MinHeapImpl for Ptr<MinHeap> {
             ({ MinHeapImpl::Heapify(self, smallest) });
         }
     }
+    #[inline]
     fn ExtractMin(&self) -> Ptr<MinHeapNode> {
         let mut out: Ptr<MinHeapNode> = (((*self).with(|__s| __s.arr.clone()).as_pointer()
             as Ptr<Ptr<MinHeapNode>>)
@@ -374,6 +378,7 @@ impl MinHeapImpl for Ptr<MinHeap> {
         ({ MinHeapImpl::Heapify(self, 0) });
         return out;
     }
+    #[inline]
     fn Insert(&self, mut node: Ptr<MinHeapNode>) {
         field!((*self), size).with_mut(|__v| __v.prefix_inc());
         let mut i: i32 = ((*self).with(|__s| __s.size) - 1);
@@ -398,6 +403,7 @@ impl MinHeapImpl for Ptr<MinHeap> {
             .offset((i as usize) as isize)
             .write((node).clone());
     }
+    #[inline]
     fn Build(
         &self,
         data: Ptr<Option<Value<Box<[i8]>>>>,
@@ -427,6 +433,7 @@ impl MinHeapImpl for Ptr<MinHeap> {
             i.prefix_dec();
         }
     }
+    #[inline]
     fn move_assign(&self, _a0: Ptr<MinHeap>) -> Ptr<MinHeap> {
         field!((*self), size).write({ { (*_a0.upgrade().deref()).size } });
         field!((*self), capacity).write({ { (*_a0.upgrade().deref()).capacity } });
@@ -445,6 +452,7 @@ pub trait MinHeapNodeImpl {
     fn IsLeaf(&self) -> bool;
 }
 impl MinHeapNodeImpl for Ptr<MinHeapNode> {
+    #[inline]
     fn IsLeaf(&self) -> bool {
         return (((*self).with(|__s| __s.left.clone())).is_null())
             && (((*self).with(|__s| __s.right.clone())).is_null());

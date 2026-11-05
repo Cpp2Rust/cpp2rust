@@ -61,6 +61,7 @@ pub trait SizedImpl {
     fn size(&self) -> i32;
 }
 impl SizedImpl for Ptr<Sized> {
+    #[inline]
     fn size(&self) -> i32 {
         return 4;
     }

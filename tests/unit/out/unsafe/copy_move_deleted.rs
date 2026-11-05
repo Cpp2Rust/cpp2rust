@@ -13,15 +13,18 @@ pub struct NoCopy {
     pub v: i32,
 }
 impl NoCopy {
+    #[inline]
     pub unsafe fn new(mut v: i32) -> Self {
         let mut this = Self { v: v };
         this
     }
+    #[inline]
     pub unsafe fn move_from(o: *mut NoCopy) -> Self {
         let mut this = Self { v: (*o).v };
         (*o).v = 0;
         this
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, o: *mut NoCopy) -> *mut NoCopy {
         self.v = (*o).v;
         (*o).v = 0;
@@ -34,15 +37,18 @@ pub struct PrivateCopy {
     pub v: i32,
 }
 impl PrivateCopy {
+    #[inline]
     pub unsafe fn new() -> Self {
         let mut this = Self { v: 0 };
         this
     }
+    #[inline]
     pub unsafe fn move_from(o: *mut PrivateCopy) -> Self {
         let mut this = Self { v: (*o).v };
         (*o).v = 0;
         this
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, o: *mut PrivateCopy) -> *mut PrivateCopy {
         self.v = (*o).v;
         (*o).v = 0;
@@ -60,6 +66,7 @@ pub struct Immovable {
     pub v: i32,
 }
 impl Immovable {
+    #[inline]
     pub unsafe fn new() -> Self {
         let mut this = Self { v: 0 };
         this
@@ -77,6 +84,7 @@ pub struct Container {
     pub tag: i32,
 }
 impl Container {
+    #[inline]
     pub unsafe fn move_from(_a0: *mut Container) -> Self {
         let mut this = Self {
             inner: NoCopy::move_from({ &mut (*_a0).inner }),
@@ -84,6 +92,7 @@ impl Container {
         };
         this
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, _a0: *mut Container) -> *mut Container {
         (unsafe {
             let _o: *mut NoCopy = &mut (*_a0).inner;
@@ -99,12 +108,14 @@ pub struct VecHolder {
     pub items: Vec<NoCopy>,
 }
 impl VecHolder {
+    #[inline]
     pub unsafe fn move_from(_a0: *mut VecHolder) -> Self {
         let mut this = Self {
             items: std::mem::take(&mut (*_a0).items),
         };
         this
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, _a0: *mut VecHolder) -> *mut VecHolder {
         self.items = std::mem::take(&mut (*_a0).items);
         return &mut (*(self as *mut VecHolder));

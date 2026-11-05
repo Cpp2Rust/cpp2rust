@@ -23,9 +23,11 @@ pub struct Key {
     pub k: i32,
 }
 impl Key {
+    #[inline]
     pub fn new(mut k: i32) -> Self {
         Self { k: k }
     }
+    #[inline]
     pub fn copy_from(o: Ptr<Key>) -> Self {
         let __this: Key = Self {
             k: o.with(|__s| __s.k),
@@ -33,6 +35,7 @@ impl Key {
         (*copies_0.with(Value::clone).borrow_mut()).prefix_inc();
         __this
     }
+    #[inline]
     pub fn move_from(o: Ptr<Key>) -> Self {
         let __this: Key = Self {
             k: o.with(|__s| __s.k),
@@ -271,6 +274,7 @@ pub trait KeyImpl {
     fn operator_lt(&self, o: Ptr<Key>) -> bool;
 }
 impl KeyImpl for Ptr<Key> {
+    #[inline]
     fn operator_lt(&self, o: Ptr<Key>) -> bool {
         return ({ (*self).with(|__s| __s.k) } < { o.with(|__s| __s.k) });
     }

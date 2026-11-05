@@ -136,15 +136,19 @@ pub trait Access_S_Impl {
     fn ref_4(&self, r: Ptr<S>) -> i32;
 }
 impl Access_S_Impl for Ptr<Access_S_> {
+    #[inline]
     fn get_1(&self, mut p: Ptr<S>) -> i32 {
         return p.with(|__s| __s.base);
     }
+    #[inline]
     fn get_2(&self, mut p: Ptr<S>) -> i32 {
         return (p.with(|__s| __s.base) + 1);
     }
+    #[inline]
     fn ref_3(&self, r: Ptr<S>) -> i32 {
         return (r.with(|__s| __s.base) + 2);
     }
+    #[inline]
     fn ref_4(&self, r: Ptr<S>) -> i32 {
         return (r.with(|__s| __s.base) + 3);
     }
@@ -181,39 +185,49 @@ pub trait SImpl {
     fn count_3_int_long(&self, x: i32) -> i32;
 }
 impl SImpl for Ptr<S> {
+    #[inline]
     fn plain_4(&self, mut x: i32) -> i32 {
         return ((*self).with(|__s| __s.base) + x);
     }
+    #[inline]
     fn plain_5(&self, mut x: i64) -> i32 {
         return (((*self).with(|__s| __s.base) + (x as i32)) + 1);
     }
+    #[inline]
     fn take_6(&self, x: Ptr<i32>) -> i32 {
         return (({ (*self).with(|__s| __s.base) } + { (x.read()) }) + 1);
     }
+    #[inline]
     fn take_7(&self, x: Ptr<i32>) -> i32 {
         return (({ (*self).with(|__s| __s.base) } + { (x.read()) }) + 2);
     }
+    #[inline]
     fn pick_8(&self, p: (Value<i32>, Value<i32>)) -> i32 {
         let p: Value<(Value<i32>, Value<i32>)> = Rc::new(RefCell::new(p));
         return ((*self).with(|__s| __s.base) + (*(*p.borrow()).0.borrow()));
     }
+    #[inline]
     fn pick_9(&self, p: (Value<i32>, Value<i64>)) -> i32 {
         let p: Value<(Value<i32>, Value<i64>)> = Rc::new(RefCell::new(p));
         return ((*self).with(|__s| __s.base) + ((*(*p.borrow()).1.borrow()) as i32));
     }
+    #[inline]
     fn apply_10(&self, mut f: FnPtr<fn(Ptr<i32>)>, x: i32) -> i32 {
         let x: Value<i32> = Rc::new(RefCell::new(x));
         ({ f.call((x.as_pointer())) });
         return ((*self).with(|__s| __s.base) + (*x.borrow()));
     }
+    #[inline]
     fn apply_11(&self, mut f: FnPtr<fn(Ptr<i32>, i32)>, x: i32) -> i32 {
         let x: Value<i32> = Rc::new(RefCell::new(x));
         ({ f.call((x.as_pointer()), 10) });
         return ((*self).with(|__s| __s.base) + (*x.borrow()));
     }
+    #[inline]
     fn apply_12(&self, mut f: FnPtr<fn(i32) -> i32>, mut x: i32) -> i32 {
         return ({ (*self).with(|__s| __s.base) } + { ({ f.call(x) }) });
     }
+    #[inline]
     fn combine_13(
         &self,
         p: Ptr<(Value<i32>, Value<i64>)>,
@@ -229,6 +243,7 @@ impl SImpl for Ptr<S> {
             } + { ({ f.call((q.read())) }) })
         } + { (n as i32) });
     }
+    #[inline]
     fn combine_14(
         &self,
         p: Ptr<(Value<i32>, Value<i32>)>,
@@ -244,21 +259,27 @@ impl SImpl for Ptr<S> {
         return ({ ({ (*self).with(|__s| __s.base) } + { (*(*p.upgrade().deref()).0.borrow()) }) }
             + { (q.read()) });
     }
+    #[inline]
     fn width_1_char(&self, mut x: i32) -> i32 {
         return ((*self).with(|__s| __s.base) + (x * (::std::mem::size_of::<i8>() as i32)));
     }
+    #[inline]
     fn width_1_int(&self, mut x: i32) -> i32 {
         return ((*self).with(|__s| __s.base) + (x * (::std::mem::size_of::<i32>() as i32)));
     }
+    #[inline]
     fn scale_2_2(&self, mut x: i32) -> i32 {
         return ((*self).with(|__s| __s.base) + (x * 2));
     }
+    #[inline]
     fn scale_2_3(&self, mut x: i32) -> i32 {
         return ((*self).with(|__s| __s.base) + (x * 3));
     }
+    #[inline]
     fn count_3(&self, mut x: i32) -> i32 {
         return (((*self).with(|__s| __s.base) + x) + (0 as i32));
     }
+    #[inline]
     fn count_3_int_long(&self, mut x: i32) -> i32 {
         return (((*self).with(|__s| __s.base) + x) + (2 as i32));
     }

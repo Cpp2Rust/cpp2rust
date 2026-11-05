@@ -18,12 +18,14 @@ pub struct Outer {
     pub inner: Option<Box<Inner>>,
 }
 impl Outer {
+    #[inline]
     pub unsafe fn move_from(_a0: *mut Outer) -> Self {
         let mut this = Self {
             inner: (*_a0).inner.take(),
         };
         this
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, _a0: *mut Outer) -> *mut Outer {
         self.inner = (*_a0).inner.take();
         return &mut (*(self as *mut Outer));

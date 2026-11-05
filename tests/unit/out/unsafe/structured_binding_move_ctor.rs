@@ -15,10 +15,12 @@ pub struct Movable {
     pub y: i32,
 }
 impl Movable {
+    #[inline]
     pub unsafe fn new(mut x: i32, mut y: i32) -> Self {
         let mut this = Self { x: x, y: y };
         this
     }
+    #[inline]
     pub unsafe fn copy_from(other: *const Movable) -> Self {
         let mut this = Self {
             x: (*other).x,
@@ -27,6 +29,7 @@ impl Movable {
         (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)).prefix_inc();
         this
     }
+    #[inline]
     pub unsafe fn move_from(other: *mut Movable) -> Self {
         let mut this = Self {
             x: (*other).x,
@@ -50,12 +53,14 @@ pub struct Holder {
     pub ys: Vec<i32>,
 }
 impl Holder {
+    #[inline]
     pub unsafe fn extract(&mut self) -> Holder {
         return Holder {
             xs: std::mem::take(&mut self.xs),
             ys: std::mem::take(&mut self.ys),
         };
     }
+    #[inline]
     pub unsafe fn move_from(_a0: *mut Holder) -> Self {
         let mut this = Self {
             xs: std::mem::take(&mut (*_a0).xs),
@@ -63,6 +68,7 @@ impl Holder {
         };
         this
     }
+    #[inline]
     pub unsafe fn move_assign(&mut self, _a0: *mut Holder) -> *mut Holder {
         self.xs = std::mem::take(&mut (*_a0).xs);
         self.ys = std::mem::take(&mut (*_a0).ys);

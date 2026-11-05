@@ -14,9 +14,11 @@ pub struct Node {
     pub prev: *mut Node,
 }
 impl Node {
+    #[inline]
     pub unsafe fn SetNext(&mut self, mut n: *mut Node) {
         self.next = n;
     }
+    #[inline]
     pub unsafe fn SetPrev(&mut self, mut p: *mut Node) {
         self.prev = p;
     }

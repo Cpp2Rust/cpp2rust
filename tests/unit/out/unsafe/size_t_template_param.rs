@@ -17,6 +17,7 @@ pub struct PtrCtor_unsigned_long_ {
     pub v: u64,
 }
 impl PtrCtor_unsigned_long_ {
+    #[inline]
     pub unsafe fn new(mut p: *const u64) -> Self {
         let mut this = Self {
             v: (*p.offset((1) as isize)),
@@ -31,6 +32,7 @@ pub struct RefCtor_unsigned_long_ {
     pub v: u64,
 }
 impl RefCtor_unsigned_long_ {
+    #[inline]
     pub unsafe fn new(x: *const u64) -> Self {
         let mut this = Self {
             v: (*x).wrapping_add(1_u64),

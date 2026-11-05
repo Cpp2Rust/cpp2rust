@@ -27,6 +27,7 @@ pub struct Holder {
     pub f: Option<unsafe fn(i32) -> i32>,
 }
 impl Holder {
+    #[inline]
     pub unsafe fn run(&self, mut x: i32) -> i32 {
         return (unsafe { (self.f).unwrap()(x) });
     }

@@ -14,6 +14,7 @@ pub struct Celsius {
     pub degrees: i32,
 }
 impl Celsius {
+    #[inline]
     pub fn new(mut d: i32) -> Self {
         Self { degrees: d }
     }
@@ -33,6 +34,7 @@ pub struct Label {
     pub id: i32,
 }
 impl Label {
+    #[inline]
     pub fn new(c: Ptr<Celsius>) -> Self {
         Self {
             id: c.with(|__s| __s.degrees),
@@ -50,12 +52,14 @@ pub struct Owner {
     pub copied: i32,
 }
 impl Owner {
+    #[inline]
     pub fn new_1(c: Ptr<Celsius>) -> Self {
         Self {
             taken: 0,
             copied: c.with(|__s| __s.degrees),
         }
     }
+    #[inline]
     pub fn new_2(c: Ptr<Celsius>) -> Self {
         Self {
             taken: c.with(|__s| __s.degrees),
@@ -71,6 +75,7 @@ pub struct Holder {
     pub value: i32,
 }
 impl Holder {
+    #[inline]
     pub fn new(mut c: Celsius) -> Self {
         Self { value: c.degrees }
     }
@@ -83,6 +88,7 @@ pub struct Fallback {
     pub value: i32,
 }
 impl Fallback {
+    #[inline]
     pub fn new(v: Option<i32>) -> Self {
         let mut v: i32 = v.unwrap_or_else(|| -1_i32);
         Self { value: v }
@@ -107,6 +113,7 @@ pub struct Observer {
     pub seen: i32,
 }
 impl Observer {
+    #[inline]
     pub fn new(c: Ptr<Counter>) -> Self {
         let __this: Observer = Self {
             seen: c.with(|__s| __s.hits),
@@ -116,6 +123,7 @@ impl Observer {
     }
 }
 impl Tag {
+    #[inline]
     pub fn new(u: Ptr<Celsius>) -> Self {
         Self {
             code: (u.with(|__s| __s.degrees) + 100),
@@ -137,6 +145,7 @@ pub struct Name {
     pub len: i32,
 }
 impl Name {
+    #[inline]
     pub fn new(mut s: Ptr<i8>) -> Self {
         let __this: Value<Name> = Rc::new(RefCell::new(Self { len: 0 }));
         let this: Ptr<Name> = __this.as_pointer();
@@ -337,6 +346,7 @@ pub trait MetersImpl {
     fn to_i32(&self) -> i32;
 }
 impl MetersImpl for Ptr<Meters> {
+    #[inline]
     fn to_i32(&self) -> i32 {
         return (*self).with(|__s| __s.value);
     }

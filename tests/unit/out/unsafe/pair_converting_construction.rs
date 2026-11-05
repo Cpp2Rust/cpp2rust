@@ -13,6 +13,7 @@ pub struct Celsius {
     pub degrees: i32,
 }
 impl Celsius {
+    #[inline]
     pub unsafe fn new(mut d: i32) -> Self {
         let mut this = Self { degrees: d };
         this
@@ -25,6 +26,7 @@ pub struct Meters {
     pub value: i32,
 }
 impl Meters {
+    #[inline]
     pub unsafe fn to_i32(&self) -> i32 {
         return self.value;
     }
@@ -36,6 +38,7 @@ pub struct Label {
     pub id: i32,
 }
 impl Label {
+    #[inline]
     pub unsafe fn new(c: *const Celsius) -> Self {
         let mut this = Self { id: (*c).degrees };
         this
@@ -50,6 +53,7 @@ pub struct Owner {
     pub copied: i32,
 }
 impl Owner {
+    #[inline]
     pub unsafe fn new_1(c: *const Celsius) -> Self {
         let mut this = Self {
             taken: 0,
@@ -57,6 +61,7 @@ impl Owner {
         };
         this
     }
+    #[inline]
     pub unsafe fn new_2(c: *mut Celsius) -> Self {
         let mut this = Self {
             taken: (*c).degrees,
@@ -72,6 +77,7 @@ pub struct Holder {
     pub value: i32,
 }
 impl Holder {
+    #[inline]
     pub unsafe fn new(mut c: Celsius) -> Self {
         let mut this = Self { value: c.degrees };
         this
@@ -84,6 +90,7 @@ pub struct Fallback {
     pub value: i32,
 }
 impl Fallback {
+    #[inline]
     pub unsafe fn new(mut v: Option<i32>) -> Self {
         let mut v: i32 = v.unwrap_or_else(|| unsafe { -1_i32 });
         let mut this = Self { value: v };
@@ -107,6 +114,7 @@ pub struct Observer {
     pub seen: i32,
 }
 impl Observer {
+    #[inline]
     pub unsafe fn new(c: *mut Counter) -> Self {
         let mut this = Self { seen: (*c).hits };
         (*c).hits.postfix_inc();
@@ -114,6 +122,7 @@ impl Observer {
     }
 }
 impl Tag {
+    #[inline]
     pub unsafe fn new(u: *const Celsius) -> Self {
         let mut this = Self {
             code: (((*u).degrees) + (100)),
@@ -134,6 +143,7 @@ pub struct Name {
     pub len: i32,
 }
 impl Name {
+    #[inline]
     pub unsafe fn new(mut s: *const libc::c_char) -> Self {
         let mut this = Self { len: 0 };
         'loop_: while ((*s.offset((this.len) as isize)) != 0) {

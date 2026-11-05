@@ -18,9 +18,11 @@ pub struct Y {
     pub p: *mut X,
 }
 impl Y {
+    #[inline]
     pub unsafe fn foo(&mut self) -> *mut X {
         return &mut self.x;
     }
+    #[inline]
     pub unsafe fn ptr(&mut self) -> *mut X {
         return (&mut self.x as *mut X);
     }

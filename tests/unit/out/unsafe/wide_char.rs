@@ -6,33 +6,43 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+#[inline]
 pub unsafe fn get_0(mut s: *const libc::c_char) -> *const libc::c_char {
     return s;
 }
+#[inline]
 pub unsafe fn get_1(mut s: *const i32) -> *const i32 {
     return s;
 }
+#[inline]
 pub unsafe fn get_2(mut s: *const u8) -> *const u8 {
     return s;
 }
+#[inline]
 pub unsafe fn get_3(mut s: *const u16) -> *const u16 {
     return s;
 }
+#[inline]
 pub unsafe fn get_4(mut s: *const u32) -> *const u32 {
     return s;
 }
+#[inline]
 pub unsafe fn second_5(s: *const [libc::c_char; 3]) -> libc::c_char {
     return (*s)[(1) as usize];
 }
+#[inline]
 pub unsafe fn second_6(s: *const [i32; 3]) -> i32 {
     return (*s)[(1) as usize];
 }
+#[inline]
 pub unsafe fn second_7(s: *const [u8; 3]) -> u8 {
     return (*s)[(1) as usize];
 }
+#[inline]
 pub unsafe fn second_8(s: *const [u16; 3]) -> u16 {
     return (*s)[(1) as usize];
 }
+#[inline]
 pub unsafe fn second_9(s: *const [u32; 3]) -> u32 {
     return (*s)[(1) as usize];
 }

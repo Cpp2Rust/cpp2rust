@@ -17,6 +17,7 @@ pub struct Holder {
     pub vec_: Vec<i32>,
 }
 impl Holder {
+    #[inline]
     pub fn move_from(_a0: Ptr<Holder>) -> Self {
         Self {
             ref_: ({ (*_a0.upgrade().deref()).ref_.clone() }).clone(),

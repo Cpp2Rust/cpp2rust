@@ -38,6 +38,7 @@ pub struct HashHolder_unsigned_long__ptr__bool__ {
     pub h: Option<unsafe fn(bool) -> u64>,
 }
 impl HashHolder_unsigned_long__ptr__bool__ {
+    #[inline]
     pub unsafe fn new(h: *const Option<unsafe fn(bool) -> u64>) -> Self {
         let mut this = Self { h: (*h) };
         this

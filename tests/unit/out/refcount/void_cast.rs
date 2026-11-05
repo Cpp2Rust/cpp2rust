@@ -17,6 +17,7 @@ pub struct NonTrivial {
     pub data: Vec<i32>,
 }
 impl NonTrivial {
+    #[inline]
     pub fn move_from(_a0: Ptr<NonTrivial>) -> Self {
         Self {
             data: field!(_a0, data).with_mut(std::mem::take),
@@ -50,6 +51,7 @@ pub struct NonCopyable {
     pub value: Option<Value<i32>>,
 }
 impl NonCopyable {
+    #[inline]
     pub fn move_from(_a0: Ptr<NonCopyable>) -> Self {
         Self {
             value: field!(_a0, value).with_mut(|__v: &mut Option<Value<i32>>| __v.take()),
@@ -136,6 +138,7 @@ pub trait NonCopyableImpl {
     fn move_assign(&self, _a0: Ptr<NonCopyable>) -> Ptr<NonCopyable>;
 }
 impl NonCopyableImpl for Ptr<NonCopyable> {
+    #[inline]
     fn move_assign(&self, _a0: Ptr<NonCopyable>) -> Ptr<NonCopyable> {
         field_ptr!((*self), value)
             .write(field!(_a0, value).with_mut(|__v: &mut Option<Value<i32>>| __v.take()));
@@ -146,6 +149,7 @@ pub trait NonTrivialImpl {
     fn move_assign(&self, _a0: Ptr<NonTrivial>) -> Ptr<NonTrivial>;
 }
 impl NonTrivialImpl for Ptr<NonTrivial> {
+    #[inline]
     fn move_assign(&self, _a0: Ptr<NonTrivial>) -> Ptr<NonTrivial> {
         field_ref!((*self), data)
             .as_pointer()

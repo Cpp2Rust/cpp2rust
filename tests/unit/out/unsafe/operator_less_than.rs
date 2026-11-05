@@ -13,6 +13,7 @@ pub struct Pair {
     pub y: i32,
 }
 impl Pair {
+    #[inline]
     pub unsafe fn operator_lt(&mut self, other: *const Pair) -> bool {
         return ((self.x) < ((*other).x))
             || (((self.x) == ((*other).x)) && ((self.y) < ((*other).y)));

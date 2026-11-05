@@ -75,21 +75,27 @@ pub trait SImpl {
     fn operator_ge(&self, o: Ptr<i8>) -> bool;
 }
 impl SImpl for Ptr<S> {
+    #[inline]
     fn operator_eq(&self, mut o: i32) -> bool {
         return ((*self).with(|__s| __s.v) == o);
     }
+    #[inline]
     fn operator_ne(&self, mut o: i32) -> bool {
         return ((*self).with(|__s| __s.v) != o);
     }
+    #[inline]
     fn operator_lt(&self, mut o: i32) -> bool {
         return ((*self).with(|__s| __s.v) < o);
     }
+    #[inline]
     fn operator_gt(&self, mut o: f64) -> bool {
         return (((*self).with(|__s| __s.v) as f64) > o);
     }
+    #[inline]
     fn operator_le(&self, mut o: i64) -> bool {
         return (((*self).with(|__s| __s.v) as i64) <= o);
     }
+    #[inline]
     fn operator_ge(&self, mut o: Ptr<i8>) -> bool {
         return ({ (*self).with(|__s| __s.v) } >= { (((o.read()) as i32) - (('0' as i8) as i32)) });
     }

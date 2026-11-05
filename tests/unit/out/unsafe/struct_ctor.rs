@@ -13,15 +13,18 @@ pub struct StructWithCtor {
     x2_: i32,
 }
 impl StructWithCtor {
+    #[inline]
     pub unsafe fn new(mut x1: i32, mut x2: i32) -> Self {
         let mut this = Self { x1_: x1, x2_: x2 };
         this.x1_.prefix_inc();
         this.x2_.prefix_dec();
         this
     }
+    #[inline]
     pub unsafe fn x1(&self) -> *const i32 {
         return &self.x1_;
     }
+    #[inline]
     pub unsafe fn x2(&self) -> *const i32 {
         return &self.x2_;
     }
@@ -36,6 +39,7 @@ pub struct Value_ {
     pub v: i32,
 }
 impl Value_ {
+    #[inline]
     pub unsafe fn new(mut u: i32) -> Self {
         let mut this = Self { v: u };
         this
@@ -48,6 +52,7 @@ pub struct Ptr_ {
     pub v2: Value_,
 }
 impl Ptr_ {
+    #[inline]
     pub unsafe fn new() -> Self {
         let mut this = Self {
             v1: Value_::new({ 11 }),
