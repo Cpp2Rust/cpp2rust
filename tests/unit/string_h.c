@@ -1,6 +1,7 @@
 #undef _GNU_SOURCE
 #define _GNU_SOURCE
 #include <assert.h>
+#include <errno.h>
 #include <string.h>
 #include <strings.h>
 
@@ -153,6 +154,17 @@ static void test_strcasecmp(void) {
   assert(strcasecmp(p, q) == 0);
 }
 
+static void test_strerror_r(void) {
+  char buf[64];
+#if defined(__linux__)
+  const char *msg = strerror_r(ENOENT, buf, sizeof buf);
+#else
+  assert(strerror_r(ENOENT, buf, sizeof buf) == 0);
+  const char *msg = buf;
+#endif
+  assert(strcmp(msg, "No such file or directory") == 0);
+}
+
 int main(void) {
   test_memcpy();
   test_memset();
@@ -169,5 +181,6 @@ int main(void) {
   test_strstr();
   test_strpbrk();
   test_strcasecmp();
+  test_strerror_r();
   return 0;
 }
