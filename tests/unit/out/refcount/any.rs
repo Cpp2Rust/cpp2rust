@@ -28,23 +28,38 @@ fn main_0() -> i32 {
         RefCell::new(Point::new({ 3 }, { 4 })),
     ))));
     assert!(({ (*a.borrow()).is_some() }));
-    let mut p: Ptr<Point> = (a.as_pointer()).with(|__a: &Option<Rc<dyn std::any::Any>>| match __a
-        .clone()
-        .map(|__r| __r.downcast::<RefCell<Point>>())
-    {
-        Some(Ok(__v)) => __v.as_pointer(),
-        _ => Ptr::null(),
-    });
+    let mut p: Ptr<Point> = match ({ (a.as_pointer()) },) {
+        (mut __tmp_0,) => {
+            if __tmp_0.is_null() {
+                Ptr::null()
+            } else {
+                __tmp_0.with(|__a: &Option<Rc<dyn std::any::Any>>| {
+                    match __a.clone().map(|__r| __r.downcast::<RefCell<Point>>()) {
+                        Some(Ok(__v)) => __v.as_pointer(),
+                        _ => Ptr::null(),
+                    }
+                })
+            }
+        }
+    };
     assert!(!((p).is_null()));
     assert!((p.with(|__s| __s.x) == 3));
     assert!((p.with(|__s| __s.y) == 4));
     assert!(
-        ((a.as_pointer()).with(|__a: &Option<Rc<dyn std::any::Any>>| {
-            match __a.clone().map(|__r| __r.downcast::<RefCell<i32>>()) {
-                Some(Ok(__v)) => __v.as_pointer(),
-                _ => Ptr::null(),
+        (match ({ (a.as_pointer()) },) {
+            (mut __tmp_1,) => {
+                if __tmp_1.is_null() {
+                    Ptr::null()
+                } else {
+                    __tmp_1.with(|__a: &Option<Rc<dyn std::any::Any>>| {
+                        match __a.clone().map(|__r| __r.downcast::<RefCell<i32>>()) {
+                            Some(Ok(__v)) => __v.as_pointer(),
+                            _ => Ptr::null(),
+                        }
+                    })
+                }
             }
-        }))
+        })
         .is_null()
     );
     let q: Ptr<Point> = {
@@ -55,38 +70,74 @@ fn main_0() -> i32 {
     };
     assert!((q.with(|__s| __s.x) == 5));
     assert!(
-        ((a.as_pointer())
-            .with(|__a: &Option<Rc<dyn std::any::Any>>| {
-                match __a.clone().map(|__r| __r.downcast::<RefCell<Point>>()) {
-                    Some(Ok(__v)) => __v.as_pointer(),
-                    _ => Ptr::null(),
+        (match ({ (a.as_pointer()) },) {
+            (mut __tmp_2,) => {
+                if __tmp_2.is_null() {
+                    Ptr::null()
+                } else {
+                    __tmp_2.with(|__a: &Option<Rc<dyn std::any::Any>>| {
+                        match __a.clone().map(|__r| __r.downcast::<RefCell<Point>>()) {
+                            Some(Ok(__v)) => __v.as_pointer(),
+                            _ => Ptr::null(),
+                        }
+                    })
                 }
-            })
-            .with(|__s| __s.y)
+            }
+        }
+        .with(|__s| __s.y)
             == 6)
     );
     let b: Value<Option<Rc<dyn std::any::Any>>> =
         Rc::new(RefCell::new(Some(Rc::new(RefCell::new(7)))));
     assert!(
-        (((b.as_pointer())
-            .with(|__a: &Option<Rc<dyn std::any::Any>>| {
-                match __a.clone().map(|__r| __r.downcast::<RefCell<i32>>()) {
-                    Some(Ok(__v)) => __v.as_pointer(),
-                    _ => Ptr::null(),
+        ((match ({ (b.as_pointer()) },) {
+            (mut __tmp_3,) => {
+                if __tmp_3.is_null() {
+                    Ptr::null()
+                } else {
+                    __tmp_3.with(|__a: &Option<Rc<dyn std::any::Any>>| {
+                        match __a.clone().map(|__r| __r.downcast::<RefCell<i32>>()) {
+                            Some(Ok(__v)) => __v.as_pointer(),
+                            _ => Ptr::null(),
+                        }
+                    })
                 }
-            })
-            .read())
+            }
+        }
+        .read())
             == 7)
     );
     (*b.borrow_mut()) = None;
     assert!(({ !((*b.borrow()).is_some()) }));
     assert!(
-        ((b.as_pointer()).with(|__a: &Option<Rc<dyn std::any::Any>>| {
-            match __a.clone().map(|__r| __r.downcast::<RefCell<i32>>()) {
-                Some(Ok(__v)) => __v.as_pointer(),
-                _ => Ptr::null(),
+        (match ({ (b.as_pointer()) },) {
+            (mut __tmp_4,) => {
+                if __tmp_4.is_null() {
+                    Ptr::null()
+                } else {
+                    __tmp_4.with(|__a: &Option<Rc<dyn std::any::Any>>| {
+                        match __a.clone().map(|__r| __r.downcast::<RefCell<i32>>()) {
+                            Some(Ok(__v)) => __v.as_pointer(),
+                            _ => Ptr::null(),
+                        }
+                    })
+                }
             }
-        }))
+        })
+        .is_null()
+    );
+    let mut n: Ptr<Option<Rc<dyn std::any::Any>>> = Ptr::<Option<Rc<dyn std::any::Any>>>::null();
+    assert!(
+        (if n.is_null() {
+            Ptr::null()
+        } else {
+            n.with(|__a: &Option<Rc<dyn std::any::Any>>| {
+                match __a.clone().map(|__r| __r.downcast::<RefCell<i32>>()) {
+                    Some(Ok(__v)) => __v.as_pointer(),
+                    _ => Ptr::null(),
+                }
+            })
+        })
         .is_null()
     );
     return 0;

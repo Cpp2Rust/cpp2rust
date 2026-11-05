@@ -27,8 +27,9 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut a: Option<Box<dyn std::any::Any>> = Some(Box::new(Point::new({ 3 }, { 4 })));
     assert!(a.is_some());
-    let mut p: *mut Point = match (*(&mut a as *mut Option<Box<dyn std::any::Any>>))
+    let mut p: *mut Point = match (&mut a as *mut Option<Box<dyn std::any::Any>>)
         .as_mut()
+        .and_then(|__a| __a.as_mut())
         .and_then(|__b| __b.downcast_mut::<Point>())
     {
         Some(__v) => __v as *mut Point,
@@ -38,8 +39,9 @@ unsafe fn main_0() -> i32 {
     assert!((((*p).x) == (3)));
     assert!((((*p).y) == (4)));
     assert!(
-        (match (*(&mut a as *mut Option<Box<dyn std::any::Any>>))
+        (match (&mut a as *mut Option<Box<dyn std::any::Any>>)
             .as_mut()
+            .and_then(|__a| __a.as_mut())
             .and_then(|__b| __b.downcast_mut::<i32>())
         {
             Some(__v) => __v as *mut i32,
@@ -53,8 +55,9 @@ unsafe fn main_0() -> i32 {
     };
     assert!((((*q).x) == (5)));
     assert!(
-        (((*match (*(&mut a as *mut Option<Box<dyn std::any::Any>>))
+        (((*match (&mut a as *mut Option<Box<dyn std::any::Any>>)
             .as_mut()
+            .and_then(|__a| __a.as_mut())
             .and_then(|__b| __b.downcast_mut::<Point>())
         {
             Some(__v) => __v as *mut Point,
@@ -64,8 +67,9 @@ unsafe fn main_0() -> i32 {
     );
     let mut b: Option<Box<dyn std::any::Any>> = Some(Box::new(7));
     assert!(
-        ((*match (*(&mut b as *mut Option<Box<dyn std::any::Any>>))
+        ((*match (&mut b as *mut Option<Box<dyn std::any::Any>>)
             .as_mut()
+            .and_then(|__a| __a.as_mut())
             .and_then(|__b| __b.downcast_mut::<i32>())
         {
             Some(__v) => __v as *mut i32,
@@ -75,8 +79,21 @@ unsafe fn main_0() -> i32 {
     b = None;
     assert!(!(b.is_some()));
     assert!(
-        (match (*(&mut b as *mut Option<Box<dyn std::any::Any>>))
+        (match (&mut b as *mut Option<Box<dyn std::any::Any>>)
             .as_mut()
+            .and_then(|__a| __a.as_mut())
+            .and_then(|__b| __b.downcast_mut::<i32>())
+        {
+            Some(__v) => __v as *mut i32,
+            None => std::ptr::null_mut(),
+        })
+        .is_null()
+    );
+    let mut n: *mut Option<Box<dyn std::any::Any>> = std::ptr::null_mut();
+    assert!(
+        (match n
+            .as_mut()
+            .and_then(|__a| __a.as_mut())
             .and_then(|__b| __b.downcast_mut::<i32>())
         {
             Some(__v) => __v as *mut i32,
