@@ -192,7 +192,52 @@ pub unsafe fn test_fgets_getc_2() {
     assert!(((((libc::fclose(fp)) == (0)) as i32) != 0));
     assert!(((((libc::unlink(path)) == (0)) as i32) != 0));
 }
-pub unsafe fn test_freopen_3() {
+pub unsafe fn test_fgets_size_one_and_error_flag_3() {
+    let mut path: *const libc::c_char =
+        (c"cpp2rust_stdio_nofd_gets_flag.tmp".as_ptr().cast_mut()).cast_const();
+    let mut fp: *mut ::libc::FILE = libc::fopen(path, (c"wb".as_ptr().cast_mut()).cast_const());
+    assert!((((!((fp).is_null())) as i32) != 0));
+    assert!(
+        ((((libc::fputs((c"line1\n".as_ptr().cast_mut()).cast_const(), fp)) >= (0)) as i32) != 0)
+    );
+    assert!(((((libc::fclose(fp)) == (0)) as i32) != 0));
+    fp = libc::fopen(path, (c"rb".as_ptr().cast_mut()).cast_const());
+    assert!((((!((fp).is_null())) as i32) != 0));
+    let mut buf: [libc::c_char; 8] = [(0 as libc::c_char); 8];
+    buf[(0) as usize] = (('x' as i32) as libc::c_char);
+    assert!(((((libc::fgets(buf.as_mut_ptr(), 1, fp)) == (buf.as_mut_ptr())) as i32) != 0));
+    assert!(((((buf[(0) as usize] as i32) == ('\0' as i32)) as i32) != 0));
+    assert!(
+        ((((libc::fputs((c"x".as_ptr().cast_mut()).cast_const(), fp)) == (-1_i32)) as i32) != 0)
+    );
+    assert!(((((libc::ferror(fp)) != (0)) as i32) != 0));
+    assert!(((((libc::fgets(buf.as_mut_ptr(), 8, fp)) == (buf.as_mut_ptr())) as i32) != 0));
+    assert!(
+        (((({
+            let sa = core::slice::from_raw_parts(
+                (buf.as_mut_ptr() as *const ::libc::c_void) as *const u8,
+                7_usize as usize,
+            );
+            let sb = core::slice::from_raw_parts(
+                (c"line1\n".as_ptr().cast_mut() as *const ::libc::c_void) as *const u8,
+                7_usize as usize,
+            );
+            let mut diff = 0_i32;
+            for (x, y) in sa.iter().zip(sb.iter()) {
+                if x != y {
+                    diff = (*x as i32) - (*y as i32);
+                    break;
+                }
+            }
+            diff
+        }) == (0)) as i32)
+            != 0)
+    );
+    assert!(((((libc::ferror(fp)) != (0)) as i32) != 0));
+    assert!(((((libc::fclose(fp)) == (0)) as i32) != 0));
+    assert!(((((libc::unlink(path)) == (0)) as i32) != 0));
+}
+pub unsafe fn test_freopen_4() {
     let mut path: *const libc::c_char =
         (c"cpp2rust_stdio_nofd_reopen.tmp".as_ptr().cast_mut()).cast_const();
     let mut fp: *mut ::libc::FILE = libc::fopen(path, (c"wb".as_ptr().cast_mut()).cast_const());
@@ -246,7 +291,7 @@ pub unsafe fn test_freopen_3() {
     assert!(((((libc::fclose(fp2)) == (0)) as i32) != 0));
     assert!(((((libc::unlink(path)) == (0)) as i32) != 0));
 }
-pub unsafe fn test_fseeko_4() {
+pub unsafe fn test_fseeko_5() {
     let mut path: *const libc::c_char =
         (c"cpp2rust_stdio_nofd_seek.tmp".as_ptr().cast_mut()).cast_const();
     let mut fp: *mut ::libc::FILE = libc::fopen(path, (c"wb".as_ptr().cast_mut()).cast_const());
@@ -321,7 +366,7 @@ pub unsafe fn test_fseeko_4() {
     assert!(((((libc::fclose(fp)) == (0)) as i32) != 0));
     assert!(((((libc::unlink(path)) == (0)) as i32) != 0));
 }
-pub unsafe fn test_rename_5() {
+pub unsafe fn test_rename_6() {
     let mut from: *const libc::c_char =
         (c"cpp2rust_stdio_nofd_from.tmp".as_ptr().cast_mut()).cast_const();
     let mut to: *const libc::c_char =
@@ -340,7 +385,7 @@ pub unsafe fn test_rename_5() {
     assert!(((((libc::rename(from, to)) == (-1_i32)) as i32) != 0));
     assert!(((((libc::unlink(to)) == (0)) as i32) != 0));
 }
-pub unsafe fn test_setvbuf_6() {
+pub unsafe fn test_setvbuf_7() {
     let mut path: *const libc::c_char =
         (c"cpp2rust_stdio_nofd_vbuf.tmp".as_ptr().cast_mut()).cast_const();
     let mut fp: *mut ::libc::FILE = libc::fopen(path, (c"wb".as_ptr().cast_mut()).cast_const());
@@ -360,10 +405,11 @@ unsafe fn main_0() -> i32 {
     (unsafe { test_fputc_fputs_0() });
     (unsafe { test_puts_1() });
     (unsafe { test_fgets_getc_2() });
-    (unsafe { test_freopen_3() });
-    (unsafe { test_fseeko_4() });
-    (unsafe { test_rename_5() });
-    (unsafe { test_setvbuf_6() });
+    (unsafe { test_fgets_size_one_and_error_flag_3() });
+    (unsafe { test_freopen_4() });
+    (unsafe { test_fseeko_5() });
+    (unsafe { test_rename_6() });
+    (unsafe { test_setvbuf_7() });
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}
