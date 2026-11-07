@@ -34,7 +34,6 @@ const clang::Decl *getParent(clang::QualType type) {
             spec->getTemplateName().getAsTemplateDecl())) {
       return tmpl->getCanonicalDecl();
     }
-    return nullptr;
   }
   auto record = type->getAsCXXRecordDecl();
   if (!record) {
@@ -160,6 +159,10 @@ std::optional<ExprKey> GetExprKey(clang::ASTContext &ctx,
                                    rewritten->getOperator()));
   }
   if (auto cast = llvm::dyn_cast<clang::ExplicitCastExpr>(expr)) {
+    if (auto key = getConstructorKey(getParent(cast->getSubExpr()->getType()));
+        key && cast->isTypeDependent()) {
+      return key;
+    }
     return GetExprKey(ctx, cast->getSubExpr());
   }
   if (auto construct = llvm::dyn_cast<clang::CXXConstructExpr>(expr)) {
@@ -170,6 +173,9 @@ std::optional<ExprKey> GetExprKey(clang::ASTContext &ctx,
     return getConstructorKey(getParent(construct->getTypeAsWritten()));
   }
   if (auto call = llvm::dyn_cast<clang::CallExpr>(expr)) {
+    if (llvm::isa<clang::CXXMemberCallExpr>(call)) {
+      return GetExprKey(ctx, call->getCallee());
+    }
     if (auto callee = call->getDirectCallee()) {
       return GetDeclKey(callee);
     }
@@ -195,7 +201,9 @@ std::optional<ExprKey> GetExprKey(clang::ASTContext &ctx,
                                                        sm, ctx.getLangOpts());
       return Unqualified{clang::DeclarationName(&ctx.Idents.get(macro))};
     }
-    return GetDeclKey(member->getMemberDecl());
+    return getMemberKey(
+        getParent(member->getBase()->IgnoreImpCasts()->getType()),
+        member->getMemberDecl()->getDeclName());
   }
   if (auto ref = llvm::dyn_cast<clang::DeclRefExpr>(expr)) {
     return GetDeclKey(ref->getDecl());
@@ -250,6 +258,9 @@ std::vector<ExprKey> GetExprKeys(clang::Sema &sema,
     return keys;
   }
   auto key = GetExprKey(ctx, returned);
+  if (!key && llvm::isa<clang::InitListExpr>(returned)) {
+    key = getConstructorKey(getParent(rule->getAsFunction()->getReturnType()));
+  }
   assert(key && "expression rule has no key");
   return {*key};
 }
