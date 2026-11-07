@@ -1821,21 +1821,55 @@ bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
   return false;
 }
 
+// The temporary that `expr` is a field of, or a field of a field of, e.g.,
+// the result of f() in f().a.b.
+static clang::Expr *GetFieldTemporary(clang::ASTContext &ctx,
+                                      clang::MemberExpr *expr) {
+  clang::Expr *base = expr;
+  while (auto *member = clang::dyn_cast<clang::MemberExpr>(base)) {
+    if (member->isArrow()) {
+      return nullptr;
+    }
+    base = member->getBase()->IgnoreParenNoopCasts(ctx);
+  }
+  return clang::isa<clang::MaterializeTemporaryExpr>(base) ? base : nullptr;
+}
+
 void ConverterRefCount::ConvertInlineField(clang::MemberExpr *expr) {
   auto name = GetNamedDeclAsString(expr->getMemberDecl());
   auto type = expr->getType();
   auto *base = expr->getBase();
   if (isAddrOf()) {
-    // A pointer to the struct, offset to the field. An array decays to a
-    // pointer to its first element, and a vector can be used as one.
-    if (type->isArrayType()) {
-      StrCat(std::format("array_field_ptr!({}, {})", ConvertRecordPtr(expr),
-                         name));
-    } else if (IsBoxedType(type)) {
-      StrCat(std::format("field_ref!({}, {}){}", ConvertRecordPtr(expr), name,
-                         AsPointerMethod(type)));
+    // The outermost field of a temporary binds a pointer to the temporary.
+    FieldTemporary temporary{GetFieldTemporary(ctx_, expr), ""};
+    bool outermost = temporary.temporary &&
+                     (!field_temporary_ ||
+                      field_temporary_->temporary != temporary.temporary);
+    std::string str;
+    {
+      Buffer buf(*this);
+      ScopedValue push(field_temporary_,
+                       outermost ? &temporary : field_temporary_);
+      // A pointer to the struct, offset to the field. An array decays to a
+      // pointer to its first element, and a vector can be used as one.
+      if (type->isArrayType()) {
+        StrCat(std::format("array_field_ptr!({}, {})", ConvertRecordPtr(expr),
+                           name));
+      } else if (IsBoxedType(type)) {
+        StrCat(std::format("field_ref!({}, {}){}", ConvertRecordPtr(expr), name,
+                           AsPointerMethod(type)));
+      } else {
+        StrCat(std::format("field_ptr!({}, {})", ConvertRecordPtr(expr), name));
+      }
+      str = std::move(buf).str();
+    }
+    if (temporary.var.empty()) {
+      StrCat(str);
     } else {
-      StrCat(std::format("field_ptr!({}, {})", ConvertRecordPtr(expr), name));
+      PushParen paren(*this);
+      StrCat("match", ConvertTemporaryPointer(temporary.temporary, {}));
+      PushBrace brace(*this);
+      StrCat(temporary.var, "=>", str);
     }
     MarkFresh();
     return;
@@ -1878,6 +1912,14 @@ void ConverterRefCount::ConvertInlineField(clang::MemberExpr *expr) {
 }
 
 std::string ConverterRefCount::ConvertRecordPtr(clang::MemberExpr *expr) {
+  auto *base = expr->getBase()->IgnoreParenNoopCasts(ctx_);
+  if (field_temporary_ && !expr->isArrow() &&
+      base == field_temporary_->temporary) {
+    if (field_temporary_->var.empty()) {
+      field_temporary_->var = NewTempName();
+    }
+    return field_temporary_->var;
+  }
   Buffer buf(*this);
   PushExprKind push(*this, ExprKind::AddrOf);
   if (expr->isArrow()) {

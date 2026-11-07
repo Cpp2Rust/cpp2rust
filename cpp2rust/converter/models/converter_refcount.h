@@ -202,6 +202,19 @@ public:
   std::string *record_ptr_ = nullptr;
   const clang::Expr *record_base_ = nullptr;
 
+  // The temporary whose field, or field of a field, a pointer is being made
+  // to, e.g., the result of f() in &f().a.b, and the variable that a match
+  // binds a pointer to the temporary to. The temporaries in the block of a
+  // field macro end with the block, while those of the matched value live
+  // until the end of the enclosing statement or block. That can be before
+  // the end of the C++ full-expression, e.g., for a call argument that is
+  // bound to a variable or converted in a block of its own.
+  struct FieldTemporary {
+    clang::Expr *temporary;
+    std::string var;
+  };
+  FieldTemporary *field_temporary_ = nullptr;
+
   // The expression that ConvertFreshRValue copies.
   const clang::Expr *copied_expr_ = nullptr;
 
