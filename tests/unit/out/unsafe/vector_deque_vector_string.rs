@@ -97,7 +97,7 @@ unsafe fn main_0() -> i32 {
     {
         (__tmp_1,) => {
             (&mut (*((copy[(0_usize)]).first_mut().unwrap())))[(0_usize)] =
-                std::mem::take(&mut (*__tmp_1))
+                std::mem::replace(&mut (*__tmp_1), vec![0])
         }
     };
     (*match (

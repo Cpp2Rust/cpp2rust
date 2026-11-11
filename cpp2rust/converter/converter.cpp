@@ -1424,6 +1424,7 @@ bool Converter::VisitDeclStmt(clang::DeclStmt *stmt) {
 }
 
 bool Converter::VisitReturnStmt(clang::ReturnStmt *stmt) {
+  ScopedValue return_value(return_value_, stmt->getRetValue());
   auto return_type = curr_function_->getReturnType();
   if (!return_type->isVoidType()) {
     HoistMaterializedTempBindings hoist_temps(*this);
@@ -5109,9 +5110,38 @@ std::string Converter::ConvertBorrowMut(clang::Expr *arg) {
 }
 
 std::string Converter::ConvertTake(clang::Expr *arg) {
+  auto moved_from = GetMovedFromValue(arg);
   auto lvalue = ConvertLValue(arg);
   MarkFresh();
+  if (!moved_from.empty()) {
+    return std::format("std::mem::replace(&mut {}, {})", std::move(lvalue),
+                       std::move(moved_from));
+  }
   return std::format("std::mem::take(&mut {})", std::move(lvalue));
+}
+
+std::string Converter::GetMovedFromValue(clang::Expr *arg) {
+  auto type = arg->getType();
+  if (!IsStdDecl(type->getAsCXXRecordDecl(), "basic_string")) {
+    return {};
+  }
+  // An implicit return move consumes a local or by-value parameter. There is
+  // no need to allocate a terminator for the object about to be destroyed.
+  auto *returned = return_value_ ? return_value_->IgnoreImplicit() : nullptr;
+  if (auto *ctor = clang::dyn_cast_or_null<clang::CXXConstructExpr>(returned);
+      ctor && ctor->getConstructor()->isMoveConstructor() &&
+      ctor->getArg(0)->IgnoreParenImpCasts() == arg->IgnoreParenImpCasts()) {
+    if (auto *ref =
+            clang::dyn_cast<clang::DeclRefExpr>(arg->IgnoreParenImpCasts())) {
+      if (auto *var = clang::dyn_cast<clang::VarDecl>(ref->getDecl());
+          var && var->hasLocalStorage() && !var->getType()->isReferenceType()) {
+        return {};
+      }
+    }
+  }
+  // A string is translated as a vector that ends with a null terminator, so an
+  // empty vector is not a valid empty string.
+  return Mapper::MapInitializer(*this, type);
 }
 
 std::string Converter::ConvertMappedMethodCall(
