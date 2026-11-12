@@ -14,7 +14,7 @@ impl SemanticAnalysis {
         let mut resolver = MethodResolver { ir };
 
         if rustc_driver::catch_fatal_errors(|| {
-            rustc_driver::run_compiler(&args, &mut resolver);
+            rustc_driver::RunCompiler::new(&args, &mut resolver).run();
         })
         .is_err()
         {
