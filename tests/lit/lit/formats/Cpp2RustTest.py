@@ -9,6 +9,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import NamedTuple, Optional
 import difflib
+import functools
+import json
 import os
 import re
 import shlex
@@ -217,21 +219,7 @@ class TestContext:
     def build_rust(self):
         exp = self.expectations
 
-        cc2rs_dir = BUILD_DIR / "libcc2rs-target" / "release"
-        libc_dep_deps = BUILD_DIR / "libc-dep-target" / "release" / "deps"
-        # pick the most recently compiled libc
-        libc_rlib = max(
-            libc_dep_deps.glob("liblibc-*.rlib"),
-            key=lambda p: p.stat().st_mtime,
-        )
-        nix_rlib = max(
-            libc_dep_deps.glob("libnix-*.rlib"),
-            key=lambda p: p.stat().st_mtime,
-        )
-        jiff_rlib = max(
-            libc_dep_deps.glob("libjiff-*.rlib"),
-            key=lambda p: p.stat().st_mtime,
-        )
+        libs = read_cargo_artifacts()
         cmd = [
             "rustc",
             "+" + read_rust_version(),
@@ -248,19 +236,11 @@ class TestContext:
             "panic=abort",
             "--out-dir",
             str(self.tmp_dir),
-            "-L",
-            f"dependency={cc2rs_dir / 'deps'}",
-            "-L",
-            f"dependency={libc_dep_deps}",
-            "--extern",
-            f"libcc2rs={cc2rs_dir / 'liblibcc2rs.rlib'}",
-            "--extern",
-            f"libc={libc_rlib}",
-            "--extern",
-            f"nix={nix_rlib}",
-            "--extern",
-            f"jiff={jiff_rlib}",
         ]
+        for lib_dir in sorted({p.parent for p in libs.values()}):
+            cmd += ["-L", f"dependency={lib_dir}"]
+        for crate in ("libcc2rs", "libc", "nix", "jiff"):
+            cmd += ["--extern", f"{crate}={libs[crate]}"]
         _, err, returncode = lit.util.executeCommand(cmd, str(self.tmp_dir))
         if exp.should_not_compile:
             if returncode != 0:
@@ -401,6 +381,21 @@ def read_rust_version():
             if m:
                 return m.group(1)
     raise Exception("could not find rust version in " + toolchain_path)
+
+
+@functools.cache
+def read_cargo_artifacts():
+    libs = {}
+    for crate in ("libc-dep", "libcc2rs"):
+        path = BUILD_DIR / f"{crate}-target" / "artifacts.json"
+        for line in path.read_text().splitlines():
+            msg = json.loads(line)
+            if msg.get("reason") != "compiler-artifact":
+                continue
+            for f in map(Path, msg["filenames"]):
+                if f.suffix in (".rlib", ".so", ".dylib"):
+                    libs[msg["target"]["name"]] = f
+    return libs
 
 
 def get_temp_dir():
