@@ -12,7 +12,7 @@ pub fn sum_0(n: i32, __args: Box<[VaArg]>) -> i32 {
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
     (*ap.borrow_mut()) = __args.as_pointer();
     let guard: Value<Guard_1> = Rc::new(RefCell::new(Guard_1::new({ ap.as_pointer() })));
-    let _dtor_guard = ScopedDestructor::new(&guard, |__p| __p.destructor());
+    let _dtor_guard = std::mem::DropGuard::new(guard.clone(), |__p| __p.as_pointer().destructor());
     let mut total: i32 = 0;
     let mut i: i32 = 0;
     'loop_: while (i < (*n.borrow())) {

@@ -133,7 +133,7 @@ unsafe fn main_0() -> i32 {
     (*std::cell::LazyCell::force_mut(&mut *&raw mut destroyed_0)) = 0;
     {
         let mut s: S = S { v: 12 };
-        let _dtor_s = ScopedDestructorUnsafe::new(&raw mut s, S::destructor);
+        let _dtor_s = std::mem::DropGuard::new(&raw mut s, |__p| unsafe { (*__p).destructor() });
         s = (unsafe { make_2(13) });
         assert!(
             (((*std::cell::LazyCell::force_mut(&mut *&raw mut destroyed_0)) == (1))

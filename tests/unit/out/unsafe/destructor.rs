@@ -141,46 +141,46 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     {
         let mut s: S = <S>::default();
-        let _dtor_s = ScopedDestructorUnsafe::new(&raw mut s, S::destructor);
+        let _dtor_s = std::mem::DropGuard::new(&raw mut s, |__p| unsafe { (*__p).destructor() });
     }
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut global_0)) == (1)));
     {
         let mut s: S = <S>::default();
-        let _dtor_s = ScopedDestructorUnsafe::new(&raw mut s, S::destructor);
+        let _dtor_s = std::mem::DropGuard::new(&raw mut s, |__p| unsafe { (*__p).destructor() });
     }
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut global_0)) == (2)));
     {
         let mut d: Defaulted = <Defaulted>::default();
-        let _dtor_d = ScopedDestructorUnsafe::new(&raw mut d, Defaulted::destructor);
+        let _dtor_d = std::mem::DropGuard::new(&raw mut d, |__p| unsafe { (*__p).destructor() });
     }
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut global_0)) == (3)));
     {
         let mut o: Outer = <Outer>::default();
-        let _dtor_o = ScopedDestructorUnsafe::new(&raw mut o, Outer::destructor);
+        let _dtor_o = std::mem::DropGuard::new(&raw mut o, |__p| unsafe { (*__p).destructor() });
     }
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut global_0)) == (4)));
     {
         let mut am: ArrayMember = <ArrayMember>::default();
-        let _dtor_am = ScopedDestructorUnsafe::new(&raw mut am, ArrayMember::destructor);
+        let _dtor_am = std::mem::DropGuard::new(&raw mut am, |__p| unsafe { (*__p).destructor() });
     }
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut global_0)) == (7)));
     {
         let mut e: EmptyBody = <EmptyBody>::default();
-        let _dtor_e = ScopedDestructorUnsafe::new(&raw mut e, EmptyBody::destructor);
+        let _dtor_e = std::mem::DropGuard::new(&raw mut e, |__p| unsafe { (*__p).destructor() });
     }
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut global_0)) == (8)));
     {
         let mut tc: Templated_char_ = <Templated_char_>::default();
-        let _dtor_tc = ScopedDestructorUnsafe::new(&raw mut tc, Templated_char_::destructor);
+        let _dtor_tc = std::mem::DropGuard::new(&raw mut tc, |__p| unsafe { (*__p).destructor() });
         let mut ti: Templated_int_ = <Templated_int_>::default();
-        let _dtor_ti = ScopedDestructorUnsafe::new(&raw mut ti, Templated_int_::destructor);
+        let _dtor_ti = std::mem::DropGuard::new(&raw mut ti, |__p| unsafe { (*__p).destructor() });
     }
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut global_0)) == (13)));
     {
         let mut a: Copied = Copied { v: 5 };
-        let _dtor_a = ScopedDestructorUnsafe::new(&raw mut a, Copied::destructor);
+        let _dtor_a = std::mem::DropGuard::new(&raw mut a, |__p| unsafe { (*__p).destructor() });
         let mut b: Copied = a.clone();
-        let _dtor_b = ScopedDestructorUnsafe::new(&raw mut b, Copied::destructor);
+        let _dtor_b = std::mem::DropGuard::new(&raw mut b, |__p| unsafe { (*__p).destructor() });
         assert!(((b.v) == (5)));
     }
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut global_0)) == (15)));
@@ -192,7 +192,7 @@ unsafe fn main_0() -> i32 {
             dummy2: 0,
             third: Tagged { tag: 3 },
         };
-        let _dtor_o = ScopedDestructorUnsafe::new(&raw mut o, Ordered::destructor);
+        let _dtor_o = std::mem::DropGuard::new(&raw mut o, |__p| unsafe { (*__p).destructor() });
     }
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut order_count_2)) == (3)));
     assert!((((*std::cell::LazyCell::force_mut(&mut *&raw mut order_1))[(0) as usize]) == (3)));
@@ -201,7 +201,7 @@ unsafe fn main_0() -> i32 {
     let mut before: i32 = (*std::cell::LazyCell::force_mut(&mut *&raw mut global_0));
     {
         let mut cs: S = <S>::default();
-        let _dtor_cs = ScopedDestructorUnsafe::new(&raw mut cs, S::destructor);
+        let _dtor_cs = std::mem::DropGuard::new(&raw mut cs, |__p| unsafe { (*__p).destructor() });
         &(cs);
     }
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut global_0)) == ((before) + (1))));

@@ -111,46 +111,46 @@ pub fn main() {
 fn main_0() -> i32 {
     {
         let s: Value<S> = Rc::new(RefCell::new(<S>::default()));
-        let _dtor_s = ScopedDestructor::new(&s, |__p| __p.destructor());
+        let _dtor_s = std::mem::DropGuard::new(s.clone(), |__p| __p.as_pointer().destructor());
     }
     assert!((global_0.with(|rc| *rc.borrow()) == 1));
     {
         let s: Value<S> = Rc::new(RefCell::new(<S>::default()));
-        let _dtor_s = ScopedDestructor::new(&s, |__p| __p.destructor());
+        let _dtor_s = std::mem::DropGuard::new(s.clone(), |__p| __p.as_pointer().destructor());
     }
     assert!((global_0.with(|rc| *rc.borrow()) == 2));
     {
         let d: Value<Defaulted> = Rc::new(RefCell::new(<Defaulted>::default()));
-        let _dtor_d = ScopedDestructor::new(&d, |__p| __p.destructor());
+        let _dtor_d = std::mem::DropGuard::new(d.clone(), |__p| __p.as_pointer().destructor());
     }
     assert!((global_0.with(|rc| *rc.borrow()) == 3));
     {
         let o: Value<Outer> = Rc::new(RefCell::new(<Outer>::default()));
-        let _dtor_o = ScopedDestructor::new(&o, |__p| __p.destructor());
+        let _dtor_o = std::mem::DropGuard::new(o.clone(), |__p| __p.as_pointer().destructor());
     }
     assert!((global_0.with(|rc| *rc.borrow()) == 4));
     {
         let am: Value<ArrayMember> = Rc::new(RefCell::new(<ArrayMember>::default()));
-        let _dtor_am = ScopedDestructor::new(&am, |__p| __p.destructor());
+        let _dtor_am = std::mem::DropGuard::new(am.clone(), |__p| __p.as_pointer().destructor());
     }
     assert!((global_0.with(|rc| *rc.borrow()) == 7));
     {
         let e: Value<EmptyBody> = Rc::new(RefCell::new(<EmptyBody>::default()));
-        let _dtor_e = ScopedDestructor::new(&e, |__p| __p.destructor());
+        let _dtor_e = std::mem::DropGuard::new(e.clone(), |__p| __p.as_pointer().destructor());
     }
     assert!((global_0.with(|rc| *rc.borrow()) == 8));
     {
         let tc: Value<Templated_char_> = Rc::new(RefCell::new(<Templated_char_>::default()));
-        let _dtor_tc = ScopedDestructor::new(&tc, |__p| __p.destructor());
+        let _dtor_tc = std::mem::DropGuard::new(tc.clone(), |__p| __p.as_pointer().destructor());
         let ti: Value<Templated_int_> = Rc::new(RefCell::new(<Templated_int_>::default()));
-        let _dtor_ti = ScopedDestructor::new(&ti, |__p| __p.destructor());
+        let _dtor_ti = std::mem::DropGuard::new(ti.clone(), |__p| __p.as_pointer().destructor());
     }
     assert!((global_0.with(|rc| *rc.borrow()) == 13));
     {
         let a: Value<Copied> = Rc::new(RefCell::new(Copied { v: 5 }));
-        let _dtor_a = ScopedDestructor::new(&a, |__p| __p.destructor());
+        let _dtor_a = std::mem::DropGuard::new(a.clone(), |__p| __p.as_pointer().destructor());
         let b: Value<Copied> = Rc::new(RefCell::new((*a.borrow()).clone()));
-        let _dtor_b = ScopedDestructor::new(&b, |__p| __p.destructor());
+        let _dtor_b = std::mem::DropGuard::new(b.clone(), |__p| __p.as_pointer().destructor());
         assert!(({ ({ (*b.borrow()).v } == 5) }));
     }
     assert!((global_0.with(|rc| *rc.borrow()) == 15));
@@ -162,7 +162,7 @@ fn main_0() -> i32 {
             dummy2: 0,
             third: Tagged { tag: 3 },
         }));
-        let _dtor_o = ScopedDestructor::new(&o, |__p| __p.destructor());
+        let _dtor_o = std::mem::DropGuard::new(o.clone(), |__p| __p.as_pointer().destructor());
     }
     assert!((order_count_2.with(|rc| *rc.borrow()) == 3));
     assert!(
@@ -186,7 +186,7 @@ fn main_0() -> i32 {
     let mut before: i32 = global_0.with(|rc| *rc.borrow());
     {
         let cs: Value<S> = Rc::new(RefCell::new(<S>::default()));
-        let _dtor_cs = ScopedDestructor::new(&cs, |__p| __p.destructor());
+        let _dtor_cs = std::mem::DropGuard::new(cs.clone(), |__p| __p.as_pointer().destructor());
         &(*cs.borrow_mut());
     }
     assert!((global_0.with(|rc| *rc.borrow()) == (before + 1)));

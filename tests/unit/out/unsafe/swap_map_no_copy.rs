@@ -500,9 +500,9 @@ unsafe fn main_0() -> i32 {
     );
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
     let mut c1: CopyOnly = CopyOnly::new({ 1 });
-    let _dtor_c1 = ScopedDestructorUnsafe::new(&raw mut c1, CopyOnly::destructor);
+    let _dtor_c1 = std::mem::DropGuard::new(&raw mut c1, |__p| unsafe { (*__p).destructor() });
     let mut c2: CopyOnly = CopyOnly::new({ 2 });
-    let _dtor_c2 = ScopedDestructorUnsafe::new(&raw mut c2, CopyOnly::destructor);
+    let _dtor_c2 = std::mem::DropGuard::new(&raw mut c2, |__p| unsafe { (*__p).destructor() });
     cpp_swap_unsafe!(&mut c1, &mut c2);
     assert!(((c1.v) == (2)) && ((c2.v) == (1)));
     assert!(
@@ -513,7 +513,7 @@ unsafe fn main_0() -> i32 {
         x: CopyOnly::new({ 3 }),
         y: CopyOnly::new({ 4 }),
     };
-    let _dtor_cp = ScopedDestructorUnsafe::new(&raw mut cp, CopyOnlyPair::destructor);
+    let _dtor_cp = std::mem::DropGuard::new(&raw mut cp, |__p| unsafe { (*__p).destructor() });
     cpp_swap_unsafe!(&mut cp.x, &mut cp.y);
     assert!(((cp.x.v) == (4)) && ((cp.y.v) == (3)));
     assert!(
@@ -528,9 +528,9 @@ unsafe fn main_0() -> i32 {
             && ((*std::cell::LazyCell::force_mut(&mut *&raw mut copy_only_dtors_2)) == (3))
     );
     let mut mv1: Moved = Moved::new({ 1 });
-    let _dtor_mv1 = ScopedDestructorUnsafe::new(&raw mut mv1, Moved::destructor);
+    let _dtor_mv1 = std::mem::DropGuard::new(&raw mut mv1, |__p| unsafe { (*__p).destructor() });
     let mut mv2: Moved = Moved::new({ 2 });
-    let _dtor_mv2 = ScopedDestructorUnsafe::new(&raw mut mv2, Moved::destructor);
+    let _dtor_mv2 = std::mem::DropGuard::new(&raw mut mv2, |__p| unsafe { (*__p).destructor() });
     cpp_swap_unsafe!(&mut mv1, &mut mv2);
     assert!(((mv1.v) == (2)) && ((mv2.v) == (1)));
     assert!((unsafe { swapped_once_6() }));
@@ -538,7 +538,7 @@ unsafe fn main_0() -> i32 {
         x: Moved::new({ 3 }),
         y: Moved::new({ 4 }),
     };
-    let _dtor_mp = ScopedDestructorUnsafe::new(&raw mut mp, MovedPair::destructor);
+    let _dtor_mp = std::mem::DropGuard::new(&raw mut mp, |__p| unsafe { (*__p).destructor() });
     cpp_swap_unsafe!(&mut mp.x, &mut mp.y);
     assert!(((mp.x.v) == (4)) && ((mp.y.v) == (3)));
     assert!((unsafe { swapped_once_6() }));

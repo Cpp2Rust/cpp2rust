@@ -141,9 +141,11 @@ fn main_0() -> i32 {
             },
             || {}
         )));
-        let _dtor_m = ScopedDestructor::new(&m, |__p| __p.with(|__f| __f.destroy()));
+        let _dtor_m =
+            std::mem::DropGuard::new(m.clone(), |__p| __p.as_pointer().with(|__f| __f.destroy()));
         let m2: Value<FnPtr<fn()>> = Rc::new(RefCell::new((*m.borrow()).move_from()));
-        let _dtor_m2 = ScopedDestructor::new(&m2, |__p| __p.with(|__f| __f.destroy()));
+        let _dtor_m2 =
+            std::mem::DropGuard::new(m2.clone(), |__p| __p.as_pointer().with(|__f| __f.destroy()));
     }
     assert!((drops_0.with(|rc| *rc.borrow()) == 2));
     {
@@ -153,9 +155,11 @@ fn main_0() -> i32 {
             },
             || {}
         )));
-        let _dtor_k = ScopedDestructor::new(&k, |__p| __p.with(|__f| __f.destroy()));
+        let _dtor_k =
+            std::mem::DropGuard::new(k.clone(), |__p| __p.as_pointer().with(|__f| __f.destroy()));
         let k2: Value<FnPtr<fn()>> = Rc::new(RefCell::new((*k.borrow()).copy_from()));
-        let _dtor_k2 = ScopedDestructor::new(&k2, |__p| __p.with(|__f| __f.destroy()));
+        let _dtor_k2 =
+            std::mem::DropGuard::new(k2.clone(), |__p| __p.as_pointer().with(|__f| __f.destroy()));
     }
     assert!((drops_0.with(|rc| *rc.borrow()) == 4));
     {
@@ -165,7 +169,9 @@ fn main_0() -> i32 {
             },
             || {}
         )));
-        let _dtor_inner = ScopedDestructor::new(&inner, |__p| __p.with(|__f| __f.destroy()));
+        let _dtor_inner = std::mem::DropGuard::new(inner.clone(), |__p| {
+            __p.as_pointer().with(|__f| __f.destroy())
+        });
         let outer: Value<FnPtr<fn()>> = Rc::new(RefCell::new(lambda!(
             {
                 let inner: Value<FnPtr<fn()>> =
@@ -173,7 +179,9 @@ fn main_0() -> i32 {
             },
             || {}
         )));
-        let _dtor_outer = ScopedDestructor::new(&outer, |__p| __p.with(|__f| __f.destroy()));
+        let _dtor_outer = std::mem::DropGuard::new(outer.clone(), |__p| {
+            __p.as_pointer().with(|__f| __f.destroy())
+        });
     }
     assert!((drops_0.with(|rc| *rc.borrow()) == 6));
     return 0;

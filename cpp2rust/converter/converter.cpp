@@ -686,15 +686,10 @@ void Converter::EmitScopedDestructor(const clang::VarDecl *decl) {
   if (!NeedsScopedDestructor(decl)) {
     return;
   }
-  auto type = decl->getType();
-  auto destroy =
-      AsLambdaClass(type)
-          ? std::string("|__f| __f.destroy()")
-          : std::format("{}::{}", GetRecordName(type->getAsCXXRecordDecl()),
-                        kDestructorName);
+  auto destroy = AsLambdaClass(decl->getType()) ? "destroy" : kDestructorName;
   StrCat(token::kSemiColon,
-         std::format("let _dtor_{0} = ScopedDestructorUnsafe::new(&raw mut "
-                     "{0}, {1})",
+         std::format("let _dtor_{0} = std::mem::DropGuard::new(&raw mut {0}, "
+                     "|__p| unsafe {{ (*__p).{1}() }})",
                      GetNamedDeclAsString(decl), destroy));
 }
 

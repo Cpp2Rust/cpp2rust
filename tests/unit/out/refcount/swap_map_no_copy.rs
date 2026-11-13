@@ -531,9 +531,9 @@ fn main_0() -> i32 {
     );
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
     let c1: Value<CopyOnly> = Rc::new(RefCell::new(CopyOnly::new({ 1 })));
-    let _dtor_c1 = ScopedDestructor::new(&c1, |__p| __p.destructor());
+    let _dtor_c1 = std::mem::DropGuard::new(c1.clone(), |__p| __p.as_pointer().destructor());
     let c2: Value<CopyOnly> = Rc::new(RefCell::new(CopyOnly::new({ 2 })));
-    let _dtor_c2 = ScopedDestructor::new(&c2, |__p| __p.destructor());
+    let _dtor_c2 = std::mem::DropGuard::new(c2.clone(), |__p| __p.as_pointer().destructor());
     cpp_swap!(c1.as_pointer(), c2.as_pointer());
     assert!(({ ({ (*c1.borrow()).v } == 2) && ({ (*c2.borrow()).v } == 1) }));
     assert!(
@@ -544,7 +544,7 @@ fn main_0() -> i32 {
         x: CopyOnly::new({ 3 }),
         y: CopyOnly::new({ 4 }),
     }));
-    let _dtor_cp = ScopedDestructor::new(&cp, |__p| __p.destructor());
+    let _dtor_cp = std::mem::DropGuard::new(cp.clone(), |__p| __p.as_pointer().destructor());
     cpp_swap!(
         field_ptr!(cp.as_pointer(), x),
         field_ptr!(cp.as_pointer(), y)
@@ -573,9 +573,9 @@ fn main_0() -> i32 {
             && (copy_only_dtors_2.with(|rc| *rc.borrow()) == 3)
     );
     let mv1: Value<Moved> = Rc::new(RefCell::new(Moved::new({ 1 })));
-    let _dtor_mv1 = ScopedDestructor::new(&mv1, |__p| __p.destructor());
+    let _dtor_mv1 = std::mem::DropGuard::new(mv1.clone(), |__p| __p.as_pointer().destructor());
     let mv2: Value<Moved> = Rc::new(RefCell::new(Moved::new({ 2 })));
-    let _dtor_mv2 = ScopedDestructor::new(&mv2, |__p| __p.destructor());
+    let _dtor_mv2 = std::mem::DropGuard::new(mv2.clone(), |__p| __p.as_pointer().destructor());
     cpp_swap!(mv1.as_pointer(), mv2.as_pointer());
     assert!(({ ({ (*mv1.borrow()).v } == 2) && ({ (*mv2.borrow()).v } == 1) }));
     assert!(({ swapped_once_6() }));
@@ -583,7 +583,7 @@ fn main_0() -> i32 {
         x: Moved::new({ 3 }),
         y: Moved::new({ 4 }),
     }));
-    let _dtor_mp = ScopedDestructor::new(&mp, |__p| __p.destructor());
+    let _dtor_mp = std::mem::DropGuard::new(mp.clone(), |__p| __p.as_pointer().destructor());
     cpp_swap!(
         field_ptr!(mp.as_pointer(), x),
         field_ptr!(mp.as_pointer(), y)

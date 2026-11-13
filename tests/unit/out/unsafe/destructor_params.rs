@@ -50,7 +50,7 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     {
         let mut s: S = S { v: 1 };
-        let _dtor_s = ScopedDestructorUnsafe::new(&raw mut s, S::destructor);
+        let _dtor_s = std::mem::DropGuard::new(&raw mut s, |__p| unsafe { (*__p).destructor() });
         assert!(((unsafe { by_value_2(s.clone(),) }) == (1)));
         assert!(
             ((*std::cell::LazyCell::force_mut(&mut *&raw mut destroyed_0)) == (1))

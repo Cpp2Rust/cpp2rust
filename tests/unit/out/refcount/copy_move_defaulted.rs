@@ -265,22 +265,22 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let a: Value<Explicit> = Rc::new(RefCell::new(Explicit::new({ 1 })));
-    let _dtor_a = ScopedDestructor::new(&a, |__p| __p.destructor());
+    let _dtor_a = std::mem::DropGuard::new(a.clone(), |__p| __p.as_pointer().destructor());
     let b: Value<Explicit> = Rc::new(RefCell::new((*a.borrow()).clone()));
-    let _dtor_b = ScopedDestructor::new(&b, |__p| __p.destructor());
+    let _dtor_b = std::mem::DropGuard::new(b.clone(), |__p| __p.as_pointer().destructor());
     let c: Value<Explicit> = Rc::new(RefCell::new((*a.borrow()).clone()));
-    let _dtor_c = ScopedDestructor::new(&c, |__p| __p.destructor());
+    let _dtor_c = std::mem::DropGuard::new(c.clone(), |__p| __p.as_pointer().destructor());
     let d: Value<Explicit> = Rc::new(RefCell::new((*a.borrow()).clone()));
-    let _dtor_d = ScopedDestructor::new(&d, |__p| __p.destructor());
+    let _dtor_d = std::mem::DropGuard::new(d.clone(), |__p| __p.as_pointer().destructor());
     assert!(
         (({ same_0(b.as_pointer(), a.as_pointer(),) })
             && ({ same_0(c.as_pointer(), a.as_pointer(),) }))
             && ({ same_0(d.as_pointer(), a.as_pointer(),) })
     );
     let e: Value<Explicit> = Rc::new(RefCell::new(Explicit::new({ 2 })));
-    let _dtor_e = ScopedDestructor::new(&e, |__p| __p.destructor());
+    let _dtor_e = std::mem::DropGuard::new(e.clone(), |__p| __p.as_pointer().destructor());
     let f: Value<Explicit> = Rc::new(RefCell::new(Explicit::new({ 3 })));
-    let _dtor_f = ScopedDestructor::new(&f, |__p| __p.destructor());
+    let _dtor_f = std::mem::DropGuard::new(f.clone(), |__p| __p.as_pointer().destructor());
     (*e.borrow_mut()) = (*b.borrow()).clone();
     (*f.borrow_mut()) = (*c.borrow()).clone();
     assert!(
@@ -288,7 +288,7 @@ fn main_0() -> i32 {
             && ({ same_0(f.as_pointer(), c.as_pointer(),) })
     );
     let g: Value<Explicit> = Rc::new(RefCell::new(Explicit::new({ 4 })));
-    let _dtor_g = ScopedDestructor::new(&g, |__p| __p.destructor());
+    let _dtor_g = std::mem::DropGuard::new(g.clone(), |__p| __p.as_pointer().destructor());
     (*g.borrow_mut()) = {
         (*e.borrow_mut()) = (*f.borrow()).clone();
         (*e.borrow()).clone()
@@ -448,13 +448,13 @@ fn main_0() -> i32 {
         })
     );
     let h1: Value<Holder> = Rc::new(RefCell::new(Holder::new({ 4 })));
-    let _dtor_h1 = ScopedDestructor::new(&h1, |__p| __p.destructor());
+    let _dtor_h1 = std::mem::DropGuard::new(h1.clone(), |__p| __p.as_pointer().destructor());
     {
         let _p: Ptr<_> = Ptr::alloc(9);
         field_ptr!(h1.as_pointer(), p).write(_p.to_owned_opt())
     };
     let h2: Value<Holder> = Rc::new(RefCell::new(Holder::move_from({ h1.as_pointer() })));
-    let _dtor_h2 = ScopedDestructor::new(&h2, |__p| __p.destructor());
+    let _dtor_h2 = std::mem::DropGuard::new(h2.clone(), |__p| __p.as_pointer().destructor());
     assert!(
         ({
             ((({ (*h2.borrow()).inner.x } == 4) && ({ (*h2.borrow()).e.v } == 4))
@@ -463,7 +463,7 @@ fn main_0() -> i32 {
         })
     );
     let h3: Value<Holder> = Rc::new(RefCell::new(Holder::new({ 1 })));
-    let _dtor_h3 = ScopedDestructor::new(&h3, |__p| __p.destructor());
+    let _dtor_h3 = std::mem::DropGuard::new(h3.clone(), |__p| __p.as_pointer().destructor());
     ({ HolderImpl::move_assign(&h3.as_pointer(), h2.as_pointer()) });
     assert!(
         ({

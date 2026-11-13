@@ -51,7 +51,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut o: Owner = Owner::new({ 5 });
-    let _dtor_o = ScopedDestructorUnsafe::new(&raw mut o, Owner::destructor);
+    let _dtor_o = std::mem::DropGuard::new(&raw mut o, |__p| unsafe { (*__p).destructor() });
     let mut f: FnPtr<fn() -> i32> = lambda_unsafe!(
         {
             let h: Owner = Owner::move_from({ &mut o });
@@ -60,11 +60,11 @@ unsafe fn main_0() -> i32 {
             return (*h.p);
         }
     );
-    let _dtor_f = ScopedDestructorUnsafe::new(&raw mut f, |__f| __f.destroy());
+    let _dtor_f = std::mem::DropGuard::new(&raw mut f, |__p| unsafe { (*__p).destroy() });
     assert!((o.p).is_null());
     assert!(((unsafe { f.call() }) == (5)));
     let mut g: FnPtr<fn() -> i32> = f.move_from();
-    let _dtor_g = ScopedDestructorUnsafe::new(&raw mut g, |__f| __f.destroy());
+    let _dtor_g = std::mem::DropGuard::new(&raw mut g, |__p| unsafe { (*__p).destroy() });
     assert!(((unsafe { g.call() }) == (5)));
     let mut total: i32 = 0;
     let mut consume: FnPtr<fn()> = lambda_unsafe!(
@@ -77,14 +77,15 @@ unsafe fn main_0() -> i32 {
             (*h.p) = 0;
         }
     );
-    let _dtor_consume = ScopedDestructorUnsafe::new(&raw mut consume, |__f| __f.destroy());
+    let _dtor_consume =
+        std::mem::DropGuard::new(&raw mut consume, |__p| unsafe { (*__p).destroy() });
     (unsafe { consume.call() });
     (unsafe { consume.call() });
     assert!(((total) == (7)));
     let mut o2: Owner = Owner::new({ 9 });
-    let _dtor_o2 = ScopedDestructorUnsafe::new(&raw mut o2, Owner::destructor);
+    let _dtor_o2 = std::mem::DropGuard::new(&raw mut o2, |__p| unsafe { (*__p).destructor() });
     let mut t: FnPtr<fn() -> i32> = (unsafe { Owner::take(&mut o2) });
-    let _dtor_t = ScopedDestructorUnsafe::new(&raw mut t, |__f| __f.destroy());
+    let _dtor_t = std::mem::DropGuard::new(&raw mut t, |__p| unsafe { (*__p).destroy() });
     assert!((o2.p).is_null());
     assert!(((unsafe { t.call() }) == (9)));
     return 0;

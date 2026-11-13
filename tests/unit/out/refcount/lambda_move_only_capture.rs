@@ -32,7 +32,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let o: Value<Owner> = Rc::new(RefCell::new(Owner::new({ 5 })));
-    let _dtor_o = ScopedDestructor::new(&o, |__p| __p.destructor());
+    let _dtor_o = std::mem::DropGuard::new(o.clone(), |__p| __p.as_pointer().destructor());
     let f: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new(lambda!(
         {
             let h: Value<Owner> = Rc::new(RefCell::new(Owner::move_from({ o.as_pointer() })));
@@ -41,11 +41,13 @@ fn main_0() -> i32 {
             return ({ (*h.borrow()).p.clone() }.read());
         }
     )));
-    let _dtor_f = ScopedDestructor::new(&f, |__p| __p.with(|__f| __f.destroy()));
+    let _dtor_f =
+        std::mem::DropGuard::new(f.clone(), |__p| __p.as_pointer().with(|__f| __f.destroy()));
     assert!(({ ({ (*o.borrow()).p.clone() }).is_null() }));
     assert!(({ (({ (*f.borrow()).call() }) == 5) }));
     let g: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new((*f.borrow()).move_from()));
-    let _dtor_g = ScopedDestructor::new(&g, |__p| __p.with(|__f| __f.destroy()));
+    let _dtor_g =
+        std::mem::DropGuard::new(g.clone(), |__p| __p.as_pointer().with(|__f| __f.destroy()));
     assert!(({ (({ (*g.borrow()).call() }) == 5) }));
     let total: Value<i32> = Rc::new(RefCell::new(0));
     let consume: Value<FnPtr<fn()>> = Rc::new(RefCell::new(lambda!(
@@ -61,15 +63,18 @@ fn main_0() -> i32 {
             { (*h.borrow()).p.clone() }.write(0);
         }
     )));
-    let _dtor_consume = ScopedDestructor::new(&consume, |__p| __p.with(|__f| __f.destroy()));
+    let _dtor_consume = std::mem::DropGuard::new(consume.clone(), |__p| {
+        __p.as_pointer().with(|__f| __f.destroy())
+    });
     ({ (*consume.borrow()).call() });
     ({ (*consume.borrow()).call() });
     assert!(({ ((*total.borrow()) == 7) }));
     let o2: Value<Owner> = Rc::new(RefCell::new(Owner::new({ 9 })));
-    let _dtor_o2 = ScopedDestructor::new(&o2, |__p| __p.destructor());
+    let _dtor_o2 = std::mem::DropGuard::new(o2.clone(), |__p| __p.as_pointer().destructor());
     let t: Value<FnPtr<fn() -> i32>> =
         Rc::new(RefCell::new(({ OwnerImpl::take(&o2.as_pointer()) })));
-    let _dtor_t = ScopedDestructor::new(&t, |__p| __p.with(|__f| __f.destroy()));
+    let _dtor_t =
+        std::mem::DropGuard::new(t.clone(), |__p| __p.as_pointer().with(|__f| __f.destroy()));
     assert!(({ ({ (*o2.borrow()).p.clone() }).is_null() }));
     assert!(({ (({ (*t.borrow()).call() }) == 9) }));
     return 0;

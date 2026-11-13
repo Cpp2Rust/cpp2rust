@@ -67,7 +67,7 @@ pub fn main() {
 fn main_0() -> i32 {
     {
         let s: Value<S> = Rc::new(RefCell::new(S::new({ 3 })));
-        let _dtor_s = ScopedDestructor::new(&s, |__p| __p.destructor());
+        let _dtor_s = std::mem::DropGuard::new(s.clone(), |__p| __p.as_pointer().destructor());
         assert!(({ ({ (*s.borrow()).v } == 4) }));
         assert!((total_0.with(|rc| *rc.borrow()) == 8));
     }

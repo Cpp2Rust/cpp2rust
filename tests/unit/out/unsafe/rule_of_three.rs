@@ -83,9 +83,9 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     {
         let mut a: Buffer = Buffer::new({ 4 });
-        let _dtor_a = ScopedDestructorUnsafe::new(&raw mut a, Buffer::destructor);
+        let _dtor_a = std::mem::DropGuard::new(&raw mut a, |__p| unsafe { (*__p).destructor() });
         let mut b: Buffer = Buffer::copy_from({ &a });
-        let _dtor_b = ScopedDestructorUnsafe::new(&raw mut b, Buffer::destructor);
+        let _dtor_b = std::mem::DropGuard::new(&raw mut b, |__p| unsafe { (*__p).destructor() });
         assert!(
             ((*std::cell::LazyCell::force_mut(&mut *&raw mut alive_0)) == (2))
                 && ((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_1)) == (1))
@@ -93,7 +93,7 @@ unsafe fn main_0() -> i32 {
         b.data[(0) as usize] = 100;
         assert!(((a.data[(0) as usize]) == (0)));
         let mut c: Buffer = Buffer::new({ 2 });
-        let _dtor_c = ScopedDestructorUnsafe::new(&raw mut c, Buffer::destructor);
+        let _dtor_c = std::mem::DropGuard::new(&raw mut c, |__p| unsafe { (*__p).destructor() });
         (unsafe { Buffer::copy_assign(&mut c, &a) });
         assert!(((c.size) == (4)) && ((c.data[(3) as usize]) == (3)));
         assert!(
@@ -108,7 +108,7 @@ unsafe fn main_0() -> i32 {
         assert!(((unsafe { sum_2(&a,) }) == (6)));
         assert!(((unsafe { sum_2(&b,) }) == (106)));
         let mut d: Buffer = Buffer::copy_from({ &a });
-        let _dtor_d = ScopedDestructorUnsafe::new(&raw mut d, Buffer::destructor);
+        let _dtor_d = std::mem::DropGuard::new(&raw mut d, |__p| unsafe { (*__p).destructor() });
         assert!(
             ((*std::cell::LazyCell::force_mut(&mut *&raw mut alive_0)) == (4))
                 && ((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_1)) == (3))

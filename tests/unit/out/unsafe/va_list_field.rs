@@ -10,7 +10,8 @@ pub unsafe fn sum_0(mut n: i32, __args: Box<[VaArg]>) -> i32 {
     let mut ap: *const VaArg = ::std::ptr::null();
     ap = __args.as_ptr();
     let mut guard: Guard_1 = Guard_1::new({ &mut ap });
-    let _dtor_guard = ScopedDestructorUnsafe::new(&raw mut guard, Guard_1::destructor);
+    let _dtor_guard =
+        std::mem::DropGuard::new(&raw mut guard, |__p| unsafe { (*__p).destructor() });
     let mut total: i32 = 0;
     let mut i: i32 = 0;
     'loop_: while ((i) < (n)) {

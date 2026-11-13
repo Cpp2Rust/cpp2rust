@@ -881,10 +881,11 @@ void ConverterRefCount::EmitScopedDestructor(const clang::VarDecl *decl) {
     return;
   }
   auto destroy = AsLambdaClass(decl->getType())
-                     ? std::string("__p.with(|__f| __f.destroy())")
-                     : std::format("__p.{}()", kDestructorName);
+                     ? std::string("with(|__f| __f.destroy())")
+                     : std::format("{}()", kDestructorName);
   StrCat(token::kSemiColon,
-         std::format("let _dtor_{0} = ScopedDestructor::new(&{0}, |__p| {1})",
+         std::format("let _dtor_{0} = std::mem::DropGuard::new({0}.clone(), "
+                     "|__p| __p.as_pointer().{1})",
                      GetNamedDeclAsString(decl), destroy));
 }
 

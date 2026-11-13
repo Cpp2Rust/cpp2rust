@@ -116,7 +116,7 @@ fn main_0() -> i32 {
     destroyed_0.with(|rc| *rc.borrow_mut() = 0);
     {
         let s: Value<S> = Rc::new(RefCell::new(S { v: 12 }));
-        let _dtor_s = ScopedDestructor::new(&s, |__p| __p.destructor());
+        let _dtor_s = std::mem::DropGuard::new(s.clone(), |__p| __p.as_pointer().destructor());
         (*s.borrow_mut()) = ({ make_2(13) });
         assert!(
             ({

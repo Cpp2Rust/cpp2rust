@@ -257,26 +257,26 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut a: Explicit = Explicit::new({ 1 });
-    let _dtor_a = ScopedDestructorUnsafe::new(&raw mut a, Explicit::destructor);
+    let _dtor_a = std::mem::DropGuard::new(&raw mut a, |__p| unsafe { (*__p).destructor() });
     let mut b: Explicit = a.clone();
-    let _dtor_b = ScopedDestructorUnsafe::new(&raw mut b, Explicit::destructor);
+    let _dtor_b = std::mem::DropGuard::new(&raw mut b, |__p| unsafe { (*__p).destructor() });
     let mut c: Explicit = a.clone();
-    let _dtor_c = ScopedDestructorUnsafe::new(&raw mut c, Explicit::destructor);
+    let _dtor_c = std::mem::DropGuard::new(&raw mut c, |__p| unsafe { (*__p).destructor() });
     let mut d: Explicit = a.clone();
-    let _dtor_d = ScopedDestructorUnsafe::new(&raw mut d, Explicit::destructor);
+    let _dtor_d = std::mem::DropGuard::new(&raw mut d, |__p| unsafe { (*__p).destructor() });
     assert!(
         ((unsafe { same_0(&b, &a,) }) && (unsafe { same_0(&c, &a,) }))
             && (unsafe { same_0(&d, &a,) })
     );
     let mut e: Explicit = Explicit::new({ 2 });
-    let _dtor_e = ScopedDestructorUnsafe::new(&raw mut e, Explicit::destructor);
+    let _dtor_e = std::mem::DropGuard::new(&raw mut e, |__p| unsafe { (*__p).destructor() });
     let mut f: Explicit = Explicit::new({ 3 });
-    let _dtor_f = ScopedDestructorUnsafe::new(&raw mut f, Explicit::destructor);
+    let _dtor_f = std::mem::DropGuard::new(&raw mut f, |__p| unsafe { (*__p).destructor() });
     e = (b).clone();
     f = (c).clone();
     assert!((unsafe { same_0(&e, &b,) }) && (unsafe { same_0(&f, &c,) }));
     let mut g: Explicit = Explicit::new({ 4 });
-    let _dtor_g = ScopedDestructorUnsafe::new(&raw mut g, Explicit::destructor);
+    let _dtor_g = std::mem::DropGuard::new(&raw mut g, |__p| unsafe { (*__p).destructor() });
     g = {
         e = (f).clone();
         (e).clone()
@@ -417,7 +417,7 @@ unsafe fn main_0() -> i32 {
     (unsafe { Copyable::move_assign(&mut c4, &mut c3) });
     assert!(((c4.data[(1_usize)]) == (2)) && (c3.data.is_empty()));
     let mut h1: Holder = Holder::new({ 4 });
-    let _dtor_h1 = ScopedDestructorUnsafe::new(&raw mut h1, Holder::destructor);
+    let _dtor_h1 = std::mem::DropGuard::new(&raw mut h1, |__p| unsafe { (*__p).destructor() });
     {
         let _a0: *mut i32 = (Box::leak(Box::new(9)) as *mut i32);
         h1.p = if _a0.is_null() {
@@ -427,7 +427,7 @@ unsafe fn main_0() -> i32 {
         }
     };
     let mut h2: Holder = Holder::move_from({ &mut h1 });
-    let _dtor_h2 = ScopedDestructorUnsafe::new(&raw mut h2, Holder::destructor);
+    let _dtor_h2 = std::mem::DropGuard::new(&raw mut h2, |__p| unsafe { (*__p).destructor() });
     assert!(
         ((((h2.inner.x) == (4)) && ((h2.e.v) == (4)))
             && ((*h2
@@ -442,7 +442,7 @@ unsafe fn main_0() -> i32 {
             .is_null())
     );
     let mut h3: Holder = Holder::new({ 1 });
-    let _dtor_h3 = ScopedDestructorUnsafe::new(&raw mut h3, Holder::destructor);
+    let _dtor_h3 = std::mem::DropGuard::new(&raw mut h3, |__p| unsafe { (*__p).destructor() });
     (unsafe { Holder::move_assign(&mut h3, &mut h2) });
     assert!(
         ((((h3.inner.x) == (4)) && ((h3.e.arr[(1) as usize]) == (5)))
