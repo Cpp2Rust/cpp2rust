@@ -46,11 +46,7 @@ fn main_0() -> i32 {
     let n: Value<node> = <Value<node>>::default();
     (*n.borrow_mut()).next = Ptr::<node>::null();
     elem!(anon_0::bytes(field_ptr!(n.as_pointer(), x)), 0).write(171_u8);
-    assert!(
-        (((((elem!(anon_0::bytes(field_ptr!(n.as_pointer(), x)), 0).read()) as i32) == 171)
-            as i32)
-            != 0)
-    );
+    assert!((((elem!(anon_0::bytes(field_ptr!(n.as_pointer(), x)), 0).read()) as i32) == 171));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

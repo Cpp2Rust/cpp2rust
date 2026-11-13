@@ -25,7 +25,7 @@ pub unsafe fn test_s6_addr_access_0() {
         }
     };
     assert!(
-        (((({
+        (({
             let sa = core::slice::from_raw_parts(
                 ((*(ap as *mut ::libc::in6_addr)).s6_addr.as_mut_ptr() as *const ::libc::c_void)
                     as *const u8,
@@ -43,38 +43,25 @@ pub unsafe fn test_s6_addr_access_0() {
                 }
             }
             diff
-        }) == (0)) as i32)
-            != 0)
+        }) == (0))
     );
     (*(&mut addr as *mut ::libc::in6_addr)).s6_addr[(0) as usize] = 32_u8;
     (*(ap as *mut ::libc::in6_addr)).s6_addr[(1) as usize] = 1_u8;
     assert!(
-        ((((((((*(&mut addr as *mut ::libc::in6_addr)).s6_addr[(0) as usize] as i32) == (32))
-            as i32)
-            != 0)
-            && (((((*(ap as *mut ::libc::in6_addr)).s6_addr[(1) as usize] as i32) == (1)) as i32)
-                != 0)) as i32)
-            != 0)
+        ((((*(&mut addr as *mut ::libc::in6_addr)).s6_addr[(0) as usize] as i32) == (32))
+            && (((*(ap as *mut ::libc::in6_addr)).s6_addr[(1) as usize] as i32) == (1)))
     );
     (*(&mut addr as *mut ::libc::in6_addr)).s6_addr[(15) as usize] =
         (((*(&mut addr as *mut ::libc::in6_addr)).s6_addr[(15) as usize] as i32) + 4) as u8;
     (*(ap as *mut ::libc::in6_addr)).s6_addr[(15) as usize].postfix_inc();
-    assert!(
-        (((((*(&mut addr as *mut ::libc::in6_addr)).s6_addr[(15) as usize] as i32) == (6)) as i32)
-            != 0)
-    );
+    assert!((((*(&mut addr as *mut ::libc::in6_addr)).s6_addr[(15) as usize] as i32) == (6)));
     let mut bytes: *mut u8 = (*(&mut addr as *mut ::libc::in6_addr)).s6_addr.as_mut_ptr();
     (*bytes.offset((2) as isize)) = 7_u8;
-    assert!(
-        (((((*(ap as *mut ::libc::in6_addr)).s6_addr[(2) as usize] as i32) == (7)) as i32) != 0)
-    );
+    assert!((((*(ap as *mut ::libc::in6_addr)).s6_addr[(2) as usize] as i32) == (7)));
     let mut fourth: *mut u8 =
         (&mut (*(ap as *mut ::libc::in6_addr)).s6_addr[(3) as usize] as *mut u8);
     (*fourth) = 8_u8;
-    assert!(
-        (((((*(&mut addr as *mut ::libc::in6_addr)).s6_addr[(3) as usize] as i32) == (8)) as i32)
-            != 0)
-    );
+    assert!((((*(&mut addr as *mut ::libc::in6_addr)).s6_addr[(3) as usize] as i32) == (8)));
     match (
         { ((*(ap as *mut ::libc::in6_addr)).s6_addr.as_mut_ptr() as *mut ::libc::c_void) },
         { (loopback.as_ptr() as *const ::libc::c_void) },
@@ -87,7 +74,7 @@ pub unsafe fn test_s6_addr_access_0() {
         }
     };
     assert!(
-        (((({
+        (({
             let sa = core::slice::from_raw_parts(
                 ((*(&mut addr as *mut ::libc::in6_addr)).s6_addr.as_mut_ptr()
                     as *const ::libc::c_void) as *const u8,
@@ -105,8 +92,7 @@ pub unsafe fn test_s6_addr_access_0() {
                 }
             }
             diff
-        }) == (0)) as i32)
-            != 0)
+        }) == (0))
     );
 }
 pub fn main() {
@@ -119,7 +105,7 @@ unsafe fn main_0() -> i32 {
     (unsafe { test_s6_addr_access_0() });
     let mut buf: [u8; 16] = [0_u8; 16];
     assert!(
-        (((({
+        (({
             unsafe extern "C" {
                 fn inet_pton(af: i32, src: *const libc::c_char, dst: *mut ::libc::c_void) -> i32;
             }
@@ -128,20 +114,15 @@ unsafe fn main_0() -> i32 {
                 (c"1.2.3.4".as_ptr().cast_mut()).cast_const(),
                 (buf.as_mut_ptr() as *mut ::libc::c_void),
             )
-        }) == (1)) as i32)
-            != 0)
+        }) == (1))
     );
     assert!(
-        (((((((((((((buf[(0) as usize] as i32) == (1)) as i32) != 0)
-            && ((((buf[(1) as usize] as i32) == (2)) as i32) != 0)) as i32)
-            != 0)
-            && ((((buf[(2) as usize] as i32) == (3)) as i32) != 0)) as i32)
-            != 0)
-            && ((((buf[(3) as usize] as i32) == (4)) as i32) != 0)) as i32)
-            != 0)
+        (((((buf[(0) as usize] as i32) == (1)) && ((buf[(1) as usize] as i32) == (2)))
+            && ((buf[(2) as usize] as i32) == (3)))
+            && ((buf[(3) as usize] as i32) == (4)))
     );
     assert!(
-        (((({
+        (({
             unsafe extern "C" {
                 fn inet_pton(af: i32, src: *const libc::c_char, dst: *mut ::libc::c_void) -> i32;
             }
@@ -150,11 +131,10 @@ unsafe fn main_0() -> i32 {
                 (c"999.1.1.1".as_ptr().cast_mut()).cast_const(),
                 (buf.as_mut_ptr() as *mut ::libc::c_void),
             )
-        }) == (0)) as i32)
-            != 0)
+        }) == (0))
     );
     assert!(
-        (((({
+        (({
             unsafe extern "C" {
                 fn inet_pton(af: i32, src: *const libc::c_char, dst: *mut ::libc::c_void) -> i32;
             }
@@ -163,11 +143,10 @@ unsafe fn main_0() -> i32 {
                 (c"not an ip".as_ptr().cast_mut()).cast_const(),
                 (buf.as_mut_ptr() as *mut ::libc::c_void),
             )
-        }) == (0)) as i32)
-            != 0)
+        }) == (0))
     );
     assert!(
-        (((({
+        (({
             unsafe extern "C" {
                 fn inet_pton(af: i32, src: *const libc::c_char, dst: *mut ::libc::c_void) -> i32;
             }
@@ -176,16 +155,11 @@ unsafe fn main_0() -> i32 {
                 (c"::1".as_ptr().cast_mut()).cast_const(),
                 (buf.as_mut_ptr() as *mut ::libc::c_void),
             )
-        }) == (1)) as i32)
-            != 0)
+        }) == (1))
     );
+    assert!((((buf[(0) as usize] as i32) == (0)) && ((buf[(15) as usize] as i32) == (1))));
     assert!(
-        (((((((buf[(0) as usize] as i32) == (0)) as i32) != 0)
-            && ((((buf[(15) as usize] as i32) == (1)) as i32) != 0)) as i32)
-            != 0)
-    );
-    assert!(
-        (((({
+        (({
             unsafe extern "C" {
                 fn inet_pton(af: i32, src: *const libc::c_char, dst: *mut ::libc::c_void) -> i32;
             }
@@ -194,20 +168,16 @@ unsafe fn main_0() -> i32 {
                 (c"2001:db8::5".as_ptr().cast_mut()).cast_const(),
                 (buf.as_mut_ptr() as *mut ::libc::c_void),
             )
-        }) == (1)) as i32)
-            != 0)
+        }) == (1))
     );
     assert!(
-        ((((((((((buf[(0) as usize] as i32) == (32)) as i32) != 0)
-            && ((((buf[(1) as usize] as i32) == (1)) as i32) != 0)) as i32)
-            != 0)
-            && ((((buf[(15) as usize] as i32) == (5)) as i32) != 0)) as i32)
-            != 0)
+        ((((buf[(0) as usize] as i32) == (32)) && ((buf[(1) as usize] as i32) == (1)))
+            && ((buf[(15) as usize] as i32) == (5)))
     );
     let mut text: [libc::c_char; 64] = [(0 as libc::c_char); 64];
     let mut four: [u8; 4] = [10_u8, 0_u8, 0_u8, 1_u8];
     assert!(
-        ((((libc::strcmp(
+        ((libc::strcmp(
             {
                 unsafe extern "C" {
                     fn inet_ntop(
@@ -225,8 +195,7 @@ unsafe fn main_0() -> i32 {
                 )
             },
             (c"10.0.0.1".as_ptr().cast_mut()).cast_const()
-        )) == (0)) as i32)
-            != 0)
+        )) == (0))
     );
     let mut sixteen: [u8; 16] = [
         0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8,
@@ -234,7 +203,7 @@ unsafe fn main_0() -> i32 {
     ];
     sixteen[(15) as usize] = 1_u8;
     assert!(
-        ((((libc::strcmp(
+        ((libc::strcmp(
             {
                 unsafe extern "C" {
                     fn inet_ntop(
@@ -252,11 +221,10 @@ unsafe fn main_0() -> i32 {
                 )
             },
             (c"::1".as_ptr().cast_mut()).cast_const()
-        )) == (0)) as i32)
-            != 0)
+        )) == (0))
     );
     assert!(
-        (((({
+        (({
             unsafe extern "C" {
                 fn inet_ntop(
                     af: i32,
@@ -272,8 +240,7 @@ unsafe fn main_0() -> i32 {
                 (4 as libc::socklen_t),
             )
         })
-        .is_null()) as i32)
-            != 0)
+        .is_null())
     );
     return 0;
 }

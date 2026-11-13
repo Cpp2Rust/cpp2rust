@@ -60,7 +60,7 @@ unsafe fn main_0() -> i32 {
             Box::new([(42).into()]),
         )
     });
-    assert!(((((ctx.last_error) == (42)) as i32) != 0));
+    assert!(((ctx.last_error) == (42)));
     ctx.verbose = 0;
     (unsafe {
         set_error_0(
@@ -69,12 +69,12 @@ unsafe fn main_0() -> i32 {
             Box::new([(99).into()]),
         )
     });
-    assert!(((((ctx.last_error) == (42)) as i32) != 0));
+    assert!(((ctx.last_error) == (42)));
     let mut v: value = <value>::default();
     v.l = ((1_i64) << (40));
-    assert!(((((unsafe { pick_1(1, Box::new([(v).into(),])) }) == ((1_i64) << (40))) as i32) != 0));
+    assert!(((unsafe { pick_1(1, Box::new([(v).into(),])) }) == ((1_i64) << (40))));
     v.i = 7;
-    assert!(((((unsafe { pick_1(0, Box::new([(v).into(),])) }) == (7_i64)) as i32) != 0));
+    assert!(((unsafe { pick_1(0, Box::new([(v).into(),])) }) == (7_i64)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

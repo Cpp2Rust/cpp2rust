@@ -49,10 +49,6 @@ fn main_0() -> i32 {
             }
         }
     };
-    return if (((n == (-1_i32 as isize)) as i32) != 0) {
-        0
-    } else {
-        1
-    };
+    return if (n == (-1_i32 as isize)) { 0 } else { 1 };
 }
 pub fn __cpp2rust_init_globals() {}

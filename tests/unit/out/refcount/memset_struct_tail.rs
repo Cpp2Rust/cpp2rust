@@ -40,7 +40,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let mut p: Ptr<S> = libcc2rs::malloc_refcount(32usize).reinterpret_cast::<S>();
-    assert!((((!((p).is_null())) as i32) != 0));
+    assert!((!((p).is_null())));
     match ({ (p).to_any() },) {
         (mut __tmp_0,) => {
             __tmp_0.memset((255) as u8, 32usize as usize);
@@ -57,15 +57,11 @@ fn main_0() -> i32 {
             (__tmp_1).clone()
         }
     };
-    assert!((((p.with(|__s| __s.keep) == 7) as i32) != 0));
+    assert!((p.with(|__s| __s.keep) == 7));
     assert!(
-        ((((((((((((p.with(|__s| __s.a) == 0) as i32) != 0)
-            && (((p.with(|__s| __s.b) == 0_i64) as i32) != 0)) as i32)
-            != 0)
-            && (((((array_elem!(p, c, 4).read()) as i32) == 0) as i32) != 0)) as i32)
-            != 0)
-            && (((p.with(|__s| __s.last) == 0) as i32) != 0)) as i32)
-            != 0)
+        ((((p.with(|__s| __s.a) == 0) && (p.with(|__s| __s.b) == 0_i64))
+            && (((array_elem!(p, c, 4).read()) as i32) == 0))
+            && (p.with(|__s| __s.last) == 0))
     );
     field!(p, a).write(1);
     field!(p, b).write(2_i64);
@@ -80,17 +76,9 @@ fn main_0() -> i32 {
             (__tmp_2).clone()
         }
     };
-    assert!(
-        ((((((p.with(|__s| __s.keep) == 7) as i32) != 0)
-            && (((p.with(|__s| __s.a) == 1) as i32) != 0)) as i32)
-            != 0)
-    );
-    assert!(
-        ((((((p.with(|__s| __s.b) == 0_i64) as i32) != 0)
-            && (((((array_elem!(p, c, 0).read()) as i32) == 0) as i32) != 0)) as i32)
-            != 0)
-    );
-    assert!((((p.with(|__s| __s.last) == 3) as i32) != 0));
+    assert!(((p.with(|__s| __s.keep) == 7) && (p.with(|__s| __s.a) == 1)));
+    assert!(((p.with(|__s| __s.b) == 0_i64) && (((array_elem!(p, c, 0).read()) as i32) == 0)));
+    assert!((p.with(|__s| __s.last) == 3));
     libcc2rs::free_refcount((p).to_any());
     return 0;
 }

@@ -39,8 +39,8 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((((({ first_0() }) == 3) as i32) != 0));
-    assert!((((({ second_2() }) == 30) as i32) != 0));
+    assert!((({ first_0() }) == 3));
+    assert!((({ second_2() }) == 30));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

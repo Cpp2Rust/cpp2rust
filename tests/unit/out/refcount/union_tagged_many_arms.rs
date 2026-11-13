@@ -60,45 +60,35 @@ fn main_0() -> i32 {
     let a: Value<Slot> = <Value<Slot>>::default();
     (*a.borrow_mut()).tag = Tag_enum_T_NUM_S;
     anon_0::signed_n(field_ptr!(a.as_pointer(), payload)).write((-7_i32 as i64));
-    assert!(
-        ((((anon_0::signed_n(field_ptr!(a.as_pointer(), payload)).read()) == (-7_i32 as i64))
-            as i32)
-            != 0)
-    );
+    assert!(((anon_0::signed_n(field_ptr!(a.as_pointer(), payload)).read()) == (-7_i32 as i64)));
     let b: Value<Slot> = <Value<Slot>>::default();
     (*b.borrow_mut()).tag = Tag_enum_T_NUM_U;
     anon_0::unsigned_n(field_ptr!(b.as_pointer(), payload)).write(3735928559_u64);
-    assert!(
-        ((((anon_0::unsigned_n(field_ptr!(b.as_pointer(), payload)).read()) == 3735928559_u64)
-            as i32)
-            != 0)
-    );
+    assert!(((anon_0::unsigned_n(field_ptr!(b.as_pointer(), payload)).read()) == 3735928559_u64));
     let c: Value<Slot> = <Value<Slot>>::default();
     (*c.borrow_mut()).tag = Tag_enum_T_TEXT;
     anon_0::text(field_ptr!(c.as_pointer(), payload))
         .write(Ptr::<i8>::from_string_literal(b"hello"));
     assert!(
-        (((((elem!(
+        (((elem!(
             (anon_0::text(field_ptr!(c.as_pointer(), payload)).read()),
             0
         )
         .read()) as i32)
-            == ('h' as i32)) as i32)
-            != 0)
+            == ('h' as i32))
     );
     let d: Value<Slot> = <Value<Slot>>::default();
     (*d.borrow_mut()).tag = Tag_enum_T_FLOAT;
     anon_0::f(field_ptr!(d.as_pointer(), payload)).write(1.5_f64);
-    assert!(((((anon_0::f(field_ptr!(d.as_pointer(), payload)).read()) == 1.5_f64) as i32) != 0));
+    assert!(((anon_0::f(field_ptr!(d.as_pointer(), payload)).read()) == 1.5_f64));
     let x: Value<i32> = Rc::new(RefCell::new(0));
     let e: Value<Slot> = <Value<Slot>>::default();
     (*e.borrow_mut()).tag = Tag_enum_T_REF;
     anon_0::handle(field_ptr!(e.as_pointer(), payload)).write((x.as_pointer()).to_any());
     assert!(
-        ((({ (anon_0::handle(field_ptr!(e.as_pointer(), payload)).read()) } == {
+        ({ (anon_0::handle(field_ptr!(e.as_pointer(), payload)).read()) } == {
             (x.as_pointer()).to_any()
-        }) as i32)
-            != 0)
+        })
     );
     return 0;
 }

@@ -27,29 +27,27 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut buf: [libc::c_char; 64] = [(0 as libc::c_char); 64];
     assert!(
-        ((((unsafe {
+        ((unsafe {
             extract_first_0(
                 buf.as_mut_ptr(),
                 1,
                 (c"%d".as_ptr().cast_mut()).cast_const(),
                 Box::new([(42).into()]),
             )
-        }) == (42)) as i32)
-            != 0)
+        }) == (42))
     );
-    assert!(((((buf[(0) as usize] as i32) == (42)) as i32) != 0));
+    assert!(((buf[(0) as usize] as i32) == (42)));
     assert!(
-        ((((unsafe {
+        ((unsafe {
             extract_first_0(
                 buf.as_mut_ptr(),
                 1,
                 (c"%d".as_ptr().cast_mut()).cast_const(),
                 Box::new([(65).into()]),
             )
-        }) == (65)) as i32)
-            != 0)
+        }) == (65))
     );
-    assert!(((((buf[(0) as usize] as i32) == ('A' as i32)) as i32) != 0));
+    assert!(((buf[(0) as usize] as i32) == ('A' as i32)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

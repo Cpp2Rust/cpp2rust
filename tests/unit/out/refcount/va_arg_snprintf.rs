@@ -22,29 +22,27 @@ pub fn main() {
 fn main_0() -> i32 {
     let buf: Value<Box<[i8]>> = Rc::new(RefCell::new((0..64).map(|_| 0_i8).collect::<Box<[i8]>>()));
     assert!(
-        (((({
+        (({
             extract_first_0(
                 buf.decay(),
                 1,
                 Ptr::<i8>::from_string_literal(b"%d"),
                 Box::new([(42).into()]),
             )
-        }) == 42) as i32)
-            != 0)
+        }) == 42)
     );
-    assert!(({ (((((*buf.borrow())[(0) as usize] as i32) == 42) as i32) != 0) }));
+    assert!(({ (((*buf.borrow())[(0) as usize] as i32) == 42) }));
     assert!(
-        (((({
+        (({
             extract_first_0(
                 buf.decay(),
                 1,
                 Ptr::<i8>::from_string_literal(b"%d"),
                 Box::new([(65).into()]),
             )
-        }) == 65) as i32)
-            != 0)
+        }) == 65)
     );
-    assert!(({ (((((*buf.borrow())[(0) as usize] as i32) == ('A' as i32)) as i32) != 0) }));
+    assert!(({ (((*buf.borrow())[(0) as usize] as i32) == ('A' as i32)) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

@@ -55,37 +55,30 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let mut p: Ptr<S> = libcc2rs::calloc_refcount(1_usize, 32usize).reinterpret_cast::<S>();
-    assert!((((!((p).is_null())) as i32) != 0));
+    assert!((!((p).is_null())));
     let mut q: Ptr<S> = (p).clone();
     field!(field!(p, in_), x).write(1);
     field!(field!(p, in_), y).write(2);
     field!(p, total).write(({ q.with(|__s| __s.in_.x) } + { q.with(|__s| __s.in_.y) }));
-    assert!((((q.with(|__s| __s.total) == 3) as i32) != 0));
+    assert!((q.with(|__s| __s.total) == 3));
     let mut ip: Ptr<In> = (field_ptr!(p, in_));
     field!(ip, x).write((p.with(|__s| __s.total) + 1));
-    assert!(
-        ((((((q.with(|__s| __s.in_.x) == 4) as i32) != 0)
-            && (((q.with(|__s| __s.in_.y) == 2) as i32) != 0)) as i32)
-            != 0)
-    );
+    assert!(((q.with(|__s| __s.in_.x) == 4) && (q.with(|__s| __s.in_.y) == 2)));
     array_elem!(p, arr, p.with(|__s| __s.n)).write({ p.with(|__s| __s.total) });
     {
         field!(p, n).with_mut(|__v| *__v = *__v + 1)
     };
     array_elem!(p, arr, p.with(|__s| __s.n)).write(q.with(|__s| __s.in_.x));
     assert!(
-        ((((((((((array_elem!(q, arr, 0).read()) == 3) as i32) != 0)
-            && ((((array_elem!(q, arr, 1).read()) == 4) as i32) != 0)) as i32)
-            != 0)
-            && (((q.with(|__s| __s.n) == 1) as i32) != 0)) as i32)
-            != 0)
+        ((((array_elem!(q, arr, 0).read()) == 3) && ((array_elem!(q, arr, 1).read()) == 4))
+            && (q.with(|__s| __s.n) == 1))
     );
     libcc2rs::free_refcount((p).to_any());
     let s: Value<Node> = <Value<Node>>::default();
     (*s.borrow_mut()).x = 1;
     (*s.borrow_mut()).self_ = { (s.as_pointer()) };
     field!({ (*s.borrow()).self_.clone() }, x).write({ ({ (*s.borrow()).x } + 1) });
-    assert!(({ ((({ (*s.borrow()).x } == 2) as i32) != 0) }));
+    assert!(({ ({ (*s.borrow()).x } == 2) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

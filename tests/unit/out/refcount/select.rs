@@ -14,7 +14,7 @@ fn main_0() -> i32 {
     let fds: Value<Box<[i32]>> =
         Rc::new(RefCell::new((0..2).map(|_| 0_i32).collect::<Box<[i32]>>()));
     assert!(
-        (((match ({ fds.decay() },) {
+        (match ({ fds.decay() },) {
             (mut __tmp_0,) => {
                 match nix::unistd::pipe() {
                     Ok((__r, __w)) => {
@@ -28,8 +28,7 @@ fn main_0() -> i32 {
                     }
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
     let rset: Value<CFdSet> = Rc::new(RefCell::new(Default::default()));
     (rset.as_pointer()).with_mut(|__s| __s.zero());
@@ -48,7 +47,7 @@ fn main_0() -> i32 {
     (*tv.borrow_mut()).tv_sec = (0 as ::libc::time_t);
     assert!(
         ({
-            (((match (
+            (match (
                 { ((*fds.borrow())[(0) as usize] + 1) },
                 { (rset.as_pointer()) },
                 { (tv.as_pointer()) },
@@ -160,13 +159,12 @@ fn main_0() -> i32 {
                         }
                     })
                 }
-            } == 0) as i32)
-                != 0)
+            } == 0)
         })
     );
     assert!(
         ({
-            ((!(match ({ (*fds.borrow())[(0) as usize] },) {
+            !(match ({ (*fds.borrow())[(0) as usize] },) {
                 (mut __tmp_6,) => {
                     if (rset.as_pointer()).with(|__s| __s.isset(__tmp_6)) {
                         1
@@ -174,12 +172,11 @@ fn main_0() -> i32 {
                         0
                     }
                 }
-            } != 0) as i32)
-                != 0)
+            } != 0)
         })
     );
     assert!(
-        (((match FdRegistry::with_fd(({ (*fds.borrow())[(1) as usize] }), |__fd| {
+        (match FdRegistry::with_fd(({ (*fds.borrow())[(1) as usize] }), |__fd| {
             (Ptr::<i8>::from_string_literal(b"x"))
                 .to_any()
                 .reinterpret_cast::<u8>()
@@ -190,8 +187,7 @@ fn main_0() -> i32 {
                 libcc2rs::cpp2rust_errno().write(__e as i32);
                 -1
             }
-        } == 1_isize) as i32)
-            != 0)
+        } == 1_isize)
     );
     (rset.as_pointer()).with_mut(|__s| __s.zero());
     match ({ (*fds.borrow())[(0) as usize] },) {
@@ -202,7 +198,7 @@ fn main_0() -> i32 {
     (*tv.borrow_mut()).tv_sec = (1 as ::libc::time_t);
     assert!(
         ({
-            (((match (
+            (match (
                 { ((*fds.borrow())[(0) as usize] + 1) },
                 { (rset.as_pointer()) },
                 { (tv.as_pointer()) },
@@ -314,8 +310,7 @@ fn main_0() -> i32 {
                         }
                     })
                 }
-            } == 1) as i32)
-                != 0)
+            } == 1)
         })
     );
     assert!(
@@ -331,8 +326,8 @@ fn main_0() -> i32 {
             } != 0)
         })
     );
-    assert!((((FdRegistry::close(({ (*fds.borrow())[(0) as usize] })) == 0) as i32) != 0));
-    assert!((((FdRegistry::close(({ (*fds.borrow())[(1) as usize] })) == 0) as i32) != 0));
+    assert!((FdRegistry::close(({ (*fds.borrow())[(0) as usize] })) == 0));
+    assert!((FdRegistry::close(({ (*fds.borrow())[(1) as usize] })) == 0));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

@@ -24,9 +24,9 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((((({ param_shadow_1(10,) }) == 11) as i32) != 0));
-    assert!((((({ local_shadow_2() }) == 99) as i32) != 0));
-    assert!((((({ read_global_3() }) == 5) as i32) != 0));
+    assert!((({ param_shadow_1(10,) }) == 11));
+    assert!((({ local_shadow_2() }) == 99));
+    assert!((({ read_global_3() }) == 5));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {

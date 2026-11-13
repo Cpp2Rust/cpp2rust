@@ -35,46 +35,35 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
+    assert!((((*std::cell::LazyCell::force_mut(&mut *&raw mut T1_0)).count) == (1_usize)));
     assert!(
-        (((((*std::cell::LazyCell::force_mut(&mut *&raw mut T1_0)).count) == (1_usize)) as i32)
-            != 0)
-    );
-    assert!(
-        ((((libc::strcmp(
+        ((libc::strcmp(
             (*std::cell::LazyCell::force_mut(&mut *&raw mut T1_0)).rows[(0) as usize].as_ptr(),
             (c"alpha".as_ptr().cast_mut()).cast_const()
-        )) == (0)) as i32)
-            != 0)
+        )) == (0))
     );
     assert!(
-        (((((*std::cell::LazyCell::force_mut(&mut *&raw mut T1_0)).rows[(1) as usize][(0) as usize]
+        (((*std::cell::LazyCell::force_mut(&mut *&raw mut T1_0)).rows[(1) as usize][(0) as usize]
             as i32)
-            == ('\0' as i32)) as i32)
-            != 0)
+            == ('\0' as i32))
     );
+    assert!((((*std::cell::LazyCell::force_mut(&mut *&raw mut T2_1)).count) == (2_usize)));
     assert!(
-        (((((*std::cell::LazyCell::force_mut(&mut *&raw mut T2_1)).count) == (2_usize)) as i32)
-            != 0)
-    );
-    assert!(
-        ((((libc::strcmp(
+        ((libc::strcmp(
             (*std::cell::LazyCell::force_mut(&mut *&raw mut T2_1)).rows[(0) as usize].as_ptr(),
             (c"alpha".as_ptr().cast_mut()).cast_const()
-        )) == (0)) as i32)
-            != 0)
+        )) == (0))
     );
     assert!(
-        ((((libc::strcmp(
+        ((libc::strcmp(
             (*std::cell::LazyCell::force_mut(&mut *&raw mut T2_1)).rows[(1) as usize].as_ptr(),
             (c"beta".as_ptr().cast_mut()).cast_const()
-        )) == (0)) as i32)
-            != 0)
+        )) == (0))
     );
     assert!(
-        (((((*std::cell::LazyCell::force_mut(&mut *&raw mut T2_1)).rows[(2) as usize][(0) as usize]
+        (((*std::cell::LazyCell::force_mut(&mut *&raw mut T2_1)).rows[(2) as usize][(0) as usize]
             as i32)
-            == ('\0' as i32)) as i32)
-            != 0)
+            == ('\0' as i32))
     );
     let mut local: table = table {
         rows: [
@@ -85,30 +74,27 @@ unsafe fn main_0() -> i32 {
         count: 3_usize,
     };
     assert!(
-        ((((libc::strcmp(
+        ((libc::strcmp(
             (local.rows[(2) as usize].as_mut_ptr()).cast_const(),
             (c"three".as_ptr().cast_mut()).cast_const()
-        )) == (0)) as i32)
-            != 0)
+        )) == (0))
     );
     local.rows[(1) as usize][(0) as usize] = (('T' as i32) as libc::c_char);
     assert!(
-        ((((libc::strcmp(
+        ((libc::strcmp(
             (local.rows[(1) as usize].as_mut_ptr()).cast_const(),
             (c"Two".as_ptr().cast_mut()).cast_const()
-        )) == (0)) as i32)
-            != 0)
+        )) == (0))
     );
     assert!(
-        ((((libc::strcmp(
+        ((libc::strcmp(
             (local.rows[(0) as usize].as_mut_ptr()).cast_const(),
             (c"one".as_ptr().cast_mut()).cast_const()
-        )) == (0)) as i32)
-            != 0)
+        )) == (0))
     );
     let mut p: *const libc::c_char = (local.rows[(2) as usize].as_mut_ptr()).cast_const();
-    assert!((((((*p.offset((0) as isize)) as i32) == ('t' as i32)) as i32) != 0));
-    assert!(((((local.count) == (3_usize)) as i32) != 0));
+    assert!((((*p.offset((0) as isize)) as i32) == ('t' as i32)));
+    assert!(((local.count) == (3_usize)));
     let mut copy: table = <table>::default();
     match (
         { ((&mut copy.rows as *mut [[libc::c_char; 10]; 3]) as *mut ::libc::c_void) },
@@ -126,17 +112,14 @@ unsafe fn main_0() -> i32 {
         }
     };
     assert!(
-        (((((((libc::strcmp(
+        (((libc::strcmp(
             (copy.rows[(1) as usize].as_mut_ptr()).cast_const(),
             (c"Two".as_ptr().cast_mut()).cast_const()
-        )) == (0)) as i32)
-            != 0)
-            && ((((libc::strcmp(
+        )) == (0))
+            && ((libc::strcmp(
                 (copy.rows[(2) as usize].as_mut_ptr()).cast_const(),
                 (c"three".as_ptr().cast_mut()).cast_const()
-            )) == (0)) as i32)
-                != 0)) as i32)
-            != 0)
+            )) == (0)))
     );
     let mut grid: [[libc::c_char; 3]; 2] = [
         [
@@ -167,10 +150,8 @@ unsafe fn main_0() -> i32 {
         }
     };
     assert!(
-        (((((((other[(1) as usize][(2) as usize] as i32) == ('f' as i32)) as i32) != 0)
-            && ((((other[(0) as usize][(1) as usize] as i32) == ('b' as i32)) as i32) != 0))
-            as i32)
-            != 0)
+        (((other[(1) as usize][(2) as usize] as i32) == ('f' as i32))
+            && ((other[(0) as usize][(1) as usize] as i32) == ('b' as i32)))
     );
     return 0;
 }

@@ -97,9 +97,9 @@ pub fn test_puts_2() {
     };
 }
 pub fn test_fileno_3() {
-    assert!((((libcc2rs::c_stdin().with(|__f| __f.fd) == 0) as i32) != 0));
-    assert!((((libcc2rs::c_stdout().with(|__f| __f.fd) == 1) as i32) != 0));
-    assert!((((libcc2rs::c_stderr().with(|__f| __f.fd) == 2) as i32) != 0));
+    assert!((libcc2rs::c_stdin().with(|__f| __f.fd) == 0));
+    assert!((libcc2rs::c_stdout().with(|__f| __f.fd) == 1));
+    assert!((libcc2rs::c_stderr().with(|__f| __f.fd) == 2));
     let mut file: Ptr<i8> = Ptr::<i8>::from_string_literal(b"cpp2rust_fileno_test.tmp");
     let mut fp: Ptr<CFile> = match CFile::open(
         &file.to_rust_string(),
@@ -108,22 +108,21 @@ pub fn test_fileno_3() {
         Some(__f) => Ptr::alloc(__f),
         None => Ptr::null(),
     };
-    assert!((((!((fp).is_null())) as i32) != 0));
-    assert!((((fp.with(|__f| __f.fd) > 2) as i32) != 0));
+    assert!((!((fp).is_null())));
+    assert!((fp.with(|__f| __f.fd) > 2));
     {
         let __r = fp.with(|__f| __f.close());
         fp.delete();
         __r
     };
     assert!(
-        (((match nix::unistd::unlink(file.to_rust_string().as_str()) {
+        (match nix::unistd::unlink(file.to_rust_string().as_str()) {
             Ok(()) => 0,
             Err(__e) => {
                 libcc2rs::cpp2rust_errno().write(__e as i32);
                 -1
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
 }
 pub fn main() {

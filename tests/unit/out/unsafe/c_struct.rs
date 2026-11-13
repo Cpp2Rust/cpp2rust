@@ -49,19 +49,19 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut p: Point = Point { x: 10, y: 20 };
-    assert!(((((p.x) == (10)) as i32) != 0));
-    assert!(((((p.y) == (20)) as i32) != 0));
+    assert!(((p.x) == (10)));
+    assert!(((p.y) == (20)));
     let mut q: Point = p;
     q.x = 99;
-    assert!(((((p.x) == (10)) as i32) != 0));
-    assert!(((((q.x) == (99)) as i32) != 0));
-    assert!(((((q.y) == (20)) as i32) != 0));
+    assert!(((p.x) == (10)));
+    assert!(((q.x) == (99)));
+    assert!(((q.y) == (20)));
     let mut l: Line = Line {
         start: Point { x: 1, y: 2 },
         end: Point { x: 3, y: 4 },
     };
-    assert!(((((l.start.x) == (1)) as i32) != 0));
-    assert!(((((l.end.y) == (4)) as i32) != 0));
+    assert!(((l.start.x) == (1)));
+    assert!(((l.end.y) == (4)));
     let mut a: Node = Node {
         value: 1,
         next: std::ptr::null_mut(),
@@ -70,19 +70,19 @@ unsafe fn main_0() -> i32 {
         value: 2,
         next: (&mut a as *mut Node),
     };
-    assert!((((((*b.next).value) == (1)) as i32) != 0));
+    assert!((((*b.next).value) == (1)));
     let mut c: Container = Container {
         inner: Inner { a: 5, b: 6 },
         color: Color_GREEN,
         count: 42,
     };
-    assert!(((((c.inner.a) == (5)) as i32) != 0));
-    assert!(((((c.inner.b) == (6)) as i32) != 0));
-    assert!(((((c.color as u32) == ((Color_GREEN as i32) as u32)) as i32) != 0));
-    assert!(((((c.count) == (42)) as i32) != 0));
+    assert!(((c.inner.a) == (5)));
+    assert!(((c.inner.b) == (6)));
+    assert!(((c.color as u32) == ((Color_GREEN as i32) as u32)));
+    assert!(((c.count) == (42)));
     let mut c2: Container = <Container>::default();
     c2.color = Color_BLUE;
-    assert!(((((c2.color as u32) == (2_u32)) as i32) != 0));
+    assert!(((c2.color as u32) == (2_u32)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

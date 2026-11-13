@@ -35,34 +35,31 @@ pub fn main() {
 fn main_0() -> i32 {
     let mut dummy: Ptr<i8> = Ptr::<i8>::from_string_literal(b"dummy");
     assert!(
-        (((({
+        (({
             logf_1(
                 Ptr::<i8>::from_string_literal(b"hello %d %d"),
                 Box::new([(10).into(), (dummy.to_c_string_iterator().count()).into()]),
             )
-        }) == 15) as i32)
-            != 0)
+        }) == 15)
     );
     assert!(
-        (((({
+        (({
             logf_1(
                 Ptr::<i8>::from_string_literal(b"x %d %d"),
                 Box::new([(1).into(), (2).into()]),
             )
-        }) == 3) as i32)
-            != 0)
+        }) == 3)
     );
     assert!(
-        (((({
+        (({
             lenf_2(
                 Ptr::<i8>::from_string_literal(b"%s"),
                 Box::new([((dummy).clone()).into()]),
             )
-        }) == 5) as i32)
-            != 0)
+        }) == 5)
     );
     assert!(
-        (((({
+        (({
             lenf_2(
                 Ptr::<i8>::from_string_literal(b"%s"),
                 Box::new([(if (((elem!(dummy, 0).read()) as i32) != 0) {
@@ -72,8 +69,7 @@ fn main_0() -> i32 {
                 })
                 .into()]),
             )
-        }) == 5) as i32)
-            != 0)
+        }) == 5)
     );
     return 0;
 }

@@ -55,7 +55,7 @@ unsafe fn main_0() -> i32 {
             == (22_usize))
     );
     let mut __do_while = true;
-    'loop_: while __do_while || (0 != 0) {
+    'loop_: while __do_while || (false) {
         __do_while = false;
         let mut stream: *mut ::libc::FILE = libc::fopen(c"/dev/zero".as_ptr(), c"rb".as_ptr());
         assert!(!((stream).is_null()));
@@ -89,7 +89,7 @@ unsafe fn main_0() -> i32 {
         libc::fclose(stream);
     }
     let mut __do_while = true;
-    'loop_: while __do_while || (0 != 0) {
+    'loop_: while __do_while || (false) {
         __do_while = false;
         let mut stream: *mut ::libc::FILE = libc::fopen(c"/dev/zero".as_ptr(), c"rb".as_ptr());
         assert!(!((stream).is_null()));
@@ -152,7 +152,7 @@ unsafe fn main_0() -> i32 {
             == (33_usize))
     );
     let mut __do_while = true;
-    'loop_: while __do_while || (0 != 0) {
+    'loop_: while __do_while || (false) {
         __do_while = false;
         let mut stream: *mut ::libc::FILE = libc::fopen(c"/dev/null".as_ptr(), c"wb".as_ptr());
         assert!(!((stream).is_null()));
@@ -176,7 +176,7 @@ unsafe fn main_0() -> i32 {
         libc::fclose(stream);
     }
     let mut __do_while = true;
-    'loop_: while __do_while || (0 != 0) {
+    'loop_: while __do_while || (false) {
         __do_while = false;
         let mut stream: *mut ::libc::FILE = libc::fopen(c"/dev/null".as_ptr(), c"wb".as_ptr());
         assert!(!((stream).is_null()));

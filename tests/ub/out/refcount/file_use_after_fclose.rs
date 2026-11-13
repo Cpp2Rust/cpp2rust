@@ -24,14 +24,13 @@ fn main_0() -> i32 {
         fp.delete();
         __r
     };
-    return if ((({
+    return if ({
         let __c = ('x' as i32) as u8;
         match fp.with_mut(|__f| __f.write(&[__c])) {
             1 => __c as i32,
             _ => -1,
         }
-    } == ('x' as i32)) as i32)
-        != 0)
+    } == ('x' as i32))
     {
         1
     } else {

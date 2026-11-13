@@ -32,7 +32,7 @@ unsafe fn main_0() -> i32 {
         z: 4,
     };
     let mut p: *mut S = (libcc2rs::malloc_unsafe(::std::mem::size_of::<S>()) as *mut S);
-    assert!((((!((p).is_null())) as i32) != 0));
+    assert!((!((p).is_null())));
     match ({ ((&mut (*p).x as *mut i32) as *mut ::libc::c_void) }, {
         ((&mut src as *mut S) as *const ::libc::c_void)
     }) {
@@ -48,13 +48,8 @@ unsafe fn main_0() -> i32 {
         }
     };
     assert!(
-        ((((((((((((((*p).x) == (1)) as i32) != 0) && (((((*p).in_.a as i32) == (2)) as i32) != 0))
-            as i32)
-            != 0)
-            && (((((*p).in_.b as i32) == (3)) as i32) != 0)) as i32)
-            != 0)
-            && (((((*p).z) == (4)) as i32) != 0)) as i32)
-            != 0)
+        ((((((*p).x) == (1)) && (((*p).in_.a as i32) == (2))) && (((*p).in_.b as i32) == (3)))
+            && (((*p).z) == (4)))
     );
     let mut n: In = In { a: 5_i16, b: 6_i16 };
     match ({ ((&mut (*p).in_ as *mut In) as *mut ::libc::c_void) }, {
@@ -72,25 +67,16 @@ unsafe fn main_0() -> i32 {
         }
     };
     assert!(
-        ((((((((((((((*p).x) == (1)) as i32) != 0) && (((((*p).in_.a as i32) == (5)) as i32) != 0))
-            as i32)
-            != 0)
-            && (((((*p).in_.b as i32) == (6)) as i32) != 0)) as i32)
-            != 0)
-            && (((((*p).z) == (4)) as i32) != 0)) as i32)
-            != 0)
+        ((((((*p).x) == (1)) && (((*p).in_.a as i32) == (5))) && (((*p).in_.b as i32) == (6)))
+            && (((*p).z) == (4)))
     );
     let mut bz: *mut u8 = ((&mut (*p).z as *mut i32) as *mut u8);
     let mut i: i32 = 0;
-    'loop_: while ((((i) < (4)) as i32) != 0) {
+    'loop_: while ((i) < (4)) {
         (*bz.offset((i) as isize)) = 1_u8;
         i.postfix_inc();
     }
-    assert!(
-        ((((((((*p).z) == (16843009)) as i32) != 0) && (((((*p).in_.b as i32) == (6)) as i32) != 0))
-            as i32)
-            != 0)
-    );
+    assert!(((((*p).z) == (16843009)) && (((*p).in_.b as i32) == (6))));
     libcc2rs::free_unsafe((p as *mut ::libc::c_void));
     return 0;
 }

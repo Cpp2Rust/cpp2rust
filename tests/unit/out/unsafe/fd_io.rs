@@ -22,18 +22,17 @@ unsafe fn main_0() -> i32 {
             (420),
         )
     });
-    assert!(((((fd) >= (0)) as i32) != 0));
+    assert!(((fd) >= (0)));
     assert!(
-        ((((libc::write(
+        ((libc::write(
             fd,
             (c"hello world".as_ptr().cast_mut() as *const ::libc::c_void),
             11_usize
-        )) == (11_isize)) as i32)
-            != 0)
+        )) == (11_isize))
     );
-    assert!(((((libc::close(fd)) == (0)) as i32) != 0));
+    assert!(((libc::close(fd)) == (0)));
     fd = (unsafe { libc::open(path as *const i8, ::libc::O_RDONLY as i32) });
-    assert!(((((fd) >= (0)) as i32) != 0));
+    assert!(((fd) >= (0)));
     let mut buf: [libc::c_char; 16] = [(0 as libc::c_char); 16];
     match ({ (buf.as_mut_ptr() as *mut ::libc::c_void) },) {
         (mut __tmp_0,) => {
@@ -45,30 +44,27 @@ unsafe fn main_0() -> i32 {
         }
     };
     assert!(
-        ((((libc::read(
+        ((libc::read(
             fd,
             (buf.as_mut_ptr() as *mut ::libc::c_void),
             ::std::mem::size_of::<[libc::c_char; 16]>()
-        )) == (11_isize)) as i32)
-            != 0)
+        )) == (11_isize))
     );
     assert!(
-        ((((libc::strcmp(
+        ((libc::strcmp(
             (buf.as_mut_ptr()).cast_const(),
             (c"hello world".as_ptr().cast_mut()).cast_const()
-        )) == (0)) as i32)
-            != 0)
+        )) == (0))
     );
     assert!(
-        ((((libc::read(
+        ((libc::read(
             fd,
             (buf.as_mut_ptr() as *mut ::libc::c_void),
             ::std::mem::size_of::<[libc::c_char; 16]>()
-        )) == (0_isize)) as i32)
-            != 0)
+        )) == (0_isize))
     );
-    assert!(((((libc::close(fd)) == (0)) as i32) != 0));
-    assert!(((((libc::unlink(path)) == (0)) as i32) != 0));
+    assert!(((libc::close(fd)) == (0)));
+    assert!(((libc::unlink(path)) == (0)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

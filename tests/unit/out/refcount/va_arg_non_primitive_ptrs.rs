@@ -62,57 +62,52 @@ pub fn main() {
 fn main_0() -> i32 {
     let s: Value<Ptr<i8>> = Rc::new(RefCell::new(Ptr::<i8>::null()));
     assert!(
-        (((({
+        (({
             dispatch_0(
                 (opt_OPT_STRING_OUT as i32),
                 Box::new([(s.as_pointer()).into()]),
             )
-        }) == 1) as i32)
-            != 0)
+        }) == 1)
     );
-    assert!(({ (((!((*s.borrow()).is_null())) as i32) != 0) }));
+    assert!(({ (!((*s.borrow()).is_null())) }));
     assert!(
-        (((({
+        (({
             dispatch_0(
                 (opt_OPT_FILE as i32),
                 Box::new([(libcc2rs::c_stdout()).into()]),
             )
-        }) == 1) as i32)
-            != 0)
+        }) == 1)
     );
     assert!(
-        (((({
+        (({
             dispatch_0(
                 (opt_OPT_FILE as i32),
                 Box::new([((AnyPtr::default()).reinterpret_cast::<CFile>()).into()]),
             )
-        }) == 0) as i32)
-            != 0)
+        }) == 0)
     );
     let head: Value<node> = Rc::new(RefCell::new(node {
         data: 42,
         next: Ptr::<node>::null(),
     }));
     assert!(
-        (((({
+        (({
             dispatch_0(
                 (opt_OPT_NODE as i32),
                 Box::new([(head.as_pointer()).into()]),
             )
-        }) == 42) as i32)
-            != 0)
+        }) == 42)
     );
     let outp: Value<Ptr<node>> = Rc::new(RefCell::new((head.as_pointer())));
     assert!(
-        (((({
+        (({
             dispatch_0(
                 (opt_OPT_NODE_OUT as i32),
                 Box::new([(outp.as_pointer()).into()]),
             )
-        }) == 2) as i32)
-            != 0)
+        }) == 2)
     );
-    assert!(({ ((((*outp.borrow()).is_null()) as i32) != 0) }));
+    assert!(({ ((*outp.borrow()).is_null()) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

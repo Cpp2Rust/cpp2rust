@@ -17,17 +17,15 @@ pub fn test_getpwuid_0() {
             Ptr::null()
         }
     };
-    assert!((((!((pw).is_null())) as i32) != 0));
-    assert!(((({ pw.with(|__s| __s.pw_uid) } == { nix::unistd::geteuid().as_raw() }) as i32) != 0));
+    assert!((!((pw).is_null())));
+    assert!(({ pw.with(|__s| __s.pw_uid) } == { nix::unistd::geteuid().as_raw() }));
     assert!(
-        (((pw
-            .with(|__s| __s.pw_name.clone())
+        (pw.with(|__s| __s.pw_name.clone())
             .to_c_string_iterator()
             .count()
-            > 0_usize) as i32)
-            != 0)
+            > 0_usize)
     );
-    assert!((((!((pw.with(|__s| __s.pw_dir.clone())).is_null())) as i32) != 0));
+    assert!((!((pw.with(|__s| __s.pw_dir.clone())).is_null())));
     println!("{}", pw.with(|__s| __s.pw_name.clone()));
 }
 pub fn test_getpwuid_missing_1() {
@@ -42,8 +40,8 @@ pub fn test_getpwuid_missing_1() {
             Ptr::null()
         }
     };
-    assert!(((((pw).is_null()) as i32) != 0));
-    assert!(((((libcc2rs::cpp2rust_errno().read()) == 0) as i32) != 0));
+    assert!(((pw).is_null()));
+    assert!(((libcc2rs::cpp2rust_errno().read()) == 0));
 }
 pub fn test_getpwuid_r_2() {
     let pw: Value<libcc2rs::Passwd> = Rc::new(RefCell::new(Default::default()));
@@ -52,7 +50,7 @@ pub fn test_getpwuid_r_2() {
     let result: Value<Ptr<libcc2rs::Passwd>> =
         Rc::new(RefCell::new(Ptr::<libcc2rs::Passwd>::null()));
     assert!(
-        (((match (
+        (match (
             { nix::unistd::geteuid().as_raw() },
             { (pw.as_pointer()) },
             { buf.decay() },
@@ -97,17 +95,15 @@ pub fn test_getpwuid_r_2() {
                     }
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
-    assert!(({ ((({ (*result.borrow()).clone() } == { (pw.as_pointer()) }) as i32) != 0) }));
-    assert!(({ ((({ (*pw.borrow()).pw_uid } == nix::unistd::geteuid().as_raw()) as i32) != 0) }));
+    assert!(({ ({ (*result.borrow()).clone() } == { (pw.as_pointer()) }) }));
+    assert!(({ ({ (*pw.borrow()).pw_uid } == nix::unistd::geteuid().as_raw()) }));
     assert!(
-        (((({ { (*pw.borrow()).pw_name.clone() } })
+        (({ { (*pw.borrow()).pw_name.clone() } })
             .to_c_string_iterator()
             .count()
-            > 0_usize) as i32)
-            != 0)
+            > 0_usize)
     );
     let mut pw2: Ptr<libcc2rs::Passwd> = match nix::unistd::User::from_uid(
         nix::unistd::Uid::from_raw(nix::unistd::geteuid().as_raw()),
@@ -119,9 +115,9 @@ pub fn test_getpwuid_r_2() {
             Ptr::null()
         }
     };
-    assert!((((!((pw2).is_null())) as i32) != 0));
+    assert!((!((pw2).is_null())));
     assert!(
-        ((({
+        ({
             let mut __it1 = ({ { (*pw.borrow()).pw_name.clone() } }).to_c_string_iterator();
             let mut __it2 = pw2.with(|__s| __s.pw_name.clone()).to_c_string_iterator();
             loop {
@@ -134,8 +130,7 @@ pub fn test_getpwuid_r_2() {
                     break 0;
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
     println!("{}", { (*pw.borrow()).pw_name.clone() });
 }
@@ -145,7 +140,7 @@ pub fn test_getpwuid_r_erange_3() {
     let result: Value<Ptr<libcc2rs::Passwd>> =
         Rc::new(RefCell::new(Ptr::<libcc2rs::Passwd>::null()));
     assert!(
-        (((match (
+        (match (
             { nix::unistd::geteuid().as_raw() },
             { (pw.as_pointer()) },
             { tiny.decay() },
@@ -190,10 +185,9 @@ pub fn test_getpwuid_r_erange_3() {
                     }
                 }
             }
-        } == libc::ERANGE) as i32)
-            != 0)
+        } == libc::ERANGE)
     );
-    assert!(({ ((((*result.borrow()).is_null()) as i32) != 0) }));
+    assert!(({ ((*result.borrow()).is_null()) }));
 }
 pub fn main() {
     __cpp2rust_init_globals();

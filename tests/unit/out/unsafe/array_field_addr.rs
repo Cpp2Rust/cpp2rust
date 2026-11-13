@@ -21,7 +21,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut s: *mut S = (libcc2rs::malloc_unsafe(::std::mem::size_of::<S>()) as *mut S);
-    assert!((((!((s).is_null())) as i32) != 0));
+    assert!((!((s).is_null())));
     (*s).before = 1;
     match ({ ((*s).mask.as_mut_ptr() as *mut ::libc::c_void) },) {
         (mut __tmp_0,) => {
@@ -49,16 +49,8 @@ unsafe fn main_0() -> i32 {
             __tmp_1
         }
     };
-    assert!(
-        (((((((out[(0) as usize] as i32) == (7)) as i32) != 0)
-            && ((((out[(3) as usize] as i32) == (5)) as i32) != 0)) as i32)
-            != 0)
-    );
-    assert!(
-        ((((((((*s).before) == (1)) as i32) != 0) && (((((*s).after) == (2)) as i32) != 0))
-            as i32)
-            != 0)
-    );
+    assert!((((out[(0) as usize] as i32) == (7)) && ((out[(3) as usize] as i32) == (5))));
+    assert!(((((*s).before) == (1)) && (((*s).after) == (2))));
     libcc2rs::free_unsafe((s as *mut ::libc::c_void));
     return 0;
 }

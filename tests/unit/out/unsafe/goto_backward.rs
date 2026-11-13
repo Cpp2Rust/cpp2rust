@@ -17,7 +17,7 @@ pub unsafe fn retry_0(mut n: i32) -> i32 {
         'again: {
             count += 1;
             acc += n;
-            if ((((count) < (3)) as i32) != 0) {
+            if ((count) < (3)) {
                 goto!('again);
             }
             return acc;
@@ -32,7 +32,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(((((unsafe { retry_0(4,) }) == (12)) as i32) != 0));
+    assert!(((unsafe { retry_0(4,) }) == (12)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

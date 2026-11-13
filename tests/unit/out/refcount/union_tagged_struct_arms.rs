@@ -95,13 +95,9 @@ fn main_0() -> i32 {
         .write(items_4.with(|v| v.decay()));
     field!(anon_0::list(field_ptr!(p_list.as_pointer(), v)), count).write(3_i64);
     field!(anon_0::list(field_ptr!(p_list.as_pointer(), v)), cursor).write(1_i64);
+    assert!((anon_0::list(field_ptr!(p_list.as_pointer(), v)).with(|__s| __s.count) == 3_i64));
     assert!(
-        (((anon_0::list(field_ptr!(p_list.as_pointer(), v)).with(|__s| __s.count) == 3_i64)
-            as i32)
-            != 0)
-    );
-    assert!(
-        (((((elem!(
+        (((elem!(
             (elem!(
                 anon_0::list(field_ptr!(p_list.as_pointer(), v)).with(|__s| __s.items.clone()),
                 1
@@ -110,8 +106,7 @@ fn main_0() -> i32 {
             0
         )
         .read()) as i32)
-            == ('b' as i32)) as i32)
-            != 0)
+            == ('b' as i32))
     );
     let p_letters: Value<Branch> = <Value<Branch>>::default();
     (*p_letters.borrow_mut()).choice = Choice_enum_C_LETTERS;
@@ -121,10 +116,9 @@ fn main_0() -> i32 {
     field!(anon_0::letters(field_ptr!(p_letters.as_pointer(), v)), curr).write(('m' as i32));
     field!(anon_0::letters(field_ptr!(p_letters.as_pointer(), v)), step).write(1_u8);
     assert!(
-        ((((anon_0::letters(field_ptr!(p_letters.as_pointer(), v)).with(|__s| __s.hi)
+        ((anon_0::letters(field_ptr!(p_letters.as_pointer(), v)).with(|__s| __s.hi)
             - anon_0::letters(field_ptr!(p_letters.as_pointer(), v)).with(|__s| __s.lo))
-            == 25) as i32)
-            != 0)
+            == 25)
     );
     let p_integers: Value<Branch> = <Value<Branch>>::default();
     (*p_integers.borrow_mut()).choice = Choice_enum_C_INTEGERS;
@@ -147,15 +141,9 @@ fn main_0() -> i32 {
     )
     .write(3);
     assert!(
-        (((anon_0::integers(field_ptr!(p_integers.as_pointer(), v)).with(|__s| __s.hi) == 100_i64)
-            as i32)
-            != 0)
+        (anon_0::integers(field_ptr!(p_integers.as_pointer(), v)).with(|__s| __s.hi) == 100_i64)
     );
-    assert!(
-        (((anon_0::integers(field_ptr!(p_integers.as_pointer(), v)).with(|__s| __s.width) == 3)
-            as i32)
-            != 0)
-    );
+    assert!((anon_0::integers(field_ptr!(p_integers.as_pointer(), v)).with(|__s| __s.width) == 3));
     return 0;
 }
 thread_local!(

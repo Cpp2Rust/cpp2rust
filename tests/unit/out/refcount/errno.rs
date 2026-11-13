@@ -8,18 +8,18 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn test_errno_0() {
     libcc2rs::cpp2rust_errno().write(0);
-    assert!(((((libcc2rs::cpp2rust_errno().read()) == 0) as i32) != 0));
+    assert!(((libcc2rs::cpp2rust_errno().read()) == 0));
     libcc2rs::cpp2rust_errno().write(42);
-    assert!(((((libcc2rs::cpp2rust_errno().read()) == 42) as i32) != 0));
+    assert!(((libcc2rs::cpp2rust_errno().read()) == 42));
     let mut saved: i32 = (libcc2rs::cpp2rust_errno().read());
-    assert!((((saved == 42) as i32) != 0));
+    assert!((saved == 42));
     libcc2rs::cpp2rust_errno().write(0);
 }
 pub fn test_errno_preserved_across_strdup_1() {
     libcc2rs::cpp2rust_errno().write(99);
     let mut d: Ptr<i8> = libcc2rs::strdup_refcount(Ptr::<i8>::from_string_literal(b"hello"));
-    assert!((((!((d).is_null())) as i32) != 0));
-    assert!(((((libcc2rs::cpp2rust_errno().read()) == 99) as i32) != 0));
+    assert!((!((d).is_null())));
+    assert!(((libcc2rs::cpp2rust_errno().read()) == 99));
     libcc2rs::free_refcount((d).to_any());
     libcc2rs::cpp2rust_errno().write(0);
 }
@@ -30,8 +30,8 @@ pub fn test_errno_from_fseek_2() {
             -1 => -1,
             _ => 0,
         };
-    assert!((((r == -1_i32) as i32) != 0));
-    assert!(((((libcc2rs::cpp2rust_errno().read()) == libc::ESPIPE) as i32) != 0));
+    assert!((r == -1_i32));
+    assert!(((libcc2rs::cpp2rust_errno().read()) == libc::ESPIPE));
     libcc2rs::cpp2rust_errno().write(0);
 }
 pub fn main() {

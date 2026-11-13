@@ -54,28 +54,26 @@ unsafe fn main_0() -> i32 {
     };
     let mut payload: i32 = 7;
     assert!(
-        ((((unsafe {
+        ((unsafe {
             registry_update_0(
                 (&mut r as *mut registry),
                 field_FIELD_SLOT,
                 Box::new([(&mut payload as *mut i32).into()]),
             )
-        }) == (0)) as i32)
-            != 0)
+        }) == (0))
     );
     assert!(
-        ((((unsafe {
+        ((unsafe {
             registry_update_0(
                 (&mut r as *mut registry),
                 field_FIELD_LEVEL,
                 Box::new([(5_i64).into()]),
             )
-        }) == (0)) as i32)
-            != 0)
+        }) == (0))
     );
-    assert!(((((r.slot) == ((&mut payload as *mut i32) as *mut ::libc::c_void)) as i32) != 0));
-    assert!(((((*(r.slot as *mut i32)) == (7)) as i32) != 0));
-    assert!(((((r.level) == (5_i64)) as i32) != 0));
+    assert!(((r.slot) == ((&mut payload as *mut i32) as *mut ::libc::c_void)));
+    assert!(((*(r.slot as *mut i32)) == (7)));
+    assert!(((r.level) == (5_i64)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

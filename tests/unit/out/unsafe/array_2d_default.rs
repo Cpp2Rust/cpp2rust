@@ -19,7 +19,7 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut grid: [[libc::c_char; 6]; 3] = [[(0 as libc::c_char); 6]; 3];
     let mut i: i32 = 0;
-    'loop_: while ((((i) < (3)) as i32) != 0) {
+    'loop_: while ((i) < (3)) {
         (unsafe {
             let _row: *mut libc::c_char = grid[(i) as usize].as_mut_ptr();
             let _c: libc::c_char = ((('a' as i32) + (i)) as libc::c_char);
@@ -27,12 +27,12 @@ unsafe fn main_0() -> i32 {
         });
         i.postfix_inc();
     }
-    assert!(((((grid[(0) as usize][(0) as usize] as i32) == ('a' as i32)) as i32) != 0));
-    assert!(((((grid[(1) as usize][(0) as usize] as i32) == ('b' as i32)) as i32) != 0));
-    assert!(((((grid[(2) as usize][(0) as usize] as i32) == ('c' as i32)) as i32) != 0));
-    assert!(((((grid[(1) as usize][(1) as usize] as i32) == ('\0' as i32)) as i32) != 0));
+    assert!(((grid[(0) as usize][(0) as usize] as i32) == ('a' as i32)));
+    assert!(((grid[(1) as usize][(0) as usize] as i32) == ('b' as i32)));
+    assert!(((grid[(2) as usize][(0) as usize] as i32) == ('c' as i32)));
+    assert!(((grid[(1) as usize][(1) as usize] as i32) == ('\0' as i32)));
     grid[(2) as usize][(5) as usize] = (('z' as i32) as libc::c_char);
-    assert!(((((grid[(2) as usize][(5) as usize] as i32) == ('z' as i32)) as i32) != 0));
+    assert!(((grid[(2) as usize][(5) as usize] as i32) == ('z' as i32)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

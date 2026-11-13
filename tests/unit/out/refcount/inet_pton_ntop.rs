@@ -20,32 +20,27 @@ pub fn test_s6_addr_access_0() {
         }
     };
     assert!(
-        ((((In6Addr::s6_addr((ap).clone()))
+        ((In6Addr::s6_addr((ap).clone()))
             .to_any()
             .memcmp(&(loopback.decay()).to_any(), 16_usize)
-            == 0) as i32)
-            != 0)
+            == 0)
     );
     elem!(In6Addr::s6_addr(addr.as_pointer()), 0).write(32_u8);
     elem!(In6Addr::s6_addr((ap).clone()), 1).write(1_u8);
     assert!(
-        ((((((((elem!(In6Addr::s6_addr(addr.as_pointer()), 0).read()) as i32) == 32) as i32) != 0)
-            && (((((elem!(In6Addr::s6_addr((ap).clone()), 1).read()) as i32) == 1) as i32) != 0))
-            as i32)
-            != 0)
+        ((((elem!(In6Addr::s6_addr(addr.as_pointer()), 0).read()) as i32) == 32)
+            && (((elem!(In6Addr::s6_addr((ap).clone()), 1).read()) as i32) == 1))
     );
     elem!(In6Addr::s6_addr(addr.as_pointer()), 15)
         .write({ (((elem!(In6Addr::s6_addr(addr.as_pointer()), 15).read()) as i32) + 4) as u8 });
     elem!(In6Addr::s6_addr((ap).clone()), 15).with_mut(|__v| __v.postfix_inc());
-    assert!(
-        (((((elem!(In6Addr::s6_addr(addr.as_pointer()), 15).read()) as i32) == 6) as i32) != 0)
-    );
+    assert!((((elem!(In6Addr::s6_addr(addr.as_pointer()), 15).read()) as i32) == 6));
     let mut bytes: Ptr<u8> = In6Addr::s6_addr(addr.as_pointer());
     elem!(bytes, 2).write(7_u8);
-    assert!((((((elem!(In6Addr::s6_addr((ap).clone()), 2).read()) as i32) == 7) as i32) != 0));
+    assert!((((elem!(In6Addr::s6_addr((ap).clone()), 2).read()) as i32) == 7));
     let mut fourth: Ptr<u8> = (In6Addr::s6_addr((ap).clone()).offset((3) as isize));
     fourth.write(8_u8);
-    assert!((((((elem!(In6Addr::s6_addr(addr.as_pointer()), 3).read()) as i32) == 8) as i32) != 0));
+    assert!((((elem!(In6Addr::s6_addr(addr.as_pointer()), 3).read()) as i32) == 8));
     match ({ (In6Addr::s6_addr((ap).clone())).to_any() },) {
         (mut __tmp_1,) => {
             __tmp_1.memcpy(&(loopback.decay()).to_any(), 16_usize as usize);
@@ -53,11 +48,10 @@ pub fn test_s6_addr_access_0() {
         }
     };
     assert!(
-        ((((In6Addr::s6_addr(addr.as_pointer()))
+        ((In6Addr::s6_addr(addr.as_pointer()))
             .to_any()
             .memcmp(&(loopback.decay()).to_any(), 16_usize)
-            == 0) as i32)
-            != 0)
+            == 0)
     );
 }
 pub fn main() {
@@ -68,7 +62,7 @@ fn main_0() -> i32 {
     ({ test_s6_addr_access_0() });
     let buf: Value<Box<[u8]>> = Rc::new(RefCell::new((0..16).map(|_| 0_u8).collect::<Box<[u8]>>()));
     assert!(
-        (((match ({ (buf.decay()).to_any() },) {
+        (match ({ (buf.decay()).to_any() },) {
             (mut __tmp_2,) => {
                 if libc::AF_INET == libc::AF_INET {
                     match Ptr::<i8>::from_string_literal(b"1.2.3.4")
@@ -101,25 +95,18 @@ fn main_0() -> i32 {
                     -1
                 }
             }
-        } == 1) as i32)
-            != 0)
+        } == 1)
     );
     assert!(
         ({
-            ((((((((((((((*buf.borrow())[(0) as usize] as i32) == 1) as i32) != 0)
-                && (((((*buf.borrow())[(1) as usize] as i32) == 2) as i32) != 0))
-                as i32)
-                != 0)
-                && (((((*buf.borrow())[(2) as usize] as i32) == 3) as i32) != 0))
-                as i32)
-                != 0)
-                && (((((*buf.borrow())[(3) as usize] as i32) == 4) as i32) != 0))
-                as i32)
-                != 0)
+            ((((((*buf.borrow())[(0) as usize] as i32) == 1)
+                && (((*buf.borrow())[(1) as usize] as i32) == 2))
+                && (((*buf.borrow())[(2) as usize] as i32) == 3))
+                && (((*buf.borrow())[(3) as usize] as i32) == 4))
         })
     );
     assert!(
-        (((match ({ (buf.decay()).to_any() },) {
+        (match ({ (buf.decay()).to_any() },) {
             (mut __tmp_3,) => {
                 if libc::AF_INET == libc::AF_INET {
                     match Ptr::<i8>::from_string_literal(b"999.1.1.1")
@@ -152,11 +139,10 @@ fn main_0() -> i32 {
                     -1
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
     assert!(
-        (((match ({ (buf.decay()).to_any() },) {
+        (match ({ (buf.decay()).to_any() },) {
             (mut __tmp_4,) => {
                 if libc::AF_INET == libc::AF_INET {
                     match Ptr::<i8>::from_string_literal(b"not an ip")
@@ -189,11 +175,10 @@ fn main_0() -> i32 {
                     -1
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
     assert!(
-        (((match ({ (buf.decay()).to_any() },) {
+        (match ({ (buf.decay()).to_any() },) {
             (mut __tmp_5,) => {
                 if libc::AF_INET6 == libc::AF_INET {
                     match Ptr::<i8>::from_string_literal(b"::1")
@@ -226,19 +211,16 @@ fn main_0() -> i32 {
                     -1
                 }
             }
-        } == 1) as i32)
-            != 0)
+        } == 1)
     );
     assert!(
         ({
-            ((((((((*buf.borrow())[(0) as usize] as i32) == 0) as i32) != 0)
-                && (((((*buf.borrow())[(15) as usize] as i32) == 1) as i32) != 0))
-                as i32)
-                != 0)
+            ((((*buf.borrow())[(0) as usize] as i32) == 0)
+                && (((*buf.borrow())[(15) as usize] as i32) == 1))
         })
     );
     assert!(
-        (((match ({ (buf.decay()).to_any() },) {
+        (match ({ (buf.decay()).to_any() },) {
             (mut __tmp_6,) => {
                 if libc::AF_INET6 == libc::AF_INET {
                     match Ptr::<i8>::from_string_literal(b"2001:db8::5")
@@ -271,25 +253,20 @@ fn main_0() -> i32 {
                     -1
                 }
             }
-        } == 1) as i32)
-            != 0)
+        } == 1)
     );
     assert!(
         ({
-            (((((((((((*buf.borrow())[(0) as usize] as i32) == 32) as i32) != 0)
-                && (((((*buf.borrow())[(1) as usize] as i32) == 1) as i32) != 0))
-                as i32)
-                != 0)
-                && (((((*buf.borrow())[(15) as usize] as i32) == 5) as i32) != 0))
-                as i32)
-                != 0)
+            (((((*buf.borrow())[(0) as usize] as i32) == 32)
+                && (((*buf.borrow())[(1) as usize] as i32) == 1))
+                && (((*buf.borrow())[(15) as usize] as i32) == 5))
         })
     );
     let text: Value<Box<[i8]>> =
         Rc::new(RefCell::new((0..64).map(|_| 0_i8).collect::<Box<[i8]>>()));
     let four: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([10_u8, 0_u8, 0_u8, 1_u8])));
     assert!(
-        ((({
+        ({
             let mut __it1 = match ({ (four.decay()).to_any() }, { text.decay() }) {
                 (mut __tmp_7, mut __tmp_8) => {
                     let __text = if libc::AF_INET == libc::AF_INET {
@@ -338,8 +315,7 @@ fn main_0() -> i32 {
                     break 0;
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
     let sixteen: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
         0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8,
@@ -347,7 +323,7 @@ fn main_0() -> i32 {
     ])));
     (*sixteen.borrow_mut())[(15) as usize] = 1_u8;
     assert!(
-        ((({
+        ({
             let mut __it1 = match ({ (sixteen.decay()).to_any() }, { text.decay() }) {
                 (mut __tmp_9, mut __tmp_10) => {
                     let __text = if libc::AF_INET6 == libc::AF_INET {
@@ -396,11 +372,10 @@ fn main_0() -> i32 {
                     break 0;
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
     assert!(
-        ((((match ({ (four.decay()).to_any() }, { text.decay() },) {
+        ((match ({ (four.decay()).to_any() }, { text.decay() },) {
             (mut __tmp_11, mut __tmp_12) => {
                 {
                     let __text = if libc::AF_INET == libc::AF_INET {
@@ -435,8 +410,7 @@ fn main_0() -> i32 {
                 }
             }
         })
-        .is_null()) as i32)
-            != 0)
+        .is_null())
     );
     return 0;
 }

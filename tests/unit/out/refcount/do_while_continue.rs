@@ -10,11 +10,11 @@ pub fn run_0() -> i32 {
     let mut i: i32 = 0;
     let mut runs: i32 = 0;
     let mut __do_while = true;
-    'loop_: while __do_while || (((i < 4) as i32) != 0) {
+    'loop_: while __do_while || (i < 4) {
         __do_while = false;
         runs += 1;
         i += 1;
-        if (((i == 4) as i32) != 0) {
+        if (i == 4) {
             continue 'loop_;
         }
     }
@@ -24,16 +24,16 @@ pub fn nested_1() -> i32 {
     let mut oi: i32 = 0;
     let mut runs: i32 = 0;
     let mut __do_while = true;
-    'loop_: while __do_while || (((oi < 2) as i32) != 0) {
+    'loop_: while __do_while || (oi < 2) {
         __do_while = false;
         oi += 1;
         let mut ii: i32 = 0;
         let mut __do_while = true;
-        'loop_: while __do_while || (((ii < 3) as i32) != 0) {
+        'loop_: while __do_while || (ii < 3) {
             __do_while = false;
             runs += 1;
             ii += 1;
-            if (((ii == 3) as i32) != 0) {
+            if (ii == 3) {
                 continue 'loop_;
             }
         }
@@ -45,8 +45,8 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((((({ run_0() }) == 4) as i32) != 0));
-    assert!((((({ nested_1() }) == 6) as i32) != 0));
+    assert!((({ run_0() }) == 4));
+    assert!((({ nested_1() }) == 6));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

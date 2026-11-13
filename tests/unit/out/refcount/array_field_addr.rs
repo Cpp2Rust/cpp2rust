@@ -34,7 +34,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let mut s: Ptr<S> = libcc2rs::malloc_refcount(12usize).reinterpret_cast::<S>();
-    assert!((((!((s).is_null())) as i32) != 0));
+    assert!((!((s).is_null())));
     field!(s, before).write(1);
     match ({ (array_field_ptr!(s, mask)).to_any() },) {
         (mut __tmp_0,) => {
@@ -56,17 +56,11 @@ fn main_0() -> i32 {
     };
     assert!(
         ({
-            ((((((((*out.borrow())[(0) as usize] as i32) == 7) as i32) != 0)
-                && (((((*out.borrow())[(3) as usize] as i32) == 5) as i32) != 0))
-                as i32)
-                != 0)
+            ((((*out.borrow())[(0) as usize] as i32) == 7)
+                && (((*out.borrow())[(3) as usize] as i32) == 5))
         })
     );
-    assert!(
-        ((((((s.with(|__s| __s.before) == 1) as i32) != 0)
-            && (((s.with(|__s| __s.after) == 2) as i32) != 0)) as i32)
-            != 0)
-    );
+    assert!(((s.with(|__s| __s.before) == 1) && (s.with(|__s| __s.after) == 2)));
     libcc2rs::free_refcount((s).to_any());
     return 0;
 }

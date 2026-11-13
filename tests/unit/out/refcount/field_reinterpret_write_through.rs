@@ -46,15 +46,15 @@ impl Default for S {
 }
 pub fn set_bytes_0(mut p: Ptr<u8>, mut n: usize, mut v: u8) {
     let mut i: usize = 0_usize;
-    'loop_: while (((i < n) as i32) != 0) {
+    'loop_: while (i < n) {
         elem!(p, i).write({ v });
         i.postfix_inc();
     }
 }
 pub fn all_bytes_1(mut p: Ptr<u8>, mut n: usize, mut v: u8) -> i32 {
     let mut i: usize = 0_usize;
-    'loop_: while (((i < n) as i32) != 0) {
-        if ((({ ((elem!(p, i).read()) as i32) } != { (v as i32) }) as i32) != 0) {
+    'loop_: while (i < n) {
+        if ({ ((elem!(p, i).read()) as i32) } != { (v as i32) }) {
             return 0;
         }
         i.postfix_inc();
@@ -63,62 +63,44 @@ pub fn all_bytes_1(mut p: Ptr<u8>, mut n: usize, mut v: u8) -> i32 {
 }
 pub fn check_final_2(mut s: Ptr<S>) {
     assert!(
-        (((s.with(|__s| __s.x)
+        (s.with(|__s| __s.x)
             == (((72340172838076673_u64 as u64).wrapping_mul((((19) as u8) as u64))) as i32))
-            as i32)
-            != 0)
     );
     assert!(
-        ((((s.with(|__s| __s.in_.a) as i32)
+        ((s.with(|__s| __s.in_.a) as i32)
             == ((((72340172838076673_u64 as u64).wrapping_mul((((35) as u8) as u64))) as i16)
-                as i32)) as i32)
-            != 0)
+                as i32))
     );
     assert!(
-        (((s.with(|__s| __s.in_.b)
+        (s.with(|__s| __s.in_.b)
             == (((72340172838076673_u64 as u64).wrapping_mul((((51) as u8) as u64))) as i32))
-            as i32)
-            != 0)
     );
     assert!(
-        ((((((((array_elem!(s, bytes, 0).read()) as i32) == 67) as i32) != 0)
-            && (((((array_elem!(s, bytes, 1).read()) as i32) == 83) as i32) != 0))
-            as i32)
-            != 0)
+        ((((array_elem!(s, bytes, 0).read()) as i32) == 67)
+            && (((array_elem!(s, bytes, 1).read()) as i32) == 83))
     );
     assert!(
-        ((((((((array_elem!(s, bytes, 2).read()) as i32) == 99) as i32) != 0)
-            && (((((array_elem!(s, bytes, 3).read()) as i32) == 115) as i32) != 0))
-            as i32)
-            != 0)
+        ((((array_elem!(s, bytes, 2).read()) as i32) == 99)
+            && (((array_elem!(s, bytes, 3).read()) as i32) == 115))
     );
     assert!(
-        (((((((array_elem!(s, arr, 0).read())
+        (((array_elem!(s, arr, 0).read())
             == (((72340172838076673_u64 as u64).wrapping_mul((((131) as u8) as u64))) as i32))
-            as i32)
-            != 0)
-            && ((((array_elem!(s, arr, 1).read())
-                == (((72340172838076673_u64 as u64).wrapping_mul((((147) as u8) as u64))) as i32))
-                as i32)
-                != 0)) as i32)
-            != 0)
+            && ((array_elem!(s, arr, 1).read())
+                == (((72340172838076673_u64 as u64).wrapping_mul((((147) as u8) as u64))) as i32)))
     );
     assert!(
-        ((((array_elem!(s, arr, 2).read())
+        ((array_elem!(s, arr, 2).read())
             == (((72340172838076673_u64 as u64).wrapping_mul((((11) as u8) as u64))) as i32))
-            as i32)
-            != 0)
     );
     assert!(
-        (((s.with(|__s| __s.tail)
+        (s.with(|__s| __s.tail)
             == (((72340172838076673_u64 as u64).wrapping_mul((((27) as u8) as u64))) as i64))
-            as i32)
-            != 0)
     );
 }
 pub fn check_struct_3(mut s: Ptr<S>) {
     let mut __do_while = true;
-    'loop_: while __do_while || (0 != 0) {
+    'loop_: while __do_while || (false) {
         __do_while = false;
         let mut fb: Ptr<u8> = (field_ptr!((s), x)).reinterpret_cast::<u8>();
         let mut sb: Ptr<u8> = (s).reinterpret_cast::<u8>().offset((0_usize) as isize);
@@ -127,10 +109,8 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<i32>(), ((16) as u8))
         });
         assert!(
-            ((((s).with(|__s| __s.x)
+            ((s).with(|__s| __s.x)
                 == (((72340172838076673_u64 as u64).wrapping_mul((((16) as u8) as u64))) as i32))
-                as i32)
-                != 0)
         );
         assert!(
             (({
@@ -161,10 +141,9 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<i32>(), _v)
         });
         assert!(
-            ((((s).with(|__s| __s.x)
+            ((s).with(|__s| __s.x)
                 == (((72340172838076673_u64 as u64).wrapping_mul(((((16) + 2) as u8) as u64)))
-                    as i32)) as i32)
-                != 0)
+                    as i32))
         );
         assert!(
             (({
@@ -192,7 +171,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
         );
     }
     let mut __do_while = true;
-    'loop_: while __do_while || (0 != 0) {
+    'loop_: while __do_while || (false) {
         __do_while = false;
         let mut fb: Ptr<u8> = (field_ptr!(field_ptr!((s), in_), a)).reinterpret_cast::<u8>();
         let mut sb: Ptr<u8> = (s)
@@ -203,10 +182,9 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<i16>(), ((32) as u8))
         });
         assert!(
-            (((((s).with(|__s| __s.in_.a) as i32)
+            (((s).with(|__s| __s.in_.a) as i32)
                 == ((((72340172838076673_u64 as u64).wrapping_mul((((32) as u8) as u64))) as i16)
-                    as i32)) as i32)
-                != 0)
+                    as i32))
         );
         assert!(
             (({
@@ -237,10 +215,9 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<i16>(), _v)
         });
         assert!(
-            (((((s).with(|__s| __s.in_.a) as i32)
+            (((s).with(|__s| __s.in_.a) as i32)
                 == ((((72340172838076673_u64 as u64).wrapping_mul(((((32) + 2) as u8) as u64)))
-                    as i16) as i32)) as i32)
-                != 0)
+                    as i16) as i32))
         );
         assert!(
             (({
@@ -268,7 +245,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
         );
     }
     let mut __do_while = true;
-    'loop_: while __do_while || (0 != 0) {
+    'loop_: while __do_while || (false) {
         __do_while = false;
         let mut fb: Ptr<u8> = (field_ptr!(field_ptr!((s), in_), b)).reinterpret_cast::<u8>();
         let mut sb: Ptr<u8> = (s)
@@ -279,10 +256,8 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<i32>(), ((48) as u8))
         });
         assert!(
-            ((((s).with(|__s| __s.in_.b)
+            ((s).with(|__s| __s.in_.b)
                 == (((72340172838076673_u64 as u64).wrapping_mul((((48) as u8) as u64))) as i32))
-                as i32)
-                != 0)
         );
         assert!(
             (({
@@ -313,10 +288,9 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<i32>(), _v)
         });
         assert!(
-            ((((s).with(|__s| __s.in_.b)
+            ((s).with(|__s| __s.in_.b)
                 == (((72340172838076673_u64 as u64).wrapping_mul(((((48) + 2) as u8) as u64)))
-                    as i32)) as i32)
-                != 0)
+                    as i32))
         );
         assert!(
             (({
@@ -344,7 +318,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
         );
     }
     let mut __do_while = true;
-    'loop_: while __do_while || (0 != 0) {
+    'loop_: while __do_while || (false) {
         __do_while = false;
         let mut fb: Ptr<u8> =
             (array_field_ptr!((s), bytes).offset((0) as isize)).reinterpret_cast::<u8>();
@@ -356,10 +330,9 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<u8>(), ((64) as u8))
         });
         assert!(
-            (((((array_elem!((s), bytes, 0).read()) as i32)
+            (((array_elem!((s), bytes, 0).read()) as i32)
                 == ((((72340172838076673_u64 as u64).wrapping_mul((((64) as u8) as u64))) as u8)
-                    as i32)) as i32)
-                != 0)
+                    as i32))
         );
         assert!(
             (({
@@ -390,10 +363,9 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<u8>(), _v)
         });
         assert!(
-            (((((array_elem!((s), bytes, 0).read()) as i32)
+            (((array_elem!((s), bytes, 0).read()) as i32)
                 == ((((72340172838076673_u64 as u64).wrapping_mul(((((64) + 2) as u8) as u64)))
-                    as u8) as i32)) as i32)
-                != 0)
+                    as u8) as i32))
         );
         assert!(
             (({
@@ -421,7 +393,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
         );
     }
     let mut __do_while = true;
-    'loop_: while __do_while || (0 != 0) {
+    'loop_: while __do_while || (false) {
         __do_while = false;
         let mut fb: Ptr<u8> =
             (array_field_ptr!((s), bytes).offset((1) as isize)).reinterpret_cast::<u8>();
@@ -433,10 +405,9 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<u8>(), ((80) as u8))
         });
         assert!(
-            (((((array_elem!((s), bytes, 1).read()) as i32)
+            (((array_elem!((s), bytes, 1).read()) as i32)
                 == ((((72340172838076673_u64 as u64).wrapping_mul((((80) as u8) as u64))) as u8)
-                    as i32)) as i32)
-                != 0)
+                    as i32))
         );
         assert!(
             (({
@@ -467,10 +438,9 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<u8>(), _v)
         });
         assert!(
-            (((((array_elem!((s), bytes, 1).read()) as i32)
+            (((array_elem!((s), bytes, 1).read()) as i32)
                 == ((((72340172838076673_u64 as u64).wrapping_mul(((((80) + 2) as u8) as u64)))
-                    as u8) as i32)) as i32)
-                != 0)
+                    as u8) as i32))
         );
         assert!(
             (({
@@ -498,7 +468,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
         );
     }
     let mut __do_while = true;
-    'loop_: while __do_while || (0 != 0) {
+    'loop_: while __do_while || (false) {
         __do_while = false;
         let mut fb: Ptr<u8> =
             (array_field_ptr!((s), bytes).offset((2) as isize)).reinterpret_cast::<u8>();
@@ -510,10 +480,9 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<u8>(), ((96) as u8))
         });
         assert!(
-            (((((array_elem!((s), bytes, 2).read()) as i32)
+            (((array_elem!((s), bytes, 2).read()) as i32)
                 == ((((72340172838076673_u64 as u64).wrapping_mul((((96) as u8) as u64))) as u8)
-                    as i32)) as i32)
-                != 0)
+                    as i32))
         );
         assert!(
             (({
@@ -544,10 +513,9 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<u8>(), _v)
         });
         assert!(
-            (((((array_elem!((s), bytes, 2).read()) as i32)
+            (((array_elem!((s), bytes, 2).read()) as i32)
                 == ((((72340172838076673_u64 as u64).wrapping_mul(((((96) + 2) as u8) as u64)))
-                    as u8) as i32)) as i32)
-                != 0)
+                    as u8) as i32))
         );
         assert!(
             (({
@@ -575,7 +543,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
         );
     }
     let mut __do_while = true;
-    'loop_: while __do_while || (0 != 0) {
+    'loop_: while __do_while || (false) {
         __do_while = false;
         let mut fb: Ptr<u8> =
             (array_field_ptr!((s), bytes).offset((3) as isize)).reinterpret_cast::<u8>();
@@ -587,10 +555,9 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<u8>(), ((112) as u8))
         });
         assert!(
-            (((((array_elem!((s), bytes, 3).read()) as i32)
+            (((array_elem!((s), bytes, 3).read()) as i32)
                 == ((((72340172838076673_u64 as u64).wrapping_mul((((112) as u8) as u64))) as u8)
-                    as i32)) as i32)
-                != 0)
+                    as i32))
         );
         assert!(
             (({
@@ -621,10 +588,9 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<u8>(), _v)
         });
         assert!(
-            (((((array_elem!((s), bytes, 3).read()) as i32)
+            (((array_elem!((s), bytes, 3).read()) as i32)
                 == ((((72340172838076673_u64 as u64).wrapping_mul(((((112) + 2) as u8) as u64)))
-                    as u8) as i32)) as i32)
-                != 0)
+                    as u8) as i32))
         );
         assert!(
             (({
@@ -652,7 +618,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
         );
     }
     let mut __do_while = true;
-    'loop_: while __do_while || (0 != 0) {
+    'loop_: while __do_while || (false) {
         __do_while = false;
         let mut fb: Ptr<u8> =
             (array_field_ptr!((s), arr).offset((0) as isize)).reinterpret_cast::<u8>();
@@ -666,10 +632,8 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<i32>(), ((128) as u8))
         });
         assert!(
-            ((((array_elem!((s), arr, 0).read())
+            ((array_elem!((s), arr, 0).read())
                 == (((72340172838076673_u64 as u64).wrapping_mul((((128) as u8) as u64))) as i32))
-                as i32)
-                != 0)
         );
         assert!(
             (({
@@ -700,10 +664,9 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<i32>(), _v)
         });
         assert!(
-            ((((array_elem!((s), arr, 0).read())
+            ((array_elem!((s), arr, 0).read())
                 == (((72340172838076673_u64 as u64).wrapping_mul(((((128) + 2) as u8) as u64)))
-                    as i32)) as i32)
-                != 0)
+                    as i32))
         );
         assert!(
             (({
@@ -731,7 +694,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
         );
     }
     let mut __do_while = true;
-    'loop_: while __do_while || (0 != 0) {
+    'loop_: while __do_while || (false) {
         __do_while = false;
         let mut fb: Ptr<u8> =
             (array_field_ptr!((s), arr).offset((1) as isize)).reinterpret_cast::<u8>();
@@ -745,10 +708,8 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<i32>(), ((144) as u8))
         });
         assert!(
-            ((((array_elem!((s), arr, 1).read())
+            ((array_elem!((s), arr, 1).read())
                 == (((72340172838076673_u64 as u64).wrapping_mul((((144) as u8) as u64))) as i32))
-                as i32)
-                != 0)
         );
         assert!(
             (({
@@ -779,10 +740,9 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<i32>(), _v)
         });
         assert!(
-            ((((array_elem!((s), arr, 1).read())
+            ((array_elem!((s), arr, 1).read())
                 == (((72340172838076673_u64 as u64).wrapping_mul(((((144) + 2) as u8) as u64)))
-                    as i32)) as i32)
-                != 0)
+                    as i32))
         );
         assert!(
             (({
@@ -810,7 +770,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
         );
     }
     let mut __do_while = true;
-    'loop_: while __do_while || (0 != 0) {
+    'loop_: while __do_while || (false) {
         __do_while = false;
         let mut fb: Ptr<u8> =
             (array_field_ptr!((s), arr).offset((2) as isize)).reinterpret_cast::<u8>();
@@ -824,10 +784,8 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<i32>(), ((8) as u8))
         });
         assert!(
-            ((((array_elem!((s), arr, 2).read())
+            ((array_elem!((s), arr, 2).read())
                 == (((72340172838076673_u64 as u64).wrapping_mul((((8) as u8) as u64))) as i32))
-                as i32)
-                != 0)
         );
         assert!(
             (({
@@ -858,10 +816,9 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<i32>(), _v)
         });
         assert!(
-            ((((array_elem!((s), arr, 2).read())
+            ((array_elem!((s), arr, 2).read())
                 == (((72340172838076673_u64 as u64).wrapping_mul(((((8) + 2) as u8) as u64)))
-                    as i32)) as i32)
-                != 0)
+                    as i32))
         );
         assert!(
             (({
@@ -889,7 +846,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
         );
     }
     let mut __do_while = true;
-    'loop_: while __do_while || (0 != 0) {
+    'loop_: while __do_while || (false) {
         __do_while = false;
         let mut fb: Ptr<u8> = (field_ptr!((s), tail)).reinterpret_cast::<u8>();
         let mut sb: Ptr<u8> = (s).reinterpret_cast::<u8>().offset((32_usize) as isize);
@@ -898,10 +855,8 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<i64>(), ((24) as u8))
         });
         assert!(
-            ((((s).with(|__s| __s.tail)
+            ((s).with(|__s| __s.tail)
                 == (((72340172838076673_u64 as u64).wrapping_mul((((24) as u8) as u64))) as i64))
-                as i32)
-                != 0)
         );
         assert!(
             (({
@@ -932,10 +887,9 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<i64>(), _v)
         });
         assert!(
-            ((((s).with(|__s| __s.tail)
+            ((s).with(|__s| __s.tail)
                 == (((72340172838076673_u64 as u64).wrapping_mul(((((24) + 2) as u8) as u64)))
-                    as i64)) as i32)
-                != 0)
+                    as i64))
         );
         assert!(
             (({
@@ -965,15 +919,11 @@ pub fn check_struct_3(mut s: Ptr<S>) {
     ({ check_final_2((s).clone()) });
     ({ set_bytes_0((field_ptr!(s, in_)).reinterpret_cast::<u8>(), 8usize, 33_u8) });
     assert!(
-        (((((((s.with(|__s| __s.in_.a) as i32)
+        (((s.with(|__s| __s.in_.a) as i32)
             == ((((72340172838076673_u64 as u64).wrapping_mul((((33) as u8) as u64))) as i16)
-                as i32)) as i32)
-            != 0)
-            && (((s.with(|__s| __s.in_.b)
-                == (((72340172838076673_u64 as u64).wrapping_mul((((33) as u8) as u64))) as i32))
-                as i32)
-                != 0)) as i32)
-            != 0)
+                as i32))
+            && (s.with(|__s| __s.in_.b)
+                == (((72340172838076673_u64 as u64).wrapping_mul((((33) as u8) as u64))) as i32)))
     );
     let mut in_: In = In {
         a: (((72340172838076673_u64 as u64).wrapping_mul((((35) as u8) as u64))) as i16),
@@ -1004,15 +954,10 @@ pub fn check_struct_3(mut s: Ptr<S>) {
         set_bytes_0(_p, _n, 133_u8)
     });
     assert!(
-        (((((((array_elem!(s, arr, 0).read())
+        (((array_elem!(s, arr, 0).read())
             == (((72340172838076673_u64 as u64).wrapping_mul((((133) as u8) as u64))) as i32))
-            as i32)
-            != 0)
-            && ((((array_elem!(s, arr, 2).read())
-                == (((72340172838076673_u64 as u64).wrapping_mul((((133) as u8) as u64))) as i32))
-                as i32)
-                != 0)) as i32)
-            != 0)
+            && ((array_elem!(s, arr, 2).read())
+                == (((72340172838076673_u64 as u64).wrapping_mul((((133) as u8) as u64))) as i32)))
     );
     ({
         let _p: Ptr<u8> = (array_field_ptr!(s, arr)).reinterpret_cast::<u8>();
@@ -1020,10 +965,8 @@ pub fn check_struct_3(mut s: Ptr<S>) {
         set_bytes_0(_p, _n, 134_u8)
     });
     assert!(
-        ((((array_elem!(s, arr, 1).read())
+        ((array_elem!(s, arr, 1).read())
             == (((72340172838076673_u64 as u64).wrapping_mul((((134) as u8) as u64))) as i32))
-            as i32)
-            != 0)
     );
     array_elem!(s, arr, 0)
         .write((((72340172838076673_u64 as u64).wrapping_mul((((131) as u8) as u64))) as i32));
@@ -1045,16 +988,15 @@ pub fn check_struct_3(mut s: Ptr<S>) {
     array_elem!(s, bytes, 2).write(99_u8);
     array_elem!(s, bytes, 3).write(115_u8);
     assert!(
-        ((({ (ib.read()) } == {
+        ({ (ib.read()) } == {
             ((array_field_ptr!(s, bytes))
                 .reinterpret_cast::<i32>()
                 .read())
-        }) as i32)
-            != 0)
+        })
     );
     let mut v: AnyPtr = (field_ptr!(field_ptr!(s, in_), b)).to_any();
     v.reinterpret_cast::<i32>().write(11);
-    assert!((((s.with(|__s| __s.in_.b) == 11) as i32) != 0));
+    assert!((s.with(|__s| __s.in_.b) == 11));
     let twelve: Value<i32> = Rc::new(RefCell::new(12));
     match ({ (field_ptr!(s, x)).to_any() },) {
         (mut __tmp_0,) => {
@@ -1065,7 +1007,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             (__tmp_0).clone()
         }
     };
-    assert!((((s.with(|__s| __s.x) == 12) as i32) != 0));
+    assert!((s.with(|__s| __s.x) == 12));
     match ({ (field_ptr!(field_ptr!(s, in_), b)).to_any() },) {
         (mut __tmp_1,) => {
             __tmp_1.memset((51) as u8, ::std::mem::size_of::<i32>() as usize);
@@ -1113,11 +1055,11 @@ fn main_0() -> i32 {
         }) != 0)
     );
     let mut heap: Ptr<S> = libcc2rs::calloc_refcount(1_usize, 40usize).reinterpret_cast::<S>();
-    assert!((((!((heap).is_null())) as i32) != 0));
+    assert!((!((heap).is_null())));
     ({ check_struct_3((heap).clone()) });
     libcc2rs::free_refcount((heap).to_any());
     let mut raw_: Ptr<u8> = libcc2rs::malloc_refcount(40usize).reinterpret_cast::<u8>();
-    assert!((((!((raw_).is_null())) as i32) != 0));
+    assert!((!((raw_).is_null())));
     match ({ (raw_).to_any() },) {
         (mut __tmp_5,) => {
             __tmp_5.memset((0) as u8, 40usize as usize);
@@ -1126,22 +1068,17 @@ fn main_0() -> i32 {
     };
     let mut view: Ptr<S> = raw_.reinterpret_cast::<S>();
     ({ check_struct_3((view).clone()) });
-    assert!((((((elem!(raw_, 32_usize).read()) as i32) == 27) as i32) != 0));
+    assert!((((elem!(raw_, 32_usize).read()) as i32) == 27));
     ({
         let _p: Ptr<u8> = raw_.offset((16_usize) as isize);
         set_bytes_0(_p, ::std::mem::size_of::<i32>(), 119_u8)
     });
     assert!(
-        ((((array_elem!(view, arr, 0).read())
+        ((array_elem!(view, arr, 0).read())
             == (((72340172838076673_u64 as u64).wrapping_mul((((119) as u8) as u64))) as i32))
-            as i32)
-            != 0)
     );
     array_elem!(view, bytes, 3).write(17_u8);
-    assert!(
-        (((((elem!(raw_, (12_usize as usize).wrapping_add(3_usize)).read()) as i32) == 17) as i32)
-            != 0)
-    );
+    assert!((((elem!(raw_, (12_usize as usize).wrapping_add(3_usize)).read()) as i32) == 17));
     libcc2rs::free_refcount((raw_).to_any());
     return 0;
 }

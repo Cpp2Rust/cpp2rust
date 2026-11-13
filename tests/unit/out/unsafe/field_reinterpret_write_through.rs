@@ -23,15 +23,15 @@ pub struct S {
 }
 pub unsafe fn set_bytes_0(mut p: *mut u8, mut n: usize, mut v: u8) {
     let mut i: usize = 0_usize;
-    'loop_: while ((((i) < (n)) as i32) != 0) {
+    'loop_: while ((i) < (n)) {
         (*p.offset((i) as isize)) = v;
         i.postfix_inc();
     }
 }
 pub unsafe fn all_bytes_1(mut p: *const u8, mut n: usize, mut v: u8) -> i32 {
     let mut i: usize = 0_usize;
-    'loop_: while ((((i) < (n)) as i32) != 0) {
-        if (((((*p.offset((i) as isize)) as i32) != (v as i32)) as i32) != 0) {
+    'loop_: while ((i) < (n)) {
+        if (((*p.offset((i) as isize)) as i32) != (v as i32)) {
             return 0;
         }
         i.postfix_inc();
@@ -40,60 +40,43 @@ pub unsafe fn all_bytes_1(mut p: *const u8, mut n: usize, mut v: u8) -> i32 {
 }
 pub unsafe fn check_final_2(mut s: *mut S) {
     assert!(
-        (((((*s).x)
-            == (((72340172838076673_u64 as u64).wrapping_mul((((19) as u8) as u64))) as i32))
-            as i32)
-            != 0)
+        (((*s).x) == (((72340172838076673_u64 as u64).wrapping_mul((((19) as u8) as u64))) as i32))
     );
     assert!(
-        (((((*s).in_.a as i32)
+        (((*s).in_.a as i32)
             == ((((72340172838076673_u64 as u64).wrapping_mul((((35) as u8) as u64))) as i16)
-                as i32)) as i32)
-            != 0)
+                as i32))
     );
     assert!(
-        (((((*s).in_.b)
+        (((*s).in_.b)
             == (((72340172838076673_u64 as u64).wrapping_mul((((51) as u8) as u64))) as i32))
-            as i32)
-            != 0)
     );
     assert!(
-        ((((((((*s).bytes[(0) as usize] as i32) == (67)) as i32) != 0)
-            && (((((*s).bytes[(1) as usize] as i32) == (83)) as i32) != 0)) as i32)
-            != 0)
+        ((((*s).bytes[(0) as usize] as i32) == (67))
+            && (((*s).bytes[(1) as usize] as i32) == (83)))
     );
     assert!(
-        ((((((((*s).bytes[(2) as usize] as i32) == (99)) as i32) != 0)
-            && (((((*s).bytes[(3) as usize] as i32) == (115)) as i32) != 0)) as i32)
-            != 0)
+        ((((*s).bytes[(2) as usize] as i32) == (99))
+            && (((*s).bytes[(3) as usize] as i32) == (115)))
     );
     assert!(
-        ((((((((*s).arr[(0) as usize])
+        ((((*s).arr[(0) as usize])
             == (((72340172838076673_u64 as u64).wrapping_mul((((131) as u8) as u64))) as i32))
-            as i32)
-            != 0)
-            && (((((*s).arr[(1) as usize])
-                == (((72340172838076673_u64 as u64).wrapping_mul((((147) as u8) as u64))) as i32))
-                as i32)
-                != 0)) as i32)
-            != 0)
+            && (((*s).arr[(1) as usize])
+                == (((72340172838076673_u64 as u64).wrapping_mul((((147) as u8) as u64))) as i32)))
     );
     assert!(
-        (((((*s).arr[(2) as usize])
+        (((*s).arr[(2) as usize])
             == (((72340172838076673_u64 as u64).wrapping_mul((((11) as u8) as u64))) as i32))
-            as i32)
-            != 0)
     );
     assert!(
-        (((((*s).tail)
+        (((*s).tail)
             == (((72340172838076673_u64 as u64).wrapping_mul((((27) as u8) as u64))) as i64))
-            as i32)
-            != 0)
     );
 }
 pub unsafe fn check_struct_3(mut s: *mut S) {
     let mut __do_while = true;
-    'loop_: while __do_while || (0 != 0) {
+    'loop_: while __do_while || (false) {
         __do_while = false;
         let mut fb: *mut u8 = ((&mut (*(s)).x as *mut i32) as *mut u8);
         let mut sb: *mut u8 = ((s) as *mut u8).offset((::std::mem::offset_of!(S, x)) as isize);
@@ -102,10 +85,8 @@ pub unsafe fn check_struct_3(mut s: *mut S) {
             set_bytes_0(_p, ::std::mem::size_of::<i32>(), ((16) as u8))
         });
         assert!(
-            (((((*(s)).x)
+            (((*(s)).x)
                 == (((72340172838076673_u64 as u64).wrapping_mul((((16) as u8) as u64))) as i32))
-                as i32)
-                != 0)
         );
         assert!(
             ((unsafe {
@@ -135,10 +116,9 @@ pub unsafe fn check_struct_3(mut s: *mut S) {
             set_bytes_0(_p, ::std::mem::size_of::<i32>(), _v)
         });
         assert!(
-            (((((*(s)).x)
+            (((*(s)).x)
                 == (((72340172838076673_u64 as u64).wrapping_mul(((((16) + (2)) as u8) as u64)))
-                    as i32)) as i32)
-                != 0)
+                    as i32))
         );
         assert!(
             ((unsafe {
@@ -165,7 +145,7 @@ pub unsafe fn check_struct_3(mut s: *mut S) {
         );
     }
     let mut __do_while = true;
-    'loop_: while __do_while || (0 != 0) {
+    'loop_: while __do_while || (false) {
         __do_while = false;
         let mut fb: *mut u8 = ((&mut (*(s)).in_.a as *mut i16) as *mut u8);
         let mut sb: *mut u8 = ((s) as *mut u8).offset(
@@ -177,10 +157,9 @@ pub unsafe fn check_struct_3(mut s: *mut S) {
             set_bytes_0(_p, ::std::mem::size_of::<i16>(), ((32) as u8))
         });
         assert!(
-            (((((*(s)).in_.a as i32)
+            (((*(s)).in_.a as i32)
                 == ((((72340172838076673_u64 as u64).wrapping_mul((((32) as u8) as u64))) as i16)
-                    as i32)) as i32)
-                != 0)
+                    as i32))
         );
         assert!(
             ((unsafe {
@@ -210,10 +189,9 @@ pub unsafe fn check_struct_3(mut s: *mut S) {
             set_bytes_0(_p, ::std::mem::size_of::<i16>(), _v)
         });
         assert!(
-            (((((*(s)).in_.a as i32)
+            (((*(s)).in_.a as i32)
                 == ((((72340172838076673_u64 as u64).wrapping_mul(((((32) + (2)) as u8) as u64)))
-                    as i16) as i32)) as i32)
-                != 0)
+                    as i16) as i32))
         );
         assert!(
             ((unsafe {
@@ -240,7 +218,7 @@ pub unsafe fn check_struct_3(mut s: *mut S) {
         );
     }
     let mut __do_while = true;
-    'loop_: while __do_while || (0 != 0) {
+    'loop_: while __do_while || (false) {
         __do_while = false;
         let mut fb: *mut u8 = ((&mut (*(s)).in_.b as *mut i32) as *mut u8);
         let mut sb: *mut u8 = ((s) as *mut u8).offset(
@@ -252,10 +230,8 @@ pub unsafe fn check_struct_3(mut s: *mut S) {
             set_bytes_0(_p, ::std::mem::size_of::<i32>(), ((48) as u8))
         });
         assert!(
-            (((((*(s)).in_.b)
+            (((*(s)).in_.b)
                 == (((72340172838076673_u64 as u64).wrapping_mul((((48) as u8) as u64))) as i32))
-                as i32)
-                != 0)
         );
         assert!(
             ((unsafe {
@@ -285,10 +261,9 @@ pub unsafe fn check_struct_3(mut s: *mut S) {
             set_bytes_0(_p, ::std::mem::size_of::<i32>(), _v)
         });
         assert!(
-            (((((*(s)).in_.b)
+            (((*(s)).in_.b)
                 == (((72340172838076673_u64 as u64).wrapping_mul(((((48) + (2)) as u8) as u64)))
-                    as i32)) as i32)
-                != 0)
+                    as i32))
         );
         assert!(
             ((unsafe {
@@ -315,7 +290,7 @@ pub unsafe fn check_struct_3(mut s: *mut S) {
         );
     }
     let mut __do_while = true;
-    'loop_: while __do_while || (0 != 0) {
+    'loop_: while __do_while || (false) {
         __do_while = false;
         let mut fb: *mut u8 = (&mut (*(s)).bytes[(0) as usize] as *mut u8);
         let mut sb: *mut u8 = ((s) as *mut u8)
@@ -325,10 +300,9 @@ pub unsafe fn check_struct_3(mut s: *mut S) {
             set_bytes_0(_p, ::std::mem::size_of::<u8>(), ((64) as u8))
         });
         assert!(
-            (((((*(s)).bytes[(0) as usize] as i32)
+            (((*(s)).bytes[(0) as usize] as i32)
                 == ((((72340172838076673_u64 as u64).wrapping_mul((((64) as u8) as u64))) as u8)
-                    as i32)) as i32)
-                != 0)
+                    as i32))
         );
         assert!(
             ((unsafe {
@@ -358,10 +332,9 @@ pub unsafe fn check_struct_3(mut s: *mut S) {
             set_bytes_0(_p, ::std::mem::size_of::<u8>(), _v)
         });
         assert!(
-            (((((*(s)).bytes[(0) as usize] as i32)
+            (((*(s)).bytes[(0) as usize] as i32)
                 == ((((72340172838076673_u64 as u64).wrapping_mul(((((64) + (2)) as u8) as u64)))
-                    as u8) as i32)) as i32)
-                != 0)
+                    as u8) as i32))
         );
         assert!(
             ((unsafe {
@@ -388,7 +361,7 @@ pub unsafe fn check_struct_3(mut s: *mut S) {
         );
     }
     let mut __do_while = true;
-    'loop_: while __do_while || (0 != 0) {
+    'loop_: while __do_while || (false) {
         __do_while = false;
         let mut fb: *mut u8 = (&mut (*(s)).bytes[(1) as usize] as *mut u8);
         let mut sb: *mut u8 = ((s) as *mut u8)
@@ -398,10 +371,9 @@ pub unsafe fn check_struct_3(mut s: *mut S) {
             set_bytes_0(_p, ::std::mem::size_of::<u8>(), ((80) as u8))
         });
         assert!(
-            (((((*(s)).bytes[(1) as usize] as i32)
+            (((*(s)).bytes[(1) as usize] as i32)
                 == ((((72340172838076673_u64 as u64).wrapping_mul((((80) as u8) as u64))) as u8)
-                    as i32)) as i32)
-                != 0)
+                    as i32))
         );
         assert!(
             ((unsafe {
@@ -431,10 +403,9 @@ pub unsafe fn check_struct_3(mut s: *mut S) {
             set_bytes_0(_p, ::std::mem::size_of::<u8>(), _v)
         });
         assert!(
-            (((((*(s)).bytes[(1) as usize] as i32)
+            (((*(s)).bytes[(1) as usize] as i32)
                 == ((((72340172838076673_u64 as u64).wrapping_mul(((((80) + (2)) as u8) as u64)))
-                    as u8) as i32)) as i32)
-                != 0)
+                    as u8) as i32))
         );
         assert!(
             ((unsafe {
@@ -461,7 +432,7 @@ pub unsafe fn check_struct_3(mut s: *mut S) {
         );
     }
     let mut __do_while = true;
-    'loop_: while __do_while || (0 != 0) {
+    'loop_: while __do_while || (false) {
         __do_while = false;
         let mut fb: *mut u8 = (&mut (*(s)).bytes[(2) as usize] as *mut u8);
         let mut sb: *mut u8 = ((s) as *mut u8)
@@ -471,10 +442,9 @@ pub unsafe fn check_struct_3(mut s: *mut S) {
             set_bytes_0(_p, ::std::mem::size_of::<u8>(), ((96) as u8))
         });
         assert!(
-            (((((*(s)).bytes[(2) as usize] as i32)
+            (((*(s)).bytes[(2) as usize] as i32)
                 == ((((72340172838076673_u64 as u64).wrapping_mul((((96) as u8) as u64))) as u8)
-                    as i32)) as i32)
-                != 0)
+                    as i32))
         );
         assert!(
             ((unsafe {
@@ -504,10 +474,9 @@ pub unsafe fn check_struct_3(mut s: *mut S) {
             set_bytes_0(_p, ::std::mem::size_of::<u8>(), _v)
         });
         assert!(
-            (((((*(s)).bytes[(2) as usize] as i32)
+            (((*(s)).bytes[(2) as usize] as i32)
                 == ((((72340172838076673_u64 as u64).wrapping_mul(((((96) + (2)) as u8) as u64)))
-                    as u8) as i32)) as i32)
-                != 0)
+                    as u8) as i32))
         );
         assert!(
             ((unsafe {
@@ -534,7 +503,7 @@ pub unsafe fn check_struct_3(mut s: *mut S) {
         );
     }
     let mut __do_while = true;
-    'loop_: while __do_while || (0 != 0) {
+    'loop_: while __do_while || (false) {
         __do_while = false;
         let mut fb: *mut u8 = (&mut (*(s)).bytes[(3) as usize] as *mut u8);
         let mut sb: *mut u8 = ((s) as *mut u8)
@@ -544,10 +513,9 @@ pub unsafe fn check_struct_3(mut s: *mut S) {
             set_bytes_0(_p, ::std::mem::size_of::<u8>(), ((112) as u8))
         });
         assert!(
-            (((((*(s)).bytes[(3) as usize] as i32)
+            (((*(s)).bytes[(3) as usize] as i32)
                 == ((((72340172838076673_u64 as u64).wrapping_mul((((112) as u8) as u64))) as u8)
-                    as i32)) as i32)
-                != 0)
+                    as i32))
         );
         assert!(
             ((unsafe {
@@ -577,10 +545,9 @@ pub unsafe fn check_struct_3(mut s: *mut S) {
             set_bytes_0(_p, ::std::mem::size_of::<u8>(), _v)
         });
         assert!(
-            (((((*(s)).bytes[(3) as usize] as i32)
+            (((*(s)).bytes[(3) as usize] as i32)
                 == ((((72340172838076673_u64 as u64).wrapping_mul(((((112) + (2)) as u8) as u64)))
-                    as u8) as i32)) as i32)
-                != 0)
+                    as u8) as i32))
         );
         assert!(
             ((unsafe {
@@ -607,7 +574,7 @@ pub unsafe fn check_struct_3(mut s: *mut S) {
         );
     }
     let mut __do_while = true;
-    'loop_: while __do_while || (0 != 0) {
+    'loop_: while __do_while || (false) {
         __do_while = false;
         let mut fb: *mut u8 = ((&mut (*(s)).arr[(0) as usize] as *mut i32) as *mut i32 as *mut u8);
         let mut sb: *mut u8 = ((s) as *mut u8).offset(
@@ -620,10 +587,8 @@ pub unsafe fn check_struct_3(mut s: *mut S) {
             set_bytes_0(_p, ::std::mem::size_of::<i32>(), ((128) as u8))
         });
         assert!(
-            (((((*(s)).arr[(0) as usize])
+            (((*(s)).arr[(0) as usize])
                 == (((72340172838076673_u64 as u64).wrapping_mul((((128) as u8) as u64))) as i32))
-                as i32)
-                != 0)
         );
         assert!(
             ((unsafe {
@@ -653,10 +618,9 @@ pub unsafe fn check_struct_3(mut s: *mut S) {
             set_bytes_0(_p, ::std::mem::size_of::<i32>(), _v)
         });
         assert!(
-            (((((*(s)).arr[(0) as usize])
+            (((*(s)).arr[(0) as usize])
                 == (((72340172838076673_u64 as u64).wrapping_mul(((((128) + (2)) as u8) as u64)))
-                    as i32)) as i32)
-                != 0)
+                    as i32))
         );
         assert!(
             ((unsafe {
@@ -683,7 +647,7 @@ pub unsafe fn check_struct_3(mut s: *mut S) {
         );
     }
     let mut __do_while = true;
-    'loop_: while __do_while || (0 != 0) {
+    'loop_: while __do_while || (false) {
         __do_while = false;
         let mut fb: *mut u8 = ((&mut (*(s)).arr[(1) as usize] as *mut i32) as *mut i32 as *mut u8);
         let mut sb: *mut u8 = ((s) as *mut u8).offset(
@@ -696,10 +660,8 @@ pub unsafe fn check_struct_3(mut s: *mut S) {
             set_bytes_0(_p, ::std::mem::size_of::<i32>(), ((144) as u8))
         });
         assert!(
-            (((((*(s)).arr[(1) as usize])
+            (((*(s)).arr[(1) as usize])
                 == (((72340172838076673_u64 as u64).wrapping_mul((((144) as u8) as u64))) as i32))
-                as i32)
-                != 0)
         );
         assert!(
             ((unsafe {
@@ -729,10 +691,9 @@ pub unsafe fn check_struct_3(mut s: *mut S) {
             set_bytes_0(_p, ::std::mem::size_of::<i32>(), _v)
         });
         assert!(
-            (((((*(s)).arr[(1) as usize])
+            (((*(s)).arr[(1) as usize])
                 == (((72340172838076673_u64 as u64).wrapping_mul(((((144) + (2)) as u8) as u64)))
-                    as i32)) as i32)
-                != 0)
+                    as i32))
         );
         assert!(
             ((unsafe {
@@ -759,7 +720,7 @@ pub unsafe fn check_struct_3(mut s: *mut S) {
         );
     }
     let mut __do_while = true;
-    'loop_: while __do_while || (0 != 0) {
+    'loop_: while __do_while || (false) {
         __do_while = false;
         let mut fb: *mut u8 = ((&mut (*(s)).arr[(2) as usize] as *mut i32) as *mut i32 as *mut u8);
         let mut sb: *mut u8 = ((s) as *mut u8).offset(
@@ -772,10 +733,8 @@ pub unsafe fn check_struct_3(mut s: *mut S) {
             set_bytes_0(_p, ::std::mem::size_of::<i32>(), ((8) as u8))
         });
         assert!(
-            (((((*(s)).arr[(2) as usize])
+            (((*(s)).arr[(2) as usize])
                 == (((72340172838076673_u64 as u64).wrapping_mul((((8) as u8) as u64))) as i32))
-                as i32)
-                != 0)
         );
         assert!(
             ((unsafe {
@@ -805,10 +764,9 @@ pub unsafe fn check_struct_3(mut s: *mut S) {
             set_bytes_0(_p, ::std::mem::size_of::<i32>(), _v)
         });
         assert!(
-            (((((*(s)).arr[(2) as usize])
+            (((*(s)).arr[(2) as usize])
                 == (((72340172838076673_u64 as u64).wrapping_mul(((((8) + (2)) as u8) as u64)))
-                    as i32)) as i32)
-                != 0)
+                    as i32))
         );
         assert!(
             ((unsafe {
@@ -835,7 +793,7 @@ pub unsafe fn check_struct_3(mut s: *mut S) {
         );
     }
     let mut __do_while = true;
-    'loop_: while __do_while || (0 != 0) {
+    'loop_: while __do_while || (false) {
         __do_while = false;
         let mut fb: *mut u8 = ((&mut (*(s)).tail as *mut i64) as *mut u8);
         let mut sb: *mut u8 = ((s) as *mut u8).offset((::std::mem::offset_of!(S, tail)) as isize);
@@ -844,10 +802,8 @@ pub unsafe fn check_struct_3(mut s: *mut S) {
             set_bytes_0(_p, ::std::mem::size_of::<i64>(), ((24) as u8))
         });
         assert!(
-            (((((*(s)).tail)
+            (((*(s)).tail)
                 == (((72340172838076673_u64 as u64).wrapping_mul((((24) as u8) as u64))) as i64))
-                as i32)
-                != 0)
         );
         assert!(
             ((unsafe {
@@ -877,10 +833,9 @@ pub unsafe fn check_struct_3(mut s: *mut S) {
             set_bytes_0(_p, ::std::mem::size_of::<i64>(), _v)
         });
         assert!(
-            (((((*(s)).tail)
+            (((*(s)).tail)
                 == (((72340172838076673_u64 as u64).wrapping_mul(((((24) + (2)) as u8) as u64)))
-                    as i64)) as i32)
-                != 0)
+                    as i64))
         );
         assert!(
             ((unsafe {
@@ -915,15 +870,11 @@ pub unsafe fn check_struct_3(mut s: *mut S) {
         )
     });
     assert!(
-        ((((((((*s).in_.a as i32)
+        ((((*s).in_.a as i32)
             == ((((72340172838076673_u64 as u64).wrapping_mul((((33) as u8) as u64))) as i16)
-                as i32)) as i32)
-            != 0)
-            && (((((*s).in_.b)
-                == (((72340172838076673_u64 as u64).wrapping_mul((((33) as u8) as u64))) as i32))
-                as i32)
-                != 0)) as i32)
-            != 0)
+                as i32))
+            && (((*s).in_.b)
+                == (((72340172838076673_u64 as u64).wrapping_mul((((33) as u8) as u64))) as i32)))
     );
     let mut in_: In = In {
         a: (((72340172838076673_u64 as u64).wrapping_mul((((35) as u8) as u64))) as i16),
@@ -954,15 +905,10 @@ pub unsafe fn check_struct_3(mut s: *mut S) {
         set_bytes_0(_p, _n, 133_u8)
     });
     assert!(
-        ((((((((*s).arr[(0) as usize])
+        ((((*s).arr[(0) as usize])
             == (((72340172838076673_u64 as u64).wrapping_mul((((133) as u8) as u64))) as i32))
-            as i32)
-            != 0)
-            && (((((*s).arr[(2) as usize])
-                == (((72340172838076673_u64 as u64).wrapping_mul((((133) as u8) as u64))) as i32))
-                as i32)
-                != 0)) as i32)
-            != 0)
+            && (((*s).arr[(2) as usize])
+                == (((72340172838076673_u64 as u64).wrapping_mul((((133) as u8) as u64))) as i32)))
     );
     (unsafe {
         let _p: *mut u8 = ((&mut (*s).arr as *mut [i32; 3]) as *mut u8);
@@ -970,10 +916,8 @@ pub unsafe fn check_struct_3(mut s: *mut S) {
         set_bytes_0(_p, _n, 134_u8)
     });
     assert!(
-        (((((*s).arr[(1) as usize])
+        (((*s).arr[(1) as usize])
             == (((72340172838076673_u64 as u64).wrapping_mul((((134) as u8) as u64))) as i32))
-            as i32)
-            != 0)
     );
     (*s).arr[(0) as usize] =
         (((72340172838076673_u64 as u64).wrapping_mul((((131) as u8) as u64))) as i32);
@@ -994,12 +938,10 @@ pub unsafe fn check_struct_3(mut s: *mut S) {
     (*s).bytes[(1) as usize] = 83_u8;
     (*s).bytes[(2) as usize] = 99_u8;
     (*s).bytes[(3) as usize] = 115_u8;
-    assert!(
-        ((((*ib) == (*(((&mut (*s).bytes as *mut [u8; 4]) as *mut u8) as *mut i32))) as i32) != 0)
-    );
+    assert!(((*ib) == (*(((&mut (*s).bytes as *mut [u8; 4]) as *mut u8) as *mut i32))));
     let mut v: *mut ::libc::c_void = ((&mut (*s).in_.b as *mut i32) as *mut ::libc::c_void);
     (*(v as *mut i32)) = 11;
-    assert!((((((*s).in_.b) == (11)) as i32) != 0));
+    assert!((((*s).in_.b) == (11)));
     let mut twelve: i32 = 12;
     match ({ ((&mut (*s).x as *mut i32) as *mut ::libc::c_void) }, {
         ((&mut twelve as *mut i32) as *const ::libc::c_void)
@@ -1015,7 +957,7 @@ pub unsafe fn check_struct_3(mut s: *mut S) {
             __tmp_0
         }
     };
-    assert!((((((*s).x) == (12)) as i32) != 0));
+    assert!((((*s).x) == (12)));
     match ({ ((&mut (*s).in_.b as *mut i32) as *mut ::libc::c_void) },) {
         (mut __tmp_2,) => {
             let byte_0 = __tmp_2 as *mut u8;
@@ -1075,11 +1017,11 @@ unsafe fn main_0() -> i32 {
         }) != 0)
     );
     let mut heap: *mut S = (libcc2rs::calloc_unsafe(1_usize, ::std::mem::size_of::<S>()) as *mut S);
-    assert!((((!((heap).is_null())) as i32) != 0));
+    assert!((!((heap).is_null())));
     (unsafe { check_struct_3(heap) });
     libcc2rs::free_unsafe((heap as *mut ::libc::c_void));
     let mut raw_: *mut u8 = (libcc2rs::malloc_unsafe(::std::mem::size_of::<S>()) as *mut u8);
-    assert!((((!((raw_).is_null())) as i32) != 0));
+    assert!((!((raw_).is_null())));
     match ({ (raw_ as *mut ::libc::c_void) },) {
         (mut __tmp_6,) => {
             let byte_0 = __tmp_6 as *mut u8;
@@ -1091,27 +1033,21 @@ unsafe fn main_0() -> i32 {
     };
     let mut view: *mut S = (raw_ as *mut S);
     (unsafe { check_struct_3(view) });
-    assert!(
-        (((((*raw_.offset((::std::mem::offset_of!(S, tail)) as isize)) as i32) == (27)) as i32)
-            != 0)
-    );
+    assert!((((*raw_.offset((::std::mem::offset_of!(S, tail)) as isize)) as i32) == (27)));
     (unsafe {
         let _p: *mut u8 = raw_.offset((::std::mem::offset_of!(S, arr)) as isize);
         set_bytes_0(_p, ::std::mem::size_of::<i32>(), 119_u8)
     });
     assert!(
-        (((((*view).arr[(0) as usize])
+        (((*view).arr[(0) as usize])
             == (((72340172838076673_u64 as u64).wrapping_mul((((119) as u8) as u64))) as i32))
-            as i32)
-            != 0)
     );
     (*view).bytes[(3) as usize] = 17_u8;
     assert!(
-        (((((*raw_
+        (((*raw_
             .offset(((::std::mem::offset_of!(S, bytes) as usize).wrapping_add(3_usize)) as isize))
             as i32)
-            == (17)) as i32)
-            != 0)
+            == (17))
     );
     libcc2rs::free_unsafe((raw_ as *mut ::libc::c_void));
     return 0;

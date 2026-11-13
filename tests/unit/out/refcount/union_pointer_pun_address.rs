@@ -31,7 +31,7 @@ fn main_0() -> i32 {
     let ptr: Value<anon_0> = <Value<anon_0>>::default();
     anon_0::to_a(ptr.as_pointer()).write((a.as_pointer()));
     let mut out: Ptr<node_b> = (anon_0::to_b(ptr.as_pointer()).read());
-    assert!(((({ (out).to_any() } == { (a.as_pointer()).to_any() }) as i32) != 0));
+    assert!(({ (out).to_any() } == { (a.as_pointer()).to_any() }));
     return 0;
 }
 #[derive(VaArg, FnPtrArg, ByteRepr, Clone)]

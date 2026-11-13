@@ -45,12 +45,8 @@ fn main_0() -> i32 {
         }
     };
     let mut i: i32 = 0;
-    'loop_: while (((i < 7) as i32) != 0) {
-        assert!(
-            ({
-                ((((*arr.borrow())[(i) as usize] <= (*arr.borrow())[(i + 1) as usize]) as i32) != 0)
-            })
-        );
+    'loop_: while (i < 7) {
+        assert!(({ ((*arr.borrow())[(i) as usize] <= (*arr.borrow())[(i + 1) as usize]) }));
         i.prefix_inc();
     }
     let key: Value<i32> = Rc::new(RefCell::new(7));
@@ -76,8 +72,8 @@ fn main_0() -> i32 {
         }
     }
     .reinterpret_cast::<i32>();
-    assert!((((!((hit).is_null())) as i32) != 0));
-    assert!(((((hit.read()) == 7) as i32) != 0));
+    assert!((!((hit).is_null())));
+    assert!(((hit.read()) == 7));
     let miss_key: Value<i32> = Rc::new(RefCell::new(42));
     let mut miss: Ptr<i32> = match ({ (miss_key.as_pointer()).to_any() },) {
         (mut __tmp_1,) => {
@@ -101,7 +97,7 @@ fn main_0() -> i32 {
         }
     }
     .reinterpret_cast::<i32>();
-    assert!(((((miss).is_null()) as i32) != 0));
+    assert!(((miss).is_null()));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

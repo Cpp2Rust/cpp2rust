@@ -18,27 +18,23 @@ pub unsafe fn test_ipv4_literal_0() {
     hints.ai_socktype = libc::SOCK_STREAM;
     let mut res: *mut ::libc::addrinfo = std::ptr::null_mut();
     assert!(
-        ((((libc::getaddrinfo(
+        ((libc::getaddrinfo(
             (c"127.0.0.1".as_ptr().cast_mut()).cast_const(),
             (c"8080".as_ptr().cast_mut()).cast_const(),
             (&mut hints as *mut ::libc::addrinfo).cast_const(),
             (&mut res as *mut *mut ::libc::addrinfo)
-        )) == (0)) as i32)
-            != 0)
+        )) == (0))
     );
-    assert!((((!((res).is_null())) as i32) != 0));
-    assert!((((((*res).ai_family) == (libc::AF_INET)) as i32) != 0));
-    assert!((((((*res).ai_socktype) == (libc::SOCK_STREAM)) as i32) != 0));
-    assert!(
-        (((((*res).ai_addrlen as usize) == (::std::mem::size_of::<::libc::sockaddr_in>())) as i32)
-            != 0)
-    );
-    assert!((((!(((*res).ai_addr).is_null())) as i32) != 0));
+    assert!((!((res).is_null())));
+    assert!((((*res).ai_family) == (libc::AF_INET)));
+    assert!((((*res).ai_socktype) == (libc::SOCK_STREAM)));
+    assert!((((*res).ai_addrlen as usize) == (::std::mem::size_of::<::libc::sockaddr_in>())));
+    assert!((!(((*res).ai_addr).is_null())));
     let mut sin: *mut ::libc::sockaddr_in = ((*res).ai_addr as *mut ::libc::sockaddr_in);
-    assert!((((((*sin).sin_family as i32) == (libc::AF_INET)) as i32) != 0));
+    assert!((((*sin).sin_family as i32) == (libc::AF_INET)));
     let mut port_be: [u8; 2] = [(((8080) / (256)) as u8), (((8080) % (256)) as u8)];
     assert!(
-        (((({
+        (({
             let sa = core::slice::from_raw_parts(
                 ((&mut (*sin).sin_port as *mut ::libc::in_port_t) as *const ::libc::c_void)
                     as *const u8,
@@ -56,12 +52,11 @@ pub unsafe fn test_ipv4_literal_0() {
                 }
             }
             diff
-        }) == (0)) as i32)
-            != 0)
+        }) == (0))
     );
     let mut addr_be: [u8; 4] = [127_u8, 0_u8, 0_u8, 1_u8];
     assert!(
-        (((({
+        (({
             let sa = core::slice::from_raw_parts(
                 ((&mut (*sin).sin_addr as *mut ::libc::in_addr) as *const ::libc::c_void)
                     as *const u8,
@@ -79,8 +74,7 @@ pub unsafe fn test_ipv4_literal_0() {
                 }
             }
             diff
-        }) == (0)) as i32)
-            != 0)
+        }) == (0))
     );
     libc::freeaddrinfo(res);
 }
@@ -96,27 +90,22 @@ pub unsafe fn test_ipv6_literal_1() {
     hints.ai_socktype = libc::SOCK_STREAM;
     let mut res: *mut ::libc::addrinfo = std::ptr::null_mut();
     assert!(
-        ((((libc::getaddrinfo(
+        ((libc::getaddrinfo(
             (c"::1".as_ptr().cast_mut()).cast_const(),
             (c"443".as_ptr().cast_mut()).cast_const(),
             (&mut hints as *mut ::libc::addrinfo).cast_const(),
             (&mut res as *mut *mut ::libc::addrinfo)
-        )) == (0)) as i32)
-            != 0)
+        )) == (0))
     );
-    assert!((((!((res).is_null())) as i32) != 0));
-    assert!((((((*res).ai_family) == (libc::AF_INET6)) as i32) != 0));
-    assert!(
-        (((((*res).ai_addrlen as usize) == (::std::mem::size_of::<::libc::sockaddr_in6>()))
-            as i32)
-            != 0)
-    );
-    assert!((((!(((*res).ai_addr).is_null())) as i32) != 0));
+    assert!((!((res).is_null())));
+    assert!((((*res).ai_family) == (libc::AF_INET6)));
+    assert!((((*res).ai_addrlen as usize) == (::std::mem::size_of::<::libc::sockaddr_in6>())));
+    assert!((!(((*res).ai_addr).is_null())));
     let mut sin6: *mut ::libc::sockaddr_in6 = ((*res).ai_addr as *mut ::libc::sockaddr_in6);
-    assert!((((((*sin6).sin6_family as i32) == (libc::AF_INET6)) as i32) != 0));
+    assert!((((*sin6).sin6_family as i32) == (libc::AF_INET6)));
     let mut port_be: [u8; 2] = [(((443) / (256)) as u8), (((443) % (256)) as u8)];
     assert!(
-        (((({
+        (({
             let sa = core::slice::from_raw_parts(
                 ((&mut (*sin6).sin6_port as *mut ::libc::in_port_t) as *const ::libc::c_void)
                     as *const u8,
@@ -134,15 +123,14 @@ pub unsafe fn test_ipv6_literal_1() {
                 }
             }
             diff
-        }) == (0)) as i32)
-            != 0)
+        }) == (0))
     );
     let mut addr_be: [u8; 16] = [
         0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8,
         1_u8,
     ];
     assert!(
-        (((({
+        (({
             let sa = core::slice::from_raw_parts(
                 ((&mut (*sin6).sin6_addr as *mut ::libc::in6_addr) as *const ::libc::c_void)
                     as *const u8,
@@ -160,28 +148,26 @@ pub unsafe fn test_ipv6_literal_1() {
                 }
             }
             diff
-        }) == (0)) as i32)
-            != 0)
+        }) == (0))
     );
     libc::freeaddrinfo(res);
 }
 pub unsafe fn test_null_hints_2() {
     let mut res: *mut ::libc::addrinfo = std::ptr::null_mut();
     assert!(
-        ((((libc::getaddrinfo(
+        ((libc::getaddrinfo(
             (c"127.0.0.1".as_ptr().cast_mut()).cast_const(),
             (c"80".as_ptr().cast_mut()).cast_const(),
             std::ptr::null(),
             (&mut res as *mut *mut ::libc::addrinfo)
-        )) == (0)) as i32)
-            != 0)
+        )) == (0))
     );
-    assert!((((!((res).is_null())) as i32) != 0));
-    assert!((((((*res).ai_family) == (libc::AF_INET)) as i32) != 0));
+    assert!((!((res).is_null())));
+    assert!((((*res).ai_family) == (libc::AF_INET)));
     let mut sin: *mut ::libc::sockaddr_in = ((*res).ai_addr as *mut ::libc::sockaddr_in);
     let mut addr_be: [u8; 4] = [127_u8, 0_u8, 0_u8, 1_u8];
     assert!(
-        (((({
+        (({
             let sa = core::slice::from_raw_parts(
                 ((&mut (*sin).sin_addr as *mut ::libc::in_addr) as *const ::libc::c_void)
                     as *const u8,
@@ -199,8 +185,7 @@ pub unsafe fn test_null_hints_2() {
                 }
             }
             diff
-        }) == (0)) as i32)
-            != 0)
+        }) == (0))
     );
     libc::freeaddrinfo(res);
 }

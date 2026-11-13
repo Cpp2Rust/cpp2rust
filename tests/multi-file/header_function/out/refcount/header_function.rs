@@ -11,7 +11,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((((({ helper_0(42,) }) == 43) as i32) != 0));
+    assert!((({ helper_0(42,) }) == 43));
     return 0;
 }
 pub fn unrelated1_1() -> i32 {

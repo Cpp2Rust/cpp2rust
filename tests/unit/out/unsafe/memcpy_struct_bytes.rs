@@ -50,8 +50,8 @@ unsafe fn main_0() -> i32 {
             __tmp_2
         }
     };
-    assert!(((((dst.x) == (3)) as i32) != 0));
-    assert!(((((dst.y) == (7)) as i32) != 0));
+    assert!(((dst.x) == (3)));
+    assert!(((dst.y) == (7)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

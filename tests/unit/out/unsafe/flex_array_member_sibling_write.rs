@@ -36,7 +36,7 @@ unsafe fn main_0() -> i32 {
         1_usize,
         (::std::mem::size_of::<S>() as usize).wrapping_add(8_usize),
     ) as *mut S);
-    assert!((((!((s).is_null())) as i32) != 0));
+    assert!((!((s).is_null())));
     match ({ ((*s).name.as_mut_ptr() as *mut ::libc::c_void) },) {
         (mut __tmp_0,) => {
             if 8_usize != 0 {
@@ -50,43 +50,36 @@ unsafe fn main_0() -> i32 {
         }
     };
     (*s).n = 5;
-    assert!((((((*s).n) == (5)) as i32) != 0));
+    assert!((((*s).n) == (5)));
     assert!(
-        ((((libc::strcmp(
+        ((libc::strcmp(
             ((*s).name.as_mut_ptr()).cast_const(),
             (c"abcdefg".as_ptr().cast_mut()).cast_const()
-        )) == (0)) as i32)
-            != 0)
+        )) == (0))
     );
     libcc2rs::free_unsafe((s as *mut ::libc::c_void));
     let mut t: *mut T = (libcc2rs::malloc_unsafe(
         (::std::mem::size_of::<T>() as usize).wrapping_add((::std::mem::size_of::<E>() as usize)),
     ) as *mut T);
-    assert!((((!((t).is_null())) as i32) != 0));
+    assert!((!((t).is_null())));
     (*t).n = 2;
     (*t).cap = 2;
     (*(*t).a.as_mut_ptr().add((0) as usize)).id = 10;
     (*(*t).a.as_mut_ptr().add((1) as usize)).w = 20;
     (*t).n = 3;
     assert!(
-        ((((((((*(*t).a.as_mut_ptr().add((0) as usize)).id) == (10)) as i32) != 0)
-            && (((((*(*t).a.as_mut_ptr().add((1) as usize)).w) == (20)) as i32) != 0))
-            as i32)
-            != 0)
+        ((((*(*t).a.as_mut_ptr().add((0) as usize)).id) == (10))
+            && (((*(*t).a.as_mut_ptr().add((1) as usize)).w) == (20)))
     );
     let mut tail: *mut E = ((&mut (*t.offset((1) as isize)) as *mut T) as *mut T as *mut E);
-    assert!(((((tail) == ((*t).a.as_mut_ptr().add((1) as usize))) as i32) != 0));
+    assert!(((tail) == ((*t).a.as_mut_ptr().add((1) as usize))));
     (*tail.offset((0) as isize)).id = 30;
     (*t).cap = 4;
     assert!(
-        ((((((((*(*t).a.as_mut_ptr().add((1) as usize)).id) == (30)) as i32) != 0)
-            && (((((*(*t).a.as_mut_ptr().add((1) as usize)).w) == (20)) as i32) != 0))
-            as i32)
-            != 0)
+        ((((*(*t).a.as_mut_ptr().add((1) as usize)).id) == (30))
+            && (((*(*t).a.as_mut_ptr().add((1) as usize)).w) == (20)))
     );
-    assert!(
-        ((((((((*t).n) == (3)) as i32) != 0) && (((((*t).cap) == (4)) as i32) != 0)) as i32) != 0)
-    );
+    assert!(((((*t).n) == (3)) && (((*t).cap) == (4))));
     libcc2rs::free_unsafe((t as *mut ::libc::c_void));
     return 0;
 }

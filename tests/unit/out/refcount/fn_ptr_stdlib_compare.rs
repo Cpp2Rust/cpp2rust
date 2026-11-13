@@ -37,7 +37,7 @@ fn main_0() -> i32 {
     .cast::<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>();
     assert!((({ (f3).call(AnyPtr::default(), 0_usize, 0_usize, Ptr::null(),) }) == 22_usize));
     let mut __do_while = true;
-    'loop_: while __do_while || (0 != 0) {
+    'loop_: while __do_while || (false) {
         __do_while = false;
         let mut stream: Ptr<CFile> = match CFile::open(
             &Ptr::<i8>::from_string_literal(b"/dev/zero").to_rust_string(),
@@ -78,7 +78,7 @@ fn main_0() -> i32 {
         };
     }
     let mut __do_while = true;
-    'loop_: while __do_while || (0 != 0) {
+    'loop_: while __do_while || (false) {
         __do_while = false;
         let mut stream: Ptr<CFile> = match CFile::open(
             &Ptr::<i8>::from_string_literal(b"/dev/zero").to_rust_string(),
@@ -135,7 +135,7 @@ fn main_0() -> i32 {
             .cast::<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>();
     assert!((({ (g3).call(AnyPtr::default(), 0_usize, 0_usize, Ptr::null(),) }) == 33_usize));
     let mut __do_while = true;
-    'loop_: while __do_while || (0 != 0) {
+    'loop_: while __do_while || (false) {
         __do_while = false;
         let mut stream: Ptr<CFile> = match CFile::open(
             &Ptr::<i8>::from_string_literal(b"/dev/null").to_rust_string(),
@@ -166,7 +166,7 @@ fn main_0() -> i32 {
         };
     }
     let mut __do_while = true;
-    'loop_: while __do_while || (0 != 0) {
+    'loop_: while __do_while || (false) {
         __do_while = false;
         let mut stream: Ptr<CFile> = match CFile::open(
             &Ptr::<i8>::from_string_literal(b"/dev/null").to_rust_string(),

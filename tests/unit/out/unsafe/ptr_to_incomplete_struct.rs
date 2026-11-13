@@ -16,7 +16,7 @@ unsafe fn main_0() -> i32 {
     let mut fp: *mut ::libc::FILE = libcc2rs::stdout_unsafe();
     let mut p: *mut ::libc::c_void = (fp as *mut ::libc::c_void);
     let mut fp2: *mut ::libc::FILE = (p as *mut ::libc::FILE);
-    assert!(((((fp) == (fp2)) as i32) != 0));
+    assert!(((fp) == (fp2)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

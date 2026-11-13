@@ -92,10 +92,10 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let mut c: Color = Color_RED;
-    assert!(((((c as u32) == ((Color_RED as i32) as u32)) as i32) != 0));
-    assert!(((((c as u32) == 0_u32) as i32) != 0));
-    assert!(((((c as u32) != 1_u32) as i32) != 0));
-    if ((((c as u32) == ((Color_GREEN as i32) as u32)) as i32) != 0) {
+    assert!(((c as u32) == ((Color_RED as i32) as u32)));
+    assert!(((c as u32) == 0_u32));
+    assert!(((c as u32) != 1_u32));
+    if ((c as u32) == ((Color_GREEN as i32) as u32)) {
         return 1;
     }
     'switch: {
@@ -115,36 +115,36 @@ fn main_0() -> i32 {
         }
     };
     let mut x: i32 = (c as i32);
-    assert!((((x == 0) as i32) != 0));
+    assert!((x == 0));
     let mut y: i32 = (((c as u32).wrapping_add(1_u32)) as i32);
-    assert!((((y == 1) as i32) != 0));
+    assert!((y == 1));
     c = ((2) as Color);
-    assert!(((((c as u32) == ((Color_BLUE as i32) as u32)) as i32) != 0));
-    assert!(((((c as u32) == 2_u32) as i32) != 0));
+    assert!(((c as u32) == ((Color_BLUE as i32) as u32)));
+    assert!(((c as u32) == 2_u32));
     c = ({ make_color_6(1) });
-    assert!(((((c as u32) == ((Color_GREEN as i32) as u32)) as i32) != 0));
+    assert!(((c as u32) == ((Color_GREEN as i32) as u32)));
     let mut cmp: Color = (((c as u32).wrapping_add(1_u32)) as Color);
-    assert!(((((cmp as u32) == ((Color_BLUE as i32) as u32)) as i32) != 0));
+    assert!(((cmp as u32) == ((Color_BLUE as i32) as u32)));
     let mut o: Option = Option_OPT_A;
-    assert!(((((o as u32) == ((Option_OPT_A as i32) as u32)) as i32) != 0));
-    assert!(((((o as u32) == 10_u32) as i32) != 0));
+    assert!(((o as u32) == ((Option_OPT_A as i32) as u32)));
+    assert!(((o as u32) == 10_u32));
     let mut oi: i32 = (o as i32);
-    assert!((((oi == 10) as i32) != 0));
+    assert!((oi == 10));
     o = ((20) as Option);
-    assert!(((((o as u32) == ((Option_OPT_B as i32) as u32)) as i32) != 0));
+    assert!(((o as u32) == ((Option_OPT_B as i32) as u32)));
     let mut rc: i32 = ({ classify_option_5((o as i32)) });
-    assert!((((rc == 2) as i32) != 0));
+    assert!((rc == 2));
     rc = ({ classify_option_5(20) });
-    assert!((((rc == 2) as i32) != 0));
+    assert!((rc == 2));
     rc = ({ classify_option_5((Option_OPT_C as i32)) });
-    assert!((((rc == 3) as i32) != 0));
+    assert!((rc == 3));
     let mut t: Tag_enum = Tag_enum_TAG_ONE;
-    assert!(((((t as u32) == 1_u32) as i32) != 0));
-    assert!(((((t as u32) == ((Tag_enum_TAG_ONE as i32) as u32)) as i32) != 0));
+    assert!(((t as u32) == 1_u32));
+    assert!(((t as u32) == ((Tag_enum_TAG_ONE as i32) as u32)));
     let mut ti: i32 = (t as i32);
-    assert!((((ti == 1) as i32) != 0));
+    assert!((ti == 1));
     t = ((2) as Tag_enum);
-    assert!(((((t as u32) == ((Tag_enum_TAG_TWO as i32) as u32)) as i32) != 0));
+    assert!(((t as u32) == ((Tag_enum_TAG_TWO as i32) as u32)));
     'switch: {
         match { (t as u32) } {
             __v if __v == ((Tag_enum_TAG_ZERO as i32) as u32) => {
@@ -160,62 +160,44 @@ fn main_0() -> i32 {
         }
     };
     let mut extra: i32 = (((Color_RED as i32) + (Color_GREEN as i32)) + (Color_BLUE as i32));
-    assert!((((extra == ((0 + 1) + 2)) as i32) != 0));
-    assert!(
-        ((((global_color_0.with(|rc| *rc.borrow()) as u32) == ((Color_GREEN as i32) as u32))
-            as i32)
-            != 0)
-    );
-    assert!(
-        ((((global_opt_1.with(|rc| *rc.borrow()) as u32) == ((Option_OPT_B as i32) as u32))
-            as i32)
-            != 0)
-    );
-    assert!(
-        ((((global_tag_2.with(|rc| *rc.borrow()) as u32) == ((Tag_enum_TAG_TWO as i32) as u32))
-            as i32)
-            != 0)
-    );
+    assert!((extra == ((0 + 1) + 2)));
+    assert!(((global_color_0.with(|rc| *rc.borrow()) as u32) == ((Color_GREEN as i32) as u32)));
+    assert!(((global_opt_1.with(|rc| *rc.borrow()) as u32) == ((Option_OPT_B as i32) as u32)));
+    assert!(((global_tag_2.with(|rc| *rc.borrow()) as u32) == ((Tag_enum_TAG_TWO as i32) as u32)));
     assert!(
         ({
-            (((({ (*entries_3.with(Value::clone).borrow())[(0) as usize].color } as u32)
-                == ((Color_RED as i32) as u32)) as i32)
-                != 0)
+            (({ (*entries_3.with(Value::clone).borrow())[(0) as usize].color } as u32)
+                == ((Color_RED as i32) as u32))
         })
     );
     assert!(
         ({
-            (((({ (*entries_3.with(Value::clone).borrow())[(0) as usize].opt } as u32)
-                == ((Option_OPT_NONE as i32) as u32)) as i32)
-                != 0)
+            (({ (*entries_3.with(Value::clone).borrow())[(0) as usize].opt } as u32)
+                == ((Option_OPT_NONE as i32) as u32))
         })
     );
     assert!(
         ({
-            (((({ (*entries_3.with(Value::clone).borrow())[(1) as usize].color } as u32)
-                == ((Color_GREEN as i32) as u32)) as i32)
-                != 0)
+            (({ (*entries_3.with(Value::clone).borrow())[(1) as usize].color } as u32)
+                == ((Color_GREEN as i32) as u32))
         })
     );
     assert!(
         ({
-            (((({ (*entries_3.with(Value::clone).borrow())[(1) as usize].opt } as u32)
-                == ((Option_OPT_A as i32) as u32)) as i32)
-                != 0)
+            (({ (*entries_3.with(Value::clone).borrow())[(1) as usize].opt } as u32)
+                == ((Option_OPT_A as i32) as u32))
         })
     );
     assert!(
         ({
-            (((({ (*entries_3.with(Value::clone).borrow())[(2) as usize].color } as u32)
-                == ((Color_BLUE as i32) as u32)) as i32)
-                != 0)
+            (({ (*entries_3.with(Value::clone).borrow())[(2) as usize].color } as u32)
+                == ((Color_BLUE as i32) as u32))
         })
     );
     assert!(
         ({
-            (((({ (*entries_3.with(Value::clone).borrow())[(2) as usize].opt } as u32)
-                == ((Option_OPT_C as i32) as u32)) as i32)
-                != 0)
+            (({ (*entries_3.with(Value::clone).borrow())[(2) as usize].opt } as u32)
+                == ((Option_OPT_C as i32) as u32))
         })
     );
     let names: Value<Box<[Ptr<i8>]>> = Rc::new(RefCell::new(Box::new([
@@ -224,35 +206,27 @@ fn main_0() -> i32 {
         Ptr::<i8>::from_string_literal(b"blue"),
     ])));
     let mut idx: Color = Color_GREEN;
+    assert!(({ (((elem!((*names.borrow())[(idx) as usize], 0).read()) as i32) == ('g' as i32)) }));
     assert!(
         ({
-            (((((elem!((*names.borrow())[(idx) as usize], 0).read()) as i32) == ('g' as i32))
-                as i32)
-                != 0)
+            (({ (*entries_3.with(Value::clone).borrow())[(idx) as usize].opt } as u32)
+                == ((Option_OPT_A as i32) as u32))
         })
     );
     assert!(
         ({
-            (((({ (*entries_3.with(Value::clone).borrow())[(idx) as usize].opt } as u32)
-                == ((Option_OPT_A as i32) as u32)) as i32)
-                != 0)
-        })
-    );
-    assert!(
-        ({
-            (((((elem!(
+            (((elem!(
                 (*names.borrow())[(global_tag_2.with(|rc| *rc.borrow())) as usize],
                 0
             )
             .read()) as i32)
-                == ('b' as i32)) as i32)
-                != 0)
+                == ('b' as i32))
         })
     );
     let mut pp: Ptr<Ptr<i8>> = (names.decay().offset((idx) as isize));
-    assert!((((((elem!((pp.read()), 0).read()) as i32) == ('g' as i32)) as i32) != 0));
+    assert!((((elem!((pp.read()), 0).read()) as i32) == ('g' as i32)));
     let mut pe: Ptr<Entry> = (entries_3.with(|v| v.decay()).offset((idx) as isize));
-    assert!(((((pe.with(|__s| __s.opt) as u32) == ((Option_OPT_A as i32) as u32)) as i32) != 0));
+    assert!(((pe.with(|__s| __s.opt) as u32) == ((Option_OPT_A as i32) as u32)));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {

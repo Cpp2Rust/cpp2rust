@@ -43,7 +43,7 @@ pub unsafe fn fill_1(mut out: *mut ::libc::c_void, mut cap: usize) {
     src[(5) as usize] = 0_u8;
     src[(6) as usize] = 0_u8;
     src[(7) as usize] = 1_u8;
-    let mut n: usize = (if ((((::std::mem::size_of::<[u8; 16]>()) < (cap)) as i32) != 0) {
+    let mut n: usize = (if ((::std::mem::size_of::<[u8; 16]>()) < (cap)) {
         (::std::mem::size_of::<[u8; 16]>() as u64)
     } else {
         (cap as u64)
@@ -79,19 +79,11 @@ unsafe fn main_0() -> i32 {
         let _cap: usize = ::std::mem::size_of::<anon_0>();
         fill_1(_out, _cap)
     });
-    assert!(((((c.view.h.code as i32) == (2)) as i32) != 0));
-    assert!(
-        (((((*((&mut c.view.h.lo as *mut u16) as *mut u8).offset((0) as isize)) as i32) == (0))
-            as i32)
-            != 0)
-    );
-    assert!(
-        (((((*((&mut c.view.h.lo as *mut u16) as *mut u8).offset((1) as isize)) as i32) == (80))
-            as i32)
-            != 0)
-    );
-    assert!(((((c.view.raw_[(0) as usize] as i32) == (2)) as i32) != 0));
-    assert!((((((c.view.raw_[(3) as usize] as u8) as i32) == (80)) as i32) != 0));
+    assert!(((c.view.h.code as i32) == (2)));
+    assert!((((*((&mut c.view.h.lo as *mut u16) as *mut u8).offset((0) as isize)) as i32) == (0)));
+    assert!((((*((&mut c.view.h.lo as *mut u16) as *mut u8).offset((1) as isize)) as i32) == (80)));
+    assert!(((c.view.raw_[(0) as usize] as i32) == (2)));
+    assert!((((c.view.raw_[(3) as usize] as u8) as i32) == (80)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

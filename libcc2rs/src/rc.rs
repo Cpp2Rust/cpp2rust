@@ -122,7 +122,10 @@ impl<T: 'static> Ptr<T> {
     pub(crate) fn borrow_in<'a>(&self, root: &'a SliceRoot) -> Ref<'a, T> {
         let offset = self.offset;
         match &self.kind {
-            PtrKind::StackSingle(_) | PtrKind::HeapSingle(_) => root.alloc::<T>().borrow(),
+            PtrKind::StackSingle(_) | PtrKind::HeapSingle(_) => {
+                check_single(offset);
+                root.alloc::<T>().borrow()
+            }
             PtrKind::StackVec(_) | PtrKind::HeapVec(_) => {
                 Ref::map(root.alloc::<Vec<T>>().borrow(), |v| &v[offset])
             }
@@ -144,7 +147,10 @@ impl<T: 'static> Ptr<T> {
     pub(crate) fn borrow_in_mut<'a>(&self, root: &'a SliceRoot) -> RefMut<'a, T> {
         let offset = self.offset;
         match &self.kind {
-            PtrKind::StackSingle(_) | PtrKind::HeapSingle(_) => root.alloc::<T>().borrow_mut(),
+            PtrKind::StackSingle(_) | PtrKind::HeapSingle(_) => {
+                check_single(offset);
+                root.alloc::<T>().borrow_mut()
+            }
             PtrKind::StackVec(_) | PtrKind::HeapVec(_) => {
                 RefMut::map(root.alloc::<Vec<T>>().borrow_mut(), |v| &mut v[offset])
             }
@@ -595,6 +601,7 @@ impl<T> Ptr<T> {
         match &self.kind {
             PtrKind::Null => null_deref(),
             PtrKind::StackSingle(weak) | PtrKind::HeapSingle(weak) => {
+                check_single(self.offset);
                 StrongPtr::StackSingle(weak.upgrade().unwrap_or_else(|| dangling()))
             }
             PtrKind::StackVec(weak) | PtrKind::HeapVec(weak) => StrongPtr::Vec {
@@ -766,6 +773,7 @@ impl<T> Ptr<T> {
     {
         match &self.kind {
             PtrKind::StackSingle(weak) | PtrKind::HeapSingle(weak) => {
+                check_single(offset);
                 let rc = weak.upgrade().unwrap_or_else(|| dangling());
                 let mut borrow = rc.borrow_mut();
                 f(&mut *borrow)
@@ -887,6 +895,7 @@ impl<T> Ptr<T> {
     {
         match &self.kind {
             PtrKind::StackSingle(weak) | PtrKind::HeapSingle(weak) => {
+                check_single(offset);
                 let rc = weak.upgrade().unwrap_or_else(|| dangling());
                 let borrow = rc.borrow();
                 f(&*borrow)
@@ -955,6 +964,22 @@ pub(crate) fn null_deref() -> ! {
 #[track_caller]
 pub(crate) fn dangling() -> ! {
     panic!("ub: dangling pointer")
+}
+
+// A pointer to a single object can only be dereferenced at offset 0, not
+// past the object.
+#[inline(always)]
+#[track_caller]
+fn check_single(offset: usize) {
+    #[cold]
+    #[inline(never)]
+    #[track_caller]
+    fn out_of_bounds(offset: usize) -> ! {
+        panic!("ub: access at offset {offset} of a single object")
+    }
+    if offset != 0 {
+        out_of_bounds(offset)
+    }
 }
 
 impl<T: CChar> Ptr<T> {
@@ -1535,6 +1560,13 @@ mod tests {
         let v: Value<Box<[i32]>> = Rc::new(RefCell::new(vec![1, 2, 3].into_boxed_slice()));
         let p: Ptr<Box<[i32]>> = v.as_pointer();
         p.decay().delete();
+    }
+
+    #[test]
+    #[should_panic(expected = "ub: access at offset 1 of a single object")]
+    fn write_past_single_panics() {
+        let v: Value<i32> = Rc::new(RefCell::new(1));
+        v.as_pointer().offset(1).write(2);
     }
 
     #[test]

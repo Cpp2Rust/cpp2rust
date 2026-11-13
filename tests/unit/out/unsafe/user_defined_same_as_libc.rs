@@ -27,7 +27,7 @@ unsafe fn main_0() -> i32 {
             (c"r".as_ptr().cast_mut()).cast_const(),
         )
     });
-    assert!(((((fp).is_null()) as i32) != 0));
+    assert!(((fp).is_null()));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

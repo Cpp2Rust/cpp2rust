@@ -12,7 +12,7 @@ pub fn early_0(mut n: i32) -> i32 {
     goto_block!({
         '__entry: {
             ret = 0;
-            if (((n < 0) as i32) != 0) {
+            if (n < 0) {
                 ret = -1_i32;
                 goto!('out);
             }
@@ -31,8 +31,8 @@ pub fn from_loop_1(mut n: i32) -> i32 {
         '__entry: {
             ret = 0;
             let mut i: i32 = 0;
-            'loop_: while (((i < n) as i32) != 0) {
-                if (((i == 3) as i32) != 0) {
+            'loop_: while (i < n) {
+                if (i == 3) {
                     ret = 7;
                     goto!('out);
                 }
@@ -127,20 +127,20 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((((({ early_0(-1_i32,) }) == -1_i32) as i32) != 0));
-    assert!((((({ early_0(5,) }) == 100) as i32) != 0));
-    assert!((((({ from_loop_1(2,) }) == 999) as i32) != 0));
-    assert!((((({ from_loop_1(10,) }) == 7) as i32) != 0));
-    assert!((((({ from_switch_2(1,) }) == 10) as i32) != 0));
-    assert!((((({ from_switch_2(2,) }) == 999) as i32) != 0));
+    assert!((({ early_0(-1_i32,) }) == -1_i32));
+    assert!((({ early_0(5,) }) == 100));
+    assert!((({ from_loop_1(2,) }) == 999));
+    assert!((({ from_loop_1(10,) }) == 7));
+    assert!((({ from_switch_2(1,) }) == 10));
+    assert!((({ from_switch_2(2,) }) == 999));
     let value: Value<i32> = Rc::new(RefCell::new(42));
     let w: Value<wrapper> = Rc::new(RefCell::new(wrapper {
         item: (value.as_pointer()),
     }));
-    assert!((((({ via_pointer_3((w.as_pointer()), 0,) }) == 42) as i32) != 0));
-    assert!((((({ via_pointer_3((w.as_pointer()), 1,) }) == -1_i32) as i32) != 0));
-    assert!((((({ via_arrays_4(0,) }) == 11) as i32) != 0));
-    assert!((((({ via_arrays_4(1,) }) == -1_i32) as i32) != 0));
+    assert!((({ via_pointer_3((w.as_pointer()), 0,) }) == 42));
+    assert!((({ via_pointer_3((w.as_pointer()), 1,) }) == -1_i32));
+    assert!((({ via_arrays_4(0,) }) == 11));
+    assert!((({ via_arrays_4(1,) }) == -1_i32));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

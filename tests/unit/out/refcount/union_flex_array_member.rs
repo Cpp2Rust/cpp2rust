@@ -50,29 +50,28 @@ fn main_0() -> i32 {
             .reinterpret_cast::<node>();
     field!(n, len).write(tail_size);
     let mut i: usize = 0_usize;
-    'loop_: while (((i < tail_size) as i32) != 0) {
+    'loop_: while (i < tail_size) {
         elem!(anon_0::bytes(field_ptr!(n, x)), i).write({ ((i & 255_usize) as u8) });
         i.postfix_inc();
     }
     let mut i: usize = 0_usize;
-    'loop_: while (((i < tail_size) as i32) != 0) {
+    'loop_: while (i < tail_size) {
         assert!(
-            ((({ ((elem!(anon_0::bytes(field_ptr!(n, x)), i).read()) as i32) } == {
+            ({ ((elem!(anon_0::bytes(field_ptr!(n, x)), i).read()) as i32) } == {
                 (((i & 255_usize) as u8) as i32)
-            }) as i32)
-                != 0)
+            })
         );
         i.postfix_inc();
     }
     let mut p: Ptr<u8> = (anon_0::bytes(field_ptr!(n, x)).offset((10) as isize));
-    assert!((((((p.read()) as i32) == 10) as i32) != 0));
+    assert!((((p.read()) as i32) == 10));
     p.write(170_u8);
-    assert!((((((elem!(anon_0::bytes(field_ptr!(n, x)), 10).read()) as i32) == 170) as i32) != 0));
+    assert!((((elem!(anon_0::bytes(field_ptr!(n, x)), 10).read()) as i32) == 170));
     field!(n, pos).write(20_usize);
     let mut q: Ptr<u8> = (anon_0::bytes(field_ptr!(n, x)).offset((n.with(|__s| __s.pos)) as isize));
-    assert!((((((q.read()) as i32) == 20) as i32) != 0));
+    assert!((((q.read()) as i32) == 20));
     q.write(187_u8);
-    assert!((((((q.read()) as i32) == 187) as i32) != 0));
+    assert!((((q.read()) as i32) == 187));
     libcc2rs::free_refcount((n).to_any());
     return 0;
 }

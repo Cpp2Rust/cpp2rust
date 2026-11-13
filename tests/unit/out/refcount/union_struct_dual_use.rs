@@ -54,7 +54,7 @@ fn main_0() -> i32 {
     let standalone: Value<Inner> = <Value<Inner>>::default();
     (*standalone.borrow_mut()).a = 3;
     (*standalone.borrow_mut()).b = 4;
-    assert!((((({ sum_inner_0((standalone.as_pointer()),) }) == 7) as i32) != 0));
+    assert!((({ sum_inner_0((standalone.as_pointer()),) }) == 7));
     let outer: Value<Outer> = <Value<Outer>>::default();
     match ({ (outer.as_pointer()).to_any() },) {
         (mut __tmp_0,) => {
@@ -64,20 +64,12 @@ fn main_0() -> i32 {
     };
     field!(anon_1::inner(field_ptr!(outer.as_pointer(), u)), a).write(3);
     field!(anon_1::inner(field_ptr!(outer.as_pointer(), u)), b).write(4);
+    assert!((({ sum_inner_0((anon_1::inner(field_ptr!(outer.as_pointer(), u))).clone(),) }) == 7));
     assert!(
-        (((({ sum_inner_0((anon_1::inner(field_ptr!(outer.as_pointer(), u))).clone(),) }) == 7)
-            as i32)
-            != 0)
+        ((((elem!(anon_1::raw_(field_ptr!(outer.as_pointer(), u)), 0).read()) as u8) as i32) == 3)
     );
     assert!(
-        ((((((elem!(anon_1::raw_(field_ptr!(outer.as_pointer(), u)), 0).read()) as u8) as i32) == 3)
-            as i32)
-            != 0)
-    );
-    assert!(
-        ((((((elem!(anon_1::raw_(field_ptr!(outer.as_pointer(), u)), 4).read()) as u8) as i32) == 4)
-            as i32)
-            != 0)
+        ((((elem!(anon_1::raw_(field_ptr!(outer.as_pointer(), u)), 4).read()) as u8) as i32) == 4)
     );
     return 0;
 }

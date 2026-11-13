@@ -37,15 +37,15 @@ pub fn test_time_0() {
             }
         },
     };
-    assert!((((t1 > (1500000000 as ::libc::time_t)) as i32) != 0));
-    assert!(({ ((((*t2.borrow()) == t3) as i32) != 0) }));
-    assert!((((t3 >= t1) as i32) != 0));
+    assert!((t1 > (1500000000 as ::libc::time_t)));
+    assert!(({ ((*t2.borrow()) == t3) }));
+    assert!((t3 >= t1));
 }
 pub fn print_tm_1(t: ::libc::time_t) {
     let t: Value<::libc::time_t> = Rc::new(RefCell::new(t));
     let tm: Value<libcc2rs::Tm> = Rc::new(RefCell::new(Default::default()));
     assert!(
-        (((!((match ({ (tm.as_pointer()) },) {
+        (!((match ({ (tm.as_pointer()) },) {
             (mut __tmp_1,) => {
                 match jiff::Timestamp::from_second((t.as_pointer()).read()) {
                     Ok(__ts) => {
@@ -60,8 +60,7 @@ pub fn print_tm_1(t: ::libc::time_t) {
                 }
             }
         })
-        .is_null())) as i32)
-            != 0)
+        .is_null()))
     );
     println!(
         "{}-{}-{} {}:{}:{} wday={} yday={} {} gmtoff={} isdst={}",
@@ -94,7 +93,7 @@ pub fn print_local_tm_3(t: ::libc::time_t) {
     let t: Value<::libc::time_t> = Rc::new(RefCell::new(t));
     let tm: Value<libcc2rs::Tm> = Rc::new(RefCell::new(Default::default()));
     assert!(
-        (((!((match ({ (tm.as_pointer()) },) {
+        (!((match ({ (tm.as_pointer()) },) {
             (mut __tmp_2,) => {
                 match jiff::Timestamp::from_second((t.as_pointer()).read()) {
                     Ok(__ts) => {
@@ -115,8 +114,7 @@ pub fn print_local_tm_3(t: ::libc::time_t) {
                 }
             }
         })
-        .is_null())) as i32)
-            != 0)
+        .is_null()))
     );
     println!(
         "{}-{}-{} {}:{}:{} wday={} yday={} {} gmtoff={} isdst={}",
@@ -144,7 +142,7 @@ pub fn test_strftime_5() {
     let t: Value<::libc::time_t> = Rc::new(RefCell::new((1721126096 as ::libc::time_t)));
     let tm: Value<libcc2rs::Tm> = Rc::new(RefCell::new(Default::default()));
     assert!(
-        (((!((match ({ (tm.as_pointer()) },) {
+        (!((match ({ (tm.as_pointer()) },) {
             (mut __tmp_3,) => {
                 match jiff::Timestamp::from_second((t.as_pointer()).read()) {
                     Ok(__ts) => {
@@ -159,12 +157,11 @@ pub fn test_strftime_5() {
                 }
             }
         })
-        .is_null())) as i32)
-            != 0)
+        .is_null()))
     );
     let buf: Value<Box<[i8]>> = Rc::new(RefCell::new((0..64).map(|_| 0_i8).collect::<Box<[i8]>>()));
     assert!(
-        (((match ({ buf.decay() },) {
+        (match ({ buf.decay() },) {
             (mut __tmp_4,) => {
                 {
                     let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
@@ -187,12 +184,11 @@ pub fn test_strftime_5() {
                     }
                 }
             }
-        } > 0_usize) as i32)
-            != 0)
+        } > 0_usize)
     );
     println!("{}", buf.decay());
     assert!(
-        (((match ({ buf.decay() },) {
+        (match ({ buf.decay() },) {
             (mut __tmp_5,) => {
                 {
                     let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
@@ -215,12 +211,11 @@ pub fn test_strftime_5() {
                     }
                 }
             }
-        } > 0_usize) as i32)
-            != 0)
+        } > 0_usize)
     );
     println!("{}", buf.decay());
     assert!(
-        (((match ({ buf.decay() },) {
+        (match ({ buf.decay() },) {
             (mut __tmp_6,) => {
                 {
                     let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
@@ -243,12 +238,11 @@ pub fn test_strftime_5() {
                     }
                 }
             }
-        } > 0_usize) as i32)
-            != 0)
+        } > 0_usize)
     );
     println!("{}", buf.decay());
     assert!(
-        (((match ({ buf.decay() },) {
+        (match ({ buf.decay() },) {
             (mut __tmp_7,) => {
                 {
                     let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
@@ -271,14 +265,13 @@ pub fn test_strftime_5() {
                     }
                 }
             }
-        } > 0_usize) as i32)
-            != 0)
+        } > 0_usize)
     );
     println!("{}", buf.decay());
     let small: Value<Box<[i8]>> =
         Rc::new(RefCell::new((0..4).map(|_| 0_i8).collect::<Box<[i8]>>()));
     assert!(
-        (((match ({ small.decay() },) {
+        (match ({ small.decay() },) {
             (mut __tmp_8,) => {
                 {
                     let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
@@ -301,8 +294,7 @@ pub fn test_strftime_5() {
                     }
                 }
             }
-        } == 0_usize) as i32)
-            != 0)
+        } == 0_usize)
     );
 }
 pub fn main() {

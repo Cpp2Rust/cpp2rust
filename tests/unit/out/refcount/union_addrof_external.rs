@@ -73,7 +73,7 @@ pub fn fill_1(mut out: AnyPtr, mut cap: usize) {
     (*src.borrow_mut())[(5) as usize] = 0_u8;
     (*src.borrow_mut())[(6) as usize] = 0_u8;
     (*src.borrow_mut())[(7) as usize] = 1_u8;
-    let mut n: usize = (if (((::std::mem::size_of::<[u8; 16]>() < cap) as i32) != 0) {
+    let mut n: usize = (if (::std::mem::size_of::<[u8; 16]>() < cap) {
         (::std::mem::size_of::<[u8; 16]>() as u64)
     } else {
         (cap as u64)
@@ -100,39 +100,28 @@ fn main_0() -> i32 {
         let _cap: usize = 128usize;
         fill_1(_out, _cap)
     });
+    assert!(((anon_0::h(field_ptr!(c.as_pointer(), view)).with(|__s| __s.code) as i32) == 2));
     assert!(
-        ((((anon_0::h(field_ptr!(c.as_pointer(), view)).with(|__s| __s.code) as i32) == 2) as i32)
-            != 0)
-    );
-    assert!(
-        (((((elem!(
+        (((elem!(
             ((field_ptr!(anon_0::h(field_ptr!(c.as_pointer(), view)), lo))
                 .reinterpret_cast::<u8>()),
             0
         )
         .read()) as i32)
-            == 0) as i32)
-            != 0)
+            == 0)
     );
     assert!(
-        (((((elem!(
+        (((elem!(
             ((field_ptr!(anon_0::h(field_ptr!(c.as_pointer(), view)), lo))
                 .reinterpret_cast::<u8>()),
             1
         )
         .read()) as i32)
-            == 80) as i32)
-            != 0)
+            == 80)
     );
+    assert!((((elem!(anon_0::raw_(field_ptr!(c.as_pointer(), view)), 0).read()) as i32) == 2));
     assert!(
-        (((((elem!(anon_0::raw_(field_ptr!(c.as_pointer(), view)), 0).read()) as i32) == 2)
-            as i32)
-            != 0)
-    );
-    assert!(
-        ((((((elem!(anon_0::raw_(field_ptr!(c.as_pointer(), view)), 3).read()) as u8) as i32) == 80)
-            as i32)
-            != 0)
+        ((((elem!(anon_0::raw_(field_ptr!(c.as_pointer(), view)), 3).read()) as u8) as i32) == 80)
     );
     return 0;
 }

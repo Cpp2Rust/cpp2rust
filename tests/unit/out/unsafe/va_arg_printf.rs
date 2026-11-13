@@ -32,34 +32,31 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut dummy: *const libc::c_char = (c"dummy".as_ptr().cast_mut()).cast_const();
     assert!(
-        ((((unsafe {
+        ((unsafe {
             logf_1(
                 (c"hello %d %d".as_ptr().cast_mut()).cast_const(),
                 Box::new([(10).into(), (libc::strlen(dummy)).into()]),
             )
-        }) == (15)) as i32)
-            != 0)
+        }) == (15))
     );
     assert!(
-        ((((unsafe {
+        ((unsafe {
             logf_1(
                 (c"x %d %d".as_ptr().cast_mut()).cast_const(),
                 Box::new([(1).into(), (2).into()]),
             )
-        }) == (3)) as i32)
-            != 0)
+        }) == (3))
     );
     assert!(
-        ((((unsafe {
+        ((unsafe {
             lenf_2(
                 (c"%s".as_ptr().cast_mut()).cast_const(),
                 Box::new([(dummy).into()]),
             )
-        }) == (5)) as i32)
-            != 0)
+        }) == (5))
     );
     assert!(
-        ((((unsafe {
+        ((unsafe {
             lenf_2(
                 (c"%s".as_ptr().cast_mut()).cast_const(),
                 Box::new([(if (((*dummy.offset((0) as isize)) as i32) != 0) {
@@ -69,8 +66,7 @@ unsafe fn main_0() -> i32 {
                 })
                 .into()]),
             )
-        }) == (5)) as i32)
-            != 0)
+        }) == (5))
     );
     return 0;
 }

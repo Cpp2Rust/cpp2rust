@@ -11,57 +11,56 @@ pub fn test_expect_0() {
     assert!(((((x == 42) as i32) as i64) != 0));
 }
 pub fn test_ctz_1() {
-    assert!((((8_u32.trailing_zeros() as i32 == 3) as i32) != 0));
-    assert!((((1_u32.trailing_zeros() as i32 == 0) as i32) != 0));
+    assert!((8_u32.trailing_zeros() as i32 == 3));
+    assert!((1_u32.trailing_zeros() as i32 == 0));
 }
 pub fn test_clz_2() {
-    assert!((((1_u32.leading_zeros() as i32 == 31) as i32) != 0));
-    assert!((((2147483648_u32.leading_zeros() as i32 == 0) as i32) != 0));
+    assert!((1_u32.leading_zeros() as i32 == 31));
+    assert!((2147483648_u32.leading_zeros() as i32 == 0));
 }
 pub fn test_bswap16_3() {
-    assert!((((((4660 as u16).swap_bytes() as i32) == 13330) as i32) != 0));
+    assert!((((4660 as u16).swap_bytes() as i32) == 13330));
 }
 pub fn test_bswap32_4() {
-    assert!((((305419896_u32.swap_bytes() == 2018915346_u32) as i32) != 0));
+    assert!((305419896_u32.swap_bytes() == 2018915346_u32));
 }
 pub fn test_bswap64_5() {
-    assert!((((81985529216486895_u64.swap_bytes() == 17279655951921914625_u64) as i32) != 0));
+    assert!((81985529216486895_u64.swap_bytes() == 17279655951921914625_u64));
 }
 pub fn test_ctzl_6() {
-    assert!((((8_u64.trailing_zeros() as i32 == 3) as i32) != 0));
-    assert!((((1_u64.trailing_zeros() as i32 == 0) as i32) != 0));
+    assert!((8_u64.trailing_zeros() as i32 == 3));
+    assert!((1_u64.trailing_zeros() as i32 == 0));
 }
 pub fn test_popcountl_7() {
-    assert!((((0_u64.count_ones() as i32 == 0) as i32) != 0));
-    assert!((((255_u64.count_ones() as i32 == 8) as i32) != 0));
+    assert!((0_u64.count_ones() as i32 == 0));
+    assert!((255_u64.count_ones() as i32 == 8));
 }
 pub fn test_clzl_8() {
-    assert!((((1_u64.leading_zeros() as i32 == 63) as i32) != 0));
-    assert!((((9223372036854775808_u64.leading_zeros() as i32 == 0) as i32) != 0));
+    assert!((1_u64.leading_zeros() as i32 == 63));
+    assert!((9223372036854775808_u64.leading_zeros() as i32 == 0));
 }
 pub fn test_inff_9() {
     let mut inf: f32 = f32::INFINITY;
-    assert!((((inf > 0_f32) as i32) != 0));
-    assert!((((inf == (inf * 2_f32)) as i32) != 0));
-    assert!(((((1_f32 / inf) == 0_f32) as i32) != 0));
+    assert!((inf > 0_f32));
+    assert!((inf == (inf * 2_f32)));
+    assert!(((1_f32 / inf) == 0_f32));
 }
 pub fn test_nanf_10() {
     let mut nan: f32 = f32::NAN;
-    assert!((((nan != nan) as i32) != 0));
-    assert!(((!(((nan < 0_f32) as i32) != 0) as i32) != 0));
-    assert!(((!(((nan > 0_f32) as i32) != 0) as i32) != 0));
+    assert!((nan != nan));
+    assert!(!(nan < 0_f32));
+    assert!(!(nan > 0_f32));
 }
 pub fn test_mul_overflow_long_11() {
     let r: Value<i64> = Rc::new(RefCell::new(0_i64));
     assert!(
-        ((!({
+        !({
             let (val, ovf) = 3_i64.overflowing_mul(7_i64);
             (r.as_pointer()).write(val);
             ovf
-        }) as i32)
-            != 0)
+        })
     );
-    assert!(({ ((((*r.borrow()) == 21_i64) as i32) != 0) }));
+    assert!(({ ((*r.borrow()) == 21_i64) }));
     assert!({
         let (val, ovf) = 9223372036854775807_i64.overflowing_mul(2_i64);
         (r.as_pointer()).write(val);
@@ -71,14 +70,13 @@ pub fn test_mul_overflow_long_11() {
 pub fn test_mul_overflow_long_long_12() {
     let r: Value<i64> = Rc::new(RefCell::new(0_i64));
     assert!(
-        ((!({
+        !({
             let (val, ovf) = 1000_i64.overflowing_mul(1000_i64);
             (r.as_pointer()).write(val);
             ovf
-        }) as i32)
-            != 0)
+        })
     );
-    assert!(({ ((((*r.borrow()) == 1000000_i64) as i32) != 0) }));
+    assert!(({ ((*r.borrow()) == 1000000_i64) }));
     assert!({
         let (val, ovf) = 9223372036854775807_i64.overflowing_mul(2_i64);
         (r.as_pointer()).write(val);

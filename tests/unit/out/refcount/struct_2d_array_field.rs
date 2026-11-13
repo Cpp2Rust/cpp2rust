@@ -52,9 +52,9 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!(({ ((({ (*T1_0.with(Value::clone).borrow()).count } == 1_usize) as i32) != 0) }));
+    assert!(({ ({ (*T1_0.with(Value::clone).borrow()).count } == 1_usize) }));
     assert!(
-        ((({
+        ({
             let mut __it1 = array_field_ptr!(T1_0.with(|v| v.as_pointer()), rows)
                 .offset(0)
                 .decay()
@@ -70,19 +70,17 @@ fn main_0() -> i32 {
                     break 0;
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
     assert!(
         ({
-            (((((*T1_0.with(Value::clone).borrow()).rows[(1) as usize][(0) as usize] as i32)
-                == ('\0' as i32)) as i32)
-                != 0)
+            (((*T1_0.with(Value::clone).borrow()).rows[(1) as usize][(0) as usize] as i32)
+                == ('\0' as i32))
         })
     );
-    assert!(({ ((({ (*T2_1.with(Value::clone).borrow()).count } == 2_usize) as i32) != 0) }));
+    assert!(({ ({ (*T2_1.with(Value::clone).borrow()).count } == 2_usize) }));
     assert!(
-        ((({
+        ({
             let mut __it1 = array_field_ptr!(T2_1.with(|v| v.as_pointer()), rows)
                 .offset(0)
                 .decay()
@@ -98,11 +96,10 @@ fn main_0() -> i32 {
                     break 0;
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
     assert!(
-        ((({
+        ({
             let mut __it1 = array_field_ptr!(T2_1.with(|v| v.as_pointer()), rows)
                 .offset(1)
                 .decay()
@@ -118,14 +115,12 @@ fn main_0() -> i32 {
                     break 0;
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
     assert!(
         ({
-            (((((*T2_1.with(Value::clone).borrow()).rows[(2) as usize][(0) as usize] as i32)
-                == ('\0' as i32)) as i32)
-                != 0)
+            (((*T2_1.with(Value::clone).borrow()).rows[(2) as usize][(0) as usize] as i32)
+                == ('\0' as i32))
         })
     );
     let local: Value<table> = Rc::new(RefCell::new(table {
@@ -137,7 +132,7 @@ fn main_0() -> i32 {
         count: 3_usize,
     }));
     assert!(
-        ((({
+        ({
             let mut __it1 = array_field_ptr!(local.as_pointer(), rows)
                 .offset(2)
                 .decay()
@@ -153,12 +148,11 @@ fn main_0() -> i32 {
                     break 0;
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
     (*local.borrow_mut()).rows[(1) as usize][(0) as usize] = (('T' as i32) as i8);
     assert!(
-        ((({
+        ({
             let mut __it1 = array_field_ptr!(local.as_pointer(), rows)
                 .offset(1)
                 .decay()
@@ -174,11 +168,10 @@ fn main_0() -> i32 {
                     break 0;
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
     assert!(
-        ((({
+        ({
             let mut __it1 = array_field_ptr!(local.as_pointer(), rows)
                 .offset(0)
                 .decay()
@@ -194,12 +187,11 @@ fn main_0() -> i32 {
                     break 0;
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
     let mut p: Ptr<i8> = array_field_ptr!(local.as_pointer(), rows).offset(2).decay();
-    assert!((((((elem!(p, 0).read()) as i32) == ('t' as i32)) as i32) != 0));
-    assert!(({ ((({ (*local.borrow()).count } == 3_usize) as i32) != 0) }));
+    assert!((((elem!(p, 0).read()) as i32) == ('t' as i32)));
+    assert!(({ ({ (*local.borrow()).count } == 3_usize) }));
     let copy: Value<table> = <Value<table>>::default();
     match ({ (array_field_ptr!(copy.as_pointer(), rows)).to_any() },) {
         (mut __tmp_0,) => {
@@ -211,7 +203,7 @@ fn main_0() -> i32 {
         }
     };
     assert!(
-        (((((({
+        (({
             let mut __it1 = array_field_ptr!(copy.as_pointer(), rows)
                 .offset(1)
                 .decay()
@@ -227,9 +219,8 @@ fn main_0() -> i32 {
                     break 0;
                 }
             }
-        } == 0) as i32)
-            != 0)
-            && ((({
+        } == 0)
+            && ({
                 let mut __it1 = array_field_ptr!(copy.as_pointer(), rows)
                     .offset(2)
                     .decay()
@@ -245,9 +236,7 @@ fn main_0() -> i32 {
                         break 0;
                     }
                 }
-            } == 0) as i32)
-                != 0)) as i32)
-            != 0)
+            } == 0))
     );
     let grid: Value<Box<[Box<[i8]>]>> = Rc::new(RefCell::new(Box::new([
         Box::new([
@@ -277,12 +266,8 @@ fn main_0() -> i32 {
     };
     assert!(
         ({
-            ((((((((*other.borrow())[(1) as usize][(2) as usize] as i32) == ('f' as i32)) as i32)
-                != 0)
-                && (((((*other.borrow())[(0) as usize][(1) as usize] as i32) == ('b' as i32))
-                    as i32)
-                    != 0)) as i32)
-                != 0)
+            ((((*other.borrow())[(1) as usize][(2) as usize] as i32) == ('f' as i32))
+                && (((*other.borrow())[(0) as usize][(1) as usize] as i32) == ('b' as i32)))
         })
     );
     return 0;

@@ -37,8 +37,8 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(((((unsafe { first_0() }) == (3)) as i32) != 0));
-    assert!(((((unsafe { second_2() }) == (30)) as i32) != 0));
+    assert!(((unsafe { first_0() }) == (3)));
+    assert!(((unsafe { second_2() }) == (30)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

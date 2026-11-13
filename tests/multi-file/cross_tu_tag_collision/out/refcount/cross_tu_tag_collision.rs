@@ -22,8 +22,8 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((((({ a_value_0() }) == 11) as i32) != 0));
-    assert!((((({ b_value_1() }) == 2) as i32) != 0));
+    assert!((({ a_value_0() }) == 11));
+    assert!((({ b_value_1() }) == 2));
     return 0;
 }
 pub type widget_enum = u32;

@@ -94,24 +94,10 @@ fn main_0() -> i32 {
             (__tmp_0).clone()
         }
     };
-    assert!(
-        ((((anon_0::a(field_ptr!(c.as_pointer(), view)).with(|__s| __s.code) as i32) == 0) as i32)
-            != 0)
-    );
-    assert!(
-        ((((anon_0::b(field_ptr!(c.as_pointer(), view)).with(|__s| __s.lo) as i32) == 0) as i32)
-            != 0)
-    );
-    assert!(
-        (((((elem!(anon_0::raw_(field_ptr!(c.as_pointer(), view)), 0).read()) as i32) == 0)
-            as i32)
-            != 0)
-    );
-    assert!(
-        (((((elem!(anon_0::raw_(field_ptr!(c.as_pointer(), view)), 255).read()) as i32) == 0)
-            as i32)
-            != 0)
-    );
+    assert!(((anon_0::a(field_ptr!(c.as_pointer(), view)).with(|__s| __s.code) as i32) == 0));
+    assert!(((anon_0::b(field_ptr!(c.as_pointer(), view)).with(|__s| __s.lo) as i32) == 0));
+    assert!((((elem!(anon_0::raw_(field_ptr!(c.as_pointer(), view)), 0).read()) as i32) == 0));
+    assert!((((elem!(anon_0::raw_(field_ptr!(c.as_pointer(), view)), 255).read()) as i32) == 0));
     let src: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
         0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8,
         0_u8,
@@ -124,26 +110,22 @@ fn main_0() -> i32 {
     (*src.borrow_mut())[(6) as usize] = 0_u8;
     (*src.borrow_mut())[(7) as usize] = 1_u8;
     let mut len: usize = 16_usize;
-    assert!((((len <= ::std::mem::size_of::<[i8; 256]>()) as i32) != 0));
+    assert!((len <= ::std::mem::size_of::<[i8; 256]>()));
     match ({ (anon_0::raw_(field_ptr!(c.as_pointer(), view))).to_any() },) {
         (mut __tmp_1,) => {
             __tmp_1.memcpy(&(src.decay()).to_any(), len as usize);
             (__tmp_1).clone()
         }
     };
+    assert!(((anon_0::b(field_ptr!(c.as_pointer(), view)).with(|__s| __s.code) as i32) == 2));
     assert!(
-        ((((anon_0::b(field_ptr!(c.as_pointer(), view)).with(|__s| __s.code) as i32) == 2) as i32)
-            != 0)
-    );
-    assert!(
-        (((((elem!(
+        (((elem!(
             ((field_ptr!(anon_0::b(field_ptr!(c.as_pointer(), view)), lo))
                 .reinterpret_cast::<u8>()),
             0
         )
         .read()) as i32)
-            == 80) as i32)
-            != 0)
+            == 80)
     );
     match ({ (c.as_pointer()).to_any() },) {
         (mut __tmp_2,) => {
@@ -151,10 +133,7 @@ fn main_0() -> i32 {
             (__tmp_2).clone()
         }
     };
-    assert!(
-        ((((anon_0::b(field_ptr!(c.as_pointer(), view)).with(|__s| __s.code) as i32) == 0) as i32)
-            != 0)
-    );
+    assert!(((anon_0::b(field_ptr!(c.as_pointer(), view)).with(|__s| __s.code) as i32) == 0));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

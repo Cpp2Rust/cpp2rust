@@ -14,20 +14,18 @@ pub fn sum_then_product_0(first: i32, __args: Box<[VaArg]>) -> i32 {
     let mut product: i32 = (*first.borrow());
     (*ap.borrow_mut()) = __args.decay();
     let mut val: i32 = 0_i32;
-    'loop_: while (((({
+    'loop_: while (({
         val = (*ap.borrow_mut()).arg::<i32>();
         val
-    }) != 0) as i32)
-        != 0)
+    }) != 0)
     {
         sum += val;
     }
     (*ap.borrow_mut()) = __args.decay();
-    'loop_: while (((({
+    'loop_: while (({
         val = (*ap.borrow_mut()).arg::<i32>();
         val
-    }) != 0) as i32)
-        != 0)
+    }) != 0)
     {
         product *= val;
     }
@@ -38,11 +36,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!(
-        (((({ sum_then_product_0(2, Box::new([(3).into(), (4).into(), (0).into(),])) }) == 33)
-            as i32)
-            != 0)
-    );
+    assert!((({ sum_then_product_0(2, Box::new([(3).into(), (4).into(), (0).into(),])) }) == 33));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

@@ -30,10 +30,10 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((((4usize == ::std::mem::size_of::<i32>()) as i32) != 0));
+    assert!((4usize == ::std::mem::size_of::<i32>()));
     let mut f: Ptr<F> =
         libcc2rs::malloc_refcount((4usize as usize).wrapping_add(4_usize)).reinterpret_cast::<F>();
-    assert!((((!((f).is_null())) as i32) != 0));
+    assert!((!((f).is_null())));
     field!(f, n).write(4);
     match ({ (array_field_ptr!(f, tail)).to_any() },) {
         (mut __tmp_0,) => {
@@ -44,9 +44,9 @@ fn main_0() -> i32 {
             (__tmp_0).clone()
         }
     };
-    assert!((((f.with(|__s| __s.n) == 4) as i32) != 0));
+    assert!((f.with(|__s| __s.n) == 4));
     assert!(
-        ((({
+        ({
             let mut __it1 = array_field_ptr!(f, tail).to_c_string_iterator();
             let mut __it2 = Ptr::<i8>::from_string_literal(b"xyz").to_c_string_iterator();
             loop {
@@ -59,14 +59,13 @@ fn main_0() -> i32 {
                     break 0;
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
-    assert!((((((array_elem!(f, tail, 1).read()) as i32) == ('y' as i32)) as i32) != 0));
+    assert!((((array_elem!(f, tail, 1).read()) as i32) == ('y' as i32)));
     libcc2rs::free_refcount((f).to_any());
     let mut g: Ptr<F> =
         libcc2rs::malloc_refcount((4usize as usize).wrapping_add(8_usize)).reinterpret_cast::<F>();
-    assert!((((!((g).is_null())) as i32) != 0));
+    assert!((!((g).is_null())));
     field!(g, n).write(8);
     match ({ (array_field_ptr!(g, tail)).to_any() },) {
         (mut __tmp_1,) => {
@@ -77,8 +76,8 @@ fn main_0() -> i32 {
             (__tmp_1).clone()
         }
     };
-    assert!((((((array_elem!(g, tail, 6).read()) as i32) == ('g' as i32)) as i32) != 0));
-    assert!((((((array_elem!(g, tail, 7).read()) as i32) == ('\0' as i32)) as i32) != 0));
+    assert!((((array_elem!(g, tail, 6).read()) as i32) == ('g' as i32)));
+    assert!((((array_elem!(g, tail, 7).read()) as i32) == ('\0' as i32)));
     libcc2rs::free_refcount((g).to_any());
     return 0;
 }

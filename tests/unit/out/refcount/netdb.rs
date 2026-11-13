@@ -19,7 +19,7 @@ pub fn test_ipv4_literal_0() {
     let res: Value<Ptr<libcc2rs::Addrinfo>> =
         Rc::new(RefCell::new(Ptr::<libcc2rs::Addrinfo>::null()));
     assert!(
-        (((match ({ (hints.as_pointer()) }, { (res.as_pointer()) },) {
+        (match ({ (hints.as_pointer()) }, { (res.as_pointer()) },) {
             (mut __tmp_0, mut __tmp_1) => {
                 {
                     let __family = if __tmp_0.is_null() {
@@ -110,40 +110,33 @@ pub fn test_ipv4_literal_0() {
                     }
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
-    assert!(({ (((!((*res.borrow()).is_null())) as i32) != 0) }));
-    assert!(({ ((((*res.borrow()).with(|__s| __s.ai_family) == libc::AF_INET) as i32) != 0) }));
-    assert!(
-        ({ ((((*res.borrow()).with(|__s| __s.ai_socktype) == libc::SOCK_STREAM) as i32) != 0) })
-    );
-    assert!(
-        ({ (((((*res.borrow()).with(|__s| __s.ai_addrlen) as usize) == 16usize) as i32) != 0) })
-    );
-    assert!(({ (((!(((*res.borrow()).with(|__s| __s.ai_addr.clone())).is_null())) as i32) != 0) }));
+    assert!(({ (!((*res.borrow()).is_null())) }));
+    assert!(({ ((*res.borrow()).with(|__s| __s.ai_family) == libc::AF_INET) }));
+    assert!(({ ((*res.borrow()).with(|__s| __s.ai_socktype) == libc::SOCK_STREAM) }));
+    assert!(({ (((*res.borrow()).with(|__s| __s.ai_addrlen) as usize) == 16usize) }));
+    assert!(({ (!(((*res.borrow()).with(|__s| __s.ai_addr.clone())).is_null())) }));
     let mut sin: Ptr<libcc2rs::SockaddrIn> = (*res.borrow())
         .with(|__s| __s.ai_addr.clone())
         .reinterpret_cast::<libcc2rs::SockaddrIn>();
-    assert!(((((sin.with(|__s| __s.sin_family) as i32) == libc::AF_INET) as i32) != 0));
+    assert!(((sin.with(|__s| __s.sin_family) as i32) == libc::AF_INET));
     let port_be: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
         ((8080 / 256) as u8),
         ((8080 % 256) as u8),
     ])));
     assert!(
-        ((((field_ptr!(sin, sin_port))
+        ((field_ptr!(sin, sin_port))
             .to_any()
             .memcmp(&(port_be.decay()).to_any(), 2_usize)
-            == 0) as i32)
-            != 0)
+            == 0)
     );
     let addr_be: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([127_u8, 0_u8, 0_u8, 1_u8])));
     assert!(
-        ((((field_ptr!(sin, sin_addr))
+        ((field_ptr!(sin, sin_addr))
             .to_any()
             .memcmp(&(addr_be.decay()).to_any(), 4_usize)
-            == 0) as i32)
-            != 0)
+            == 0)
     );
     {
         let mut __cur = ({ (*res.borrow()).clone() });
@@ -172,7 +165,7 @@ pub fn test_ipv6_literal_1() {
     let res: Value<Ptr<libcc2rs::Addrinfo>> =
         Rc::new(RefCell::new(Ptr::<libcc2rs::Addrinfo>::null()));
     assert!(
-        (((match ({ (hints.as_pointer()) }, { (res.as_pointer()) },) {
+        (match ({ (hints.as_pointer()) }, { (res.as_pointer()) },) {
             (mut __tmp_2, mut __tmp_3) => {
                 {
                     let __family = if __tmp_2.is_null() {
@@ -263,40 +256,35 @@ pub fn test_ipv6_literal_1() {
                     }
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
-    assert!(({ (((!((*res.borrow()).is_null())) as i32) != 0) }));
-    assert!(({ ((((*res.borrow()).with(|__s| __s.ai_family) == libc::AF_INET6) as i32) != 0) }));
-    assert!(
-        ({ (((((*res.borrow()).with(|__s| __s.ai_addrlen) as usize) == 28usize) as i32) != 0) })
-    );
-    assert!(({ (((!(((*res.borrow()).with(|__s| __s.ai_addr.clone())).is_null())) as i32) != 0) }));
+    assert!(({ (!((*res.borrow()).is_null())) }));
+    assert!(({ ((*res.borrow()).with(|__s| __s.ai_family) == libc::AF_INET6) }));
+    assert!(({ (((*res.borrow()).with(|__s| __s.ai_addrlen) as usize) == 28usize) }));
+    assert!(({ (!(((*res.borrow()).with(|__s| __s.ai_addr.clone())).is_null())) }));
     let mut sin6: Ptr<libcc2rs::SockaddrIn6> = (*res.borrow())
         .with(|__s| __s.ai_addr.clone())
         .reinterpret_cast::<libcc2rs::SockaddrIn6>();
-    assert!(((((sin6.with(|__s| __s.sin6_family) as i32) == libc::AF_INET6) as i32) != 0));
+    assert!(((sin6.with(|__s| __s.sin6_family) as i32) == libc::AF_INET6));
     let port_be: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
         ((443 / 256) as u8),
         ((443 % 256) as u8),
     ])));
     assert!(
-        ((((field_ptr!(sin6, sin6_port))
+        ((field_ptr!(sin6, sin6_port))
             .to_any()
             .memcmp(&(port_be.decay()).to_any(), 2_usize)
-            == 0) as i32)
-            != 0)
+            == 0)
     );
     let addr_be: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
         0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8,
         1_u8,
     ])));
     assert!(
-        ((((field_ptr!(sin6, sin6_addr))
+        ((field_ptr!(sin6, sin6_addr))
             .to_any()
             .memcmp(&(addr_be.decay()).to_any(), 16_usize)
-            == 0) as i32)
-            != 0)
+            == 0)
     );
     {
         let mut __cur = ({ (*res.borrow()).clone() });
@@ -316,7 +304,7 @@ pub fn test_null_hints_2() {
     let res: Value<Ptr<libcc2rs::Addrinfo>> =
         Rc::new(RefCell::new(Ptr::<libcc2rs::Addrinfo>::null()));
     assert!(
-        (((match ({ (res.as_pointer()) },) {
+        (match ({ (res.as_pointer()) },) {
             (mut __tmp_4,) => {
                 {
                     let __family = if Ptr::<libcc2rs::Addrinfo>::null().is_null() {
@@ -407,21 +395,19 @@ pub fn test_null_hints_2() {
                     }
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
-    assert!(({ (((!((*res.borrow()).is_null())) as i32) != 0) }));
-    assert!(({ ((((*res.borrow()).with(|__s| __s.ai_family) == libc::AF_INET) as i32) != 0) }));
+    assert!(({ (!((*res.borrow()).is_null())) }));
+    assert!(({ ((*res.borrow()).with(|__s| __s.ai_family) == libc::AF_INET) }));
     let mut sin: Ptr<libcc2rs::SockaddrIn> = (*res.borrow())
         .with(|__s| __s.ai_addr.clone())
         .reinterpret_cast::<libcc2rs::SockaddrIn>();
     let addr_be: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([127_u8, 0_u8, 0_u8, 1_u8])));
     assert!(
-        ((((field_ptr!(sin, sin_addr))
+        ((field_ptr!(sin, sin_addr))
             .to_any()
             .memcmp(&(addr_be.decay()).to_any(), 4_usize)
-            == 0) as i32)
-            != 0)
+            == 0)
     );
     {
         let mut __cur = ({ (*res.borrow()).clone() });

@@ -28,31 +28,31 @@ fn main_0() -> i32 {
     let text: Value<Box<[i8]>> = Rc::new(RefCell::new(i8::array_from_literal(b"hi\0")));
     let mut cp: Ptr<i8> = text.decay();
     let mut u: Ptr<u8> = cp.reinterpret_cast::<u8>();
-    assert!((((((elem!(u, 0).read()) as i32) == ('h' as i32)) as i32) != 0));
-    assert!((((((elem!(u, 1).read()) as i32) == ('i' as i32)) as i32) != 0));
+    assert!((((elem!(u, 0).read()) as i32) == ('h' as i32)));
+    assert!((((elem!(u, 1).read()) as i32) == ('i' as i32)));
     let h: Value<header> = Rc::new(RefCell::new(header { tag: 7, size: 32 }));
     let mut hp: Ptr<header> = (h.as_pointer());
     let mut v: Ptr<view> = hp.reinterpret_cast::<view>();
-    assert!((((v.with(|__s| __s.tag) == 7) as i32) != 0));
+    assert!((v.with(|__s| __s.tag) == 7));
     let data: Value<Box<[i8]>> = Rc::new(RefCell::new(i8::array_from_literal(b"hi\0")));
     let mut vp: AnyPtr = (data.decay()).to_any();
     let mut n: i32 = 2;
-    let mut sel: Ptr<i8> = if (((n < 100) as i32) != 0) {
+    let mut sel: Ptr<i8> = if (n < 100) {
         (vp).clone()
     } else {
         (AnyPtr::default())
     }
     .reinterpret_cast::<i8>();
-    assert!((((!((sel).is_null())) as i32) != 0));
-    assert!((((((elem!(sel, 0).read()) as i32) == ('h' as i32)) as i32) != 0));
+    assert!((!((sel).is_null())));
+    assert!((((elem!(sel, 0).read()) as i32) == ('h' as i32)));
     n = 200;
-    sel = if (((n < 100) as i32) != 0) {
+    sel = if (n < 100) {
         (vp).clone()
     } else {
         (AnyPtr::default())
     }
     .reinterpret_cast::<i8>();
-    assert!(((((sel).is_null()) as i32) != 0));
+    assert!(((sel).is_null()));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

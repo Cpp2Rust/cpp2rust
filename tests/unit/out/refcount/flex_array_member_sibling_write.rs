@@ -62,7 +62,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let mut s: Ptr<S> = libcc2rs::calloc_refcount(1_usize, (8usize as usize).wrapping_add(8_usize))
         .reinterpret_cast::<S>();
-    assert!((((!((s).is_null())) as i32) != 0));
+    assert!((!((s).is_null())));
     match ({ (array_field_ptr!(s, name)).to_any() },) {
         (mut __tmp_0,) => {
             __tmp_0.memcpy(
@@ -73,9 +73,9 @@ fn main_0() -> i32 {
         }
     };
     field!(s, n).write(5);
-    assert!((((s.with(|__s| __s.n) == 5) as i32) != 0));
+    assert!((s.with(|__s| __s.n) == 5));
     assert!(
-        ((({
+        ({
             let mut __it1 = array_field_ptr!(s, name).to_c_string_iterator();
             let mut __it2 = Ptr::<i8>::from_string_literal(b"abcdefg").to_c_string_iterator();
             loop {
@@ -88,40 +88,31 @@ fn main_0() -> i32 {
                     break 0;
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
     libcc2rs::free_refcount((s).to_any());
     let mut t: Ptr<T> =
         libcc2rs::malloc_refcount((16usize as usize).wrapping_add((8usize as usize)))
             .reinterpret_cast::<T>();
-    assert!((((!((t).is_null())) as i32) != 0));
+    assert!((!((t).is_null())));
     field!(t, n).write(2);
     field!(t, cap).write(2);
     field!(array_elem!(t, a, 0), id).write(10);
     field!(array_elem!(t, a, 1), w).write(20);
     field!(t, n).write(3);
     assert!(
-        ((((((array_elem!(t, a, 0).with(|__s| __s.id) == 10) as i32) != 0)
-            && (((array_elem!(t, a, 1).with(|__s| __s.w) == 20) as i32) != 0)) as i32)
-            != 0)
+        ((array_elem!(t, a, 0).with(|__s| __s.id) == 10)
+            && (array_elem!(t, a, 1).with(|__s| __s.w) == 20))
     );
     let mut tail: Ptr<E> = (t.offset((1) as isize)).reinterpret_cast::<E>();
-    assert!(
-        ((({ (tail).clone() } == { (array_field_ptr!(t, a).offset((1) as isize)) }) as i32) != 0)
-    );
+    assert!(({ (tail).clone() } == { (array_field_ptr!(t, a).offset((1) as isize)) }));
     field!(elem!(tail, 0), id).write(30);
     field!(t, cap).write(4);
     assert!(
-        ((((((array_elem!(t, a, 1).with(|__s| __s.id) == 30) as i32) != 0)
-            && (((array_elem!(t, a, 1).with(|__s| __s.w) == 20) as i32) != 0)) as i32)
-            != 0)
+        ((array_elem!(t, a, 1).with(|__s| __s.id) == 30)
+            && (array_elem!(t, a, 1).with(|__s| __s.w) == 20))
     );
-    assert!(
-        ((((((t.with(|__s| __s.n) == 3) as i32) != 0)
-            && (((t.with(|__s| __s.cap) == 4) as i32) != 0)) as i32)
-            != 0)
-    );
+    assert!(((t.with(|__s| __s.n) == 3) && (t.with(|__s| __s.cap) == 4)));
     libcc2rs::free_refcount((t).to_any());
     return 0;
 }

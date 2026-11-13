@@ -27,22 +27,19 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!((((((*std::cell::LazyCell::force_mut(&mut *&raw mut s_0)).head) == (5)) as i32) != 0));
+    assert!((((*std::cell::LazyCell::force_mut(&mut *&raw mut s_0)).head) == (5)));
     let mut i: i32 = 0;
-    'loop_: while ((((i) < (3)) as i32) != 0) {
+    'loop_: while ((i) < (3)) {
         assert!(
-            (((((*std::cell::LazyCell::force_mut(&mut *&raw mut s_0)).tail[(i) as usize]) == (0))
-                as i32)
-                != 0)
+            (((*std::cell::LazyCell::force_mut(&mut *&raw mut s_0)).tail[(i) as usize]) == (0))
         );
         i.postfix_inc();
     }
     let mut i: i32 = 0;
-    'loop_: while ((((i) < (4)) as i32) != 0) {
+    'loop_: while ((i) < (4)) {
         assert!(
-            (((((*std::cell::LazyCell::force_mut(&mut *&raw mut s_0)).buf[(i) as usize] as i32)
-                == (0)) as i32)
-                != 0)
+            (((*std::cell::LazyCell::force_mut(&mut *&raw mut s_0)).buf[(i) as usize] as i32)
+                == (0))
         );
         i.postfix_inc();
     }

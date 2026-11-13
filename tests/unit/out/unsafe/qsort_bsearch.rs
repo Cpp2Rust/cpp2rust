@@ -32,8 +32,8 @@ unsafe fn main_0() -> i32 {
         )),
     );
     let mut i: i32 = 0;
-    'loop_: while ((((i) < (7)) as i32) != 0) {
-        assert!(((((arr[(i) as usize]) <= (arr[((i) + (1)) as usize])) as i32) != 0));
+    'loop_: while ((i) < (7)) {
+        assert!(((arr[(i) as usize]) <= (arr[((i) + (1)) as usize])));
         i.prefix_inc();
     }
     let mut key: i32 = 7;
@@ -50,8 +50,8 @@ unsafe fn main_0() -> i32 {
                 as *const (),
         )),
     ) as *mut i32);
-    assert!((((!((hit).is_null())) as i32) != 0));
-    assert!(((((*hit) == (7)) as i32) != 0));
+    assert!((!((hit).is_null())));
+    assert!(((*hit) == (7)));
     let mut miss_key: i32 = 42;
     let mut miss: *mut i32 = (libc::bsearch(
         ((&mut miss_key as *mut i32) as *const ::libc::c_void),
@@ -66,7 +66,7 @@ unsafe fn main_0() -> i32 {
                 as *const (),
         )),
     ) as *mut i32);
-    assert!(((((miss).is_null()) as i32) != 0));
+    assert!(((miss).is_null()));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

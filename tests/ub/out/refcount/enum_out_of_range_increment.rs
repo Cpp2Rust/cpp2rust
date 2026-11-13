@@ -17,7 +17,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let mut c: color = color_BLUE;
     c.postfix_inc();
-    return if ((((c as u32) == ((color_RED as i32) as u32)) as i32) != 0) {
+    return if ((c as u32) == ((color_RED as i32) as u32)) {
         0
     } else {
         1

@@ -31,7 +31,7 @@ fn main_0() -> i32 {
         }
     };
     FdRegistry::close(fd);
-    return if (((FdRegistry::close(fd) == -1_i32) as i32) != 0) {
+    return if (FdRegistry::close(fd) == -1_i32) {
         0
     } else {
         1

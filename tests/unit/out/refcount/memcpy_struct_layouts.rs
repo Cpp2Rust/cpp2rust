@@ -91,11 +91,7 @@ fn main_0() -> i32 {
         }
     };
     assert!(
-        ({
-            (((((*buf.borrow())[((8usize as usize).wrapping_add(4_usize)) as usize] as i32) == 6)
-                as i32)
-                != 0)
-        })
+        ({ (((*buf.borrow())[((8usize as usize).wrapping_add(4_usize)) as usize] as i32) == 6) })
     );
     let p2: Value<Box<[packed]>> = Rc::new(RefCell::new(
         (0..2)
@@ -110,16 +106,10 @@ fn main_0() -> i32 {
     };
     assert!(
         ({
-            (((((((((((({ (*p2.borrow())[(1) as usize].a } == 5) as i32) != 0)
-                && (((({ (*p2.borrow())[(1) as usize].b } as i32) == 6) as i32) != 0))
-                as i32)
-                != 0)
-                && (((({ (*p2.borrow())[(1) as usize].c } as i32) == 7) as i32) != 0))
-                as i32)
-                != 0)
-                && (((({ (*p2.borrow())[(1) as usize].d } as i32) == 8) as i32) != 0))
-                as i32)
-                != 0)
+            (((({ (*p2.borrow())[(1) as usize].a } == 5)
+                && (({ (*p2.borrow())[(1) as usize].b } as i32) == 6))
+                && (({ (*p2.borrow())[(1) as usize].c } as i32) == 7))
+                && (({ (*p2.borrow())[(1) as usize].d } as i32) == 8))
         })
     );
     let r: Value<Box<[reordered]>> = Rc::new(RefCell::new(Box::new([
@@ -141,11 +131,7 @@ fn main_0() -> i32 {
         }
     };
     assert!(
-        ({
-            (((((*buf.borrow())[((12usize as usize).wrapping_add(8_usize)) as usize] as i32) == 6)
-                as i32)
-                != 0)
-        })
+        ({ (((*buf.borrow())[((12usize as usize).wrapping_add(8_usize)) as usize] as i32) == 6) })
     );
     let r2: Value<Box<[reordered]>> = Rc::new(RefCell::new(
         (0..2)
@@ -160,13 +146,9 @@ fn main_0() -> i32 {
     };
     assert!(
         ({
-            (((((((((({ (*r2.borrow())[(1) as usize].a } as i32) == 4) as i32) != 0)
-                && ((({ (*r2.borrow())[(1) as usize].b } == 5) as i32) != 0))
-                as i32)
-                != 0)
-                && (((({ (*r2.borrow())[(1) as usize].c } as i32) == 6) as i32) != 0))
-                as i32)
-                != 0)
+            (((({ (*r2.borrow())[(1) as usize].a } as i32) == 4)
+                && ({ (*r2.borrow())[(1) as usize].b } == 5))
+                && (({ (*r2.borrow())[(1) as usize].c } as i32) == 6))
         })
     );
     let n: Value<Box<[nested]>> = Rc::new(RefCell::new(Box::new([
@@ -192,11 +174,7 @@ fn main_0() -> i32 {
         }
     };
     assert!(
-        ({
-            (((((*buf.borrow())[((24usize as usize).wrapping_add(16_usize)) as usize] as i32) == 6)
-                as i32)
-                != 0)
-        })
+        ({ (((*buf.borrow())[((24usize as usize).wrapping_add(16_usize)) as usize] as i32) == 6) })
     );
     let n2: Value<Box<[nested]>> = Rc::new(RefCell::new(
         (0..2)
@@ -211,13 +189,9 @@ fn main_0() -> i32 {
     };
     assert!(
         ({
-            (((((((((({ (*n2.borrow())[(1) as usize].t.a } as i32) == 4) as i32) != 0)
-                && ((({ (*n2.borrow())[(1) as usize].t.b } == 5.5_f64) as i32) != 0))
-                as i32)
-                != 0)
-                && (((({ (*n2.borrow())[(1) as usize].c } as i32) == 6) as i32) != 0))
-                as i32)
-                != 0)
+            (((({ (*n2.borrow())[(1) as usize].t.a } as i32) == 4)
+                && ({ (*n2.borrow())[(1) as usize].t.b } == 5.5_f64))
+                && (({ (*n2.borrow())[(1) as usize].c } as i32) == 6))
         })
     );
     let a: Value<Box<[array]>> = Rc::new(RefCell::new(Box::new([
@@ -238,9 +212,8 @@ fn main_0() -> i32 {
     };
     assert!(
         ({
-            (((((*buf.borrow())[((8usize as usize).wrapping_add(1_usize)) as usize] as i32)
-                == ('d' as i32)) as i32)
-                != 0)
+            (((*buf.borrow())[((8usize as usize).wrapping_add(1_usize)) as usize] as i32)
+                == ('d' as i32))
         })
     );
     let a2: Value<Box<[array]>> = Rc::new(RefCell::new(
@@ -254,14 +227,9 @@ fn main_0() -> i32 {
     };
     assert!(
         ({
-            (((((((((((array_elem!(a2.decay().offset(1), name, 1).read()) as i32) == ('d' as i32))
-                as i32)
-                != 0)
-                && (((((array_elem!(a2.decay().offset(1), name, 2).read()) as i32) == 0) as i32)
-                    != 0)) as i32)
-                != 0)
-                && ((({ (*a2.borrow())[(1) as usize].x } == 2) as i32) != 0)) as i32)
-                != 0)
+            (((((array_elem!(a2.decay().offset(1), name, 1).read()) as i32) == ('d' as i32))
+                && (((array_elem!(a2.decay().offset(1), name, 2).read()) as i32) == 0))
+                && ({ (*a2.borrow())[(1) as usize].x } == 2))
         })
     );
     return 0;

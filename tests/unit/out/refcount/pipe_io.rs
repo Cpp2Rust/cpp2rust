@@ -14,7 +14,7 @@ fn main_0() -> i32 {
     let fds: Value<Box<[i32]>> =
         Rc::new(RefCell::new((0..2).map(|_| 0_i32).collect::<Box<[i32]>>()));
     assert!(
-        (((match ({ fds.decay() },) {
+        (match ({ fds.decay() },) {
             (mut __tmp_0,) => {
                 match nix::unistd::pipe() {
                     Ok((__r, __w)) => {
@@ -28,11 +28,10 @@ fn main_0() -> i32 {
                     }
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
     assert!(
-        (((match FdRegistry::with_fd(({ (*fds.borrow())[(1) as usize] }), |__fd| {
+        (match FdRegistry::with_fd(({ (*fds.borrow())[(1) as usize] }), |__fd| {
             (Ptr::<i8>::from_string_literal(b"ab"))
                 .to_any()
                 .reinterpret_cast::<u8>()
@@ -43,8 +42,7 @@ fn main_0() -> i32 {
                 libcc2rs::cpp2rust_errno().write(__e as i32);
                 -1
             }
-        } == 2_isize) as i32)
-            != 0)
+        } == 2_isize)
     );
     let buf: Value<Box<[i8]>> = Rc::new(RefCell::new((0..4).map(|_| 0_i8).collect::<Box<[i8]>>()));
     match ({ (buf.decay()).to_any() },) {
@@ -54,7 +52,7 @@ fn main_0() -> i32 {
         }
     };
     assert!(
-        (((match ({ (buf.decay()).to_any() },) {
+        (match ({ (buf.decay()).to_any() },) {
             (mut __tmp_2,) => {
                 match FdRegistry::with_fd(({ (*fds.borrow())[(0) as usize] }), |__fd| {
                     __tmp_2
@@ -70,11 +68,10 @@ fn main_0() -> i32 {
                     }
                 }
             }
-        } == 2_isize) as i32)
-            != 0)
+        } == 2_isize)
     );
     assert!(
-        ((({
+        ({
             let mut __it1 = buf.decay().to_c_string_iterator();
             let mut __it2 = Ptr::<i8>::from_string_literal(b"ab").to_c_string_iterator();
             loop {
@@ -87,12 +84,11 @@ fn main_0() -> i32 {
                     break 0;
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
-    assert!((((FdRegistry::close(({ (*fds.borrow())[(1) as usize] })) == 0) as i32) != 0));
+    assert!((FdRegistry::close(({ (*fds.borrow())[(1) as usize] })) == 0));
     assert!(
-        (((match ({ (buf.decay()).to_any() },) {
+        (match ({ (buf.decay()).to_any() },) {
             (mut __tmp_3,) => {
                 match FdRegistry::with_fd(({ (*fds.borrow())[(0) as usize] }), |__fd| {
                     __tmp_3
@@ -108,10 +104,9 @@ fn main_0() -> i32 {
                     }
                 }
             }
-        } == 0_isize) as i32)
-            != 0)
+        } == 0_isize)
     );
-    assert!((((FdRegistry::close(({ (*fds.borrow())[(0) as usize] })) == 0) as i32) != 0));
+    assert!((FdRegistry::close(({ (*fds.borrow())[(0) as usize] })) == 0));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

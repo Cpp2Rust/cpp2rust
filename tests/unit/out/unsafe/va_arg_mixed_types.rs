@@ -17,13 +17,13 @@ pub unsafe fn sum_mixed_0(mut count: i32, __args: Box<[VaArg]>) -> i32 {
     ap = __args.as_ptr();
     let mut total: i32 = 0;
     let mut i: i32 = 0;
-    'loop_: while ((((i) < (count)) as i32) != 0) {
+    'loop_: while ((i) < (count)) {
         let mut tag: i32 = ap.arg::<i32>();
-        if ((((tag) == (0)) as i32) != 0) {
+        if ((tag) == (0)) {
             total += ap.arg::<i32>();
-        } else if ((((tag) == (1)) as i32) != 0) {
+        } else if ((tag) == (1)) {
             total += (ap.arg::<f64>() as i32);
-        } else if ((((tag) == (3)) as i32) != 0) {
+        } else if ((tag) == (3)) {
             let mut p: pair = ap.arg::<pair>();
             total += ((p.a) * (p.b));
         } else {
@@ -42,7 +42,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     assert!(
-        ((((unsafe {
+        ((unsafe {
             sum_mixed_0(
                 3,
                 Box::new([
@@ -54,30 +54,25 @@ unsafe fn main_0() -> i32 {
                     (30_i64).into(),
                 ]),
             )
-        }) == (60)) as i32)
-            != 0)
+        }) == (60))
     );
+    assert!(((unsafe { sum_mixed_0(1, Box::new([(0).into(), (42).into(),])) }) == (42)));
     assert!(
-        ((((unsafe { sum_mixed_0(1, Box::new([(0).into(), (42).into(),])) }) == (42)) as i32) != 0)
-    );
-    assert!(
-        ((((unsafe {
+        ((unsafe {
             sum_mixed_0(
                 2,
                 Box::new([(1).into(), (3.7_f64).into(), (2).into(), (100_i64).into()]),
             )
-        }) == (103)) as i32)
-            != 0)
+        }) == (103))
     );
     let mut p: pair = pair { a: 7, b: 8 };
     assert!(
-        ((((unsafe {
+        ((unsafe {
             sum_mixed_0(
                 2,
                 Box::new([(3).into(), (p).into(), (0).into(), (5).into()]),
             )
-        }) == (61)) as i32)
-            != 0)
+        }) == (61))
     );
     return 0;
 }

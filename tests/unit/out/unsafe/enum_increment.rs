@@ -20,16 +20,16 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut count: i32 = 0;
     let mut c: color = color_RED;
-    'loop_: while ((((c as u32) < ((color_COLOR_LAST as i32) as u32)) as i32) != 0) {
+    'loop_: while ((c as u32) < ((color_COLOR_LAST as i32) as u32)) {
         count.postfix_inc();
         c.postfix_inc();
     }
-    assert!(((((count) == (3)) as i32) != 0));
+    assert!(((count) == (3)));
     let mut c: color = color_RED;
-    assert!(((((c.postfix_inc() as u32) == ((color_RED as i32) as u32)) as i32) != 0));
-    assert!(((((c.prefix_inc() as u32) == ((color_BLUE as i32) as u32)) as i32) != 0));
-    assert!(((((c.postfix_dec() as u32) == ((color_BLUE as i32) as u32)) as i32) != 0));
-    assert!(((((c.prefix_dec() as u32) == ((color_RED as i32) as u32)) as i32) != 0));
+    assert!(((c.postfix_inc() as u32) == ((color_RED as i32) as u32)));
+    assert!(((c.prefix_inc() as u32) == ((color_BLUE as i32) as u32)));
+    assert!(((c.postfix_dec() as u32) == ((color_BLUE as i32) as u32)));
+    assert!(((c.prefix_dec() as u32) == ((color_RED as i32) as u32)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

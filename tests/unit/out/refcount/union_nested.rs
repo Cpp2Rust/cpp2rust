@@ -109,24 +109,18 @@ fn main_0() -> i32 {
     (*ex.borrow_mut()).len = (16usize as u32);
     field!(anon_1::h(field_ptr!(ex.as_pointer(), body)), code).write(2_u16);
     array_elem!(anon_1::h(field_ptr!(ex.as_pointer(), body)), pad, 0).write((('X' as i32) as i8));
+    assert!(((anon_1::h(field_ptr!(ex.as_pointer(), body)).with(|__s| __s.code) as i32) == 2));
     assert!(
-        ((((anon_1::h(field_ptr!(ex.as_pointer(), body)).with(|__s| __s.code) as i32) == 2)
-            as i32)
-            != 0)
+        (((array_elem!(anon_1::h(field_ptr!(ex.as_pointer(), body)), pad, 0).read()) as i32)
+            == ('X' as i32))
     );
     assert!(
-        (((((array_elem!(anon_1::h(field_ptr!(ex.as_pointer(), body)), pad, 0).read()) as i32)
-            == ('X' as i32)) as i32)
-            != 0)
-    );
-    assert!(
-        ((((anon_0::h(field_ptr!(
+        ((anon_0::h(field_ptr!(
             anon_1::nested(field_ptr!(ex.as_pointer(), body)),
             view
         ))
         .with(|__s| __s.code) as i32)
-            == 2) as i32)
-            != 0)
+            == 2)
     );
     return 0;
 }

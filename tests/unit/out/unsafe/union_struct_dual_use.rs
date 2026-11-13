@@ -41,7 +41,7 @@ unsafe fn main_0() -> i32 {
     let mut standalone: Inner = <Inner>::default();
     standalone.a = 3;
     standalone.b = 4;
-    assert!(((((unsafe { sum_inner_0((&mut standalone as *mut Inner),) }) == (7)) as i32) != 0));
+    assert!(((unsafe { sum_inner_0((&mut standalone as *mut Inner),) }) == (7)));
     let mut outer: Outer = <Outer>::default();
     match ({ ((&mut outer as *mut Outer) as *mut ::libc::c_void) },) {
         (mut __tmp_0,) => {
@@ -54,9 +54,9 @@ unsafe fn main_0() -> i32 {
     };
     outer.u.inner.a = 3;
     outer.u.inner.b = 4;
-    assert!(((((unsafe { sum_inner_0((&mut outer.u.inner as *mut Inner),) }) == (7)) as i32) != 0));
-    assert!((((((outer.u.raw_[(0) as usize] as u8) as i32) == (3)) as i32) != 0));
-    assert!((((((outer.u.raw_[(4) as usize] as u8) as i32) == (4)) as i32) != 0));
+    assert!(((unsafe { sum_inner_0((&mut outer.u.inner as *mut Inner),) }) == (7)));
+    assert!((((outer.u.raw_[(0) as usize] as u8) as i32) == (3)));
+    assert!((((outer.u.raw_[(4) as usize] as u8) as i32) == (4)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

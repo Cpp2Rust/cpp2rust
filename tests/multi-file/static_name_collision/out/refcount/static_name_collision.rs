@@ -23,10 +23,10 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((((({ a_foo_2() }) == 1) as i32) != 0));
-    assert!((((({ b_foo_4() }) == 1_f32) as i32) != 0));
-    assert!((((({ a_bar_3() }) == 5) as i32) != 0));
-    assert!((((({ b_bar_5() }) == 6) as i32) != 0));
+    assert!((({ a_foo_2() }) == 1));
+    assert!((({ b_foo_4() }) == 1_f32));
+    assert!((({ a_bar_3() }) == 5));
+    assert!((({ b_bar_5() }) == 6));
     return 0;
 }
 thread_local!(

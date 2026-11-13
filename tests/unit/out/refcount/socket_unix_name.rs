@@ -16,7 +16,7 @@ pub fn check_name_0(mut fd: i32, mut path: Ptr<i8>) {
     };
     let actual: Value<libc::socklen_t> = Rc::new(RefCell::new((128usize as libc::socklen_t)));
     assert!(
-        (((match (
+        (match (
             { (full.as_pointer()).reinterpret_cast::<libcc2rs::Sockaddr>() },
             { (actual.as_pointer()) },
         ) {
@@ -32,22 +32,20 @@ pub fn check_name_0(mut fd: i32, mut path: Ptr<i8>) {
                     }
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
-    assert!(({ (((({ (*full.borrow()).ss_family } as i32) == 1) as i32) != 0) }));
-    assert!(({ (((((*actual.borrow()) as usize) >= 2_usize) as i32) != 0) }));
-    assert!(({ (((((*actual.borrow()) as usize) < 128usize) as i32) != 0) }));
+    assert!(({ (({ (*full.borrow()).ss_family } as i32) == 1) }));
+    assert!(({ (((*actual.borrow()) as usize) >= 2_usize) }));
+    assert!(({ (((*actual.borrow()) as usize) < 128usize) }));
     if !(path).is_null() {
         assert!(
-            ((((array_field_ptr!(
+            ((array_field_ptr!(
                 ((full.as_pointer()).reinterpret_cast::<libcc2rs::SockaddrUn>()),
                 sun_path
             ))
             .to_any()
             .memcmp(&(path).to_any(), path.to_c_string_iterator().count())
-                == 0) as i32)
-                != 0)
+                == 0)
         );
     }
     let mut capacities: [libc::socklen_t; 6] = [
@@ -59,11 +57,9 @@ pub fn check_name_0(mut fd: i32, mut path: Ptr<i8>) {
         (*actual.borrow()).wrapping_add((1 as libc::socklen_t)),
     ];
     let mut i: u32 = 0_u32;
-    'loop_: while ((((i as usize)
+    'loop_: while ((i as usize)
         < (::std::mem::size_of::<[libc::socklen_t; 6]>() as usize)
             .wrapping_div((::std::mem::size_of::<libc::socklen_t>() as usize)))
-        as i32)
-        != 0)
     {
         let out: Value<Box<[u8]>> =
             Rc::new(RefCell::new((0..136).map(|_| 0_u8).collect::<Box<[u8]>>()));
@@ -75,7 +71,7 @@ pub fn check_name_0(mut fd: i32, mut path: Ptr<i8>) {
         };
         let len: Value<libc::socklen_t> = Rc::new(RefCell::new(capacities[(i) as usize]));
         assert!(
-            (((match ({ out.decay().reinterpret_cast::<libcc2rs::Sockaddr>() }, {
+            (match ({ out.decay().reinterpret_cast::<libcc2rs::Sockaddr>() }, {
                 (len.as_pointer())
             },)
             {
@@ -91,25 +87,23 @@ pub fn check_name_0(mut fd: i32, mut path: Ptr<i8>) {
                         }
                     }
                 }
-            } == 0) as i32)
-                != 0)
+            } == 0)
         );
-        assert!(({ ((((*len.borrow()) == (*actual.borrow())) as i32) != 0) }));
-        let mut copied: u32 = (if (((capacities[(i) as usize] < (*actual.borrow())) as i32) != 0) {
+        assert!(({ ((*len.borrow()) == (*actual.borrow())) }));
+        let mut copied: u32 = (if (capacities[(i) as usize] < (*actual.borrow())) {
             capacities[(i) as usize]
         } else {
             (*actual.borrow())
         } as u32);
         assert!(
-            ((((out.decay())
+            ((out.decay())
                 .to_any()
                 .memcmp(&(full.as_pointer()).to_any(), (copied as usize))
-                == 0) as i32)
-                != 0)
+                == 0)
         );
         let mut j: u32 = copied;
-        'loop_: while ((((j as usize) < ::std::mem::size_of::<[u8; 136]>()) as i32) != 0) {
-            assert!(({ (((((*out.borrow())[(j) as usize] as i32) == 165) as i32) != 0) }));
+        'loop_: while ((j as usize) < ::std::mem::size_of::<[u8; 136]>()) {
+            assert!(({ (((*out.borrow())[(j) as usize] as i32) == 165) }));
             j.prefix_inc();
         }
         i.prefix_inc();
@@ -147,7 +141,7 @@ fn main_0() -> i32 {
             }
         }
     };
-    assert!((((fd >= 0) as i32) != 0));
+    assert!((fd >= 0));
     ({ check_name_0(fd, Ptr::<i8>::null()) });
     let addr: Value<libcc2rs::SockaddrStorage> = Rc::new(RefCell::new(Default::default()));
     match ({ (addr.as_pointer()).to_any() },) {
@@ -158,7 +152,7 @@ fn main_0() -> i32 {
     };
     let len: Value<libc::socklen_t> = Rc::new(RefCell::new((128usize as libc::socklen_t)));
     assert!(
-        (((match (
+        (match (
             { (addr.as_pointer()).reinterpret_cast::<libcc2rs::Sockaddr>() },
             { (len.as_pointer()) },
         ) {
@@ -174,8 +168,7 @@ fn main_0() -> i32 {
                     }
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
     let mut un: Ptr<libcc2rs::SockaddrUn> =
         (addr.as_pointer()).reinterpret_cast::<libcc2rs::SockaddrUn>();
@@ -189,7 +182,7 @@ fn main_0() -> i32 {
         }
     };
     assert!(
-        (((match Sockaddr::decode(
+        (match Sockaddr::decode(
             &(addr.as_pointer()).reinterpret_cast::<libcc2rs::Sockaddr>(),
             (((2_usize as usize).wrapping_add(
                 array_field_ptr!(un, sun_path)
@@ -208,20 +201,18 @@ fn main_0() -> i32 {
                 libcc2rs::cpp2rust_errno().write(::libc::EAFNOSUPPORT);
                 -1
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
     ({ check_name_0(fd, array_field_ptr!(un, sun_path)) });
-    assert!((((FdRegistry::close(fd) == 0) as i32) != 0));
+    assert!((FdRegistry::close(fd) == 0));
     assert!(
-        (((match nix::unistd::unlink(array_field_ptr!(un, sun_path).to_rust_string().as_str()) {
+        (match nix::unistd::unlink(array_field_ptr!(un, sun_path).to_rust_string().as_str()) {
             Ok(()) => 0,
             Err(__e) => {
                 libcc2rs::cpp2rust_errno().write(__e as i32);
                 -1
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
     return 0;
 }

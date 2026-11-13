@@ -21,7 +21,7 @@ fn main_0() -> i32 {
             .collect::<Box<[Box<[i8]>]>>(),
     ));
     let mut i: i32 = 0;
-    'loop_: while (((i < 3) as i32) != 0) {
+    'loop_: while (i < 3) {
         ({
             let _row: Ptr<i8> = grid.decay().offset(i).decay();
             let _c: i8 = ((('a' as i32) + i) as i8);
@@ -29,32 +29,12 @@ fn main_0() -> i32 {
         });
         i.postfix_inc();
     }
-    assert!(
-        ({
-            (((((*grid.borrow())[(0) as usize][(0) as usize] as i32) == ('a' as i32)) as i32) != 0)
-        })
-    );
-    assert!(
-        ({
-            (((((*grid.borrow())[(1) as usize][(0) as usize] as i32) == ('b' as i32)) as i32) != 0)
-        })
-    );
-    assert!(
-        ({
-            (((((*grid.borrow())[(2) as usize][(0) as usize] as i32) == ('c' as i32)) as i32) != 0)
-        })
-    );
-    assert!(
-        ({
-            (((((*grid.borrow())[(1) as usize][(1) as usize] as i32) == ('\0' as i32)) as i32) != 0)
-        })
-    );
+    assert!(({ (((*grid.borrow())[(0) as usize][(0) as usize] as i32) == ('a' as i32)) }));
+    assert!(({ (((*grid.borrow())[(1) as usize][(0) as usize] as i32) == ('b' as i32)) }));
+    assert!(({ (((*grid.borrow())[(2) as usize][(0) as usize] as i32) == ('c' as i32)) }));
+    assert!(({ (((*grid.borrow())[(1) as usize][(1) as usize] as i32) == ('\0' as i32)) }));
     (*grid.borrow_mut())[(2) as usize][(5) as usize] = (('z' as i32) as i8);
-    assert!(
-        ({
-            (((((*grid.borrow())[(2) as usize][(5) as usize] as i32) == ('z' as i32)) as i32) != 0)
-        })
-    );
+    assert!(({ (((*grid.borrow())[(2) as usize][(5) as usize] as i32) == ('z' as i32)) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

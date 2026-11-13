@@ -18,8 +18,8 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((((({ a_value_1() }) == 7) as i32) != 0));
-    assert!((((({ b_value_2() }) == 9) as i32) != 0));
+    assert!((({ a_value_1() }) == 7));
+    assert!((({ b_value_2() }) == 9));
     return 0;
 }
 pub type anon_3 = u32;

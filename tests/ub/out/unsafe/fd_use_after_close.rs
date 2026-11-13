@@ -26,10 +26,6 @@ unsafe fn main_0() -> i32 {
         (buf.as_mut_ptr() as *mut ::libc::c_void),
         ::std::mem::size_of::<[libc::c_char; 4]>(),
     );
-    return if ((((n) == (-1_i32 as isize)) as i32) != 0) {
-        0
-    } else {
-        1
-    };
+    return if ((n) == (-1_i32 as isize)) { 0 } else { 1 };
 }
 pub unsafe fn __cpp2rust_init_globals() {}

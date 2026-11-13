@@ -8,19 +8,19 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn test_errno_0() {
     (*libcc2rs::cpp2rust_errno_unsafe()) = 0;
-    assert!(((((*libcc2rs::cpp2rust_errno_unsafe()) == (0)) as i32) != 0));
+    assert!(((*libcc2rs::cpp2rust_errno_unsafe()) == (0)));
     (*libcc2rs::cpp2rust_errno_unsafe()) = 42;
-    assert!(((((*libcc2rs::cpp2rust_errno_unsafe()) == (42)) as i32) != 0));
+    assert!(((*libcc2rs::cpp2rust_errno_unsafe()) == (42)));
     let mut saved: i32 = (*libcc2rs::cpp2rust_errno_unsafe());
-    assert!(((((saved) == (42)) as i32) != 0));
+    assert!(((saved) == (42)));
     (*libcc2rs::cpp2rust_errno_unsafe()) = 0;
 }
 pub unsafe fn test_errno_preserved_across_strdup_1() {
     (*libcc2rs::cpp2rust_errno_unsafe()) = 99;
     let mut d: *mut libc::c_char =
         libcc2rs::strdup_unsafe((c"hello".as_ptr().cast_mut()).cast_const());
-    assert!((((!((d).is_null())) as i32) != 0));
-    assert!(((((*libcc2rs::cpp2rust_errno_unsafe()) == (99)) as i32) != 0));
+    assert!((!((d).is_null())));
+    assert!(((*libcc2rs::cpp2rust_errno_unsafe()) == (99)));
     libcc2rs::free_unsafe((d as *mut ::libc::c_void));
     (*libcc2rs::cpp2rust_errno_unsafe()) = 0;
 }
@@ -31,8 +31,8 @@ pub unsafe fn test_errno_from_fseek_2() {
         0_i64 as ::libc::c_long,
         ::libc::SEEK_SET,
     );
-    assert!(((((r) == (-1_i32)) as i32) != 0));
-    assert!(((((*libcc2rs::cpp2rust_errno_unsafe()) == (libc::ESPIPE)) as i32) != 0));
+    assert!(((r) == (-1_i32)));
+    assert!(((*libcc2rs::cpp2rust_errno_unsafe()) == (libc::ESPIPE)));
     (*libcc2rs::cpp2rust_errno_unsafe()) = 0;
 }
 pub fn main() {

@@ -2473,13 +2473,21 @@ void Converter::ConvertIntegralToBooleanCast(clang::ImplicitCastExpr *expr) {
     return;
   }
 
-  if (auto binop = clang::dyn_cast<clang::BinaryOperator>(stripped)) {
-    // Comparisons and logical ops already produces bool, no wrap needed.
-    if ((binop->isComparisonOp() || binop->isLogicalOp()) &&
-        binop->getType()->isBooleanType()) {
-      Convert(sub_expr);
-      return;
-    }
+  if (auto binop = clang::dyn_cast<clang::BinaryOperator>(stripped);
+      binop && (binop->isComparisonOp() || binop->isLogicalOp())) {
+    // Comparisons and logical ops produce a bool, which C makes an int.
+    PushParen paren(*this);
+    ConvertBinaryOperator(binop);
+    return;
+  }
+  if (auto *unop = clang::dyn_cast<clang::UnaryOperator>(stripped);
+      unop && unop->getOpcode() == clang::UO_LNot) {
+    Convert(NormalizeToBool(unop, ctx_));
+    return;
+  }
+  if (auto *literal = clang::dyn_cast<clang::IntegerLiteral>(stripped)) {
+    EmitFresh(literal->getValue().isZero() ? keyword::kFalse : keyword::kTrue);
+    return;
   }
 
   PushParen paren(*this);

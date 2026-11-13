@@ -13,9 +13,9 @@ pub fn mixed_args_0(count: i32, __args: Box<[VaArg]>) -> i32 {
     (*ap.borrow_mut()) = __args.decay();
     let mut total: i32 = 0;
     let mut i: i32 = 0;
-    'loop_: while (((i < (*count.borrow())) as i32) != 0) {
+    'loop_: while (i < (*count.borrow())) {
         let mut tag: i32 = (*ap.borrow_mut()).arg::<i32>();
-        if (((tag == 0) as i32) != 0) {
+        if (tag == 0) {
             total += (*ap.borrow_mut()).arg::<i32>();
         } else {
             let mut ptr: Ptr<i32> = (*ap.borrow_mut()).arg::<Ptr<i32>>();
@@ -32,7 +32,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(100));
     assert!(
-        (((({
+        (({
             mixed_args_0(
                 3,
                 Box::new([
@@ -44,22 +44,17 @@ fn main_0() -> i32 {
                     (20).into(),
                 ]),
             )
-        }) == 130) as i32)
-            != 0)
+        }) == 130)
     );
     let y: Value<i32> = Rc::new(RefCell::new(50));
+    assert!((({ mixed_args_0(1, Box::new([(1).into(), (y.as_pointer()).into(),])) }) == 50));
     assert!(
-        (((({ mixed_args_0(1, Box::new([(1).into(), (y.as_pointer()).into(),])) }) == 50) as i32)
-            != 0)
-    );
-    assert!(
-        (((({
+        (({
             mixed_args_0(
                 2,
                 Box::new([(0).into(), (5).into(), (0).into(), (3).into()]),
             )
-        }) == 8) as i32)
-            != 0)
+        }) == 8)
     );
     return 0;
 }

@@ -16,27 +16,19 @@ pub fn test_memcpy_0() {
             (__tmp_0).clone()
         }
     };
-    assert!(((({ (r).clone() } == { (dst.decay()).to_any() }) as i32) != 0));
+    assert!(({ (r).clone() } == { (dst.decay()).to_any() }));
     assert!(
         ({
-            (((((((((((*dst.borrow())[(0) as usize] as i32) == ('h' as i32)) as i32) != 0)
-                && (((((*dst.borrow())[(1) as usize] as i32) == ('e' as i32)) as i32) != 0))
-                as i32)
-                != 0)
-                && (((((*dst.borrow())[(2) as usize] as i32) == ('l' as i32)) as i32) != 0))
-                as i32)
-                != 0)
+            (((((*dst.borrow())[(0) as usize] as i32) == ('h' as i32))
+                && (((*dst.borrow())[(1) as usize] as i32) == ('e' as i32)))
+                && (((*dst.borrow())[(2) as usize] as i32) == ('l' as i32)))
         })
     );
     assert!(
         ({
-            (((((((((((*dst.borrow())[(3) as usize] as i32) == ('l' as i32)) as i32) != 0)
-                && (((((*dst.borrow())[(4) as usize] as i32) == ('o' as i32)) as i32) != 0))
-                as i32)
-                != 0)
-                && (((((*dst.borrow())[(5) as usize] as i32) == ('\0' as i32)) as i32) != 0))
-                as i32)
-                != 0)
+            (((((*dst.borrow())[(3) as usize] as i32) == ('l' as i32))
+                && (((*dst.borrow())[(4) as usize] as i32) == ('o' as i32)))
+                && (((*dst.borrow())[(5) as usize] as i32) == ('\0' as i32)))
         })
     );
 }
@@ -48,19 +40,13 @@ pub fn test_memset_1() {
             (__tmp_1).clone()
         }
     };
-    assert!(((({ (r).clone() } == { (buf.decay()).to_any() }) as i32) != 0));
+    assert!(({ (r).clone() } == { (buf.decay()).to_any() }));
     assert!(
         ({
-            ((((((((((((((*buf.borrow())[(0) as usize] as i32) == ('x' as i32)) as i32) != 0)
-                && (((((*buf.borrow())[(1) as usize] as i32) == ('x' as i32)) as i32) != 0))
-                as i32)
-                != 0)
-                && (((((*buf.borrow())[(2) as usize] as i32) == ('x' as i32)) as i32) != 0))
-                as i32)
-                != 0)
-                && (((((*buf.borrow())[(3) as usize] as i32) == ('x' as i32)) as i32) != 0))
-                as i32)
-                != 0)
+            ((((((*buf.borrow())[(0) as usize] as i32) == ('x' as i32))
+                && (((*buf.borrow())[(1) as usize] as i32) == ('x' as i32)))
+                && (((*buf.borrow())[(2) as usize] as i32) == ('x' as i32)))
+                && (((*buf.borrow())[(3) as usize] as i32) == ('x' as i32)))
         })
     );
 }
@@ -68,9 +54,9 @@ pub fn test_memcmp_2() {
     let a: Value<Box<[i8]>> = Rc::new(RefCell::new(Box::new([1_i8, 2_i8, 3_i8, 4_i8])));
     let b: Value<Box<[i8]>> = Rc::new(RefCell::new(Box::new([1_i8, 2_i8, 3_i8, 4_i8])));
     let c: Value<Box<[i8]>> = Rc::new(RefCell::new(Box::new([1_i8, 2_i8, 9_i8, 4_i8])));
-    assert!(((((a.decay()).to_any().memcmp(&(b.decay()).to_any(), 4_usize) == 0) as i32) != 0));
-    assert!(((((a.decay()).to_any().memcmp(&(c.decay()).to_any(), 4_usize) < 0) as i32) != 0));
-    assert!(((((c.decay()).to_any().memcmp(&(a.decay()).to_any(), 4_usize) > 0) as i32) != 0));
+    assert!(((a.decay()).to_any().memcmp(&(b.decay()).to_any(), 4_usize) == 0));
+    assert!(((a.decay()).to_any().memcmp(&(c.decay()).to_any(), 4_usize) < 0));
+    assert!(((c.decay()).to_any().memcmp(&(a.decay()).to_any(), 4_usize) > 0));
 }
 pub fn test_memmove_3() {
     let buf: Value<Box<[i8]>> = Rc::new(RefCell::new(Box::new([
@@ -87,27 +73,19 @@ pub fn test_memmove_3() {
             (__tmp_2).clone()
         }
     };
-    assert!(((({ (r).clone() } == { (buf.decay().offset((1) as isize)).to_any() }) as i32) != 0));
+    assert!(({ (r).clone() } == { (buf.decay().offset((1) as isize)).to_any() }));
     assert!(
         ({
-            (((((((((((*buf.borrow())[(0) as usize] as i32) == ('a' as i32)) as i32) != 0)
-                && (((((*buf.borrow())[(1) as usize] as i32) == ('a' as i32)) as i32) != 0))
-                as i32)
-                != 0)
-                && (((((*buf.borrow())[(2) as usize] as i32) == ('b' as i32)) as i32) != 0))
-                as i32)
-                != 0)
+            (((((*buf.borrow())[(0) as usize] as i32) == ('a' as i32))
+                && (((*buf.borrow())[(1) as usize] as i32) == ('a' as i32)))
+                && (((*buf.borrow())[(2) as usize] as i32) == ('b' as i32)))
         })
     );
     assert!(
         ({
-            (((((((((((*buf.borrow())[(3) as usize] as i32) == ('c' as i32)) as i32) != 0)
-                && (((((*buf.borrow())[(4) as usize] as i32) == ('d' as i32)) as i32) != 0))
-                as i32)
-                != 0)
-                && (((((*buf.borrow())[(5) as usize] as i32) == ('\0' as i32)) as i32) != 0))
-                as i32)
-                != 0)
+            (((((*buf.borrow())[(3) as usize] as i32) == ('c' as i32))
+                && (((*buf.borrow())[(4) as usize] as i32) == ('d' as i32)))
+                && (((*buf.borrow())[(5) as usize] as i32) == ('\0' as i32)))
         })
     );
 }
@@ -128,10 +106,10 @@ pub fn test_strchr_4() {
             }
         }
     };
-    assert!((((!((r).is_null())) as i32) != 0));
-    assert!((((((r.read()) as i32) == ('w' as i32)) as i32) != 0));
+    assert!((!((r).is_null())));
+    assert!((((r.read()) as i32) == ('w' as i32)));
     assert!(
-        ((((match ({ s.reinterpret_cast::<i8>() },) {
+        ((match ({ s.reinterpret_cast::<i8>() },) {
             (mut __tmp_4,) => {
                 {
                     let __t = ('z' as i32) as i8;
@@ -148,31 +126,27 @@ pub fn test_strchr_4() {
                 }
             }
         })
-        .is_null()) as i32)
-            != 0)
+        .is_null())
     );
 }
 pub fn test_strlen_5() {
     assert!(
-        (((Ptr::<i8>::from_string_literal(b"")
+        (Ptr::<i8>::from_string_literal(b"")
             .to_c_string_iterator()
             .count()
-            == 0_usize) as i32)
-            != 0)
+            == 0_usize)
     );
     assert!(
-        (((Ptr::<i8>::from_string_literal(b"hello")
+        (Ptr::<i8>::from_string_literal(b"hello")
             .to_c_string_iterator()
             .count()
-            == 5_usize) as i32)
-            != 0)
+            == 5_usize)
     );
     assert!(
-        (((Ptr::<i8>::from_string_literal(b"hello world")
+        (Ptr::<i8>::from_string_literal(b"hello world")
             .to_c_string_iterator()
             .count()
-            == 11_usize) as i32)
-            != 0)
+            == 11_usize)
     );
     let buf: Value<Box<[i8]>> = Rc::new(RefCell::new(i8::array_from_literal(b"one\0two\0")));
     let mut first: Ptr<i8> = buf.decay();
@@ -180,7 +154,7 @@ pub fn test_strlen_5() {
         .decay()
         .offset((first.to_c_string_iterator().count()).wrapping_add(1_usize)));
     assert!(
-        ((({
+        ({
             let mut __it1 = second.to_c_string_iterator();
             let mut __it2 = Ptr::<i8>::from_string_literal(b"two").to_c_string_iterator();
             loop {
@@ -193,18 +167,17 @@ pub fn test_strlen_5() {
                     break 0;
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
     let big : Value<Box<[ i8  ]> > = Rc::new(RefCell::new(i8::array_from_literal(b"hi\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0") )) ;
-    assert!((((big.decay().to_c_string_iterator().count() == 2_usize) as i32) != 0));
+    assert!((big.decay().to_c_string_iterator().count() == 2_usize));
     (*big.borrow_mut())[(2) as usize] = (('x' as i32) as i8);
     (*big.borrow_mut())[(3) as usize] = (('\0' as i32) as i8);
-    assert!((((big.decay().to_c_string_iterator().count() == 3_usize) as i32) != 0));
+    assert!((big.decay().to_c_string_iterator().count() == 3_usize));
 }
 pub fn test_strcmp_6() {
     assert!(
-        ((({
+        ({
             let mut __it1 = Ptr::<i8>::from_string_literal(b"abc").to_c_string_iterator();
             let mut __it2 = Ptr::<i8>::from_string_literal(b"abc").to_c_string_iterator();
             loop {
@@ -217,11 +190,10 @@ pub fn test_strcmp_6() {
                     break 0;
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
     assert!(
-        ((({
+        ({
             let mut __it1 = Ptr::<i8>::from_string_literal(b"abc").to_c_string_iterator();
             let mut __it2 = Ptr::<i8>::from_string_literal(b"abd").to_c_string_iterator();
             loop {
@@ -234,11 +206,10 @@ pub fn test_strcmp_6() {
                     break 0;
                 }
             }
-        } < 0) as i32)
-            != 0)
+        } < 0)
     );
     assert!(
-        ((({
+        ({
             let mut __it1 = Ptr::<i8>::from_string_literal(b"abd").to_c_string_iterator();
             let mut __it2 = Ptr::<i8>::from_string_literal(b"abc").to_c_string_iterator();
             loop {
@@ -251,8 +222,7 @@ pub fn test_strcmp_6() {
                     break 0;
                 }
             }
-        } > 0) as i32)
-            != 0)
+        } > 0)
     );
     let mut p: Ptr<i8> = Ptr::<i8>::from_string_literal(b"abc");
     let mut q: Ptr<i8> = Ptr::<i8>::from_string_literal(b"abd");
@@ -263,7 +233,7 @@ pub fn test_strcmp_6() {
         (('\0' as i32) as i8),
     ])));
     assert!(
-        ((({
+        ({
             let mut __it1 = p.to_c_string_iterator();
             let mut __it2 = p.to_c_string_iterator();
             loop {
@@ -276,11 +246,10 @@ pub fn test_strcmp_6() {
                     break 0;
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
     assert!(
-        ((({
+        ({
             let mut __it1 = p.to_c_string_iterator();
             let mut __it2 = q.to_c_string_iterator();
             loop {
@@ -293,11 +262,10 @@ pub fn test_strcmp_6() {
                     break 0;
                 }
             }
-        } < 0) as i32)
-            != 0)
+        } < 0)
     );
     assert!(
-        ((({
+        ({
             let mut __it1 = buf.decay().to_c_string_iterator();
             let mut __it2 = p.to_c_string_iterator();
             loop {
@@ -310,13 +278,12 @@ pub fn test_strcmp_6() {
                     break 0;
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
 }
 pub fn test_strncmp_7() {
     assert!(
-        ((({
+        ({
             let mut __it1 = Ptr::<i8>::from_string_literal(b"abcdef")
                 .to_c_string_iterator()
                 .take(3_usize);
@@ -333,11 +300,10 @@ pub fn test_strncmp_7() {
                     break 0;
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
     assert!(
-        ((({
+        ({
             let mut __it1 = Ptr::<i8>::from_string_literal(b"abcdef")
                 .to_c_string_iterator()
                 .take(4_usize);
@@ -354,11 +320,10 @@ pub fn test_strncmp_7() {
                     break 0;
                 }
             }
-        } < 0) as i32)
-            != 0)
+        } < 0)
     );
     assert!(
-        ((({
+        ({
             let mut __it1 = Ptr::<i8>::from_string_literal(b"abcxyz")
                 .to_c_string_iterator()
                 .take(4_usize);
@@ -375,8 +340,7 @@ pub fn test_strncmp_7() {
                     break 0;
                 }
             }
-        } > 0) as i32)
-            != 0)
+        } > 0)
     );
     let mut p: Ptr<i8> = Ptr::<i8>::from_string_literal(b"abcdef");
     let mut q: Ptr<i8> = Ptr::<i8>::from_string_literal(b"abcxyz");
@@ -391,7 +355,7 @@ pub fn test_strncmp_7() {
     ])));
     let mut n: usize = 3_usize;
     assert!(
-        ((({
+        ({
             let mut __it1 = p.to_c_string_iterator().take(n);
             let mut __it2 = q.to_c_string_iterator().take(n);
             loop {
@@ -404,11 +368,10 @@ pub fn test_strncmp_7() {
                     break 0;
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
     assert!(
-        (((match ({ (n).wrapping_add(1_usize) },) {
+        (match ({ (n).wrapping_add(1_usize) },) {
             (mut __tmp_5,) => {
                 {
                     let mut __it1 = p.to_c_string_iterator().take(__tmp_5);
@@ -426,11 +389,10 @@ pub fn test_strncmp_7() {
                     }
                 }
             }
-        } < 0) as i32)
-            != 0)
+        } < 0)
     );
     assert!(
-        ((({
+        ({
             let mut __it1 = buf.decay().to_c_string_iterator().take(6_usize);
             let mut __it2 = p.to_c_string_iterator().take(6_usize);
             loop {
@@ -443,8 +405,7 @@ pub fn test_strncmp_7() {
                     break 0;
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
 }
 pub fn test_memchr_8() {
@@ -463,9 +424,9 @@ pub fn test_memchr_8() {
             __i += 1;
         }
     };
-    assert!(((({ (r).clone() } == { (data.decay().offset(2)).to_any() }) as i32) != 0));
+    assert!(({ (r).clone() } == { (data.decay().offset(2)).to_any() }));
     assert!(
-        (((({
+        (({
             let mut __p = (data.decay()).to_any().reinterpret_cast::<u8>();
             let mut __i: usize = 0;
             loop {
@@ -479,13 +440,12 @@ pub fn test_memchr_8() {
                 __i += 1;
             }
         })
-        .is_null()) as i32)
-            != 0)
+        .is_null())
     );
     let mut p: AnyPtr = (data.decay()).to_any();
     let mut n: usize = 4_usize;
     assert!(
-        ((({
+        ({
             {
                 let mut __p = p.reinterpret_cast::<u8>();
                 let mut __i: usize = 0;
@@ -500,8 +460,7 @@ pub fn test_memchr_8() {
                     __i += 1;
                 }
             }
-        } == { (p).clone() }) as i32)
-            != 0)
+        } == { (p).clone() })
     );
 }
 pub fn test_strrchr_9() {
@@ -526,11 +485,11 @@ pub fn test_strrchr_9() {
             }
         }
     };
-    assert!((((!((r).is_null())) as i32) != 0));
-    assert!((((((r.read()) as i32) == ('l' as i32)) as i32) != 0));
-    assert!(((({ (r).clone() } == { s.offset((9) as isize) }) as i32) != 0));
+    assert!((!((r).is_null())));
+    assert!((((r.read()) as i32) == ('l' as i32)));
+    assert!(({ (r).clone() } == { s.offset((9) as isize) }));
     assert!(
-        ((((match ({ s.reinterpret_cast::<i8>() },) {
+        ((match ({ s.reinterpret_cast::<i8>() },) {
             (mut __tmp_7,) => {
                 {
                     let __t = ('z' as i32) as i8;
@@ -552,8 +511,7 @@ pub fn test_strrchr_9() {
                 }
             }
         })
-        .is_null()) as i32)
-            != 0)
+        .is_null())
     );
     let buf: Value<Box<[i8]>> = Rc::new(RefCell::new(Box::new([
         (('a' as i32) as i8),
@@ -562,7 +520,7 @@ pub fn test_strrchr_9() {
         (('\0' as i32) as i8),
     ])));
     assert!(
-        (((match ({ buf.decay() },) {
+        (match ({ buf.decay() },) {
             (mut __tmp_8,) => {
                 {
                     let __t = ('a' as i32) as i8;
@@ -583,90 +541,81 @@ pub fn test_strrchr_9() {
                     }
                 }
             }
-        } == (buf.decay().offset(2))) as i32)
-            != 0)
+        } == (buf.decay().offset(2)))
     );
 }
 pub fn test_strcspn_10() {
     assert!(
-        (((Ptr::<i8>::from_string_literal(b"hello")
+        (Ptr::<i8>::from_string_literal(b"hello")
             .to_c_string_iterator()
             .take_while(|__c| !Ptr::<i8>::from_string_literal(b"el")
                 .to_c_string_iterator()
                 .any(|__r| __r == *__c))
             .count()
-            == 1_usize) as i32)
-            != 0)
+            == 1_usize)
     );
     assert!(
-        (((Ptr::<i8>::from_string_literal(b"abc")
+        (Ptr::<i8>::from_string_literal(b"abc")
             .to_c_string_iterator()
             .take_while(|__c| !Ptr::<i8>::from_string_literal(b"xyz")
                 .to_c_string_iterator()
                 .any(|__r| __r == *__c))
             .count()
-            == 3_usize) as i32)
-            != 0)
+            == 3_usize)
     );
     assert!(
-        (((Ptr::<i8>::from_string_literal(b"")
+        (Ptr::<i8>::from_string_literal(b"")
             .to_c_string_iterator()
             .take_while(|__c| !Ptr::<i8>::from_string_literal(b"abc")
                 .to_c_string_iterator()
                 .any(|__r| __r == *__c))
             .count()
-            == 0_usize) as i32)
-            != 0)
+            == 0_usize)
     );
     let mut s: Ptr<i8> = Ptr::<i8>::from_string_literal(b"hello");
     let mut rej: Ptr<i8> = Ptr::<i8>::from_string_literal(b"el");
     assert!(
-        (((s.to_c_string_iterator()
+        (s.to_c_string_iterator()
             .take_while(|__c| !rej.to_c_string_iterator().any(|__r| __r == *__c))
             .count()
-            == 1_usize) as i32)
-            != 0)
+            == 1_usize)
     );
 }
 pub fn test_strspn_11() {
     assert!(
-        (((Ptr::<i8>::from_string_literal(b"hello")
+        (Ptr::<i8>::from_string_literal(b"hello")
             .to_c_string_iterator()
             .take_while(|__c| Ptr::<i8>::from_string_literal(b"hel")
                 .to_c_string_iterator()
                 .any(|__r| __r == *__c))
             .count()
-            == 4_usize) as i32)
-            != 0)
+            == 4_usize)
     );
     assert!(
-        (((Ptr::<i8>::from_string_literal(b"abc")
+        (Ptr::<i8>::from_string_literal(b"abc")
             .to_c_string_iterator()
             .take_while(|__c| Ptr::<i8>::from_string_literal(b"xyz")
                 .to_c_string_iterator()
                 .any(|__r| __r == *__c))
             .count()
-            == 0_usize) as i32)
-            != 0)
+            == 0_usize)
     );
     assert!(
-        (((Ptr::<i8>::from_string_literal(b"aaa")
+        (Ptr::<i8>::from_string_literal(b"aaa")
             .to_c_string_iterator()
             .take_while(|__c| Ptr::<i8>::from_string_literal(b"a")
                 .to_c_string_iterator()
                 .any(|__r| __r == *__c))
             .count()
-            == 3_usize) as i32)
-            != 0)
+            == 3_usize)
     );
     let mut s: Ptr<i8> = Ptr::<i8>::from_string_literal(b"hello");
     let mut acc: Ptr<i8> = Ptr::<i8>::from_string_literal(b"hel");
     assert!(
-        (((s.to_c_string_iterator()
+        (s.to_c_string_iterator()
             .take_while(|__c| acc.to_c_string_iterator().any(|__r| __r == *__c))
             .count()
-            == 4_usize) as i32)
-            != 0)
+            == 4_usize)
     );
 }
 pub fn test_strstr_12() {
@@ -687,10 +636,10 @@ pub fn test_strstr_12() {
             __p += 1;
         }
     };
-    assert!((((!((r).is_null())) as i32) != 0));
-    assert!(((({ (r).clone() } == { h.offset((6) as isize) }) as i32) != 0));
+    assert!((!((r).is_null())));
+    assert!(({ (r).clone() } == { h.offset((6) as isize) }));
     assert!(
-        (((({
+        (({
             let mut __p = h.reinterpret_cast::<i8>();
             loop {
                 let mut __h = __p.to_c_string_iterator();
@@ -706,8 +655,7 @@ pub fn test_strstr_12() {
                 __p += 1;
             }
         })
-        .is_null()) as i32)
-            != 0)
+        .is_null())
     );
     let buf: Value<Box<[i8]>> = Rc::new(RefCell::new(Box::new([
         (('h' as i32) as i8),
@@ -718,7 +666,7 @@ pub fn test_strstr_12() {
         (('\0' as i32) as i8),
     ])));
     assert!(
-        ((({
+        ({
             let mut __p = buf.decay();
             loop {
                 let mut __h = __p.to_c_string_iterator();
@@ -733,8 +681,7 @@ pub fn test_strstr_12() {
                 }
                 __p += 1;
             }
-        } == (buf.decay().offset(2))) as i32)
-            != 0)
+        } == (buf.decay().offset(2)))
     );
 }
 pub fn test_strpbrk_13() {
@@ -751,10 +698,10 @@ pub fn test_strpbrk_13() {
             }
         }
     };
-    assert!((((!((r).is_null())) as i32) != 0));
-    assert!(((({ (r).clone() } == { s.offset((4) as isize) }) as i32) != 0));
+    assert!((!((r).is_null())));
+    assert!(({ (r).clone() } == { s.offset((4) as isize) }));
     assert!(
-        ((((match ({ s.reinterpret_cast::<i8>() },) {
+        ((match ({ s.reinterpret_cast::<i8>() },) {
             (mut __tmp_10,) => {
                 match __tmp_10.to_c_string_iterator().position(|__c| {
                     Ptr::<i8>::from_string_literal(b"xyz")
@@ -766,8 +713,7 @@ pub fn test_strpbrk_13() {
                 }
             }
         })
-        .is_null()) as i32)
-            != 0)
+        .is_null())
     );
     let buf: Value<Box<[i8]>> = Rc::new(RefCell::new(Box::new([
         (('a' as i32) as i8),
@@ -776,7 +722,7 @@ pub fn test_strpbrk_13() {
         (('\0' as i32) as i8),
     ])));
     assert!(
-        (((match ({ buf.decay() },) {
+        (match ({ buf.decay() },) {
             (mut __tmp_11,) => {
                 match __tmp_11.to_c_string_iterator().position(|__c| {
                     Ptr::<i8>::from_string_literal(b"b")
@@ -787,13 +733,12 @@ pub fn test_strpbrk_13() {
                     None => Ptr::null(),
                 }
             }
-        } == (buf.decay().offset(1))) as i32)
-            != 0)
+        } == (buf.decay().offset(1)))
     );
 }
 pub fn test_strcasecmp_14() {
     assert!(
-        ((({
+        ({
             let mut __it1 = Ptr::<i8>::from_string_literal(b"HELLO")
                 .to_c_string_iterator()
                 .map(|__c| (__c as u8).to_ascii_lowercase());
@@ -810,11 +755,10 @@ pub fn test_strcasecmp_14() {
                     break 0;
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
     assert!(
-        ((({
+        ({
             let mut __it1 = Ptr::<i8>::from_string_literal(b"abc")
                 .to_c_string_iterator()
                 .map(|__c| (__c as u8).to_ascii_lowercase());
@@ -831,11 +775,10 @@ pub fn test_strcasecmp_14() {
                     break 0;
                 }
             }
-        } < 0) as i32)
-            != 0)
+        } < 0)
     );
     assert!(
-        ((({
+        ({
             let mut __it1 = Ptr::<i8>::from_string_literal(b"abd")
                 .to_c_string_iterator()
                 .map(|__c| (__c as u8).to_ascii_lowercase());
@@ -852,13 +795,12 @@ pub fn test_strcasecmp_14() {
                     break 0;
                 }
             }
-        } > 0) as i32)
-            != 0)
+        } > 0)
     );
     let mut p: Ptr<i8> = Ptr::<i8>::from_string_literal(b"FOO");
     let mut q: Ptr<i8> = Ptr::<i8>::from_string_literal(b"foo");
     assert!(
-        ((({
+        ({
             let mut __it1 = p
                 .to_c_string_iterator()
                 .map(|__c| (__c as u8).to_ascii_lowercase());
@@ -875,8 +817,7 @@ pub fn test_strcasecmp_14() {
                     break 0;
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
 }
 pub fn main() {

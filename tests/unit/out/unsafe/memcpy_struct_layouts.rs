@@ -76,9 +76,7 @@ unsafe fn main_0() -> i32 {
         }
     };
     assert!(
-        ((((buf[((::std::mem::size_of::<packed>() as usize).wrapping_add(4_usize))] as i32) == (6))
-            as i32)
-            != 0)
+        ((buf[((::std::mem::size_of::<packed>() as usize).wrapping_add(4_usize))] as i32) == (6))
     );
     let mut p2: [packed; 2] = [<packed>::default(); 2];
     match ({ (p2.as_mut_ptr() as *mut ::libc::c_void) }, {
@@ -96,13 +94,9 @@ unsafe fn main_0() -> i32 {
         }
     };
     assert!(
-        (((((((((((((p2[(1) as usize].a) == (5)) as i32) != 0)
-            && ((((p2[(1) as usize].b as i32) == (6)) as i32) != 0)) as i32)
-            != 0)
-            && ((((p2[(1) as usize].c as i32) == (7)) as i32) != 0)) as i32)
-            != 0)
-            && ((((p2[(1) as usize].d as i32) == (8)) as i32) != 0)) as i32)
-            != 0)
+        (((((p2[(1) as usize].a) == (5)) && ((p2[(1) as usize].b as i32) == (6)))
+            && ((p2[(1) as usize].c as i32) == (7)))
+            && ((p2[(1) as usize].d as i32) == (8)))
     );
     let mut r: [reordered; 2] = [
         reordered {
@@ -131,9 +125,8 @@ unsafe fn main_0() -> i32 {
         }
     };
     assert!(
-        ((((buf[((::std::mem::size_of::<reordered>() as usize).wrapping_add(8_usize))] as i32)
-            == (6)) as i32)
-            != 0)
+        ((buf[((::std::mem::size_of::<reordered>() as usize).wrapping_add(8_usize))] as i32)
+            == (6))
     );
     let mut r2: [reordered; 2] = [<reordered>::default(); 2];
     match ({ (r2.as_mut_ptr() as *mut ::libc::c_void) }, {
@@ -151,11 +144,8 @@ unsafe fn main_0() -> i32 {
         }
     };
     assert!(
-        ((((((((((r2[(1) as usize].a as i32) == (4)) as i32) != 0)
-            && ((((r2[(1) as usize].b) == (5)) as i32) != 0)) as i32)
-            != 0)
-            && ((((r2[(1) as usize].c as i32) == (6)) as i32) != 0)) as i32)
-            != 0)
+        ((((r2[(1) as usize].a as i32) == (4)) && ((r2[(1) as usize].b) == (5)))
+            && ((r2[(1) as usize].c as i32) == (6)))
     );
     let mut n: [nested; 2] = [
         nested {
@@ -188,9 +178,7 @@ unsafe fn main_0() -> i32 {
         }
     };
     assert!(
-        ((((buf[((::std::mem::size_of::<nested>() as usize).wrapping_add(16_usize))] as i32) == (6))
-            as i32)
-            != 0)
+        ((buf[((::std::mem::size_of::<nested>() as usize).wrapping_add(16_usize))] as i32) == (6))
     );
     let mut n2: [nested; 2] = [<nested>::default(); 2];
     match ({ (n2.as_mut_ptr() as *mut ::libc::c_void) }, {
@@ -208,11 +196,8 @@ unsafe fn main_0() -> i32 {
         }
     };
     assert!(
-        ((((((((((n2[(1) as usize].t.a as i32) == (4)) as i32) != 0)
-            && ((((n2[(1) as usize].t.b) == (5.5_f64)) as i32) != 0)) as i32)
-            != 0)
-            && ((((n2[(1) as usize].c as i32) == (6)) as i32) != 0)) as i32)
-            != 0)
+        ((((n2[(1) as usize].t.a as i32) == (4)) && ((n2[(1) as usize].t.b) == (5.5_f64)))
+            && ((n2[(1) as usize].c as i32) == (6)))
     );
     let mut a: [array; 2] = [
         array {
@@ -239,9 +224,8 @@ unsafe fn main_0() -> i32 {
         }
     };
     assert!(
-        ((((buf[((::std::mem::size_of::<array>() as usize).wrapping_add(1_usize))] as i32)
-            == ('d' as i32)) as i32)
-            != 0)
+        ((buf[((::std::mem::size_of::<array>() as usize).wrapping_add(1_usize))] as i32)
+            == ('d' as i32))
     );
     let mut a2: [array; 2] = [<array>::default(); 2];
     match ({ (a2.as_mut_ptr() as *mut ::libc::c_void) }, {
@@ -259,12 +243,9 @@ unsafe fn main_0() -> i32 {
         }
     };
     assert!(
-        ((((((((((a2[(1) as usize].name[(1) as usize] as i32) == ('d' as i32)) as i32) != 0)
-            && ((((a2[(1) as usize].name[(2) as usize] as i32) == (0)) as i32) != 0))
-            as i32)
-            != 0)
-            && ((((a2[(1) as usize].x) == (2)) as i32) != 0)) as i32)
-            != 0)
+        ((((a2[(1) as usize].name[(1) as usize] as i32) == ('d' as i32))
+            && ((a2[(1) as usize].name[(2) as usize] as i32) == (0)))
+            && ((a2[(1) as usize].x) == (2)))
     );
     return 0;
 }

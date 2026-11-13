@@ -24,8 +24,8 @@ unsafe fn main_0() -> i32 {
         x: 42,
     };
     (unsafe { touch_0((&mut c as *mut container)) });
-    assert!(((((c.x) == (42)) as i32) != 0));
-    assert!(((((c.p).is_null()) as i32) != 0));
+    assert!(((c.x) == (42)));
+    assert!(((c.p).is_null()));
     return 0;
 }
 pub unsafe fn touch_0(mut c: *mut container) {

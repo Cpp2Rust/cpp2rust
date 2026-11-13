@@ -22,20 +22,19 @@ unsafe fn main_0() -> i32 {
             (420),
         )
     });
-    assert!(((((fd) >= (0)) as i32) != 0));
+    assert!(((fd) >= (0)));
     assert!(
-        ((((libc::write(
+        ((libc::write(
             fd,
             (c"hello".as_ptr().cast_mut() as *const ::libc::c_void),
             5_usize
-        )) == (5_isize)) as i32)
-            != 0)
+        )) == (5_isize))
     );
     let mut st: ::libc::stat = unsafe { std::mem::zeroed() };
-    assert!(((((libc::fstat(fd, (&mut st as *mut ::libc::stat))) == (0)) as i32) != 0));
-    assert!(((((st.st_size) == (5 as ::libc::off_t)) as i32) != 0));
-    assert!(((((libc::close(fd)) == (0)) as i32) != 0));
-    assert!(((((libc::unlink(path)) == (0)) as i32) != 0));
+    assert!(((libc::fstat(fd, (&mut st as *mut ::libc::stat))) == (0)));
+    assert!(((st.st_size) == (5 as ::libc::off_t)));
+    assert!(((libc::close(fd)) == (0)));
+    assert!(((libc::unlink(path)) == (0)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

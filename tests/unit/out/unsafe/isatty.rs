@@ -22,10 +22,10 @@ unsafe fn main_0() -> i32 {
             (420),
         )
     });
-    assert!(((((fd) >= (0)) as i32) != 0));
-    assert!(((((libc::isatty(fd)) == (0)) as i32) != 0));
-    assert!(((((libc::close(fd)) == (0)) as i32) != 0));
-    assert!(((((libc::unlink(path)) == (0)) as i32) != 0));
+    assert!(((fd) >= (0)));
+    assert!(((libc::isatty(fd)) == (0)));
+    assert!(((libc::close(fd)) == (0)));
+    assert!(((libc::unlink(path)) == (0)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

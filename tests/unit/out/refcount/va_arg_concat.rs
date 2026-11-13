@@ -13,11 +13,10 @@ pub fn sum_ints_0(first: i32, __args: Box<[VaArg]>) -> i32 {
     let mut total: i32 = (*first.borrow());
     (*args.borrow_mut()) = __args.decay();
     let mut val: i32 = 0_i32;
-    'loop_: while (((({
+    'loop_: while (({
         val = (*args.borrow_mut()).arg::<i32>();
         val
-    }) != 0) as i32)
-        != 0)
+    }) != 0)
     {
         total += val;
     }
@@ -29,23 +28,21 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     assert!(
-        (((({
+        (({
             sum_ints_0(
                 1,
                 Box::new([(2).into(), (3).into(), (4).into(), (0).into()]),
             )
-        }) == 10) as i32)
-            != 0)
+        }) == 10)
     );
-    assert!((((({ sum_ints_0(100, Box::new([(0).into(),])) }) == 100) as i32) != 0));
+    assert!((({ sum_ints_0(100, Box::new([(0).into(),])) }) == 100));
     assert!(
-        (((({
+        (({
             sum_ints_0(
                 5,
                 Box::new([(5).into(), (5).into(), (5).into(), (5).into(), (0).into()]),
             )
-        }) == 25) as i32)
-            != 0)
+        }) == 25)
     );
     return 0;
 }

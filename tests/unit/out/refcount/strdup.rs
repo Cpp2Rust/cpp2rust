@@ -19,9 +19,9 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let mut d: Ptr<i8> = libcc2rs::strdup_refcount(Ptr::<i8>::from_string_literal(b"hello"));
-    assert!((((!((d).is_null())) as i32) != 0));
+    assert!((!((d).is_null())));
     assert!(
-        ((({
+        ({
             let mut __it1 = d.to_c_string_iterator();
             let mut __it2 = Ptr::<i8>::from_string_literal(b"hello").to_c_string_iterator();
             loop {
@@ -34,8 +34,7 @@ fn main_0() -> i32 {
                     break 0;
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
     libcc2rs::free_refcount((d).to_any());
     let mut p: Ptr<i8> = Ptr::<i8>::from_string_literal(b"world");
@@ -46,9 +45,9 @@ fn main_0() -> i32 {
         (('\0' as i32) as i8),
     ])));
     let mut d2: Ptr<i8> = libcc2rs::strdup_refcount((p).clone());
-    assert!((((!((d2).is_null())) as i32) != 0));
+    assert!((!((d2).is_null())));
     assert!(
-        ((({
+        ({
             let mut __it1 = d2.to_c_string_iterator();
             let mut __it2 = p.to_c_string_iterator();
             loop {
@@ -61,14 +60,13 @@ fn main_0() -> i32 {
                     break 0;
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
     libcc2rs::free_refcount((d2).to_any());
     let mut d3: Ptr<i8> = libcc2rs::strdup_refcount(buf.decay());
-    assert!((((!((d3).is_null())) as i32) != 0));
+    assert!((!((d3).is_null())));
     assert!(
-        ((({
+        ({
             let mut __it1 = d3.to_c_string_iterator();
             let mut __it2 = buf.decay().to_c_string_iterator();
             loop {
@@ -81,15 +79,14 @@ fn main_0() -> i32 {
                     break 0;
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
     libcc2rs::free_refcount((d3).to_any());
     let mut d4: Ptr<i8> = Ptr::<i8>::null();
     d4 = libcc2rs::strdup_refcount((p).clone());
-    assert!((((!((d4).is_null())) as i32) != 0));
+    assert!((!((d4).is_null())));
     assert!(
-        ((({
+        ({
             let mut __it1 = d4.to_c_string_iterator();
             let mut __it2 = p.to_c_string_iterator();
             loop {
@@ -102,8 +99,7 @@ fn main_0() -> i32 {
                     break 0;
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
     libcc2rs::free_refcount((d4).to_any());
     let rec: Value<record> = Rc::new(RefCell::new(record {
@@ -112,9 +108,9 @@ fn main_0() -> i32 {
     let mut r: Ptr<record> = (rec.as_pointer());
     let __rhs = libcc2rs::strdup_refcount((p).clone());
     field!(r, name).write(__rhs);
-    assert!((((!((r.with(|__s| __s.name.clone())).is_null())) as i32) != 0));
+    assert!((!((r.with(|__s| __s.name.clone())).is_null())));
     assert!(
-        ((({
+        ({
             let mut __it1 = r.with(|__s| __s.name.clone()).to_c_string_iterator();
             let mut __it2 = p.to_c_string_iterator();
             loop {
@@ -127,8 +123,7 @@ fn main_0() -> i32 {
                     break 0;
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
     libcc2rs::free_refcount((r.with(|__s| __s.name.clone())).to_any());
     return 0;

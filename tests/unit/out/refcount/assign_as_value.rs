@@ -18,7 +18,7 @@ fn main_0() -> i32 {
         p += 1;
         (p).clone()
     };
-    assert!(((({ (q).clone() } == { buf.decay().offset((1) as isize) }) as i32) != 0));
+    assert!(({ (q).clone() } == { buf.decay().offset((1) as isize) }));
     let mut out: i8 = 0_i8;
     'switch: {
         match {
@@ -28,16 +28,16 @@ fn main_0() -> i32 {
             }) as i32)
         } {
             __v if __v == ('x' as i32) => {
-                assert!((1 != 0));
+                assert!(true);
                 break 'switch;
             }
             _ => {
-                assert!((0 != 0));
+                assert!(false);
                 break 'switch;
             }
         }
     };
-    assert!(((((out as i32) == ('x' as i32)) as i32) != 0));
+    assert!(((out as i32) == ('x' as i32)));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

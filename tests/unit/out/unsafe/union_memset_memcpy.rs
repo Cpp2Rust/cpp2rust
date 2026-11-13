@@ -54,10 +54,10 @@ unsafe fn main_0() -> i32 {
             __tmp_0
         }
     };
-    assert!(((((c.view.a.code as i32) == (0)) as i32) != 0));
-    assert!(((((c.view.b.lo as i32) == (0)) as i32) != 0));
-    assert!(((((c.view.raw_[(0) as usize] as i32) == (0)) as i32) != 0));
-    assert!(((((c.view.raw_[(255) as usize] as i32) == (0)) as i32) != 0));
+    assert!(((c.view.a.code as i32) == (0)));
+    assert!(((c.view.b.lo as i32) == (0)));
+    assert!(((c.view.raw_[(0) as usize] as i32) == (0)));
+    assert!(((c.view.raw_[(255) as usize] as i32) == (0)));
     let mut src: [u8; 16] = [
         0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8,
         0_u8,
@@ -70,7 +70,7 @@ unsafe fn main_0() -> i32 {
     src[(6) as usize] = 0_u8;
     src[(7) as usize] = 1_u8;
     let mut len: usize = 16_usize;
-    assert!(((((len) <= (::std::mem::size_of::<[libc::c_char; 256]>())) as i32) != 0));
+    assert!(((len) <= (::std::mem::size_of::<[libc::c_char; 256]>())));
     match (
         { ((&mut c.view.raw_ as *mut [libc::c_char; 256]) as *mut ::libc::c_void) },
         { (src.as_mut_ptr() as *const ::libc::c_void) },
@@ -82,12 +82,8 @@ unsafe fn main_0() -> i32 {
             __tmp_1
         }
     };
-    assert!(((((c.view.b.code as i32) == (2)) as i32) != 0));
-    assert!(
-        (((((*((&mut c.view.b.lo as *mut u16) as *mut u8).offset((0) as isize)) as i32) == (80))
-            as i32)
-            != 0)
-    );
+    assert!(((c.view.b.code as i32) == (2)));
+    assert!((((*((&mut c.view.b.lo as *mut u16) as *mut u8).offset((0) as isize)) as i32) == (80)));
     match ({ ((&mut c as *mut Container) as *mut ::libc::c_void) },) {
         (mut __tmp_3,) => {
             let byte_0 = __tmp_3 as *mut u8;
@@ -97,7 +93,7 @@ unsafe fn main_0() -> i32 {
             __tmp_3
         }
     };
-    assert!(((((c.view.b.code as i32) == (0)) as i32) != 0));
+    assert!(((c.view.b.code as i32) == (0)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

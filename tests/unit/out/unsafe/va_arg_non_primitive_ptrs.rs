@@ -59,57 +59,52 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut s: *const libc::c_char = std::ptr::null();
     assert!(
-        ((((unsafe {
+        ((unsafe {
             dispatch_0(
                 (opt_OPT_STRING_OUT as i32),
                 Box::new([(&mut s as *mut *const libc::c_char).into()]),
             )
-        }) == (1)) as i32)
-            != 0)
+        }) == (1))
     );
-    assert!((((!((s).is_null())) as i32) != 0));
+    assert!((!((s).is_null())));
     assert!(
-        ((((unsafe {
+        ((unsafe {
             dispatch_0(
                 (opt_OPT_FILE as i32),
                 Box::new([(libcc2rs::stdout_unsafe()).into()]),
             )
-        }) == (1)) as i32)
-            != 0)
+        }) == (1))
     );
     assert!(
-        ((((unsafe {
+        ((unsafe {
             dispatch_0(
                 (opt_OPT_FILE as i32),
                 Box::new([((0 as *mut ::libc::c_void) as *mut ::libc::FILE).into()]),
             )
-        }) == (0)) as i32)
-            != 0)
+        }) == (0))
     );
     let mut head: node = node {
         data: 42,
         next: std::ptr::null_mut(),
     };
     assert!(
-        ((((unsafe {
+        ((unsafe {
             dispatch_0(
                 (opt_OPT_NODE as i32),
                 Box::new([(&mut head as *mut node).into()]),
             )
-        }) == (42)) as i32)
-            != 0)
+        }) == (42))
     );
     let mut outp: *mut node = (&mut head as *mut node);
     assert!(
-        ((((unsafe {
+        ((unsafe {
             dispatch_0(
                 (opt_OPT_NODE_OUT as i32),
                 Box::new([(&mut outp as *mut *mut node).into()]),
             )
-        }) == (2)) as i32)
-            != 0)
+        }) == (2))
     );
-    assert!(((((outp).is_null()) as i32) != 0));
+    assert!(((outp).is_null()));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

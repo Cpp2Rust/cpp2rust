@@ -18,23 +18,21 @@ unsafe fn main_0() -> i32 {
     let mut slen: libc::socklen_t =
         (::std::mem::size_of::<libc::sockaddr_storage>() as libc::socklen_t);
     assert!(
-        ((((libc::getsockname(
+        ((libc::getsockname(
             fd,
             ((&mut ssloc as *mut libc::sockaddr_storage) as *mut libc::sockaddr),
             (&mut slen as *mut libc::socklen_t)
-        )) == (-1_i32)) as i32)
-            != 0)
+        )) == (-1_i32))
     );
     let mut sin: ::libc::sockaddr_in = unsafe { std::mem::zeroed() };
     let mut inlen: libc::socklen_t =
         (::std::mem::size_of::<::libc::sockaddr_in>() as libc::socklen_t);
     assert!(
-        ((((libc::getsockname(
+        ((libc::getsockname(
             fd,
             ((&mut sin as *mut ::libc::sockaddr_in) as *mut libc::sockaddr),
             (&mut inlen as *mut libc::socklen_t)
-        )) == (-1_i32)) as i32)
-            != 0)
+        )) == (-1_i32))
     );
     return 0;
 }

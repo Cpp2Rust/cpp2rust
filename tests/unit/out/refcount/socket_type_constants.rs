@@ -11,8 +11,8 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((((libc::SOCK_STREAM == 1) as i32) != 0));
-    assert!((((libc::SOCK_DGRAM == 2) as i32) != 0));
+    assert!((libc::SOCK_STREAM == 1));
+    assert!((libc::SOCK_DGRAM == 2));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

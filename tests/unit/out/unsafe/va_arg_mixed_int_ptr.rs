@@ -11,9 +11,9 @@ pub unsafe fn mixed_args_0(mut count: i32, __args: Box<[VaArg]>) -> i32 {
     ap = __args.as_ptr();
     let mut total: i32 = 0;
     let mut i: i32 = 0;
-    'loop_: while ((((i) < (count)) as i32) != 0) {
+    'loop_: while ((i) < (count)) {
         let mut tag: i32 = ap.arg::<i32>();
-        if ((((tag) == (0)) as i32) != 0) {
+        if ((tag) == (0)) {
             total += ap.arg::<i32>();
         } else {
             let mut ptr: *mut i32 = ap.arg::<*mut i32>();
@@ -32,7 +32,7 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut x: i32 = 100;
     assert!(
-        ((((unsafe {
+        ((unsafe {
             mixed_args_0(
                 3,
                 Box::new([
@@ -44,23 +44,20 @@ unsafe fn main_0() -> i32 {
                     (20).into(),
                 ]),
             )
-        }) == (130)) as i32)
-            != 0)
+        }) == (130))
     );
     let mut y: i32 = 50;
     assert!(
-        ((((unsafe { mixed_args_0(1, Box::new([(1).into(), (&mut y as *mut i32).into(),])) })
-            == (50)) as i32)
-            != 0)
+        ((unsafe { mixed_args_0(1, Box::new([(1).into(), (&mut y as *mut i32).into(),])) })
+            == (50))
     );
     assert!(
-        ((((unsafe {
+        ((unsafe {
             mixed_args_0(
                 2,
                 Box::new([(0).into(), (5).into(), (0).into(), (3).into()]),
             )
-        }) == (8)) as i32)
-            != 0)
+        }) == (8))
     );
     return 0;
 }

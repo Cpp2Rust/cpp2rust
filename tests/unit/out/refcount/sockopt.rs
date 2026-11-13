@@ -38,32 +38,30 @@ fn main_0() -> i32 {
             }
         }
     };
-    assert!((((s >= 0) as i32) != 0));
+    assert!((s >= 0));
     let on: Value<i32> = Rc::new(RefCell::new(1));
     assert!(
-        (((libcc2rs::setsockopt_refcount(
+        (libcc2rs::setsockopt_refcount(
             s,
             libc::SOL_SOCKET,
             libc::SO_KEEPALIVE,
             (on.as_pointer()).to_any()
-        ) == 0) as i32)
-            != 0)
+        ) == 0)
     );
     assert!(
-        (((libcc2rs::setsockopt_refcount(
+        (libcc2rs::setsockopt_refcount(
             s,
             libc::IPPROTO_TCP,
             libc::TCP_NODELAY,
             (on.as_pointer()).to_any()
-        ) == 0) as i32)
-            != 0)
+        ) == 0)
     );
     let err: Value<i32> = Rc::new(RefCell::new(-1_i32));
     let len: Value<libc::socklen_t> = Rc::new(RefCell::new(
         (::std::mem::size_of::<i32>() as libc::socklen_t),
     ));
     assert!(
-        (((match ({ (err.as_pointer()).to_any() }, { (len.as_pointer()) },) {
+        (match ({ (err.as_pointer()).to_any() }, { (len.as_pointer()) },) {
             (mut __tmp_0, mut __tmp_1) => {
                 match (libc::SOL_SOCKET, libc::SO_ERROR) {
                     (::libc::SOL_SOCKET, ::libc::SO_ERROR) => {
@@ -90,11 +88,10 @@ fn main_0() -> i32 {
                     ),
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
-    assert!(({ ((((*err.borrow()) == 0) as i32) != 0) }));
-    assert!((((FdRegistry::close(s) == 0) as i32) != 0));
+    assert!(({ ((*err.borrow()) == 0) }));
+    assert!((FdRegistry::close(s) == 0));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

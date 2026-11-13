@@ -14,7 +14,7 @@ fn main_0() -> i32 {
     let mut visits: i32 = 0;
     let mut tail: i32 = 0;
     let mut i: i32 = 0;
-    'loop_: while (((i < 3) as i32) != 0) {
+    'loop_: while (i < 3) {
         goto_block!({
             '__entry: {}
             'outer: {
@@ -23,7 +23,7 @@ fn main_0() -> i32 {
                     goto_block!({
                         '__entry: {}
                         'inner: {
-                            if (((i == 0) as i32) != 0) {
+                            if (i == 0) {
                                 break;
                             }
                         }
@@ -34,12 +34,12 @@ fn main_0() -> i32 {
         });
         i.postfix_inc();
     }
-    assert!((((visits == 1) as i32) != 0));
-    assert!((((tail == 0) as i32) != 0));
+    assert!((visits == 1));
+    assert!((tail == 0));
     visits = 0;
     tail = 0;
     let mut i: i32 = 0;
-    'loop_: while (((i < 3) as i32) != 0) {
+    'loop_: while (i < 3) {
         switch!(match i {
             __v if __v == 0 => {
                 {
@@ -51,7 +51,7 @@ fn main_0() -> i32 {
                                 goto_block!({
                                     '__entry: {}
                                     'switch_inner: {
-                                        if (((i == 0) as i32) != 0) {
+                                        if (i == 0) {
                                             break;
                                         }
                                     }
@@ -73,8 +73,8 @@ fn main_0() -> i32 {
         });
         i.postfix_inc();
     }
-    assert!((((visits == 1) as i32) != 0));
-    assert!((((tail == 110) as i32) != 0));
+    assert!((visits == 1));
+    assert!((tail == 110));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

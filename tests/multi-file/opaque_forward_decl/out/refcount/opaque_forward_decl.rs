@@ -25,8 +25,8 @@ fn main_0() -> i32 {
         x: 42,
     }));
     ({ touch_0((c.as_pointer())) });
-    assert!(({ ((({ (*c.borrow()).x } == 42) as i32) != 0) }));
-    assert!(({ (((({ (*c.borrow()).p.clone() }).is_null()) as i32) != 0) }));
+    assert!(({ ({ (*c.borrow()).x } == 42) }));
+    assert!(({ (({ (*c.borrow()).p.clone() }).is_null()) }));
     return 0;
 }
 pub fn touch_0(mut c: Ptr<container>) {

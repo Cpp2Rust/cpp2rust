@@ -37,28 +37,27 @@ unsafe fn main_0() -> i32 {
     ) as *mut node);
     (*n).len = tail_size;
     let mut i: usize = 0_usize;
-    'loop_: while ((((i) < (tail_size)) as i32) != 0) {
+    'loop_: while ((i) < (tail_size)) {
         (*(*n).x.bytes.as_mut_ptr().add((i) as usize)) = (((i) & (255_usize)) as u8);
         i.postfix_inc();
     }
     let mut i: usize = 0_usize;
-    'loop_: while ((((i) < (tail_size)) as i32) != 0) {
+    'loop_: while ((i) < (tail_size)) {
         assert!(
-            (((((*(*n).x.bytes.as_mut_ptr().add((i) as usize)) as i32)
-                == ((((i) & (255_usize)) as u8) as i32)) as i32)
-                != 0)
+            (((*(*n).x.bytes.as_mut_ptr().add((i) as usize)) as i32)
+                == ((((i) & (255_usize)) as u8) as i32))
         );
         i.postfix_inc();
     }
     let mut p: *mut u8 = ((*n).x.bytes.as_mut_ptr().add((10) as usize));
-    assert!((((((*p) as i32) == (10)) as i32) != 0));
+    assert!((((*p) as i32) == (10)));
     (*p) = 170_u8;
-    assert!((((((*(*n).x.bytes.as_mut_ptr().add((10) as usize)) as i32) == (170)) as i32) != 0));
+    assert!((((*(*n).x.bytes.as_mut_ptr().add((10) as usize)) as i32) == (170)));
     (*n).pos = 20_usize;
     let mut q: *mut u8 = ((*n).x.bytes.as_mut_ptr().add(((*n).pos) as usize));
-    assert!((((((*q) as i32) == (20)) as i32) != 0));
+    assert!((((*q) as i32) == (20)));
     (*q) = 187_u8;
-    assert!((((((*q) as i32) == (187)) as i32) != 0));
+    assert!((((*q) as i32) == (187)));
     libcc2rs::free_unsafe((n as *mut ::libc::c_void));
     return 0;
 }
