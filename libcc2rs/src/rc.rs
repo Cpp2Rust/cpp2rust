@@ -562,9 +562,11 @@ impl<T> Ptr<T> {
 
     #[inline]
     pub fn offset(&self, offset: impl TryInto<isize>) -> Self {
+        // Compute the offset before cloning kind, as it may panic. Otherwise,
+        // the optimizer can't remove the clone. Same in to_last/to_end.
         Self {
-            kind: self.kind.clone(),
             offset: self.offset_by(offset),
+            kind: self.kind.clone(),
         }
     }
 
@@ -580,8 +582,8 @@ impl<T> Ptr<T> {
             return self.clone();
         }
         Self {
-            kind: self.kind.clone(),
             offset: self.len().wrapping_sub(1).wrapping_mul(self.elem_step()),
+            kind: self.kind.clone(),
         }
     }
 
@@ -591,8 +593,8 @@ impl<T> Ptr<T> {
             return self.offset(1);
         }
         Self {
-            kind: self.kind.clone(),
             offset: self.len().wrapping_mul(self.elem_step()),
+            kind: self.kind.clone(),
         }
     }
 
