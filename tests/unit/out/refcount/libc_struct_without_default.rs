@@ -82,7 +82,7 @@ fn main_0() -> i32 {
     assert!(((elem!(field_ref!(ud.as_pointer(), a).decay(), 0_usize).read()) == 3));
     assert!(({ ((*ud.borrow()).v.len() == 0_usize) }));
     let mut filt: FieldIsLibcType = <FieldIsLibcType>::default();
-    filt.addr.sa_family = (2 as libc::sa_family_t);
+    filt.addr.sa_family = 2_u16;
     assert!(((filt.addr.sa_family as i32) == 2));
     return 0;
 }
