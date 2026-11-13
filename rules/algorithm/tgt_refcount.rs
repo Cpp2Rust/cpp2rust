@@ -107,16 +107,19 @@ fn f12<T1: CppInputIterator<T2>, T2: Clone + ByteRepr>(a0: T1, a1: T1, a2: T2) {
     }
 }
 
-fn f13<T1: CppInputIterator<i8>>(a0: T1, a1: T1, a2: &mut ::std::fs::File) -> ::std::fs::File {
+fn f13<T1: CppInputIterator<i8>>(
+    a0: T1,
+    a1: T1,
+    a2: Ptr<libcc2rs::CppStream>,
+) -> Ptr<libcc2rs::CppStream> {
     let mut __it = a0;
-    let __out = &mut *a2;
     let mut __bytes: Vec<u8> = Vec::new();
     while __it != a1 {
         __bytes.push(__it.iter_deref().read() as u8);
         __it.iter_inc();
     }
-    __out.write_all(&__bytes);
-    __out.try_clone().unwrap()
+    a2.write_all(&__bytes);
+    a2
 }
 
 fn f14<T1: Clone + ByteRepr, T2>(a0: Ptr<T1>, a1: Ptr<T1>, a2: T2)

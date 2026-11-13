@@ -140,11 +140,10 @@ fn f2(a0: Vec<i8>) -> usize {
     (a0.len() - 1)
 }
 
-fn f8(a0: std::fs::File, a1: std::fs::File) -> Vec<i8> {
+fn f8(a0: Ptr<libcc2rs::CppStream>, a1: Ptr<libcc2rs::CppStream>) -> Vec<i8> {
     use std::io::Read;
     let mut __bytes: Vec<u8> = Vec::new();
-    let mut __f = &a0;
-    __f.read_to_end(&mut __bytes)
+    a0.with_mut(|__f| __f.read_to_end(&mut __bytes))
         .expect("couldn't read the file");
     __bytes.push(0);
     CChar::from_byte_vec(__bytes)

@@ -12,13 +12,13 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let mut cond: bool = true;
-    let mut os1: Ptr<std::fs::File> = if cond {
+    let mut os1: Ptr<libcc2rs::CppStream> = if cond {
         (libcc2rs::cout())
     } else {
         (libcc2rs::cerr())
     };
     write!(os1, "hello\n",);
-    let os2: Ptr<std::fs::File> = if cond {
+    let os2: Ptr<libcc2rs::CppStream> = if cond {
         (libcc2rs::cout())
     } else {
         (libcc2rs::cerr())
