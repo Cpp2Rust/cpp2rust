@@ -8,7 +8,7 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn logf_impl_0(mut fmt: Ptr<i8>, ap: Ptr<VaArg>) -> i32 {
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(ap));
-    &(fmt);
+    ();
     return ({ (*ap.borrow_mut()).arg::<i32>() } + { (*ap.borrow_mut()).arg::<i32>() });
 }
 pub fn logf_1(fmt: Ptr<i8>, __args: Box<[VaArg]>) -> i32 {

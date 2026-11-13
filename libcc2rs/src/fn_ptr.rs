@@ -507,6 +507,9 @@ impl<T: FnSig> ErasedPtr for FnPtr<T> {
     fn as_bytes(&self) -> Ptr<u8> {
         panic!("byte view not supported on fn pointer");
     }
+    fn byte_address(&self) -> usize {
+        panic!("byte view not supported on fn pointer");
+    }
     fn as_any(&self) -> &dyn Any {
         self
     }

@@ -10,8 +10,8 @@ pub unsafe fn fopen_0(
     mut path: *const libc::c_char,
     mut mode: *const libc::c_char,
 ) -> *mut ::libc::FILE {
-    &(path);
-    &(mode);
+    ();
+    ();
     return std::ptr::null_mut();
 }
 pub fn main() {

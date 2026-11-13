@@ -15,13 +15,8 @@ fn main_0() -> i32 {
         Box::new([1, 2, 3]),
         Box::new([4, 5, 6]),
     ])));
-    return ((((((rows.as_pointer() as Ptr<Box<[i32]>>)
-        .offset(1)
-        .as_pointer()) as Ptr<i32>)
-        - (((((rows.as_pointer() as Ptr<Box<[i32]>>)
-            .offset(0)
-            .as_pointer()) as Ptr<i32>)
-            .offset(0))
-        .offset((2) as isize))) as i64) as i32);
+    return ((((((rows.as_pointer() as Ptr<Box<[i32]>>).offset(1).decay()) as Ptr<i32>)
+        - (((((rows.as_pointer() as Ptr<Box<[i32]>>).offset(0).decay()) as Ptr<i32>).offset(0))
+            .offset((2) as isize))) as i64) as i32);
 }
 pub fn __cpp2rust_init_globals() {}

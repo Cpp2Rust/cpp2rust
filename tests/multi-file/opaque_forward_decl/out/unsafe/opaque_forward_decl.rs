@@ -29,7 +29,7 @@ unsafe fn main_0() -> i32 {
     return 0;
 }
 pub unsafe fn touch_0(mut c: *mut container) {
-    &((*c).p);
+    ();
 }
 #[derive(Clone, Copy, Default, VaArg, FnPtrArg)]
 pub struct opaque;

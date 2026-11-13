@@ -23,7 +23,7 @@ unsafe fn main_0() -> i32 {
         p: std::ptr::null_mut(),
         x: 42,
     };
-    &(c.p);
+    ();
     return ((c.x) - (42));
 }
 #[derive(Clone, Copy, Default, VaArg, FnPtrArg)]

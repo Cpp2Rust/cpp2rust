@@ -187,7 +187,7 @@ fn main_0() -> i32 {
     {
         let cs: Value<S> = Rc::new(RefCell::new(<S>::default()));
         let _dtor_cs = std::mem::DropGuard::new(cs.clone(), |__p| __p.as_pointer().destructor());
-        &(*cs.borrow_mut());
+        ();
     }
     assert!((global_0.with(|rc| *rc.borrow()) == (before + 1)));
     return 0;

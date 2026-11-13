@@ -30,7 +30,7 @@ fn main_0() -> i32 {
     return 0;
 }
 pub fn touch_0(mut c: Ptr<container>) {
-    &(c.with(|__s| __s.p.clone()));
+    ();
 }
 #[derive(Clone, Copy, Default, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(1)]

@@ -2619,6 +2619,10 @@ bool Converter::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
   auto type = expr->getTypeAsWritten();
   auto *sub_expr = expr->getSubExpr();
   if (type->isVoidType()) {
+    if (!sub_expr->HasSideEffects(ctx_)) {
+      EmitFresh("()");
+      return false;
+    }
     StrCat(token::kRef);
     PushParen paren(*this);
     PushExprKind push(*this, ExprKind::Void);

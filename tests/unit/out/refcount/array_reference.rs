@@ -147,28 +147,22 @@ fn main_0() -> i32 {
     let mut p: Ptr<Box<[i32]>> = (rows.as_pointer() as Ptr<Box<[i32]>>);
     p.prefix_inc();
     assert!(
-        ({ ((p).as_pointer() as Ptr::<i32>).clone() } == {
-            ((((rows.as_pointer() as Ptr<Box<[i32]>>)
-                .offset(1)
-                .as_pointer()) as Ptr<i32>)
-                .offset(0))
+        ({ ((p).decay() as Ptr::<i32>).clone() } == {
+            ((((rows.as_pointer() as Ptr<Box<[i32]>>).offset(1).decay()) as Ptr<i32>).offset(0))
         })
     );
-    let r: Ptr<i32> = ((p).as_pointer()).clone();
+    let r: Ptr<i32> = ((p).decay()).clone();
     assert!(((elem!((r), 0).read()) == 4));
     assert!((({ sum_2((r).clone(),) }) == 15));
-    assert!((({ sum_2(((p).as_pointer()).clone(),) }) == 15));
+    assert!((({ sum_2(((p).decay()).clone(),) }) == 15));
     let mut q: Ptr<Box<[i32]>> = (rows.as_pointer() as Ptr<Box<[i32]>>);
-    assert!((({ sum_2(q.offset((1) as isize).as_pointer(),) }) == 15));
+    assert!((({ sum_2(q.offset((1) as isize).decay(),) }) == 15));
     assert!(
-        ({ (q.offset((1) as isize).as_pointer() as Ptr::<i32>) } == {
-            ((((rows.as_pointer() as Ptr<Box<[i32]>>)
-                .offset(1)
-                .as_pointer()) as Ptr<i32>)
-                .offset(0))
+        ({ (q.offset((1) as isize).decay() as Ptr::<i32>) } == {
+            ((((rows.as_pointer() as Ptr<Box<[i32]>>).offset(1).decay()) as Ptr<i32>).offset(0))
         })
     );
-    elem!((q.offset((1) as isize).as_pointer() as Ptr::<i32>), 2).write(8);
+    elem!((q.offset((1) as isize).decay() as Ptr::<i32>), 2).write(8);
     assert!(
         ({
             ((*rows.borrow())[(1) as usize][(2) as usize] == 8)
@@ -177,12 +171,11 @@ fn main_0() -> i32 {
     );
     (*rows.borrow_mut())[(0) as usize][(1) as usize] =
         { (*rows.borrow())[(0) as usize][(2) as usize] };
-    elem!((q.offset((1) as isize).as_pointer() as Ptr::<i32>), 0)
-        .write({ (elem!((q.offset((0) as isize).as_pointer() as Ptr::<i32>), 1).read()) });
+    elem!((q.offset((1) as isize).decay() as Ptr::<i32>), 0)
+        .write({ (elem!((q.offset((0) as isize).decay() as Ptr::<i32>), 1).read()) });
     {
-        let __rhs = { (elem!((q.offset((0) as isize).as_pointer() as Ptr::<i32>), 2).read()) };
-        elem!((q.offset((1) as isize).as_pointer() as Ptr::<i32>), 1)
-            .with_mut(|__v| *__v = *__v + __rhs)
+        let __rhs = { (elem!((q.offset((0) as isize).decay() as Ptr::<i32>), 2).read()) };
+        elem!((q.offset((1) as isize).decay() as Ptr::<i32>), 1).with_mut(|__v| *__v = *__v + __rhs)
     };
     assert!(
         ({
@@ -192,14 +185,9 @@ fn main_0() -> i32 {
         })
     );
     assert!(
-        ((((((rows.as_pointer() as Ptr<Box<[i32]>>)
-            .offset(1)
-            .as_pointer()) as Ptr<i32>)
-            .offset(2))
-            - ((((rows.as_pointer() as Ptr<Box<[i32]>>)
-                .offset(1)
-                .as_pointer()) as Ptr<i32>)
-                .offset(0))) as i64
+        ((((((rows.as_pointer() as Ptr<Box<[i32]>>).offset(1).decay()) as Ptr<i32>).offset(2))
+            - ((((rows.as_pointer() as Ptr<Box<[i32]>>).offset(1).decay()) as Ptr<i32>).offset(0)))
+            as i64
             == 2_i64)
     );
     let key: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([0, 4, 5, 6])));
@@ -209,7 +197,7 @@ fn main_0() -> i32 {
             .memcmp(
                 &((((kTable_14.with(|v| v.as_pointer()) as Ptr<Box<[i32]>>)
                     .offset(1)
-                    .as_pointer()) as Ptr::<i32>) as Ptr<i32>)
+                    .decay()) as Ptr::<i32>) as Ptr<i32>)
                     .to_any(),
                 ::std::mem::size_of::<[i32; 3]>()
             )
@@ -221,7 +209,7 @@ fn main_0() -> i32 {
             .memcmp(
                 &((((kTable_14.with(|v| v.as_pointer()) as Ptr<Box<[i32]>>)
                     .offset(0)
-                    .as_pointer()) as Ptr::<i32>) as Ptr<i32>)
+                    .decay()) as Ptr::<i32>) as Ptr<i32>)
                     .to_any(),
                 ::std::mem::size_of::<[i32; 3]>()
             )

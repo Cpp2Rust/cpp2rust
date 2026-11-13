@@ -2729,7 +2729,7 @@ void ConverterRefCount::ConvertArraySubscript(clang::Expr *base,
       }
 
       if (is_inner_boxed) {
-        StrCat(".as_pointer()");
+        StrCat(".decay()");
       }
     }
 
@@ -2818,7 +2818,7 @@ void ConverterRefCount::ConvertPointerSubscript(
   } else {
     ConvertPointerOffset(base, idx);
     if (expr->getType()->isArrayType()) {
-      StrCat(".as_pointer()");
+      StrCat(".decay()");
     }
   }
 }
@@ -2890,7 +2890,7 @@ void ConverterRefCount::ConvertDeref(clang::Expr *expr) {
   }
 
   if (isAddrOf() && pointee_type->isArrayType()) {
-    str = std::format("({}).as_pointer()", std::move(str));
+    str = std::format("({}).decay()", std::move(str));
   }
   StrCat(std::move(str));
 }

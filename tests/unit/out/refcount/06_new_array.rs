@@ -27,7 +27,7 @@ fn main_0() -> i32 {
         )));
         take_0(_p.as_pointer())
     });
-    &(c);
+    ();
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

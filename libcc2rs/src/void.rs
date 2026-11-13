@@ -8,6 +8,9 @@ use crate::reinterpret::ByteRepr;
 
 pub trait ErasedPtr: std::any::Any {
     fn as_bytes(&self) -> Ptr<u8>;
+    // The address of the byte that the pointer points to, which is the same
+    // for pointers of any type to the same object.
+    fn byte_address(&self) -> usize;
     fn as_any(&self) -> &dyn std::any::Any;
     fn equals(&self, other: &dyn ErasedPtr) -> bool;
     fn is_null(&self) -> bool;
@@ -33,12 +36,16 @@ where
         self.reinterpret_cast::<u8>()
     }
 
+    fn byte_address(&self) -> usize {
+        Ptr::byte_address(self)
+    }
+
     fn as_any(&self) -> &dyn std::any::Any {
         self
     }
 
     fn equals(&self, other: &dyn ErasedPtr) -> bool {
-        other.as_bytes() == self.as_bytes()
+        other.byte_address() == self.byte_address()
     }
 
     fn is_null(&self) -> bool {
@@ -178,6 +185,18 @@ mod tests {
         let any2 = Ptr::<i32>::null().to_any();
         let p3 = any2.reinterpret_cast::<f32>();
         assert!(p3.is_null());
+    }
+
+    #[test]
+    fn anyptr_eq_across_types() {
+        let p: Ptr<i32> = Ptr::alloc_array(vec![1, 2, 3].into_boxed_slice());
+        let bytes = p.reinterpret_cast::<u8>();
+        assert!(p.offset(1).to_any() == bytes.offset(4).to_any());
+        assert!(p.offset(1).to_any() != bytes.offset(3).to_any());
+        assert!(bytes.offset(8).reinterpret_cast::<u16>().to_any() == p.offset(2).to_any());
+        assert!(Ptr::<i32>::null().to_any() == Ptr::<u8>::null().to_any());
+        assert!(p.to_any() != Ptr::<i32>::null().to_any());
+        p.delete();
     }
 
     #[test]

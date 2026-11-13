@@ -7,8 +7,8 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn fopen_0(mut path: Ptr<i8>, mut mode: Ptr<i8>) -> Ptr<CFile> {
-    &(path);
-    &(mode);
+    ();
+    ();
     return Ptr::null();
 }
 pub fn main() {

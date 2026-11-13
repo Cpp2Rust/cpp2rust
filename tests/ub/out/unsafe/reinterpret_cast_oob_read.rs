@@ -16,7 +16,7 @@ unsafe fn main_0() -> i32 {
     let mut val: u32 = 67305985_u32;
     let mut bytes: *mut u8 = ((&mut val as *mut u32) as *mut u8);
     let mut x: u8 = (*bytes.offset((4) as isize));
-    &(x);
+    ();
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

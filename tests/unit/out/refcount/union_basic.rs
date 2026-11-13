@@ -72,7 +72,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let u: Value<basic> = Rc::new(RefCell::new(<basic>::default()));
     let e: Value<empty> = Rc::new(RefCell::new(<empty>::default()));
-    &(*e.borrow_mut());
+    ();
     basic::i(u.as_pointer()).write(42);
     assert!(((basic::i(u.as_pointer()).read()) == 42));
     basic::f(u.as_pointer()).write(3.14_f32);

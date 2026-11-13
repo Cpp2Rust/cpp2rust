@@ -1554,7 +1554,7 @@ mod tests {
         let nums: Ptr<i32> = field_ptr!(s, nums).decay();
         nums.sort(3);
         assert_eq!(s.borrow().nums, vec![1, 2, 3]);
-        assert_eq!(nums.collect::<Vec<_>>().len(), 3);
+        assert_eq!(nums.len(), 3);
     }
 
     #[test]

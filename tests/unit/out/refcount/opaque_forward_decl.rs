@@ -24,7 +24,7 @@ fn main_0() -> i32 {
         p: Ptr::<opaque>::null(),
         x: 42,
     };
-    &(c.p);
+    ();
     return (c.x - 42);
 }
 #[derive(Clone, Copy, Default, ByteRepr, VaArg, FnPtrArg)]

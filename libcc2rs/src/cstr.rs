@@ -100,12 +100,8 @@ impl<T: CChar> fmt::Display for Ptr<T> {
         match &self.kind {
             PtrKind::Null => write!(f, "NULL"),
             _ => {
-                for value in self {
-                    let ch = value.read().to_byte();
-                    if ch == 0 {
-                        break;
-                    }
-                    write!(f, "{}", char::from(ch))?;
+                for ch in self.to_c_string_iterator() {
+                    write!(f, "{}", char::from(ch.to_byte()))?;
                 }
                 Ok(())
             }
@@ -192,16 +188,12 @@ impl<T: CChar> Ptr<T> {
             return;
         }
         let mut dst = self.clone();
-        let mut i: usize = 0;
-        for value in src {
-            if i >= len {
-                break;
-            }
-            dst.write(value.read());
+        let mut s = src.clone();
+        for _ in 0..len {
+            dst.write(s.read());
             dst += 1;
-            i += 1;
+            s += 1;
         }
-        assert_eq!(i, len, "ub: memcpy");
     }
 
     #[allow(clippy::explicit_counter_loop)]

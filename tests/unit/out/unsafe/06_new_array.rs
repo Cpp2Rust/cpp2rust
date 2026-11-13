@@ -51,7 +51,7 @@ unsafe fn main_0() -> i32 {
         .as_mut_ptr();
         take_0(&mut _p)
     });
-    &(c);
+    ();
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

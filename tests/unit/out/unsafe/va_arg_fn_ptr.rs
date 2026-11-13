@@ -40,9 +40,9 @@ pub unsafe fn not_supported_5(
     mut fn_: Option<unsafe fn(i32) -> i32>,
     mut extra: *mut ::libc::c_void,
 ) -> i32 {
-    &(ctx);
-    &(fn_);
-    &(extra);
+    ();
+    ();
+    ();
     return -3_i32;
 }
 pub fn main() {

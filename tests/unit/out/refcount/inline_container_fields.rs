@@ -192,7 +192,7 @@ fn main_0() -> i32 {
                     sum_0(
                         (((array_field_ptr!(s.as_pointer(), grid) as Ptr<Box<[i32]>>)
                             .offset(1)
-                            .as_pointer()) as Ptr<i32>),
+                            .decay()) as Ptr<i32>),
                         3,
                     )
                 }) == 12)

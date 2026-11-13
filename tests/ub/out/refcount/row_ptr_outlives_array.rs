@@ -11,9 +11,7 @@ pub fn second_row_0() -> Ptr<i32> {
         Box::new([1, 2, 3]),
         Box::new([4, 5, 6]),
     ])));
-    return (((rows.as_pointer() as Ptr<Box<[i32]>>)
-        .offset(1)
-        .as_pointer()) as Ptr<i32>);
+    return (((rows.as_pointer() as Ptr<Box<[i32]>>).offset(1).decay()) as Ptr<i32>);
 }
 pub fn main() {
     __cpp2rust_init_globals();

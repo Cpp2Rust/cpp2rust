@@ -521,6 +521,21 @@ impl<T> Ptr<T> {
         self.kind.address().wrapping_add(self.byte_offset())
     }
 
+    // The address of the object that the pointer points to in the C++ layout
+    // of its allocation, which reinterpreted views of the allocation share,
+    // e.g., to compare pointers of different types as void*.
+    pub(crate) fn byte_address(&self) -> usize
+    where
+        T: ByteRepr,
+    {
+        let offset = match &self.kind {
+            PtrKind::Null => return 0,
+            PtrKind::Reinterpreted(_) | PtrKind::Field(_, _, FieldShape::Single) => self.offset,
+            _ => self.offset.wrapping_mul(T::byte_size()),
+        };
+        self.kind.address().wrapping_add(offset)
+    }
+
     // Normalize offset to bytes for cross-variant comparison.
     #[inline]
     fn byte_offset(&self) -> usize {
@@ -1240,38 +1255,6 @@ impl<T: std::cmp::Ord + 'static> Ptr<T> {
     }
 }
 
-impl<T> IntoIterator for &Ptr<T>
-where
-    T: Clone,
-{
-    type Item = Ptr<T>;
-    type IntoIter = Ptr<T>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.clone()
-    }
-}
-
-impl<T> Iterator for Ptr<T> {
-    type Item = Ptr<T>;
-    fn next(&mut self) -> Option<Self::Item> {
-        if self.get_offset() < self.len() {
-            let value = self.clone();
-            self.offset += self.elem_step();
-            Some(value)
-        } else {
-            None
-        }
-    }
-
-    // Lets collections built from the iterator (e.g. `std::string`'s
-    // constructors) allocate their storage once instead of growing it.
-    fn size_hint(&self) -> (usize, Option<usize>) {
-        let remaining = self.len().saturating_sub(self.get_offset());
-        (remaining, Some(remaining))
-    }
-}
-
 impl<T> Sub for Ptr<T> {
     type Output = isize;
     fn sub(self, other: Self) -> Self::Output {
@@ -1428,13 +1411,6 @@ impl<T> AsPointer<T> for Option<Rc<RefCell<Box<[T]>>>> {
     }
 }
 
-impl<T> AsPointer<Vec<T>> for Ptr<Vec<T>> {
-    #[inline]
-    fn as_pointer(&self) -> Ptr<Vec<T>> {
-        self.clone()
-    }
-}
-
 impl<T: 'static> Ptr<Vec<T>> {
     #[inline]
     pub fn decay(&self) -> Ptr<T> {
@@ -1464,20 +1440,6 @@ impl<T: 'static> Ptr<Vec<T>> {
             },
             _ => panic!("ub: invalid decay"),
         }
-    }
-}
-
-impl<T> AsPointer<Box<[T]>> for Ptr<Box<[T]>> {
-    #[inline]
-    fn as_pointer(&self) -> Ptr<Box<[T]>> {
-        self.clone()
-    }
-}
-
-impl<T: 'static> AsPointer<T> for Ptr<Box<[T]>> {
-    #[inline]
-    fn as_pointer(&self) -> Ptr<T> {
-        self.decay()
     }
 }
 

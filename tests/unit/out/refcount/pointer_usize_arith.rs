@@ -79,10 +79,8 @@ fn main_0() -> i32 {
         Box::new([4, 5, 6, 7]),
         Box::new([8, 9, 10, 11]),
     ])));
-    let mut row1: Ptr<i32> = ((((matrix.as_pointer() as Ptr<Box<[i32]>>)
-        .offset(1)
-        .as_pointer()) as Ptr<i32>)
-        .offset(0));
+    let mut row1: Ptr<i32> =
+        ((((matrix.as_pointer() as Ptr<Box<[i32]>>).offset(1).decay()) as Ptr<i32>).offset(0));
     assert!(((elem!(row1, 2).read()) == 6));
     let mut back: Ptr<i32> = end.offset(-((1) as isize));
     assert!(((back.read()) == 17));
