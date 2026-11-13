@@ -9,7 +9,7 @@ use std::{
 };
 
 use crate::field::{Root, upgrade as upgrade_root};
-use crate::rc::{Ptr, SliceParent};
+use crate::rc::{Ptr, SliceParent, reclaim};
 
 pub trait ByteRepr: 'static {
     fn byte_size() -> usize
@@ -297,12 +297,7 @@ impl OriginalAlloc {
         let Storage::Alloc(weak) = &self.storage else {
             panic!("ub: invalid delete");
         };
-        assert_eq!(Weak::strong_count(weak), 1, "ub: invalid delete");
-        unsafe {
-            let strong = weak.upgrade().expect("ub: dangling pointer");
-            Rc::from_raw(Rc::as_ptr(&strong));
-        }
-        assert_eq!(Weak::strong_count(weak), 0, "ub: double free");
+        drop(reclaim(weak, "ub: invalid delete"));
     }
 }
 

@@ -98,51 +98,32 @@ fn f29<T1: 'static, T2: 'static>(a0: Ptr<Map<T1, (Value<T1>, Value<T2>)>>) -> Bi
     a0.with(|__m: &Map<T1, (Value<T1>, Value<T2>)>| __m.begin())
 }
 
-fn f67<T1: CppLess + Clone + ByteRepr + 'static, T2: Default + Clone + ByteRepr + 'static>(
+fn f67<T1: CppLess + 'static, T2: 'static>(
     a0: Ptr<Map<T1, (Value<T1>, Value<T2>)>>,
     init: cpp_type!("typename std::map<T1, T2, T3, T4>::value_type", (Value<T1>, Value<T2>)),
 ) -> (Value<BidirectionalIterator<(Value<T1>, Value<T2>)>>, Value<bool>) {
     let __init = init;
-    let __key = __init.0.as_pointer();
-    let __inserted = a0.with(|__m: &Map<T1, (Value<T1>, Value<T2>)>| __m.get(&__key).is_none());
-    if __inserted {
-        Map::subscript(a0.clone(), __key.clone()).write(__init.1.borrow().clone());
-    }
-    (
-        Rc::new(RefCell::new(
-            a0.with(|__m: &Map<T1, (Value<T1>, Value<T2>)>| __m.find(&__key)),
-        )),
-        Rc::new(RefCell::new(__inserted)),
-    )
+    let (__it, __inserted) = Map::emplace(a0, &__init.0.as_pointer(), || __init);
+    (Rc::new(RefCell::new(__it)), Rc::new(RefCell::new(__inserted)))
 }
 
-fn f68<T1: CppLess + Clone + ByteRepr + 'static, T2: Default + Clone + ByteRepr + 'static>(
+fn f68<T1: CppLess + 'static, T2: 'static>(
     a0: Ptr<Map<T1, (Value<T1>, Value<T2>)>>,
     a1: BidirectionalIterator<(Value<T1>, Value<T2>)>,
     init: cpp_type!("typename std::map<T1, T2, T3, T4>::value_type", (Value<T1>, Value<T2>)),
 ) -> BidirectionalIterator<(Value<T1>, Value<T2>)> {
     let _ = a1;
     let __init = init;
-    let __key = __init.0.as_pointer();
-    if a0.with(|__m: &Map<T1, (Value<T1>, Value<T2>)>| __m.get(&__key).is_none()) {
-        Map::subscript(a0.clone(), __key.clone()).write(__init.1.borrow().clone());
-    }
-    a0.with(|__m: &Map<T1, (Value<T1>, Value<T2>)>| __m.find(&__key))
+    Map::emplace(a0, &__init.0.as_pointer(), || __init).0
 }
 
-fn f73<T1: CppLess + Clone + ByteRepr + 'static, T2: Default + ByteRepr + 'static>(
+fn f73<T1: CppLess + Clone + ByteRepr + 'static, T2: 'static>(
     a0: Ptr<Map<T1, (Value<T1>, Value<T2>)>>,
     a1: Ptr<T1>,
     init: T2,
 ) -> (Value<BidirectionalIterator<(Value<T1>, Value<T2>)>>, Value<bool>) {
-    let __inserted = a0.with(|__m: &Map<T1, (Value<T1>, Value<T2>)>| __m.get(&a1).is_none());
-    if __inserted {
-        Map::subscript(a0.clone(), a1.clone()).write(init);
-    }
-    (
-        Rc::new(RefCell::new(
-            a0.with(|__m: &Map<T1, (Value<T1>, Value<T2>)>| __m.find(&a1)),
-        )),
-        Rc::new(RefCell::new(__inserted)),
-    )
+    let (__it, __inserted) = Map::emplace(a0, &a1, || {
+        (Rc::new(RefCell::new(a1.read())), Rc::new(RefCell::new(init)))
+    });
+    (Rc::new(RefCell::new(__it)), Rc::new(RefCell::new(__inserted)))
 }

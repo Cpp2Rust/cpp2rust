@@ -375,19 +375,13 @@ impl<T> Eq for PtrKind<T> {}
 
 impl<T> PartialEq for PtrKind<T> {
     fn eq(&self, other: &Self) -> bool {
-        match (self, other) {
-            (PtrKind::Null, PtrKind::Null) => true,
-            _ => self.address() == other.address(),
-        }
+        self.address() == other.address()
     }
 }
 
 impl<T> PartialOrd for PtrKind<T> {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        match (self, other) {
-            (PtrKind::Null, PtrKind::Null) => Some(std::cmp::Ordering::Equal),
-            _ => self.address().partial_cmp(&other.address()),
-        }
+        self.address().partial_cmp(&other.address())
     }
 }
 
@@ -481,30 +475,9 @@ impl<T> Ptr<T> {
     #[inline]
     pub fn delete(&self) {
         match &self.kind {
-            PtrKind::HeapSingle(weak) => {
-                assert_eq!(Weak::strong_count(weak), 1, "ub: invalid delete");
-                unsafe {
-                    let strong = weak.upgrade().expect("ub: dangling pointer");
-                    Rc::from_raw(Rc::as_ptr(&strong));
-                }
-                assert_eq!(Weak::strong_count(weak), 0, "ub: double free");
-            }
-            PtrKind::HeapArray(weak) => {
-                assert_eq!(Weak::strong_count(weak), 1, "ub: invalid delete");
-                unsafe {
-                    let strong = weak.upgrade().expect("ub: dangling pointer");
-                    Rc::from_raw(Rc::as_ptr(&strong));
-                }
-                assert_eq!(Weak::strong_count(weak), 0, "ub: double free");
-            }
-            PtrKind::HeapVec(weak) => {
-                assert_eq!(Weak::strong_count(weak), 1, "ub: invalid delete");
-                unsafe {
-                    let strong = weak.upgrade().expect("ub: dangling pointer");
-                    Rc::from_raw(Rc::as_ptr(&strong));
-                }
-                assert_eq!(Weak::strong_count(weak), 0, "ub: double free");
-            }
+            PtrKind::HeapSingle(weak) => drop(reclaim(weak, "ub: invalid delete")),
+            PtrKind::HeapArray(weak) => drop(reclaim(weak, "ub: invalid delete")),
+            PtrKind::HeapVec(weak) => drop(reclaim(weak, "ub: invalid delete")),
             PtrKind::Reinterpreted(data) => data.alloc.delete(),
             PtrKind::Null => {}
             _ => panic!("ub: invalid delete"),
@@ -578,25 +551,7 @@ impl<T> Ptr<T> {
 
     #[inline]
     pub fn is_empty(&self) -> bool {
-        match &self.kind {
-            PtrKind::Null => true,
-            PtrKind::StackSingle(_)
-            | PtrKind::HeapSingle(_)
-            | PtrKind::Field(_, _, FieldShape::Single) => false,
-            PtrKind::StackVec(weak) | PtrKind::HeapVec(weak) => weak
-                .upgrade()
-                .expect("ub: dangling pointer")
-                .borrow()
-                .is_empty(),
-            PtrKind::Nested(parent) => parent.borrow_slice(&parent.root()).is_empty(),
-            PtrKind::StackArray(weak) | PtrKind::HeapArray(weak) => weak
-                .upgrade()
-                .expect("ub: dangling pointer")
-                .borrow()
-                .is_empty(),
-            PtrKind::Field(..) => self.len() == 0,
-            PtrKind::Reinterpreted(data) => self.offset >= data.alloc.total_byte_len(),
-        }
+        self.len() == 0
     }
 
     #[inline]
@@ -975,6 +930,17 @@ impl<T> Ptr<T> {
             f(&T::from_bytes(buf))
         })
     }
+}
+
+// Takes back the reference to a heap allocation that Ptr::alloc leaked, which
+// must be its only one, to free the allocation or to own it.
+#[track_caller]
+pub(crate) fn reclaim<A: ?Sized>(weak: &Weak<A>, msg: &str) -> Rc<A> {
+    assert_eq!(Weak::strong_count(weak), 1, "{msg}");
+    let strong = weak.upgrade().unwrap();
+    // SAFETY: the reference that Ptr::alloc leaked is the one counted above.
+    drop(unsafe { Rc::from_raw(Rc::as_ptr(&strong)) });
+    strong
 }
 
 #[cold]
@@ -1486,14 +1452,7 @@ impl<T> ToOwnedOption<T, T> for Ptr<T> {
             PtrKind::Null => None,
             PtrKind::HeapSingle(ref weak) => {
                 assert_eq!(self.offset, 0, "ub: invalid offset");
-                assert_eq!(Weak::strong_count(weak), 1, "ub: invalid pointer");
-                let strong = weak.upgrade().expect("ub: dangling pointer");
-                // Delete the leaked reference
-                unsafe {
-                    Rc::from_raw(Rc::as_ptr(&strong));
-                }
-                assert_eq!(Rc::strong_count(&strong), 1, "wrong refs");
-                Some(strong)
+                Some(reclaim(weak, "ub: invalid pointer"))
             }
             PtrKind::StackSingle(_) | PtrKind::StackArray(_) => {
                 panic!("Can't own a stack variable")
@@ -1515,14 +1474,7 @@ impl<T> ToOwnedOption<T, Box<[T]>> for Ptr<T> {
             PtrKind::Null => None,
             PtrKind::HeapArray(ref weak) => {
                 assert_eq!(self.offset, 0, "ub: invalid offset");
-                assert_eq!(Weak::strong_count(weak), 1, "ub: invalid pointer");
-                let strong = weak.upgrade().expect("ub: dangling pointer");
-                // Delete the leaked reference
-                unsafe {
-                    Rc::from_raw(Rc::as_ptr(&strong));
-                }
-                assert_eq!(Rc::strong_count(&strong), 1, "wrong refs");
-                Some(strong)
+                Some(reclaim(weak, "ub: invalid pointer"))
             }
             PtrKind::StackSingle(_) | PtrKind::StackArray(_) => {
                 panic!("Can't own a stack variable")
@@ -1539,41 +1491,20 @@ impl<T> ToOwnedOption<T, Box<[T]>> for Ptr<T> {
 
 impl<T> fmt::Debug for Ptr<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let addr = match &self.kind {
-            PtrKind::Null => 0,
-            PtrKind::StackSingle(w) | PtrKind::HeapSingle(w) => {
-                (Weak::as_ptr(w) as usize).wrapping_add(self.byte_offset())
-            }
-            PtrKind::StackArray(w) | PtrKind::HeapArray(w) => {
-                (Weak::as_ptr(w) as usize).wrapping_add(self.byte_offset())
-            }
-            PtrKind::StackVec(w) | PtrKind::HeapVec(w) => {
-                (Weak::as_ptr(w) as usize).wrapping_add(self.byte_offset())
-            }
-            PtrKind::Nested(..) | PtrKind::Field(..) => {
-                self.kind.address().wrapping_add(self.byte_offset())
-            }
-            PtrKind::Reinterpreted(data) => data.alloc.address().wrapping_add(self.byte_offset()),
-        };
-        write!(f, "0x{:x}", addr)
+        write!(f, "0x{:x}", self.address())
     }
 }
 
 impl<T: 'static> ByteRepr for Ptr<T> {}
 
-impl<T: 'static> Ptr<T> {
+// Pointers have no integer representation.
+impl<T> Ptr<T> {
     pub fn to_int(&self) -> usize {
-        with_scratch(Self::byte_size(), |buf| {
-            self.to_bytes(buf);
-            usize::from_bytes(&buf[..std::mem::size_of::<usize>()])
-        })
+        panic!("pointer to integer cast is not supported")
     }
 
-    pub fn from_int(value: usize) -> Self {
-        with_scratch(Self::byte_size(), |buf| {
-            value.to_bytes(&mut buf[..std::mem::size_of::<usize>()]);
-            Self::from_bytes(buf)
-        })
+    pub fn from_int(_value: usize) -> Self {
+        panic!("integer to pointer cast is not supported")
     }
 }
 

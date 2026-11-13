@@ -157,13 +157,14 @@ impl AnyPtr {
 
 impl ByteRepr for AnyPtr {}
 
+// Pointers have no integer representation.
 impl AnyPtr {
     pub fn to_int(&self) -> usize {
-        self.reinterpret_cast::<u8>().to_int()
+        panic!("pointer to integer cast is not supported")
     }
 
-    pub fn from_int(value: usize) -> Self {
-        Ptr::<u8>::from_int(value).to_any()
+    pub fn from_int(_value: usize) -> Self {
+        panic!("integer to pointer cast is not supported")
     }
 }
 

@@ -252,6 +252,20 @@ impl<K: CppLess + 'static, V: 'static> Map<K, Entry<K, V>> {
         })
     }
 
+    // emplace and try_emplace: inserts the entry that `entry` makes, unless
+    // the map has `key`, and returns an iterator to the entry with the key
+    // and whether it was inserted.
+    pub fn emplace(
+        map: Ptr<Self>,
+        key: &Ptr<K>,
+        entry: impl FnOnce() -> Entry<K, V>,
+    ) -> (BidirectionalIterator<Entry<K, V>>, bool) {
+        map.with_mut(|map| match map.search(key) {
+            Ok(node) => (BidirectionalIterator::Map(node), false),
+            Err(prev) => (BidirectionalIterator::Map(map.link_after(prev, entry())), true),
+        })
+    }
+
     pub fn erase(
         map: Ptr<Self>,
         it: &BidirectionalIterator<Entry<K, V>>,
@@ -493,6 +507,16 @@ impl<K: Ord, V> UnsafeMap<K, (K, V)> {
         match self.search(unsafe { &*key }) {
             Ok(node) => Self::mapped(node),
             Err(prev) => Self::mapped(self.link_after(prev, (new_key(key), V::default()))),
+        }
+    }
+
+    // emplace and try_emplace: inserts the entry, unless the map has its key,
+    // and returns an iterator to the entry with the key and whether it was
+    // inserted.
+    pub fn emplace(&mut self, entry: (K, V)) -> (UnsafeBidirectionalIterator<(K, V)>, bool) {
+        match self.search(&entry.0) {
+            Ok(node) => (UnsafeBidirectionalIterator::Map(node), false),
+            Err(prev) => (UnsafeBidirectionalIterator::Map(self.link_after(prev, entry)), true),
         }
     }
 
