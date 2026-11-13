@@ -1,4 +1,5 @@
 // panic-ub: refcount
+// nondet-result: unsafe
 
 #include <cassert>
 

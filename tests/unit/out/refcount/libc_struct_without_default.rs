@@ -78,10 +78,12 @@ fn main_0() -> i32 {
     (*st.borrow_mut()).st_size = (1024 as ::libc::off_t);
     assert!(({ ({ (*st.borrow()).st_size } == (1024 as ::libc::off_t)) }));
     let ud: Value<UserDefined> = Rc::new(RefCell::new(<UserDefined>::default()));
-    assert!(((elem!(field_ref!(ud.as_pointer(), a).decay(), 0_usize).read()) == 0));
+    elem!(field_ref!(ud.as_pointer(), a).decay(), 0_usize).write(3);
+    assert!(((elem!(field_ref!(ud.as_pointer(), a).decay(), 0_usize).read()) == 3));
     assert!(({ ((*ud.borrow()).v.len() == 0_usize) }));
     let mut filt: FieldIsLibcType = <FieldIsLibcType>::default();
-    assert!(((filt.addr.sa_family as i32) == 0));
+    filt.addr.sa_family = (2 as libc::sa_family_t);
+    assert!(((filt.addr.sa_family as i32) == 2));
     return 0;
 }
 pub trait UserDefinedImpl {

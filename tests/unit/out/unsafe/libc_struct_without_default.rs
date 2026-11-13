@@ -80,10 +80,12 @@ unsafe fn main_0() -> i32 {
     st.st_size = (1024 as ::libc::off_t);
     assert!(((st.st_size) == (1024 as ::libc::off_t)));
     let mut ud: UserDefined = <UserDefined>::default();
-    assert!(((ud.a[(0_usize)]) == (0)));
+    ud.a[(0_usize)] = 3;
+    assert!(((ud.a[(0_usize)]) == (3)));
     assert!(((ud.v.len()) == (0_usize)));
     let mut filt: FieldIsLibcType = <FieldIsLibcType>::default();
-    assert!(((filt.addr.sa_family as i32) == (0)));
+    filt.addr.sa_family = (2 as libc::sa_family_t);
+    assert!(((filt.addr.sa_family as i32) == (2)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

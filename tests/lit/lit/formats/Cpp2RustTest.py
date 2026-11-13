@@ -8,6 +8,7 @@ from .base import TestFormat
 from dataclasses import dataclass
 from pathlib import Path
 from typing import NamedTuple, Optional
+import atexit
 import difflib
 import functools
 import json
@@ -91,12 +92,12 @@ class TestContext:
     rust_result: Optional[RunResult] = None
 
     @classmethod
-    def setup(cls, test):
+    def setup(cls, test, model):
         cc_input = Path(test.getFilePath())
         is_multi = is_multi_file_test(cc_input)
-        model = test.getSourcePath().split("/")[-1]
         fname = cc_input.name if is_multi else cc_input.stem
-        tmp_dir = get_temp_dir() / f"{fname}-{model}"
+        # Tests in different directories may share a file name.
+        tmp_dir = get_temp_dir() / f"{cc_input.parent.name}-{fname}-{model}"
 
         shutil.rmtree(tmp_dir, ignore_errors=True)
         tmp_dir.mkdir(parents=True)
@@ -191,6 +192,8 @@ class TestContext:
 
     def build_cpp(self):
         exp = self.expectations
+        if self.cpp_bin is not None:
+            return None
         if self.build_dir is not None:
             cmd = ["cmake", "--build", str(self.build_dir)]
             _, _, rc = lit.util.executeCommand(cmd)
@@ -203,7 +206,6 @@ class TestContext:
         self.cpp_bin = self.tmp_dir / "cpp"
         cmd = [
             cc,
-            "-O3",
             "-o",
             str(self.cpp_bin),
             str(self.cc_input),
@@ -229,7 +231,9 @@ class TestContext:
             "-A",
             "warnings",
             "-C",
-            "opt-level=3",  # Equivalent to --release
+            "opt-level=0",
+            "-C",
+            "debug-assertions=off",  # On by default at opt-level=0
             "-C",
             "strip=symbols",
             "-C",
@@ -255,9 +259,10 @@ class TestContext:
     def run_cpp(self):
         if self.skip_run:
             return None
-        self.cpp_result = RunResult(
-            *lit.util.executeCommand(str(self.cpp_bin), str(self.tmp_dir))
-        )
+        if self.cpp_result is None:
+            self.cpp_result = RunResult(
+                *lit.util.executeCommand(str(self.cpp_bin), str(self.tmp_dir))
+            )
 
         if (
             not self.expectations.should_panic_ub
@@ -325,50 +330,69 @@ class TestContext:
             return (lit.Test.FAIL, "did not fail as expected")
         return (lit.Test.PASS, "")
 
-    def finalize(self, result):
+    def finalize(self):
         shutil.rmtree(self.tmp_dir, ignore_errors=True)
-        return result
 
 
 class Cpp2RustTest(TestFormat):
     def __init__(self):
         os.environ["RUSTFLAGS"] = "-Awarnings"
+        # Runs once, in the main lit process. Each test removes its own dirs,
+        # so this only removes the top-level dir.
+        atexit.register(shutil.rmtree, get_temp_dir(), ignore_errors=True)
 
     def execute(self, test, litConfig):
-        ctx = TestContext.setup(test)
-        result = (
-            ctx.translate()
-            or ctx.check_expected()
-            or ctx.build_cpp()
-            or ctx.build_rust()
-            or ctx.run_cpp()
-            or ctx.run_rust()
-            or ctx.compare()
-            or ctx.success_result()
-        )
-        return ctx.finalize(result)
-
-    def getTestsForPath(self, testSuite, path_in_suite, litConfig, localConfig):
-        source_path = testSuite.getSourcePath(path_in_suite)
+        contexts = []
+        results = []
         for model in MODELS:
-            yield lit.Test.Test(
-                testSuite, path_in_suite + (model,), localConfig, source_path
+            ctx = TestContext.setup(test, model)
+            if contexts:
+                # Reuse the C++ binary and its output from the previous model.
+                ctx.cpp_bin = contexts[-1].cpp_bin
+                ctx.cpp_result = contexts[-1].cpp_result
+            contexts.append(ctx)
+            result = (
+                ctx.translate()
+                or ctx.check_expected()
+                or ctx.build_cpp()
+                or ctx.build_rust()
+                or ctx.run_cpp()
+                or ctx.run_rust()
+                or ctx.compare()
+                or ctx.success_result()
             )
+            results.append((model, result))
+        # The C++ binary lives in the first model's dir, so clean up at the end.
+        for ctx in contexts:
+            ctx.finalize()
+        return combine_results(results)
 
     def getTestsInDirectory(self, testSuite, path_in_suite, litConfig, localConfig):
         source_path = Path(testSuite.getSourcePath(path_in_suite))
         if is_multi_file_test(source_path):
-            for t in self.getTestsForPath(
-                testSuite, path_in_suite, litConfig, localConfig
-            ):
-                yield t
+            yield lit.Test.Test(testSuite, path_in_suite, localConfig)
             return
         for entry in source_path.iterdir():
             if entry.is_file() and entry.suffix in (".cpp", ".c"):
-                for t in self.getTestsForPath(
-                    testSuite, path_in_suite + (entry.name,), litConfig, localConfig
-                ):
-                    yield t
+                yield lit.Test.Test(
+                    testSuite, path_in_suite + (entry.name,), localConfig
+                )
+
+
+def combine_results(results):
+    """Reports the first model that failed; otherwise XFAIL if some model failed
+    as expected, and PASS if none did."""
+    codes = [code for _, (code, _) in results]
+    code = next(
+        (c for c in codes if c.isFailure),
+        lit.Test.XFAIL if lit.Test.XFAIL in codes else lit.Test.PASS,
+    )
+    output = "".join(
+        f"{model}: {c.name}\n{out}\n"
+        for model, (c, out) in results
+        if c != lit.Test.PASS
+    )
+    return (code, output)
 
 
 def read_rust_version():
