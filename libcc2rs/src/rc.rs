@@ -986,6 +986,7 @@ impl<T: CChar> Ptr<T> {
     pub fn with_slice_mut<R>(&self, len: usize, f: impl FnOnce(&mut [T]) -> R) -> R {
         let off = self.offset;
         match &self.kind {
+            PtrKind::Null if len == 0 => f(&mut []),
             PtrKind::Null => panic!("ub: null pointer"),
             PtrKind::StackSingle(weak) | PtrKind::HeapSingle(weak) => {
                 assert!(off == 0 && len <= 1, "ub: with_slice_mut out of bounds");
@@ -1036,6 +1037,7 @@ impl<T: CChar> Ptr<T> {
     pub fn with_slice<R>(&self, len: usize, f: impl FnOnce(&[T]) -> R) -> R {
         let off = self.offset;
         match &self.kind {
+            PtrKind::Null if len == 0 => f(&[]),
             PtrKind::Null => panic!("ub: null pointer"),
             PtrKind::StackSingle(weak) | PtrKind::HeapSingle(weak) => {
                 assert!(off == 0 && len <= 1, "ub: with_slice out of bounds");
