@@ -10,7 +10,7 @@ pub fn sum_0(n: i32, __args: Box<[VaArg]>) -> i32 {
     let __args: Value<Box<[VaArg]>> = Rc::new(RefCell::new(__args.into()));
     let n: Value<i32> = Rc::new(RefCell::new(n));
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
-    (*ap.borrow_mut()) = __args.as_pointer();
+    (*ap.borrow_mut()) = __args.decay();
     let guard: Value<Guard_1> = Rc::new(RefCell::new(Guard_1::new({ ap.as_pointer() })));
     let _dtor_guard = std::mem::DropGuard::new(guard.clone(), |__p| __p.as_pointer().destructor());
     let mut total: i32 = 0;
@@ -43,7 +43,7 @@ pub fn sum_ptr_2(n: i32, __args: Box<[VaArg]>) -> i32 {
     let __args: Value<Box<[VaArg]>> = Rc::new(RefCell::new(__args.into()));
     let n: Value<i32> = Rc::new(RefCell::new(n));
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
-    (*ap.borrow_mut()) = __args.as_pointer();
+    (*ap.borrow_mut()) = __args.decay();
     let mut cursor: Cursor_3 = Cursor_3 {
         ap: (ap.as_pointer()),
     };

@@ -14,7 +14,7 @@ fn main_0() -> i32 {
     let fds: Value<Box<[i32]>> =
         Rc::new(RefCell::new((0..2).map(|_| 0_i32).collect::<Box<[i32]>>()));
     assert!(
-        (((match ({ (fds.as_pointer() as Ptr::<i32>) },) {
+        (((match ({ fds.decay() },) {
             (mut __tmp_0,) => {
                 match nix::unistd::pipe() {
                     Ok((__r, __w)) => {
@@ -33,7 +33,7 @@ fn main_0() -> i32 {
     );
     assert!(
         (((match FdRegistry::with_fd(({ (*fds.borrow())[(1) as usize] }), |__fd| {
-            Ptr::<i8>::from_string_literal(b"ab")
+            (Ptr::<i8>::from_string_literal(b"ab"))
                 .to_any()
                 .reinterpret_cast::<u8>()
                 .with_slice(2_usize, |__buf| nix::unistd::write(__fd, __buf))
@@ -47,14 +47,14 @@ fn main_0() -> i32 {
             != 0)
     );
     let buf: Value<Box<[i8]>> = Rc::new(RefCell::new((0..4).map(|_| 0_i8).collect::<Box<[i8]>>()));
-    match ({ ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any() },) {
+    match ({ (buf.decay()).to_any() },) {
         (mut __tmp_1,) => {
             __tmp_1.memset((0) as u8, ::std::mem::size_of::<[i8; 4]>() as usize);
             (__tmp_1).clone()
         }
     };
     assert!(
-        (((match ({ ((buf.as_pointer() as Ptr::<i8>) as Ptr<i8>).to_any() },) {
+        (((match ({ (buf.decay()).to_any() },) {
             (mut __tmp_2,) => {
                 match FdRegistry::with_fd(({ (*fds.borrow())[(0) as usize] }), |__fd| {
                     __tmp_2
@@ -75,7 +75,7 @@ fn main_0() -> i32 {
     );
     assert!(
         ((({
-            let mut __it1 = (buf.as_pointer() as Ptr<i8>).to_c_string_iterator();
+            let mut __it1 = buf.decay().to_c_string_iterator();
             let mut __it2 = Ptr::<i8>::from_string_literal(b"ab").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
@@ -92,7 +92,7 @@ fn main_0() -> i32 {
     );
     assert!((((FdRegistry::close(({ (*fds.borrow())[(1) as usize] })) == 0) as i32) != 0));
     assert!(
-        (((match ({ ((buf.as_pointer() as Ptr::<i8>) as Ptr<i8>).to_any() },) {
+        (((match ({ (buf.decay()).to_any() },) {
             (mut __tmp_3,) => {
                 match FdRegistry::with_fd(({ (*fds.borrow())[(0) as usize] }), |__fd| {
                     __tmp_3

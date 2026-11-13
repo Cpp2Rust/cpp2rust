@@ -10,16 +10,13 @@ pub fn test_memcpy_0() {
     let src: Value<Box<[i8]>> = Rc::new(RefCell::new(i8::array_from_literal(b"hello\0")));
     let dst: Value<Box<[i8]>> =
         Rc::new(RefCell::new(Box::new([0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8])));
-    let mut r: AnyPtr = match ({ ((dst.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any() },) {
+    let mut r: AnyPtr = match ({ (dst.decay()).to_any() },) {
         (mut __tmp_0,) => {
-            __tmp_0.memcpy(
-                &((src.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any(),
-                6_usize as usize,
-            );
+            __tmp_0.memcpy(&(src.decay()).to_any(), 6_usize as usize);
             (__tmp_0).clone()
         }
     };
-    assert!(({ (r).clone() } == { ((dst.as_pointer() as Ptr::<i8>) as Ptr<i8>).to_any() }));
+    assert!(({ (r).clone() } == { (dst.decay()).to_any() }));
     assert!(
         ({
             ((((*dst.borrow())[(0) as usize] as i32) == (('h' as i8) as i32))
@@ -37,13 +34,13 @@ pub fn test_memcpy_0() {
 }
 pub fn test_memset_1() {
     let buf: Value<Box<[i8]>> = Rc::new(RefCell::new((0..4).map(|_| 0_i8).collect::<Box<[i8]>>()));
-    let mut r: AnyPtr = match ({ ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any() },) {
+    let mut r: AnyPtr = match ({ (buf.decay()).to_any() },) {
         (mut __tmp_1,) => {
             __tmp_1.memset((('x' as i8) as i32) as u8, 4_usize as usize);
             (__tmp_1).clone()
         }
     };
-    assert!(({ (r).clone() } == { ((buf.as_pointer() as Ptr::<i8>) as Ptr<i8>).to_any() }));
+    assert!(({ (r).clone() } == { (buf.decay()).to_any() }));
     assert!(
         ({
             (((((*buf.borrow())[(0) as usize] as i32) == (('x' as i8) as i32))
@@ -57,24 +54,9 @@ pub fn test_memcmp_2() {
     let a: Value<Box<[i8]>> = Rc::new(RefCell::new(Box::new([1_i8, 2_i8, 3_i8, 4_i8])));
     let b: Value<Box<[i8]>> = Rc::new(RefCell::new(Box::new([1_i8, 2_i8, 3_i8, 4_i8])));
     let c: Value<Box<[i8]>> = Rc::new(RefCell::new(Box::new([1_i8, 2_i8, 9_i8, 4_i8])));
-    assert!(
-        (((a.as_pointer() as Ptr::<i8>) as Ptr<i8>).to_any().memcmp(
-            &((b.as_pointer() as Ptr::<i8>) as Ptr<i8>).to_any(),
-            4_usize
-        ) == 0)
-    );
-    assert!(
-        (((a.as_pointer() as Ptr::<i8>) as Ptr<i8>).to_any().memcmp(
-            &((c.as_pointer() as Ptr::<i8>) as Ptr<i8>).to_any(),
-            4_usize
-        ) < 0)
-    );
-    assert!(
-        (((c.as_pointer() as Ptr::<i8>) as Ptr<i8>).to_any().memcmp(
-            &((a.as_pointer() as Ptr::<i8>) as Ptr<i8>).to_any(),
-            4_usize
-        ) > 0)
-    );
+    assert!(((a.decay()).to_any().memcmp(&(b.decay()).to_any(), 4_usize) == 0));
+    assert!(((a.decay()).to_any().memcmp(&(c.decay()).to_any(), 4_usize) < 0));
+    assert!(((c.decay()).to_any().memcmp(&(a.decay()).to_any(), 4_usize) > 0));
 }
 pub fn test_memmove_3() {
     let buf: Value<Box<[i8]>> = Rc::new(RefCell::new(Box::new([
@@ -85,21 +67,13 @@ pub fn test_memmove_3() {
         ('e' as i8),
         ('\0' as i8),
     ])));
-    let mut r: AnyPtr =
-        match ({ ((buf.as_pointer() as Ptr<i8>).offset((1) as isize) as Ptr<i8>).to_any() },) {
-            (mut __tmp_2,) => {
-                __tmp_2.memcpy(
-                    &((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any(),
-                    4_usize as usize,
-                );
-                (__tmp_2).clone()
-            }
-        };
-    assert!(
-        ({ (r).clone() } == {
-            ((buf.as_pointer() as Ptr<i8>).offset((1) as isize) as Ptr<i8>).to_any()
-        })
-    );
+    let mut r: AnyPtr = match ({ (buf.decay().offset((1) as isize)).to_any() },) {
+        (mut __tmp_2,) => {
+            __tmp_2.memcpy(&(buf.decay()).to_any(), 4_usize as usize);
+            (__tmp_2).clone()
+        }
+    };
+    assert!(({ (r).clone() } == { (buf.decay().offset((1) as isize)).to_any() }));
     assert!(
         ({
             ((((*buf.borrow())[(0) as usize] as i32) == (('a' as i8) as i32))
@@ -260,7 +234,7 @@ pub fn test_strcmp_6() {
     );
     assert!(
         ({
-            let mut __it1 = (buf.as_pointer() as Ptr<i8>).to_c_string_iterator();
+            let mut __it1 = buf.decay().to_c_string_iterator();
             let mut __it2 = p.to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
@@ -387,9 +361,7 @@ pub fn test_strncmp_7() {
     );
     assert!(
         ({
-            let mut __it1 = (buf.as_pointer() as Ptr<i8>)
-                .to_c_string_iterator()
-                .take(6_usize);
+            let mut __it1 = buf.decay().to_c_string_iterator().take(6_usize);
             let mut __it2 = p.to_c_string_iterator().take(6_usize);
             loop {
                 let __c1 = __it1.next();
@@ -407,9 +379,7 @@ pub fn test_strncmp_7() {
 pub fn test_memchr_8() {
     let data: Value<Box<[i8]>> = Rc::new(RefCell::new(Box::new([16_i8, 32_i8, 48_i8, 64_i8])));
     let mut r: AnyPtr = {
-        let mut __p = ((data.as_pointer() as Ptr<i8>) as Ptr<i8>)
-            .to_any()
-            .reinterpret_cast::<u8>();
+        let mut __p = (data.decay()).to_any().reinterpret_cast::<u8>();
         let mut __i: usize = 0;
         loop {
             if __i == 4_usize {
@@ -422,14 +392,10 @@ pub fn test_memchr_8() {
             __i += 1;
         }
     };
-    assert!(
-        ({ (r).clone() } == { (((data.as_pointer() as Ptr<i8>).offset(2)) as Ptr<i8>).to_any() })
-    );
+    assert!(({ (r).clone() } == { (data.decay().offset(2)).to_any() }));
     assert!(
         ({
-            let mut __p = ((data.as_pointer() as Ptr<i8>) as Ptr<i8>)
-                .to_any()
-                .reinterpret_cast::<u8>();
+            let mut __p = (data.decay()).to_any().reinterpret_cast::<u8>();
             let mut __i: usize = 0;
             loop {
                 if __i == 4_usize {
@@ -444,7 +410,7 @@ pub fn test_memchr_8() {
         })
         .is_null()
     );
-    let mut p: AnyPtr = ((data.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any();
+    let mut p: AnyPtr = (data.decay()).to_any();
     let mut n: usize = 4_usize;
     assert!(
         ({
@@ -516,7 +482,7 @@ pub fn test_strrchr_9() {
         ('\0' as i8),
     ])));
     assert!(
-        (match ({ (buf.as_pointer() as Ptr::<i8>) },) {
+        (match ({ buf.decay() },) {
             (mut __tmp_4,) => {
                 {
                     let __t = (('a' as i8) as i32) as i8;
@@ -537,7 +503,7 @@ pub fn test_strrchr_9() {
                     }
                 }
             }
-        } == ((buf.as_pointer() as Ptr<i8>).offset(2)))
+        } == (buf.decay().offset(2)))
     );
 }
 pub fn test_strdup_10() {
@@ -586,12 +552,12 @@ pub fn test_strdup_10() {
         } == 0)
     );
     libcc2rs::free_refcount((d2).to_any());
-    let mut d3: Ptr<i8> = libcc2rs::strdup_refcount((buf.as_pointer() as Ptr<i8>));
+    let mut d3: Ptr<i8> = libcc2rs::strdup_refcount(buf.decay());
     assert!(!((d3).is_null()));
     assert!(
         ({
             let mut __it1 = d3.to_c_string_iterator();
-            let mut __it2 = (buf.as_pointer() as Ptr<i8>).to_c_string_iterator();
+            let mut __it2 = buf.decay().to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
@@ -729,7 +695,7 @@ pub fn test_strstr_13() {
     ])));
     assert!(
         ({
-            let mut __p = (buf.as_pointer() as Ptr<i8>);
+            let mut __p = buf.decay();
             loop {
                 let mut __h = __p.to_c_string_iterator();
                 if Ptr::<i8>::from_string_literal(b"ll")
@@ -743,7 +709,7 @@ pub fn test_strstr_13() {
                 }
                 __p += 1;
             }
-        } == ((buf.as_pointer() as Ptr<i8>).offset(2)))
+        } == (buf.decay().offset(2)))
     );
 }
 pub fn test_strpbrk_14() {
@@ -777,7 +743,7 @@ pub fn test_strpbrk_14() {
         ('\0' as i8),
     ])));
     assert!(
-        (match ({ (buf.as_pointer() as Ptr::<i8>) },) {
+        (match ({ buf.decay() },) {
             (mut __tmp_5,) => {
                 match __tmp_5.to_c_string_iterator().position(|__c| {
                     Ptr::<i8>::from_string_literal(b"b")
@@ -788,7 +754,7 @@ pub fn test_strpbrk_14() {
                     None => Ptr::null(),
                 }
             }
-        } == ((buf.as_pointer() as Ptr<i8>).offset(1)))
+        } == (buf.decay().offset(1)))
     );
 }
 pub fn test_strcasecmp_15() {

@@ -55,10 +55,9 @@ fn main_0() -> i32 {
     assert!(({ ((({ (*T1_0.with(Value::clone).borrow()).count } == 1_usize) as i32) != 0) }));
     assert!(
         ((({
-            let mut __it1 = (((array_field_ptr!(T1_0.with(|v| v.as_pointer()), rows)
-                as Ptr<Box<[i8]>>)
+            let mut __it1 = array_field_ptr!(T1_0.with(|v| v.as_pointer()), rows)
                 .offset(0)
-                .decay()) as Ptr<i8>)
+                .decay()
                 .to_c_string_iterator();
             let mut __it2 = Ptr::<i8>::from_string_literal(b"alpha").to_c_string_iterator();
             loop {
@@ -84,10 +83,9 @@ fn main_0() -> i32 {
     assert!(({ ((({ (*T2_1.with(Value::clone).borrow()).count } == 2_usize) as i32) != 0) }));
     assert!(
         ((({
-            let mut __it1 = (((array_field_ptr!(T2_1.with(|v| v.as_pointer()), rows)
-                as Ptr<Box<[i8]>>)
+            let mut __it1 = array_field_ptr!(T2_1.with(|v| v.as_pointer()), rows)
                 .offset(0)
-                .decay()) as Ptr<i8>)
+                .decay()
                 .to_c_string_iterator();
             let mut __it2 = Ptr::<i8>::from_string_literal(b"alpha").to_c_string_iterator();
             loop {
@@ -105,10 +103,9 @@ fn main_0() -> i32 {
     );
     assert!(
         ((({
-            let mut __it1 = (((array_field_ptr!(T2_1.with(|v| v.as_pointer()), rows)
-                as Ptr<Box<[i8]>>)
+            let mut __it1 = array_field_ptr!(T2_1.with(|v| v.as_pointer()), rows)
                 .offset(1)
-                .decay()) as Ptr<i8>)
+                .decay()
                 .to_c_string_iterator();
             let mut __it2 = Ptr::<i8>::from_string_literal(b"beta").to_c_string_iterator();
             loop {
@@ -141,9 +138,9 @@ fn main_0() -> i32 {
     }));
     assert!(
         ((({
-            let mut __it1 = (((array_field_ptr!(local.as_pointer(), rows) as Ptr<Box<[i8]>>)
+            let mut __it1 = array_field_ptr!(local.as_pointer(), rows)
                 .offset(2)
-                .decay()) as Ptr<i8>)
+                .decay()
                 .to_c_string_iterator();
             let mut __it2 = Ptr::<i8>::from_string_literal(b"three").to_c_string_iterator();
             loop {
@@ -162,9 +159,9 @@ fn main_0() -> i32 {
     (*local.borrow_mut()).rows[(1) as usize][(0) as usize] = (('T' as i32) as i8);
     assert!(
         ((({
-            let mut __it1 = (((array_field_ptr!(local.as_pointer(), rows) as Ptr<Box<[i8]>>)
+            let mut __it1 = array_field_ptr!(local.as_pointer(), rows)
                 .offset(1)
-                .decay()) as Ptr<i8>)
+                .decay()
                 .to_c_string_iterator();
             let mut __it2 = Ptr::<i8>::from_string_literal(b"Two").to_c_string_iterator();
             loop {
@@ -182,9 +179,9 @@ fn main_0() -> i32 {
     );
     assert!(
         ((({
-            let mut __it1 = (((array_field_ptr!(local.as_pointer(), rows) as Ptr<Box<[i8]>>)
+            let mut __it1 = array_field_ptr!(local.as_pointer(), rows)
                 .offset(0)
-                .decay()) as Ptr<i8>)
+                .decay()
                 .to_c_string_iterator();
             let mut __it2 = Ptr::<i8>::from_string_literal(b"one").to_c_string_iterator();
             loop {
@@ -200,16 +197,14 @@ fn main_0() -> i32 {
         } == 0) as i32)
             != 0)
     );
-    let mut p: Ptr<i8> = (((array_field_ptr!(local.as_pointer(), rows) as Ptr<Box<[i8]>>)
-        .offset(2)
-        .decay()) as Ptr<i8>);
+    let mut p: Ptr<i8> = array_field_ptr!(local.as_pointer(), rows).offset(2).decay();
     assert!((((((elem!(p, 0).read()) as i32) == ('t' as i32)) as i32) != 0));
     assert!(({ ((({ (*local.borrow()).count } == 3_usize) as i32) != 0) }));
     let copy: Value<table> = <Value<table>>::default();
-    match ({ ((array_field_ptr!(copy.as_pointer(), rows)) as Ptr<Box<[i8]>>).to_any() },) {
+    match ({ (array_field_ptr!(copy.as_pointer(), rows)).to_any() },) {
         (mut __tmp_0,) => {
             __tmp_0.memcpy(
-                &((array_field_ptr!(local.as_pointer(), rows)) as Ptr<Box<[i8]>>).to_any(),
+                &(array_field_ptr!(local.as_pointer(), rows)).to_any(),
                 ::std::mem::size_of::<[[i8; 10]; 3]>() as usize,
             );
             (__tmp_0).clone()
@@ -217,9 +212,9 @@ fn main_0() -> i32 {
     };
     assert!(
         (((((({
-            let mut __it1 = (((array_field_ptr!(copy.as_pointer(), rows) as Ptr<Box<[i8]>>)
+            let mut __it1 = array_field_ptr!(copy.as_pointer(), rows)
                 .offset(1)
-                .decay()) as Ptr<i8>)
+                .decay()
                 .to_c_string_iterator();
             let mut __it2 = Ptr::<i8>::from_string_literal(b"Two").to_c_string_iterator();
             loop {
@@ -235,9 +230,9 @@ fn main_0() -> i32 {
         } == 0) as i32)
             != 0)
             && ((({
-                let mut __it1 = (((array_field_ptr!(copy.as_pointer(), rows) as Ptr<Box<[i8]>>)
+                let mut __it1 = array_field_ptr!(copy.as_pointer(), rows)
                     .offset(2)
-                    .decay()) as Ptr<i8>)
+                    .decay()
                     .to_c_string_iterator();
                 let mut __it2 = Ptr::<i8>::from_string_literal(b"three").to_c_string_iterator();
                 loop {
@@ -271,10 +266,10 @@ fn main_0() -> i32 {
             .map(|_| (0..3).map(|_| 0_i8).collect::<Box<[i8]>>())
             .collect::<Box<[Box<[i8]>]>>(),
     ));
-    match ({ ((other.as_pointer()) as Ptr<Box<[i8]>>).to_any() },) {
+    match ({ (other.decay()).to_any() },) {
         (mut __tmp_1,) => {
             __tmp_1.memcpy(
-                &((grid.as_pointer()) as Ptr<Box<[i8]>>).to_any(),
+                &(grid.decay()).to_any(),
                 ::std::mem::size_of::<[[i8; 3]; 2]>() as usize,
             );
             (__tmp_1).clone()

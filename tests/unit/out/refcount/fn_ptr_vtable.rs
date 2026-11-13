@@ -24,7 +24,7 @@ thread_local!(
 );
 pub fn int_create_1(mut val: i32) -> AnyPtr {
     storage_0.with(|rc| *rc.borrow_mut() = val);
-    return ((storage_0.with(|v| v.as_pointer())) as Ptr<i32>).to_any();
+    return (storage_0.with(|v| v.as_pointer())).to_any();
 }
 pub fn int_get_2(mut p: AnyPtr) -> i32 {
     return (p.reinterpret_cast::<i32>().read());

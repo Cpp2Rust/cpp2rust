@@ -106,11 +106,9 @@ fn main_0() -> i32 {
         Tracked::new_1({ 1 }),
         Tracked::new_1({ 5 }),
     ])));
-    match ({ (arr.as_pointer() as Ptr<Tracked>) },) {
+    match ({ arr.decay() },) {
         (mut __tmp_0,) => {
-            let __n = (arr.as_pointer() as Ptr<Tracked>)
-                .offset((5) as isize)
-                .iter_distance(&__tmp_0);
+            let __n = arr.decay().offset((5) as isize).iter_distance(&__tmp_0);
             let mut __order: Vec<isize> = (0..__n).collect();
             __order.sort_by(|&__x, &__y| cpp_cmp(&__tmp_0.iter_at(__x), &__tmp_0.iter_at(__y)));
             reorder(__order, |__i| __tmp_0.iter_at(__i));
@@ -259,11 +257,9 @@ fn main_0() -> i32 {
         let __init = Tracked::new_1({ 3 });
         (*bags.borrow_mut())[(2) as usize].items.push(__init)
     };
-    match ({ (bags.as_pointer() as Ptr<Bag>) },) {
+    match ({ bags.decay() },) {
         (mut __tmp_5,) => {
-            let __n = (bags.as_pointer() as Ptr<Bag>)
-                .offset((3) as isize)
-                .iter_distance(&__tmp_5);
+            let __n = bags.decay().offset((3) as isize).iter_distance(&__tmp_5);
             let mut __order: Vec<isize> = (0..__n).collect();
             __order.sort_by(|&__x, &__y| cpp_cmp(&__tmp_5.iter_at(__x), &__tmp_5.iter_at(__y)));
             reorder(__order, |__i| __tmp_5.iter_at(__i));
@@ -317,10 +313,7 @@ fn main_0() -> i32 {
                 {
                     let mut __it = (__tmp_7).clone();
                     while __it != __tmp_8
-                        && !CppEq::equal(
-                            &__it.iter_deref(),
-                            &(bags.as_pointer() as Ptr<Bag>).offset(1),
-                        )
+                        && !CppEq::equal(&__it.iter_deref(), &bags.decay().offset(1))
                     {
                         __it.iter_inc();
                     }
@@ -350,24 +343,18 @@ fn main_0() -> i32 {
         } == bag_vec.decay().begin().iter_add(2_isize)
     );
     assert!(
-        ((if CppLess::less(
-            &(bags.as_pointer() as Ptr<Bag>).offset(2),
-            &(bags.as_pointer() as Ptr<Bag>).offset(0)
-        ) {
-            (bags.as_pointer() as Ptr<Bag>).offset(2)
+        ((if CppLess::less(&bags.decay().offset(2), &bags.decay().offset(0)) {
+            bags.decay().offset(2)
         } else {
-            (bags.as_pointer() as Ptr<Bag>).offset(0)
-        }) == ((bags.as_pointer() as Ptr<Bag>).offset(0)))
+            bags.decay().offset(0)
+        }) == (bags.decay().offset(0)))
     );
     assert!(
-        ((if CppLess::less(
-            &(bags.as_pointer() as Ptr<Bag>).offset(0),
-            &(bags.as_pointer() as Ptr<Bag>).offset(2)
-        ) {
-            (bags.as_pointer() as Ptr<Bag>).offset(2)
+        ((if CppLess::less(&bags.decay().offset(0), &bags.decay().offset(2)) {
+            bags.decay().offset(2)
         } else {
-            (bags.as_pointer() as Ptr<Bag>).offset(0)
-        }) == ((bags.as_pointer() as Ptr<Bag>).offset(2)))
+            bags.decay().offset(0)
+        }) == (bags.decay().offset(2)))
     );
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
     let bag_map: Value<Map<Bag, (Value<Bag>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
@@ -386,8 +373,7 @@ fn main_0() -> i32 {
     assert!(
         ((*(*bag_map
             .as_pointer()
-            .with(|__m: &Map<Bag, (Value<Bag>, Value<i32>)>| __m
-                .find(&(bags.as_pointer() as Ptr<Bag>).offset(2)))
+            .with(|__m: &Map<Bag, (Value<Bag>, Value<i32>)>| __m.find(&bags.decay().offset(2)))
             .iter_deref()
             .upgrade()
             .deref())
@@ -398,8 +384,7 @@ fn main_0() -> i32 {
     assert!(
         bag_map
             .as_pointer()
-            .with(|__m: &Map<Bag, (Value<Bag>, Value<i32>)>| __m
-                .find(&(bags.as_pointer() as Ptr<Bag>).offset(1)))
+            .with(|__m: &Map<Bag, (Value<Bag>, Value<i32>)>| __m.find(&bags.decay().offset(1)))
             == bag_map
                 .as_pointer()
                 .with(|__m: &Map<Bag, (Value<Bag>, Value<i32>)>| __m.end())

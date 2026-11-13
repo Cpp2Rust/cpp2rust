@@ -23,7 +23,7 @@ pub fn top_level_2(n: i32, __args: Box<[VaArg]>) -> i32 {
     let __args: Value<Box<[VaArg]>> = Rc::new(RefCell::new(__args.into()));
     let n: Value<i32> = Rc::new(RefCell::new(n));
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
-    (*ap.borrow_mut()) = __args.as_pointer();
+    (*ap.borrow_mut()) = __args.decay();
     let mut result: i32 = ({ middle_layer_1((*n.borrow()), (*ap.borrow()).clone()) });
     return result;
 }

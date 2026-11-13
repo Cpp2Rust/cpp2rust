@@ -249,10 +249,9 @@ fn main_0() -> i32 {
                 != 0)
         })
     );
-    let mut pp: Ptr<Ptr<i8>> = ((names.as_pointer() as Ptr<Ptr<i8>>).offset((idx) as isize));
+    let mut pp: Ptr<Ptr<i8>> = (names.decay().offset((idx) as isize));
     assert!((((((elem!((pp.read()), 0).read()) as i32) == ('g' as i32)) as i32) != 0));
-    let mut pe: Ptr<Entry> =
-        ((entries_3.with(|v| v.as_pointer()) as Ptr<Entry>).offset((idx) as isize));
+    let mut pe: Ptr<Entry> = (entries_3.with(|v| v.decay()).offset((idx) as isize));
     assert!(((((pe.with(|__s| __s.opt) as u32) == ((Option_OPT_A as i32) as u32)) as i32) != 0));
     return 0;
 }

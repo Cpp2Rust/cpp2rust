@@ -93,7 +93,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let c: Value<Container> = <Value<Container>>::default();
-    match ({ ((c.as_pointer()) as Ptr<Container>).to_any() },) {
+    match ({ (c.as_pointer()).to_any() },) {
         (mut __tmp_0,) => {
             __tmp_0.memset((0) as u8, 68usize as usize);
             (__tmp_0).clone()
@@ -120,8 +120,7 @@ fn main_0() -> i32 {
     field!(anon_0::b(field_ptr!(c.as_pointer(), u)), lo).write(8080_u16);
     assert!(
         (((((elem!(
-            (((anon_0::raw_(field_ptr!(c.as_pointer(), u)).reinterpret_cast::<i8>()) as Ptr<i8>)
-                .reinterpret_cast::<u8>()),
+            ((anon_0::raw_(field_ptr!(c.as_pointer(), u))).reinterpret_cast::<u8>()),
             2
         )
         .read()) as i32)
@@ -130,8 +129,7 @@ fn main_0() -> i32 {
     );
     assert!(
         (((((elem!(
-            (((anon_0::raw_(field_ptr!(c.as_pointer(), u)).reinterpret_cast::<i8>()) as Ptr<i8>)
-                .reinterpret_cast::<u8>()),
+            ((anon_0::raw_(field_ptr!(c.as_pointer(), u))).reinterpret_cast::<u8>()),
             3
         )
         .read()) as i32)

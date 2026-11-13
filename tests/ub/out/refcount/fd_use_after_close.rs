@@ -32,7 +32,7 @@ fn main_0() -> i32 {
     };
     FdRegistry::close(fd);
     let buf: Value<Box<[i8]>> = Rc::new(RefCell::new((0..4).map(|_| 0_i8).collect::<Box<[i8]>>()));
-    let mut n: isize = match ({ ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any() },) {
+    let mut n: isize = match ({ (buf.decay()).to_any() },) {
         (mut __tmp_0,) => {
             match FdRegistry::with_fd(fd, |__fd| {
                 __tmp_0

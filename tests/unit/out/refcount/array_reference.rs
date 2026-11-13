@@ -8,7 +8,7 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn len_0(s: Ptr<i8>) -> i32 {
     let mut n: i32 = 0;
-    'loop_: while (((elem!((s), n).read()) as i32) != (('\0' as i8) as i32)) {
+    'loop_: while (((elem!(s, n).read()) as i32) != (('\0' as i8) as i32)) {
         n.prefix_inc();
     }
     return n;
@@ -21,12 +21,12 @@ pub fn len5_1(mut s: Ptr<i8>) -> i32 {
     return n;
 }
 pub fn sum_2(a: Ptr<i32>) -> i32 {
-    return (((elem!((a), 0).read()) + (elem!((a), 1).read())) + (elem!((a), 2).read()));
+    return (((elem!(a, 0).read()) + (elem!(a, 1).read())) + (elem!(a, 2).read()));
 }
 pub fn fill_3(a: Ptr<i32>, mut v: i32) {
     let mut i: i32 = 0;
     'loop_: while (i < 3) {
-        elem!((a), i).write(v);
+        elem!(a, i).write(v);
         i.prefix_inc();
     }
 }
@@ -69,23 +69,23 @@ pub struct Point {
 }
 pub fn sum_points_11(p: Ptr<Point>) -> i32 {
     return ({
-        ({ ({ elem!((p), 0).with(|__s| __s.x) } + { elem!((p), 0).with(|__s| __s.y) }) } + {
-            elem!((p), 1).with(|__s| __s.x)
+        ({ ({ elem!(p, 0).with(|__s| __s.x) } + { elem!(p, 0).with(|__s| __s.y) }) } + {
+            elem!(p, 1).with(|__s| __s.x)
         })
-    } + { elem!((p), 1).with(|__s| __s.y) });
+    } + { elem!(p, 1).with(|__s| __s.y) });
 }
 pub fn shift_points_12(p: Ptr<Point>, mut d: i32) {
     {
         let __rhs = d;
-        field!(elem!((p), 0), x).with_mut(|__v| *__v = *__v + __rhs)
+        field!(elem!(p, 0), x).with_mut(|__v| *__v = *__v + __rhs)
     };
     {
         let __rhs = d;
-        field!(elem!((p), 1), y).with_mut(|__v| *__v = *__v + __rhs)
+        field!(elem!(p, 1), y).with_mut(|__v| *__v = *__v + __rhs)
     };
 }
 pub fn total_len_13(names: Ptr<Ptr<i8>>) -> i32 {
-    return (({ len5_1((elem!((names), 0).read())) }) + ({ len5_1((elem!((names), 1).read())) }));
+    return (({ len5_1((elem!(names, 0).read())) }) + ({ len5_1((elem!(names, 1).read())) }));
 }
 thread_local!(
     pub static kTable_14: Value<Box<[Box<[i32]>]>> = Rc::new(RefCell::new(Box::new([
@@ -100,20 +100,20 @@ pub fn main() {
 fn main_0() -> i32 {
     assert!((({ len_0(Ptr::<i8>::from_string_literal(b"beta"),) }) == 4));
     let buf: Value<Box<[i8]>> = Rc::new(RefCell::new(i8::array_from_literal(b"abcd\0")));
-    assert!((({ len_0(buf.as_pointer(),) }) == 4));
+    assert!((({ len_0(buf.decay(),) }) == 4));
     let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2, 3])));
-    assert!((({ sum_2(arr.as_pointer(),) }) == 6));
+    assert!((({ sum_2(arr.decay(),) }) == 6));
     assert!(
         (({
             let _a: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2, 3])));
-            sum_2(_a.as_pointer())
+            sum_2(_a.decay())
         }) == 6)
     );
-    ({ fill_3(arr.as_pointer(), 7) });
-    assert!((({ sum_2(arr.as_pointer(),) }) == 21));
-    assert!((({ sum_twice_4(arr.as_pointer(),) }) == 42));
+    ({ fill_3(arr.decay(), 7) });
+    assert!((({ sum_2(arr.decay(),) }) == 21));
+    assert!((({ sum_twice_4(arr.decay(),) }) == 42));
     let out: Value<i32> = Rc::new(RefCell::new(0));
-    ({ fill_and_sum_9(arr.as_pointer(), 2, out.as_pointer()) });
+    ({ fill_and_sum_9(arr.decay(), 2, out.as_pointer()) });
     assert!(({ ((*out.borrow()) == 12) }));
     assert!(({ ((*arr.borrow())[(0) as usize] == 2) }));
     let lit: Ptr<i8> = Ptr::<i8>::from_string_literal(b"beta");
@@ -122,47 +122,39 @@ fn main_0() -> i32 {
         (((elem!(({ pick_10(Ptr::<i8>::from_string_literal(b"beta"),) }), 0).read()) as i32)
             == (('b' as i8) as i32))
     );
-    assert!((({ len_0(({ pick_10(buf.as_pointer(),) }),) }) == 4));
+    assert!((({ len_0(({ pick_10(buf.decay(),) }),) }) == 4));
     let pts: Value<Box<[Point]>> = Rc::new(RefCell::new(Box::new([
         Point { x: 1, y: 2 },
         Point { x: 3, y: 4 },
     ])));
-    assert!((({ sum_points_11(pts.as_pointer(),) }) == 10));
-    ({ shift_points_12(pts.as_pointer(), 10) });
+    assert!((({ sum_points_11(pts.decay(),) }) == 10));
+    ({ shift_points_12(pts.decay(), 10) });
     assert!(({ ({ (*pts.borrow())[(0) as usize].x } == 11) }));
     assert!(({ ({ (*pts.borrow())[(1) as usize].y } == 14) }));
-    assert!((({ sum_points_11(pts.as_pointer(),) }) == 30));
-    assert!((({ sum_decayed_6(arr.as_pointer(),) }) == ({ sum_2(arr.as_pointer(),) })));
-    ({ bump_decayed_8(arr.as_pointer()) });
+    assert!((({ sum_points_11(pts.decay(),) }) == 30));
+    assert!((({ sum_decayed_6(arr.decay(),) }) == ({ sum_2(arr.decay(),) })));
+    ({ bump_decayed_8(arr.decay()) });
     assert!(({ ((*arr.borrow())[(0) as usize] == 3) }));
     let names: Value<Box<[Ptr<i8>]>> = Rc::new(RefCell::new(Box::new([
         Ptr::<i8>::from_string_literal(b"ab"),
         Ptr::<i8>::from_string_literal(b"cde"),
     ])));
-    assert!((({ total_len_13(names.as_pointer(),) }) == 5));
+    assert!((({ total_len_13(names.decay(),) }) == 5));
     let rows: Value<Box<[Box<[i32]>]>> = Rc::new(RefCell::new(Box::new([
         Box::new([1, 2, 3]),
         Box::new([4, 5, 6]),
     ])));
-    let mut p: Ptr<Box<[i32]>> = (rows.as_pointer() as Ptr<Box<[i32]>>);
+    let mut p: Ptr<Box<[i32]>> = rows.decay();
     p.prefix_inc();
-    assert!(
-        ({ ((p).decay() as Ptr::<i32>).clone() } == {
-            ((((rows.as_pointer() as Ptr<Box<[i32]>>).offset(1).decay()) as Ptr<i32>).offset(0))
-        })
-    );
-    let r: Ptr<i32> = ((p).decay()).clone();
-    assert!(((elem!((r), 0).read()) == 4));
+    assert!(({ p.decay() } == { (rows.decay().offset(1).decay().offset(0)) }));
+    let r: Ptr<i32> = p.decay();
+    assert!(((elem!(r, 0).read()) == 4));
     assert!((({ sum_2((r).clone(),) }) == 15));
-    assert!((({ sum_2(((p).decay()).clone(),) }) == 15));
-    let mut q: Ptr<Box<[i32]>> = (rows.as_pointer() as Ptr<Box<[i32]>>);
+    assert!((({ sum_2(p.decay(),) }) == 15));
+    let mut q: Ptr<Box<[i32]>> = rows.decay();
     assert!((({ sum_2(q.offset((1) as isize).decay(),) }) == 15));
-    assert!(
-        ({ (q.offset((1) as isize).decay() as Ptr::<i32>) } == {
-            ((((rows.as_pointer() as Ptr<Box<[i32]>>).offset(1).decay()) as Ptr<i32>).offset(0))
-        })
-    );
-    elem!((q.offset((1) as isize).decay() as Ptr::<i32>), 2).write(8);
+    assert!(({ q.offset((1) as isize).decay() } == { (rows.decay().offset(1).decay().offset(0)) }));
+    elem!(q.offset((1) as isize).decay(), 2).write(8);
     assert!(
         ({
             ((*rows.borrow())[(1) as usize][(2) as usize] == 8)
@@ -171,11 +163,11 @@ fn main_0() -> i32 {
     );
     (*rows.borrow_mut())[(0) as usize][(1) as usize] =
         { (*rows.borrow())[(0) as usize][(2) as usize] };
-    elem!((q.offset((1) as isize).decay() as Ptr::<i32>), 0)
-        .write({ (elem!((q.offset((0) as isize).decay() as Ptr::<i32>), 1).read()) });
+    elem!(q.offset((1) as isize).decay(), 0)
+        .write({ (elem!(q.offset((0) as isize).decay(), 1).read()) });
     {
-        let __rhs = { (elem!((q.offset((0) as isize).decay() as Ptr::<i32>), 2).read()) };
-        elem!((q.offset((1) as isize).decay() as Ptr::<i32>), 1).with_mut(|__v| *__v = *__v + __rhs)
+        let __rhs = { (elem!(q.offset((0) as isize).decay(), 2).read()) };
+        elem!(q.offset((1) as isize).decay(), 1).with_mut(|__v| *__v = *__v + __rhs)
     };
     assert!(
         ({
@@ -185,35 +177,22 @@ fn main_0() -> i32 {
         })
     );
     assert!(
-        ((((((rows.as_pointer() as Ptr<Box<[i32]>>).offset(1).decay()) as Ptr<i32>).offset(2))
-            - ((((rows.as_pointer() as Ptr<Box<[i32]>>).offset(1).decay()) as Ptr<i32>).offset(0)))
+        (((rows.decay().offset(1).decay().offset(2)) - (rows.decay().offset(1).decay().offset(0)))
             as i64
             == 2_i64)
     );
     let key: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([0, 4, 5, 6])));
     assert!(
-        ((((key.as_pointer() as Ptr<i32>).offset(1)) as Ptr<i32>)
-            .to_any()
-            .memcmp(
-                &((((kTable_14.with(|v| v.as_pointer()) as Ptr<Box<[i32]>>)
-                    .offset(1)
-                    .decay()) as Ptr::<i32>) as Ptr<i32>)
-                    .to_any(),
-                ::std::mem::size_of::<[i32; 3]>()
-            )
-            == 0)
+        ((key.decay().offset(1)).to_any().memcmp(
+            &(kTable_14.with(|v| v.decay()).offset(1).decay()).to_any(),
+            ::std::mem::size_of::<[i32; 3]>()
+        ) == 0)
     );
     assert!(
-        ((((key.as_pointer() as Ptr<i32>).offset(1)) as Ptr<i32>)
-            .to_any()
-            .memcmp(
-                &((((kTable_14.with(|v| v.as_pointer()) as Ptr<Box<[i32]>>)
-                    .offset(0)
-                    .decay()) as Ptr::<i32>) as Ptr<i32>)
-                    .to_any(),
-                ::std::mem::size_of::<[i32; 3]>()
-            )
-            != 0)
+        ((key.decay().offset(1)).to_any().memcmp(
+            &(kTable_14.with(|v| v.decay()).offset(0).decay()).to_any(),
+            ::std::mem::size_of::<[i32; 3]>()
+        ) != 0)
     );
     assert!(
         (({

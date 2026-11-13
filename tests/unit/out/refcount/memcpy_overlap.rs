@@ -13,12 +13,9 @@ pub fn main() {
 fn main_0() -> i32 {
     let buf: Value<Box<[i8]>> =
         Rc::new(RefCell::new(Box::new([1_i8, 2_i8, 3_i8, 4_i8, 5_i8, 6_i8])));
-    match ({ ((buf.as_pointer() as Ptr<i8>).offset((2) as isize) as Ptr<i8>).to_any() },) {
+    match ({ (buf.decay().offset((2) as isize)).to_any() },) {
         (mut __tmp_0,) => {
-            __tmp_0.memcpy(
-                &((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any(),
-                4_usize as usize,
-            );
+            __tmp_0.memcpy(&(buf.decay()).to_any(), 4_usize as usize);
             (__tmp_0).clone()
         }
     };

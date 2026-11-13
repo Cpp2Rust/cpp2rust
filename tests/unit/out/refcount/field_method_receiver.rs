@@ -56,33 +56,18 @@ impl Default for S {
 pub fn run_0(mut o: Ptr<S>) {
     ({ CounterImpl::add(&field_ptr!(o, c), 2) });
     assert!((({ CounterImpl::get(&field_ptr!(o, c),) }) == 2));
-    ({
-        CounterImpl::add(
-            &(array_field_ptr!(o, arr) as Ptr<Counter>).offset((1) as isize),
-            5,
-        )
-    });
-    assert!(
-        (({ CounterImpl::get(&(array_field_ptr!(o, arr) as Ptr<Counter>).offset((1) as isize),) })
-            == 5)
-    );
+    ({ CounterImpl::add(&array_field_ptr!(o, arr).offset((1) as isize), 5) });
+    assert!((({ CounterImpl::get(&array_field_ptr!(o, arr).offset((1) as isize),) }) == 5));
     ({ CounterImpl::add(&({ CounterImpl::self_(&field_ptr!(o, c)) }), 1) });
     assert!((({ CounterImpl::get(&field_ptr!(o, c),) }) == 3));
     assert!(({ ({ CounterImpl::self_(&field_ptr!(o, c),) }) } == { (field_ptr!(o, c)) }));
     ({
-        let _other: Ptr<Counter> =
-            ((array_field_ptr!(o, arr) as Ptr<Counter>).offset((1) as isize));
-        CounterImpl::take(
-            &(array_field_ptr!(o, arr) as Ptr<Counter>).offset((0) as isize),
-            _other,
-        )
+        let _other: Ptr<Counter> = (array_field_ptr!(o, arr).offset((1) as isize));
+        CounterImpl::take(&array_field_ptr!(o, arr).offset((0) as isize), _other)
     });
     assert!(
-        (({ CounterImpl::get(&(array_field_ptr!(o, arr) as Ptr<Counter>).offset((0) as isize),) })
-            == 5)
-            && (({
-                CounterImpl::get(&(array_field_ptr!(o, arr) as Ptr<Counter>).offset((1) as isize))
-            }) == 0)
+        (({ CounterImpl::get(&array_field_ptr!(o, arr).offset((0) as isize),) }) == 5)
+            && (({ CounterImpl::get(&array_field_ptr!(o, arr).offset((1) as isize),) }) == 0)
     );
     ({
         let _other: Ptr<Counter> = (field_ptr!(o, c));
@@ -157,12 +142,9 @@ impl SImpl for Ptr<S> {
     fn move_assign(&self, _a0: Ptr<S>) -> Ptr<S> {
         field!((*self), tag).write({ { (*_a0.upgrade().deref()).tag } });
         field!((*self), c).write({ { (*_a0.upgrade().deref()).c.clone() } });
-        match ({ ((array_field_ptr!((*self), arr)) as Ptr<Counter>).to_any() },) {
+        match ({ (array_field_ptr!((*self), arr)).to_any() },) {
             (mut __tmp_0,) => {
-                __tmp_0.memcpy(
-                    &((array_field_ptr!(_a0, arr)) as Ptr<Counter>).to_any(),
-                    8_usize as usize,
-                );
+                __tmp_0.memcpy(&(array_field_ptr!(_a0, arr)).to_any(), 8_usize as usize);
                 (__tmp_0).clone()
             }
         };

@@ -181,7 +181,7 @@ fn main_0() -> i32 {
     ])));
     let mut string: Vec<i8> = {
         let mut __v = Vec::with_capacity(3_usize as usize + 1);
-        (arr.as_pointer() as Ptr<i8>)
+        arr.decay()
             .with_slice(3_usize as usize, |__s| __v.extend_from_slice(__s));
         __v.push(0);
         __v
@@ -444,7 +444,7 @@ fn main_0() -> i32 {
         },
     ])));
     let mut target_index: i32 = 0;
-    match ((targets.as_pointer() as Ptr<Vec<i8>>).offset(target_index.postfix_inc()),) {
+    match (targets.decay().offset(target_index.postfix_inc()),) {
         (__tmp_5,) => {
             __tmp_5.with_mut(|__v: &mut Vec<i8>| __v.pop());
             __tmp_5.with_mut(|__v: &mut Vec<i8>| __v.resize((1_usize) as usize, 0));
@@ -453,8 +453,8 @@ fn main_0() -> i32 {
     };
     println!(
         "element receiver: {} {} {}",
-        (targets.as_pointer() as Ptr<Vec<i8>>).offset(0).decay(),
-        (targets.as_pointer() as Ptr<Vec<i8>>).offset(1).decay(),
+        targets.decay().offset(0).decay(),
+        targets.decay().offset(1).decay(),
         target_index
     );
     (*receiver_calls.borrow_mut()) = 0;

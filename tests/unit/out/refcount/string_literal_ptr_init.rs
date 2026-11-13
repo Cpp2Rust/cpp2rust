@@ -128,7 +128,7 @@ fn main_0() -> i32 {
         })
         .to_any()
     } else {
-        Ptr::<i8>::from_string_literal(b"").to_any()
+        (Ptr::<i8>::from_string_literal(b"")).to_any()
     };
     assert!(
         (((((elem!((p.reinterpret_cast::<i8>()), 0).read()) as i32) == ('\0' as i32)) as i32) != 0)
@@ -142,7 +142,7 @@ fn main_0() -> i32 {
         })
         .to_any()
     } else {
-        Ptr::<i8>::from_string_literal(b"").to_any()
+        (Ptr::<i8>::from_string_literal(b"")).to_any()
     };
     assert!(
         (((((elem!((p.reinterpret_cast::<i8>()), 0).read()) as i32) == ('f' as i32)) as i32) != 0)

@@ -103,13 +103,7 @@ fn main_0() -> i32 {
     let sigma: Value<Box<[u32]>> = Rc::new(RefCell::new(Box::new([2_u32, 0_u32, 3_u32, 1_u32])));
     let code: Value<Box<[u32]>> =
         Rc::new(RefCell::new((0..4).map(|_| 0_u32).collect::<Box<[u32]>>()));
-    ({
-        lehmer_3(
-            (sigma.as_pointer() as Ptr<u32>),
-            4_u32,
-            (code.as_pointer() as Ptr<u32>),
-        )
-    });
+    ({ lehmer_3(sigma.decay(), 4_u32, code.decay()) });
     assert!(
         ({
             ((((*code.borrow())[(0) as usize] == 2_u32)

@@ -457,8 +457,9 @@ private:
   // a pointer to the whole object (Ptr<Vec<T>>), or one to its first
   // element (Ptr<T>).
   enum class ObjectShape { Whole, Element };
-  std::string ConvertObject(clang::Expr *expr,
-                            ObjectShape shape = ObjectShape::Whole);
+  std::string
+  ConvertObject(clang::Expr *expr, ObjectShape shape = ObjectShape::Whole,
+                std::optional<clang::QualType> implicit_convert_to = {});
   std::string ConvertFreshObject(clang::Expr *expr) override;
 
   std::string ConvertPointerReceiver(

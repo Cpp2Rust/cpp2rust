@@ -49,7 +49,7 @@ fn f6<T1: ByteRepr>(a0: Ptr<Option<Value<Box<[T1]>>>>, a1: Ptr<T1>) {
 }
 
 fn f7<T1>(a0: Option<Value<Box<[T1]>>>) -> Ptr<T1> {
-    a0.as_pointer()
+    a0.decay()
 }
 
 fn f8<T1>(init: T1) -> Option<Value<T1>> {
@@ -97,7 +97,7 @@ fn f18<T1>(a0: Option<Value<T1>>) -> Ptr<T1> {
 }
 
 fn f19<T1>(a0: Option<Value<Box<[T1]>>>, a1: usize) -> Ptr<T1> {
-    (a0.as_pointer() as Ptr<T1>).offset(a1 as isize)
+    a0.decay().offset(a1)
 }
 
 fn f20<T1>(a0: Option<Value<T1>>) -> bool {

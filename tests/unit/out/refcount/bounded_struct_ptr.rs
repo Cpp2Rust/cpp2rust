@@ -23,9 +23,9 @@ fn main_0() -> i32 {
         Foo { x1: 1, x2: 2 },
         Foo { x1: 3, x2: 4 },
     ])));
-    let mut p1: Ptr<i32> = (field_ptr!((arr.as_pointer() as Ptr<Foo>).offset(1), x1));
+    let mut p1: Ptr<i32> = (field_ptr!(arr.decay().offset(1), x1));
     let mut a: i32 = (p1.read());
-    let mut p2: Ptr<Foo> = ((arr.as_pointer() as Ptr<Foo>).offset(0));
+    let mut p2: Ptr<Foo> = (arr.decay().offset(0));
     assert!((({ a } + { p2.with(|__s| __s.x2) }) == 5));
     return 0;
 }

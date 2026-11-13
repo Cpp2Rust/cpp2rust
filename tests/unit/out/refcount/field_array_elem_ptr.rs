@@ -67,36 +67,32 @@ fn main_0() -> i32 {
         ]),
         tail: 99,
     }));
-    let mut c: Ptr<i32> =
-        ((array_field_ptr!(s.as_pointer(), coords) as Ptr<i32>).offset((1) as isize));
+    let mut c: Ptr<i32> = (array_field_ptr!(s.as_pointer(), coords).offset((1) as isize));
     assert!(((c.read()) == 20));
     c.write(21);
     assert!(((array_elem!(s.as_pointer(), coords, 1).read()) == 21));
     c += 2;
     assert!(((c.read()) == 40));
     assert!(
-        (((c).clone()
-            - ((array_field_ptr!(s.as_pointer(), coords) as Ptr::<i32>).offset((0) as isize)))
-            as i64
+        (((c).clone() - (array_field_ptr!(s.as_pointer(), coords).offset((0) as isize))) as i64
             == 3_i64)
     );
     assert!(((elem!(c, -1_i32).read()) == 30));
-    assert!((({ sum_0((array_field_ptr!(s.as_pointer(), coords) as Ptr::<i32>), 4,) }) == 101));
+    assert!((({ sum_0(array_field_ptr!(s.as_pointer(), coords), 4,) }) == 101));
     assert!(
         (({
             sum_0(
-                ((array_field_ptr!(s.as_pointer(), coords) as Ptr<i32>).offset((2) as isize)),
+                (array_field_ptr!(s.as_pointer(), coords).offset((2) as isize)),
                 2,
             )
         }) == 70)
     );
-    let mut p: Ptr<Point> =
-        ((array_field_ptr!(s.as_pointer(), points) as Ptr<Point>).offset((1) as isize));
+    let mut p: Ptr<Point> = (array_field_ptr!(s.as_pointer(), points).offset((1) as isize));
     assert!((p.with(|__s| __s.x) == 3));
     ({ set_y_1(p.offset((1) as isize), 60) });
     assert!((array_elem!(s.as_pointer(), points, 2).with(|__s| __s.y) == 60));
     let mut py: Ptr<i32> = (field_ptr!(
-        (array_field_ptr!(s.as_pointer(), points) as Ptr<Point>).offset((0) as isize),
+        array_field_ptr!(s.as_pointer(), points).offset((0) as isize),
         y
     ));
     py.write(7);
@@ -107,14 +103,14 @@ fn main_0() -> i32 {
     };
     assert!((array_elem!(s.as_pointer(), points, 2).with(|__s| __s.x) == 55));
     let mut sp: Ptr<Shape> = (s.as_pointer());
-    let mut d: Ptr<i32> = (array_field_ptr!(sp, coords) as Ptr<i32>).offset((3) as isize);
+    let mut d: Ptr<i32> = array_field_ptr!(sp, coords).offset((3) as isize);
     d.write(41);
     assert!(((array_elem!(s.as_pointer(), coords, 3).read()) == 41));
     field!(array_elem!(sp, points, 1), y).write({
         ({ (array_elem!(sp, coords, 0).read()) } + { array_elem!(sp, points, 0).with(|__s| __s.x) })
     });
     assert!((array_elem!(s.as_pointer(), points, 1).with(|__s| __s.y) == 11));
-    let mut q: Ptr<Point> = (array_field_ptr!(sp, points) as Ptr<Point>);
+    let mut q: Ptr<Point> = array_field_ptr!(sp, points);
     field!(elem!(q, 2), x).write(8);
     assert!((array_elem!(sp, points, 2).with(|__s| __s.x) == 8));
     let mut t: Shape = (*s.borrow()).clone();

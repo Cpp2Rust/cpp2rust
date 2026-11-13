@@ -11,7 +11,7 @@ pub fn sum_with_copy_0(count: i32, __args: Box<[VaArg]>) -> i32 {
     let count: Value<i32> = Rc::new(RefCell::new(count));
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
     let aq: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
-    (*ap.borrow_mut()) = __args.as_pointer();
+    (*ap.borrow_mut()) = __args.decay();
     (*aq.borrow_mut()) = (*ap.borrow_mut()).clone();
     let mut sum1: i32 = 0;
     let mut i: i32 = 0;

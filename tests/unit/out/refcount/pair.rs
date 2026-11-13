@@ -55,9 +55,7 @@ fn main_0() -> i32 {
             .collect::<Vec<_>>(),
     ));
     match (Rc::new(RefCell::new((
-        Rc::new(RefCell::new(
-            (arr.as_pointer() as Ptr<i32>).offset((1) as isize),
-        )),
+        Rc::new(RefCell::new(arr.decay().offset((1) as isize))),
         Rc::new(RefCell::new(n)),
     )))
     .as_pointer(),)

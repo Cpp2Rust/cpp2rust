@@ -14,7 +14,7 @@ fn main_0() -> i32 {
     let fds: Value<Box<[i32]>> =
         Rc::new(RefCell::new((0..2).map(|_| 0_i32).collect::<Box<[i32]>>()));
     assert!(
-        (((match ({ (fds.as_pointer() as Ptr::<i32>) },) {
+        (((match ({ fds.decay() },) {
             (mut __tmp_0,) => {
                 match nix::unistd::pipe() {
                     Ok((__r, __w)) => {
@@ -149,7 +149,7 @@ fn main_0() -> i32 {
     assert!(((((flags & ::libc::O_NONBLOCK) != 0) as i32) != 0));
     let b: Value<i8> = Rc::new(RefCell::new(0_i8));
     assert!(
-        (((match ({ ((b.as_pointer()) as Ptr<i8>).to_any() },) {
+        (((match ({ (b.as_pointer()).to_any() },) {
             (mut __tmp_4,) => {
                 match FdRegistry::with_fd(({ (*fds.borrow())[(0) as usize] }), |__fd| {
                     __tmp_4

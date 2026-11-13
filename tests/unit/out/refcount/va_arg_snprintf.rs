@@ -10,7 +10,7 @@ pub fn extract_first_0(mut buf: Ptr<i8>, mut size: i32, fmt: Ptr<i8>, __args: Bo
     let __args: Value<Box<[VaArg]>> = Rc::new(RefCell::new(__args.into()));
     let fmt: Value<Ptr<i8>> = Rc::new(RefCell::new(fmt));
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
-    (*ap.borrow_mut()) = __args.as_pointer();
+    (*ap.borrow_mut()) = __args.decay();
     let mut n: i32 = (*ap.borrow_mut()).arg::<i32>();
     elem!(buf, 0).write({ (n as i8) });
     return n;
@@ -24,7 +24,7 @@ fn main_0() -> i32 {
     assert!(
         (((({
             extract_first_0(
-                (buf.as_pointer() as Ptr<i8>),
+                buf.decay(),
                 1,
                 Ptr::<i8>::from_string_literal(b"%d"),
                 Box::new([(42).into()]),
@@ -36,7 +36,7 @@ fn main_0() -> i32 {
     assert!(
         (((({
             extract_first_0(
-                (buf.as_pointer() as Ptr<i8>),
+                buf.decay(),
                 1,
                 Ptr::<i8>::from_string_literal(b"%d"),
                 Box::new([(65).into()]),

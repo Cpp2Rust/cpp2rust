@@ -92,7 +92,7 @@ fn main_0() -> i32 {
     (*p_list.borrow_mut()).choice = Choice_enum_C_LIST;
     (*p_list.borrow_mut()).index = 0;
     field!(anon_0::list(field_ptr!(p_list.as_pointer(), v)), items)
-        .write((items_4.with(|v| v.as_pointer()) as Ptr<Ptr<i8>>));
+        .write(items_4.with(|v| v.decay()));
     field!(anon_0::list(field_ptr!(p_list.as_pointer(), v)), count).write(3_i64);
     field!(anon_0::list(field_ptr!(p_list.as_pointer(), v)), cursor).write(1_i64);
     assert!(

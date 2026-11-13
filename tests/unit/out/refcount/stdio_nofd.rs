@@ -56,19 +56,15 @@ pub fn test_fputc_fputs_0() {
         0_i8,
     ])));
     assert!(
-        (((libcc2rs::fread_refcount(
-            ((buf.as_pointer() as Ptr::<i8>) as Ptr<i8>).to_any(),
-            1_usize,
-            16_usize,
-            (fp).clone()
-        ) == 5_usize) as i32)
+        (((libcc2rs::fread_refcount((buf.decay()).to_any(), 1_usize, 16_usize, (fp).clone())
+            == 5_usize) as i32)
             != 0)
     );
     assert!(
-        (((((buf.as_pointer() as Ptr::<i8>) as Ptr<i8>)
-            .to_any()
-            .memcmp(&Ptr::<i8>::from_string_literal(b"ABCD\n").to_any(), 5_usize)
-            == 0) as i32)
+        ((((buf.decay()).to_any().memcmp(
+            &(Ptr::<i8>::from_string_literal(b"ABCD\n")).to_any(),
+            5_usize
+        ) == 0) as i32)
             != 0)
     );
     (*buf.borrow_mut())[(0) as usize] = 2_i8;
@@ -81,7 +77,7 @@ pub fn test_fputc_fputs_0() {
     );
     assert!(
         (((libcc2rs::fread_refcount(
-            ((buf.as_pointer() as Ptr::<i8>).offset((1) as isize) as Ptr<i8>).to_any(),
+            (buf.decay().offset((1) as isize)).to_any(),
             1_usize,
             ({ ((*buf.borrow())[(0) as usize] as usize) }),
             (fp).clone()
@@ -89,10 +85,10 @@ pub fn test_fputc_fputs_0() {
             != 0)
     );
     assert!(
-        (((((buf.as_pointer() as Ptr::<i8>) as Ptr<i8>)
-            .to_any()
-            .memcmp(&Ptr::<i8>::from_string_literal(b"\x02AB").to_any(), 3_usize)
-            == 0) as i32)
+        ((((buf.decay()).to_any().memcmp(
+            &(Ptr::<i8>::from_string_literal(b"\x02AB")).to_any(),
+            3_usize
+        ) == 0) as i32)
             != 0)
     );
     assert!(
@@ -164,7 +160,7 @@ pub fn test_fgets_getc_2() {
     assert!((((!((fp).is_null())) as i32) != 0));
     let buf: Value<Box<[i8]>> = Rc::new(RefCell::new((0..8).map(|_| 0_i8).collect::<Box<[i8]>>()));
     assert!(
-        (((!((match ({ (buf.as_pointer() as Ptr::<i8>) },) {
+        (((!((match ({ buf.decay() },) {
             (mut __tmp_0,) => {
                 if 8 <= 0 {
                     Ptr::null()
@@ -204,18 +200,15 @@ pub fn test_fgets_getc_2() {
             != 0)
     );
     assert!(
-        (((((buf.as_pointer() as Ptr::<i8>) as Ptr<i8>)
-            .to_any()
-            .memcmp(
-                &Ptr::<i8>::from_string_literal(b"line1\n").to_any(),
-                7_usize
-            )
-            == 0) as i32)
+        ((((buf.decay()).to_any().memcmp(
+            &(Ptr::<i8>::from_string_literal(b"line1\n")).to_any(),
+            7_usize
+        ) == 0) as i32)
             != 0)
     );
     assert!((((fp.with_mut(|__f| __f.getc()) == ('l' as i32)) as i32) != 0));
     assert!(
-        (((!((match ({ (buf.as_pointer() as Ptr::<i8>) },) {
+        (((!((match ({ buf.decay() },) {
             (mut __tmp_1,) => {
                 if 4 <= 0 {
                     Ptr::null()
@@ -255,14 +248,14 @@ pub fn test_fgets_getc_2() {
             != 0)
     );
     assert!(
-        (((((buf.as_pointer() as Ptr::<i8>) as Ptr<i8>)
+        ((((buf.decay())
             .to_any()
-            .memcmp(&Ptr::<i8>::from_string_literal(b"ine").to_any(), 4_usize)
+            .memcmp(&(Ptr::<i8>::from_string_literal(b"ine")).to_any(), 4_usize)
             == 0) as i32)
             != 0)
     );
     assert!(
-        (((!((match ({ (buf.as_pointer() as Ptr::<i8>) },) {
+        (((!((match ({ buf.decay() },) {
             (mut __tmp_2,) => {
                 if 8 <= 0 {
                     Ptr::null()
@@ -302,14 +295,14 @@ pub fn test_fgets_getc_2() {
             != 0)
     );
     assert!(
-        (((((buf.as_pointer() as Ptr::<i8>) as Ptr<i8>)
+        ((((buf.decay())
             .to_any()
-            .memcmp(&Ptr::<i8>::from_string_literal(b"2\n").to_any(), 3_usize)
+            .memcmp(&(Ptr::<i8>::from_string_literal(b"2\n")).to_any(), 3_usize)
             == 0) as i32)
             != 0)
     );
     assert!(
-        ((((match ({ (buf.as_pointer() as Ptr::<i8>) },) {
+        ((((match ({ buf.decay() },) {
             (mut __tmp_3,) => {
                 if 8 <= 0 {
                     Ptr::null()
@@ -407,7 +400,7 @@ pub fn test_fgets_size_one_and_error_flag_3() {
     (*buf.borrow_mut())[(0) as usize] = (('x' as i32) as i8);
     assert!(
         ((({
-            match ({ (buf.as_pointer() as Ptr<i8>) },) {
+            match ({ buf.decay() },) {
                 (mut __tmp_4,) => {
                     if 1 <= 0 {
                         Ptr::null()
@@ -443,7 +436,7 @@ pub fn test_fgets_size_one_and_error_flag_3() {
                     }
                 }
             }
-        } == { (buf.as_pointer() as Ptr::<i8>) }) as i32)
+        } == { buf.decay() }) as i32)
             != 0)
     );
     assert!(({ (((((*buf.borrow())[(0) as usize] as i32) == ('\0' as i32)) as i32) != 0) }));
@@ -459,7 +452,7 @@ pub fn test_fgets_size_one_and_error_flag_3() {
     assert!((((fp.with(|__f| __f.err) as i32 != 0) as i32) != 0));
     assert!(
         ((({
-            match ({ (buf.as_pointer() as Ptr<i8>) },) {
+            match ({ buf.decay() },) {
                 (mut __tmp_5,) => {
                     if 8 <= 0 {
                         Ptr::null()
@@ -495,17 +488,14 @@ pub fn test_fgets_size_one_and_error_flag_3() {
                     }
                 }
             }
-        } == { (buf.as_pointer() as Ptr::<i8>) }) as i32)
+        } == { buf.decay() }) as i32)
             != 0)
     );
     assert!(
-        (((((buf.as_pointer() as Ptr::<i8>) as Ptr<i8>)
-            .to_any()
-            .memcmp(
-                &Ptr::<i8>::from_string_literal(b"line1\n").to_any(),
-                7_usize
-            )
-            == 0) as i32)
+        ((((buf.decay()).to_any().memcmp(
+            &(Ptr::<i8>::from_string_literal(b"line1\n")).to_any(),
+            7_usize
+        ) == 0) as i32)
             != 0)
     );
     assert!((((fp.with(|__f| __f.err) as i32 != 0) as i32) != 0));
@@ -571,19 +561,15 @@ pub fn test_freopen_4() {
         0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8,
     ])));
     assert!(
-        (((libcc2rs::fread_refcount(
-            ((buf.as_pointer() as Ptr::<i8>) as Ptr<i8>).to_any(),
-            1_usize,
-            8_usize,
-            (fp2).clone()
-        ) == 5_usize) as i32)
+        (((libcc2rs::fread_refcount((buf.decay()).to_any(), 1_usize, 8_usize, (fp2).clone())
+            == 5_usize) as i32)
             != 0)
     );
     assert!(
-        (((((buf.as_pointer() as Ptr::<i8>) as Ptr<i8>)
-            .to_any()
-            .memcmp(&Ptr::<i8>::from_string_literal(b"hello").to_any(), 5_usize)
-            == 0) as i32)
+        ((((buf.decay()).to_any().memcmp(
+            &(Ptr::<i8>::from_string_literal(b"hello")).to_any(),
+            5_usize
+        ) == 0) as i32)
             != 0)
     );
     assert!(
@@ -651,19 +637,15 @@ pub fn test_fseeko_5() {
         0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8,
     ])));
     assert!(
-        (((libcc2rs::fread_refcount(
-            ((buf.as_pointer() as Ptr::<i8>) as Ptr<i8>).to_any(),
-            1_usize,
-            5_usize,
-            (fp).clone()
-        ) == 5_usize) as i32)
+        (((libcc2rs::fread_refcount((buf.decay()).to_any(), 1_usize, 5_usize, (fp).clone())
+            == 5_usize) as i32)
             != 0)
     );
     assert!(
-        (((((buf.as_pointer() as Ptr::<i8>) as Ptr<i8>)
-            .to_any()
-            .memcmp(&Ptr::<i8>::from_string_literal(b"world").to_any(), 5_usize)
-            == 0) as i32)
+        ((((buf.decay()).to_any().memcmp(
+            &(Ptr::<i8>::from_string_literal(b"world")).to_any(),
+            5_usize
+        ) == 0) as i32)
             != 0)
     );
     assert!(

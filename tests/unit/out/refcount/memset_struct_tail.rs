@@ -48,7 +48,7 @@ fn main_0() -> i32 {
         }
     };
     field!(p, keep).write(7);
-    match ({ ((field_ptr!(p, a)) as Ptr<i32>).to_any() },) {
+    match ({ (field_ptr!(p, a)).to_any() },) {
         (mut __tmp_1,) => {
             __tmp_1.memset(
                 (0) as u8,
@@ -71,7 +71,7 @@ fn main_0() -> i32 {
     field!(p, b).write(2_i64);
     array_elem!(p, c, 0).write((('x' as i32) as i8));
     field!(p, last).write(3);
-    match ({ ((field_ptr!(p, b)) as Ptr<i64>).to_any() },) {
+    match ({ (field_ptr!(p, b)).to_any() },) {
         (mut __tmp_2,) => {
             __tmp_2.memset(
                 (0) as u8,

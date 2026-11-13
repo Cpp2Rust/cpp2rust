@@ -12,11 +12,9 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let arr1: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([5, 2, 8, 1, 3])));
-    match ({ (arr1.as_pointer() as Ptr<i32>) },) {
+    match ({ arr1.decay() },) {
         (mut __tmp_0,) => {
-            let __n = (arr1.as_pointer() as Ptr<i32>)
-                .offset((5) as isize)
-                .iter_distance(&__tmp_0);
+            let __n = arr1.decay().offset((5) as isize).iter_distance(&__tmp_0);
             let mut __order: Vec<isize> = (0..__n).collect();
             __order.sort_by(|&__x, &__y| {
                 let __a = __tmp_0.iter_at(__x);

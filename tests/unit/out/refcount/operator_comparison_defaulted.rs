@@ -217,15 +217,11 @@ fn main_0() -> i32 {
     assert!(({ SecondaryImpl::operator_ge(&s2.as_pointer(), s1.as_pointer(),) }));
     assert!(!({ SecondaryImpl::operator_lt(&s2.as_pointer(), s1.as_pointer(),) }));
     let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([0, 0])));
-    let p1: Value<PtrMember> = Rc::new(RefCell::new(PtrMember {
-        p: (arr.as_pointer() as Ptr<i32>),
-    }));
+    let p1: Value<PtrMember> = Rc::new(RefCell::new(PtrMember { p: arr.decay() }));
     let p2: Value<PtrMember> = Rc::new(RefCell::new(PtrMember {
-        p: (arr.as_pointer() as Ptr<i32>).offset((1) as isize),
+        p: arr.decay().offset((1) as isize),
     }));
-    let p3: Value<PtrMember> = Rc::new(RefCell::new(PtrMember {
-        p: (arr.as_pointer() as Ptr<i32>),
-    }));
+    let p3: Value<PtrMember> = Rc::new(RefCell::new(PtrMember { p: arr.decay() }));
     assert!(
         ({ PtrMemberImpl::operator_cmp(&p1.as_pointer(), p2.as_pointer(),) })
             == std::cmp::Ordering::Less

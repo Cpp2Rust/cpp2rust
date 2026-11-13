@@ -45,18 +45,10 @@ pub fn main() {
 fn main_0() -> i32 {
     let n: Value<node> = <Value<node>>::default();
     (*n.borrow_mut()).next = Ptr::<node>::null();
-    elem!(
-        (anon_0::bytes(field_ptr!(n.as_pointer(), x)).reinterpret_cast::<u8>() as Ptr::<u8>),
-        0
-    )
-    .write(171_u8);
+    elem!(anon_0::bytes(field_ptr!(n.as_pointer(), x)), 0).write(171_u8);
     assert!(
-        (((((elem!(
-            (anon_0::bytes(field_ptr!(n.as_pointer(), x)).reinterpret_cast::<u8>() as Ptr::<u8>),
-            0
-        )
-        .read()) as i32)
-            == 171) as i32)
+        (((((elem!(anon_0::bytes(field_ptr!(n.as_pointer(), x)), 0).read()) as i32) == 171)
+            as i32)
             != 0)
     );
     return 0;

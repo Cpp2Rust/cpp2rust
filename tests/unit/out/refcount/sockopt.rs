@@ -45,7 +45,7 @@ fn main_0() -> i32 {
             s,
             libc::SOL_SOCKET,
             libc::SO_KEEPALIVE,
-            ((on.as_pointer()) as Ptr<i32>).to_any()
+            (on.as_pointer()).to_any()
         ) == 0) as i32)
             != 0)
     );
@@ -54,7 +54,7 @@ fn main_0() -> i32 {
             s,
             libc::IPPROTO_TCP,
             libc::TCP_NODELAY,
-            ((on.as_pointer()) as Ptr<i32>).to_any()
+            (on.as_pointer()).to_any()
         ) == 0) as i32)
             != 0)
     );
@@ -63,10 +63,7 @@ fn main_0() -> i32 {
         (::std::mem::size_of::<i32>() as libc::socklen_t),
     ));
     assert!(
-        (((match ({ ((err.as_pointer()) as Ptr<i32>).to_any() }, {
-            (len.as_pointer())
-        },)
-        {
+        (((match ({ (err.as_pointer()).to_any() }, { (len.as_pointer()) },) {
             (mut __tmp_0, mut __tmp_1) => {
                 match (libc::SOL_SOCKET, libc::SO_ERROR) {
                     (::libc::SOL_SOCKET, ::libc::SO_ERROR) => {

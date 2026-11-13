@@ -24,7 +24,7 @@ pub fn dispatch_0(option: i32, __args: Box<[VaArg]>) -> i32 {
     let __args: Value<Box<[VaArg]>> = Rc::new(RefCell::new(__args.into()));
     let option: Value<i32> = Rc::new(RefCell::new(option));
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
-    (*ap.borrow_mut()) = __args.as_pointer();
+    (*ap.borrow_mut()) = __args.decay();
     let mut result: i32 = 0;
     'switch: {
         match { (*option.borrow()) } {

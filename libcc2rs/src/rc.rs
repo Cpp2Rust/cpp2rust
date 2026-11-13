@@ -1333,7 +1333,20 @@ impl<T: 'static> Decay<T> for Rc<RefCell<Vec<T>>> {
 impl<T> Decay<T> for Rc<RefCell<Box<[T]>>> {
     #[inline]
     fn decay(&self) -> Ptr<T> {
-        AsPointer::<T>::as_pointer(self)
+        Ptr {
+            offset: 0,
+            kind: PtrKind::StackArray(Rc::downgrade(self)),
+        }
+    }
+}
+
+impl<T> Decay<T> for Option<Rc<RefCell<Box<[T]>>>> {
+    #[inline]
+    fn decay(&self) -> Ptr<T> {
+        match self {
+            None => Ptr::null(),
+            Some(p) => p.decay(),
+        }
     }
 }
 
@@ -1348,26 +1361,6 @@ impl<T> AsPointer<T> for Rc<RefCell<T>> {
 }
 
 impl<T> AsPointer<T> for Option<Rc<RefCell<T>>> {
-    #[inline]
-    fn as_pointer(&self) -> Ptr<T> {
-        match self {
-            None => Ptr::null(),
-            Some(p) => p.as_pointer(),
-        }
-    }
-}
-
-impl<T> AsPointer<T> for Rc<RefCell<Box<[T]>>> {
-    #[inline]
-    fn as_pointer(&self) -> Ptr<T> {
-        Ptr {
-            offset: 0,
-            kind: PtrKind::StackArray(Rc::downgrade(self)),
-        }
-    }
-}
-
-impl<T> AsPointer<T> for Option<Rc<RefCell<Box<[T]>>>> {
     #[inline]
     fn as_pointer(&self) -> Ptr<T> {
         match self {
@@ -1540,7 +1533,7 @@ mod tests {
     #[should_panic(expected = "ub: invalid delete")]
     fn decay_stack_array_cannot_be_freed() {
         let v: Value<Box<[i32]>> = Rc::new(RefCell::new(vec![1, 2, 3].into_boxed_slice()));
-        let p: Ptr<Box<[i32]>> = (&v as &dyn AsPointer<Box<[i32]>>).as_pointer();
+        let p: Ptr<Box<[i32]>> = v.as_pointer();
         p.decay().delete();
     }
 
@@ -1567,7 +1560,7 @@ mod tests {
     fn read_write_through_pointer_to_pointer() {
         let a: Value<Box<[i32]>> = Rc::new(RefCell::new(vec![1, 2, 3].into_boxed_slice()));
         let v: Value<Vec<i32>> = Rc::new(RefCell::new(vec![4, 5]));
-        let pp: Value<Ptr<i32>> = Rc::new(RefCell::new(a.as_pointer()));
+        let pp: Value<Ptr<i32>> = Rc::new(RefCell::new(a.decay()));
         let pp_ptr = pp.as_pointer();
         pp_ptr.write(pp_ptr.read().offset(2));
         assert_eq!(pp.borrow().read(), 3);

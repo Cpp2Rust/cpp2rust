@@ -23,8 +23,7 @@ fn main_0() -> i32 {
     let mut i: i32 = 0;
     'loop_: while (((i < 3) as i32) != 0) {
         ({
-            let _row: Ptr<i8> =
-                (((grid.as_pointer() as Ptr<Box<[i8]>>).offset(i).decay()) as Ptr<i8>);
+            let _row: Ptr<i8> = grid.decay().offset(i).decay();
             let _c: i8 = ((('a' as i32) + i) as i8);
             fill_row_0(_row, _c)
         });

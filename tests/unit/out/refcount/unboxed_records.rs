@@ -95,8 +95,8 @@ fn main_0() -> i32 {
     let in_: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2, 3, 4])));
     let cookie: Value<Cookie> = Rc::new(RefCell::new(<Cookie>::default()));
     (*cookie.borrow_mut()).x = 2;
-    (*cookie.borrow_mut()).data = (data.as_pointer() as Ptr<i32>);
-    (*cookie.borrow_mut()).in_ = (in_.as_pointer() as Ptr<i32>);
+    (*cookie.borrow_mut()).data = data.decay();
+    (*cookie.borrow_mut()).in_ = in_.decay();
     (*cookie.borrow_mut()).inner.a = 1;
     (*cookie.borrow_mut()).inner.b = 3;
     assert!((({ consume_3(cookie.as_pointer(),) }) == 23));

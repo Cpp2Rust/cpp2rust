@@ -35,10 +35,10 @@ fn main_0() -> i32 {
         libcc2rs::malloc_refcount((4usize as usize).wrapping_add(4_usize)).reinterpret_cast::<F>();
     assert!((((!((f).is_null())) as i32) != 0));
     field!(f, n).write(4);
-    match ({ ((array_field_ptr!(f, tail) as Ptr<i8>) as Ptr<i8>).to_any() },) {
+    match ({ (array_field_ptr!(f, tail)).to_any() },) {
         (mut __tmp_0,) => {
             __tmp_0.memcpy(
-                &Ptr::<i8>::from_string_literal(b"xyz").to_any(),
+                &(Ptr::<i8>::from_string_literal(b"xyz")).to_any(),
                 4_usize as usize,
             );
             (__tmp_0).clone()
@@ -47,7 +47,7 @@ fn main_0() -> i32 {
     assert!((((f.with(|__s| __s.n) == 4) as i32) != 0));
     assert!(
         ((({
-            let mut __it1 = (array_field_ptr!(f, tail) as Ptr<i8>).to_c_string_iterator();
+            let mut __it1 = array_field_ptr!(f, tail).to_c_string_iterator();
             let mut __it2 = Ptr::<i8>::from_string_literal(b"xyz").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
@@ -68,10 +68,10 @@ fn main_0() -> i32 {
         libcc2rs::malloc_refcount((4usize as usize).wrapping_add(8_usize)).reinterpret_cast::<F>();
     assert!((((!((g).is_null())) as i32) != 0));
     field!(g, n).write(8);
-    match ({ ((array_field_ptr!(g, tail) as Ptr<i8>) as Ptr<i8>).to_any() },) {
+    match ({ (array_field_ptr!(g, tail)).to_any() },) {
         (mut __tmp_1,) => {
             __tmp_1.memcpy(
-                &Ptr::<i8>::from_string_literal(b"abcdefg").to_any(),
+                &(Ptr::<i8>::from_string_literal(b"abcdefg")).to_any(),
                 8_usize as usize,
             );
             (__tmp_1).clone()

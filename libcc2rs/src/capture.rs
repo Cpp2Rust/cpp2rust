@@ -24,7 +24,7 @@ use std::collections::BTreeMap;
 use std::rc::Rc;
 
 use crate::fn_ptr::{FnPtr, FnSig};
-use crate::rc::{AsPointer, Ptr, Value};
+use crate::rc::{AsPointer, Decay, Ptr, Value};
 use crate::reinterpret::ByteRepr;
 use crate::{Map, UnsafeMap};
 
@@ -214,7 +214,7 @@ pub trait MoveElems<T> {
 
 impl<T: MoveCtor> MoveElems<Value<Box<[T]>>> for &&&Capture<'_, Value<Box<[T]>>> {
     fn move_capture(&self) -> Value<Box<[T]>> {
-        let src: Ptr<T> = self.0.as_pointer();
+        let src: Ptr<T> = self.0.decay();
         let len = self.0.borrow().len();
         Rc::new(RefCell::new(
             (0..len).map(|i| T::move_ctor(src.offset(i))).collect(),
@@ -266,7 +266,7 @@ pub trait DestroyElems {
 
 impl<T: Destructor> DestroyElems for &&Capture<'_, Value<Box<[T]>>> {
     fn destroy_capture(&self) {
-        let p: Ptr<T> = self.0.as_pointer();
+        let p: Ptr<T> = self.0.decay();
         for i in (0..self.0.borrow().len()).rev() {
             T::destroy(p.offset(i));
         }

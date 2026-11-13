@@ -19,7 +19,7 @@ pub fn set_error_0(mut ctx: Ptr<context>, fmt: Ptr<i8>, __args: Box<[VaArg]>) {
     let fmt: Value<Ptr<i8>> = Rc::new(RefCell::new(fmt));
     if (ctx.with(|__s| __s.verbose) != 0) {
         let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
-        (*ap.borrow_mut()) = __args.as_pointer();
+        (*ap.borrow_mut()) = __args.decay();
         let __rhs = (*ap.borrow_mut()).arg::<i32>();
         field!(ctx, last_error).write(__rhs);
     }
@@ -50,7 +50,7 @@ pub fn pick_1(use_long: i32, __args: Box<[VaArg]>) -> i64 {
     let __args: Value<Box<[VaArg]>> = Rc::new(RefCell::new(__args.into()));
     let use_long: Value<i32> = Rc::new(RefCell::new(use_long));
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
-    (*ap.borrow_mut()) = __args.as_pointer();
+    (*ap.borrow_mut()) = __args.decay();
     let v: Value<value> = Rc::new(RefCell::new((*ap.borrow_mut()).arg::<value>()));
     if ((*use_long.borrow()) != 0) {
         return (value::l(v.as_pointer()).read());

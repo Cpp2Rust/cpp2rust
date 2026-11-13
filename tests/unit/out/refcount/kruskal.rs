@@ -17,14 +17,14 @@ pub struct Edge {
     pub weight: f64,
 }
 pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, mut start: i32, mut end: i32) -> i32 {
-    let pivot: Ptr<Edge> =
-        ((*arr.upgrade().deref()).as_pointer() as Ptr<Edge>).offset((start as usize) as isize);
+    let pivot: Ptr<Edge> = (*arr.upgrade().deref()).decay().offset((start as usize));
     let mut count: i32 = 0;
     let mut i: i32 = (start + 1);
     'loop_: while (i <= end) {
         if ({
-            ((*arr.upgrade().deref()).as_pointer() as Ptr<Edge>)
-                .offset((i as usize) as isize)
+            (*arr.upgrade().deref())
+                .decay()
+                .offset((i as usize))
                 .with(|__s| __s.weight)
         } <= { pivot.with(|__s| __s.weight) })
         {
@@ -34,32 +34,40 @@ pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, mut start: i32, mut end
     }
     let mut pidx: i32 = (start + count);
     let mut tmp: Edge = Edge {
-        u: ((*arr.upgrade().deref()).as_pointer() as Ptr<Edge>)
-            .offset((pidx as usize) as isize)
+        u: (*arr.upgrade().deref())
+            .decay()
+            .offset((pidx as usize))
             .with(|__s| __s.u),
-        v: ((*arr.upgrade().deref()).as_pointer() as Ptr<Edge>)
-            .offset((pidx as usize) as isize)
+        v: (*arr.upgrade().deref())
+            .decay()
+            .offset((pidx as usize))
             .with(|__s| __s.v),
-        weight: ((*arr.upgrade().deref()).as_pointer() as Ptr<Edge>)
-            .offset((pidx as usize) as isize)
+        weight: (*arr.upgrade().deref())
+            .decay()
+            .offset((pidx as usize))
             .with(|__s| __s.weight),
     };
     let __rhs = Edge {
-        u: ((*arr.upgrade().deref()).as_pointer() as Ptr<Edge>)
-            .offset((start as usize) as isize)
+        u: (*arr.upgrade().deref())
+            .decay()
+            .offset((start as usize))
             .with(|__s| __s.u),
-        v: ((*arr.upgrade().deref()).as_pointer() as Ptr<Edge>)
-            .offset((start as usize) as isize)
+        v: (*arr.upgrade().deref())
+            .decay()
+            .offset((start as usize))
             .with(|__s| __s.v),
-        weight: ((*arr.upgrade().deref()).as_pointer() as Ptr<Edge>)
-            .offset((start as usize) as isize)
+        weight: (*arr.upgrade().deref())
+            .decay()
+            .offset((start as usize))
             .with(|__s| __s.weight),
     };
-    ((*arr.upgrade().deref()).as_pointer() as Ptr<Edge>)
-        .offset((pidx as usize) as isize)
+    (*arr.upgrade().deref())
+        .decay()
+        .offset((pidx as usize))
         .write(__rhs);
-    ((*arr.upgrade().deref()).as_pointer() as Ptr<Edge>)
-        .offset((start as usize) as isize)
+    (*arr.upgrade().deref())
+        .decay()
+        .offset((start as usize))
         .write(Edge {
             u: tmp.u,
             v: tmp.v,
@@ -69,16 +77,18 @@ pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, mut start: i32, mut end
     let mut j: i32 = end;
     'loop_: while (i < pidx) && (j > pidx) {
         'loop_: while ({
-            ((*arr.upgrade().deref()).as_pointer() as Ptr<Edge>)
-                .offset((i as usize) as isize)
+            (*arr.upgrade().deref())
+                .decay()
+                .offset((i as usize))
                 .with(|__s| __s.weight)
         } <= { pivot.with(|__s| __s.weight) })
         {
             i.prefix_inc();
         }
         'loop_: while ({
-            ((*arr.upgrade().deref()).as_pointer() as Ptr<Edge>)
-                .offset((j as usize) as isize)
+            (*arr.upgrade().deref())
+                .decay()
+                .offset((j as usize))
                 .with(|__s| __s.weight)
         } > { pivot.with(|__s| __s.weight) })
         {
@@ -86,32 +96,40 @@ pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, mut start: i32, mut end
         }
         if (i < pidx) && (j > pidx) {
             tmp = Edge {
-                u: ((*arr.upgrade().deref()).as_pointer() as Ptr<Edge>)
-                    .offset((i as usize) as isize)
+                u: (*arr.upgrade().deref())
+                    .decay()
+                    .offset((i as usize))
                     .with(|__s| __s.u),
-                v: ((*arr.upgrade().deref()).as_pointer() as Ptr<Edge>)
-                    .offset((i as usize) as isize)
+                v: (*arr.upgrade().deref())
+                    .decay()
+                    .offset((i as usize))
                     .with(|__s| __s.v),
-                weight: ((*arr.upgrade().deref()).as_pointer() as Ptr<Edge>)
-                    .offset((i as usize) as isize)
+                weight: (*arr.upgrade().deref())
+                    .decay()
+                    .offset((i as usize))
                     .with(|__s| __s.weight),
             };
             let __rhs = Edge {
-                u: ((*arr.upgrade().deref()).as_pointer() as Ptr<Edge>)
-                    .offset((j as usize) as isize)
+                u: (*arr.upgrade().deref())
+                    .decay()
+                    .offset((j as usize))
                     .with(|__s| __s.u),
-                v: ((*arr.upgrade().deref()).as_pointer() as Ptr<Edge>)
-                    .offset((j as usize) as isize)
+                v: (*arr.upgrade().deref())
+                    .decay()
+                    .offset((j as usize))
                     .with(|__s| __s.v),
-                weight: ((*arr.upgrade().deref()).as_pointer() as Ptr<Edge>)
-                    .offset((j as usize) as isize)
+                weight: (*arr.upgrade().deref())
+                    .decay()
+                    .offset((j as usize))
                     .with(|__s| __s.weight),
             };
-            ((*arr.upgrade().deref()).as_pointer() as Ptr<Edge>)
-                .offset((i as usize) as isize)
+            (*arr.upgrade().deref())
+                .decay()
+                .offset((i as usize))
                 .write(__rhs);
-            ((*arr.upgrade().deref()).as_pointer() as Ptr<Edge>)
-                .offset((j as usize) as isize)
+            (*arr.upgrade().deref())
+                .decay()
+                .offset((j as usize))
                 .write(Edge {
                     u: tmp.u,
                     v: tmp.v,
@@ -210,14 +228,20 @@ pub fn MSTKruskal_2(graph: Ptr<Graph>) -> f64 {
     let mut total_weight: f64 = 0_f64;
     let mut i: i32 = 0;
     'loop_: while ({ i } < { graph.with(|__s| __s.E) }) {
-        let mut x: i32 = (graph.with(|__s| __s.edges.clone()).as_pointer() as Ptr<Edge>)
-            .offset((i as usize) as isize)
+        let mut x: i32 = graph
+            .with(|__s| __s.edges.clone())
+            .decay()
+            .offset((i as usize))
             .with(|__s| __s.u);
-        let mut y: i32 = (graph.with(|__s| __s.edges.clone()).as_pointer() as Ptr<Edge>)
-            .offset((i as usize) as isize)
+        let mut y: i32 = graph
+            .with(|__s| __s.edges.clone())
+            .decay()
+            .offset((i as usize))
             .with(|__s| __s.v);
-        let mut w: f64 = (graph.with(|__s| __s.edges.clone()).as_pointer() as Ptr<Edge>)
-            .offset((i as usize) as isize)
+        let mut w: f64 = graph
+            .with(|__s| __s.edges.clone())
+            .decay()
+            .offset((i as usize))
             .with(|__s| __s.weight);
         if (({ DisjointSetImpl::find(&set.as_pointer(), x) })
             != ({ DisjointSetImpl::find(&set.as_pointer(), y) }))
@@ -245,36 +269,41 @@ fn main_0() -> i32 {
         V: V,
         E: E,
     }));
-    (({ { (*graph.borrow()).edges.clone() } }).as_pointer() as Ptr<Edge>)
-        .offset(0_usize as isize)
+    ({ { (*graph.borrow()).edges.clone() } })
+        .decay()
+        .offset(0_usize)
         .write(Edge {
             u: 0,
             v: 1,
             weight: 10_f64,
         });
-    (({ { (*graph.borrow()).edges.clone() } }).as_pointer() as Ptr<Edge>)
-        .offset(1_usize as isize)
+    ({ { (*graph.borrow()).edges.clone() } })
+        .decay()
+        .offset(1_usize)
         .write(Edge {
             u: 1,
             v: 3,
             weight: 15_f64,
         });
-    (({ { (*graph.borrow()).edges.clone() } }).as_pointer() as Ptr<Edge>)
-        .offset(2_usize as isize)
+    ({ { (*graph.borrow()).edges.clone() } })
+        .decay()
+        .offset(2_usize)
         .write(Edge {
             u: 2,
             v: 3,
             weight: 4_f64,
         });
-    (({ { (*graph.borrow()).edges.clone() } }).as_pointer() as Ptr<Edge>)
-        .offset(3_usize as isize)
+    ({ { (*graph.borrow()).edges.clone() } })
+        .decay()
+        .offset(3_usize)
         .write(Edge {
             u: 2,
             v: 0,
             weight: 6_f64,
         });
-    (({ { (*graph.borrow()).edges.clone() } }).as_pointer() as Ptr<Edge>)
-        .offset(4_usize as isize)
+    ({ { (*graph.borrow()).edges.clone() } })
+        .decay()
+        .offset(4_usize)
         .write(Edge {
             u: 0,
             v: 3,
@@ -295,33 +324,45 @@ impl DisjointSetImpl for Ptr<DisjointSet> {
         let mut i: i32 = 0;
         'loop_: while (i < (*self).with(|__s| __s.n)) {
             let __rhs = i;
-            ((*self).with(|__s| __s.parent.clone()).as_pointer() as Ptr<i32>)
-                .offset((i as usize) as isize)
+            (*self)
+                .with(|__s| __s.parent.clone())
+                .decay()
+                .offset((i as usize))
                 .write(__rhs);
-            ((*self).with(|__s| __s.rank.clone()).as_pointer() as Ptr<i32>)
-                .offset((i as usize) as isize)
+            (*self)
+                .with(|__s| __s.rank.clone())
+                .decay()
+                .offset((i as usize))
                 .write(1);
             i.postfix_inc();
         }
     }
     fn find(&self, mut x: i32) -> i32 {
-        if ((((*self).with(|__s| __s.parent.clone()).as_pointer() as Ptr<i32>)
-            .offset((x as usize) as isize)
+        if (((*self)
+            .with(|__s| __s.parent.clone())
+            .decay()
+            .offset((x as usize))
             .read())
             != x)
         {
             let __rhs = ({
-                let _x: i32 = (((*self).with(|__s| __s.parent.clone()).as_pointer() as Ptr<i32>)
-                    .offset((x as usize) as isize)
+                let _x: i32 = ((*self)
+                    .with(|__s| __s.parent.clone())
+                    .decay()
+                    .offset((x as usize))
                     .read());
                 DisjointSetImpl::find(self, _x)
             });
-            ((*self).with(|__s| __s.parent.clone()).as_pointer() as Ptr<i32>)
-                .offset((x as usize) as isize)
+            (*self)
+                .with(|__s| __s.parent.clone())
+                .decay()
+                .offset((x as usize))
                 .write(__rhs);
         }
-        return (((*self).with(|__s| __s.parent.clone()).as_pointer() as Ptr<i32>)
-            .offset((x as usize) as isize)
+        return ((*self)
+            .with(|__s| __s.parent.clone())
+            .decay()
+            .offset((x as usize))
             .read());
     }
     fn merge(&self, mut x: i32, mut y: i32) {
@@ -330,36 +371,54 @@ impl DisjointSetImpl for Ptr<DisjointSet> {
         if (xset == yset) {
             return;
         }
-        if ((((*self).with(|__s| __s.rank.clone()).as_pointer() as Ptr<i32>)
-            .offset((xset as usize) as isize)
+        if (((*self)
+            .with(|__s| __s.rank.clone())
+            .decay()
+            .offset((xset as usize))
             .read())
-            < (((*self).with(|__s| __s.rank.clone()).as_pointer() as Ptr<i32>)
-                .offset((yset as usize) as isize)
+            < ((*self)
+                .with(|__s| __s.rank.clone())
+                .decay()
+                .offset((yset as usize))
                 .read()))
         {
-            ((*self).with(|__s| __s.parent.clone()).as_pointer() as Ptr<i32>)
-                .offset((xset as usize) as isize)
+            (*self)
+                .with(|__s| __s.parent.clone())
+                .decay()
+                .offset((xset as usize))
                 .write(yset);
-        } else if ((((*self).with(|__s| __s.rank.clone()).as_pointer() as Ptr<i32>)
-            .offset((xset as usize) as isize)
+        } else if (((*self)
+            .with(|__s| __s.rank.clone())
+            .decay()
+            .offset((xset as usize))
             .read())
-            > (((*self).with(|__s| __s.rank.clone()).as_pointer() as Ptr<i32>)
-                .offset((yset as usize) as isize)
+            > ((*self)
+                .with(|__s| __s.rank.clone())
+                .decay()
+                .offset((yset as usize))
                 .read()))
         {
-            ((*self).with(|__s| __s.parent.clone()).as_pointer() as Ptr<i32>)
-                .offset((yset as usize) as isize)
+            (*self)
+                .with(|__s| __s.parent.clone())
+                .decay()
+                .offset((yset as usize))
                 .write(xset);
         } else {
-            ((*self).with(|__s| __s.parent.clone()).as_pointer() as Ptr<i32>)
-                .offset((yset as usize) as isize)
+            (*self)
+                .with(|__s| __s.parent.clone())
+                .decay()
+                .offset((yset as usize))
                 .write(xset);
-            let __rhs = ((((*self).with(|__s| __s.rank.clone()).as_pointer() as Ptr<i32>)
-                .offset((xset as usize) as isize)
+            let __rhs = (((*self)
+                .with(|__s| __s.rank.clone())
+                .decay()
+                .offset((xset as usize))
                 .read())
                 + 1);
-            ((*self).with(|__s| __s.rank.clone()).as_pointer() as Ptr<i32>)
-                .offset((xset as usize) as isize)
+            (*self)
+                .with(|__s| __s.rank.clone())
+                .decay()
+                .offset((xset as usize))
                 .write(__rhs);
         }
     }

@@ -19,7 +19,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let value: Value<i32> = Rc::new(RefCell::new(41));
-    let mut opaque: AnyPtr = ((value.as_pointer()) as Ptr<i32>).to_any();
+    let mut opaque: AnyPtr = (value.as_pointer()).to_any();
     let mut typed: Ptr<i32> = opaque.reinterpret_cast::<i32>();
     assert!((((({ bump_0((opaque).clone(),) }) == 42) as i32) != 0));
     assert!(((((typed.read()) == 42) as i32) != 0));

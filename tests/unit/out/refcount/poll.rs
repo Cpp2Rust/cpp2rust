@@ -14,7 +14,7 @@ fn main_0() -> i32 {
     let fds: Value<Box<[i32]>> =
         Rc::new(RefCell::new((0..2).map(|_| 0_i32).collect::<Box<[i32]>>()));
     assert!(
-        (((match ({ (fds.as_pointer() as Ptr::<i32>) },) {
+        (((match ({ fds.decay() },) {
             (mut __tmp_0,) => {
                 match nix::unistd::pipe() {
                     Ok((__r, __w)) => {
@@ -33,7 +33,7 @@ fn main_0() -> i32 {
     );
     assert!(
         (((match FdRegistry::with_fd(({ (*fds.borrow())[(1) as usize] }), |__fd| {
-            Ptr::<i8>::from_string_literal(b"x")
+            (Ptr::<i8>::from_string_literal(b"x"))
                 .to_any()
                 .reinterpret_cast::<u8>()
                 .with_slice(1_usize, |__buf| nix::unistd::write(__fd, __buf))
@@ -58,7 +58,7 @@ fn main_0() -> i32 {
     (*pfd.borrow_mut())[(1) as usize].events = 1_i16;
     (*pfd.borrow_mut())[(1) as usize].revents = 42_i16;
     assert!(
-        (((match ({ (pfd.as_pointer() as Ptr<libcc2rs::Pollfd>) },) {
+        (((match ({ pfd.decay() },) {
             (mut __tmp_1,) => {
                 {
                     let __timeout = match nix::poll::PollTimeout::try_from(0) {
@@ -114,7 +114,7 @@ fn main_0() -> i32 {
     assert!(({ (((({ (*pfd.borrow())[(1) as usize].revents } as i32) == 0) as i32) != 0) }));
     let ch: Value<i8> = Rc::new(RefCell::new(0_i8));
     assert!(
-        (((match ({ ((ch.as_pointer()) as Ptr<i8>).to_any() },) {
+        (((match ({ (ch.as_pointer()).to_any() },) {
             (mut __tmp_2,) => {
                 match FdRegistry::with_fd(({ (*fds.borrow())[(0) as usize] }), |__fd| {
                     __tmp_2

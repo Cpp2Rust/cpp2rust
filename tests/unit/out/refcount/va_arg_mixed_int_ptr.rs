@@ -10,7 +10,7 @@ pub fn mixed_args_0(count: i32, __args: Box<[VaArg]>) -> i32 {
     let __args: Value<Box<[VaArg]>> = Rc::new(RefCell::new(__args.into()));
     let count: Value<i32> = Rc::new(RefCell::new(count));
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
-    (*ap.borrow_mut()) = __args.as_pointer();
+    (*ap.borrow_mut()) = __args.decay();
     let mut total: i32 = 0;
     let mut i: i32 = 0;
     'loop_: while (((i < (*count.borrow())) as i32) != 0) {

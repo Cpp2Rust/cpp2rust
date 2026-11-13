@@ -55,7 +55,7 @@ pub fn test_getpwuid_r_2() {
         (((match (
             { nix::unistd::geteuid().as_raw() },
             { (pw.as_pointer()) },
-            { (buf.as_pointer() as Ptr::<i8>) },
+            { buf.decay() },
             { (result.as_pointer()) },
         ) {
             (mut __tmp_0, mut __tmp_1, mut __tmp_2, mut __tmp_3) => {
@@ -148,7 +148,7 @@ pub fn test_getpwuid_r_erange_3() {
         (((match (
             { nix::unistd::geteuid().as_raw() },
             { (pw.as_pointer()) },
-            { (tiny.as_pointer() as Ptr::<i8>) },
+            { tiny.decay() },
             { (result.as_pointer()) },
         ) {
             (mut __tmp_4, mut __tmp_5, mut __tmp_6, mut __tmp_7) => {

@@ -79,10 +79,10 @@ impl Arrays {
     pub fn move_from(_a0: Ptr<Arrays>) -> Self {
         Self {
             a: Box::new(std::array::from_fn::<_, 2, _>(|__i: usize| {
-                Tracked::move_from({ (array_field_ptr!(_a0, a) as Ptr<Tracked>).offset(__i) })
+                Tracked::move_from({ array_field_ptr!(_a0, a).offset(__i) })
             })),
             b: Box::new(std::array::from_fn::<_, 2, _>(|__i: usize| {
-                Tracked::move_from({ (array_field_ptr!(_a0, b) as Ptr<Tracked>).offset(__i) })
+                Tracked::move_from({ array_field_ptr!(_a0, b).offset(__i) })
             })),
         }
     }
@@ -355,19 +355,13 @@ fn main_0() -> i32 {
         Tracked::new_1({ 2 }),
         Tracked::new_1({ 3 }),
     ])));
-    cpp_swap!(
-        (arr.as_pointer() as Ptr<Tracked>).offset(0),
-        (arr.as_pointer() as Ptr<Tracked>).offset(2)
-    );
+    cpp_swap!(arr.decay().offset(0), arr.decay().offset(2));
     assert!(
         ({
             ({ (*arr.borrow())[(0) as usize].v } == 3) && ({ (*arr.borrow())[(2) as usize].v } == 1)
         })
     );
-    cpp_swap!(
-        (arr.as_pointer() as Ptr<Tracked>).offset(1),
-        (arr.as_pointer() as Ptr<Tracked>).offset(1)
-    );
+    cpp_swap!(arr.decay().offset(1), arr.decay().offset(1));
     assert!(({ ({ (*arr.borrow())[(1) as usize].v } == 2) }));
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
     let vec_: Value<Vec<Tracked>> = Rc::new(RefCell::new(Vec::new()));
@@ -397,14 +391,11 @@ fn main_0() -> i32 {
         y: Tracked::new_1({ 11 }),
     }));
     cpp_swap!(
-        field_ptr!((pairs.as_pointer() as Ptr<Pair>).offset(0), x),
+        field_ptr!(pairs.decay().offset(0), x),
         field_ptr!(p.as_pointer(), y)
     );
     assert!(({ ({ (*pairs.borrow())[(0) as usize].x.v } == 11) && ({ (*p.borrow()).y.v } == 6) }));
-    cpp_swap!(
-        (pairs.as_pointer() as Ptr<Pair>).offset(0),
-        (pairs.as_pointer() as Ptr<Pair>).offset(1)
-    );
+    cpp_swap!(pairs.decay().offset(0), pairs.decay().offset(1));
     assert!(
         ({
             ({ (*pairs.borrow())[(0) as usize].x.v } == 8)
@@ -415,8 +406,8 @@ fn main_0() -> i32 {
     cpp_swap!(field_ptr!(p.as_pointer(), x), field_ptr!(p.as_pointer(), y));
     assert!(({ ({ (*p.borrow()).x.v } == 6) && ({ (*p.borrow()).y.v } == 10) }));
     cpp_swap!(
-        field_ptr!((pairs.as_pointer() as Ptr<Pair>).offset(0), x),
-        field_ptr!((pairs.as_pointer() as Ptr<Pair>).offset(1), y)
+        field_ptr!(pairs.decay().offset(0), x),
+        field_ptr!(pairs.decay().offset(1), y)
     );
     assert!(
         ({
@@ -429,16 +420,16 @@ fn main_0() -> i32 {
     field!(array_elem!(arrays.as_pointer(), a, 0), v).write(1);
     field!(array_elem!(arrays.as_pointer(), b, 1), v).write(2);
     cpp_swap!(
-        (array_field_ptr!(arrays.as_pointer(), a) as Ptr<Tracked>).offset((0) as isize),
-        (array_field_ptr!(arrays.as_pointer(), b) as Ptr<Tracked>).offset((1) as isize)
+        array_field_ptr!(arrays.as_pointer(), a).offset((0) as isize),
+        array_field_ptr!(arrays.as_pointer(), b).offset((1) as isize)
     );
     assert!(
         (array_elem!(arrays.as_pointer(), a, 0).with(|__s| __s.v) == 2)
             && (array_elem!(arrays.as_pointer(), b, 1).with(|__s| __s.v) == 1)
     );
     cpp_swap!(
-        (array_field_ptr!(arrays.as_pointer(), a) as Ptr<Tracked>).offset((0) as isize),
-        (array_field_ptr!(arrays.as_pointer(), a) as Ptr<Tracked>).offset((1) as isize)
+        array_field_ptr!(arrays.as_pointer(), a).offset((0) as isize),
+        array_field_ptr!(arrays.as_pointer(), a).offset((1) as isize)
     );
     assert!(
         (array_elem!(arrays.as_pointer(), a, 0).with(|__s| __s.v) == 0)
@@ -487,7 +478,7 @@ fn main_0() -> i32 {
         let _o: Value<Tracked> = Rc::new(RefCell::new(Tracked::new_1({ 1 })));
         TrackedImpl::move_assign(
             &Map::subscript_move(
-                (maps.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<Tracked>)>>).offset(0),
+                maps.decay().offset(0),
                 Rc::new(RefCell::new(1)).as_pointer(),
                 |__k| cpp_move!(__k),
             ),
@@ -498,21 +489,18 @@ fn main_0() -> i32 {
         let _o: Value<Tracked> = Rc::new(RefCell::new(Tracked::new_1({ 2 })));
         TrackedImpl::move_assign(
             &Map::subscript_move(
-                (maps.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<Tracked>)>>).offset(1),
+                maps.decay().offset(1),
                 Rc::new(RefCell::new(2)).as_pointer(),
                 |__k| cpp_move!(__k),
             ),
             _o.as_pointer(),
         )
     });
-    cpp_swap!(
-        (maps.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<Tracked>)>>).offset(0),
-        (maps.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<Tracked>)>>).offset(1)
-    );
+    cpp_swap!(maps.decay().offset(0), maps.decay().offset(1));
     assert!(
         ((*maps.borrow())[(0) as usize].len() == 1_usize)
             && (Map::subscript_move(
-                (maps.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<Tracked>)>>).offset(0),
+                maps.decay().offset(0),
                 Rc::new(RefCell::new(2)).as_pointer(),
                 |__k| cpp_move!(__k)
             )
@@ -522,7 +510,7 @@ fn main_0() -> i32 {
     assert!(
         ((*maps.borrow())[(1) as usize].len() == 1_usize)
             && (Map::subscript_move(
-                (maps.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<Tracked>)>>).offset(1),
+                maps.decay().offset(1),
                 Rc::new(RefCell::new(1)).as_pointer(),
                 |__k| cpp_move!(__k)
             )
@@ -558,10 +546,7 @@ fn main_0() -> i32 {
         CopyOnly::new({ 5 }),
         CopyOnly::new({ 6 }),
     ])));
-    cpp_swap!(
-        (carr.as_pointer() as Ptr<CopyOnly>).offset(0),
-        (carr.as_pointer() as Ptr<CopyOnly>).offset(1)
-    );
+    cpp_swap!(carr.decay().offset(0), carr.decay().offset(1));
     assert!(
         ({
             ({ (*carr.borrow())[(0) as usize].v } == 6)
@@ -594,10 +579,7 @@ fn main_0() -> i32 {
         Moved::new({ 5 }),
         Moved::new({ 6 }),
     ])));
-    cpp_swap!(
-        (marr.as_pointer() as Ptr<Moved>).offset(0),
-        (marr.as_pointer() as Ptr<Moved>).offset(1)
-    );
+    cpp_swap!(marr.decay().offset(0), marr.decay().offset(1));
     assert!(
         ({
             ({ (*marr.borrow())[(0) as usize].v } == 6)
@@ -631,24 +613,16 @@ impl ArraysImpl for Ptr<Arrays> {
         let mut __i0: usize = 0_usize;
         'loop_: while (__i0 != 2_usize) {
             ({
-                let _o: Ptr<Tracked> =
-                    (array_field_ptr!(_a0, a) as Ptr<Tracked>).offset((__i0) as isize);
-                TrackedImpl::copy_assign(
-                    &(array_field_ptr!((*self), a) as Ptr<Tracked>).offset((__i0) as isize),
-                    _o,
-                )
+                let _o: Ptr<Tracked> = array_field_ptr!(_a0, a).offset((__i0) as isize);
+                TrackedImpl::copy_assign(&array_field_ptr!((*self), a).offset((__i0) as isize), _o)
             });
             __i0.prefix_inc();
         }
         let mut __i0: usize = 0_usize;
         'loop_: while (__i0 != 2_usize) {
             ({
-                let _o: Ptr<Tracked> =
-                    (array_field_ptr!(_a0, b) as Ptr<Tracked>).offset((__i0) as isize);
-                TrackedImpl::copy_assign(
-                    &(array_field_ptr!((*self), b) as Ptr<Tracked>).offset((__i0) as isize),
-                    _o,
-                )
+                let _o: Ptr<Tracked> = array_field_ptr!(_a0, b).offset((__i0) as isize);
+                TrackedImpl::copy_assign(&array_field_ptr!((*self), b).offset((__i0) as isize), _o)
             });
             __i0.prefix_inc();
         }
@@ -658,24 +632,16 @@ impl ArraysImpl for Ptr<Arrays> {
         let mut __i0: usize = 0_usize;
         'loop_: while (__i0 != 2_usize) {
             ({
-                let _o: Ptr<Tracked> =
-                    (array_field_ptr!(_a0, a) as Ptr<Tracked>).offset((__i0) as isize);
-                TrackedImpl::move_assign(
-                    &(array_field_ptr!((*self), a) as Ptr<Tracked>).offset((__i0) as isize),
-                    _o,
-                )
+                let _o: Ptr<Tracked> = array_field_ptr!(_a0, a).offset((__i0) as isize);
+                TrackedImpl::move_assign(&array_field_ptr!((*self), a).offset((__i0) as isize), _o)
             });
             __i0.prefix_inc();
         }
         let mut __i0: usize = 0_usize;
         'loop_: while (__i0 != 2_usize) {
             ({
-                let _o: Ptr<Tracked> =
-                    (array_field_ptr!(_a0, b) as Ptr<Tracked>).offset((__i0) as isize);
-                TrackedImpl::move_assign(
-                    &(array_field_ptr!((*self), b) as Ptr<Tracked>).offset((__i0) as isize),
-                    _o,
-                )
+                let _o: Ptr<Tracked> = array_field_ptr!(_a0, b).offset((__i0) as isize);
+                TrackedImpl::move_assign(&array_field_ptr!((*self), b).offset((__i0) as isize), _o)
             });
             __i0.prefix_inc();
         }

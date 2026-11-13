@@ -40,7 +40,7 @@ fn main_0() -> i32 {
         (((elem!(bytes, 0).read()) as i32) == 187) && (((elem!(bytes, 4).read()) as i32) == 170)
     );
     let words: Value<Box<[u32]>> = Rc::new(RefCell::new(Box::new([16909060_u32, 84281096_u32])));
-    let mut halves: Ptr<u16> = (words.as_pointer() as Ptr<u32>).reinterpret_cast::<u16>();
+    let mut halves: Ptr<u16> = words.decay().reinterpret_cast::<u16>();
     cpp_swap!(halves.offset((0) as isize), halves.offset((3) as isize));
     assert!(
         ({

@@ -47,7 +47,7 @@ pub fn test_call_through_cast_5() {
     let mut gfn: FnPtr<fn(AnyPtr, i32) -> i32> =
         FnPtr::<fn(Ptr<i32>, i32) -> i32>::new(add_offset_4).cast::<fn(AnyPtr, i32) -> i32>();
     let val: Value<i32> = Rc::new(RefCell::new(100));
-    let mut result: i32 = ({ gfn.call(((val.as_pointer()) as Ptr<i32>).to_any(), 42) });
+    let mut result: i32 = ({ gfn.call((val.as_pointer()).to_any(), 42) });
     assert!((result == 142));
 }
 pub fn main() {

@@ -33,10 +33,7 @@ fn main_0() -> i32 {
             second: 6,
         },
     ])));
-    'loop_: for __decomp_0 in IterRange::new(
-        (arr.as_pointer() as Ptr<Pair>),
-        (arr.as_pointer() as Ptr<Pair>).offset((3_i64) as isize),
-    ) {
+    'loop_: for __decomp_0 in IterRange::new(arr.decay(), arr.decay().offset((3_i64) as isize)) {
         let __decomp_0: Ptr<Pair> = (__decomp_0).clone();
         {
             let __rhs = __decomp_0.with(|__s| __s.second);
@@ -45,10 +42,7 @@ fn main_0() -> i32 {
     }
     assert!(({ ({ (*arr.borrow())[(0) as usize].first } == 3) }));
     assert!(({ ({ (*arr.borrow())[(2) as usize].first } == 11) }));
-    'loop_: for __decomp_1 in IterRange::new(
-        (arr.as_pointer() as Ptr<Pair>),
-        (arr.as_pointer() as Ptr<Pair>).offset((3_i64) as isize),
-    ) {
+    'loop_: for __decomp_1 in IterRange::new(arr.decay(), arr.decay().offset((3_i64) as isize)) {
         let __decomp_1: Value<Pair> =
             Rc::new(RefCell::new((*__decomp_1.upgrade().deref()).clone()));
         (*__decomp_1.borrow_mut()).first = 0;
@@ -57,10 +51,7 @@ fn main_0() -> i32 {
     assert!(({ ({ (*arr.borrow())[(1) as usize].first } == 7) }));
     assert!(({ ({ (*arr.borrow())[(1) as usize].second } == 4) }));
     let mut sum: i32 = 0;
-    'loop_: for __decomp_2 in IterRange::new(
-        (arr.as_pointer() as Ptr<Pair>),
-        (arr.as_pointer() as Ptr<Pair>).offset((3_i64) as isize),
-    ) {
+    'loop_: for __decomp_2 in IterRange::new(arr.decay(), arr.decay().offset((3_i64) as isize)) {
         let __decomp_2: Ptr<Pair> = (__decomp_2).clone();
         sum += (__decomp_2.with(|__s| __s.first) * __decomp_2.with(|__s| __s.second));
     }

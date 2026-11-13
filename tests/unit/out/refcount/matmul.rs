@@ -21,18 +21,16 @@ pub fn matalloc_0(
         )))))
         .as_pointer(),)
         {
-            (__tmp_0,) => (m.as_pointer() as Ptr<Option<Value<Box<[i32]>>>>)
-                .offset((i as usize) as isize)
+            (__tmp_0,) => m
+                .decay()
+                .offset((i as usize))
                 .write(__tmp_0.with_mut(|__v: &mut Option<Value<Box<[i32]>>>| __v.take())),
         };
         let mut j: i32 = 0;
         'loop_: while (j < p) {
-            ((*(m.as_pointer() as Ptr<Option<Value<Box<[i32]>>>>)
-                .offset((i as usize) as isize)
-                .upgrade()
-                .deref())
-            .as_pointer() as Ptr<i32>)
-                .offset((j as usize) as isize)
+            (*m.decay().offset((i as usize)).upgrade().deref())
+                .decay()
+                .offset((j as usize))
                 .write(e);
             j.prefix_inc();
         }
@@ -56,28 +54,19 @@ pub fn matmul_1(
         'loop_: while (j < p2) {
             let mut k: i32 = 0;
             'loop_: while (k < p1) {
-                sum += ((((*(m1.as_pointer() as Ptr<Option<Value<Box<[i32]>>>>)
-                    .offset((i as usize) as isize)
-                    .upgrade()
-                    .deref())
-                .as_pointer() as Ptr<i32>)
-                    .offset((k as usize) as isize)
+                sum += (((*m1.decay().offset((i as usize)).upgrade().deref())
+                    .decay()
+                    .offset((k as usize))
                     .read())
-                    * (((*(m2.as_pointer() as Ptr<Option<Value<Box<[i32]>>>>)
-                        .offset((k as usize) as isize)
-                        .upgrade()
-                        .deref())
-                    .as_pointer() as Ptr<i32>)
-                        .offset((j as usize) as isize)
+                    * ((*m2.decay().offset((k as usize)).upgrade().deref())
+                        .decay()
+                        .offset((j as usize))
                         .read()));
                 k.prefix_inc();
             }
-            ((*(m3.as_pointer() as Ptr<Option<Value<Box<[i32]>>>>)
-                .offset((i as usize) as isize)
-                .upgrade()
-                .deref())
-            .as_pointer() as Ptr<i32>)
-                .offset((j as usize) as isize)
+            (*m3.decay().offset((i as usize)).upgrade().deref())
+                .decay()
+                .offset((j as usize))
                 .write(sum);
             j.prefix_inc();
         }
@@ -107,12 +96,9 @@ fn main_0() -> i32 {
     });
     assert!(
         ({
-            ((((*(m3.as_pointer() as Ptr<Option<Value<Box<[i32]>>>>)
-                .offset(0_usize as isize)
-                .upgrade()
-                .deref())
-            .as_pointer() as Ptr<i32>)
-                .offset(0_usize as isize)
+            (((*m3.decay().offset(0_usize).upgrade().deref())
+                .decay()
+                .offset(0_usize)
                 .read())
                 == 20)
         })

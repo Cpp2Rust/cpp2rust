@@ -34,7 +34,7 @@ fn main_0() -> i32 {
     assert!((((fd >= 0) as i32) != 0));
     assert!(
         (((match FdRegistry::with_fd(fd, |__fd| {
-            Ptr::<i8>::from_string_literal(b"hello world")
+            (Ptr::<i8>::from_string_literal(b"hello world"))
                 .to_any()
                 .reinterpret_cast::<u8>()
                 .with_slice(11_usize, |__buf| nix::unistd::write(__fd, __buf))
@@ -67,14 +67,14 @@ fn main_0() -> i32 {
     };
     assert!((((fd >= 0) as i32) != 0));
     let buf: Value<Box<[i8]>> = Rc::new(RefCell::new((0..16).map(|_| 0_i8).collect::<Box<[i8]>>()));
-    match ({ ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any() },) {
+    match ({ (buf.decay()).to_any() },) {
         (mut __tmp_0,) => {
             __tmp_0.memset((0) as u8, ::std::mem::size_of::<[i8; 16]>() as usize);
             (__tmp_0).clone()
         }
     };
     assert!(
-        (((match ({ ((buf.as_pointer() as Ptr::<i8>) as Ptr<i8>).to_any() },) {
+        (((match ({ (buf.decay()).to_any() },) {
             (mut __tmp_1,) => {
                 match FdRegistry::with_fd(fd, |__fd| {
                     __tmp_1
@@ -95,7 +95,7 @@ fn main_0() -> i32 {
     );
     assert!(
         ((({
-            let mut __it1 = (buf.as_pointer() as Ptr<i8>).to_c_string_iterator();
+            let mut __it1 = buf.decay().to_c_string_iterator();
             let mut __it2 = Ptr::<i8>::from_string_literal(b"hello world").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
@@ -111,7 +111,7 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        (((match ({ ((buf.as_pointer() as Ptr::<i8>) as Ptr<i8>).to_any() },) {
+        (((match ({ (buf.decay()).to_any() },) {
             (mut __tmp_2,) => {
                 match FdRegistry::with_fd(fd, |__fd| {
                     __tmp_2

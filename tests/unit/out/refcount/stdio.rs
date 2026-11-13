@@ -63,7 +63,7 @@ pub fn test_fputs_1() {
         (('f' as i32) as i8),
         (('\0' as i32) as i8),
     ])));
-    match (buf.as_pointer() as Ptr<i8>).with_c_bytes(|__bytes| {
+    match buf.decay().with_c_bytes(|__bytes| {
         libcc2rs::c_stdout().with_mut(|__f| __f.write(__bytes)) == __bytes.len()
     }) {
         true => 0,

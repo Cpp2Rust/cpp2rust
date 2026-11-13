@@ -57,19 +57,15 @@ fn main_0() -> i32 {
         (-1_i32 as i8),
     ];
     let mut cases: usize = 0_usize;
-    'loop_: for length in IterRange::new(
-        (lengths.as_pointer() as Ptr<usize>),
-        (lengths.as_pointer() as Ptr<usize>).offset((10_i64) as isize),
-    ) {
+    'loop_: for length in IterRange::new(lengths.decay(), lengths.decay().offset((10_i64) as isize))
+    {
         let mut length: usize = (length.read());
-        'loop_: for count in IterRange::new(
-            (counts.as_pointer() as Ptr<usize>),
-            (counts.as_pointer() as Ptr<usize>).offset((6_i64) as isize),
-        ) {
+        'loop_: for count in IterRange::new(counts.decay(), counts.decay().offset((6_i64) as isize))
+        {
             let mut count: usize = (count.read());
             'loop_: for character in IterRange::new(
-                (characters.as_pointer() as Ptr<i8>),
-                (characters.as_pointer() as Ptr<i8>).offset((20_i64) as isize),
+                characters.decay(),
+                characters.decay().offset((20_i64) as isize),
             ) {
                 let mut character: i8 = (character.read());
                 let mut shrink: i32 = 0;

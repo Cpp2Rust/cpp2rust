@@ -56,7 +56,7 @@ fn main_0() -> i32 {
     (*standalone.borrow_mut()).b = 4;
     assert!((((({ sum_inner_0((standalone.as_pointer()),) }) == 7) as i32) != 0));
     let outer: Value<Outer> = <Value<Outer>>::default();
-    match ({ ((outer.as_pointer()) as Ptr<Outer>).to_any() },) {
+    match ({ (outer.as_pointer()).to_any() },) {
         (mut __tmp_0,) => {
             __tmp_0.memset((0) as u8, 16usize as usize);
             (__tmp_0).clone()
@@ -70,21 +70,13 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        ((((((elem!(
-            (anon_1::raw_(field_ptr!(outer.as_pointer(), u)).reinterpret_cast::<i8>() as Ptr::<i8>),
-            0
-        )
-        .read()) as u8) as i32)
-            == 3) as i32)
+        ((((((elem!(anon_1::raw_(field_ptr!(outer.as_pointer(), u)), 0).read()) as u8) as i32) == 3)
+            as i32)
             != 0)
     );
     assert!(
-        ((((((elem!(
-            (anon_1::raw_(field_ptr!(outer.as_pointer(), u)).reinterpret_cast::<i8>() as Ptr::<i8>),
-            4
-        )
-        .read()) as u8) as i32)
-            == 4) as i32)
+        ((((((elem!(anon_1::raw_(field_ptr!(outer.as_pointer(), u)), 4).read()) as u8) as i32) == 4)
+            as i32)
             != 0)
     );
     return 0;

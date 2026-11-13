@@ -4998,9 +4998,7 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
   }
 
   if (ph_ctx.declared_in_rule_as_rust_ptr && arg->getType()->isArrayType()) {
-    auto elem = ctx_.getAsArrayType(arg->getType())->getElementType();
-    return std::format("({} as {})", ConvertFreshPointer(arg),
-                       ToStringBase(ctx_.getPointerType(elem)));
+    return ConvertElementPtr(arg);
   }
 
   if (auto *init =

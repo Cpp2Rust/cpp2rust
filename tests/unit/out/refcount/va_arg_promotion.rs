@@ -10,7 +10,7 @@ pub fn test_promotions_0(count: i32, __args: Box<[VaArg]>) -> i32 {
     let __args: Value<Box<[VaArg]>> = Rc::new(RefCell::new(__args.into()));
     let count: Value<i32> = Rc::new(RefCell::new(count));
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
-    (*ap.borrow_mut()) = __args.as_pointer();
+    (*ap.borrow_mut()) = __args.decay();
     let mut a: i32 = (*ap.borrow_mut()).arg::<i32>();
     let mut b: i32 = (*ap.borrow_mut()).arg::<i32>();
     let mut c: f64 = (*ap.borrow_mut()).arg::<f64>();

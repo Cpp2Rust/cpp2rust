@@ -18,7 +18,7 @@ pub fn size_of_2(mut i: i32) -> usize {
 }
 pub fn pick_3(mut i: i32) -> Ptr<i32> {
     (*calls_0.with(Value::clone).borrow_mut()).prefix_inc();
-    return (xs_1.with(|v| v.as_pointer()) as Ptr<i32>).offset(i);
+    return xs_1.with(|v| v.decay()).offset(i);
 }
 #[derive(Record, ByteRepr, VaArg, FnPtrArg, CppFrom, CopyAssign, Default)]
 #[cpp_from(i32, new, value)]
@@ -109,9 +109,7 @@ fn main_0() -> i32 {
     };
     assert!((((((r1 + r2) + r3) + r4) + r5) == 56));
     let values: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 7, 7, 3])));
-    let mut max: Ptr<i32> = match ({ (values.as_pointer() as Ptr<i32>) }, {
-        (values.as_pointer() as Ptr<i32>).offset((4) as isize)
-    }) {
+    let mut max: Ptr<i32> = match ({ values.decay() }, { values.decay().offset((4) as isize) }) {
         (mut __tmp_2, mut __tmp_3) => {
             let mut __best = __tmp_2.clone();
             if __tmp_2 != __tmp_3 {
@@ -127,7 +125,7 @@ fn main_0() -> i32 {
             __best
         }
     };
-    assert!(({ (max).clone() } == { (values.as_pointer() as Ptr::<i32>).offset((1) as isize) }));
+    assert!(({ (max).clone() } == { values.decay().offset((1) as isize) }));
     assert!(
         ((match (({ pick_3(0,) }), ({ pick_3(1,) }),) {
             (__tmp_4, __tmp_5) => {

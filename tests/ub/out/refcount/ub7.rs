@@ -26,6 +26,6 @@ fn main_0() -> i32 {
         ('n' as i8),
         ('g' as i8),
     ])));
-    return (({ strlen_0(((s.as_pointer() as Ptr<i8>).offset(0))) }) as i32);
+    return (({ strlen_0((s.decay().offset(0))) }) as i32);
 }
 pub fn __cpp2rust_init_globals() {}

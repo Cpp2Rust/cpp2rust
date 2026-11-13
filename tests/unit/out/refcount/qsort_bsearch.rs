@@ -18,9 +18,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([5, 2, 9, 1, 7, 3, 8, 4])));
     {
-        let __base = ((arr.as_pointer() as Ptr<i32>) as Ptr<i32>)
-            .to_any()
-            .reinterpret_cast::<u8>();
+        let __base = (arr.decay()).to_any().reinterpret_cast::<u8>();
         for __i in 0..8_usize {
             let mut __min = __i;
             for __j in (__i + 1)..8_usize {
@@ -56,11 +54,9 @@ fn main_0() -> i32 {
         i.prefix_inc();
     }
     let key: Value<i32> = Rc::new(RefCell::new(7));
-    let mut hit: Ptr<i32> = match ({ ((key.as_pointer()) as Ptr<i32>).to_any() },) {
+    let mut hit: Ptr<i32> = match ({ (key.as_pointer()).to_any() },) {
         (mut __tmp_0,) => {
-            let __base = ((arr.as_pointer() as Ptr<i32>) as Ptr<i32>)
-                .to_any()
-                .reinterpret_cast::<u8>();
+            let __base = (arr.decay()).to_any().reinterpret_cast::<u8>();
             let mut __lo: isize = 0;
             let mut __hi: isize = 8_usize as isize - 1;
             let mut __found = AnyPtr::default();
@@ -83,11 +79,9 @@ fn main_0() -> i32 {
     assert!((((!((hit).is_null())) as i32) != 0));
     assert!(((((hit.read()) == 7) as i32) != 0));
     let miss_key: Value<i32> = Rc::new(RefCell::new(42));
-    let mut miss: Ptr<i32> = match ({ ((miss_key.as_pointer()) as Ptr<i32>).to_any() },) {
+    let mut miss: Ptr<i32> = match ({ (miss_key.as_pointer()).to_any() },) {
         (mut __tmp_1,) => {
-            let __base = ((arr.as_pointer() as Ptr<i32>) as Ptr<i32>)
-                .to_any()
-                .reinterpret_cast::<u8>();
+            let __base = (arr.decay()).to_any().reinterpret_cast::<u8>();
             let mut __lo: isize = 0;
             let mut __hi: isize = 8_usize as isize - 1;
             let mut __found = AnyPtr::default();

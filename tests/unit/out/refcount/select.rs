@@ -14,7 +14,7 @@ fn main_0() -> i32 {
     let fds: Value<Box<[i32]>> =
         Rc::new(RefCell::new((0..2).map(|_| 0_i32).collect::<Box<[i32]>>()));
     assert!(
-        (((match ({ (fds.as_pointer() as Ptr::<i32>) },) {
+        (((match ({ fds.decay() },) {
             (mut __tmp_0,) => {
                 match nix::unistd::pipe() {
                     Ok((__r, __w)) => {
@@ -39,7 +39,7 @@ fn main_0() -> i32 {
         }
     };
     let tv: Value<libcc2rs::Timeval> = Rc::new(RefCell::new(Default::default()));
-    match ({ ((tv.as_pointer()) as Ptr<libcc2rs::Timeval>).to_any() },) {
+    match ({ (tv.as_pointer()).to_any() },) {
         (mut __tmp_2,) => {
             __tmp_2.memset((0) as u8, 16usize as usize);
             (__tmp_2).clone()
@@ -180,7 +180,7 @@ fn main_0() -> i32 {
     );
     assert!(
         (((match FdRegistry::with_fd(({ (*fds.borrow())[(1) as usize] }), |__fd| {
-            Ptr::<i8>::from_string_literal(b"x")
+            (Ptr::<i8>::from_string_literal(b"x"))
                 .to_any()
                 .reinterpret_cast::<u8>()
                 .with_slice(1_usize, |__buf| nix::unistd::write(__fd, __buf))

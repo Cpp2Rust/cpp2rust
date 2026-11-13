@@ -79,10 +79,7 @@ pub fn fill_1(mut out: AnyPtr, mut cap: usize) {
         (cap as u64)
     } as usize);
     {
-        out.memcpy(
-            &((src.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
-            n as usize,
-        );
+        out.memcpy(&(src.decay()).to_any(), n as usize);
         (out).clone()
     };
 }
@@ -92,7 +89,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let c: Value<Container> = <Value<Container>>::default();
-    match ({ ((c.as_pointer()) as Ptr<Container>).to_any() },) {
+    match ({ (c.as_pointer()).to_any() },) {
         (mut __tmp_0,) => {
             __tmp_0.memset((0) as u8, 128usize as usize);
             (__tmp_0).clone()
@@ -128,21 +125,13 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        (((((elem!(
-            (anon_0::raw_(field_ptr!(c.as_pointer(), view)).reinterpret_cast::<i8>() as Ptr::<i8>),
-            0
-        )
-        .read()) as i32)
-            == 2) as i32)
+        (((((elem!(anon_0::raw_(field_ptr!(c.as_pointer(), view)), 0).read()) as i32) == 2)
+            as i32)
             != 0)
     );
     assert!(
-        ((((((elem!(
-            (anon_0::raw_(field_ptr!(c.as_pointer(), view)).reinterpret_cast::<i8>() as Ptr::<i8>),
-            3
-        )
-        .read()) as u8) as i32)
-            == 80) as i32)
+        ((((((elem!(anon_0::raw_(field_ptr!(c.as_pointer(), view)), 3).read()) as u8) as i32) == 80)
+            as i32)
             != 0)
     );
     return 0;

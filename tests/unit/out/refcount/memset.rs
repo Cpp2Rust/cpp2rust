@@ -35,13 +35,13 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new((0..4).map(|_| 0_u8).collect::<Box<[u8]>>()));
     let mut fill: u8 = 7_u8;
     let mut n: i32 = 2;
-    match ({ (((bytes.as_pointer() as Ptr<u8>).offset(0)) as Ptr<u8>).to_any() },) {
+    match ({ (bytes.decay().offset(0)).to_any() },) {
         (mut __tmp_1,) => {
             __tmp_1.memset(((fill as i32) + 1) as u8, (n as usize) as usize);
             (__tmp_1).clone()
         }
     };
-    match ({ (((bytes.as_pointer() as Ptr<u8>).offset(n)) as Ptr<u8>).to_any() },) {
+    match ({ (bytes.decay().offset(n)).to_any() },) {
         (mut __tmp_2,) => {
             __tmp_2.memset((fill as i32) as u8, ((4 - n) as usize) as usize);
             (__tmp_2).clone()

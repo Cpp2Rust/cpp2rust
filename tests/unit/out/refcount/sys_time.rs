@@ -164,7 +164,7 @@ pub fn test_strftime_5() {
     );
     let buf: Value<Box<[i8]>> = Rc::new(RefCell::new((0..64).map(|_| 0_i8).collect::<Box<[i8]>>()));
     assert!(
-        (((match ({ (buf.as_pointer() as Ptr::<i8>) },) {
+        (((match ({ buf.decay() },) {
             (mut __tmp_4,) => {
                 {
                     let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
@@ -190,9 +190,9 @@ pub fn test_strftime_5() {
         } > 0_usize) as i32)
             != 0)
     );
-    println!("{}", (buf.as_pointer() as Ptr::<i8>));
+    println!("{}", buf.decay());
     assert!(
-        (((match ({ (buf.as_pointer() as Ptr::<i8>) },) {
+        (((match ({ buf.decay() },) {
             (mut __tmp_5,) => {
                 {
                     let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
@@ -218,9 +218,9 @@ pub fn test_strftime_5() {
         } > 0_usize) as i32)
             != 0)
     );
-    println!("{}", (buf.as_pointer() as Ptr::<i8>));
+    println!("{}", buf.decay());
     assert!(
-        (((match ({ (buf.as_pointer() as Ptr::<i8>) },) {
+        (((match ({ buf.decay() },) {
             (mut __tmp_6,) => {
                 {
                     let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
@@ -246,9 +246,9 @@ pub fn test_strftime_5() {
         } > 0_usize) as i32)
             != 0)
     );
-    println!("{}", (buf.as_pointer() as Ptr::<i8>));
+    println!("{}", buf.decay());
     assert!(
-        (((match ({ (buf.as_pointer() as Ptr::<i8>) },) {
+        (((match ({ buf.decay() },) {
             (mut __tmp_7,) => {
                 {
                     let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
@@ -274,11 +274,11 @@ pub fn test_strftime_5() {
         } > 0_usize) as i32)
             != 0)
     );
-    println!("{}", (buf.as_pointer() as Ptr::<i8>));
+    println!("{}", buf.decay());
     let small: Value<Box<[i8]>> =
         Rc::new(RefCell::new((0..4).map(|_| 0_i8).collect::<Box<[i8]>>()));
     assert!(
-        (((match ({ (small.as_pointer() as Ptr::<i8>) },) {
+        (((match ({ small.decay() },) {
             (mut __tmp_8,) => {
                 {
                     let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());

@@ -60,12 +60,9 @@ fn main_0() -> i32 {
             .with(|__s| __s.ifa_addr.clone())
             .reinterpret_cast::<libcc2rs::SockaddrIn>();
         let lo_be: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([127_u8, 0_u8, 0_u8, 1_u8])));
-        if (((((field_ptr!(sin, sin_addr)) as Ptr<libcc2rs::InAddr>)
+        if ((((field_ptr!(sin, sin_addr))
             .to_any()
-            .memcmp(
-                &((lo_be.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
-                4_usize,
-            )
+            .memcmp(&(lo_be.decay()).to_any(), 4_usize)
             == 0) as i32)
             != 0)
         {
@@ -78,12 +75,9 @@ fn main_0() -> i32 {
             let mask_be: Value<Box<[u8]>> =
                 Rc::new(RefCell::new(Box::new([255_u8, 0_u8, 0_u8, 0_u8])));
             assert!(
-                (((((field_ptr!(mask, sin_addr)) as Ptr<libcc2rs::InAddr>)
+                ((((field_ptr!(mask, sin_addr))
                     .to_any()
-                    .memcmp(
-                        &((mask_be.as_pointer() as Ptr::<u8>) as Ptr<u8>).to_any(),
-                        4_usize
-                    )
+                    .memcmp(&(mask_be.decay()).to_any(), 4_usize)
                     == 0) as i32)
                     != 0)
             );

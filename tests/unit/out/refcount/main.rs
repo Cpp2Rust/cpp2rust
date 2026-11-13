@@ -10,7 +10,7 @@ use std::rc::{Rc, Weak};
 pub fn main() {
     let size: usize = ::std::env::args().map(|arg| arg.len() + 1).sum();
     let args: Value<Box<[i8]>> = Rc::new(RefCell::new(vec![0; size].into_boxed_slice()));
-    let args_ptr: Ptr<i8> = args.as_pointer();
+    let args_ptr: Ptr<i8> = args.decay();
     let mut off = 0;
     let argv: Value<Box<[Ptr<i8>]>> = Rc::new(RefCell::new(
         ::std::env::args()
@@ -24,7 +24,7 @@ pub fn main() {
             .collect(),
     ));
     __cpp2rust_init_globals();
-    ::std::process::exit(main_0(::std::env::args().len() as i32, argv.as_pointer()));
+    ::std::process::exit(main_0(::std::env::args().len() as i32, argv.decay()));
 }
 fn main_0(argc: i32, argv: Ptr<Ptr<i8>>) -> i32 {
     let mut s: Vec<i8> = {

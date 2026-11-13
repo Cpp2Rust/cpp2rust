@@ -65,12 +65,12 @@ fn main_0() -> i32 {
             != 0)
     );
     libcc2rs::free_refcount((d2).to_any());
-    let mut d3: Ptr<i8> = libcc2rs::strdup_refcount((buf.as_pointer() as Ptr<i8>));
+    let mut d3: Ptr<i8> = libcc2rs::strdup_refcount(buf.decay());
     assert!((((!((d3).is_null())) as i32) != 0));
     assert!(
         ((({
             let mut __it1 = d3.to_c_string_iterator();
-            let mut __it2 = (buf.as_pointer() as Ptr<i8>).to_c_string_iterator();
+            let mut __it2 = buf.decay().to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
@@ -130,7 +130,7 @@ fn main_0() -> i32 {
         } == 0) as i32)
             != 0)
     );
-    libcc2rs::free_refcount((r.with(|__s| __s.name.clone()) as Ptr<i8>).to_any());
+    libcc2rs::free_refcount((r.with(|__s| __s.name.clone())).to_any());
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

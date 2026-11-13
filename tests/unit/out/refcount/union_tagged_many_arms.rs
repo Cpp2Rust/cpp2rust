@@ -93,11 +93,10 @@ fn main_0() -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(0));
     let e: Value<Slot> = <Value<Slot>>::default();
     (*e.borrow_mut()).tag = Tag_enum_T_REF;
-    anon_0::handle(field_ptr!(e.as_pointer(), payload))
-        .write(((x.as_pointer()) as Ptr<i32>).to_any());
+    anon_0::handle(field_ptr!(e.as_pointer(), payload)).write((x.as_pointer()).to_any());
     assert!(
         ((({ (anon_0::handle(field_ptr!(e.as_pointer(), payload)).read()) } == {
-            ((x.as_pointer()) as Ptr<i32>).to_any()
+            (x.as_pointer()).to_any()
         }) as i32)
             != 0)
     );

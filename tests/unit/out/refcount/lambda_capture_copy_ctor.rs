@@ -117,11 +117,10 @@ fn main_0() -> i32 {
     )));
     let a: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new(lambda!(
         {
-            let arr: Value<Box<[Counted]>> = Rc::new(RefCell::new(Box::new(
-                std::array::from_fn::<_, 2, _>(|__i: usize| {
-                    Counted::copy_from({ (arr.as_pointer() as Ptr<Counted>).offset(__i) })
-                }),
-            )));
+            let arr: Value<Box<[Counted]>> =
+                Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 2, _>(
+                    |__i: usize| Counted::copy_from({ arr.decay().offset(__i) }),
+                ))));
         },
         || -> i32 {
             return ({ (*arr.borrow())[(0) as usize].copies } + {

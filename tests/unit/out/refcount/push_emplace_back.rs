@@ -55,10 +55,10 @@ pub fn push_local_from_field_1(mut jpg: Ptr<JPEGData>, mut cond: bool) {
         dest = (field_ref!(jpg, app_data).as_pointer());
     }
     {
-        let __a1 = match ({ (head.as_pointer() as Ptr<u8>).offset((3) as isize) },) {
+        let __a1 = match ({ head.decay().offset((3) as isize) },) {
             (mut __tmp_0,) => {
                 let mut __v = Vec::new();
-                let mut __it = (head.as_pointer() as Ptr<u8>);
+                let mut __it = head.decay();
                 while __it != __tmp_0 {
                     __v.push((__it.iter_deref().read()));
                     __it.iter_inc();
@@ -88,10 +88,10 @@ pub fn emplace_local_from_field_4(mut jpg: Ptr<JPEGData>, mut cond: bool) {
         dest = (field_ref!(jpg, app_data).as_pointer());
     }
     {
-        let __init = match ({ (head.as_pointer() as Ptr<u8>).offset((3) as isize) },) {
+        let __init = match ({ head.decay().offset((3) as isize) },) {
             (mut __tmp_1,) => {
                 let mut __v = Vec::new();
-                let mut __it = (head.as_pointer() as Ptr<u8>);
+                let mut __it = head.decay();
                 while __it != __tmp_1 {
                     __v.push((__it.iter_deref().read()));
                     __it.iter_inc();

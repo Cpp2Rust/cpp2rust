@@ -100,12 +100,9 @@ impl SImpl for Ptr<S> {
         field_ref!((*self), v)
             .as_pointer()
             .write(field!(_a0, v).with_mut(std::mem::take));
-        match ({ ((array_field_ptr!((*self), n)) as Ptr<i32>).to_any() },) {
+        match ({ (array_field_ptr!((*self), n)).to_any() },) {
             (mut __tmp_0,) => {
-                __tmp_0.memcpy(
-                    &((array_field_ptr!(_a0, n)) as Ptr<i32>).to_any(),
-                    8_usize as usize,
-                );
+                __tmp_0.memcpy(&(array_field_ptr!(_a0, n)).to_any(), 8_usize as usize);
                 (__tmp_0).clone()
             }
         };

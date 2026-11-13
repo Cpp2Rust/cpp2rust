@@ -18,7 +18,7 @@ fn main_0() -> i32 {
     };
     assert!(({ ((*x.borrow()) == 2) }));
     let a: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2])));
-    p = ((a.as_pointer() as Ptr<i32>).offset(1));
+    p = (a.decay().offset(1));
     {
         p.with_mut(|__v| *__v = *__v + 1)
     };

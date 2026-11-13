@@ -188,19 +188,12 @@ fn main_0() -> i32 {
     assert!(
         ({
             ((*s.borrow()).grid[(1) as usize][(2) as usize] == 5)
-                && (({
-                    sum_0(
-                        (((array_field_ptr!(s.as_pointer(), grid) as Ptr<Box<[i32]>>)
-                            .offset(1)
-                            .decay()) as Ptr<i32>),
-                        3,
-                    )
-                }) == 12)
+                && (({ sum_0(array_field_ptr!(s.as_pointer(), grid).offset(1).decay(), 3) }) == 12)
         })
     );
     assert!(((elem!(field_ref!(s.as_pointer(), arr).decay(), 1_usize).read()) == 7));
     let mut e: Ptr<Elem> = (field_ref!(s.as_pointer(), elems).decay().offset(2_usize));
-    let mut h: Ptr<i32> = (array_field_ptr!(e, hist) as Ptr<i32>);
+    let mut h: Ptr<i32> = array_field_ptr!(e, hist);
     let mut c: Ptr<i16> = (field_ref!(e, coeffs).decay().offset(1_usize));
     let mut id: Ptr<i32> = (field_ptr!(
         field_ref!(s.as_pointer(), elems).decay().offset(1_usize),
@@ -220,10 +213,10 @@ fn main_0() -> i32 {
     assert!(
         (({
             sum_0(
-                (array_field_ptr!(
+                array_field_ptr!(
                     field_ref!(s.as_pointer(), elems).decay().offset(2_usize),
                     hist
-                ) as Ptr<i32>),
+                ),
                 4,
             )
         }) == 26)
@@ -237,11 +230,11 @@ fn main_0() -> i32 {
     assert!(
         (vec_elem!(s.as_pointer(), elems, 1_usize).with(|__s| __s.id) == 11)
             && ({ h.offset((3) as isize) } == {
-                ((array_field_ptr!(
+                (array_field_ptr!(
                     field_ref!(s.as_pointer(), elems).decay().offset(2_usize),
                     hist
-                ) as Ptr<i32>)
-                    .offset((3) as isize))
+                )
+                .offset((3) as isize))
             })
     );
     let mut row: Ptr<i32> = (field_ref!(s.as_pointer(), rows)
@@ -457,12 +450,9 @@ pub trait ElemImpl {
 impl ElemImpl for Ptr<Elem> {
     fn move_assign(&self, _a0: Ptr<Elem>) -> Ptr<Elem> {
         field!((*self), id).write({ { (*_a0.upgrade().deref()).id } });
-        match ({ ((array_field_ptr!((*self), hist)) as Ptr<i32>).to_any() },) {
+        match ({ (array_field_ptr!((*self), hist)).to_any() },) {
             (mut __tmp_0,) => {
-                __tmp_0.memcpy(
-                    &((array_field_ptr!(_a0, hist)) as Ptr<i32>).to_any(),
-                    16_usize as usize,
-                );
+                __tmp_0.memcpy(&(array_field_ptr!(_a0, hist)).to_any(), 16_usize as usize);
                 (__tmp_0).clone()
             }
         };
@@ -478,12 +468,9 @@ pub trait StateImpl {
 impl StateImpl for Ptr<State> {
     fn move_assign(&self, _a0: Ptr<State>) -> Ptr<State> {
         field!((*self), count).write({ { (*_a0.upgrade().deref()).count } });
-        match ({ ((array_field_ptr!((*self), grid)) as Ptr<Box<[i32]>>).to_any() },) {
+        match ({ (array_field_ptr!((*self), grid)).to_any() },) {
             (mut __tmp_1,) => {
-                __tmp_1.memcpy(
-                    &((array_field_ptr!(_a0, grid)) as Ptr<Box<[i32]>>).to_any(),
-                    24_usize as usize,
-                );
+                __tmp_1.memcpy(&(array_field_ptr!(_a0, grid)).to_any(), 24_usize as usize);
                 (__tmp_1).clone()
             }
         };

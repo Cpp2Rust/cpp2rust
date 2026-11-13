@@ -12,7 +12,7 @@ pub fn sum_then_product_0(first: i32, __args: Box<[VaArg]>) -> i32 {
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
     let mut sum: i32 = (*first.borrow());
     let mut product: i32 = (*first.borrow());
-    (*ap.borrow_mut()) = __args.as_pointer();
+    (*ap.borrow_mut()) = __args.decay();
     let mut val: i32 = 0_i32;
     'loop_: while (((({
         val = (*ap.borrow_mut()).arg::<i32>();
@@ -22,7 +22,7 @@ pub fn sum_then_product_0(first: i32, __args: Box<[VaArg]>) -> i32 {
     {
         sum += val;
     }
-    (*ap.borrow_mut()) = __args.as_pointer();
+    (*ap.borrow_mut()) = __args.decay();
     'loop_: while (((({
         val = (*ap.borrow_mut()).arg::<i32>();
         val

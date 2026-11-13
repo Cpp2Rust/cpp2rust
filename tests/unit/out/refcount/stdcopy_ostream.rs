@@ -21,8 +21,7 @@ fn main_0() -> i32 {
     )));
     {
         let ofs: Value<::std::fs::File> = Rc::new(RefCell::new(
-            ::std::fs::File::create((file.as_pointer() as Ptr<i8>).to_string())
-                .expect("Failed to open file"),
+            ::std::fs::File::create(file.decay().to_string()).expect("Failed to open file"),
         ));
         match ({ RandomAccessIterator::Vec(str.decay()) }, {
             RandomAccessIterator::Vec(str.decay().to_last())
@@ -40,7 +39,7 @@ fn main_0() -> i32 {
             }
         };
     }
-    match nix::unistd::unlink((file.as_pointer() as Ptr<i8>).to_rust_string().as_str()) {
+    match nix::unistd::unlink(file.decay().to_rust_string().as_str()) {
         Ok(()) => 0,
         Err(__e) => {
             libcc2rs::cpp2rust_errno().write(__e as i32);

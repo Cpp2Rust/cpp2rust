@@ -33,8 +33,8 @@ pub fn main() {
 fn main_0() -> i32 {
     let s: Value<pair> = <Value<pair>>::default();
     assert!(
-        ((((array_field_ptr!(s.as_pointer(), a) as Ptr::<i32>).offset((4) as isize)
-            == (array_field_ptr!(s.as_pointer(), b) as Ptr::<i32>)) as i32)
+        (((array_field_ptr!(s.as_pointer(), a).offset((4) as isize)
+            == array_field_ptr!(s.as_pointer(), b)) as i32)
             != 0)
     );
     return 0;

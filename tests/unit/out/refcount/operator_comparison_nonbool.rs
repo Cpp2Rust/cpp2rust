@@ -188,11 +188,9 @@ fn main_0() -> i32 {
         }) == 7)
     );
     let xs: Value<Box<[X]>> = Rc::new(RefCell::new(Box::new([X { v: 3 }, X { v: 1 }, X { v: 2 }])));
-    match ({ (xs.as_pointer() as Ptr<X>) },) {
+    match ({ xs.decay() },) {
         (mut __tmp_0,) => {
-            let __n = (xs.as_pointer() as Ptr<X>)
-                .offset((3) as isize)
-                .iter_distance(&__tmp_0);
+            let __n = xs.decay().offset((3) as isize).iter_distance(&__tmp_0);
             let mut __order: Vec<isize> = (0..__n).collect();
             __order.sort_by(|&__x, &__y| cpp_cmp(&__tmp_0.iter_at(__x), &__tmp_0.iter_at(__y)));
             reorder(__order, |__i| __tmp_0.iter_at(__i));
@@ -217,11 +215,9 @@ fn main_0() -> i32 {
         Mixed { v: 4 },
         Mixed { v: 5 },
     ])));
-    match ({ (ms.as_pointer() as Ptr<Mixed>) },) {
+    match ({ ms.decay() },) {
         (mut __tmp_1,) => {
-            let __n = (ms.as_pointer() as Ptr<Mixed>)
-                .offset((3) as isize)
-                .iter_distance(&__tmp_1);
+            let __n = ms.decay().offset((3) as isize).iter_distance(&__tmp_1);
             let mut __order: Vec<isize> = (0..__n).collect();
             __order.sort_by(|&__x, &__y| cpp_cmp(&__tmp_1.iter_at(__x), &__tmp_1.iter_at(__y)));
             reorder(__order, |__i| __tmp_1.iter_at(__i));
@@ -235,8 +231,8 @@ fn main_0() -> i32 {
     );
     assert!(
         (({
-            let _o: Ptr<Mixed> = (ms.as_pointer() as Ptr<Mixed>).offset(1);
-            MixedImpl::operator_lt(&(ms.as_pointer() as Ptr<Mixed>).offset(0), _o)
+            let _o: Ptr<Mixed> = ms.decay().offset(1);
+            MixedImpl::operator_lt(&ms.decay().offset(0), _o)
         }) == 8)
     );
     let mut b1: Boolish = Boolish { v: 1 };
@@ -277,11 +273,9 @@ fn main_0() -> i32 {
         Boolish { v: 1 },
         Boolish { v: 2 },
     ])));
-    match ({ (bs.as_pointer() as Ptr<Boolish>) },) {
+    match ({ bs.decay() },) {
         (mut __tmp_2,) => {
-            let __n = (bs.as_pointer() as Ptr<Boolish>)
-                .offset((3) as isize)
-                .iter_distance(&__tmp_2);
+            let __n = bs.decay().offset((3) as isize).iter_distance(&__tmp_2);
             let mut __order: Vec<isize> = (0..__n).collect();
             __order.sort_by(|&__x, &__y| cpp_cmp(&__tmp_2.iter_at(__x), &__tmp_2.iter_at(__y)));
             reorder(__order, |__i| __tmp_2.iter_at(__i));
@@ -305,17 +299,17 @@ fn main_0() -> i32 {
     let ris: Value<Box<[RefInt]>> =
         Rc::new(RefCell::new(Box::new([RefInt { v: 1 }, RefInt { v: 2 }])));
     assert!(
-        (match ({ (ris.as_pointer() as Ptr<RefInt>).offset((2) as isize) },) {
+        (match ({ ris.decay().offset((2) as isize) },) {
             (mut __tmp_3,) => {
                 {
-                    let mut __it = (ris.as_pointer() as Ptr<RefInt>);
+                    let mut __it = ris.decay();
                     while __it != __tmp_3 && !CppEq::equal(&__it.iter_deref(), &ri2.as_pointer()) {
                         __it.iter_inc();
                     }
                     __it
                 }
             }
-        } == (ris.as_pointer() as Ptr<RefInt>))
+        } == ris.decay())
     );
     return 0;
 }

@@ -12,7 +12,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let arr: Value<Box<[u32]>> = Rc::new(RefCell::new(Box::new([67305985_u32, 134678021_u32])));
-    let mut bytes: Ptr<u8> = (arr.as_pointer() as Ptr<u32>).reinterpret_cast::<u8>();
+    let mut bytes: Ptr<u8> = arr.decay().reinterpret_cast::<u8>();
     assert!((((elem!(bytes, 3).read()) as i32) == 4));
     assert!((((elem!(bytes, 4).read()) as i32) == 5));
     elem!(bytes, 3).write(255_u8);

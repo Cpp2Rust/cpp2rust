@@ -37,9 +37,9 @@ fn main_0() -> i32 {
     }));
     let mut p: Ptr<S> = libcc2rs::malloc_refcount(12usize).reinterpret_cast::<S>();
     assert!((((!((p).is_null())) as i32) != 0));
-    match ({ ((field_ptr!(p, x)) as Ptr<i32>).to_any() },) {
+    match ({ (field_ptr!(p, x)).to_any() },) {
         (mut __tmp_0,) => {
-            __tmp_0.memcpy(&((src.as_pointer()) as Ptr<S>).to_any(), 12usize as usize);
+            __tmp_0.memcpy(&(src.as_pointer()).to_any(), 12usize as usize);
             (__tmp_0).clone()
         }
     };
@@ -53,9 +53,9 @@ fn main_0() -> i32 {
             != 0)
     );
     let n: Value<In> = Rc::new(RefCell::new(In { a: 5_i16, b: 6_i16 }));
-    match ({ ((field_ptr!(p, in_)) as Ptr<In>).to_any() },) {
+    match ({ (field_ptr!(p, in_)).to_any() },) {
         (mut __tmp_1,) => {
-            __tmp_1.memcpy(&((n.as_pointer()) as Ptr<In>).to_any(), 4usize as usize);
+            __tmp_1.memcpy(&(n.as_pointer()).to_any(), 4usize as usize);
             (__tmp_1).clone()
         }
     };

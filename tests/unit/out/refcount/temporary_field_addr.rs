@@ -109,11 +109,11 @@ fn main_0() -> i32 {
     }
     .read());
     let mut length: usize =
-        ((match Rc::new(RefCell::new(({ make_0(calls.as_pointer()) }))).as_pointer() {
+        (match Rc::new(RefCell::new(({ make_0(calls.as_pointer()) }))).as_pointer() {
             __tmp_6 => array_field_ptr!(__tmp_6, name),
-        }) as Ptr<i8>)
-            .to_c_string_iterator()
-            .count();
+        })
+        .to_c_string_iterator()
+        .count();
     let mut aggregate: i32 = ({
         sum_1(
             (match Rc::new(RefCell::new(Outer {
@@ -163,12 +163,9 @@ impl OuterImpl for Ptr<Outer> {
             let _arg0: Ptr<Inner> = field_ptr!(_a0, inner);
             InnerImpl::move_assign(&field_ptr!((*self), inner), _arg0)
         });
-        match ({ ((array_field_ptr!((*self), name)) as Ptr<i8>).to_any() },) {
+        match ({ (array_field_ptr!((*self), name)).to_any() },) {
             (mut __tmp_0,) => {
-                __tmp_0.memcpy(
-                    &((array_field_ptr!(_a0, name)) as Ptr<i8>).to_any(),
-                    8_usize as usize,
-                );
+                __tmp_0.memcpy(&(array_field_ptr!(_a0, name)).to_any(), 8_usize as usize);
                 (__tmp_0).clone()
             }
         };

@@ -21,22 +21,19 @@ pub fn main() {
 fn main_0() -> i32 {
     let src: Value<point> = Rc::new(RefCell::new(point { x: 3, y: 7 }));
     let buf: Value<Box<[u8]>> = Rc::new(RefCell::new((0..8).map(|_| 0_u8).collect::<Box<[u8]>>()));
-    match ({ ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any() },) {
+    match ({ (buf.decay()).to_any() },) {
         (mut __tmp_0,) => {
             __tmp_0.memcpy(
-                &((src.as_pointer()) as Ptr<point>).to_any(),
+                &(src.as_pointer()).to_any(),
                 ::std::mem::size_of::<[u8; 8]>() as usize,
             );
             (__tmp_0).clone()
         }
     };
     let dst: Value<point> = <Value<point>>::default();
-    match ({ ((dst.as_pointer()) as Ptr<point>).to_any() },) {
+    match ({ (dst.as_pointer()).to_any() },) {
         (mut __tmp_1,) => {
-            __tmp_1.memcpy(
-                &((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
-                8usize as usize,
-            );
+            __tmp_1.memcpy(&(buf.decay()).to_any(), 8usize as usize);
             (__tmp_1).clone()
         }
     };

@@ -63,10 +63,10 @@ fn main_0() -> i32 {
     let mut s: Ptr<S> = libcc2rs::calloc_refcount(1_usize, (8usize as usize).wrapping_add(8_usize))
         .reinterpret_cast::<S>();
     assert!((((!((s).is_null())) as i32) != 0));
-    match ({ ((array_field_ptr!(s, name) as Ptr<i8>) as Ptr<i8>).to_any() },) {
+    match ({ (array_field_ptr!(s, name)).to_any() },) {
         (mut __tmp_0,) => {
             __tmp_0.memcpy(
-                &Ptr::<i8>::from_string_literal(b"abcdefg").to_any(),
+                &(Ptr::<i8>::from_string_literal(b"abcdefg")).to_any(),
                 8_usize as usize,
             );
             (__tmp_0).clone()
@@ -76,7 +76,7 @@ fn main_0() -> i32 {
     assert!((((s.with(|__s| __s.n) == 5) as i32) != 0));
     assert!(
         ((({
-            let mut __it1 = (array_field_ptr!(s, name) as Ptr<i8>).to_c_string_iterator();
+            let mut __it1 = array_field_ptr!(s, name).to_c_string_iterator();
             let mut __it2 = Ptr::<i8>::from_string_literal(b"abcdefg").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
@@ -108,9 +108,7 @@ fn main_0() -> i32 {
     );
     let mut tail: Ptr<E> = (t.offset((1) as isize)).reinterpret_cast::<E>();
     assert!(
-        ((({ (tail).clone() } == { ((array_field_ptr!(t, a) as Ptr<E>).offset((1) as isize)) })
-            as i32)
-            != 0)
+        ((({ (tail).clone() } == { (array_field_ptr!(t, a).offset((1) as isize)) }) as i32) != 0)
     );
     field!(elem!(tail, 0), id).write(30);
     field!(t, cap).write(4);

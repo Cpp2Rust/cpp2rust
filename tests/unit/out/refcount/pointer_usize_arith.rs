@@ -12,7 +12,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([10, 11, 12, 13, 14, 15, 16, 17])));
-    let mut p: Ptr<i32> = (arr.as_pointer() as Ptr<i32>);
+    let mut p: Ptr<i32> = arr.decay();
     let mut q: Ptr<i32> = p.offset((1) as isize);
     assert!(((q.read()) == 11));
     let mut r: Ptr<i32> = p.offset((3) as isize);
@@ -59,28 +59,27 @@ fn main_0() -> i32 {
     let bytes: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
         0_u8, 1_u8, 2_u8, 3_u8, 4_u8, 5_u8, 6_u8, 7_u8,
     ])));
-    let mut bp: Ptr<u8> = (bytes.as_pointer() as Ptr<u8>);
+    let mut bp: Ptr<u8> = bytes.decay();
     let mut bq: Ptr<u8> = bp.offset((4) as isize);
     assert!((((bq.read()) as i32) == 4));
     let mut bdiff: isize = (((bq).clone() - (bp).clone()) as i64 as isize);
     assert!((bdiff == 4_isize));
-    let mut cp: Ptr<i32> = (arr.as_pointer() as Ptr<i32>);
+    let mut cp: Ptr<i32> = arr.decay();
     let mut cq: Ptr<i32> = cp.offset((2) as isize);
     assert!(((cq.read()) == 12));
     let mut cdiff: isize = (((cq).clone() - (cp).clone()) as i64 as isize);
     assert!((cdiff == 2_isize));
     let mut n: usize = 3_usize;
-    let mut q5: Ptr<i32> = (arr.as_pointer() as Ptr<i32>).offset((n) as isize);
+    let mut q5: Ptr<i32> = arr.decay().offset((n) as isize);
     assert!(((q5.read()) == 13));
-    let mut q6: Ptr<i32> = ((arr.as_pointer() as Ptr<i32>).offset(n));
+    let mut q6: Ptr<i32> = (arr.decay().offset(n));
     assert!(({ (q6).clone() } == { (q5).clone() }));
     let matrix: Value<Box<[Box<[i32]>]>> = Rc::new(RefCell::new(Box::new([
         Box::new([0, 1, 2, 3]),
         Box::new([4, 5, 6, 7]),
         Box::new([8, 9, 10, 11]),
     ])));
-    let mut row1: Ptr<i32> =
-        ((((matrix.as_pointer() as Ptr<Box<[i32]>>).offset(1).decay()) as Ptr<i32>).offset(0));
+    let mut row1: Ptr<i32> = (matrix.decay().offset(1).decay().offset(0));
     assert!(((elem!(row1, 2).read()) == 6));
     let mut back: Ptr<i32> = end.offset(-((1) as isize));
     assert!(((back.read()) == 17));

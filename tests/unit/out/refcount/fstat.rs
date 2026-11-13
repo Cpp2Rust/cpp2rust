@@ -34,7 +34,7 @@ fn main_0() -> i32 {
     assert!((((fd >= 0) as i32) != 0));
     assert!(
         (((match FdRegistry::with_fd(fd, |__fd| {
-            Ptr::<i8>::from_string_literal(b"hello")
+            (Ptr::<i8>::from_string_literal(b"hello"))
                 .to_any()
                 .reinterpret_cast::<u8>()
                 .with_slice(5_usize, |__buf| nix::unistd::write(__fd, __buf))

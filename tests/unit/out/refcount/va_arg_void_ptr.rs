@@ -23,7 +23,7 @@ pub fn registry_update_0(mut r: Ptr<registry>, field: field, __args: Box<[VaArg]
     let field: Value<field> = Rc::new(RefCell::new(field));
     let mut result: i32 = 0;
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
-    (*ap.borrow_mut()) = __args.as_pointer();
+    (*ap.borrow_mut()) = __args.decay();
     'switch: {
         match { ((*field.borrow()) as u32) } {
             __v if __v == ((field_FIELD_SLOT as i32) as u32) => {

@@ -31,10 +31,10 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let src: Value<Box<[u32]>> = Rc::new(RefCell::new(Box::new([1_u32, 2_u32, 3_u32])));
-    let mut v1: Vec<u32> = match ({ (src.as_pointer() as Ptr<u32>).offset((3) as isize) },) {
+    let mut v1: Vec<u32> = match ({ src.decay().offset((3) as isize) },) {
         (mut __tmp_0,) => {
             let mut __v = Vec::new();
-            let mut __it = (src.as_pointer() as Ptr<u32>);
+            let mut __it = src.decay();
             while __it != __tmp_0 {
                 __v.push((__it.iter_deref().read()));
                 __it.iter_inc();
@@ -44,10 +44,10 @@ fn main_0() -> i32 {
     };
     assert!((v1.len() == 3_usize));
     assert!(((v1[0_usize] == 1_u32) && (v1[1_usize] == 2_u32)) && (v1[2_usize] == 3_u32));
-    let mut v2: Vec<u64> = match ({ (src.as_pointer() as Ptr<u32>).offset((3) as isize) },) {
+    let mut v2: Vec<u64> = match ({ src.decay().offset((3) as isize) },) {
         (mut __tmp_1,) => {
             let mut __v = Vec::new();
-            let mut __it = (src.as_pointer() as Ptr<u32>);
+            let mut __it = src.decay();
             while __it != __tmp_1 {
                 __v.push(((__it.iter_deref().read()) as u64));
                 __it.iter_inc();
@@ -57,10 +57,10 @@ fn main_0() -> i32 {
     };
     assert!((v2.len() == 3_usize));
     assert!(((v2[0_usize] == 1_u64) && (v2[1_usize] == 2_u64)) && (v2[2_usize] == 3_u64));
-    let mut v3: Vec<i32> = match ({ (src.as_pointer() as Ptr<u32>).offset((3) as isize) },) {
+    let mut v3: Vec<i32> = match ({ src.decay().offset((3) as isize) },) {
         (mut __tmp_2,) => {
             let mut __v = Vec::new();
-            let mut __it = (src.as_pointer() as Ptr<u32>);
+            let mut __it = src.decay();
             while __it != __tmp_2 {
                 __v.push(((__it.iter_deref().read()) as i32));
                 __it.iter_inc();
@@ -71,10 +71,10 @@ fn main_0() -> i32 {
     assert!((v3.len() == 3_usize));
     assert!(((v3[0_usize] == 1) && (v3[1_usize] == 2)) && (v3[2_usize] == 3));
     let src1: Value<Box<[u32]>> = Rc::new(RefCell::new(Box::new([1_u32, 2_u32, 3_u32])));
-    let mut v4: Vec<u32> = match ({ (src1.as_pointer() as Ptr<u32>).to_end() },) {
+    let mut v4: Vec<u32> = match ({ src1.decay().to_end() },) {
         (mut __tmp_3,) => {
             let mut __v = Vec::new();
-            let mut __it = (src1.as_pointer() as Ptr<u32>);
+            let mut __it = src1.decay();
             while __it != __tmp_3 {
                 __v.push((__it.iter_deref().read()));
                 __it.iter_inc();
@@ -86,7 +86,7 @@ fn main_0() -> i32 {
     assert!(((v4[0_usize] == 1_u32) && (v4[1_usize] == 2_u32)) && (v4[2_usize] == 3_u32));
     let buf: Value<Box<[u8]>> =
         Rc::new(RefCell::new(Box::new([10_u8, 20_u8, 30_u8, 40_u8, 50_u8])));
-    let mut start: Ptr<u8> = (buf.as_pointer() as Ptr<u8>);
+    let mut start: Ptr<u8> = buf.decay();
     let mut len: usize = 5_usize;
     let mut v5: Vec<u8> = match ({ start.offset((len) as isize) },) {
         (mut __tmp_4,) => {
@@ -197,10 +197,10 @@ fn main_0() -> i32 {
         })
     );
     let ints: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([4, 5, 6])));
-    let mut v7: Vec<Degrees> = match ({ (ints.as_pointer() as Ptr<i32>).offset((3) as isize) },) {
+    let mut v7: Vec<Degrees> = match ({ ints.decay().offset((3) as isize) },) {
         (mut __tmp_10,) => {
             let mut __v = Vec::new();
-            let mut __it = (ints.as_pointer() as Ptr<i32>);
+            let mut __it = ints.decay();
             while __it != __tmp_10 {
                 __v.push(<Degrees as CppFrom<i32>>::cpp_from(__it.iter_deref()));
                 __it.iter_inc();
@@ -213,11 +213,10 @@ fn main_0() -> i32 {
         Reading { raw_: 4 },
         Reading { raw_: 5 },
     ])));
-    let mut v8: Vec<i64> = match ({ (readings.as_pointer() as Ptr<Reading>).offset((2) as isize) },)
-    {
+    let mut v8: Vec<i64> = match ({ readings.decay().offset((2) as isize) },) {
         (mut __tmp_11,) => {
             let mut __v = Vec::new();
-            let mut __it = (readings.as_pointer() as Ptr<Reading>);
+            let mut __it = readings.decay();
             while __it != __tmp_11 {
                 __v.push(<i64 as CppFrom<Reading>>::cpp_from(__it.iter_deref()));
                 __it.iter_inc();
