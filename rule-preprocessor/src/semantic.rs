@@ -77,7 +77,6 @@ fn build_rustc_args(crate_root: &Path) -> Vec<String> {
         "libcc2rs",
         "libcc2rs_macros",
         "libc",
-        "brotli_sys",
         "rustls_ffi",
         "nix",
         "jiff",

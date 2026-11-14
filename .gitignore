@@ -5,7 +5,6 @@ Cargo.lock
 target/
 
 rules/rustls/rustls.h
-rules/brotli/brotli/
 
 # Python
 *.pyc
