@@ -68,7 +68,7 @@ fn main_0() -> i32 {
     let buf: Value<Box<[i8]>> = Rc::new(RefCell::new((0..16).map(|_| 0_i8).collect::<Box<[i8]>>()));
     match ({ (buf.decay()).to_any() },) {
         (mut __tmp_0,) => {
-            __tmp_0.memset((0) as u8, ::std::mem::size_of::<[i8; 16]>() as usize);
+            __tmp_0.memset((0) as u8, ::std::mem::size_of::<[i8; 16]>());
             (__tmp_0).clone()
         }
     };

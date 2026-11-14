@@ -30,7 +30,7 @@ impl Elem {
         ) {
             (mut __tmp_0, mut __tmp_1) => {
                 if 16_usize != 0 {
-                    ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, 16_usize as usize)
+                    ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, 16_usize)
                 }
                 __tmp_0
             }
@@ -69,7 +69,7 @@ impl State {
         ) {
             (mut __tmp_2, mut __tmp_3) => {
                 if 24_usize != 0 {
-                    ::std::ptr::copy_nonoverlapping(__tmp_3, __tmp_2, 24_usize as usize)
+                    ::std::ptr::copy_nonoverlapping(__tmp_3, __tmp_2, 24_usize)
                 }
                 __tmp_2
             }
@@ -116,7 +116,7 @@ pub unsafe fn fill_1(mut s: *mut State) {
     }
     (&mut (*s)).arr[(1_usize)] = 7;
     {
-        let __a0 = 3_usize as usize;
+        let __a0 = 3_usize;
         (*s).elems.resize_with(__a0, || <Elem>::default())
     };
     let mut i: i32 = 0;
@@ -124,7 +124,7 @@ pub unsafe fn fill_1(mut s: *mut State) {
         (&mut (*s)).elems[(i as usize)].id = i;
         (&mut (*s)).elems[(i as usize)].hist[(i) as usize] = ((10) * (i));
         {
-            let __a0 = 4_usize as usize;
+            let __a0 = 4_usize;
             (&mut (*s)).elems[(i as usize)]
                 .coeffs
                 .resize(__a0, (i as i16))
@@ -244,7 +244,7 @@ unsafe fn main_0() -> i32 {
         .collect::<Vec<_>>();
     let mut first: *mut Elem = (&mut elems[(0_usize)] as *mut Elem);
     {
-        let __a0 = 2_usize as usize;
+        let __a0 = 2_usize;
         elems[(1_usize)].coeffs.resize_with(__a0, || 0_i16)
     };
     elems[(1_usize)].coeffs[(1_usize)] = 4_i16;

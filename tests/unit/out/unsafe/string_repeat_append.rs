@@ -9,7 +9,7 @@ use std::rc::Rc;
 pub unsafe fn append_to_reference_0(s: *mut Vec<libc::c_char>) {
     (*s).splice(
         (*s).len() - 1..(*s).len() - 1,
-        ::std::vec::from_elem(('r' as libc::c_char), 1_usize as usize),
+        ::std::vec::from_elem(('r' as libc::c_char), 1_usize),
     );
 }
 pub fn main() {
@@ -85,7 +85,7 @@ unsafe fn main_0() -> i32 {
                     }
                     s.splice(
                         s.len() - 1..s.len() - 1,
-                        ::std::vec::from_elem(character, count as usize),
+                        ::std::vec::from_elem(character, count),
                     );
                     assert!(((s.len() - 1) == ((length).wrapping_add(count))));
                     let mut data: *const libc::c_char = (s.as_mut_ptr()).cast_const();
@@ -117,7 +117,7 @@ unsafe fn main_0() -> i32 {
     .to_vec();
     unboxed.splice(
         unboxed.len() - 1..unboxed.len() - 1,
-        ::std::vec::from_elem(('b' as libc::c_char), 2_usize as usize),
+        ::std::vec::from_elem(('b' as libc::c_char), 2_usize),
     );
     assert!(
         unboxed == {
@@ -146,7 +146,7 @@ unsafe fn main_0() -> i32 {
     let mut pointer: *mut Vec<libc::c_char> = (&mut indirect as *mut Vec<libc::c_char>);
     (*pointer).splice(
         (*pointer).len() - 1..(*pointer).len() - 1,
-        ::std::vec::from_elem(('\0' as libc::c_char), 0_usize as usize),
+        ::std::vec::from_elem(('\0' as libc::c_char), 0_usize),
     );
     assert!(
         indirect == {

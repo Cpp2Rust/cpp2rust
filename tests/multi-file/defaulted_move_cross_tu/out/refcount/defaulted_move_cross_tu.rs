@@ -20,7 +20,7 @@ pub struct S {
 impl S {
     pub fn new(mut x: i32) -> Self {
         Self {
-            v: vec![x; (x as usize) as usize],
+            v: vec![x; (x as usize)],
             n: Box::new([x, (x + 1)]),
         }
     }
@@ -102,7 +102,7 @@ impl SImpl for Ptr<S> {
             .write(field!(_a0, v).with_mut(std::mem::take));
         match ({ (array_field_ptr!((*self), n)).to_any() },) {
             (mut __tmp_0,) => {
-                __tmp_0.memcpy(&(array_field_ptr!(_a0, n)).to_any(), 8_usize as usize);
+                __tmp_0.memcpy(&(array_field_ptr!(_a0, n)).to_any(), 8_usize);
                 (__tmp_0).clone()
             }
         };

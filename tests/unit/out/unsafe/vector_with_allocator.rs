@@ -106,7 +106,7 @@ unsafe fn main_0() -> i32 {
     assert!(v1.is_empty());
     let mut s1: usize = v1.len();
     {
-        let __a0 = 100_usize as usize;
+        let __a0 = 100_usize;
         v1.resize_with(__a0, || 0_i32)
     };
     assert!(((v1.len()) == (100_usize)));
@@ -155,14 +155,14 @@ unsafe fn main_0() -> i32 {
     assert!(((v2[(1_usize)]) == (2)));
     assert!(((v2[(2_usize)]) == (3)));
     let mut s2: usize = v2.len();
-    let mut v3: Vec<i32> = vec![1; 100_usize as usize];
+    let mut v3: Vec<i32> = vec![1; 100_usize];
     assert!(((v3.len()) == (100_usize)));
     let mut i: i32 = 0;
     'loop_: while ((i) < (100)) {
         assert!(((v3[(i as usize)]) == (1)));
         i.prefix_inc();
     }
-    let mut v6: Vec<f64> = vec![2_f64; s2 as usize];
+    let mut v6: Vec<f64> = vec![2_f64; s2];
     assert!(((v6.len()) == (s2)));
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < (s2)) {
@@ -185,27 +185,27 @@ unsafe fn main_0() -> i32 {
     assert!(((v3[(1_usize)]) == (98)));
     assert!(((v3.capacity()) == (100_usize)));
     assert!(((v3.len()) == (100_usize)));
-    if 200_usize as usize > v3.capacity() as usize {
+    if 200_usize > v3.capacity() as usize {
         let len_0 = v3.len();
-        v3.reserve_exact(200_usize as usize - len_0 as usize);
+        v3.reserve_exact(200_usize - len_0 as usize);
     };
     assert!(((v3.capacity()) == (200_usize)));
     assert!(((v3.len()) == (100_usize)));
-    if 50_usize as usize > v3.capacity() as usize {
+    if 50_usize > v3.capacity() as usize {
         let len_0 = v3.len();
-        v3.reserve_exact(50_usize as usize - len_0 as usize);
+        v3.reserve_exact(50_usize - len_0 as usize);
     };
     assert!(((v3.capacity()) == (200_usize)));
     assert!(((v3.len()) == (100_usize)));
-    if 200_usize as usize > v3.capacity() as usize {
+    if 200_usize > v3.capacity() as usize {
         let len_0 = v3.len();
-        v3.reserve_exact(200_usize as usize - len_0 as usize);
+        v3.reserve_exact(200_usize - len_0 as usize);
     };
     assert!(((v3.capacity()) == (200_usize)));
     assert!(((v3.len()) == (100_usize)));
-    if 201_usize as usize > v3.capacity() as usize {
+    if 201_usize > v3.capacity() as usize {
         let len_0 = v3.len();
-        v3.reserve_exact(201_usize as usize - len_0 as usize);
+        v3.reserve_exact(201_usize - len_0 as usize);
     };
     assert!(((v3.capacity()) == (201_usize)));
     assert!(((v3.len()) == (100_usize)));
@@ -220,15 +220,15 @@ unsafe fn main_0() -> i32 {
     x0 = 6_f64;
     assert!(((*((v6).last_mut().unwrap())) == (5_f64)));
     let mut idx: i32 = 0;
-    assert!(((*(&mut (v6)[(idx as usize) as usize] as *mut f64)) == (2_f64)));
-    assert!(((*(&mut (v6)[(s2).wrapping_sub(1_usize) as usize] as *mut f64)) == (5_f64)));
-    let ref1: *mut f64 = (&mut (v6)[(s2).wrapping_sub(1_usize) as usize] as *mut f64);
+    assert!(((*(&mut (v6)[(idx as usize)] as *mut f64)) == (2_f64)));
+    assert!(((*(&mut (v6)[(s2).wrapping_sub(1_usize)] as *mut f64)) == (5_f64)));
+    let ref1: *mut f64 = (&mut (v6)[(s2).wrapping_sub(1_usize)] as *mut f64);
     (*ref1) += 1.5_f64;
-    assert!(((*(&mut (v6)[(s2).wrapping_sub(1_usize) as usize] as *mut f64)) == (6.5_f64)));
-    let mut x1: f64 = (*(&mut (v6)[(s2).wrapping_sub(1_usize) as usize] as *mut f64));
+    assert!(((*(&mut (v6)[(s2).wrapping_sub(1_usize)] as *mut f64)) == (6.5_f64)));
+    let mut x1: f64 = (*(&mut (v6)[(s2).wrapping_sub(1_usize)] as *mut f64));
     assert!(((x1) == (6.5_f64)));
     x1 -= 1.5_f64;
-    assert!(((*(&mut (v6)[(s2).wrapping_sub(1_usize) as usize] as *mut f64)) == (6.5_f64)));
+    assert!(((*(&mut (v6)[(s2).wrapping_sub(1_usize)] as *mut f64)) == (6.5_f64)));
     let mut v7: Vec<i32> = Vec::new();
     let mut v8: Vec<i32> = Vec::new();
     {
@@ -332,8 +332,7 @@ unsafe fn main_0() -> i32 {
     assert!(((v13.len()) == (5_usize)));
     assert!(((v13[(0_usize)] as i32) == (10)) && ((v13[(4_usize)] as i32) == (50)));
     assert!(
-        ((((s1).wrapping_add(s2))
-            .wrapping_add(((*(&mut (v2)[0_usize as usize] as *mut i32)) as usize)))
+        ((((s1).wrapping_add(s2)).wrapping_add(((*(&mut (v2)[0_usize] as *mut i32)) as usize)))
             == (103_usize))
     );
     return 0;

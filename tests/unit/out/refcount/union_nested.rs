@@ -99,7 +99,7 @@ fn main_0() -> i32 {
     let ex: Value<Outer> = <Value<Outer>>::default();
     match ({ (ex.as_pointer()).to_any() },) {
         (mut __tmp_0,) => {
-            __tmp_0.memset((0) as u8, 144usize as usize);
+            __tmp_0.memset((0) as u8, 144usize);
             (__tmp_0).clone()
         }
     };

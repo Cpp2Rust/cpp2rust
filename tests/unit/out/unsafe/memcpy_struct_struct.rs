@@ -61,7 +61,7 @@ unsafe fn main_0() -> i32 {
     ) {
         (mut __tmp_0, mut __tmp_1, mut __tmp_2) => {
             if (__tmp_2 as usize) != 0 {
-                ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, (__tmp_2 as usize) as usize)
+                ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, (__tmp_2 as usize))
             }
             __tmp_0
         }

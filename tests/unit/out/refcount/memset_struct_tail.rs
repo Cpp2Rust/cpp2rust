@@ -43,7 +43,7 @@ fn main_0() -> i32 {
     assert!((!((p).is_null())));
     match ({ (p).to_any() },) {
         (mut __tmp_0,) => {
-            __tmp_0.memset((255) as u8, 32usize as usize);
+            __tmp_0.memset((255) as u8, 32usize);
             (__tmp_0).clone()
         }
     };
@@ -52,7 +52,7 @@ fn main_0() -> i32 {
         (mut __tmp_1,) => {
             __tmp_1.memset(
                 (0) as u8,
-                (32usize as usize).wrapping_sub((4_usize as usize)) as usize,
+                (32usize as usize).wrapping_sub((4_usize as usize)),
             );
             (__tmp_1).clone()
         }
@@ -71,7 +71,7 @@ fn main_0() -> i32 {
         (mut __tmp_2,) => {
             __tmp_2.memset(
                 (0) as u8,
-                (24_usize as usize).wrapping_sub((8_usize as usize)) as usize,
+                (24_usize as usize).wrapping_sub((8_usize as usize)),
             );
             (__tmp_2).clone()
         }

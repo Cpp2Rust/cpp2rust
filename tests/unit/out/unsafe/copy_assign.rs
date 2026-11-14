@@ -151,7 +151,7 @@ impl HasCopyCounted {
         ) {
             (mut __tmp_0, mut __tmp_1) => {
                 if 8_usize != 0 {
-                    ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, 8_usize as usize)
+                    ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, 8_usize)
                 }
                 __tmp_0
             }

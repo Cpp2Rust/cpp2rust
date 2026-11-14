@@ -46,7 +46,7 @@ fn main_0() -> i32 {
     assert!(
         ((match ({ (i.postfix_inc() as usize) },) {
             (mut __tmp_2,) => {
-                if __tmp_2 as usize >= (*c.upgrade().deref()).len() {
+                if __tmp_2 >= (*c.upgrade().deref()).len() {
                     panic!("out of bounds access")
                 } else {
                     c.decay().offset(__tmp_2 as isize)

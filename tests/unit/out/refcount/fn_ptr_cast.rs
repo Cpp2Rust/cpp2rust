@@ -50,6 +50,12 @@ pub fn test_call_through_cast_5() {
     let mut result: i32 = ({ gfn.call((val.as_pointer()).to_any(), 42) });
     assert!((result == 142));
 }
+pub fn test_null_cast_6() {
+    let mut fn_: FnPtr<fn(i32) -> i32> = FnPtr::<fn(i32) -> i32>::null();
+    let mut gfn: FnPtr<fn()> = fn_.cast::<fn()>();
+    assert!((gfn).is_null());
+    assert!((gfn.cast::<fn(i32) -> i32>()).is_null());
+}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
@@ -59,6 +65,7 @@ fn main_0() -> i32 {
     ({ test_double_cast_2() });
     ({ test_void_ptr_to_fn_3() });
     ({ test_call_through_cast_5() });
+    ({ test_null_cast_6() });
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

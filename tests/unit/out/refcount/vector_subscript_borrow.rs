@@ -21,7 +21,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let v: Value<Vec<i32>> = Rc::new(RefCell::new(vec![1; 4_usize as usize]));
+    let v: Value<Vec<i32>> = Rc::new(RefCell::new(vec![1; 4_usize]));
     let mut items: Vec<u32> = (0..(3_usize) as usize).map(|_| 0_u32).collect::<Vec<_>>();
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < items.len()) {

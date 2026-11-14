@@ -71,7 +71,7 @@ fn main_0() -> i32 {
     assert!(v1.is_empty());
     let mut s1: usize = v1.len();
     {
-        let __a0 = 100_usize as usize;
+        let __a0 = 100_usize;
         v1.resize_with(__a0, || 0_i32)
     };
     assert!((v1.len() == 100_usize));
@@ -119,14 +119,14 @@ fn main_0() -> i32 {
     assert!(({ ({ (*v2.borrow())[1_usize] } == 2) }));
     assert!(({ ({ (*v2.borrow())[2_usize] } == 3) }));
     let mut s2: usize = (*v2.borrow()).len();
-    let v3: Value<Vec<i32>> = Rc::new(RefCell::new(vec![1; 100_usize as usize]));
+    let v3: Value<Vec<i32>> = Rc::new(RefCell::new(vec![1; 100_usize]));
     assert!(({ ((*v3.borrow()).len() == 100_usize) }));
     let mut i: i32 = 0;
     'loop_: while (i < 100) {
         assert!(({ ({ (*v3.borrow())[(i as usize)] } == 1) }));
         i.prefix_inc();
     }
-    let v6: Value<Vec<f64>> = Rc::new(RefCell::new(vec![2_f64; s2 as usize]));
+    let v6: Value<Vec<f64>> = Rc::new(RefCell::new(vec![2_f64; s2]));
     assert!(({ ((*v6.borrow()).len() == s2) }));
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < s2) {
@@ -149,27 +149,27 @@ fn main_0() -> i32 {
     assert!(({ ({ (*v3.borrow())[1_usize] } == 98) }));
     assert!(({ ((*v3.borrow()).capacity() == 100_usize) }));
     assert!(({ ((*v3.borrow()).len() == 100_usize) }));
-    if 200_usize as usize > (*v3.borrow()).capacity() as usize {
+    if 200_usize > (*v3.borrow()).capacity() as usize {
         let len_0 = (*v3.borrow()).len();
-        (*v3.borrow_mut()).reserve_exact(200_usize as usize - len_0 as usize);
+        (*v3.borrow_mut()).reserve_exact(200_usize - len_0 as usize);
     };
     assert!(({ ((*v3.borrow()).capacity() == 200_usize) }));
     assert!(({ ((*v3.borrow()).len() == 100_usize) }));
-    if 50_usize as usize > (*v3.borrow()).capacity() as usize {
+    if 50_usize > (*v3.borrow()).capacity() as usize {
         let len_0 = (*v3.borrow()).len();
-        (*v3.borrow_mut()).reserve_exact(50_usize as usize - len_0 as usize);
+        (*v3.borrow_mut()).reserve_exact(50_usize - len_0 as usize);
     };
     assert!(({ ((*v3.borrow()).capacity() == 200_usize) }));
     assert!(({ ((*v3.borrow()).len() == 100_usize) }));
-    if 200_usize as usize > (*v3.borrow()).capacity() as usize {
+    if 200_usize > (*v3.borrow()).capacity() as usize {
         let len_0 = (*v3.borrow()).len();
-        (*v3.borrow_mut()).reserve_exact(200_usize as usize - len_0 as usize);
+        (*v3.borrow_mut()).reserve_exact(200_usize - len_0 as usize);
     };
     assert!(({ ((*v3.borrow()).capacity() == 200_usize) }));
     assert!(({ ((*v3.borrow()).len() == 100_usize) }));
-    if 201_usize as usize > (*v3.borrow()).capacity() as usize {
+    if 201_usize > (*v3.borrow()).capacity() as usize {
         let len_0 = (*v3.borrow()).len();
-        (*v3.borrow_mut()).reserve_exact(201_usize as usize - len_0 as usize);
+        (*v3.borrow_mut()).reserve_exact(201_usize - len_0 as usize);
     };
     assert!(({ ((*v3.borrow()).capacity() == 201_usize) }));
     assert!(({ ((*v3.borrow()).len() == 100_usize) }));
@@ -187,7 +187,7 @@ fn main_0() -> i32 {
     assert!(
         ((match ({ (idx as usize) },) {
             (mut __tmp_2,) => {
-                if __tmp_2 as usize >= v6.decay().len() {
+                if __tmp_2 >= v6.decay().len() {
                     panic!("out of bounds access")
                 } else {
                     v6.decay().offset(__tmp_2 as isize)
@@ -200,7 +200,7 @@ fn main_0() -> i32 {
     assert!(
         ((match ({ (s2).wrapping_sub(1_usize) },) {
             (mut __tmp_3,) => {
-                if __tmp_3 as usize >= v6.decay().len() {
+                if __tmp_3 >= v6.decay().len() {
                     panic!("out of bounds access")
                 } else {
                     v6.decay().offset(__tmp_3 as isize)
@@ -212,7 +212,7 @@ fn main_0() -> i32 {
     );
     let ref1: Ptr<f64> = match ({ (s2).wrapping_sub(1_usize) },) {
         (mut __tmp_4,) => {
-            if __tmp_4 as usize >= v6.decay().len() {
+            if __tmp_4 >= v6.decay().len() {
                 panic!("out of bounds access")
             } else {
                 v6.decay().offset(__tmp_4 as isize)
@@ -225,7 +225,7 @@ fn main_0() -> i32 {
     assert!(
         ((match ({ (s2).wrapping_sub(1_usize) },) {
             (mut __tmp_5,) => {
-                if __tmp_5 as usize >= v6.decay().len() {
+                if __tmp_5 >= v6.decay().len() {
                     panic!("out of bounds access")
                 } else {
                     v6.decay().offset(__tmp_5 as isize)
@@ -237,7 +237,7 @@ fn main_0() -> i32 {
     );
     let mut x1: f64 = (match ({ (s2).wrapping_sub(1_usize) },) {
         (mut __tmp_6,) => {
-            if __tmp_6 as usize >= v6.decay().len() {
+            if __tmp_6 >= v6.decay().len() {
                 panic!("out of bounds access")
             } else {
                 v6.decay().offset(__tmp_6 as isize)
@@ -250,7 +250,7 @@ fn main_0() -> i32 {
     assert!(
         ((match ({ (s2).wrapping_sub(1_usize) },) {
             (mut __tmp_7,) => {
-                if __tmp_7 as usize >= v6.decay().len() {
+                if __tmp_7 >= v6.decay().len() {
                     panic!("out of bounds access")
                 } else {
                     v6.decay().offset(__tmp_7 as isize)
@@ -356,7 +356,7 @@ fn main_0() -> i32 {
     assert!(((v13[0_usize] as i32) == 10) && ((v13[4_usize] as i32) == 50));
     assert!(
         (((s1).wrapping_add(s2)).wrapping_add(
-            ((if 0_usize as usize >= v2.decay().len() {
+            ((if 0_usize >= v2.decay().len() {
                 panic!("out of bounds access")
             } else {
                 v2.decay().offset(0_usize as isize)

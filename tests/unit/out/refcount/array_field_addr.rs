@@ -38,7 +38,7 @@ fn main_0() -> i32 {
     field!(s, before).write(1);
     match ({ (array_field_ptr!(s, mask)).to_any() },) {
         (mut __tmp_0,) => {
-            __tmp_0.memset((5) as u8, ::std::mem::size_of::<[u8; 4]>() as usize);
+            __tmp_0.memset((5) as u8, ::std::mem::size_of::<[u8; 4]>());
             (__tmp_0).clone()
         }
     };
@@ -49,7 +49,7 @@ fn main_0() -> i32 {
         (mut __tmp_1,) => {
             __tmp_1.memcpy(
                 &(array_field_ptr!(s, mask)).to_any(),
-                ::std::mem::size_of::<[u8; 4]>() as usize,
+                ::std::mem::size_of::<[u8; 4]>(),
             );
             (__tmp_1).clone()
         }

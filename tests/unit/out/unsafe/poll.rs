@@ -29,7 +29,7 @@ unsafe fn main_0() -> i32 {
     pfd[(1) as usize].fd = -1_i32;
     pfd[(1) as usize].events = 1_i16;
     pfd[(1) as usize].revents = 42_i16;
-    assert!(((libc::poll(pfd.as_mut_ptr(), (2 as ::libc::nfds_t) as ::libc::nfds_t, 0)) == (1)));
+    assert!(((libc::poll(pfd.as_mut_ptr(), (2 as ::libc::nfds_t), 0)) == (1)));
     assert!((((pfd[(0) as usize].revents as i32) & (1)) != (0)));
     assert!(((pfd[(1) as usize].revents as i32) == (0)));
     let mut ch: libc::c_char = (0 as libc::c_char);

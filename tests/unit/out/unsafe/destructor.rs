@@ -202,7 +202,6 @@ unsafe fn main_0() -> i32 {
     {
         let mut cs: S = <S>::default();
         let _dtor_cs = std::mem::DropGuard::new(&raw mut cs, |__p| unsafe { (*__p).destructor() });
-        ();
     }
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut global_0)) == ((before) + (1))));
     return 0;

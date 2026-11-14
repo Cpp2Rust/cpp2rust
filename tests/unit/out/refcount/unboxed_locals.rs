@@ -69,7 +69,6 @@ fn main_0() -> i32 {
     plain += 2;
     plain.postfix_inc();
     assert!((plain == 4));
-    ();
     let mut typed: i32 = (plain + 1);
     assert!((typed == 5));
     let addr: Value<i32> = Rc::new(RefCell::new(0));
@@ -132,7 +131,7 @@ fn main_0() -> i32 {
     });
     assert!((pair.second == 4) && (heap.with(|__s| __s.first) == 3));
     heap.delete();
-    let mut vec_: Vec<i32> = vec![1; 3_usize as usize];
+    let mut vec_: Vec<i32> = vec![1; 3_usize];
     let mut four: i32 = 4;
     {
         let a0_clone = four.clone();
@@ -153,12 +152,12 @@ fn main_0() -> i32 {
         .read())
     };
     assert!((low == 2));
-    let by_ref: Value<Vec<i32>> = Rc::new(RefCell::new(vec![3; 2_usize as usize]));
+    let by_ref: Value<Vec<i32>> = Rc::new(RefCell::new(vec![3; 2_usize]));
     assert!((({ total_2(by_ref.as_pointer(),) }) == 6));
-    let elem_ptr: Value<Vec<i32>> = Rc::new(RefCell::new(vec![0; 2_usize as usize]));
+    let elem_ptr: Value<Vec<i32>> = Rc::new(RefCell::new(vec![0; 2_usize]));
     ({ set_0((elem_ptr.decay().offset(1_usize)), 7) });
     assert!(({ ({ (*elem_ptr.borrow())[1_usize] } == 7) }));
-    let data: Value<Vec<i32>> = Rc::new(RefCell::new(vec![0; 2_usize as usize]));
+    let data: Value<Vec<i32>> = Rc::new(RefCell::new(vec![0; 2_usize]));
     ({ set_0(data.decay(), 8) });
     assert!(({ ({ (*data.borrow())[0_usize] } == 8) }));
     let square: Value<Square> = Rc::new(RefCell::new(<Square>::default()));

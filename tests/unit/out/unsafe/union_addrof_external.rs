@@ -51,7 +51,7 @@ pub unsafe fn fill_1(mut out: *mut ::libc::c_void, mut cap: usize) {
     match ({ (src.as_mut_ptr() as *const ::libc::c_void) },) {
         (mut __tmp_0,) => {
             if n != 0 {
-                ::std::ptr::copy_nonoverlapping(__tmp_0, out, n as usize)
+                ::std::ptr::copy_nonoverlapping(__tmp_0, out, n)
             }
             out
         }

@@ -53,7 +53,7 @@ fn main_0() -> i32 {
             (mut __tmp_0,) => {
                 __tmp_0.memset(
                     (('X' as i8) as i32) as u8,
-                    ::std::mem::size_of::<[i8; 16]>() as usize,
+                    ::std::mem::size_of::<[i8; 16]>(),
                 );
                 (__tmp_0).clone()
             }
@@ -94,7 +94,7 @@ fn main_0() -> i32 {
             (mut __tmp_1,) => {
                 __tmp_1.memset(
                     (('X' as i8) as i32) as u8,
-                    ::std::mem::size_of::<[i8; 16]>() as usize,
+                    ::std::mem::size_of::<[i8; 16]>(),
                 );
                 (__tmp_1).clone()
             }
@@ -151,7 +151,7 @@ fn main_0() -> i32 {
             (mut __tmp_2,) => {
                 __tmp_2.memset(
                     (('Y' as i8) as i32) as u8,
-                    ::std::mem::size_of::<[i8; 10]>() as usize,
+                    ::std::mem::size_of::<[i8; 10]>(),
                 );
                 (__tmp_2).clone()
             }
@@ -182,7 +182,7 @@ fn main_0() -> i32 {
             (mut __tmp_3,) => {
                 __tmp_3.memset(
                     (('Y' as i8) as i32) as u8,
-                    ::std::mem::size_of::<[i8; 10]>() as usize,
+                    ::std::mem::size_of::<[i8; 10]>(),
                 );
                 (__tmp_3).clone()
             }

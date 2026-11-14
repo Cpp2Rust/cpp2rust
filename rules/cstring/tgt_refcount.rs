@@ -4,12 +4,12 @@
 use libcc2rs::*;
 
 fn f1(a0: AnyPtr, a1: AnyPtr, a2: usize) -> AnyPtr {
-    a0.memcpy(&a1, a2 as usize);
+    a0.memcpy(&a1, a2);
     a0
 }
 
 fn f2(a0: AnyPtr, a1: u8, a2: usize) -> AnyPtr {
-    a0.memset((a1) as u8, a2 as usize);
+    a0.memset((a1) as u8, a2);
     a0
 }
 
@@ -18,7 +18,7 @@ fn f3(a0: AnyPtr, a1: AnyPtr, a2: usize) -> i32 {
 }
 
 fn f4(a0: AnyPtr, a1: AnyPtr, a2: usize) -> AnyPtr {
-    a0.memcpy(&a1, a2 as usize);
+    a0.memcpy(&a1, a2);
     a0
 }
 

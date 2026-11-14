@@ -78,7 +78,7 @@ unsafe fn f65<T1>(a0: &mut Vec<T1>) -> *mut T1 {
 }
 
 unsafe fn f66<T1>(a0: &mut Vec<T1>, a1: usize) -> *mut T1 {
-    (&mut (a0)[a1 as usize] as *mut T1)
+    (&mut (a0)[a1] as *mut T1)
 }
 
 unsafe fn f67<T1: Default>(a0: usize) -> Vec<T1> {
@@ -100,9 +100,9 @@ unsafe fn f70<T1>(a0: Vec<T1>) -> usize {
 }
 
 unsafe fn f71<T1>(a0: &mut Vec<T1>, a1: usize) {
-    if a1 as usize > a0.capacity() as usize {
+    if a1 > a0.capacity() as usize {
         let len_0 = a0.len();
-        a0.reserve_exact(a1 as usize - len_0 as usize);
+        a0.reserve_exact(a1 - len_0 as usize);
     }
 }
 
@@ -116,7 +116,7 @@ unsafe fn f73<T1: Default>(a0: &mut Vec<T1>, a1: &mut T1) {
 }
 
 unsafe fn f74<T1: Default>(a0: &mut Vec<T1>, a1: usize) {
-    let __a0 = a1 as usize;
+    let __a0 = a1;
     a0.resize_with(__a0, || <T1>::default())
 }
 
@@ -135,7 +135,7 @@ unsafe fn f77<T1>(a0: &mut Vec<T1>, a1: UnsafeRandomAccessIterator<T1>, a2: T1) 
 }
 
 unsafe fn f78<T1: Default + Clone>(a0: usize, a1: T1) -> Vec<T1> {
-    vec![a1; a0 as usize]
+    vec![a1; a0]
 }
 
 unsafe fn f79<T1>(a0: &mut Vec<T1>, a1: UnsafeRandomAccessIterator<T1>, a2: T1) -> UnsafeRandomAccessIterator<T1> {
@@ -180,10 +180,10 @@ unsafe fn f97<T1>(a0: &mut Vec<T1>, a1: &mut Vec<T1>) {
 }
 
 unsafe fn f98<T1: Copy>(a0: &Vec<T1>, a1: usize) -> *const T1 {
-    if a1 as usize >= a0.len() {
+    if a1 >= a0.len() {
         panic!("out of bounds access")
     } else {
-        (a0).as_ptr().add(a1 as usize)
+        (a0).as_ptr().add(a1)
     }
 }
 
@@ -209,7 +209,7 @@ unsafe fn f101<T1: Clone, T2, T3: UnsafeCppInputIterator<T1>>(
 }
 
 unsafe fn f102<T1: Default + Clone>(a0: &mut Vec<T1>, a1: usize, a2: T1) {
-    let __a0 = a1 as usize;
+    let __a0 = a1;
     a0.resize(__a0, a2)
 }
 
@@ -259,7 +259,7 @@ unsafe fn f117(a0: *mut bool) -> *mut bool {
 }
 
 unsafe fn f118<T1>(a0: &mut Vec<bool>, a1: usize) -> *mut bool {
-    (&mut (a0)[a1 as usize] as *mut bool)
+    (&mut (a0)[a1] as *mut bool)
 }
 
 unsafe fn f119(a0: *mut bool, a1: bool) -> *mut bool {

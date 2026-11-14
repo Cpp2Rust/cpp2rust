@@ -90,7 +90,7 @@ fn main_0() -> i32 {
     let c: Value<Container> = <Value<Container>>::default();
     match ({ (c.as_pointer()).to_any() },) {
         (mut __tmp_0,) => {
-            __tmp_0.memset((0) as u8, 256usize as usize);
+            __tmp_0.memset((0) as u8, 256usize);
             (__tmp_0).clone()
         }
     };
@@ -113,7 +113,7 @@ fn main_0() -> i32 {
     assert!((len <= ::std::mem::size_of::<[i8; 256]>()));
     match ({ (anon_0::raw_(field_ptr!(c.as_pointer(), view))).to_any() },) {
         (mut __tmp_1,) => {
-            __tmp_1.memcpy(&(src.decay()).to_any(), len as usize);
+            __tmp_1.memcpy(&(src.decay()).to_any(), len);
             (__tmp_1).clone()
         }
     };
@@ -129,7 +129,7 @@ fn main_0() -> i32 {
     );
     match ({ (c.as_pointer()).to_any() },) {
         (mut __tmp_2,) => {
-            __tmp_2.memset((0) as u8, 256usize as usize);
+            __tmp_2.memset((0) as u8, 256usize);
             (__tmp_2).clone()
         }
     };

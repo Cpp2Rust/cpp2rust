@@ -13,7 +13,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let v: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::from([1, 2, 3])));
     let mut idx: usize = (*v.borrow()).len();
-    let mut p: Ptr<i32> = (if idx as usize >= v.decay().len() {
+    let mut p: Ptr<i32> = (if idx >= v.decay().len() {
         panic!("out of bounds access")
     } else {
         v.decay().offset(idx as isize)

@@ -44,7 +44,7 @@ fn f3(a0: Vec<i8>, a1: Ptr<i8>) -> Vec<i8> {
 fn f4(a0: Ptr<Vec<i8>>, a1: Ptr<i8>, a2: usize) -> Ptr<Vec<i8>> {
     a0.with_mut(|__v: &mut Vec<i8>| {
         __v.pop();
-        a1.with_slice(a2 as usize, |__s| __v.extend_from_slice(__s));
+        a1.with_slice(a2, |__s| __v.extend_from_slice(__s));
         __v.push(0);
     });
     a0
@@ -59,8 +59,8 @@ fn f6(a0: Ptr<i8>) -> Ptr<i8> {
 }
 
 fn f7(a0: Ptr<i8>, a1: usize) -> Vec<i8> {
-    let mut __v = Vec::with_capacity(a1 as usize + 1);
-    a0.with_slice(a1 as usize, |__s| __v.extend_from_slice(__s));
+    let mut __v = Vec::with_capacity(a1 + 1);
+    a0.with_slice(a1, |__s| __v.extend_from_slice(__s));
     __v.push(0);
     __v
 }
@@ -80,13 +80,13 @@ fn f12(a0: Ptr<i8>) -> RandomAccessIterator<i8> {
 }
 
 fn f14(a0: Ptr<Vec<i8>>, a1: usize, a2: usize, a3: Ptr<i8>, a4: usize) -> Ptr<Vec<i8>> {
-    let pos = a1 as usize;
+    let pos = a1;
     let end = std::cmp::min(
-        pos + a2 as usize,
+        pos + a2,
         (*a0.upgrade().deref()).len().saturating_sub(1),
     );
     a0.with_mut(|__v: &mut Vec<i8>| {
-        a3.with_slice(a4 as usize, |__s| {
+        a3.with_slice(a4, |__s| {
             __v.splice(pos..end, __s.iter().copied());
         });
     });
@@ -129,7 +129,7 @@ fn f21(a0: &mut Vec<i8>, a1: usize, a2: i8) -> Vec<i8> {
 }
 
 fn f26(a0: Ptr<Vec<i8>>, a1: usize) -> Ptr<i8> {
-    if a1 as usize >= (*a0.upgrade().deref()).len().saturating_sub(1) {
+    if a1 >= (*a0.upgrade().deref()).len().saturating_sub(1) {
         panic!("out of bounds access")
     } else {
         a0.decay().offset(a1 as isize)

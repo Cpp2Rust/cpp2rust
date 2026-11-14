@@ -37,10 +37,7 @@ fn main_0() -> i32 {
     field!(f, n).write(4);
     match ({ (array_field_ptr!(f, tail)).to_any() },) {
         (mut __tmp_0,) => {
-            __tmp_0.memcpy(
-                &(Ptr::<i8>::from_string_literal(b"xyz")).to_any(),
-                4_usize as usize,
-            );
+            __tmp_0.memcpy(&(Ptr::<i8>::from_string_literal(b"xyz")).to_any(), 4_usize);
             (__tmp_0).clone()
         }
     };
@@ -71,7 +68,7 @@ fn main_0() -> i32 {
         (mut __tmp_1,) => {
             __tmp_1.memcpy(
                 &(Ptr::<i8>::from_string_literal(b"abcdefg")).to_any(),
-                8_usize as usize,
+                8_usize,
             );
             (__tmp_1).clone()
         }

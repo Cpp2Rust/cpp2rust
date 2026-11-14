@@ -3,49 +3,25 @@
 
 use crate::{AnyPtr, AsPointer, CFile, Ptr, Value};
 use std::cell::{RefCell, UnsafeCell};
-use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
+use std::os::fd::AsFd;
 use std::rc::Rc;
 
+// A File with a duplicate of the descriptor of a standard stream, which C++
+// streams read from and write to.
+fn dup(fd: std::os::fd::BorrowedFd<'_>) -> std::fs::File {
+    std::fs::File::from(fd.try_clone_to_owned().unwrap())
+}
+
 thread_local! {
-    static SAFE_STDIN: Value<std::fs::File> = Rc::new(RefCell::new(std::fs::File::from(
-        std::io::stdin().as_fd().try_clone_to_owned().unwrap(),
-    )));
-    static SAFE_STDOUT: Value<std::fs::File> = Rc::new(RefCell::new(std::fs::File::from(
-        std::io::stdout().as_fd().try_clone_to_owned().unwrap(),
-    )));
-    static SAFE_STDERR: Value<std::fs::File> = Rc::new(RefCell::new(std::fs::File::from(
-        std::io::stderr().as_fd().try_clone_to_owned().unwrap(),
-    )));
-    static UNSAFE_STDIN: UnsafeCell<std::fs::File> = unsafe {
-        UnsafeCell::new(
-            std::fs::File::from_raw_fd(
-                std::io::stdin()
-                    .as_fd()
-                    .try_clone_to_owned()
-                    .unwrap()
-                    .into_raw_fd(),
-        ))
-    };
-    static UNSAFE_STDOUT: UnsafeCell<std::fs::File> = unsafe {
-        UnsafeCell::new(
-            std::fs::File::from_raw_fd(
-                std::io::stdout()
-                    .as_fd()
-                    .try_clone_to_owned()
-                    .unwrap()
-                    .into_raw_fd(),
-        ))
-    };
-    static UNSAFE_STDERR: UnsafeCell<std::fs::File> = unsafe {
-        UnsafeCell::new(
-            std::fs::File::from_raw_fd(
-                std::io::stderr()
-                    .as_fd()
-                    .try_clone_to_owned()
-                    .unwrap()
-                    .into_raw_fd(),
-        ))
-    };
+    static SAFE_STDIN: Value<std::fs::File> =
+        Rc::new(RefCell::new(dup(std::io::stdin().as_fd())));
+    static SAFE_STDOUT: Value<std::fs::File> =
+        Rc::new(RefCell::new(dup(std::io::stdout().as_fd())));
+    static SAFE_STDERR: Value<std::fs::File> =
+        Rc::new(RefCell::new(dup(std::io::stderr().as_fd())));
+    static UNSAFE_STDIN: UnsafeCell<std::fs::File> = UnsafeCell::new(dup(std::io::stdin().as_fd()));
+    static UNSAFE_STDOUT: UnsafeCell<std::fs::File> = UnsafeCell::new(dup(std::io::stdout().as_fd()));
+    static UNSAFE_STDERR: UnsafeCell<std::fs::File> = UnsafeCell::new(dup(std::io::stderr().as_fd()));
 }
 
 thread_local! {
@@ -100,6 +76,16 @@ pub unsafe fn cout_unsafe() -> *mut std::fs::File {
 /// thread finishes.
 pub unsafe fn cerr_unsafe() -> *mut std::fs::File {
     UNSAFE_STDERR.with(UnsafeCell::get)
+}
+
+// std::istream::get: the next byte of the stream, or EOF (-1).
+pub fn istream_get(file: &mut std::fs::File) -> i32 {
+    use std::io::Read;
+    let mut byte = [0u8; 1];
+    match file.read(&mut byte) {
+        Ok(1) => byte[0] as i32,
+        _ => -1,
+    }
 }
 
 pub fn fread_refcount(a0: AnyPtr, a1: usize, a2: usize, a3: Ptr<CFile>) -> usize {

@@ -116,7 +116,7 @@ pub struct Buffer {
 impl Buffer {
     pub unsafe fn new(mut n: i32) -> Self {
         let mut this = Self {
-            data: vec![n; (n as usize) as usize],
+            data: vec![n; (n as usize)],
             rows: Vec::new(),
             n: n,
             arr: [n, ((n) + (1))],
@@ -146,7 +146,7 @@ impl Buffer {
         ) {
             (mut __tmp_0, mut __tmp_1) => {
                 if 8_usize != 0 {
-                    ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, 8_usize as usize)
+                    ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, 8_usize)
                 }
                 __tmp_0
             }
@@ -181,7 +181,7 @@ impl Owner {
         ) {
             (mut __tmp_2, mut __tmp_3) => {
                 if 8_usize != 0 {
-                    ::std::ptr::copy_nonoverlapping(__tmp_3, __tmp_2, 8_usize as usize)
+                    ::std::ptr::copy_nonoverlapping(__tmp_3, __tmp_2, 8_usize)
                 }
                 __tmp_2
             }

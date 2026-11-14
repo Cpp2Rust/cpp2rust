@@ -123,7 +123,7 @@ fn main_0() -> i32 {
     };
     match (v.decay().offset(0_usize).decay().decay().offset(1_usize),) {
         (__tmp_4,) => {
-            if 0_usize as usize >= (*__tmp_4.upgrade().deref()).len().saturating_sub(1) {
+            if 0_usize >= (*__tmp_4.upgrade().deref()).len().saturating_sub(1) {
                 panic!("out of bounds access")
             } else {
                 __tmp_4.decay().offset(0_usize as isize)

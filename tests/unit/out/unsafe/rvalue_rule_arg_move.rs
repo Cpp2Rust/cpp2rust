@@ -47,9 +47,9 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut v: Vec<Elem> = Vec::new();
-    if 4_usize as usize > v.capacity() as usize {
+    if 4_usize > v.capacity() as usize {
         let len_0 = v.len();
-        v.reserve_exact(4_usize as usize - len_0 as usize);
+        v.reserve_exact(4_usize - len_0 as usize);
     };
     let mut a: Elem = Elem::new({ 1 });
     let mut b: Elem = Elem::new({ 2 });

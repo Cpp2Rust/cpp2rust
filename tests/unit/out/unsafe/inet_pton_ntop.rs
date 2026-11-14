@@ -19,7 +19,7 @@ pub unsafe fn test_s6_addr_access_0() {
     ) {
         (mut __tmp_0, mut __tmp_1) => {
             if 16_usize != 0 {
-                ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, 16_usize as usize)
+                ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, 16_usize)
             }
             __tmp_0
         }
@@ -29,11 +29,11 @@ pub unsafe fn test_s6_addr_access_0() {
             let sa = core::slice::from_raw_parts(
                 ((*(ap as *mut ::libc::in6_addr)).s6_addr.as_mut_ptr() as *const ::libc::c_void)
                     as *const u8,
-                16_usize as usize,
+                16_usize,
             );
             let sb = core::slice::from_raw_parts(
                 (loopback.as_ptr() as *const ::libc::c_void) as *const u8,
-                16_usize as usize,
+                16_usize,
             );
             let mut diff = 0_i32;
             for (x, y) in sa.iter().zip(sb.iter()) {
@@ -68,7 +68,7 @@ pub unsafe fn test_s6_addr_access_0() {
     ) {
         (mut __tmp_2, mut __tmp_3) => {
             if 16_usize != 0 {
-                ::std::ptr::copy_nonoverlapping(__tmp_3, __tmp_2, 16_usize as usize)
+                ::std::ptr::copy_nonoverlapping(__tmp_3, __tmp_2, 16_usize)
             }
             __tmp_2
         }
@@ -78,11 +78,11 @@ pub unsafe fn test_s6_addr_access_0() {
             let sa = core::slice::from_raw_parts(
                 ((*(&mut addr as *mut ::libc::in6_addr)).s6_addr.as_mut_ptr()
                     as *const ::libc::c_void) as *const u8,
-                16_usize as usize,
+                16_usize,
             );
             let sb = core::slice::from_raw_parts(
                 (loopback.as_ptr() as *const ::libc::c_void) as *const u8,
-                16_usize as usize,
+                16_usize,
             );
             let mut diff = 0_i32;
             for (x, y) in sa.iter().zip(sb.iter()) {

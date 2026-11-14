@@ -40,11 +40,11 @@ pub unsafe fn check_name_0(mut fd: i32, mut path: *const libc::c_char) {
                                 .sun_path
                                 .as_mut_ptr() as *const ::libc::c_void)
                                 as *const u8,
-                            __tmp_1 as usize,
+                            __tmp_1,
                         );
                         let sb = core::slice::from_raw_parts(
                             (path as *const ::libc::c_void) as *const u8,
-                            __tmp_1 as usize,
+                            __tmp_1,
                         );
                         let mut diff = 0_i32;
                         for (x, y) in sa.iter().zip(sb.iter()) {
@@ -102,12 +102,12 @@ pub unsafe fn check_name_0(mut fd: i32, mut path: *const libc::c_char) {
                     {
                         let sa = core::slice::from_raw_parts(
                             (out.as_mut_ptr() as *const ::libc::c_void) as *const u8,
-                            __tmp_3 as usize,
+                            __tmp_3,
                         );
                         let sb = core::slice::from_raw_parts(
                             ((&mut full as *mut libc::sockaddr_storage) as *const ::libc::c_void)
                                 as *const u8,
-                            __tmp_3 as usize,
+                            __tmp_3,
                         );
                         let mut diff = 0_i32;
                         for (x, y) in sa.iter().zip(sb.iter()) {
@@ -166,7 +166,7 @@ unsafe fn main_0() -> i32 {
                 ::std::ptr::copy_nonoverlapping(
                     (c"socket-unix-name".as_ptr().cast_mut() as *const ::libc::c_void),
                     __tmp_5,
-                    ::std::mem::size_of::<[libc::c_char; 17]>() as usize,
+                    ::std::mem::size_of::<[libc::c_char; 17]>(),
                 )
             }
             __tmp_5

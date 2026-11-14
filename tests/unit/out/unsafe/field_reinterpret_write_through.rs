@@ -948,11 +948,7 @@ pub unsafe fn check_struct_3(mut s: *mut S) {
     }) {
         (mut __tmp_0, mut __tmp_1) => {
             if ::std::mem::size_of::<i32>() != 0 {
-                ::std::ptr::copy_nonoverlapping(
-                    __tmp_1,
-                    __tmp_0,
-                    ::std::mem::size_of::<i32>() as usize,
-                )
+                ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, ::std::mem::size_of::<i32>())
             }
             __tmp_0
         }

@@ -40,7 +40,7 @@ fn main_0() -> i32 {
     let tv: Value<libcc2rs::Timeval> = Rc::new(RefCell::new(Default::default()));
     match ({ (tv.as_pointer()).to_any() },) {
         (mut __tmp_2,) => {
-            __tmp_2.memset((0) as u8, 16usize as usize);
+            __tmp_2.memset((0) as u8, 16usize);
             (__tmp_2).clone()
         }
     };

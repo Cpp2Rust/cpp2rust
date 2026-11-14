@@ -83,7 +83,6 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { mixed.spec::<fn(i32, i32) -> i32>(0).call(2, 3,) }) == (16)));
     assert!(((unsafe { mixed.spec::<fn(i32, f64) -> f64>(1).call(2, 0.5_f64,) }) == (11_f64)));
     let mut unused: FnPtr<Generic> = lambda_unsafe!(Generic, {});
-    ();
     let mut outer: FnPtr<fn(i32) -> i32> = lambda_unsafe!(
         {
             let base: i32 = base;

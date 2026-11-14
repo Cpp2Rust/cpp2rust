@@ -108,7 +108,6 @@ fn main_0() -> i32 {
         })
     );
     let unused: Value<FnPtr<Generic>> = Rc::new(RefCell::new(lambda!(Generic, {})));
-    ();
     let outer: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(lambda!(
         {
             let base: Value<i32> = Rc::new(RefCell::new((*base.borrow())));

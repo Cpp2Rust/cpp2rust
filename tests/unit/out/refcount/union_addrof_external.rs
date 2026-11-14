@@ -79,7 +79,7 @@ pub fn fill_1(mut out: AnyPtr, mut cap: usize) {
         (cap as u64)
     } as usize);
     {
-        out.memcpy(&(src.decay()).to_any(), n as usize);
+        out.memcpy(&(src.decay()).to_any(), n);
         (out).clone()
     };
 }
@@ -91,7 +91,7 @@ fn main_0() -> i32 {
     let c: Value<Container> = <Value<Container>>::default();
     match ({ (c.as_pointer()).to_any() },) {
         (mut __tmp_0,) => {
-            __tmp_0.memset((0) as u8, 128usize as usize);
+            __tmp_0.memset((0) as u8, 128usize);
             (__tmp_0).clone()
         }
     };

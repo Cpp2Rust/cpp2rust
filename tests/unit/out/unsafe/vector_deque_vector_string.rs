@@ -104,10 +104,10 @@ unsafe fn main_0() -> i32 {
         (&mut (&mut (*((v[(0_usize)]).first_mut().unwrap())))[(1_usize)] as *mut Vec<libc::c_char>),
     ) {
         (__tmp_2,) => {
-            if 0_usize as usize >= (*__tmp_2).len() - 1 {
+            if 0_usize >= (*__tmp_2).len() - 1 {
                 panic!("out of bounds access")
             } else {
-                (&mut (&mut (*__tmp_2))[0_usize as usize] as *mut libc::c_char)
+                (&mut (&mut (*__tmp_2))[0_usize] as *mut libc::c_char)
             }
         }
     }) = ('B' as libc::c_char);

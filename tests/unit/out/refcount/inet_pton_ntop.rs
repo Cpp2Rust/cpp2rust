@@ -15,7 +15,7 @@ pub fn test_s6_addr_access_0() {
     let mut ap: Ptr<libcc2rs::In6Addr> = (addr.as_pointer());
     match ({ (In6Addr::s6_addr(addr.as_pointer())).to_any() },) {
         (mut __tmp_0,) => {
-            __tmp_0.memcpy(&(loopback.decay()).to_any(), 16_usize as usize);
+            __tmp_0.memcpy(&(loopback.decay()).to_any(), 16_usize);
             (__tmp_0).clone()
         }
     };
@@ -43,7 +43,7 @@ pub fn test_s6_addr_access_0() {
     assert!((((elem!(In6Addr::s6_addr(addr.as_pointer()), 3).read()) as i32) == 8));
     match ({ (In6Addr::s6_addr((ap).clone())).to_any() },) {
         (mut __tmp_1,) => {
-            __tmp_1.memcpy(&(loopback.decay()).to_any(), 16_usize as usize);
+            __tmp_1.memcpy(&(loopback.decay()).to_any(), 16_usize);
             (__tmp_1).clone()
         }
     };

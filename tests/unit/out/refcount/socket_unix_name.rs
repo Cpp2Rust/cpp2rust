@@ -10,7 +10,7 @@ pub fn check_name_0(mut fd: i32, mut path: Ptr<i8>) {
     let full: Value<libcc2rs::SockaddrStorage> = Rc::new(RefCell::new(Default::default()));
     match ({ (full.as_pointer()).to_any() },) {
         (mut __tmp_0,) => {
-            __tmp_0.memset((165) as u8, 128usize as usize);
+            __tmp_0.memset((165) as u8, 128usize);
             (__tmp_0).clone()
         }
     };
@@ -65,7 +65,7 @@ pub fn check_name_0(mut fd: i32, mut path: Ptr<i8>) {
             Rc::new(RefCell::new((0..136).map(|_| 0_u8).collect::<Box<[u8]>>()));
         match ({ (out.decay()).to_any() },) {
             (mut __tmp_3,) => {
-                __tmp_3.memset((165) as u8, ::std::mem::size_of::<[u8; 136]>() as usize);
+                __tmp_3.memset((165) as u8, ::std::mem::size_of::<[u8; 136]>());
                 (__tmp_3).clone()
             }
         };
@@ -146,7 +146,7 @@ fn main_0() -> i32 {
     let addr: Value<libcc2rs::SockaddrStorage> = Rc::new(RefCell::new(Default::default()));
     match ({ (addr.as_pointer()).to_any() },) {
         (mut __tmp_6,) => {
-            __tmp_6.memset((0) as u8, 128usize as usize);
+            __tmp_6.memset((0) as u8, 128usize);
             (__tmp_6).clone()
         }
     };
@@ -176,7 +176,7 @@ fn main_0() -> i32 {
         (mut __tmp_9,) => {
             __tmp_9.memcpy(
                 &(Ptr::<i8>::from_string_literal(b"socket-unix-name")).to_any(),
-                ::std::mem::size_of::<[i8; 17]>() as usize,
+                ::std::mem::size_of::<[i8; 17]>(),
             );
             (__tmp_9).clone()
         }

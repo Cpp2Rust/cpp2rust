@@ -144,7 +144,7 @@ impl SImpl for Ptr<S> {
         field!((*self), c).write({ { (*_a0.upgrade().deref()).c.clone() } });
         match ({ (array_field_ptr!((*self), arr)).to_any() },) {
             (mut __tmp_0,) => {
-                __tmp_0.memcpy(&(array_field_ptr!(_a0, arr)).to_any(), 8_usize as usize);
+                __tmp_0.memcpy(&(array_field_ptr!(_a0, arr)).to_any(), 8_usize);
                 (__tmp_0).clone()
             }
         };

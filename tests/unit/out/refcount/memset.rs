@@ -18,7 +18,7 @@ fn main_0() -> i32 {
         (mut __tmp_0,) => {
             __tmp_0.memset(
                 (1) as u8,
-                (::std::mem::size_of::<i32>() as usize).wrapping_mul((N as usize)) as usize,
+                (::std::mem::size_of::<i32>() as usize).wrapping_mul((N as usize)),
             );
             (__tmp_0).clone()
         }
@@ -37,13 +37,13 @@ fn main_0() -> i32 {
     let mut n: i32 = 2;
     match ({ (bytes.decay().offset(0)).to_any() },) {
         (mut __tmp_1,) => {
-            __tmp_1.memset(((fill as i32) + 1) as u8, (n as usize) as usize);
+            __tmp_1.memset(((fill as i32) + 1) as u8, (n as usize));
             (__tmp_1).clone()
         }
     };
     match ({ (bytes.decay().offset(n)).to_any() },) {
         (mut __tmp_2,) => {
-            __tmp_2.memset((fill as i32) as u8, ((4 - n) as usize) as usize);
+            __tmp_2.memset((fill as i32) as u8, ((4 - n) as usize));
             (__tmp_2).clone()
         }
     };

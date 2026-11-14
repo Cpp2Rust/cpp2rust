@@ -58,7 +58,7 @@ fn main_0() -> i32 {
         (mut __tmp_0,) => {
             __tmp_0.memcpy(
                 &(table.decay().offset(0)).to_any(),
-                ((table_size as u64).wrapping_mul((4usize as u64)) as usize) as usize,
+                ((table_size as u64).wrapping_mul((4usize as u64)) as usize),
             );
             (__tmp_0).clone()
         }

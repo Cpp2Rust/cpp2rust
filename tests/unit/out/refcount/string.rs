@@ -180,9 +180,9 @@ fn main_0() -> i32 {
         ('o' as i8),
     ])));
     let mut string: Vec<i8> = {
-        let mut __v = Vec::with_capacity(3_usize as usize + 1);
+        let mut __v = Vec::with_capacity(3_usize + 1);
         arr.decay()
-            .with_slice(3_usize as usize, |__s| __v.extend_from_slice(__s));
+            .with_slice(3_usize, |__s| __v.extend_from_slice(__s));
         __v.push(0);
         __v
     };
@@ -414,7 +414,7 @@ fn main_0() -> i32 {
     };
     match (({ counted_ref_1(target.as_pointer(), ref_calls.as_pointer()) }),) {
         (__tmp_4,) => {
-            if 0_usize as usize >= (*__tmp_4.upgrade().deref()).len().saturating_sub(1) {
+            if 0_usize >= (*__tmp_4.upgrade().deref()).len().saturating_sub(1) {
                 panic!("out of bounds access")
             } else {
                 __tmp_4.decay().offset(0_usize as isize)

@@ -67,7 +67,7 @@ fn main_0() -> i32 {
         (mut __tmp_0,) => {
             __tmp_0.memcpy(
                 &(Ptr::<i8>::from_string_literal(b"abcdefg")).to_any(),
-                8_usize as usize,
+                8_usize,
             );
             (__tmp_0).clone()
         }

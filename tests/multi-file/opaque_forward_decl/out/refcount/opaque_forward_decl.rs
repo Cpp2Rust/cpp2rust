@@ -29,9 +29,7 @@ fn main_0() -> i32 {
     assert!(({ (({ (*c.borrow()).p.clone() }).is_null()) }));
     return 0;
 }
-pub fn touch_0(mut c: Ptr<container>) {
-    ();
-}
+pub fn touch_0(mut c: Ptr<container>) {}
 #[derive(Clone, Copy, Default, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(1)]
 pub struct opaque;

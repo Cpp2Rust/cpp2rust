@@ -20,7 +20,7 @@ fn main_0() -> i32 {
     assert!(
         ((match (v1.decay().to_last(),) {
             (__tmp_0,) => {
-                if 0_usize as usize >= __tmp_0.decay().len() {
+                if 0_usize >= __tmp_0.decay().len() {
                     panic!("out of bounds access")
                 } else {
                     __tmp_0.decay().offset(0_usize as isize)

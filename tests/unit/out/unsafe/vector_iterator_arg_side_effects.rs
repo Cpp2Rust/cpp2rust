@@ -42,10 +42,10 @@ unsafe fn main_0() -> i32 {
     assert!(
         ((*match ({ (i.postfix_inc() as usize) },) {
             (mut __tmp_2,) => {
-                if __tmp_2 as usize >= (*c).len() {
+                if __tmp_2 >= (*c).len() {
                     panic!("out of bounds access")
                 } else {
-                    (*c).as_ptr().add(__tmp_2 as usize)
+                    (*c).as_ptr().add(__tmp_2)
                 }
             }
         }) == (1))

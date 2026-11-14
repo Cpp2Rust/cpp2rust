@@ -18,7 +18,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut v: Vec<i32> = vec![1; 4_usize as usize];
+    let mut v: Vec<i32> = vec![1; 4_usize];
     let mut items: Vec<u32> = (0..(3_usize) as usize).map(|_| 0_u32).collect::<Vec<_>>();
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < (items.len())) {

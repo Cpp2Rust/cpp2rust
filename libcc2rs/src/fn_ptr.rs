@@ -179,7 +179,9 @@ impl<T: FnSig> FnPtr<T> {
     // type. Casting the result back to a type it already had recovers that
     // exact function, calling it directly rather than through an adaptor.
     pub fn cast<U: FnSig>(&self) -> FnPtr<U> {
-        assert!(!self.is_null(), "ub: null fn pointer cast");
+        if self.is_null() {
+            return FnPtr::null();
+        }
 
         // The current function, if it already has type U.
         let current_as_u = self.current.as_ref().and_then(|current| {
@@ -567,9 +569,10 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "ub: null fn pointer cast")]
-    fn cast_null_panics() {
-        FnPtr::<fn(i32) -> i32>::null().cast::<fn(u32) -> u32>();
+    fn cast_null_is_null() {
+        let f = FnPtr::<fn(i32) -> i32>::null().cast::<fn(u32) -> u32>();
+        assert!(f.is_null());
+        assert!(f.cast::<fn(i32) -> i32>().is_null());
     }
 
     #[test]

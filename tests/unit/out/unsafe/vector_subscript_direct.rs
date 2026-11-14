@@ -95,7 +95,7 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { sum_ref_1(&v,) }) == (((((3) + (0)) + (9)) + (42)) + (5))));
     let mut h: Holder = <Holder>::default();
     {
-        let __a0 = 2_usize as usize;
+        let __a0 = 2_usize;
         h.values.resize_with(__a0, || 0_i32)
     };
     h.values[(1_usize)] = 6;
@@ -115,11 +115,11 @@ unsafe fn main_0() -> i32 {
     assert!(((h.points[(0_usize)].x) == (7)));
     let mut grid: Vec<Vec<i32>> = Vec::new();
     {
-        let __a1 = vec![0; 3_usize as usize];
+        let __a1 = vec![0; 3_usize];
         grid.push(__a1)
     };
     {
-        let __a1 = vec![0; 3_usize as usize];
+        let __a1 = vec![0; 3_usize];
         grid.push(__a1)
     };
     grid[(1_usize)][(2_usize)] = 8;

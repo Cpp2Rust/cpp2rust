@@ -13,15 +13,15 @@ pub fn main() {
 fn main_0() -> i32 {
     let v: Value<Vec<Vec<i32>>> = Rc::new(RefCell::new(Vec::new()));
     {
-        let __a0 = 2_usize as usize;
+        let __a0 = 2_usize;
         (*v.borrow_mut()).resize_with(__a0, || Default::default())
     };
     {
-        let __a0 = 2_usize as usize;
+        let __a0 = 2_usize;
         elem!(v.decay(), 0_usize).with_mut(|__v: &mut Vec<i32>| __v.resize_with(__a0, || 0_i32))
     };
     {
-        let __a0 = 1_usize as usize;
+        let __a0 = 1_usize;
         elem!(v.decay(), 1_usize).with_mut(|__v: &mut Vec<i32>| __v.resize_with(__a0, || 0_i32))
     };
     index!(elem!(v.decay(), 0_usize), 0_usize).write(1);

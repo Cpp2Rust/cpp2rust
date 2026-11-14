@@ -43,7 +43,7 @@ unsafe fn main_0() -> i32 {
                 ::std::ptr::copy_nonoverlapping(
                     (c"abcdefg".as_ptr().cast_mut() as *const ::libc::c_void),
                     __tmp_0,
-                    8_usize as usize,
+                    8_usize,
                 )
             }
             __tmp_0

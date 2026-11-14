@@ -47,7 +47,6 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut u: basic = <basic>::default();
     let mut e: empty = <empty>::default();
-    ();
     u.i = 42;
     assert!(((u.i) == (42)));
     u.f = 3.14_f32;

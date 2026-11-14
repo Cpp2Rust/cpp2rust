@@ -12,7 +12,7 @@ pub fn test_memcpy_0() {
         Rc::new(RefCell::new(Box::new([0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8])));
     let mut r: AnyPtr = match ({ (dst.decay()).to_any() },) {
         (mut __tmp_0,) => {
-            __tmp_0.memcpy(&(src.decay()).to_any(), 6_usize as usize);
+            __tmp_0.memcpy(&(src.decay()).to_any(), 6_usize);
             (__tmp_0).clone()
         }
     };
@@ -36,7 +36,7 @@ pub fn test_memset_1() {
     let buf: Value<Box<[i8]>> = Rc::new(RefCell::new((0..4).map(|_| 0_i8).collect::<Box<[i8]>>()));
     let mut r: AnyPtr = match ({ (buf.decay()).to_any() },) {
         (mut __tmp_1,) => {
-            __tmp_1.memset(('x' as i32) as u8, 4_usize as usize);
+            __tmp_1.memset(('x' as i32) as u8, 4_usize);
             (__tmp_1).clone()
         }
     };
@@ -69,7 +69,7 @@ pub fn test_memmove_3() {
     ])));
     let mut r: AnyPtr = match ({ (buf.decay().offset((1) as isize)).to_any() },) {
         (mut __tmp_2,) => {
-            __tmp_2.memcpy(&(buf.decay()).to_any(), 4_usize as usize);
+            __tmp_2.memcpy(&(buf.decay()).to_any(), 4_usize);
             (__tmp_2).clone()
         }
     };

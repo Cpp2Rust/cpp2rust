@@ -14,8 +14,8 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut v: Vec<bool> = Vec::from([true]);
-    assert!(*(&mut (v)[0_usize as usize] as *mut bool));
-    let mut r: *mut bool = (&mut (v)[0_usize as usize] as *mut bool);
+    assert!(*(&mut (v)[0_usize] as *mut bool));
+    let mut r: *mut bool = (&mut (v)[0_usize] as *mut bool);
     let mut copy: *mut bool = r;
     assert!(*copy);
     return 0;

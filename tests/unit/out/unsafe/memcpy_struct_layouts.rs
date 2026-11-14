@@ -69,7 +69,7 @@ unsafe fn main_0() -> i32 {
                 ::std::ptr::copy_nonoverlapping(
                     __tmp_1,
                     __tmp_0,
-                    ::std::mem::size_of::<[packed; 2]>() as usize,
+                    ::std::mem::size_of::<[packed; 2]>(),
                 )
             }
             __tmp_0
@@ -87,7 +87,7 @@ unsafe fn main_0() -> i32 {
                 ::std::ptr::copy_nonoverlapping(
                     __tmp_3,
                     __tmp_2,
-                    ::std::mem::size_of::<[packed; 2]>() as usize,
+                    ::std::mem::size_of::<[packed; 2]>(),
                 )
             }
             __tmp_2
@@ -118,7 +118,7 @@ unsafe fn main_0() -> i32 {
                 ::std::ptr::copy_nonoverlapping(
                     __tmp_5,
                     __tmp_4,
-                    ::std::mem::size_of::<[reordered; 2]>() as usize,
+                    ::std::mem::size_of::<[reordered; 2]>(),
                 )
             }
             __tmp_4
@@ -137,7 +137,7 @@ unsafe fn main_0() -> i32 {
                 ::std::ptr::copy_nonoverlapping(
                     __tmp_7,
                     __tmp_6,
-                    ::std::mem::size_of::<[reordered; 2]>() as usize,
+                    ::std::mem::size_of::<[reordered; 2]>(),
                 )
             }
             __tmp_6
@@ -171,7 +171,7 @@ unsafe fn main_0() -> i32 {
                 ::std::ptr::copy_nonoverlapping(
                     __tmp_9,
                     __tmp_8,
-                    ::std::mem::size_of::<[nested; 2]>() as usize,
+                    ::std::mem::size_of::<[nested; 2]>(),
                 )
             }
             __tmp_8
@@ -189,7 +189,7 @@ unsafe fn main_0() -> i32 {
                 ::std::ptr::copy_nonoverlapping(
                     __tmp_11,
                     __tmp_10,
-                    ::std::mem::size_of::<[nested; 2]>() as usize,
+                    ::std::mem::size_of::<[nested; 2]>(),
                 )
             }
             __tmp_10
@@ -217,7 +217,7 @@ unsafe fn main_0() -> i32 {
                 ::std::ptr::copy_nonoverlapping(
                     __tmp_13,
                     __tmp_12,
-                    ::std::mem::size_of::<[array; 2]>() as usize,
+                    ::std::mem::size_of::<[array; 2]>(),
                 )
             }
             __tmp_12
@@ -236,7 +236,7 @@ unsafe fn main_0() -> i32 {
                 ::std::ptr::copy_nonoverlapping(
                     __tmp_15,
                     __tmp_14,
-                    ::std::mem::size_of::<[array; 2]>() as usize,
+                    ::std::mem::size_of::<[array; 2]>(),
                 )
             }
             __tmp_14

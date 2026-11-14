@@ -105,7 +105,7 @@ unsafe fn main_0() -> i32 {
                 ::std::ptr::copy_nonoverlapping(
                     __tmp_1,
                     __tmp_0,
-                    ::std::mem::size_of::<[[libc::c_char; 10]; 3]>() as usize,
+                    ::std::mem::size_of::<[[libc::c_char; 10]; 3]>(),
                 )
             }
             __tmp_0
@@ -143,7 +143,7 @@ unsafe fn main_0() -> i32 {
                 ::std::ptr::copy_nonoverlapping(
                     __tmp_3,
                     __tmp_2,
-                    ::std::mem::size_of::<[[libc::c_char; 3]; 2]>() as usize,
+                    ::std::mem::size_of::<[[libc::c_char; 3]; 2]>(),
                 )
             }
             __tmp_2

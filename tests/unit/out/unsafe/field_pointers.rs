@@ -61,7 +61,7 @@ impl Outer {
         ) {
             (mut __tmp_0, mut __tmp_1) => {
                 if 36_usize != 0 {
-                    ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, 36_usize as usize)
+                    ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, 36_usize)
                 }
                 __tmp_0
             }
@@ -74,7 +74,7 @@ impl Outer {
         ) {
             (mut __tmp_2, mut __tmp_3) => {
                 if 16_usize != 0 {
-                    ::std::ptr::copy_nonoverlapping(__tmp_3, __tmp_2, 16_usize as usize)
+                    ::std::ptr::copy_nonoverlapping(__tmp_3, __tmp_2, 16_usize)
                 }
                 __tmp_2
             }
@@ -145,11 +145,7 @@ unsafe fn main_0() -> i32 {
     ) {
         (mut __tmp_4, mut __tmp_5) => {
             if ::std::mem::size_of::<i32>() != 0 {
-                ::std::ptr::copy_nonoverlapping(
-                    __tmp_5,
-                    __tmp_4,
-                    ::std::mem::size_of::<i32>() as usize,
-                )
+                ::std::ptr::copy_nonoverlapping(__tmp_5, __tmp_4, ::std::mem::size_of::<i32>())
             }
             __tmp_4
         }
@@ -159,11 +155,7 @@ unsafe fn main_0() -> i32 {
     }) {
         (mut __tmp_6, mut __tmp_7) => {
             if ::std::mem::size_of::<i32>() != 0 {
-                ::std::ptr::copy_nonoverlapping(
-                    __tmp_7,
-                    __tmp_6,
-                    ::std::mem::size_of::<i32>() as usize,
-                )
+                ::std::ptr::copy_nonoverlapping(__tmp_7, __tmp_6, ::std::mem::size_of::<i32>())
             }
             __tmp_6
         }

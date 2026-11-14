@@ -111,7 +111,7 @@ pub fn fill_1(mut s: Ptr<State>) {
     }
     elem!(field_ref!(s, arr).decay(), 1_usize).write(7);
     {
-        let __a0 = 3_usize as usize;
+        let __a0 = 3_usize;
         field!(s, elems).with_mut(|__v: &mut Vec<Elem>| __v.resize_with(__a0, || <Elem>::default()))
     };
     let mut i: i32 = 0;
@@ -121,7 +121,7 @@ pub fn fill_1(mut s: Ptr<State>) {
         let __rhs = (10 * i);
         index!(field!(vec_elem!(s, elems, (i as usize)), hist), i).write(__rhs);
         {
-            let __a0 = 4_usize as usize;
+            let __a0 = 4_usize;
             field!(vec_elem!(s, elems, (i as usize)), coeffs)
                 .with_mut(|__v: &mut Vec<i16>| __v.resize(__a0, (i as i16)))
         };
@@ -286,7 +286,7 @@ fn main_0() -> i32 {
     ));
     let mut first: Ptr<Elem> = (elems.decay().offset(0_usize));
     {
-        let __a0 = 2_usize as usize;
+        let __a0 = 2_usize;
         (*elems.borrow_mut())[1_usize]
             .coeffs
             .resize_with(__a0, || 0_i16)
@@ -452,7 +452,7 @@ impl ElemImpl for Ptr<Elem> {
         field!((*self), id).write({ { (*_a0.upgrade().deref()).id } });
         match ({ (array_field_ptr!((*self), hist)).to_any() },) {
             (mut __tmp_0,) => {
-                __tmp_0.memcpy(&(array_field_ptr!(_a0, hist)).to_any(), 16_usize as usize);
+                __tmp_0.memcpy(&(array_field_ptr!(_a0, hist)).to_any(), 16_usize);
                 (__tmp_0).clone()
             }
         };
@@ -470,7 +470,7 @@ impl StateImpl for Ptr<State> {
         field!((*self), count).write({ { (*_a0.upgrade().deref()).count } });
         match ({ (array_field_ptr!((*self), grid)).to_any() },) {
             (mut __tmp_1,) => {
-                __tmp_1.memcpy(&(array_field_ptr!(_a0, grid)).to_any(), 24_usize as usize);
+                __tmp_1.memcpy(&(array_field_ptr!(_a0, grid)).to_any(), 24_usize);
                 (__tmp_1).clone()
             }
         };

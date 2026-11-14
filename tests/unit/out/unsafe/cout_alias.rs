@@ -26,6 +26,10 @@ unsafe fn main_0() -> i32 {
         (&raw mut (*libcc2rs::cerr_unsafe()) as *mut std::fs::File)
     };
     write!((*os2), "hello\n",);
+    let is: *mut std::fs::File = &mut (*libcc2rs::cin_unsafe());
+    assert!(((libcc2rs::istream_get(&mut *(is as *mut ::std::fs::File))) == (-1_i32)));
+    let mut is_ptr: *mut std::fs::File = (&raw mut (*libcc2rs::cin_unsafe()) as *mut std::fs::File);
+    assert!(((libcc2rs::istream_get(&mut *(is_ptr as *mut ::std::fs::File))) == (-1_i32)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

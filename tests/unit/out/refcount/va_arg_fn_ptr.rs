@@ -35,9 +35,6 @@ pub fn apply_binary_4(mut a: i32, b: i32, __args: Box<[VaArg]>) -> i32 {
     return result;
 }
 pub fn not_supported_5(mut ctx: AnyPtr, mut fn_: FnPtr<fn(i32) -> i32>, mut extra: AnyPtr) -> i32 {
-    ();
-    ();
-    ();
     return -3_i32;
 }
 pub fn main() {

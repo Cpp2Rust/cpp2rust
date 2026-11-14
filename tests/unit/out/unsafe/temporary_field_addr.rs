@@ -51,7 +51,7 @@ impl Outer {
         ) {
             (mut __tmp_0, mut __tmp_1) => {
                 if 8_usize != 0 {
-                    ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, 8_usize as usize)
+                    ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, 8_usize)
                 }
                 __tmp_0
             }
@@ -87,8 +87,8 @@ unsafe fn main_0() -> i32 {
     let mut calls: i32 = 0;
     let mut member: i32 = (unsafe { sum_1(&(unsafe { make_0(&mut calls) }).values) });
     let mut nested: i32 = (unsafe { sum_1(&(unsafe { make_0(&mut calls) }).inner.values) });
-    let mut element: i32 = (*(&mut ((unsafe { make_0(&mut calls) }).values)
-        [(((calls) - (2)) as usize) as usize] as *mut i32));
+    let mut element: i32 =
+        (*(&mut ((unsafe { make_0(&mut calls) }).values)[(((calls) - (2)) as usize)] as *mut i32));
     let mut length: usize =
         libc::strlen(((unsafe { make_0(&mut calls) }).name.as_mut_ptr()).cast_const());
     let mut aggregate: i32 = (unsafe {

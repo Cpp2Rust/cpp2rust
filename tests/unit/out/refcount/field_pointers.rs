@@ -184,7 +184,7 @@ fn main_0() -> i32 {
                     a
                 ))
                 .to_any(),
-                ::std::mem::size_of::<i32>() as usize,
+                ::std::mem::size_of::<i32>(),
             );
             (__tmp_2).clone()
         }
@@ -197,7 +197,7 @@ fn main_0() -> i32 {
                     a
                 ))
                 .to_any(),
-                ::std::mem::size_of::<i32>() as usize,
+                ::std::mem::size_of::<i32>(),
             );
             (__tmp_3).clone()
         }
@@ -259,7 +259,7 @@ impl OuterImpl for Ptr<Outer> {
         field!((*self), inner).write({ { (*_a0.upgrade().deref()).inner.clone() } });
         match ({ (array_field_ptr!((*self), items)).to_any() },) {
             (mut __tmp_0,) => {
-                __tmp_0.memcpy(&(array_field_ptr!(_a0, items)).to_any(), 36_usize as usize);
+                __tmp_0.memcpy(&(array_field_ptr!(_a0, items)).to_any(), 36_usize);
                 (__tmp_0).clone()
             }
         };
@@ -269,7 +269,7 @@ impl OuterImpl for Ptr<Outer> {
         field!((*self), cursor).write({ { (*_a0.upgrade().deref()).cursor.clone() } });
         match ({ (array_field_ptr!((*self), buf)).to_any() },) {
             (mut __tmp_1,) => {
-                __tmp_1.memcpy(&(array_field_ptr!(_a0, buf)).to_any(), 16_usize as usize);
+                __tmp_1.memcpy(&(array_field_ptr!(_a0, buf)).to_any(), 16_usize);
                 (__tmp_1).clone()
             }
         };

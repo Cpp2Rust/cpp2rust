@@ -25,7 +25,7 @@ fn main_0() -> i32 {
         (mut __tmp_0,) => {
             __tmp_0.memcpy(
                 &(src.as_pointer()).to_any(),
-                ::std::mem::size_of::<[u8; 8]>() as usize,
+                ::std::mem::size_of::<[u8; 8]>(),
             );
             (__tmp_0).clone()
         }
@@ -33,7 +33,7 @@ fn main_0() -> i32 {
     let dst: Value<point> = <Value<point>>::default();
     match ({ (dst.as_pointer()).to_any() },) {
         (mut __tmp_1,) => {
-            __tmp_1.memcpy(&(buf.decay()).to_any(), 8usize as usize);
+            __tmp_1.memcpy(&(buf.decay()).to_any(), 8usize);
             (__tmp_1).clone()
         }
     };

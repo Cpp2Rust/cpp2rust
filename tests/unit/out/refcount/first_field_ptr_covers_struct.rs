@@ -39,7 +39,7 @@ fn main_0() -> i32 {
     assert!((!((p).is_null())));
     match ({ (field_ptr!(p, x)).to_any() },) {
         (mut __tmp_0,) => {
-            __tmp_0.memcpy(&(src.as_pointer()).to_any(), 12usize as usize);
+            __tmp_0.memcpy(&(src.as_pointer()).to_any(), 12usize);
             (__tmp_0).clone()
         }
     };
@@ -51,7 +51,7 @@ fn main_0() -> i32 {
     let n: Value<In> = Rc::new(RefCell::new(In { a: 5_i16, b: 6_i16 }));
     match ({ (field_ptr!(p, in_)).to_any() },) {
         (mut __tmp_1,) => {
-            __tmp_1.memcpy(&(n.as_pointer()).to_any(), 4usize as usize);
+            __tmp_1.memcpy(&(n.as_pointer()).to_any(), 4usize);
             (__tmp_1).clone()
         }
     };

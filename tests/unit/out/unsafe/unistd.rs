@@ -47,11 +47,11 @@ pub unsafe fn test_lseek_1() {
         (({
             let sa = core::slice::from_raw_parts(
                 (buf.as_mut_ptr() as *const ::libc::c_void) as *const u8,
-                5_usize as usize,
+                5_usize,
             );
             let sb = core::slice::from_raw_parts(
                 (c"world".as_ptr().cast_mut() as *const ::libc::c_void) as *const u8,
-                5_usize as usize,
+                5_usize,
             );
             let mut diff = 0_i32;
             for (x, y) in sa.iter().zip(sb.iter()) {
@@ -99,11 +99,11 @@ pub unsafe fn test_read_2() {
         (({
             let sa = core::slice::from_raw_parts(
                 (buf.as_mut_ptr() as *const ::libc::c_void) as *const u8,
-                11_usize as usize,
+                11_usize,
             );
             let sb = core::slice::from_raw_parts(
                 (c"hello world".as_ptr().cast_mut() as *const ::libc::c_void) as *const u8,
-                11_usize as usize,
+                11_usize,
             );
             let mut diff = 0_i32;
             for (x, y) in sa.iter().zip(sb.iter()) {
@@ -155,12 +155,10 @@ pub unsafe fn test_pipe_4() {
         (({
             let sa = core::slice::from_raw_parts(
                 (buf.as_mut_ptr() as *const ::libc::c_void) as *const u8,
-                5_usize as usize,
+                5_usize,
             );
-            let sb = core::slice::from_raw_parts(
-                (msg as *const ::libc::c_void) as *const u8,
-                5_usize as usize,
-            );
+            let sb =
+                core::slice::from_raw_parts((msg as *const ::libc::c_void) as *const u8, 5_usize);
             let mut diff = 0_i32;
             for (x, y) in sa.iter().zip(sb.iter()) {
                 if x != y {

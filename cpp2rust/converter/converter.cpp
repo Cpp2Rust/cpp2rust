@@ -2628,7 +2628,7 @@ bool Converter::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
   auto *sub_expr = expr->getSubExpr();
   if (type->isVoidType()) {
     if (!sub_expr->HasSideEffects(ctx_)) {
-      EmitFresh("()");
+      EmitFresh(isVoid() ? "" : "()");
       return false;
     }
     StrCat(token::kRef);

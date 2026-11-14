@@ -17,7 +17,7 @@ fn main_0() -> i32 {
         (mut __tmp_0,) => {
             __tmp_0.memset(
                 (0) as u8,
-                (::std::mem::size_of::<i32>() as usize).wrapping_mul(100_usize) as usize,
+                (::std::mem::size_of::<i32>() as usize).wrapping_mul(100_usize),
             );
             (__tmp_0).clone()
         }

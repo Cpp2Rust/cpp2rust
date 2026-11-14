@@ -1002,7 +1002,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
         (mut __tmp_0,) => {
             __tmp_0.memcpy(
                 &(twelve.as_pointer()).to_any(),
-                ::std::mem::size_of::<i32>() as usize,
+                ::std::mem::size_of::<i32>(),
             );
             (__tmp_0).clone()
         }
@@ -1010,13 +1010,13 @@ pub fn check_struct_3(mut s: Ptr<S>) {
     assert!((s.with(|__s| __s.x) == 12));
     match ({ (field_ptr!(field_ptr!(s, in_), b)).to_any() },) {
         (mut __tmp_1,) => {
-            __tmp_1.memset((51) as u8, ::std::mem::size_of::<i32>() as usize);
+            __tmp_1.memset((51) as u8, ::std::mem::size_of::<i32>());
             (__tmp_1).clone()
         }
     };
     match ({ (field_ptr!(s, x)).to_any() },) {
         (mut __tmp_2,) => {
-            __tmp_2.memset((19) as u8, ::std::mem::size_of::<i32>() as usize);
+            __tmp_2.memset((19) as u8, ::std::mem::size_of::<i32>());
             (__tmp_2).clone()
         }
     };
@@ -1030,7 +1030,7 @@ fn main_0() -> i32 {
     let local: Value<S> = <Value<S>>::default();
     match ({ (local.as_pointer()).to_any() },) {
         (mut __tmp_3,) => {
-            __tmp_3.memset((0) as u8, 40usize as usize);
+            __tmp_3.memset((0) as u8, 40usize);
             (__tmp_3).clone()
         }
     };
@@ -1040,7 +1040,7 @@ fn main_0() -> i32 {
     ));
     match ({ (arr.decay()).to_any() },) {
         (mut __tmp_4,) => {
-            __tmp_4.memset((0) as u8, 80usize as usize);
+            __tmp_4.memset((0) as u8, 80usize);
             (__tmp_4).clone()
         }
     };
@@ -1062,7 +1062,7 @@ fn main_0() -> i32 {
     assert!((!((raw_).is_null())));
     match ({ (raw_).to_any() },) {
         (mut __tmp_5,) => {
-            __tmp_5.memset((0) as u8, 40usize as usize);
+            __tmp_5.memset((0) as u8, 40usize);
             (__tmp_5).clone()
         }
     };

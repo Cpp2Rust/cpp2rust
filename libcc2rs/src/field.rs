@@ -20,6 +20,7 @@
 use std::any::{Any, TypeId};
 use std::cell::{Cell, Ref, RefCell, RefMut};
 use std::marker::PhantomData;
+use std::ops::DerefMut;
 use std::rc::{Rc, Weak};
 
 use crate::rc::{
@@ -645,6 +646,19 @@ pub trait Place: Clone {
     type Target;
     fn with<R>(&self, f: impl FnOnce(&Self::Target) -> R) -> R;
     fn with_mut<R>(&self, f: impl FnOnce(&mut Self::Target) -> R) -> R;
+
+    #[inline]
+    fn read(&self) -> Self::Target
+    where
+        Self::Target: Clone,
+    {
+        self.with(Clone::clone)
+    }
+
+    #[inline]
+    fn write(&self, value: Self::Target) {
+        self.with_mut(|v| *v = value)
+    }
 }
 
 impl<T: ByteRepr> Place for Ptr<T> {
@@ -677,40 +691,15 @@ impl<B: Place, T> Clone for FieldPlace<'_, B, T> {
 
 impl<B: Place, T> Copy for FieldPlace<'_, B, T> {}
 
-impl<B: Place, T> FieldPlace<'_, B, T> {
-    #[inline]
-    pub fn with<R>(&self, f: impl FnOnce(&T) -> R) -> R {
-        self.base.with(|s| f((self.get)(s)))
-    }
-
-    #[inline]
-    pub fn with_mut<R>(&self, f: impl FnOnce(&mut T) -> R) -> R {
-        self.base.with_mut(|s| f((self.get_mut)(s)))
-    }
-
-    #[inline]
-    pub fn read(&self) -> T
-    where
-        T: Clone,
-    {
-        self.with(T::clone)
-    }
-
-    #[inline]
-    pub fn write(&self, value: T) {
-        self.with_mut(|v| *v = value)
-    }
-}
-
 impl<B: Place, T> Place for FieldPlace<'_, B, T> {
     type Target = T;
     #[inline]
     fn with<R>(&self, f: impl FnOnce(&T) -> R) -> R {
-        FieldPlace::with(self, f)
+        self.base.with(|s| f((self.get)(s)))
     }
     #[inline]
     fn with_mut<R>(&self, f: impl FnOnce(&mut T) -> R) -> R {
-        FieldPlace::with_mut(self, f)
+        self.base.with_mut(|s| f((self.get_mut)(s)))
     }
 }
 
@@ -747,29 +736,6 @@ impl<T> Copy for ElemPlace<'_, T> {}
 
 impl<T: ByteRepr> ElemPlace<'_, T> {
     #[inline]
-    pub fn with<R>(&self, f: impl FnOnce(&T) -> R) -> R {
-        self.base.with_at(self.idx, f)
-    }
-
-    #[inline]
-    pub fn with_mut<R>(&self, f: impl FnOnce(&mut T) -> R) -> R {
-        self.base.with_mut_at(self.idx, f)
-    }
-
-    #[inline]
-    pub fn read(&self) -> T
-    where
-        T: Clone,
-    {
-        self.base.read_at(self.idx)
-    }
-
-    #[inline]
-    pub fn write(&self, value: T) {
-        self.base.write_at(self.idx, value)
-    }
-
-    #[inline]
     pub fn upgrade(&self) -> StrongPtr<T> {
         self.base.offset(self.idx).upgrade()
     }
@@ -779,11 +745,24 @@ impl<T: ByteRepr> Place for ElemPlace<'_, T> {
     type Target = T;
     #[inline]
     fn with<R>(&self, f: impl FnOnce(&T) -> R) -> R {
-        ElemPlace::with(self, f)
+        self.base.with_at(self.idx, f)
     }
     #[inline]
     fn with_mut<R>(&self, f: impl FnOnce(&mut T) -> R) -> R {
-        ElemPlace::with_mut(self, f)
+        self.base.with_mut_at(self.idx, f)
+    }
+    // Elements are read and written without the extra call of with, which
+    // keeps them inlined in hot loops.
+    #[inline]
+    fn read(&self) -> T
+    where
+        T: Clone,
+    {
+        self.base.read_at(self.idx)
+    }
+    #[inline]
+    fn write(&self, value: T) {
+        self.base.write_at(self.idx, value)
     }
 }
 
@@ -799,37 +778,6 @@ macro_rules! elem {
             idx: ($idx) as isize,
         }
     };
-}
-
-// An array or vector, whose elements are indexed by IndexPlace.
-pub trait Seq {
-    type Elem;
-    fn elems(&self) -> &[Self::Elem];
-    fn elems_mut(&mut self) -> &mut [Self::Elem];
-}
-
-impl<T> Seq for Box<[T]> {
-    type Elem = T;
-    #[inline]
-    fn elems(&self) -> &[T] {
-        self
-    }
-    #[inline]
-    fn elems_mut(&mut self) -> &mut [T] {
-        self
-    }
-}
-
-impl<T> Seq for Vec<T> {
-    type Elem = T;
-    #[inline]
-    fn elems(&self) -> &[T] {
-        self
-    }
-    #[inline]
-    fn elems_mut(&mut self) -> &mut [T] {
-        self
-    }
 }
 
 // Element `idx` of the array or vector in place `base`, e.g., a row of an
@@ -849,34 +797,6 @@ impl<B> Clone for IndexPlace<'_, B> {
 
 impl<B> Copy for IndexPlace<'_, B> {}
 
-impl<B: Place> IndexPlace<'_, B>
-where
-    B::Target: Seq,
-{
-    #[inline]
-    pub fn with<R>(&self, f: impl FnOnce(&<B::Target as Seq>::Elem) -> R) -> R {
-        self.base.with(|c| f(&c.elems()[self.idx]))
-    }
-
-    #[inline]
-    pub fn with_mut<R>(&self, f: impl FnOnce(&mut <B::Target as Seq>::Elem) -> R) -> R {
-        self.base.with_mut(|c| f(&mut c.elems_mut()[self.idx]))
-    }
-
-    #[inline]
-    pub fn read(&self) -> <B::Target as Seq>::Elem
-    where
-        <B::Target as Seq>::Elem: Clone,
-    {
-        self.with(Clone::clone)
-    }
-
-    #[inline]
-    pub fn write(&self, value: <B::Target as Seq>::Elem) {
-        self.with_mut(|v| *v = value)
-    }
-}
-
 impl<T: ByteRepr> IndexPlace<'_, Ptr<Vec<T>>> {
     #[inline]
     pub fn upgrade(&self) -> StrongPtr<T> {
@@ -884,18 +804,19 @@ impl<T: ByteRepr> IndexPlace<'_, Ptr<Vec<T>>> {
     }
 }
 
-impl<B: Place> Place for IndexPlace<'_, B>
+// The array or vector is a slice of its elements.
+impl<B: Place, E> Place for IndexPlace<'_, B>
 where
-    B::Target: Seq,
+    B::Target: DerefMut<Target = [E]>,
 {
-    type Target = <B::Target as Seq>::Elem;
+    type Target = E;
     #[inline]
-    fn with<R>(&self, f: impl FnOnce(&Self::Target) -> R) -> R {
-        IndexPlace::with(self, f)
+    fn with<R>(&self, f: impl FnOnce(&E) -> R) -> R {
+        self.base.with(|c| f(&c[self.idx]))
     }
     #[inline]
-    fn with_mut<R>(&self, f: impl FnOnce(&mut Self::Target) -> R) -> R {
-        IndexPlace::with_mut(self, f)
+    fn with_mut<R>(&self, f: impl FnOnce(&mut E) -> R) -> R {
+        self.base.with_mut(|c| f(&mut c[self.idx]))
     }
 }
 
@@ -943,36 +864,6 @@ impl<S: Record, T: ByteRepr> ArrayElem<'_, S, T> {
     }
 
     #[inline]
-    pub fn with<R>(&self, f: impl FnOnce(&T) -> R) -> R {
-        if let PtrKind::Reinterpreted(_) = self.base.kind {
-            return self.ptr().with(f);
-        }
-        self.base.with(|s| f(&(self.get)(s)[self.idx as usize]))
-    }
-
-    #[inline]
-    pub fn with_mut<R>(&self, f: impl FnOnce(&mut T) -> R) -> R {
-        if let PtrKind::Reinterpreted(_) = self.base.kind {
-            return self.ptr().with_mut(f);
-        }
-        self.base
-            .with_mut(|s| f(&mut (self.get_mut)(s)[self.idx as usize]))
-    }
-
-    #[inline]
-    pub fn read(&self) -> T
-    where
-        T: Clone,
-    {
-        self.with(T::clone)
-    }
-
-    #[inline]
-    pub fn write(&self, value: T) {
-        self.with_mut(|v| *v = value)
-    }
-
-    #[inline]
     pub fn upgrade(&self) -> StrongPtr<T> {
         self.ptr().upgrade()
     }
@@ -982,11 +873,18 @@ impl<S: Record, T: ByteRepr> Place for ArrayElem<'_, S, T> {
     type Target = T;
     #[inline]
     fn with<R>(&self, f: impl FnOnce(&T) -> R) -> R {
-        ArrayElem::with(self, f)
+        if let PtrKind::Reinterpreted(_) = self.base.kind {
+            return self.ptr().with(f);
+        }
+        self.base.with(|s| f(&(self.get)(s)[self.idx as usize]))
     }
     #[inline]
     fn with_mut<R>(&self, f: impl FnOnce(&mut T) -> R) -> R {
-        ArrayElem::with_mut(self, f)
+        if let PtrKind::Reinterpreted(_) = self.base.kind {
+            return self.ptr().with_mut(f);
+        }
+        self.base
+            .with_mut(|s| f(&mut (self.get_mut)(s)[self.idx as usize]))
     }
 }
 
@@ -1027,29 +925,6 @@ impl<S: Record, T> Copy for VecElem<'_, S, T> {}
 
 impl<S: Record, T: ByteRepr> VecElem<'_, S, T> {
     #[inline]
-    pub fn with<R>(&self, f: impl FnOnce(&T) -> R) -> R {
-        self.base.with(|s| f(&(self.get)(s)[self.idx]))
-    }
-
-    #[inline]
-    pub fn with_mut<R>(&self, f: impl FnOnce(&mut T) -> R) -> R {
-        self.base.with_mut(|s| f(&mut (self.get_mut)(s)[self.idx]))
-    }
-
-    #[inline]
-    pub fn read(&self) -> T
-    where
-        T: Clone,
-    {
-        self.with(T::clone)
-    }
-
-    #[inline]
-    pub fn write(&self, value: T) {
-        self.with_mut(|v| *v = value)
-    }
-
-    #[inline]
     pub fn upgrade(&self) -> StrongPtr<T> {
         let elems: Ptr<T> = self
             .base
@@ -1063,11 +938,11 @@ impl<S: Record, T: ByteRepr> Place for VecElem<'_, S, T> {
     type Target = T;
     #[inline]
     fn with<R>(&self, f: impl FnOnce(&T) -> R) -> R {
-        VecElem::with(self, f)
+        self.base.with(|s| f(&(self.get)(s)[self.idx]))
     }
     #[inline]
     fn with_mut<R>(&self, f: impl FnOnce(&mut T) -> R) -> R {
-        VecElem::with_mut(self, f)
+        self.base.with_mut(|s| f(&mut (self.get_mut)(s)[self.idx]))
     }
 }
 
@@ -1273,7 +1148,7 @@ pub(crate) fn upgrade(root: &Weak<dyn Root>) -> Rc<dyn Root> {
 
 #[cfg(test)]
 mod tests {
-    use crate::{AsPointer, ByteRepr, Decay, Ptr, Record, Value};
+    use crate::{AsPointer, ByteRepr, Decay, Place, Ptr, Record, Value};
     use std::cell::RefCell;
     use std::rc::Rc;
 
@@ -1550,10 +1425,7 @@ mod tests {
         name.offset(1)
             .with_slice_mut(2, |b| b.copy_from_slice(b"xy"));
         assert_eq!(&s.borrow().name[..4], b"axy\0");
-        assert_eq!(name.slice_until(&name.offset(3)), b"axy".to_vec());
         let nums: Ptr<i32> = field_ptr!(s, nums).decay();
-        nums.sort(3);
-        assert_eq!(s.borrow().nums, vec![1, 2, 3]);
         assert_eq!(nums.len(), 3);
     }
 

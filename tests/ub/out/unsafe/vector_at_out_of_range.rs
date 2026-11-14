@@ -15,7 +15,7 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut v: Vec<i32> = Vec::from([1, 2, 3]);
     let mut idx: usize = v.len();
-    let mut p: *mut i32 = (&mut (v)[idx as usize] as *mut i32);
+    let mut p: *mut i32 = (&mut (v)[idx] as *mut i32);
     return (((p).is_null()) as i32);
 }
 pub unsafe fn __cpp2rust_init_globals() {}

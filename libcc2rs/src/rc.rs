@@ -1084,13 +1084,6 @@ impl<T: CChar> Ptr<T> {
             }),
         }
     }
-
-    pub fn slice_until(&self, end: &Self) -> Vec<T> {
-        assert!(self.kind == end.kind, "ub: invalid slice");
-        assert!(self.offset <= end.offset);
-        assert!(end.get_offset() <= self.len());
-        self.with_slice(end.offset - self.offset, |s| s.to_vec())
-    }
 }
 
 impl<T: Clone + ByteRepr> Ptr<T> {
@@ -1214,39 +1207,6 @@ impl<T: std::io::Write + ByteRepr> Ptr<T> {
 
     pub fn write_all(&self, buf: &[u8]) -> std::io::Result<()> {
         self.with_mut(|inner| inner.write_all(buf))
-    }
-}
-
-impl<T: std::cmp::Ord + 'static> Ptr<T> {
-    pub fn sort(&self, last: usize) {
-        match self.kind {
-            PtrKind::Null => panic!("ub: dereference of null pointer"),
-            PtrKind::StackSingle(_)
-            | PtrKind::HeapSingle(_)
-            | PtrKind::Field(_, _, FieldShape::Single) => {
-                panic!("only vecs and arrays can be sorted")
-            }
-            PtrKind::StackVec(ref weak) | PtrKind::HeapVec(ref weak) => {
-                let strong = weak.upgrade().expect("ub: dangling pointer");
-                (*strong.borrow_mut())[self.get_offset()..last].sort();
-            }
-            PtrKind::Nested(ref parent) => {
-                let root = parent.root();
-                parent.borrow_slice_mut(&root)[self.get_offset()..last].sort();
-            }
-            PtrKind::Field(..) => {
-                let parent = self.field_elem_parent();
-                let root = parent.root();
-                parent.borrow_slice_mut(&root)[self.get_offset()..last].sort();
-            }
-            PtrKind::StackArray(ref weak) | PtrKind::HeapArray(ref weak) => {
-                let strong = weak.upgrade().expect("ub: dangling pointer");
-                (*strong.borrow_mut())[self.get_offset()..last].sort();
-            }
-            PtrKind::Reinterpreted(_) => {
-                panic!("sorting not supported for reinterpreted pointers")
-            }
-        }
     }
 }
 

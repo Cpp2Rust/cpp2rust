@@ -125,9 +125,9 @@ fn main_0() -> i32 {
     );
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
     let vec_: Value<Vec<Tracked>> = Rc::new(RefCell::new(Vec::new()));
-    if 4_usize as usize > (*vec_.borrow()).capacity() as usize {
+    if 4_usize > (*vec_.borrow()).capacity() as usize {
         let len_0 = (*vec_.borrow()).len();
-        (*vec_.borrow_mut()).reserve_exact(4_usize as usize - len_0 as usize);
+        (*vec_.borrow_mut()).reserve_exact(4_usize - len_0 as usize);
     };
     {
         let __init = Tracked::new_1({ 2 });

@@ -95,13 +95,13 @@ unsafe fn main_0() -> i32 {
     }
     'switch: {
         match { (c as u32) } {
-            __v if __v == (0 as u32) => {
+            __v if __v == 0_u32 => {
                 break 'switch;
             }
-            __v if __v == (1 as u32) => {
+            __v if __v == 1_u32 => {
                 return 1;
             }
-            __v if __v == (2 as u32) => {
+            __v if __v == 2_u32 => {
                 return 2;
             }
             _ => {
@@ -145,10 +145,10 @@ unsafe fn main_0() -> i32 {
             __v if __v == ((Tag_enum_TAG_ZERO as i32) as u32) => {
                 return 90;
             }
-            __v if __v == (1 as u32) => {
+            __v if __v == 1_u32 => {
                 return 91;
             }
-            __v if __v == (2 as u32) => {
+            __v if __v == 2_u32 => {
                 break 'switch;
             }
             _ => {}

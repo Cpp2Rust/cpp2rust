@@ -38,7 +38,7 @@ fn main_0() -> i32 {
             __out
         }
     };
-    let widened: Value<Vec<i64>> = Rc::new(RefCell::new(vec![0_i64; 3_usize as usize]));
+    let widened: Value<Vec<i64>> = Rc::new(RefCell::new(vec![0_i64; 3_usize]));
     match ({ input.decay().offset((3) as isize) },) {
         (mut __tmp_1,) => {
             let mut __first = input.decay();
@@ -60,7 +60,7 @@ fn main_0() -> i32 {
         })
     );
     let constructed: Value<Vec<Degrees>> =
-        Rc::new(RefCell::new(vec![Degrees::new({ 0 },); 3_usize as usize]));
+        Rc::new(RefCell::new(vec![Degrees::new({ 0 },); 3_usize]));
     match ({ input.decay().offset((3) as isize) },) {
         (mut __tmp_2,) => {
             let mut __first = input.decay();
@@ -82,7 +82,7 @@ fn main_0() -> i32 {
         })
     );
     let wide: Value<Box<[i64]>> = Rc::new(RefCell::new(Box::new([7_i64, 8_i64])));
-    let floating: Value<Vec<f64>> = Rc::new(RefCell::new(vec![0_f64; 2_usize as usize]));
+    let floating: Value<Vec<f64>> = Rc::new(RefCell::new(vec![0_f64; 2_usize]));
     match ({ wide.decay().offset((2) as isize) },) {
         (mut __tmp_3,) => {
             let mut __first = wide.decay();

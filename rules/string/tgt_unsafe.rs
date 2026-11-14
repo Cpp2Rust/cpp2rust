@@ -48,7 +48,7 @@ unsafe fn f3(a0: Vec<libc::c_char>, a1: *const libc::c_char) -> Vec<libc::c_char
 }
 unsafe fn f4(a0: &mut Vec<libc::c_char>, a1: *mut libc::c_char, a2: usize) {
     a0.splice(a0.len().saturating_sub(1)..a0.len(), {
-        let mut v = ::std::slice::from_raw_parts(a1, a2 as usize).to_vec();
+        let mut v = ::std::slice::from_raw_parts(a1, a2).to_vec();
         v.push(0);
         v
     });
@@ -60,7 +60,7 @@ unsafe fn f6(a0: &mut Vec<libc::c_char>) -> *const libc::c_char {
     a0.as_mut_ptr()
 }
 unsafe fn f7(a0: *const libc::c_char, a1: usize) -> Vec<libc::c_char> {
-    std::slice::from_raw_parts(a0, a1 as usize)
+    std::slice::from_raw_parts(a0, a1)
         .to_vec()
         .iter()
         .copied()
@@ -109,8 +109,8 @@ unsafe fn f14(
     a4: usize,
 ) {
     a0.splice(
-        a1 as usize..a1 as usize + a2 as usize,
-        ::std::slice::from_raw_parts(a3, a4 as usize).to_vec(),
+        a1..a1 + a2,
+        ::std::slice::from_raw_parts(a3, a4).to_vec(),
     );
 }
 unsafe fn f15(a0: &mut Vec<libc::c_char>) -> UnsafeRandomAccessIterator<libc::c_char> {
@@ -148,7 +148,7 @@ unsafe fn f19(a0: Vec<libc::c_char>) -> usize {
 unsafe fn f21(a0: &mut Vec<libc::c_char>, a1: usize, a2: libc::c_char) {
     a0.splice(
         a0.len() - 1..a0.len() - 1,
-        ::std::vec::from_elem(a2, a1 as usize),
+        ::std::vec::from_elem(a2, a1),
     );
 }
 
@@ -170,10 +170,10 @@ unsafe fn f25(a0: &mut Vec<libc::c_char>) {
 }
 
 unsafe fn f26(a0: &mut Vec<libc::c_char>, a1: usize) -> *mut libc::c_char {
-    if a1 as usize >= a0.len() - 1 {
+    if a1 >= a0.len() - 1 {
         panic!("out of bounds access")
     } else {
-        (&mut a0[a1 as usize] as *mut libc::c_char)
+        (&mut a0[a1] as *mut libc::c_char)
     }
 }
 

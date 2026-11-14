@@ -56,6 +56,15 @@ pub unsafe fn test_call_through_cast_5() {
         (unsafe { (gfn).unwrap()(((&mut val as *mut i32) as *mut ::libc::c_void), 42) });
     assert!(((result) == (142)));
 }
+pub unsafe fn test_null_cast_6() {
+    let mut fn_: Option<unsafe fn(i32) -> i32> = None;
+    let mut gfn: Option<unsafe fn()> =
+        std::mem::transmute::<Option<unsafe fn(i32) -> i32>, Option<unsafe fn()>>(fn_);
+    assert!((gfn).is_none());
+    assert!(
+        (std::mem::transmute::<Option<unsafe fn()>, Option<unsafe fn(i32) -> i32>>(gfn)).is_none()
+    );
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -67,6 +76,7 @@ unsafe fn main_0() -> i32 {
     (unsafe { test_double_cast_2() });
     (unsafe { test_void_ptr_to_fn_3() });
     (unsafe { test_call_through_cast_5() });
+    (unsafe { test_null_cast_6() });
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

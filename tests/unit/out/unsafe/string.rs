@@ -190,7 +190,7 @@ unsafe fn main_0() -> i32 {
         ('o' as libc::c_char),
     ];
     let mut string: Vec<libc::c_char> =
-        std::slice::from_raw_parts((arr.as_mut_ptr()).cast_const(), 3_usize as usize)
+        std::slice::from_raw_parts((arr.as_mut_ptr()).cast_const(), 3_usize)
             .to_vec()
             .iter()
             .copied()
@@ -476,10 +476,10 @@ unsafe fn main_0() -> i32 {
     };
     (*match (((unsafe { counted_ref_1(&mut target, &mut ref_calls) }) as *mut Vec<libc::c_char>),) {
         (__tmp_3,) => {
-            if 0_usize as usize >= (*__tmp_3).len() - 1 {
+            if 0_usize >= (*__tmp_3).len() - 1 {
                 panic!("out of bounds access")
             } else {
-                (&mut (&mut (*__tmp_3))[0_usize as usize] as *mut libc::c_char)
+                (&mut (&mut (*__tmp_3))[0_usize] as *mut libc::c_char)
             }
         }
     }) = ('A' as libc::c_char);

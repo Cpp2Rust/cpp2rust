@@ -197,7 +197,7 @@ fn main_0() -> i32 {
         (mut __tmp_0,) => {
             __tmp_0.memcpy(
                 &(array_field_ptr!(local.as_pointer(), rows)).to_any(),
-                ::std::mem::size_of::<[[i8; 10]; 3]>() as usize,
+                ::std::mem::size_of::<[[i8; 10]; 3]>(),
             );
             (__tmp_0).clone()
         }
@@ -259,7 +259,7 @@ fn main_0() -> i32 {
         (mut __tmp_1,) => {
             __tmp_1.memcpy(
                 &(grid.decay()).to_any(),
-                ::std::mem::size_of::<[[i8; 3]; 2]>() as usize,
+                ::std::mem::size_of::<[[i8; 3]; 2]>(),
             );
             (__tmp_1).clone()
         }

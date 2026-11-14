@@ -10,5 +10,5 @@ fn t2() -> ::libc::nfds_t {
 }
 
 unsafe fn f1(a0: *mut ::libc::pollfd, a1: ::libc::nfds_t, a2: i32) -> i32 {
-    libc::poll(a0, a1 as ::libc::nfds_t, a2)
+    libc::poll(a0, a1, a2)
 }
