@@ -119,7 +119,7 @@ fn main_0() -> i32 {
             .decay()
             .decay()
             .offset(0_usize)
-            .write(__tmp_3.with_mut(std::mem::take)),
+            .write(__tmp_3.with_mut(|__v| std::mem::replace(__v, vec![0]))),
     };
     match (v.decay().offset(0_usize).decay().decay().offset(1_usize),) {
         (__tmp_4,) => {

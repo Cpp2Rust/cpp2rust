@@ -2987,11 +2987,20 @@ std::string ConverterRefCount::ConvertBorrowMut(clang::Expr *arg) {
 }
 
 std::string ConverterRefCount::ConvertTake(clang::Expr *arg) {
+  auto moved_from = GetMovedFromValue(arg);
   auto lvalue = ConvertLValue(arg);
   MarkFresh();
   // An object reached through a pointer is taken through it.
   if (!pending_deref_.empty()) {
+    if (!moved_from.empty()) {
+      return std::format("{}.with_mut(|__v| std::mem::replace(__v, {}))",
+                         pending_deref_.take(), std::move(moved_from));
+    }
     return std::format("{}.with_mut(std::mem::take)", pending_deref_.take());
+  }
+  if (!moved_from.empty()) {
+    return std::format("std::mem::replace(&mut {}, {})", std::move(lvalue),
+                       std::move(moved_from));
   }
   return std::format("std::mem::take(&mut {})", std::move(lvalue));
 }
