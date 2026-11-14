@@ -2595,7 +2595,12 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     EmitFresh(GetDefaultAsString(type));
     break;
   default:
-    if (auto *literal = clang::dyn_cast<clang::IntegerLiteral>(sub_expr)) {
+    // Before clang 24, a case value is a literal in a ConstantExpr.
+    auto *value = sub_expr;
+    if (auto *constant = clang::dyn_cast<clang::ConstantExpr>(value)) {
+      value = constant->getSubExpr();
+    }
+    if (auto *literal = clang::dyn_cast<clang::IntegerLiteral>(value)) {
       auto type = expr->getType();
       EmitFresh(getIntegerLiteral(literal, true, &type));
       break;
