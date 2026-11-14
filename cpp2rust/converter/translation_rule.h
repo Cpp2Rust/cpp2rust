@@ -50,6 +50,8 @@ struct VaArgsFragment {
 };
 
 struct InitFragment {
+  bool conditional = false;
+
   void dump() const;
 };
 
@@ -131,7 +133,8 @@ struct ExprRule {
   // evaluated once and in order: those with side effects that the body may
   // evaluate more than once, or after a later one, and those with side effects
   // evaluated before them. Values computed from others, which the body may
-  // evaluate more than once, are bound too. args are those of expr.
+  // evaluate more than once, are bound too. Arguments a conditional init would
+  // skip are bound without constructing init. args are those of expr.
   std::vector<bool> argsToBind(clang::ASTContext &ctx, const clang::Expr *expr,
                                llvm::ArrayRef<clang::Expr *> args) const;
 

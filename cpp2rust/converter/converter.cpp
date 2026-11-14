@@ -2704,6 +2704,10 @@ bool Converter::VisitCXXRewrittenBinaryOperator(
 }
 
 bool Converter::VisitBinaryOperator(clang::BinaryOperator *expr) {
+  if (expr->isAssignmentOp() && isAddrOf()) {
+    ConvertAssignmentRef(expr);
+    return false;
+  }
   if (expr->getOpcode() == clang::BO_Cmp) {
     EmitFresh(std::format("std::cmp::Ord::cmp(&({}), &({}))",
                           ConvertRValue(expr->getLHS()),
@@ -2722,6 +2726,52 @@ bool Converter::VisitBinaryOperator(clang::BinaryOperator *expr) {
     ConvertCast(expr->getType());
   }
   return false;
+}
+
+void Converter::ConvertAssignmentRef(clang::BinaryOperator *expr) {
+  auto *lhs = expr->getLHS();
+  auto *rhs = expr->getRHS();
+  auto value = ConvertFreshRValue(rhs);
+  auto ptr = ConvertFreshObject(lhs);
+  auto loc = expr->getExprLoc();
+  clang::DeclContext *context = curr_function_;
+  if (!context) {
+    context =
+        clang::BlockDecl::Create(ctx_, ctx_.getTranslationUnitDecl(), loc);
+  }
+  auto bind = [&](clang::QualType type) {
+    return clang::VarDecl::Create(
+        ctx_, context, loc, loc, &ctx_.Idents.get(NewTempName()), type,
+        ctx_.getTrivialTypeSourceInfo(type, loc), clang::SC_None);
+  };
+  auto *left = bind(ctx_.getLValueReferenceType(lhs->getType()));
+  auto *right = bind(rhs->getType());
+  bound_values_.insert(right);
+  auto ref = [&](clang::VarDecl *var) {
+    return clang::DeclRefExpr::Create(ctx_, {}, {}, var, false, loc,
+                                      var->getType().getNonReferenceType(),
+                                      clang::VK_LValue);
+  };
+  expr->setLHS(ref(left));
+  expr->setRHS(clang::ImplicitCastExpr::Create(
+      ctx_, rhs->getType(), clang::CK_LValueToRValue, ref(right), nullptr,
+      clang::VK_PRValue, clang::FPOptionsOverride()));
+  std::string assignment;
+  {
+    Buffer buf(*this);
+    PushExprKind push(*this, ExprKind::Void);
+    ConvertBinaryOperator(expr);
+    assignment = std::move(buf).str();
+  }
+  expr->setLHS(lhs);
+  expr->setRHS(rhs);
+  // C++ evaluates the right operand before finding the place to write. Reuse
+  // the ordinary assignment conversion on the bound operands, then return the
+  // same place, without evaluating either operand again.
+  StrCat(std::format(
+      "match ({{ {0} }}, {1}) {{ ({2}, {3}) => {{ {4}; {3} }} }}", value, ptr,
+      GetNamedDeclAsString(right), GetNamedDeclAsString(left), assignment));
+  MarkFresh();
 }
 
 void Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
@@ -2901,6 +2951,14 @@ bool Converter::ConvertIncAndDec(clang::UnaryOperator *expr) {
   const char *method = GetIncDecMethod(expr->getOpcode());
   if (!method) {
     return false;
+  }
+  if (expr->isPrefix() && isAddrOf()) {
+    auto ptr = ConvertFreshObject(expr->getSubExpr());
+    auto name = NewTempName();
+    StrCat(std::format("{{ let {0} = {1}; (*{0}).{2}(); {0} }}", name, ptr,
+                       method));
+    MarkFresh();
+    return true;
   }
   {
     PushExprKind push(*this, ExprKind::LValue);
@@ -5142,8 +5200,13 @@ std::string Converter::GetMappedAsString(clang::Expr *expr, clang::Expr **args,
   auto all_args = BuildUnifiedArgs(expr, args, num_args);
   auto bind = tgt_ir->argsToBind(ctx_, expr, all_args);
   std::vector<std::string> values, names;
-  // The variables are local to the function.
-  for (size_t i = 0; curr_function_ && i < all_args.size(); ++i) {
+  // Bindings in a global initializer are local to the expansion too.
+  clang::DeclContext *binding_context = curr_function_;
+  if (!binding_context && tgt_ir->usesInit()) {
+    binding_context = clang::BlockDecl::Create(
+        ctx_, ctx_.getTranslationUnitDecl(), expr->getExprLoc());
+  }
+  for (size_t i = 0; binding_context && i < all_args.size(); ++i) {
     if (!bind[i]) {
       continue;
     }
@@ -5163,7 +5226,7 @@ std::string Converter::GetMappedAsString(clang::Expr *expr, clang::Expr **args,
     auto var_type = by_value ? type : ctx_.getLValueReferenceType(type);
     auto loc = arg->getExprLoc();
     auto *var = clang::VarDecl::Create(
-        ctx_, curr_function_, loc, loc, &ctx_.Idents.get(NewTempName()),
+        ctx_, binding_context, loc, loc, &ctx_.Idents.get(NewTempName()),
         var_type, ctx_.getTrivialTypeSourceInfo(var_type, loc), clang::SC_None);
     // The temporaries of a value, e.g., borrows, end with its block.
     if (by_value) {
@@ -5175,8 +5238,15 @@ std::string Converter::GetMappedAsString(clang::Expr *expr, clang::Expr **args,
           arg, ToString(ctx_.getPointerType(type)), convert_to));
     }
     names.push_back((by_value ? "mut " : "") + GetNamedDeclAsString(var));
+    // Preserve the value category used to forward an init argument to its
+    // constructor, in particular an rvalue that must be moved, not copied.
     all_args[i] = clang::DeclRefExpr::Create(ctx_, {}, {}, var, false, loc,
                                              type, clang::VK_LValue);
+    if (i >= tgt_ir->params.size() && arg->isXValue()) {
+      all_args[i] = clang::ImplicitCastExpr::Create(
+          ctx_, type, clang::CK_NoOp, all_args[i], nullptr, clang::VK_XValue,
+          clang::FPOptionsOverride());
+    }
     if (by_value && !type->isRecordType()) {
       all_args[i] = clang::ImplicitCastExpr::Create(
           ctx_, type, clang::CK_LValueToRValue, all_args[i], nullptr,
