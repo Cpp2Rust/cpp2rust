@@ -98,6 +98,8 @@ pub fn main() {
 fn main_0() -> i32 {
     assert!((4usize == 4usize));
     assert!((::std::mem::size_of::<i32>() == ::std::mem::size_of::<i32>()));
+    assert!(!(false));
+    assert!(!(false));
     let mut n: i32 = 3;
     assert!((n == 3));
     assert!((noisy_calls_5.with(|rc| *rc.borrow()) == 0));

@@ -102,6 +102,8 @@ unsafe fn main_0() -> i32 {
         ((::std::mem::size_of::<LifetimeTracked>()) == (::std::mem::size_of::<LifetimeTracked>()))
     );
     assert!(((::std::mem::size_of::<i32>()) == (::std::mem::size_of::<i32>())));
+    assert!(!(false));
+    assert!(!(false));
     let mut n: i32 = 3;
     assert!(((n) == (3)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut noisy_calls_5)) == (0)));

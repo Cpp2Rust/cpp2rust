@@ -18,6 +18,8 @@ int noisy() {
 int main() {
   assert(sizeof(make()) == sizeof(LifetimeTracked));
   assert(sizeof(noisy()) == sizeof(int));
+  assert(!noexcept(make()));
+  assert(!noexcept(noisy()));
   decltype(noisy()) n = 3;
   assert(n == 3);
   assert(noisy_calls == 0);
