@@ -485,6 +485,7 @@ def cpp2rust_command(cc_input, build_dir, model, rs_file, extra_cxxflags):
         model,
         "-o",
         str(rs_file),
+        f"-cxxflags=-I{cc_input.parent}",
     ]
     for flag in extra_cxxflags:
         cmd.append(f"-cxxflags={flag}")
