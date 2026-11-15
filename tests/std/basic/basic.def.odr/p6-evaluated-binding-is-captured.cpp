@@ -1,3 +1,6 @@
+// no-compile: refcount, unsafe
+// Inside the lambda the converter refers to the original structured binding,
+// not to the captured copy.
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [basic.def.odr]/6: a structured binding is odr-used if it appears as a
 // potentially-evaluated expression, so [=] captures a by copy.

@@ -1,0 +1,5 @@
+// panic: refcount
+// no-compile: unsafe
+// The converter emits one object for a constant that has internal linkage in
+// each file, and in the unsafe model compares a function with a function
+// pointer of a different type.

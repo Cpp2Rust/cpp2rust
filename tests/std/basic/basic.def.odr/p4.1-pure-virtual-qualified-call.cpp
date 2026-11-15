@@ -1,3 +1,6 @@
+// no-compile: refcount, unsafe
+// The converter drops the body of a pure virtual function and the
+// qualification of calls to it.
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [basic.def.odr]/4.1: a pure virtual function is named by an
 // id-expression with an explicitly qualified name. HasPureVirtual::f is pure
