@@ -521,6 +521,12 @@ impl<T: FnSig> ErasedPtr for FnPtr<T> {
     fn is_null(&self) -> bool {
         FnPtr::is_null(self)
     }
+    fn to_int(&self) -> usize {
+        panic!("function pointer to integer cast is not supported");
+    }
+    fn address_only(&self) -> Option<usize> {
+        None
+    }
 }
 
 impl<T: FnSig> FnPtr<T> {

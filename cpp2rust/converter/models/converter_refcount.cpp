@@ -749,9 +749,14 @@ void ConverterRefCount::EmitRustUnion(clang::RecordDecl *decl) {
 }
 
 void ConverterRefCount::EmitByteSizeAttr(const clang::RecordDecl *decl) {
-  StrCat(std::format(
-      "#[byte_size({})]",
-      ctx_.getTypeSizeInChars(ctx_.getCanonicalTagType(decl)).getQuantity()));
+  auto type = ctx_.getCanonicalTagType(decl);
+  StrCat(std::format("#[byte_size({})]",
+                     ctx_.getTypeSizeInChars(type).getQuantity()));
+  // The integers of pointers are aligned as malloc aligns them (see
+  // libcc2rs/src/escape.rs), unless the type is over-aligned.
+  if (auto align = ctx_.getTypeAlignInChars(type).getQuantity(); align > 16) {
+    StrCat(std::format("#[byte_align({})]", align));
+  }
 }
 
 std::string
@@ -1462,6 +1467,38 @@ bool ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
     EmitFresh(GetDefaultAsString(expr->getType()));
     return false;
   }
+  if (expr->getCastKind() == clang::CK_PointerToIntegral ||
+      expr->getCastKind() == clang::CK_IntegralToPointer) {
+    std::string dst_type;
+    {
+      PushConversionKind push(*this, ConversionKind::Unboxed);
+      dst_type = ToString(expr->getType());
+    }
+    // The integers of pointers are usize, which other integers are cast
+    // from and to.
+    auto sub_expr = ToString(expr->getSubExpr());
+    if (expr->getCastKind() == clang::CK_PointerToIntegral) {
+      bool cast = Mapper::Map(*this, expr->getType()) != "usize";
+      PushParen paren(*this, cast);
+      StrCat(sub_expr, ".to_int()");
+      if (cast) {
+        StrCat(keyword::kAs, dst_type);
+      }
+    } else {
+      bool cast = Mapper::Map(*this, expr->getSubExpr()->getType()) != "usize";
+      StrCat(std::format("<{}>::from_int", dst_type));
+      PushParen paren(*this);
+      {
+        PushParen value(*this, cast);
+        StrCat(sub_expr);
+      }
+      if (cast) {
+        StrCat(keyword::kAs, "usize");
+      }
+    }
+    MarkFresh();
+    return false;
+  }
   switch (expr->getStmtClass()) {
   case clang::Stmt::CXXReinterpretCastExprClass:
     assert(expr->getType()->isPointerType() &&
@@ -1472,22 +1509,6 @@ bool ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
     return false;
   case clang::Stmt::CStyleCastExprClass:
   case clang::Stmt::CXXStaticCastExprClass:
-    if (expr->getCastKind() == clang::CastKind::CK_PointerToIntegral ||
-        expr->getCastKind() == clang::CastKind::CK_IntegralToPointer) {
-      std::string dst_type;
-      {
-        PushConversionKind push(*this, ConversionKind::Unboxed);
-        dst_type = ToString(expr->getType());
-      }
-      if (expr->getCastKind() == clang::CastKind::CK_PointerToIntegral) {
-        EmitFresh(std::format("{}.to_int()", ToString(expr->getSubExpr())));
-      } else {
-        EmitFresh(std::format("<{}>::from_int({})", dst_type,
-                              ToString(expr->getSubExpr())));
-      }
-      return false;
-    }
-
     if (ConvertFunctionPointerCast(expr)) {
       return false;
     } else if (expr->getSubExpr()->getType()->isVoidPointerType() &&

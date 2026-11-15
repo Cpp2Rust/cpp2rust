@@ -14,6 +14,9 @@ pub trait ErasedPtr: std::any::Any {
     fn as_any(&self) -> &dyn std::any::Any;
     fn equals(&self, other: &dyn ErasedPtr) -> bool;
     fn is_null(&self) -> bool;
+    fn to_int(&self) -> usize;
+    // The address of a pointer that holds only one, which it is compared by.
+    fn address_only(&self) -> Option<usize>;
     // Copies len bytes from src as whole values, if it points to the same
     // type, whose values have different sizes, e.g., the rows of a 2D array.
     fn memcpy_values(&self, _src: &dyn ErasedPtr, _len: usize) -> bool {
@@ -45,11 +48,22 @@ where
     }
 
     fn equals(&self, other: &dyn ErasedPtr) -> bool {
+        if self.address_only().is_some() || other.address_only().is_some() {
+            return self.address_only() == other.address_only();
+        }
         other.byte_address() == self.byte_address()
     }
 
     fn is_null(&self) -> bool {
         Ptr::is_null(self)
+    }
+
+    fn to_int(&self) -> usize {
+        Ptr::to_int(self)
+    }
+
+    fn address_only(&self) -> Option<usize> {
+        Ptr::address_only(self)
     }
 
     fn memcpy_values(&self, src: &dyn ErasedPtr, len: usize) -> bool {
@@ -155,16 +169,28 @@ impl AnyPtr {
     }
 }
 
-impl ByteRepr for AnyPtr {}
+impl ByteRepr for AnyPtr {
+    #[inline]
+    fn byte_size() -> usize {
+        std::mem::size_of::<usize>()
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.to_int().to_bytes(buf)
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self::from_int(usize::from_bytes(buf))
+    }
+}
 
-// Pointers have no integer representation.
+// Casts between pointers and integers (see escape.rs).
 impl AnyPtr {
     pub fn to_int(&self) -> usize {
-        panic!("pointer to integer cast is not supported")
+        self.ptr.to_int()
     }
 
-    pub fn from_int(_value: usize) -> Self {
-        panic!("integer to pointer cast is not supported")
+    // A pointer to bytes, which is cast to the type it is accessed as.
+    pub fn from_int(address: usize) -> Self {
+        Ptr::<u8>::from_int(address).to_any()
     }
 }
 

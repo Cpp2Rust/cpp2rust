@@ -5,11 +5,15 @@ use proc_macro::TokenStream;
 use quote::quote;
 use syn::{Attribute, Data, DeriveInput, Expr, Fields, parse_macro_input};
 
-fn byte_size(attrs: &[Attribute]) -> Option<Expr> {
+fn attr_arg(attrs: &[Attribute], name: &str) -> Option<Expr> {
     attrs
         .iter()
-        .find(|attr| attr.path().is_ident("byte_size"))
+        .find(|attr| attr.path().is_ident(name))
         .map(|attr| attr.parse_args().unwrap())
+}
+
+fn byte_size(attrs: &[Attribute]) -> Option<Expr> {
+    attr_arg(attrs, "byte_size")
 }
 
 pub fn expand(input: TokenStream) -> TokenStream {
@@ -28,6 +32,14 @@ pub fn expand(input: TokenStream) -> TokenStream {
 
     let size = byte_size(&input.attrs)
         .unwrap_or_else(|| panic!("struct `{name}` has no #[byte_size(...)]"));
+    // Only over-aligned structs give their alignment.
+    let align = attr_arg(&input.attrs, "byte_align").map(|align| {
+        quote! {
+            fn byte_align() -> usize {
+                #align
+            }
+        }
+    });
 
     // The bytes of each field are at its offset, and span the byte size of
     // its type, unless given by its byte_size attribute.
@@ -53,6 +65,8 @@ pub fn expand(input: TokenStream) -> TokenStream {
                 #size
             }
 
+            #align
+
             #[allow(unused_variables)]
             fn to_bytes(&self, buf: &mut [u8]) {
                 #(::libcc2rs::ByteRepr::to_bytes(&self.#idents, &mut buf[#ranges]);)*
@@ -63,6 +77,13 @@ pub fn expand(input: TokenStream) -> TokenStream {
                 Self {
                     #(#idents: <#types as ::libcc2rs::ByteRepr>::from_bytes(&buf[#ranges]),)*
                 }
+            }
+
+            // Keeps the lengths of the arrays in the fields, which the bytes
+            // of rows don't give.
+            #[allow(unused_variables)]
+            fn assign_bytes(&mut self, buf: &[u8]) {
+                #(::libcc2rs::ByteRepr::assign_bytes(&mut self.#idents, &buf[#ranges]);)*
             }
         }
     }

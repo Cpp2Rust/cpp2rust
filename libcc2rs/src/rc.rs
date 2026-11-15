@@ -11,6 +11,7 @@ use std::{
     rc::{Rc, Weak},
 };
 
+use crate::escape;
 use crate::field::{Root, upgrade as upgrade_root};
 use crate::reinterpret::{ByteRepr, OriginalAlloc, with_scratch};
 
@@ -42,11 +43,75 @@ impl SliceRoot {
     }
 }
 
+// The containers that pointers point into the elements of.
+pub trait Elems<T>: AsRef<[T]> + AsMut<[T]> {
+    // Whether the elements are in the memory of the container, as those of an
+    // array are, unlike those of a vector, which are in a buffer of their own.
+    const INLINE: bool = true;
+    // The number of elements that the buffer of the elements can hold.
+    fn capacity(&self) -> usize {
+        self.as_ref().len()
+    }
+    // Where the elements of the container that `ptr` points to are, for the
+    // containers that pointers point to.
+    fn elem_storage(_ptr: &Ptr<Self>) -> ElemStorage
+    where
+        Self: ByteRepr + Sized,
+    {
+        unreachable!()
+    }
+}
+
+impl<T> Elems<T> for [T] {}
+
+// The elements of an array are where the pointer to it points.
+impl<T: ByteRepr> Elems<T> for Box<[T]> {
+    fn elem_storage(ptr: &Ptr<Self>) -> ElemStorage
+    where
+        Self: ByteRepr + Sized,
+    {
+        ptr.array_storage()
+    }
+}
+
+impl<T> Elems<T> for Vec<T> {
+    const INLINE: bool = false;
+    fn capacity(&self) -> usize {
+        Vec::capacity(self)
+    }
+    fn elem_storage(ptr: &Ptr<Self>) -> ElemStorage
+    where
+        Self: ByteRepr + Sized,
+    {
+        let root = ptr.slice_root();
+        ElemStorage::own(&*ptr.borrow_in(&root))
+    }
+}
+
+// Where the elements of a container are in C, for the integers that pointers
+// to them are cast to (see escape.rs).
+#[doc(hidden)]
+pub enum ElemStorage {
+    // In the memory of the storage, from a byte offset in it, as those of an
+    // array field are.
+    In(OriginalAlloc, usize),
+    // In a buffer of their own, as those of a vector are: the address of the
+    // buffer, which identifies them, and the number of elements it can hold.
+    Own(usize, usize),
+}
+
+impl ElemStorage {
+    pub(crate) fn own<T, C: Elems<T> + ?Sized>(elems: &C) -> Self {
+        ElemStorage::Own(elems.as_ref().as_ptr() as usize, elems.capacity())
+    }
+}
+
 // The array or vector that a Nested pointer points into. It is borrowed from
 // its root, which keeps it alive meanwhile, or its elements are accessed
 // directly with with_elem, which is faster.
 pub trait SliceParent<T> {
     fn root(&self) -> SliceRoot;
+    fn elem_storage(&self) -> ElemStorage;
     fn borrow_slice<'a>(&self, root: &'a SliceRoot) -> Ref<'a, [T]>;
     fn borrow_slice_mut<'a>(&self, root: &'a SliceRoot) -> RefMut<'a, [T]>;
     fn address(&self) -> usize;
@@ -73,10 +138,14 @@ pub trait SliceParent<T> {
 // its elements.
 impl<T, C> SliceParent<T> for Ptr<C>
 where
-    C: AsRef<[T]> + AsMut<[T]> + 'static,
+    C: Elems<T> + ByteRepr,
 {
     fn root(&self) -> SliceRoot {
         self.slice_root()
+    }
+
+    fn elem_storage(&self) -> ElemStorage {
+        C::elem_storage(self)
     }
 
     #[inline]
@@ -113,6 +182,7 @@ impl<T: 'static> Ptr<T> {
             PtrKind::Nested(parent) => parent.root(),
             PtrKind::Null => null_deref(),
             PtrKind::Reinterpreted(_) => panic!("reinterpreted memory has no nested objects"),
+            PtrKind::Address(_) => escape::invalid(self.offset),
         }
     }
 
@@ -139,7 +209,7 @@ impl<T: 'static> Ptr<T> {
                 Self::borrow_field_elem(root.field(), *field, *shape, offset)
             }
             PtrKind::Nested(parent) => Ref::map(parent.borrow_slice(root), |s| &s[offset]),
-            PtrKind::Null | PtrKind::Reinterpreted(_) => unreachable!(),
+            PtrKind::Null | PtrKind::Reinterpreted(_) | PtrKind::Address(_) => unreachable!(),
         }
     }
 
@@ -166,7 +236,7 @@ impl<T: 'static> Ptr<T> {
             PtrKind::Nested(parent) => {
                 RefMut::map(parent.borrow_slice_mut(root), |s| &mut s[offset])
             }
-            PtrKind::Null | PtrKind::Reinterpreted(_) => unreachable!(),
+            PtrKind::Null | PtrKind::Reinterpreted(_) | PtrKind::Address(_) => unreachable!(),
         }
     }
 }
@@ -196,6 +266,22 @@ pub(crate) enum PtrKind<T> {
     // limits the byte offset of an array or vector field to 4 GiB.
     Field(Weak<dyn Root>, u32, FieldShape),
     Reinterpreted(Rc<ReinterpretedView>),
+    // A pointer cast from an integer that is in no live object (see
+    // escape.rs), e.g., a sentinel, or an integer kept in a void*, whose
+    // address is the offset of the pointer. It moves by the byte size of T,
+    // which it holds, and it can't be accessed.
+    Address(u32),
+}
+
+// The place of a pointer in the order of pointers, by which pointers of
+// different forms into the same Value are compared: the Value that it points
+// into, as pointers into different Values are ordered, and its byte offset in
+// the C layout of the Value.
+#[doc(hidden)]
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Debug)]
+pub enum Place {
+    Null,
+    Value(usize, usize),
 }
 
 // The byte offset of an array or vector field in its root, as a Field pointer
@@ -318,6 +404,7 @@ impl<T> fmt::Debug for PtrKind<T> {
             PtrKind::Reinterpreted(data) => {
                 write!(f, "Reinterpreted(0x{:x})", data.alloc.address())
             }
+            PtrKind::Address(_) => write!(f, "Address"),
         }
     }
 }
@@ -336,6 +423,7 @@ impl<T> Clone for PtrKind<T> {
             PtrKind::HeapArray(weak) => PtrKind::HeapArray(weak.clone()),
             PtrKind::Field(root, field, shape) => PtrKind::Field(root.clone(), *field, *shape),
             PtrKind::Reinterpreted(data) => PtrKind::Reinterpreted(Rc::clone(data)),
+            PtrKind::Address(size) => PtrKind::Address(*size),
         }
     }
 }
@@ -343,7 +431,8 @@ impl<T> Clone for PtrKind<T> {
 impl<T> PtrKind<T> {
     fn address(&self) -> usize {
         match self {
-            PtrKind::Null => 0,
+            // The address of an Address pointer is its offset.
+            PtrKind::Null | PtrKind::Address(_) => 0,
             PtrKind::StackSingle(w) | PtrKind::HeapSingle(w) => w.as_ptr() as usize,
             PtrKind::StackVec(w) | PtrKind::HeapVec(w) => w.as_ptr() as usize,
             PtrKind::Nested(parent) => parent.address(),
@@ -355,39 +444,22 @@ impl<T> PtrKind<T> {
         }
     }
 
-    // The address of the allocation of the struct that the pointer points
-    // into, if it points to a field or to an element of an array field, which
-    // are at their address in the struct.
-    fn struct_root(&self) -> Option<usize> {
+    // The address of the Value that a pointer of a simple form points into,
+    // as its place gives, which orders it after pointers into other Values
+    // without computing its place.
+    fn value_address(&self) -> Option<usize> {
         match self {
+            PtrKind::StackSingle(_)
+            | PtrKind::HeapSingle(_)
+            | PtrKind::StackVec(_)
+            | PtrKind::HeapVec(_)
+            | PtrKind::StackArray(_)
+            | PtrKind::HeapArray(_) => Some(self.address()),
             PtrKind::Field(root, _, FieldShape::Single | FieldShape::Array) => {
                 Some(root.as_ptr() as *const () as usize)
             }
-            PtrKind::Nested(parent) => parent.struct_root(),
             _ => None,
         }
-    }
-
-    // Whether both pointers point into the same struct, where they are
-    // compared by their address, e.g., one past the end of an array field is
-    // the next field.
-    fn in_same_struct(&self, other: &Self) -> bool {
-        self.struct_root()
-            .is_some_and(|root| other.struct_root() == Some(root))
-    }
-}
-
-impl<T> Eq for PtrKind<T> {}
-
-impl<T> PartialEq for PtrKind<T> {
-    fn eq(&self, other: &Self) -> bool {
-        self.address() == other.address()
-    }
-}
-
-impl<T> PartialOrd for PtrKind<T> {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        self.address().partial_cmp(&other.address())
     }
 }
 
@@ -415,33 +487,27 @@ impl<T> Clone for Ptr<T> {
     }
 }
 
-impl<T> PartialEq for Ptr<T> {
+impl<T: ByteRepr> PartialEq for Ptr<T> {
     fn eq(&self, other: &Self) -> bool {
-        if self.byte_offset() == other.byte_offset() {
-            return self.kind == other.kind;
+        if self.same_form(other) {
+            return self.offset == other.offset;
         }
-        match (&self.kind, &other.kind) {
-            (PtrKind::Nested(a), PtrKind::Nested(b)) if Rc::ptr_eq(a, b) => false,
-            (a, b) => a.in_same_struct(b) && self.address() == other.address(),
-        }
+        self.cmp_forms(other).is_eq()
     }
 }
 
-impl<T> Eq for Ptr<T> {}
+impl<T: ByteRepr> Eq for Ptr<T> {}
 
-impl<T> Ord for Ptr<T> {
+impl<T: ByteRepr> Ord for Ptr<T> {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        match self.kind.partial_cmp(&other.kind) {
-            Some(std::cmp::Ordering::Equal) | None => self.byte_offset().cmp(&other.byte_offset()),
-            Some(_) if self.kind.in_same_struct(&other.kind) => {
-                self.address().cmp(&other.address())
-            }
-            Some(ord) => ord,
+        if self.same_form(other) {
+            return self.byte_offset().cmp(&other.byte_offset());
         }
+        self.cmp_forms(other)
     }
 }
 
-impl<T> PartialOrd for Ptr<T> {
+impl<T: ByteRepr> PartialOrd for Ptr<T> {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
         Some(self.cmp(other))
     }
@@ -485,6 +551,7 @@ impl<T> Ptr<T> {
             PtrKind::HeapArray(weak) => drop(reclaim(weak, "ub: invalid delete")),
             PtrKind::HeapVec(weak) => drop(reclaim(weak, "ub: invalid delete")),
             PtrKind::Reinterpreted(data) => data.alloc.delete(),
+            PtrKind::Address(_) => escape::invalid(self.offset),
             PtrKind::Null => {}
             _ => panic!("ub: invalid delete"),
         }
@@ -493,6 +560,16 @@ impl<T> Ptr<T> {
     #[inline]
     pub fn is_null(&self) -> bool {
         matches!(self.kind, PtrKind::Null)
+    }
+
+    #[inline]
+    fn is_address(&self) -> bool {
+        matches!(self.kind, PtrKind::Address(_))
+    }
+
+    // The address of a pointer that holds only one.
+    pub(crate) fn address_only(&self) -> Option<usize> {
+        self.is_address().then_some(self.offset)
     }
 
     // The address of the object that the pointer points to, for comparisons.
@@ -509,7 +586,9 @@ impl<T> Ptr<T> {
     {
         let offset = match &self.kind {
             PtrKind::Null => return 0,
-            PtrKind::Reinterpreted(_) | PtrKind::Field(_, _, FieldShape::Single) => self.offset,
+            PtrKind::Reinterpreted(_)
+            | PtrKind::Field(_, _, FieldShape::Single)
+            | PtrKind::Address(_) => self.offset,
             _ => self.offset.wrapping_mul(T::byte_size()),
         };
         self.kind.address().wrapping_add(offset)
@@ -519,12 +598,14 @@ impl<T> Ptr<T> {
     #[inline]
     fn byte_offset(&self) -> usize {
         match &self.kind {
-            PtrKind::Reinterpreted(_) | PtrKind::Field(_, _, FieldShape::Single) => self.offset,
+            PtrKind::Reinterpreted(_)
+            | PtrKind::Field(_, _, FieldShape::Single)
+            | PtrKind::Address(_) => self.offset,
             _ => self.offset.wrapping_mul(std::mem::size_of::<T>()),
         }
     }
 
-    // For Reinterpreted and Field, Ptr::offset is in bytes. For all other
+    // For Reinterpreted, Field and Address, Ptr::offset is in bytes. For all other
     // variants, Ptr::offset is in elements (step = 1). This helper converts
     // between user-facing element counts and the internal offset units.
     #[inline]
@@ -532,6 +613,7 @@ impl<T> Ptr<T> {
         match &self.kind {
             PtrKind::Reinterpreted(data) => data.elem_byte_size,
             PtrKind::Field(_, _, FieldShape::Single) => std::mem::size_of::<T>().max(1),
+            PtrKind::Address(size) => *size as usize,
             _ => 1,
         }
     }
@@ -552,6 +634,7 @@ impl<T> Ptr<T> {
             }
             PtrKind::Field(root, field, _) => upgrade_root(root).len_at(*field as usize),
             PtrKind::Reinterpreted(data) => data.alloc.total_byte_len() / data.elem_byte_size,
+            PtrKind::Address(_) => escape::invalid(self.offset),
         }
     }
 
@@ -630,6 +713,45 @@ impl<T> Ptr<T> {
                 byte_offset: self.offset,
                 cell: RefCell::new(None),
             },
+            PtrKind::Address(_) => escape::invalid(self.offset),
+        }
+    }
+
+    // Whether the pointers have the same form in the same allocation, whose
+    // offsets are in the same units, and so they are compared by them, e.g.,
+    // pointers that hold only addresses. Pointers of different forms are
+    // compared by their places, e.g., an element of an array of pointers and
+    // a view of its bytes.
+    #[inline(always)]
+    fn same_form(&self, other: &Self) -> bool {
+        std::mem::discriminant(&self.kind) == std::mem::discriminant(&other.kind)
+            && self.kind.address() == other.kind.address()
+    }
+
+    // The order of pointers of different forms.
+    #[inline(never)]
+    fn cmp_forms(&self, other: &Self) -> std::cmp::Ordering
+    where
+        T: ByteRepr,
+    {
+        if self.rank() != 2 || other.rank() != 2 {
+            return self.rank().cmp(&other.rank());
+        }
+        if let (Some(a), Some(b)) = (self.kind.value_address(), other.kind.value_address())
+            && a != b
+        {
+            return a.cmp(&b);
+        }
+        self.place().cmp(&other.place())
+    }
+
+    // Null is before the pointers that hold only an address, which are in no
+    // object, and which are before the pointers into objects.
+    fn rank(&self) -> u8 {
+        match self.kind {
+            PtrKind::Null => 0,
+            PtrKind::Address(_) => 1,
+            _ => 2,
         }
     }
 
@@ -650,6 +772,9 @@ impl<T> Ptr<T> {
             return self_any.downcast_ref::<Ptr<U>>().unwrap().clone();
         }
 
+        if let PtrKind::Address(_) = self.kind {
+            return Ptr::at_address(self.offset);
+        }
         match self.original_alloc() {
             Some((alloc, byte_offset)) => Ptr::<U>::from_original_alloc(alloc, byte_offset),
             None => Ptr::null(),
@@ -664,9 +789,13 @@ impl<T> Ptr<T> {
     {
         Some(match &self.kind {
             PtrKind::Null => return None,
+            // T may be an array, whose size is that of its value.
             PtrKind::StackSingle(weak) | PtrKind::HeapSingle(weak) => (
                 OriginalAlloc::single(weak),
-                self.offset.wrapping_mul(T::byte_size()),
+                match self.offset {
+                    0 => 0,
+                    offset => offset.wrapping_mul(T::byte_size()),
+                },
             ),
             PtrKind::StackVec(weak) | PtrKind::HeapVec(weak) => (
                 OriginalAlloc::slice(weak),
@@ -688,6 +817,7 @@ impl<T> Ptr<T> {
                 self.offset.wrapping_mul(T::byte_size()),
             ),
             PtrKind::Reinterpreted(data) => (data.alloc.clone(), self.offset),
+            PtrKind::Address(_) => escape::invalid(self.offset),
         })
     }
 
@@ -695,7 +825,7 @@ impl<T> Ptr<T> {
     // element points into, as the parent of a Nested pointer.
     pub(crate) fn field_elem_parent(&self) -> Rc<dyn SliceParent<T>>
     where
-        T: 'static,
+        T: ByteRepr,
     {
         let PtrKind::Field(root, field, shape) = &self.kind else {
             unreachable!()
@@ -723,6 +853,13 @@ impl<T> Ptr<T> {
     {
         if T::byte_size() == 0 {
             panic!("cannot reinterpret_cast to zero-sized type");
+        }
+        // Storage of Ts is accessed through a pointer to its elements, rather
+        // than through a view of its bytes.
+        if byte_offset.is_multiple_of(T::byte_size())
+            && let Some(ptr) = Self::native(&alloc, byte_offset / T::byte_size())
+        {
+            return ptr;
         }
         Ptr {
             offset: byte_offset,
@@ -807,6 +944,7 @@ impl<T> Ptr<T> {
                 ))
             }
             PtrKind::Reinterpreted(data) => Self::with_mut_reinterpreted(data, offset, f),
+            PtrKind::Address(_) => escape::invalid(self.offset),
             PtrKind::Null => null_deref(),
         }
     }
@@ -927,6 +1065,7 @@ impl<T> Ptr<T> {
                 f(&Self::borrow_field_elem(&*root, *field, *shape, offset))
             }
             PtrKind::Reinterpreted(data) => Self::with_reinterpreted(data, offset, f),
+            PtrKind::Address(_) => escape::invalid(self.offset),
             PtrKind::Null => null_deref(),
         }
     }
@@ -1033,6 +1172,7 @@ impl<T: CChar> Ptr<T> {
                 data.alloc.write_bytes(off, buf);
                 r
             }),
+            PtrKind::Address(_) => escape::invalid(off),
         }
     }
 
@@ -1082,6 +1222,7 @@ impl<T: CChar> Ptr<T> {
                 data.alloc.read_bytes(off, buf);
                 T::with_bytes_mut(buf, |s| f(s))
             }),
+            PtrKind::Address(_) => escape::invalid(off),
         }
     }
 }
@@ -1210,11 +1351,26 @@ impl<T: std::io::Write + ByteRepr> Ptr<T> {
     }
 }
 
-impl<T> Sub for Ptr<T> {
+impl<T: ByteRepr> Sub for Ptr<T> {
     type Output = isize;
     fn sub(self, other: Self) -> Self::Output {
-        assert!(self.kind == other.kind, "ub: invalid subtraction");
-        (self.get_offset() as isize).wrapping_sub(other.get_offset() as isize)
+        if self.same_form(&other) {
+            return (self.get_offset() as isize).wrapping_sub(other.get_offset() as isize);
+        }
+        // Pointers into different arrays, e.g., the rows of a 2D array, are not
+        // subtracted, unless one is a view of bytes, which may be in either.
+        let view = |p: &Self| matches!(p.kind, PtrKind::Reinterpreted(_));
+        assert!(
+            self.rank() == 2
+                && other.rank() == 2
+                && (view(&self) || view(&other) || self.kind.address() == other.kind.address()),
+            "ub: invalid subtraction"
+        );
+        let (Place::Value(a, x), Place::Value(b, y)) = (self.place(), other.place()) else {
+            unreachable!()
+        };
+        assert_eq!(a, b, "ub: invalid subtraction");
+        (x.wrapping_sub(y) as isize) / T::byte_size() as isize
     }
 }
 
@@ -1312,7 +1468,7 @@ pub trait Decay<T> {
     fn decay(&self) -> Ptr<T>;
 }
 
-impl<T: 'static> Decay<T> for Rc<RefCell<Vec<T>>> {
+impl<T: ByteRepr> Decay<T> for Rc<RefCell<Vec<T>>> {
     #[inline]
     fn decay(&self) -> Ptr<T> {
         self.as_pointer().decay()
@@ -1359,7 +1515,7 @@ impl<T> AsPointer<T> for Option<Rc<RefCell<T>>> {
     }
 }
 
-impl<T: 'static> Ptr<Vec<T>> {
+impl<T: ByteRepr> Ptr<Vec<T>> {
     #[inline]
     pub fn decay(&self) -> Ptr<T> {
         match &self.kind {
@@ -1386,12 +1542,13 @@ impl<T: 'static> Ptr<Vec<T>> {
                 offset: 0,
                 kind: PtrKind::Nested(Rc::new(self.clone())),
             },
+            PtrKind::Address(_) => Ptr::at_address(self.offset),
             _ => panic!("ub: invalid decay"),
         }
     }
 }
 
-impl<T: 'static> Ptr<Box<[T]>> {
+impl<T: ByteRepr> Ptr<Box<[T]>> {
     #[inline]
     pub fn decay(&self) -> Ptr<T> {
         match &self.kind {
@@ -1418,6 +1575,7 @@ impl<T: 'static> Ptr<Box<[T]>> {
                 offset: 0,
                 kind: PtrKind::Nested(Rc::new(self.clone())),
             },
+            PtrKind::Address(_) => Ptr::at_address(self.offset),
             _ => panic!("ub: invalid decay"),
         }
     }
@@ -1445,6 +1603,7 @@ impl<T> ToOwnedOption<T, T> for Ptr<T> {
             PtrKind::Field(..) => panic!("Can't own a field"),
             PtrKind::HeapArray(_) => panic!("Can't own an array variable as single"),
             PtrKind::Reinterpreted(_) => panic!("Can't own a reinterpreted pointer"),
+            PtrKind::Address(_) => escape::invalid(self.offset),
         }
     }
 }
@@ -1467,6 +1626,7 @@ impl<T> ToOwnedOption<T, Box<[T]>> for Ptr<T> {
             PtrKind::Field(..) => panic!("Can't own a field"),
             PtrKind::HeapSingle(_) => panic!("Can't own a single variable as an array"),
             PtrKind::Reinterpreted(_) => panic!("Can't own a reinterpreted pointer"),
+            PtrKind::Address(_) => escape::invalid(self.offset),
         }
     }
 }
@@ -1477,16 +1637,229 @@ impl<T> fmt::Debug for Ptr<T> {
     }
 }
 
-impl<T: 'static> ByteRepr for Ptr<T> {}
+// The bytes of a pointer are those of its integer.
+impl<T: ByteRepr> ByteRepr for Ptr<T> {
+    #[inline]
+    fn byte_size() -> usize {
+        std::mem::size_of::<usize>()
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.to_int().to_bytes(buf)
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self::from_int(usize::from_bytes(buf))
+    }
+}
 
-// Pointers have no integer representation.
-impl<T> Ptr<T> {
+// The bytes of the first `n` elements of a container, which `sum` adds up if
+// their sizes differ, as those of rows do.
+fn bytes_before<T: ByteRepr>(n: usize, sum: impl FnOnce() -> usize) -> usize {
+    if T::VARIABLE_SIZE {
+        sum()
+    } else {
+        n.wrapping_mul(T::byte_size())
+    }
+}
+
+fn sum_bytes<T: ByteRepr>(elems: &[T], n: usize) -> usize {
+    elems.iter().take(n).map(T::value_byte_size).sum()
+}
+
+// Casts between pointers and integers (see escape.rs).
+impl<T: ByteRepr> Ptr<T> {
+    // The integer of the pointer, as a cast to uintptr_t gives. Gives
+    // addresses to the Value that it points into, if it has none.
     pub fn to_int(&self) -> usize {
-        panic!("pointer to integer cast is not supported")
+        match &self.kind {
+            PtrKind::Null => 0,
+            PtrKind::Address(_) => self.offset,
+            _ => {
+                let (alloc, offset) = self.position();
+                let (value, offset) = alloc.in_value(offset);
+                escape::address_of(value, offset)
+            }
+        }
     }
 
-    pub fn from_int(_value: usize) -> Self {
-        panic!("integer to pointer cast is not supported")
+    // The place of the pointer in the order of pointers.
+    pub(crate) fn place(&self) -> Place {
+        match &self.kind {
+            PtrKind::Null => Place::Null,
+            // The elements of an array field are in the memory of the struct,
+            // at the address of the field.
+            PtrKind::Nested(parent) if let Some(root) = parent.struct_root() => {
+                let field = parent.address().wrapping_sub(root);
+                let offset = self.offset.wrapping_mul(T::byte_size());
+                Place::Value(root, field.wrapping_add(offset))
+            }
+            _ => {
+                let (alloc, offset) = self.position();
+                let (value, offset) = alloc.value_place(offset);
+                Place::Value(value, offset)
+            }
+        }
+    }
+
+    // The storage that the pointer points into, and its byte offset in it,
+    // where it is in C. Unlike in original_alloc, an element of an array
+    // field is in the storage of the struct, which keeps the parents of
+    // pointers into arrays from being nested in arrays without end.
+    pub(crate) fn position(&self) -> (OriginalAlloc, usize) {
+        let idx = self.offset;
+        match &self.kind {
+            PtrKind::StackSingle(weak) | PtrKind::HeapSingle(weak) => {
+                let value = || weak.upgrade().unwrap_or_else(|| dangling());
+                let offset = bytes_before::<T>(idx, || {
+                    sum_bytes(std::slice::from_ref(&*value().borrow()), idx)
+                });
+                (OriginalAlloc::single(weak), offset)
+            }
+            PtrKind::StackVec(weak) | PtrKind::HeapVec(weak) => {
+                let value = || weak.upgrade().unwrap_or_else(|| dangling());
+                let offset = bytes_before::<T>(idx, || sum_bytes(&value().borrow(), idx));
+                (OriginalAlloc::slice(weak), offset)
+            }
+            PtrKind::StackArray(weak) | PtrKind::HeapArray(weak) => {
+                let value = || weak.upgrade().unwrap_or_else(|| dangling());
+                let offset = bytes_before::<T>(idx, || sum_bytes(&value().borrow(), idx));
+                (OriginalAlloc::slice(weak), offset)
+            }
+            PtrKind::Field(root, _, FieldShape::Single) => {
+                (OriginalAlloc::field::<T>(root, idx), 0)
+            }
+            // The elements of an array field are in the memory of the struct.
+            PtrKind::Field(root, field, FieldShape::Array) => {
+                let field = *field as usize;
+                let offset = bytes_before::<T>(idx, || {
+                    let root = upgrade_root(root);
+                    sum_bytes(&Ptr::<Box<[T]>>::borrow_field(&*root, field), idx)
+                });
+                (
+                    OriginalAlloc::field::<T>(root, field.wrapping_add(offset)),
+                    0,
+                )
+            }
+            // The elements of a vector field are in a buffer of their own.
+            PtrKind::Field(root, field, FieldShape::Vec) => {
+                let parent: Rc<dyn SliceParent<T>> = Rc::new(Ptr::<Vec<T>> {
+                    offset: *field as usize,
+                    kind: PtrKind::Field(root.clone(), 0, FieldShape::Single),
+                });
+                (OriginalAlloc::nested(&parent), self.nested_bytes(&parent))
+            }
+            PtrKind::Nested(parent) => {
+                let offset = self.nested_bytes(parent);
+                match parent.elem_storage() {
+                    ElemStorage::In(alloc, start) => (alloc, start.wrapping_add(offset)),
+                    ElemStorage::Own(..) => (OriginalAlloc::nested(parent), offset),
+                }
+            }
+            PtrKind::Reinterpreted(data) => (data.alloc.clone(), idx),
+            PtrKind::Null | PtrKind::Address(_) => unreachable!(),
+        }
+    }
+
+    // The bytes of the elements of the parent before the pointer.
+    fn nested_bytes(&self, parent: &Rc<dyn SliceParent<T>>) -> usize {
+        bytes_before::<T>(self.offset, || {
+            sum_bytes(&parent.borrow_slice(&parent.root()), self.offset)
+        })
+    }
+
+    // The pointer that a cast of an integer to it gives, as a cast from
+    // uintptr_t does: to the object at the address, or one that holds only
+    // the address if it is in no live object. The address one past the end of
+    // an object is not in the next one, and so it is in that object.
+    pub fn from_int(address: usize) -> Self {
+        if address == 0 {
+            return Self::null();
+        }
+        match escape::find(address) {
+            escape::Found::Live(alloc, offset) => Self::from_original_alloc(alloc, offset),
+            _ => Self::at_address(address),
+        }
+    }
+
+    fn at_address(address: usize) -> Self {
+        let size = u32::try_from(T::byte_size()).expect("the pointee is too large");
+        Self {
+            offset: address,
+            kind: PtrKind::Address(size),
+        }
+    }
+
+    // The pointer to element `idx` of the storage, if it holds Ts: an array or
+    // vector Value, a single Value, or a vector that is not a Value.
+    fn native(alloc: &OriginalAlloc, idx: usize) -> Option<Self> {
+        if let Some(parent) = alloc.nested_parent::<T>() {
+            return Some(Ptr {
+                offset: idx,
+                kind: PtrKind::Nested(parent),
+            });
+        }
+        // The pointers that are cast from integers can't tell if their Value
+        // is on the heap, and so they can delete it, as reinterpreted
+        // pointers can. The type of the Value is checked first, which is
+        // cheaper than upgrading it.
+        let ty = alloc.value_type()?;
+        let value = || {
+            alloc
+                .value()
+                .unwrap()
+                .upgrade()
+                .unwrap_or_else(|| dangling())
+        };
+        let kind = if ty == TypeId::of::<Box<[T]>>() {
+            PtrKind::HeapArray(Rc::downgrade(&value().downcast().unwrap()))
+        } else if ty == TypeId::of::<Vec<T>>() {
+            PtrKind::HeapVec(Rc::downgrade(&value().downcast().unwrap()))
+        } else if ty == TypeId::of::<T>() && idx == 0 {
+            PtrKind::HeapSingle(Rc::downgrade(&value().downcast().unwrap()))
+        } else {
+            return None;
+        };
+        Some(Ptr { offset: idx, kind })
+    }
+}
+
+impl<T: ByteRepr> Ptr<Box<[T]>> {
+    // Where the elements of the array that the pointer points to are: in the
+    // memory of the Value or struct that holds it, or in a buffer of their own
+    // if the array is in that of a vector that is not a Value, which doesn't
+    // build the storage of such vectors for the parents of every array type.
+    #[inline(never)]
+    fn array_storage(&self) -> ElemStorage {
+        let root = self.slice_root();
+        let array = self.borrow_in(&root);
+        // The arrays that an array holds are as long as each other.
+        let offset = self.offset.wrapping_mul(array.value_byte_size());
+        let (alloc, start) = match &self.kind {
+            PtrKind::StackArray(weak) | PtrKind::HeapArray(weak) => (OriginalAlloc::slice(weak), 0),
+            PtrKind::StackVec(weak) | PtrKind::HeapVec(weak) => (OriginalAlloc::slice(weak), 0),
+            // The pointer to an array field holds its byte offset.
+            PtrKind::Field(field, _, FieldShape::Single) => {
+                let alloc = upgrade_root(field).original_alloc(field.clone());
+                return ElemStorage::In(alloc, self.offset);
+            }
+            // The arrays of an array field are in the memory of the struct.
+            PtrKind::Field(field, start, FieldShape::Array) => {
+                let alloc = upgrade_root(field).original_alloc(field.clone());
+                (alloc, *start as usize)
+            }
+            PtrKind::Nested(parent) => match parent.elem_storage() {
+                ElemStorage::In(alloc, start) => (alloc, start),
+                ElemStorage::Own(..) => return ElemStorage::own(&**array),
+            },
+            PtrKind::Field(_, _, FieldShape::Vec) => return ElemStorage::own(&**array),
+            // A pointer to an array Value decays to a pointer into it, which
+            // has no parent.
+            PtrKind::StackSingle(_)
+            | PtrKind::HeapSingle(_)
+            | PtrKind::Null
+            | PtrKind::Reinterpreted(_)
+            | PtrKind::Address(_) => unreachable!(),
+        };
+        ElemStorage::In(alloc, start.wrapping_add(offset))
     }
 }
 

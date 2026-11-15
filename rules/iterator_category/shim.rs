@@ -7,7 +7,7 @@ use std::marker::PhantomData;
 
 use std::rc::Rc;
 
-use crate::{MapNode, PostfixDec, PostfixInc, PrefixDec, PrefixInc, Ptr, UnsafeMapNode, Value};
+use crate::{ByteRepr, MapNode, PostfixDec, PostfixInc, PrefixDec, PrefixInc, Ptr, UnsafeMapNode, Value};
 
 pub trait CppIterator<T>: Clone {
     fn iter_deref(&self) -> Ptr<T>;
@@ -63,9 +63,9 @@ impl<T> CppIterator<T> for Ptr<T> {
     }
 }
 
-impl<T> CppInputIterator<T> for Ptr<T> {}
+impl<T: ByteRepr> CppInputIterator<T> for Ptr<T> {}
 
-impl<T> CppBidirectionalIterator<T> for Ptr<T> {
+impl<T: ByteRepr> CppBidirectionalIterator<T> for Ptr<T> {
     fn iter_dec(&mut self) -> Self {
         PrefixDec::prefix_dec(self)
     }
@@ -74,7 +74,7 @@ impl<T> CppBidirectionalIterator<T> for Ptr<T> {
     }
 }
 
-impl<T> CppRandomAccessIterator<T> for Ptr<T> {
+impl<T: ByteRepr> CppRandomAccessIterator<T> for Ptr<T> {
     fn iter_add(&self, n: isize) -> Self {
         self.offset(n)
     }
@@ -352,7 +352,10 @@ macro_rules! random_access_iterator {
             }
         }
 
-        impl<T> PartialEq for $name<T> {
+        impl<T> PartialEq for $name<T>
+        where
+            $ptr: PartialEq,
+        {
             fn eq(&self, other: &Self) -> bool {
                 match (self, other) {
                     (Self::Vec(a), Self::Vec(b)) => a == b,
@@ -360,7 +363,10 @@ macro_rules! random_access_iterator {
             }
         }
 
-        impl<T> PartialOrd for $name<T> {
+        impl<T> PartialOrd for $name<T>
+        where
+            $ptr: PartialOrd,
+        {
             fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
                 match (self, other) {
                     (Self::Vec(a), Self::Vec(b)) => a.partial_cmp(b),
@@ -386,9 +392,12 @@ macro_rules! random_access_iterator {
             }
         }
 
-        impl<T> $input<T> for $name<T> {}
+        impl<T> $input<T> for $name<T> where $ptr: $input<T> {}
 
-        impl<T> $bidi<T> for $name<T> {
+        impl<T> $bidi<T> for $name<T>
+        where
+            $ptr: $bidi<T>,
+        {
             fn iter_dec(&mut self) -> Self {
                 match self {
                     Self::Vec(p) => Self::Vec($bidi::<T>::iter_dec(p)),
@@ -401,7 +410,10 @@ macro_rules! random_access_iterator {
             }
         }
 
-        impl<T> $random<T> for $name<T> {
+        impl<T> $random<T> for $name<T>
+        where
+            $ptr: $random<T>,
+        {
             fn iter_add(&self, n: isize) -> Self {
                 match self {
                     Self::Vec(p) => Self::Vec($random::<T>::iter_add(p, n)),
@@ -460,7 +472,10 @@ pub trait IterStep: Clone + PartialEq {
 
 macro_rules! iter_step {
     ($name:ty, $iter:ident) => {
-        impl<T> IterStep for $name {
+        impl<T> IterStep for $name
+        where
+            $name: $iter<T> + PartialEq,
+        {
             fn iter_step(&mut self) {
                 $iter::<T>::iter_inc(self);
             }

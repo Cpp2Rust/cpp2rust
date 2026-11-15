@@ -2,14 +2,15 @@
 // Distributed under the MIT license that can be found in the LICENSE file.
 
 use std::{
-    any::Any,
+    any::{Any, TypeId},
     cell::RefCell,
     marker::PhantomData,
     rc::{Rc, Weak},
 };
 
+use crate::escape;
 use crate::field::{Root, upgrade as upgrade_root};
-use crate::rc::{Ptr, SliceParent, reclaim};
+use crate::rc::{ElemStorage, Ptr, SliceParent, SliceRoot, reclaim};
 
 pub trait ByteRepr: 'static {
     fn byte_size() -> usize
@@ -20,6 +21,14 @@ pub trait ByteRepr: 'static {
             "byte_size is not implemented for {}",
             std::any::type_name::<Self>()
         )
+    }
+    // The alignment of the type in C, where it is larger than that of malloc,
+    // as that of over-aligned structs.
+    fn byte_align() -> usize
+    where
+        Self: Sized,
+    {
+        1
     }
     fn to_bytes(&self, _buf: &mut [u8]) {
         panic!(
@@ -116,6 +125,9 @@ impl<T: ByteRepr> ByteRepr for std::rc::Rc<T> {
     fn byte_size() -> usize {
         T::byte_size()
     }
+    fn byte_align() -> usize {
+        T::byte_align()
+    }
     #[inline]
     fn to_bytes(&self, buf: &mut [u8]) {
         (**self).to_bytes(buf)
@@ -130,6 +142,9 @@ impl<T: ByteRepr> ByteRepr for std::cell::RefCell<T> {
     fn byte_size() -> usize {
         T::byte_size()
     }
+    fn byte_align() -> usize {
+        T::byte_align()
+    }
     #[inline]
     fn to_bytes(&self, buf: &mut [u8]) {
         self.borrow().to_bytes(buf)
@@ -140,6 +155,10 @@ impl<T: ByteRepr> ByteRepr for std::cell::RefCell<T> {
     }
 }
 impl<T: ByteRepr> ByteRepr for Box<[T]> {
+    fn byte_align() -> usize {
+        T::byte_align()
+    }
+
     fn to_bytes(&self, buf: &mut [u8]) {
         let mut offset = 0;
         for elem in self.iter() {
@@ -199,6 +218,29 @@ pub(crate) trait AllocOps {
     fn read_bytes(&self, cell: &dyn Any, byte_offset: usize, buf: &mut [u8]);
     fn write_bytes(&self, cell: &dyn Any, byte_offset: usize, data: &[u8]);
     fn total_byte_len(&self, cell: &dyn Any) -> usize;
+    fn byte_align(&self) -> usize;
+    // The type of the contents of the Value of the storage, if it is one.
+    fn value_type(&self) -> Option<TypeId> {
+        None
+    }
+    // The bytes that the elements of a vector can take before it is
+    // reallocated, if it is not borrowed mutably. None for other storage,
+    // which is never reallocated.
+    fn byte_capacity(&self, _cell: &dyn Any) -> Option<usize> {
+        None
+    }
+    // Where the elements of nested storage are, the address of their buffer
+    // and its byte capacity if it is their own, and the Value that holds the
+    // container. None for other storage.
+    fn elem_storage(&self, _storage: &dyn Any) -> Option<ElemStorage> {
+        None
+    }
+    fn own_buffer(&self, _storage: &dyn Any) -> Option<(usize, usize)> {
+        None
+    }
+    fn root(&self, _storage: &dyn Any) -> Option<Weak<dyn Any>> {
+        None
+    }
 }
 
 // Type-erased handle to the original allocation of a reinterpreted pointer.
@@ -228,17 +270,87 @@ struct FieldStorage {
 
 impl OriginalAlloc {
     pub(crate) fn single<T: ByteRepr>(weak: &Weak<RefCell<T>>) -> Self {
+        Self::single_in::<T>(weak.clone())
+    }
+
+    pub(crate) fn slice<T: AsSlice>(weak: &Weak<RefCell<T>>) -> Self {
+        Self::slice_in::<T>(weak.clone())
+    }
+
+    // The Value `weak`, which holds a RefCell<T>.
+    pub(crate) fn single_in<T: ByteRepr>(weak: Weak<dyn Any>) -> Self {
         Self {
-            storage: Storage::Alloc(weak.clone()),
+            storage: Storage::Alloc(weak),
             ops: &SingleOps::<T>(PhantomData),
         }
     }
 
-    pub(crate) fn slice<T: AsSlice>(weak: &Weak<RefCell<T>>) -> Self {
+    pub(crate) fn slice_in<T: AsSlice>(weak: Weak<dyn Any>) -> Self {
         Self {
-            storage: Storage::Alloc(weak.clone()),
+            storage: Storage::Alloc(weak),
             ops: &SliceOps::<T>(PhantomData),
         }
+    }
+
+    // The Value of an allocation that is a whole Value.
+    pub(crate) fn value(&self) -> Option<&Weak<dyn Any>> {
+        match &self.storage {
+            Storage::Alloc(weak) => Some(weak),
+            _ => None,
+        }
+    }
+
+    // The type of the contents of the Value of the storage, if it is one.
+    pub(crate) fn value_type(&self) -> Option<TypeId> {
+        self.ops.value_type()
+    }
+
+    // The container of nested storage, as the parent of pointers to its
+    // elements.
+    pub(crate) fn nested_parent<T: 'static>(&self) -> Option<Rc<dyn SliceParent<T>>> {
+        match &self.storage {
+            Storage::Nested(parent, _) => parent.downcast_ref::<Rc<dyn SliceParent<T>>>().cloned(),
+            _ => None,
+        }
+    }
+
+    // What identifies the allocation of the integers of pointers into it: the
+    // address of its Value, or of the buffer of a vector that is not a Value,
+    // e.g., a vector field.
+    pub(crate) fn key(&self) -> usize {
+        match &self.storage {
+            Storage::Alloc(weak) => escape::key(weak),
+            _ => self.own_buffer().unwrap().0,
+        }
+    }
+
+    pub(crate) fn is_freed(&self) -> bool {
+        self.value().unwrap().strong_count() == 0
+    }
+
+    // The address of the buffer of the elements of nested storage that are
+    // in one of their own, and its byte capacity.
+    pub(crate) fn own_buffer(&self) -> Option<(usize, usize)> {
+        match &self.storage {
+            Storage::Nested(parent, _) => self.ops.own_buffer(&**parent),
+            _ => None,
+        }
+    }
+
+    // The Value that holds nested storage.
+    pub(crate) fn root(&self) -> Option<Weak<dyn Any>> {
+        match &self.storage {
+            Storage::Nested(parent, _) => self.ops.root(&**parent),
+            _ => None,
+        }
+    }
+
+    pub(crate) fn byte_align(&self) -> usize {
+        self.ops.byte_align()
+    }
+
+    pub(crate) fn byte_capacity(&self) -> Option<usize> {
+        self.with_storage(|storage| self.ops.byte_capacity(storage))
     }
 
     // The field of type T at byte offset `field` of `root`.
@@ -293,6 +405,49 @@ impl OriginalAlloc {
         }
     }
 
+    // The Value that holds byte `offset` of the storage, and the offset of
+    // the byte in it, for the integers that pointers are cast to.
+    pub(crate) fn in_value(self, offset: usize) -> (Self, usize) {
+        match &self.storage {
+            Storage::Alloc(_) => (self, offset),
+            Storage::Field(root, field) => (
+                upgrade_root(root).original_alloc(root.clone()),
+                field.wrapping_add(offset),
+            ),
+            // The elements of a vector are in an allocation of their own.
+            Storage::Nested(parent, _) => match self.ops.elem_storage(&**parent) {
+                Some(ElemStorage::In(alloc, start)) => alloc.in_value(start.wrapping_add(offset)),
+                _ => (self, offset),
+            },
+        }
+    }
+
+    // The address of the Value that holds byte `offset` of the storage, and
+    // the offset of the byte in it, which order pointers. Unlike in_value,
+    // it doesn't need the Value to be alive.
+    pub(crate) fn value_place(&self, offset: usize) -> (usize, usize) {
+        match &self.storage {
+            Storage::Alloc(_) => (self.value_address(), offset),
+            Storage::Field(_, field) => (self.value_address(), field.wrapping_add(offset)),
+            Storage::Nested(parent, address) => match self.ops.elem_storage(&**parent) {
+                Some(ElemStorage::In(alloc, start)) => {
+                    alloc.value_place(start.wrapping_add(offset))
+                }
+                _ => (*address, offset),
+            },
+        }
+    }
+
+    // The address of the Value of the storage, which orders pointers into
+    // different Values.
+    pub(crate) fn value_address(&self) -> usize {
+        match &self.storage {
+            Storage::Alloc(weak) => weak.as_ptr() as *const () as usize,
+            Storage::Field(root, _) => root.as_ptr() as *const () as usize,
+            Storage::Nested(_, address) => *address,
+        }
+    }
+
     pub(crate) fn delete(&self) {
         let Storage::Alloc(weak) = &self.storage else {
             panic!("ub: invalid delete");
@@ -304,6 +459,9 @@ impl OriginalAlloc {
 // Read bytes starting at `byte_offset` from a slice of S elements into `buf`.
 // Only serializes the overlapping elements, not the whole slice.
 fn slice_read_bytes<S: ByteRepr>(slice: &[S], byte_offset: usize, buf: &mut [u8]) {
+    if S::VARIABLE_SIZE {
+        return rows_read_bytes(slice, byte_offset, buf);
+    }
     let len = buf.len();
     let elem_size = S::byte_size();
     let first_elem = byte_offset / elem_size;
@@ -324,14 +482,51 @@ fn slice_read_bytes<S: ByteRepr>(slice: &[S], byte_offset: usize, buf: &mut [u8]
     });
 }
 
+// The bytes of rows, whose sizes differ, e.g., of a 2D array.
+fn rows_read_bytes<S: ByteRepr>(rows: &[S], byte_offset: usize, buf: &mut [u8]) {
+    let end = byte_offset + buf.len();
+    let mut start = 0;
+    for row in rows {
+        let size = row.value_byte_size();
+        if start < end && byte_offset < start + size {
+            let mut bytes = vec![0; size];
+            row.to_bytes(&mut bytes);
+            let (from, to) = (byte_offset.max(start), end.min(start + size));
+            buf[from - byte_offset..to - byte_offset]
+                .copy_from_slice(&bytes[from - start..to - start]);
+        }
+        start += size;
+    }
+}
+
+fn rows_write_bytes<S: ByteRepr>(rows: &mut [S], byte_offset: usize, data: &[u8]) {
+    let end = byte_offset + data.len();
+    let mut start = 0;
+    for row in rows {
+        let size = row.value_byte_size();
+        if start < end && byte_offset < start + size {
+            let mut bytes = vec![0; size];
+            row.to_bytes(&mut bytes);
+            let (from, to) = (byte_offset.max(start), end.min(start + size));
+            bytes[from - start..to - start]
+                .copy_from_slice(&data[from - byte_offset..to - byte_offset]);
+            row.assign_bytes(&bytes);
+        }
+        start += size;
+    }
+}
+
 // Write `data` at `byte_offset` into a slice of S elements.
 // Only deserializes/reserializes the overlapping elements.
 fn slice_write_bytes<S: ByteRepr>(slice: &mut [S], byte_offset: usize, data: &[u8]) {
+    if S::VARIABLE_SIZE {
+        return rows_write_bytes(slice, byte_offset, data);
+    }
     let elem_size = S::byte_size();
     let first_elem = byte_offset / elem_size;
     let last_elem = (byte_offset + data.len()).div_ceil(elem_size);
     if byte_offset.is_multiple_of(elem_size) && data.len() == elem_size {
-        slice[first_elem] = S::from_bytes(data);
+        slice[first_elem].assign_bytes(data);
         return;
     }
     with_scratch(elem_size, |elem_buf| {
@@ -344,7 +539,7 @@ fn slice_write_bytes<S: ByteRepr>(slice: &mut [S], byte_offset: usize, data: &[u
             let data_start = byte_offset.max(elem_byte_start) - byte_offset;
             elem_buf[overlap_start..overlap_end]
                 .copy_from_slice(&data[data_start..data_start + (overlap_end - overlap_start)]);
-            *elem = S::from_bytes(elem_buf);
+            elem.assign_bytes(elem_buf);
         }
     });
 }
@@ -366,13 +561,28 @@ impl<T: ByteRepr> AllocOps for SingleOps<T> {
         );
     }
 
-    fn total_byte_len(&self, _cell: &dyn Any) -> usize {
-        T::byte_size()
+    fn total_byte_len(&self, cell: &dyn Any) -> usize {
+        if !T::VARIABLE_SIZE {
+            return T::byte_size();
+        }
+        let cell = cell.downcast_ref::<RefCell<T>>().unwrap();
+        cell.borrow().value_byte_size()
+    }
+
+    fn byte_align(&self) -> usize {
+        T::byte_align()
+    }
+
+    fn value_type(&self) -> Option<TypeId> {
+        Some(TypeId::of::<T>())
     }
 }
 
 pub(crate) trait AsSlice: 'static {
     type Elem: ByteRepr;
+    // Whether the storage of the elements is reallocated as they are added.
+    const RESIZABLE: bool;
+    fn capacity(&self) -> usize;
     fn as_slice(&self) -> &[Self::Elem];
     fn as_slice_mut(&mut self) -> &mut [Self::Elem];
     // Direct access to the bytes of an allocation of `u8`. Avoids going through
@@ -386,6 +596,10 @@ pub(crate) trait AsSlice: 'static {
 
 impl<S: ByteRepr> AsSlice for Vec<S> {
     type Elem = S;
+    const RESIZABLE: bool = true;
+    fn capacity(&self) -> usize {
+        self.capacity()
+    }
     fn as_slice(&self) -> &[S] {
         self
     }
@@ -412,6 +626,10 @@ impl<S: ByteRepr> AsSlice for Vec<S> {
 
 impl<S: ByteRepr> AsSlice for Box<[S]> {
     type Elem = S;
+    const RESIZABLE: bool = false;
+    fn capacity(&self) -> usize {
+        self.len()
+    }
     fn as_slice(&self) -> &[S] {
         self
     }
@@ -477,7 +695,24 @@ impl<T: AsSlice> AllocOps for SliceOps<T> {
 
     fn total_byte_len(&self, cell: &dyn Any) -> usize {
         let cell = cell.downcast_ref::<RefCell<T>>().unwrap();
-        cell.borrow().as_slice().len() * <T::Elem as ByteRepr>::byte_size()
+        elems_byte_len(cell.borrow().as_slice())
+    }
+
+    fn byte_align(&self) -> usize {
+        <T::Elem as ByteRepr>::byte_align()
+    }
+
+    fn value_type(&self) -> Option<TypeId> {
+        Some(TypeId::of::<T>())
+    }
+
+    fn byte_capacity(&self, cell: &dyn Any) -> Option<usize> {
+        if !T::RESIZABLE {
+            return None;
+        }
+        let cell = cell.downcast_ref::<RefCell<T>>().unwrap();
+        let value = cell.try_borrow().ok()?;
+        Some(capacity_bytes(value.as_slice(), value.capacity()))
     }
 }
 
@@ -499,6 +734,10 @@ impl<T: ByteRepr> AllocOps for FieldOps<T> {
     fn total_byte_len(&self, _storage: &dyn Any) -> usize {
         T::byte_size()
     }
+
+    fn byte_align(&self) -> usize {
+        T::byte_align()
+    }
 }
 
 struct NestedOps<T>(PhantomData<fn() -> T>);
@@ -519,6 +758,56 @@ impl<T: ByteRepr> AllocOps for NestedOps<T> {
     fn total_byte_len(&self, parent: &dyn Any) -> usize {
         let parent = parent.downcast_ref::<Rc<dyn SliceParent<T>>>().unwrap();
         let root = parent.root();
-        parent.borrow_slice(&root).len() * T::byte_size()
+        elems_byte_len(&parent.borrow_slice(&root))
+    }
+
+    fn byte_align(&self) -> usize {
+        T::byte_align()
+    }
+
+    fn byte_capacity(&self, parent: &dyn Any) -> Option<usize> {
+        Some(self.own_buffer(parent)?.1)
+    }
+
+    fn elem_storage(&self, parent: &dyn Any) -> Option<ElemStorage> {
+        let parent = parent.downcast_ref::<Rc<dyn SliceParent<T>>>().unwrap();
+        Some(parent.elem_storage())
+    }
+
+    fn own_buffer(&self, parent: &dyn Any) -> Option<(usize, usize)> {
+        let parent = parent.downcast_ref::<Rc<dyn SliceParent<T>>>().unwrap();
+        let ElemStorage::Own(address, capacity) = parent.elem_storage() else {
+            return None;
+        };
+        let root = parent.root();
+        let elems = parent.borrow_slice(&root);
+        Some((address, capacity_bytes(&elems, capacity)))
+    }
+
+    fn root(&self, parent: &dyn Any) -> Option<Weak<dyn Any>> {
+        let parent = parent.downcast_ref::<Rc<dyn SliceParent<T>>>().unwrap();
+        Some(match parent.root() {
+            SliceRoot::Alloc(root) => Rc::downgrade(&root),
+            SliceRoot::Field(root) => Rc::downgrade(&(root as Rc<dyn Any>)),
+        })
+    }
+}
+
+// The bytes of the elements, whose sizes differ if they are rows.
+fn elems_byte_len<S: ByteRepr>(elems: &[S]) -> usize {
+    if S::VARIABLE_SIZE {
+        elems.iter().map(S::value_byte_size).sum()
+    } else {
+        elems.len() * S::byte_size()
+    }
+}
+
+// The bytes that `capacity` elements take, which are rows as long as the
+// first one if their sizes differ, as the arrays in a vector are.
+fn capacity_bytes<S: ByteRepr>(elems: &[S], capacity: usize) -> usize {
+    if S::VARIABLE_SIZE {
+        capacity * elems.first().map_or(0, S::value_byte_size)
+    } else {
+        capacity * S::byte_size()
     }
 }

@@ -55,6 +55,7 @@ impl<T> Ptr<T> {
                 assert_eq!(self.offset, 0, "ub: invalid offset");
                 PtrDyn(Some(coerce(weak.clone())))
             }
+            PtrKind::Address(_) => crate::escape::invalid(self.offset),
             _ => panic!("ub: invalid upcast"),
         }
     }

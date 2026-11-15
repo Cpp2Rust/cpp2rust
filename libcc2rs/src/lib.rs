@@ -9,6 +9,8 @@ pub use reinterpret::ByteRepr;
 mod rc;
 pub use rc::*;
 
+mod escape;
+
 mod field;
 pub use field::{ArrayElem, ElemPlace, FieldPlace, FieldPtr, IndexPlace, Place, Record, VecElem};
 // Used by #[derive(Record)] and size_of_field!.
