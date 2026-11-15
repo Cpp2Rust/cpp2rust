@@ -4,7 +4,7 @@
 // the left operand is still evaluated.
 #include <cassert>
 
-#include "../../support/lifetime-tracked.h"
+#include "../../support/has-constexpr-ctor.h"
 
 static int left;
 

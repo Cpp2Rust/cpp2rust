@@ -48,49 +48,12 @@ impl Default for LifetimeTracked {
         unsafe { LifetimeTracked::new() }
     }
 }
-pub static mut copyCount_4: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
-#[repr(C)]
-#[derive(VaArg, FnPtrArg, CppFromUnsafe, CopyAssignUnsafe, Default)]
-#[cpp_from(i32, new, value)]
-pub struct HasConstexprCtor {
-    pub m: i32,
-}
-impl HasConstexprCtor {
-    pub unsafe fn new(mut v: i32) -> Self {
-        let mut this = Self { m: v };
-        this
-    }
-    pub unsafe fn copy_from(o: *const HasConstexprCtor) -> Self {
-        let mut this = Self { m: (*o).m };
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut copyCount_4)).prefix_inc();
-        this
-    }
-    pub unsafe fn copy_assign(&mut self, _a0: *const HasConstexprCtor) -> *mut HasConstexprCtor {
-        self.m = (*_a0).m;
-        return &mut (*(self as *mut HasConstexprCtor));
-    }
-}
-impl Clone for HasConstexprCtor {
-    fn clone(&self) -> Self {
-        unsafe { HasConstexprCtor::copy_from(self as *const HasConstexprCtor) }
-    }
-}
-#[repr(C)]
-#[derive(Clone, VaArg, FnPtrArg, DestructorUnsafe, Default)]
-pub struct AssertsDtorCountAtExit {
-    pub expected: i32,
-}
-impl AssertsDtorCountAtExit {
-    pub unsafe fn destructor(&mut self) {
-        assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut dtorCount_2)) == (self.expected)));
-    }
-}
-pub static mut member_5: std::cell::LazyCell<LifetimeTracked> =
+pub static mut member_4: std::cell::LazyCell<LifetimeTracked> =
     std::cell::LazyCell::new(|| unsafe { LifetimeTracked::new() });
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct HasStaticMember_int_ {}
-pub static mut member_6: std::cell::LazyCell<LifetimeTracked> =
+pub static mut member_5: std::cell::LazyCell<LifetimeTracked> =
     std::cell::LazyCell::new(|| unsafe { LifetimeTracked::new() });
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
@@ -102,28 +65,28 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    (unsafe { LifetimeTracked::use_(&(*std::cell::LazyCell::force_mut(&mut *&raw mut member_5))) });
-    (unsafe { b_use_int_7() });
-    (unsafe { b_use_long_8() });
-    assert!((((*std::cell::LazyCell::force_mut(&mut *&raw mut member_5)).uses) == (2)));
-    assert!((((*std::cell::LazyCell::force_mut(&mut *&raw mut member_6)).uses) == (1)));
+    (unsafe { LifetimeTracked::use_(&(*std::cell::LazyCell::force_mut(&mut *&raw mut member_4))) });
+    (unsafe { b_use_int_6() });
+    (unsafe { b_use_long_7() });
+    assert!((((*std::cell::LazyCell::force_mut(&mut *&raw mut member_4)).uses) == (2)));
+    assert!((((*std::cell::LazyCell::force_mut(&mut *&raw mut member_5)).uses) == (1)));
     assert!(
-        ((&raw mut (*std::cell::LazyCell::force_mut(&mut *&raw mut member_5))
+        ((&raw mut (*std::cell::LazyCell::force_mut(&mut *&raw mut member_4))
             as *mut LifetimeTracked)
-            == (unsafe { b_int_address_9() }))
+            == (unsafe { b_int_address_8() }))
     );
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut ctorCount_0)) == (2)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copyCount_1)) == (0)));
     return 0;
 }
-pub unsafe fn b_use_int_7() {
+pub unsafe fn b_use_int_6() {
+    (unsafe { LifetimeTracked::use_(&(*std::cell::LazyCell::force_mut(&mut *&raw mut member_4))) });
+}
+pub unsafe fn b_use_long_7() {
     (unsafe { LifetimeTracked::use_(&(*std::cell::LazyCell::force_mut(&mut *&raw mut member_5))) });
 }
-pub unsafe fn b_use_long_8() {
-    (unsafe { LifetimeTracked::use_(&(*std::cell::LazyCell::force_mut(&mut *&raw mut member_6))) });
-}
-pub unsafe fn b_int_address_9() -> *mut LifetimeTracked {
-    return (&raw mut (*std::cell::LazyCell::force_mut(&mut *&raw mut member_5))
+pub unsafe fn b_int_address_8() -> *mut LifetimeTracked {
+    return (&raw mut (*std::cell::LazyCell::force_mut(&mut *&raw mut member_4))
         as *mut LifetimeTracked);
 }
 pub unsafe fn __cpp2rust_init_globals() {
@@ -131,7 +94,6 @@ pub unsafe fn __cpp2rust_init_globals() {
     std::cell::LazyCell::force(&*&raw const copyCount_1);
     std::cell::LazyCell::force(&*&raw const dtorCount_2);
     std::cell::LazyCell::force(&*&raw const useCount_3);
-    std::cell::LazyCell::force(&*&raw const copyCount_4);
+    std::cell::LazyCell::force(&*&raw const member_4);
     std::cell::LazyCell::force(&*&raw const member_5);
-    std::cell::LazyCell::force(&*&raw const member_6);
 }

@@ -4,6 +4,7 @@
 // one object, each constructed once and destroyed once.
 #pragma once
 
+#include "../../../support/asserts-dtor-count-at-exit.h"
 #include "../../../support/lifetime-tracked.h"
 
 inline AssertsDtorCountAtExit check{2};

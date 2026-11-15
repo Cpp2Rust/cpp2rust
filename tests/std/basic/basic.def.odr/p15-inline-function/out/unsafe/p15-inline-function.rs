@@ -48,33 +48,6 @@ impl Default for LifetimeTracked {
         unsafe { LifetimeTracked::new() }
     }
 }
-pub static mut copyCount_4: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
-#[repr(C)]
-#[derive(VaArg, FnPtrArg, CppFromUnsafe, CopyAssignUnsafe, Default)]
-#[cpp_from(i32, new, value)]
-pub struct HasConstexprCtor {
-    pub m: i32,
-}
-impl HasConstexprCtor {
-    pub unsafe fn new(mut v: i32) -> Self {
-        let mut this = Self { m: v };
-        this
-    }
-    pub unsafe fn copy_from(o: *const HasConstexprCtor) -> Self {
-        let mut this = Self { m: (*o).m };
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut copyCount_4)).prefix_inc();
-        this
-    }
-    pub unsafe fn copy_assign(&mut self, _a0: *const HasConstexprCtor) -> *mut HasConstexprCtor {
-        self.m = (*_a0).m;
-        return &mut (*(self as *mut HasConstexprCtor));
-    }
-}
-impl Clone for HasConstexprCtor {
-    fn clone(&self) -> Self {
-        unsafe { HasConstexprCtor::copy_from(self as *const HasConstexprCtor) }
-    }
-}
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, DestructorUnsafe, Default)]
 pub struct AssertsDtorCountAtExit {
@@ -85,12 +58,12 @@ impl AssertsDtorCountAtExit {
         assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut dtorCount_2)) == (self.expected)));
     }
 }
-pub unsafe fn instance_5() -> *mut LifetimeTracked {
-    return &mut (*std::cell::LazyCell::force_mut(&mut *&raw mut t_6));
+pub unsafe fn instance_4() -> *mut LifetimeTracked {
+    return &mut (*std::cell::LazyCell::force_mut(&mut *&raw mut t_5));
 }
-static mut t_6: std::cell::LazyCell<LifetimeTracked> =
+static mut t_5: std::cell::LazyCell<LifetimeTracked> =
     std::cell::LazyCell::new(|| unsafe { LifetimeTracked::new() });
-pub static mut check_7: std::cell::LazyCell<AssertsDtorCountAtExit> =
+pub static mut check_6: std::cell::LazyCell<AssertsDtorCountAtExit> =
     std::cell::LazyCell::new(|| unsafe { AssertsDtorCountAtExit { expected: 1 } });
 pub fn main() {
     unsafe {
@@ -100,27 +73,26 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut ctorCount_0)) == (0)));
-    (unsafe { LifetimeTracked::use_(&(*(unsafe { instance_5() }))) });
-    (unsafe { b_use_8() });
+    (unsafe { LifetimeTracked::use_(&(*(unsafe { instance_4() }))) });
+    (unsafe { b_use_7() });
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut ctorCount_0)) == (1)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut useCount_3)) == (2)));
-    assert!((((*(unsafe { instance_5() })).uses) == (2)));
-    assert!(((unsafe { instance_5() }) == (unsafe { b_address_9() })));
+    assert!((((*(unsafe { instance_4() })).uses) == (2)));
+    assert!(((unsafe { instance_4() }) == (unsafe { b_address_8() })));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut ctorCount_0)) == (1)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copyCount_1)) == (0)));
     return 0;
 }
-pub unsafe fn b_use_8() {
-    (unsafe { LifetimeTracked::use_(&(*(unsafe { instance_5() }))) });
+pub unsafe fn b_use_7() {
+    (unsafe { LifetimeTracked::use_(&(*(unsafe { instance_4() }))) });
 }
-pub unsafe fn b_address_9() -> *mut LifetimeTracked {
-    return (unsafe { instance_5() });
+pub unsafe fn b_address_8() -> *mut LifetimeTracked {
+    return (unsafe { instance_4() });
 }
 pub unsafe fn __cpp2rust_init_globals() {
     std::cell::LazyCell::force(&*&raw const ctorCount_0);
     std::cell::LazyCell::force(&*&raw const copyCount_1);
     std::cell::LazyCell::force(&*&raw const dtorCount_2);
     std::cell::LazyCell::force(&*&raw const useCount_3);
-    std::cell::LazyCell::force(&*&raw const copyCount_4);
-    std::cell::LazyCell::force(&*&raw const check_7);
+    std::cell::LazyCell::force(&*&raw const check_6);
 }

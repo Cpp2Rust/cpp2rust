@@ -4,7 +4,7 @@
 // odr-use arr, so [=] does not capture it.
 #include <cassert>
 
-#include "../../support/lifetime-tracked.h"
+#include "../../support/has-constexpr-ctor.h"
 
 int main() {
   constexpr HasConstexprCtor arr[2] = {3, 4};

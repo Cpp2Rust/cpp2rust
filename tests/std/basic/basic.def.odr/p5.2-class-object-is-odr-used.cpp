@@ -3,7 +3,7 @@
 // type. Copying the constant k as a whole odr-uses it, so [=] captures it.
 #include <cassert>
 
-#include "../../support/lifetime-tracked.h"
+#include "../../support/has-constexpr-ctor.h"
 
 int main() {
   constexpr HasConstexprCtor k{5};

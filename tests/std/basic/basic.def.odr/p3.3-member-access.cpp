@@ -4,7 +4,7 @@
 // capture it.
 #include <cassert>
 
-#include "../../support/lifetime-tracked.h"
+#include "../../support/has-constexpr-ctor.h"
 
 int main() {
   constexpr HasConstexprCtor k{5};

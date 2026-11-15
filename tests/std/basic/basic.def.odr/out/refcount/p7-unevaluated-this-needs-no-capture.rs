@@ -49,41 +49,6 @@ impl Default for LifetimeTracked {
         { LifetimeTracked::new() }
     }
 }
-thread_local!(
-    pub static copyCount_4: Value<i32> = Rc::new(RefCell::new(0));
-);
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, CppFrom, CopyAssign, Default)]
-#[cpp_from(i32, new, value)]
-#[byte_size(4)]
-pub struct HasConstexprCtor {
-    #[offset(0)]
-    pub m: i32,
-}
-impl HasConstexprCtor {
-    pub fn new(mut v: i32) -> Self {
-        Self { m: v }
-    }
-    pub fn copy_from(o: Ptr<HasConstexprCtor>) -> Self {
-        let __this: HasConstexprCtor = Self {
-            m: o.with(|__s| __s.m),
-        };
-        (*copyCount_4.with(Value::clone).borrow_mut()).prefix_inc();
-        __this
-    }
-}
-impl Clone for HasConstexprCtor {
-    fn clone(&self) -> Self {
-        let __src: Value<HasConstexprCtor> =
-            Rc::new(RefCell::new(HasConstexprCtor { m: self.m.clone() }));
-        HasConstexprCtor::copy_from(__src.as_pointer())
-    }
-}
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Destructor, Default)]
-#[byte_size(4)]
-pub struct AssertsDtorCountAtExit {
-    #[offset(0)]
-    pub expected: i32,
-}
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CopyAssign, Destructor, Default)]
 #[byte_size(4)]
 pub struct HasMemberUsedInLambda {
@@ -105,23 +70,6 @@ fn main_0() -> i32 {
     assert!((copyCount_1.with(|rc| *rc.borrow()) == 0));
     assert!((useCount_3.with(|rc| *rc.borrow()) == 0));
     return 0;
-}
-pub trait AssertsDtorCountAtExitImpl {
-    fn destructor(&self);
-}
-impl AssertsDtorCountAtExitImpl for Ptr<AssertsDtorCountAtExit> {
-    fn destructor(&self) {
-        assert!((dtorCount_2.with(|rc| *rc.borrow()) == (*self).with(|__s| __s.expected)));
-    }
-}
-pub trait HasConstexprCtorImpl {
-    fn copy_assign(&self, _a0: Ptr<HasConstexprCtor>) -> Ptr<HasConstexprCtor>;
-}
-impl HasConstexprCtorImpl for Ptr<HasConstexprCtor> {
-    fn copy_assign(&self, _a0: Ptr<HasConstexprCtor>) -> Ptr<HasConstexprCtor> {
-        field!((*self), m).write({ _a0.with(|__s| __s.m) });
-        return (*self).clone();
-    }
 }
 pub trait HasMemberUsedInLambdaImpl {
     fn sizer(&self) -> FnPtr<fn() -> usize>;
@@ -170,5 +118,4 @@ pub fn __cpp2rust_init_globals() {
     let _ = copyCount_1.with(|_| ());
     let _ = dtorCount_2.with(|_| ());
     let _ = useCount_3.with(|_| ());
-    let _ = copyCount_4.with(|_| ());
 }

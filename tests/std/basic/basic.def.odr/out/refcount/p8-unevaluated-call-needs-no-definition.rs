@@ -50,45 +50,10 @@ impl Default for LifetimeTracked {
     }
 }
 thread_local!(
-    pub static copyCount_4: Value<i32> = Rc::new(RefCell::new(0));
+    pub static noisy_calls_4: Value<i32> = Rc::new(RefCell::new(0_i32));
 );
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, CppFrom, CopyAssign, Default)]
-#[cpp_from(i32, new, value)]
-#[byte_size(4)]
-pub struct HasConstexprCtor {
-    #[offset(0)]
-    pub m: i32,
-}
-impl HasConstexprCtor {
-    pub fn new(mut v: i32) -> Self {
-        Self { m: v }
-    }
-    pub fn copy_from(o: Ptr<HasConstexprCtor>) -> Self {
-        let __this: HasConstexprCtor = Self {
-            m: o.with(|__s| __s.m),
-        };
-        (*copyCount_4.with(Value::clone).borrow_mut()).prefix_inc();
-        __this
-    }
-}
-impl Clone for HasConstexprCtor {
-    fn clone(&self) -> Self {
-        let __src: Value<HasConstexprCtor> =
-            Rc::new(RefCell::new(HasConstexprCtor { m: self.m.clone() }));
-        HasConstexprCtor::copy_from(__src.as_pointer())
-    }
-}
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Destructor, Default)]
-#[byte_size(4)]
-pub struct AssertsDtorCountAtExit {
-    #[offset(0)]
-    pub expected: i32,
-}
-thread_local!(
-    pub static noisy_calls_5: Value<i32> = Rc::new(RefCell::new(0_i32));
-);
-pub fn noisy_6() -> i32 {
-    (*noisy_calls_5.with(Value::clone).borrow_mut()).prefix_inc();
+pub fn noisy_5() -> i32 {
+    (*noisy_calls_4.with(Value::clone).borrow_mut()).prefix_inc();
     return 1;
 }
 pub fn main() {
@@ -102,28 +67,11 @@ fn main_0() -> i32 {
     assert!(!(false));
     let mut n: i32 = 3;
     assert!((n == 3));
-    assert!((noisy_calls_5.with(|rc| *rc.borrow()) == 0));
+    assert!((noisy_calls_4.with(|rc| *rc.borrow()) == 0));
     assert!((ctorCount_0.with(|rc| *rc.borrow()) == 0));
-    assert!((({ noisy_6() }) == 1));
-    assert!((noisy_calls_5.with(|rc| *rc.borrow()) == 1));
+    assert!((({ noisy_5() }) == 1));
+    assert!((noisy_calls_4.with(|rc| *rc.borrow()) == 1));
     return 0;
-}
-pub trait AssertsDtorCountAtExitImpl {
-    fn destructor(&self);
-}
-impl AssertsDtorCountAtExitImpl for Ptr<AssertsDtorCountAtExit> {
-    fn destructor(&self) {
-        assert!((dtorCount_2.with(|rc| *rc.borrow()) == (*self).with(|__s| __s.expected)));
-    }
-}
-pub trait HasConstexprCtorImpl {
-    fn copy_assign(&self, _a0: Ptr<HasConstexprCtor>) -> Ptr<HasConstexprCtor>;
-}
-impl HasConstexprCtorImpl for Ptr<HasConstexprCtor> {
-    fn copy_assign(&self, _a0: Ptr<HasConstexprCtor>) -> Ptr<HasConstexprCtor> {
-        field!((*self), m).write({ _a0.with(|__s| __s.m) });
-        return (*self).clone();
-    }
 }
 pub trait LifetimeTrackedImpl {
     fn destructor(&self);
@@ -148,6 +96,5 @@ pub fn __cpp2rust_init_globals() {
     let _ = copyCount_1.with(|_| ());
     let _ = dtorCount_2.with(|_| ());
     let _ = useCount_3.with(|_| ());
-    let _ = copyCount_4.with(|_| ());
-    let _ = noisy_calls_5.with(|_| ());
+    let _ = noisy_calls_4.with(|_| ());
 }

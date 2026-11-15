@@ -49,61 +49,32 @@ impl Default for LifetimeTracked {
         { LifetimeTracked::new() }
     }
 }
-thread_local!(
-    pub static copyCount_4: Value<i32> = Rc::new(RefCell::new(0));
-);
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, CppFrom, CopyAssign, Default)]
-#[cpp_from(i32, new, value)]
-#[byte_size(4)]
-pub struct HasConstexprCtor {
-    #[offset(0)]
-    pub m: i32,
-}
-impl HasConstexprCtor {
-    pub fn new(mut v: i32) -> Self {
-        Self { m: v }
-    }
-    pub fn copy_from(o: Ptr<HasConstexprCtor>) -> Self {
-        let __this: HasConstexprCtor = Self {
-            m: o.with(|__s| __s.m),
-        };
-        (*copyCount_4.with(Value::clone).borrow_mut()).prefix_inc();
-        __this
-    }
-}
-impl Clone for HasConstexprCtor {
-    fn clone(&self) -> Self {
-        let __src: Value<HasConstexprCtor> =
-            Rc::new(RefCell::new(HasConstexprCtor { m: self.m.clone() }));
-        HasConstexprCtor::copy_from(__src.as_pointer())
-    }
-}
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Destructor, Default)]
 #[byte_size(4)]
 pub struct AssertsDtorCountAtExit {
     #[offset(0)]
     pub expected: i32,
 }
-pub fn count_5() -> i32 {
-    return (*n_7.with(Value::clone).borrow_mut()).prefix_inc();
+pub fn count_4() -> i32 {
+    return (*n_6.with(Value::clone).borrow_mut()).prefix_inc();
 }
-pub fn count_8() -> i32 {
-    return (*n_10.with(Value::clone).borrow_mut()).prefix_inc();
+pub fn count_7() -> i32 {
+    return (*n_9.with(Value::clone).borrow_mut()).prefix_inc();
 }
 thread_local!(
-    static t_6: Value<LifetimeTracked> = Rc::new(RefCell::new(LifetimeTracked::new()));
+    static t_5: Value<LifetimeTracked> = Rc::new(RefCell::new(LifetimeTracked::new()));
 );
 thread_local!(
-    static n_7: Value<i32> = Rc::new(RefCell::new(0));
+    static n_6: Value<i32> = Rc::new(RefCell::new(0));
 );
 thread_local!(
-    static t_9: Value<LifetimeTracked> = Rc::new(RefCell::new(LifetimeTracked::new()));
+    static t_8: Value<LifetimeTracked> = Rc::new(RefCell::new(LifetimeTracked::new()));
 );
 thread_local!(
-    static n_10: Value<i32> = Rc::new(RefCell::new(0));
+    static n_9: Value<i32> = Rc::new(RefCell::new(0));
 );
 thread_local!(
-    pub static check_11: Value<AssertsDtorCountAtExit> =
+    pub static check_10: Value<AssertsDtorCountAtExit> =
         Rc::new(RefCell::new(AssertsDtorCountAtExit { expected: 2 }));
 );
 pub fn main() {
@@ -112,20 +83,20 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     assert!((ctorCount_0.with(|rc| *rc.borrow()) == 0));
-    assert!((({ count_5() }) == 1));
-    assert!((({ b_count_int_12() }) == 2));
-    assert!((({ count_5() }) == 3));
+    assert!((({ count_4() }) == 1));
+    assert!((({ b_count_int_11() }) == 2));
+    assert!((({ count_4() }) == 3));
     assert!((ctorCount_0.with(|rc| *rc.borrow()) == 1));
-    assert!((({ count_8() }) == 1));
-    assert!((({ b_count_long_13() }) == 2));
+    assert!((({ count_7() }) == 1));
+    assert!((({ b_count_long_12() }) == 2));
     assert!((ctorCount_0.with(|rc| *rc.borrow()) == 2));
     return 0;
 }
-pub fn b_count_int_12() -> i32 {
-    return ({ count_5() });
+pub fn b_count_int_11() -> i32 {
+    return ({ count_4() });
 }
-pub fn b_count_long_13() -> i32 {
-    return ({ count_8() });
+pub fn b_count_long_12() -> i32 {
+    return ({ count_7() });
 }
 pub trait AssertsDtorCountAtExitImpl {
     fn destructor(&self);
@@ -133,15 +104,6 @@ pub trait AssertsDtorCountAtExitImpl {
 impl AssertsDtorCountAtExitImpl for Ptr<AssertsDtorCountAtExit> {
     fn destructor(&self) {
         assert!((dtorCount_2.with(|rc| *rc.borrow()) == (*self).with(|__s| __s.expected)));
-    }
-}
-pub trait HasConstexprCtorImpl {
-    fn copy_assign(&self, _a0: Ptr<HasConstexprCtor>) -> Ptr<HasConstexprCtor>;
-}
-impl HasConstexprCtorImpl for Ptr<HasConstexprCtor> {
-    fn copy_assign(&self, _a0: Ptr<HasConstexprCtor>) -> Ptr<HasConstexprCtor> {
-        field!((*self), m).write({ _a0.with(|__s| __s.m) });
-        return (*self).clone();
     }
 }
 pub trait LifetimeTrackedImpl {
@@ -167,6 +129,5 @@ pub fn __cpp2rust_init_globals() {
     let _ = copyCount_1.with(|_| ());
     let _ = dtorCount_2.with(|_| ());
     let _ = useCount_3.with(|_| ());
-    let _ = copyCount_4.with(|_| ());
-    let _ = check_11.with(|_| ());
+    let _ = check_10.with(|_| ());
 }
