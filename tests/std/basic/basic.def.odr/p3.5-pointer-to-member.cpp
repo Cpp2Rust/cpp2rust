@@ -2,8 +2,9 @@
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [basic.def.odr]/3.5: the potential results of E1.*E2 are those of E1.
 // Reading k.*pm does not odr-use k, so [=] does not capture it.
-#include "../../support/lifetime-tracked.h"
 #include <cassert>
+
+#include "../../support/lifetime-tracked.h"
 
 int main() {
   constexpr HasConstexprCtor k{5};

@@ -1,5 +1,6 @@
-#include "h.h"
 #include <cassert>
+
+#include "h.h"
 
 int main() {
   assert(&factor != b_factor_address());

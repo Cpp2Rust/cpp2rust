@@ -2,8 +2,9 @@
 // N4950 [basic.def.odr]/6: a structured binding is odr-used only if it appears
 // as a potentially-evaluated expression. In sizeof it is unevaluated, so [=]
 // does not capture a.
-#include "../../support/lifetime-tracked.h"
 #include <cassert>
+
+#include "../../support/lifetime-tracked.h"
 
 struct HasTwoMembers {
   LifetimeTracked a;

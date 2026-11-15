@@ -2,8 +2,9 @@
 // N4950 [basic.def.odr]/11: a definition is required only for variables
 // odr-used outside of a discarded statement. undefined is used only in a
 // discarded statement, so it is never defined.
-#include "../../support/lifetime-tracked.h"
 #include <cassert>
+
+#include "../../support/lifetime-tracked.h"
 
 static int else_runs;
 

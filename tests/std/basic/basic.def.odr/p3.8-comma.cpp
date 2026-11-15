@@ -2,8 +2,9 @@
 // N4950 [basic.def.odr]/3.8: the potential results of a comma expression are
 // those of its right operand. k is not odr-used, so [=] does not capture it;
 // the left operand is still evaluated.
-#include "../../support/lifetime-tracked.h"
 #include <cassert>
+
+#include "../../support/lifetime-tracked.h"
 
 static int left;
 

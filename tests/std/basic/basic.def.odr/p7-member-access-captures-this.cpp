@@ -3,8 +3,9 @@
 // potentially-evaluated expression, including through the implicit
 // transformation of a member name. [=] captures this, not the member x, and the
 // lambda sees later changes to the object.
-#include "../../support/lifetime-tracked.h"
 #include <cassert>
+
+#include "../../support/lifetime-tracked.h"
 
 struct HasMemberUsedInLambda {
   LifetimeTracked x;

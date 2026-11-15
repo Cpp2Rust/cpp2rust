@@ -1,5 +1,6 @@
-#include "h.h"
 #include <cassert>
+
+#include "h.h"
 
 AssertsDtorCountAtExit check{1};
 

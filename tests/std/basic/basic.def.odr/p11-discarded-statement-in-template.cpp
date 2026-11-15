@@ -3,8 +3,9 @@
 // odr-used outside of a discarded statement. In a template the discarded
 // branch is not instantiated; undefined() is called only there, so it is never
 // defined and never runs.
-#include "../../support/lifetime-tracked.h"
 #include <cassert>
+
+#include "../../support/lifetime-tracked.h"
 
 static int else_runs;
 

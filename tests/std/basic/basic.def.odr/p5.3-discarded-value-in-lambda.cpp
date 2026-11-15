@@ -2,8 +2,9 @@
 // N4950 [basic.def.odr]/5.3: a variable named by a discarded-value expression
 // to which the lvalue-to-rvalue conversion is not applied is not odr-used, so
 // [=] does not capture t.
-#include "../../support/lifetime-tracked.h"
 #include <cassert>
+
+#include "../../support/lifetime-tracked.h"
 
 int main() {
   LifetimeTracked t;

@@ -5,8 +5,9 @@
 // N4950 [basic.def.odr]/3.2: the potential results of a subscripting operation
 // with an array operand are those of the operand. Reading arr[1].m does not
 // odr-use arr, so [=] does not capture it.
-#include "../../support/lifetime-tracked.h"
 #include <cassert>
+
+#include "../../support/lifetime-tracked.h"
 
 int main() {
   constexpr HasConstexprCtor arr[2] = {3, 4};

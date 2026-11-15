@@ -4,8 +4,9 @@
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [basic.def.odr]/6: a structured binding is odr-used if it appears as a
 // potentially-evaluated expression, so [=] captures a by copy.
-#include "../../support/lifetime-tracked.h"
 #include <cassert>
+
+#include "../../support/lifetime-tracked.h"
 
 struct HasTwoMembers {
   LifetimeTracked a;

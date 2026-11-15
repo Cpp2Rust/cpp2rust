@@ -3,8 +3,9 @@
 // potentially-evaluated expression. make() is named only in unevaluated
 // operands, so it is never defined; noisy() is defined, but an unevaluated call
 // does not run it.
-#include "../../support/lifetime-tracked.h"
 #include <cassert>
+
+#include "../../support/lifetime-tracked.h"
 
 static int noisy_calls;
 

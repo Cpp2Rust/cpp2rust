@@ -2,8 +2,9 @@
 // N4950 [basic.def.odr]/5.1: a reference that is usable in constant expressions
 // is not odr-used. [=] therefore does not capture r, and the lambda uses the
 // object r refers to.
-#include "../../support/lifetime-tracked.h"
 #include <cassert>
+
+#include "../../support/lifetime-tracked.h"
 
 LifetimeTracked global;
 
