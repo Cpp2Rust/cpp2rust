@@ -878,6 +878,11 @@ protected:
   // Moves the value out of `arg`, leaving a default value behind.
   virtual std::string ConvertTake(clang::Expr *arg);
 
+  // The value to leave behind when moving from `arg`. Empty if std::mem::take
+  // suffices, including implicit return moves of locals and by-value
+  // parameters.
+  std::string GetMovedFromValue(clang::Expr *arg);
+
   // The place of `arg`, which is borrowed mutably by a rule.
   virtual std::string ConvertBorrowMut(clang::Expr *arg);
 
@@ -945,6 +950,7 @@ protected:
   clang::ASTContext &ctx_;
   std::unique_ptr<clang::MangleContext> mangle_context_;
   clang::FunctionDecl *curr_function_ = nullptr;
+  clang::Expr *return_value_ = nullptr;
   bool InConstructor() const {
     return clang::isa_and_present<clang::CXXConstructorDecl>(curr_function_);
   }
