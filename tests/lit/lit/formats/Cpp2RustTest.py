@@ -373,6 +373,8 @@ class Cpp2RustTest(TestFormat):
             yield lit.Test.Test(testSuite, path_in_suite, localConfig)
             return
         for entry in source_path.iterdir():
+            if entry.name in localConfig.excludes:
+                continue
             if entry.is_file() and entry.suffix in (".cpp", ".c"):
                 yield lit.Test.Test(
                     testSuite, path_in_suite + (entry.name,), localConfig
@@ -485,6 +487,7 @@ def cpp2rust_command(cc_input, build_dir, model, rs_file, extra_cxxflags):
         model,
         "-o",
         str(rs_file),
+        f"-cxxflags=-I{cc_input.parent}",
     ]
     for flag in extra_cxxflags:
         cmd.append(f"-cxxflags={flag}")

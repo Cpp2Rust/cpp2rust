@@ -1507,7 +1507,8 @@ static const clang::FieldDecl *
 AsLambdaCaptureField(const clang::FunctionDecl *fn, const clang::Expr *expr) {
   auto call = AsLambdaOperatorCall(fn);
   auto ref = clang::dyn_cast<clang::DeclRefExpr>(expr);
-  if (!call || !ref || !ref->refersToEnclosingVariableOrCapture()) {
+  if (!call || !ref || !ref->refersToEnclosingVariableOrCapture() ||
+      ref->isNonOdrUse() != clang::NOUR_None) {
     return nullptr;
   }
   llvm::DenseMap<const clang::ValueDecl *, clang::FieldDecl *> fields;

@@ -1,0 +1,64 @@
+extern crate libc;
+use libc::*;
+extern crate libcc2rs;
+use libcc2rs::*;
+use std::collections::BTreeMap;
+use std::io::{Read, Seek, Write};
+use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
+use std::rc::Rc;
+pub static mut copyCount_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
+#[repr(C)]
+#[derive(VaArg, FnPtrArg, CppFromUnsafe, CopyAssignUnsafe, Default)]
+#[cpp_from(i32, new, value)]
+pub struct HasConstexprCtor {
+    pub m: i32,
+}
+impl HasConstexprCtor {
+    pub unsafe fn new(mut v: i32) -> Self {
+        let mut this = Self { m: v };
+        this
+    }
+    pub unsafe fn copy_from(o: *const HasConstexprCtor) -> Self {
+        let mut this = Self { m: (*o).m };
+        (*std::cell::LazyCell::force_mut(&mut *&raw mut copyCount_0)).prefix_inc();
+        this
+    }
+    pub unsafe fn copy_assign(&mut self, _a0: *const HasConstexprCtor) -> *mut HasConstexprCtor {
+        self.m = (*_a0).m;
+        return &mut (*(self as *mut HasConstexprCtor));
+    }
+}
+impl Clone for HasConstexprCtor {
+    fn clone(&self) -> Self {
+        unsafe { HasConstexprCtor::copy_from(self as *const HasConstexprCtor) }
+    }
+}
+pub static mut left_1: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0_i32 });
+pub fn main() {
+    unsafe {
+        __cpp2rust_init_globals();
+        std::process::exit(main_0() as i32);
+    }
+}
+unsafe fn main_0() -> i32 {
+    let k: HasConstexprCtor = HasConstexprCtor::new({ 5 });
+    let mut f: FnPtr<fn() -> i32> = FnPtr::<fn() -> i32>::new(|| -> i32 {
+        unsafe {
+            return {
+                (*std::cell::LazyCell::force_mut(&mut *&raw mut left_1)).prefix_inc();
+                HasConstexprCtor::new({ 5 })
+            }
+            .m;
+        }
+    });
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copyCount_0)) == (0)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut left_1)) == (0)));
+    assert!(((unsafe { f.call() }) == (5)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut left_1)) == (1)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copyCount_0)) == (0)));
+    return 0;
+}
+pub unsafe fn __cpp2rust_init_globals() {
+    std::cell::LazyCell::force(&*&raw const copyCount_0);
+    std::cell::LazyCell::force(&*&raw const left_1);
+}

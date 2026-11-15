@@ -1,0 +1,120 @@
+extern crate libc;
+use libc::*;
+extern crate libcc2rs;
+use libcc2rs::*;
+use std::collections::BTreeMap;
+use std::io::{Read, Seek, Write};
+use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
+use std::rc::Rc;
+pub static mut ctorCount_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
+pub static mut copyCount_1: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
+pub static mut dtorCount_2: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
+pub static mut useCount_3: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
+#[repr(C)]
+#[derive(VaArg, FnPtrArg, CopyAssignUnsafe, DestructorUnsafe)]
+pub struct LifetimeTracked {
+    pub uses: i32,
+}
+impl LifetimeTracked {
+    pub unsafe fn new() -> Self {
+        let mut this = Self { uses: 0 };
+        (*std::cell::LazyCell::force_mut(&mut *&raw mut ctorCount_0)).prefix_inc();
+        this
+    }
+    pub unsafe fn copy_from(_a0: *const LifetimeTracked) -> Self {
+        let mut this = Self { uses: 0 };
+        (*std::cell::LazyCell::force_mut(&mut *&raw mut copyCount_1)).prefix_inc();
+        this
+    }
+    pub unsafe fn destructor(&mut self) {
+        (*std::cell::LazyCell::force_mut(&mut *&raw mut dtorCount_2)).prefix_inc();
+    }
+    pub unsafe fn use_(&self) {
+        (*(&raw const self.uses).cast_mut()).prefix_inc();
+        (*std::cell::LazyCell::force_mut(&mut *&raw mut useCount_3)).prefix_inc();
+    }
+    pub unsafe fn copy_assign(&mut self, _a0: *const LifetimeTracked) -> *mut LifetimeTracked {
+        self.uses = (*_a0).uses;
+        return &mut (*(self as *mut LifetimeTracked));
+    }
+}
+impl Clone for LifetimeTracked {
+    fn clone(&self) -> Self {
+        unsafe { LifetimeTracked::copy_from(self as *const LifetimeTracked) }
+    }
+}
+impl Default for LifetimeTracked {
+    fn default() -> Self {
+        unsafe { LifetimeTracked::new() }
+    }
+}
+#[repr(C)]
+#[derive(Clone, VaArg, FnPtrArg, CopyAssignUnsafe, DestructorUnsafe)]
+pub struct HasMemberUsedInLambda {
+    pub x: LifetimeTracked,
+    pub n: i32,
+}
+impl HasMemberUsedInLambda {
+    pub unsafe fn makeLambda(&mut self) -> FnPtr<fn() -> i32> {
+        return lambda_unsafe!(
+            {
+                let this_: *mut HasMemberUsedInLambda = (self as *mut HasMemberUsedInLambda);
+            },
+            || -> i32 {
+                (unsafe { LifetimeTracked::use_(&(*this_).x) });
+                return (*this_).n;
+            }
+        );
+    }
+    pub unsafe fn copy_assign(
+        &mut self,
+        _a0: *const HasMemberUsedInLambda,
+    ) -> *mut HasMemberUsedInLambda {
+        (unsafe {
+            let _arg0: *const LifetimeTracked = &(*_a0).x;
+            LifetimeTracked::copy_assign(&mut self.x, _arg0)
+        });
+        self.n = (*_a0).n;
+        return &mut (*(self as *mut HasMemberUsedInLambda));
+    }
+}
+impl HasMemberUsedInLambda {
+    pub unsafe fn destructor(&mut self) {
+        LifetimeTracked::destructor(&mut self.x);
+    }
+}
+impl Default for HasMemberUsedInLambda {
+    fn default() -> Self {
+        unsafe {
+            HasMemberUsedInLambda {
+                x: <LifetimeTracked>::default(),
+                n: 1,
+            }
+        }
+    }
+}
+pub fn main() {
+    unsafe {
+        __cpp2rust_init_globals();
+        std::process::exit(main_0() as i32);
+    }
+}
+unsafe fn main_0() -> i32 {
+    let mut c: HasMemberUsedInLambda = <HasMemberUsedInLambda>::default();
+    let _dtor_c = std::mem::DropGuard::new(&raw mut c, |__p| unsafe { (*__p).destructor() });
+    let mut f: FnPtr<fn() -> i32> = (unsafe { HasMemberUsedInLambda::makeLambda(&mut c) });
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copyCount_1)) == (0)));
+    assert!(((unsafe { f.call() }) == (1)));
+    assert!(((c.x.uses) == (1)));
+    c.n = 10;
+    assert!(((unsafe { f.call() }) == (10)));
+    assert!(((c.x.uses) == (2)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copyCount_1)) == (0)));
+    return 0;
+}
+pub unsafe fn __cpp2rust_init_globals() {
+    std::cell::LazyCell::force(&*&raw const ctorCount_0);
+    std::cell::LazyCell::force(&*&raw const copyCount_1);
+    std::cell::LazyCell::force(&*&raw const dtorCount_2);
+    std::cell::LazyCell::force(&*&raw const useCount_3);
+}

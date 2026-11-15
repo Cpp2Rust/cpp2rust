@@ -152,6 +152,7 @@ add_custom_target("check-unit"
                           "${PROJECT_SOURCE_DIR}/tests/lit/lit.py"
                           ${LIT_FLAGS}
                           "${PROJECT_SOURCE_DIR}/tests/unit"
+                          "${PROJECT_SOURCE_DIR}/tests/std"
                           "${PROJECT_SOURCE_DIR}/tests/ub"
                           "${PROJECT_SOURCE_DIR}/tests/multi-file"
                   DEPENDS cpp2rust libcc2rs

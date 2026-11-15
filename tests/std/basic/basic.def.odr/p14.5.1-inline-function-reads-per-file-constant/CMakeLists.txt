@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 3.20)
+project(p14_5_1_inline_function_reads_per_file_constant LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+add_executable(app a.cpp b.cpp)
