@@ -373,6 +373,8 @@ class Cpp2RustTest(TestFormat):
             yield lit.Test.Test(testSuite, path_in_suite, localConfig)
             return
         for entry in source_path.iterdir():
+            if entry.name in localConfig.excludes:
+                continue
             if entry.is_file() and entry.suffix in (".cpp", ".c"):
                 yield lit.Test.Test(
                     testSuite, path_in_suite + (entry.name,), localConfig
