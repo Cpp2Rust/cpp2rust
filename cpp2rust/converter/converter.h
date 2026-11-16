@@ -97,6 +97,8 @@ public:
   std::string GetTemplateArgumentAsString(const clang::TemplateArgument &arg);
 
   bool VisitRecoveryExpr(clang::RecoveryExpr *expr);
+  bool VisitExprWithCleanups(clang::ExprWithCleanups *expr);
+  bool VisitMaterializeTemporaryExpr(clang::MaterializeTemporaryExpr *expr);
 
   virtual void EmitFilePreamble();
 
@@ -518,11 +520,14 @@ public:
   virtual bool VisitBinaryOperator(clang::BinaryOperator *expr);
   bool VisitCXXRewrittenBinaryOperator(clang::CXXRewrittenBinaryOperator *expr);
 
+  void ConvertAssignmentRef(clang::BinaryOperator *expr);
   virtual void ConvertBinaryOperator(clang::BinaryOperator *expr);
 
-  // The value that the compound assignment expr assigns to its left operand,
-  // whose type differs from the computation type.
-  std::string ConvertCompoundAssignValue(clang::CompoundAssignOperator *expr);
+  // The value that the compound assignment expr assigns to its left operand.
+  // Optional operand strings refer to values that have already been evaluated.
+  std::string ConvertCompoundAssignValue(clang::CompoundAssignOperator *expr,
+                                         std::string_view lhs_value = {},
+                                         std::string_view rhs_value = {});
 
   virtual bool ConvertIncAndDec(clang::UnaryOperator *expr);
 
@@ -530,7 +535,7 @@ public:
 
   virtual bool VisitStmtExpr(clang::StmtExpr *expr);
 
-  bool ConvertLValueConditional(clang::ConditionalOperator *expr);
+  virtual bool ConvertLValueConditional(clang::ConditionalOperator *expr);
 
   virtual bool VisitConditionalOperator(clang::ConditionalOperator *expr);
 
@@ -853,7 +858,8 @@ protected:
 
   virtual void
   ConvertUnsignedArithBinaryOperator(clang::BinaryOperator *binary_operator,
-                                     clang::Expr *expr);
+                                     clang::Expr *expr,
+                                     std::string_view value = {});
 
   virtual void ConvertAddrOf(clang::Expr *expr, clang::QualType pointer_type);
 
@@ -898,6 +904,15 @@ protected:
   // The variables that arguments of rules are bound to by value, whose
   // address is not taken.
   std::unordered_set<const clang::VarDecl *> bound_values_;
+
+  // Bound initializer arguments may need a mapped move constructor when
+  // forwarding the original rvalue from its pointer binding.
+  std::unordered_set<const clang::VarDecl *> bound_init_args_;
+
+  // Updates the pointee using its previous value, borrowing it once.
+  virtual std::string
+  AssignPtrExpr(std::string_view ptr, clang::QualType type,
+                llvm::function_ref<std::string(std::string_view)> value);
 
   std::string ConvertVariadicTail(clang::Expr *expr,
                                   llvm::ArrayRef<clang::Expr *> all_args);
@@ -1012,6 +1027,9 @@ protected:
     return std::format("__tmp_{}", materialized_temp_id_++);
   }
   std::string *materialized_temp_bindings_ = nullptr;
+  // Owning temporaries needed by references bound before a rule expansion.
+  std::string *full_expression_temporaries_ = nullptr;
+  bool retain_bound_temporaries_ = false;
   class HoistMaterializedTempBindings {
     Converter &c;
     std::string *prev;
@@ -1089,6 +1107,7 @@ protected:
     Callee,
     LValue,
     RValue,
+    FreshRValue,
     XValue,
     AddrOf,
     Object,
@@ -1103,6 +1122,8 @@ protected:
       return "LValue";
     case ExprKind::RValue:
       return "RValue";
+    case ExprKind::FreshRValue:
+      return "FreshRValue";
     case ExprKind::XValue:
       return "XValue";
     case ExprKind::AddrOf:
@@ -1118,6 +1139,7 @@ protected:
 
   bool isLValue() const;
   bool isRValue() const;
+  bool isFreshRValue() const;
   bool isXValue() const;
   bool isAddrOf() const;
   bool isObject() const;
@@ -1210,10 +1232,11 @@ protected:
                  int line = __builtin_LINE());
 
   /// Materialize a temporary for a prvalue bound to a reference parameter.
-  /// Returns (binding_code, ref_expression).
+  /// Returns (binding_code, ref_expression). With declarations, emit the local
+  /// declaration there and return its initialization at the evaluation site.
   virtual std::pair<std::string, std::string>
   MaterializeTemp(const std::string &binding_name, clang::QualType param_type,
-                  clang::Expr *expr);
+                  clang::Expr *expr, std::string *declarations = nullptr);
 
   /// Emits binding_code to materialized_temp_bindings_.
   /// Returns ref_expression.

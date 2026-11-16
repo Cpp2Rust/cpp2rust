@@ -83,7 +83,10 @@ The fragment kinds are:
   result it emits the lvalue alone, so `p.first = 1.5` is `p.0 = 1.5` rather
   than `(*&mut p.0) = 1.5`.
 - `va_args`: the expansion point for a variadic tail.
-- `init`: the value built from the call's trailing arguments.
+- `init`: the value built from the call's trailing arguments. Its optional
+  `conditional` flag marks construction in a branch, loop, or closure. The
+  converter binds side-effectful arguments before entering such a rule body,
+  without making the construction unconditional.
 
 Every type in the Rules IR (in `params`, `return_type`, and type rules) is a
 `TypeInfo` object, the type text plus a set of flags:
