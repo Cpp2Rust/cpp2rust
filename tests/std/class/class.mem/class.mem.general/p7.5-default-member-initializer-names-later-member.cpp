@@ -1,3 +1,4 @@
+// no-compile: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.mem.general]/7.5: a default member initializer within the
 // member-specification of a class is a complete-class context.
