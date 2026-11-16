@@ -1,4 +1,3 @@
-// translation-fail: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [expr.cond]/7.4: if one or both of the second and third operands have
 // pointer-to-member type, they are brought to their composite pointer type.

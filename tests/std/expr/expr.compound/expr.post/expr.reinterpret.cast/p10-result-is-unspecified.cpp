@@ -1,4 +1,3 @@
-// translation-fail: refcount, unsafe
 // nondet-result
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [expr.reinterpret.cast]/10: the result of converting a pointer to

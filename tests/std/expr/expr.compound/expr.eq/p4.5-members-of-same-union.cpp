@@ -1,4 +1,3 @@
-// translation-fail: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [expr.eq]/4.5: pointers to (possibly different) members of the same
 // union compare equal.

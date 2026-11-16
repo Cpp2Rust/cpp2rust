@@ -1,4 +1,3 @@
-// translation-fail: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [expr.mptr.oper]/3: E1->*E2 is converted into (*(E1)).*E2.
 #include <cassert>

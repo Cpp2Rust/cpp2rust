@@ -1,4 +1,3 @@
-// translation-fail: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [expr.eq]/4.1: two pointers to members that are both the null member
 // pointer value compare equal.

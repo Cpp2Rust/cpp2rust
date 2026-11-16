@@ -1,4 +1,4 @@
-// translation-fail: refcount, unsafe
+// no-compile: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [expr.mptr.oper]/2: .* binds a "pointer to member of T" to a glvalue
 // of class T or of a class of which T is an unambiguous and accessible base.

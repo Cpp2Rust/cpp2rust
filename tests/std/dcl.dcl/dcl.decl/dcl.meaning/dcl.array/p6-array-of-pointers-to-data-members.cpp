@@ -1,4 +1,3 @@
-// translation-fail: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [dcl.array]/6: an object of type "array of N U" consists of a
 // contiguously allocated set of N subobjects of type U, numbered 0 to N-1.

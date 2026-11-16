@@ -1,4 +1,3 @@
-// translation-fail: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [basic.types.general]/2: the underlying bytes of an object of
 // trivially copyable type can be copied into an array of unsigned char; if

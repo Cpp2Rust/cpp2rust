@@ -1,4 +1,3 @@
-// translation-fail: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [func.require]/1.4: INVOKE(f, t1) is t1.*f when f is a pointer to data
 // member of a class T and t1 is a T or derived from T.

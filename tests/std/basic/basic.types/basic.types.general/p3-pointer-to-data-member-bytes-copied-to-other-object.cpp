@@ -1,4 +1,3 @@
-// translation-fail: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [basic.types.general]/3: if the underlying bytes of obj1 of trivially
 // copyable type are copied into obj2, obj2 holds the same value as obj1.

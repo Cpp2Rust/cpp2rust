@@ -1,4 +1,3 @@
-// translation-fail: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [temp.type]/2.6: two values of pointer-to-member type are
 // template-argument-equivalent if they refer to the same class member or are

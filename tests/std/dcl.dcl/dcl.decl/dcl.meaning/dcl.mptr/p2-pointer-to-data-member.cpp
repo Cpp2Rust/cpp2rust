@@ -1,4 +1,3 @@
-// translation-fail: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [dcl.mptr]/2: "T C::*" declares a pointer to member of class C of
 // type T.

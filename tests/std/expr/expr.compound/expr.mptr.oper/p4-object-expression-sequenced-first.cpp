@@ -1,4 +1,3 @@
-// translation-fail: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [expr.mptr.oper]/4: in E1.*E2, E1 is sequenced before E2.
 #include <cassert>
