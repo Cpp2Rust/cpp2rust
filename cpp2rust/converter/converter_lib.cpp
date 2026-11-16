@@ -80,7 +80,8 @@ static const char rust_keywords[][12] = {
 namespace cpp2rust {
 
 bool IsGlobalVar(const clang::VarDecl *decl) {
-  return decl->isFileVarDecl() || decl->isStaticLocal();
+  return decl->isFileVarDecl() || decl->isStaticLocal() ||
+         decl->isLocalExternDecl();
 }
 
 bool IsGlobalVar(const clang::Expr *expr) {
@@ -1186,7 +1187,7 @@ std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
       id = GetDeclId(decl, fn->getFormalLinkage() == clang::Linkage::Internal);
     }
   } else if (auto *var = clang::dyn_cast<clang::VarDecl>(decl);
-             var && (var->isFileVarDecl() || var->isStaticLocal())) {
+             var && IsGlobalVar(var)) {
     id = GetDeclId(var->getCanonicalDecl(),
                    var->getFormalLinkage() != clang::Linkage::External);
   } else if (auto *tag = clang::dyn_cast<clang::TagDecl>(decl);

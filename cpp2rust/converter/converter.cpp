@@ -1431,6 +1431,9 @@ bool Converter::VisitDeclStmt(clang::DeclStmt *stmt) {
     if (var && IsAliasOfInit(ctx_, var)) {
       continue;
     }
+    if (var && var->isLocalExternDecl()) {
+      continue;
+    }
     if (var && var->isImplicit()) {
       VisitVarDecl(var);
     } else {
