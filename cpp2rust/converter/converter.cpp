@@ -1175,7 +1175,7 @@ bool Converter::ConvertCXXMethodDecl(clang::CXXMethodDecl *decl) {
 
   {
     PushParen paren(*this);
-    if (!decl->isStatic()) {
+    if (decl->isImplicitObjectMemberFunction()) {
       StrCat(GetSelfMaybeWithMut(decl), token::kComma);
     }
     ConvertFunctionParameters(decl);
@@ -3246,6 +3246,10 @@ std::string Converter::ConvertDeclRef(clang::Expr *expr,
     if (auto method = clang::dyn_cast<clang::CXXMethodDecl>(function)) {
       if (method->isStatic()) {
         return GetFunctionRefName(method);
+      }
+      if (method->isExplicitObjectMemberFunction()) {
+        return std::format("{}::{}", GetUFCSName(method),
+                           GetMethodName(method));
       }
     }
     return GetNamedDeclAsString(function->getCanonicalDecl());
