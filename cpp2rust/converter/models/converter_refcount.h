@@ -116,6 +116,8 @@ public:
 
   bool ConvertIncAndDec(clang::UnaryOperator *expr) override;
 
+  bool ConvertLValueConditional(clang::ConditionalOperator *expr) override;
+
   void ConvertConditionalBranch(clang::Expr *expr,
                                 clang::QualType type) override;
 
@@ -374,7 +376,8 @@ private:
 
   std::pair<std::string, std::string>
   MaterializeTemp(const std::string &binding_name, clang::QualType param_type,
-                  clang::Expr *expr) override;
+                  clang::Expr *expr,
+                  std::string *declarations = nullptr) override;
 
   void ConvertConstructedValue(clang::QualType type,
                                clang::CXXConstructExpr *ctor) override;
@@ -440,6 +443,10 @@ private:
 
   // Wraps a pointer expression with deref prefix/suffix: e.g.
   // "(*ptr.upgrade().deref())" or "(ptr.read())"
+  std::string AssignPtrExpr(
+      std::string_view ptr, clang::QualType type,
+      llvm::function_ref<std::string(std::string_view)> value) override;
+
   std::string DerefPtrExpr(std::string_view ptr_expr,
                            clang::QualType pointee_type) override;
 

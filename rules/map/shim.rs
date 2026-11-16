@@ -520,6 +520,20 @@ impl<K: Ord, V> UnsafeMap<K, (K, V)> {
         }
     }
 
+    pub fn try_emplace(
+        &mut self,
+        key: K,
+        new_value: impl FnOnce() -> V,
+    ) -> (UnsafeBidirectionalIterator<(K, V)>, bool) {
+        match self.search(&key) {
+            Ok(node) => (UnsafeBidirectionalIterator::Map(node), false),
+            Err(prev) => (
+                UnsafeBidirectionalIterator::Map(self.link_after(prev, (key, new_value()))),
+                true,
+            ),
+        }
+    }
+
     pub fn get(&self, key: &K) -> Option<*mut (K, V)> {
         self.nodes.get(&UnsafeMapKey(key)).map(|node| {
             UnsafeMapNode::value(&**node as *const UnsafeMapNode<(K, V)> as *mut UnsafeMapNode<(K, V)>)

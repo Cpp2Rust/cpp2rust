@@ -119,5 +119,5 @@ unsafe fn f73<T1: Ord, T2>(
     a1: T1,
     init: T2,
 ) -> (UnsafeBidirectionalIterator<(T1, T2)>, bool) {
-    a0.emplace((a1, init))
+    a0.try_emplace(a1, || init)
 }
