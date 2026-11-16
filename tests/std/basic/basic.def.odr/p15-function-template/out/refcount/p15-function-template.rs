@@ -25,6 +25,24 @@ pub struct LifetimeTracked {
     pub uses: i32,
 }
 impl LifetimeTracked {
+    pub fn reset() {
+        ctorCount_0.with(|rc| {
+            *rc.borrow_mut() = {
+                copyCount_1.with(|rc| {
+                    *rc.borrow_mut() = {
+                        dtorCount_2.with(|rc| {
+                            *rc.borrow_mut() = {
+                                useCount_3.with(|rc| *rc.borrow_mut() = 0);
+                                useCount_3.with(|rc| *rc.borrow())
+                            }
+                        });
+                        dtorCount_2.with(|rc| *rc.borrow())
+                    }
+                });
+                copyCount_1.with(|rc| *rc.borrow())
+            }
+        });
+    }
     pub fn new() -> Self {
         let __this: LifetimeTracked = Self { uses: 0 };
         (*ctorCount_0.with(Value::clone).borrow_mut()).prefix_inc();
