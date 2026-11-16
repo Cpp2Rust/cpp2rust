@@ -22,7 +22,7 @@ int main() {
   assert(obj.first_calls == 0);
   assert(obj.second_calls == 0);
   assert(obj.third_calls == 1);
-  void (HasThreeMemberFunctions::**element)() = functions;
+  void (HasThreeMemberFunctions::* * element)() = functions;
   ++element;
   assert(element == &functions[1]);
   (obj.**element)();
