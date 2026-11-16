@@ -30,7 +30,14 @@ pub fn main() {
 fn main_0() -> i32 {
     let object: Value<HasExplicitObjectOverload> =
         Rc::new(RefCell::new(<HasExplicitObjectOverload>::default()));
-    assert!((({ HasExplicitObjectOverloadImpl::pick_1(object.as_pointer(), 1,) }) == 11));
+    assert!(
+        (({
+            <Ptr<HasExplicitObjectOverload> as HasExplicitObjectOverloadImpl>::pick_1(
+                object.as_pointer(),
+                1,
+            )
+        }) == 11)
+    );
     assert!((explicit_calls_0.with(|rc| *rc.borrow()) == 1));
     assert!((rvalue_calls_1.with(|rc| *rc.borrow()) == 0));
     assert!(

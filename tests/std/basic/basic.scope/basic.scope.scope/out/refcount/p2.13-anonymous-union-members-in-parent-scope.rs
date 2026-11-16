@@ -28,6 +28,9 @@ impl Default for anon_0 {
         }
     }
 }
+thread_local!(
+    pub static anon_0: Value<anon_0> = Rc::new(RefCell::new(<anon_0>::default()));
+);
 #[derive(VaArg, FnPtrArg, ByteRepr, Clone)]
 #[byte_size(8)]
 pub struct anon_1 {
@@ -113,4 +116,6 @@ impl HasAnonymousUnionImpl for Ptr<HasAnonymousUnion> {
         return (anon_1::member_count(field_ptr!((*self), anon_1)).read());
     }
 }
-pub fn __cpp2rust_init_globals() {}
+pub fn __cpp2rust_init_globals() {
+    let _ = anon_0.with(|_| ());
+}

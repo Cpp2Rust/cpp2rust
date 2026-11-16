@@ -17,6 +17,8 @@ impl Default for anon_0 {
         unsafe { std::mem::zeroed() }
     }
 }
+pub static mut anon_0: std::cell::LazyCell<anon_0> =
+    std::cell::LazyCell::new(|| unsafe { <anon_0>::default() });
 #[repr(C)]
 #[derive(Copy, Clone, FnPtrArg, VaArg)]
 pub union anon_1 {
@@ -78,4 +80,6 @@ impl Default for anon_2 {
         unsafe { std::mem::zeroed() }
     }
 }
-pub unsafe fn __cpp2rust_init_globals() {}
+pub unsafe fn __cpp2rust_init_globals() {
+    std::cell::LazyCell::force(&*&raw const anon_0);
+}
