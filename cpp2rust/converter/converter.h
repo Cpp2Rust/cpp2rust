@@ -245,6 +245,8 @@ public:
 
   void ConvertDeclContext(clang::DeclContext *decl);
 
+  void ConvertNamespaceMember(clang::Decl *decl);
+
   virtual bool VisitTypedefDecl(clang::TypedefDecl *decl);
   virtual bool VisitTypeAliasDecl(clang::TypeAliasDecl *decl);
   virtual bool VisitTypeAliasTemplateDecl(clang::TypeAliasTemplateDecl *decl);

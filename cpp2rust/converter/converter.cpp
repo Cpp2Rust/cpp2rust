@@ -394,7 +394,7 @@ bool Converter::VisitTranslationUnitDecl(clang::TranslationUnitDecl *decl) {
   for (auto *child : decl->decls()) {
     if (IsUserDefinedDecl(child) &&
         (IsInMainFile(child) || !decl_ids_.contains(GetID(child)))) {
-      Convert(child);
+      ConvertNamespaceMember(child);
       if (!hoisted_records_.empty()) {
         StrCat(hoisted_records_);
         hoisted_records_.clear();
@@ -1326,8 +1326,17 @@ void Converter::EmitFunctionPreamble(clang::FunctionDecl *decl) {
 void Converter::ConvertDeclContext(clang::DeclContext *decl) {
   for (auto *child : decl->decls()) {
     if (IsInMainFile(child) || !decl_ids_.contains(GetID(child))) {
-      Convert(child);
+      ConvertNamespaceMember(child);
     }
+  }
+}
+
+void Converter::ConvertNamespaceMember(clang::Decl *decl) {
+  if (auto *var = clang::dyn_cast<clang::VarDecl>(decl);
+      var && var->isImplicit()) {
+    VisitVarDecl(var);
+  } else {
+    Convert(decl);
   }
 }
 

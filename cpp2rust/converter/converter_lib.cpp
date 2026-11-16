@@ -250,6 +250,15 @@ std::string GetNumAsString(llvm::APFloat value) {
   }
 }
 
+static bool IsAnonymousUnionObject(const clang::Decl *decl) {
+  auto *var = clang::dyn_cast<clang::VarDecl>(decl);
+  if (!var) {
+    return false;
+  }
+  auto *record = var->getType()->getAsRecordDecl();
+  return record && record->isAnonymousStructOrUnion();
+}
+
 bool IsUserDefinedDecl(const clang::Decl *decl) {
   const auto &ctx = decl->getASTContext();
   const auto &src_mgr = ctx.getSourceManager();
@@ -288,7 +297,8 @@ bool IsUserDefinedDecl(const clang::Decl *decl) {
                    clang::TSK_ExplicitInstantiationDefinition)) {
     src_loc = spec->getSpecializedTemplate()->getLocation();
   }
-  return !decl->getBeginLoc().isInvalid() && !decl->isImplicit() &&
+  return !decl->getBeginLoc().isInvalid() &&
+         (!decl->isImplicit() || IsAnonymousUnionObject(decl)) &&
          !src_mgr.isInSystemHeader(src_loc) &&
          !src_mgr.isInSystemMacro(src_loc);
 }
