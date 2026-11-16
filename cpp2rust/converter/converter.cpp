@@ -5150,26 +5150,41 @@ void Converter::ConvertAddrOf(clang::Expr *expr, clang::QualType pointer_type) {
 }
 
 void Converter::ConvertMemberPtr(clang::UnaryOperator *expr) {
-  auto type = expr->getType();
-  if (!type->isMemberDataPointerType()) {
+  if (!expr->getType()->isMemberDataPointerType()) {
     llvm::report_fatal_error("pointers to member functions are not supported");
   }
   auto *ref = clang::cast<clang::DeclRefExpr>(expr->getSubExpr());
-  auto *field = clang::dyn_cast<clang::FieldDecl>(ref->getDecl());
-  if (!field) {
-    llvm::report_fatal_error(
-        "pointers to members of anonymous unions are not supported");
-  }
-  EmitFresh(GetMemberPtrAsString(field->getParent(), field));
+  EmitFresh(GetMemberPtrAsString(ref->getDecl()));
 }
 
-std::string Converter::GetMemberPtrAsString(const clang::RecordDecl *record,
-                                            const clang::FieldDecl *field) {
-  if (record->isUnion()) {
+std::string Converter::GetMemberPtrAsString(const clang::ValueDecl *member) {
+  std::vector<std::string> offsets;
+  for (auto *field : GetFieldPath(member)) {
+    if (field->getParent()->isUnion()) {
+      continue;
+    }
+    offsets.push_back(GetFieldOffsetAsString(field));
+  }
+  if (offsets.empty()) {
     return "0_isize";
   }
-  return std::format("(::std::mem::offset_of!({}, {}) as isize)",
-                     GetRecordName(record), GetNamedDeclAsString(field));
+  if (offsets.size() == 1) {
+    return std::format("({} as isize)", offsets.front());
+  }
+  std::string sum;
+  for (const auto &offset : offsets) {
+    if (!sum.empty()) {
+      sum += " + ";
+    }
+    sum += offset;
+  }
+  return std::format("(({}) as isize)", sum);
+}
+
+std::string Converter::GetFieldOffsetAsString(const clang::FieldDecl *field) {
+  return std::format("::std::mem::offset_of!({}, {})",
+                     GetRecordName(field->getParent()),
+                     GetNamedDeclAsString(field));
 }
 
 void Converter::ConvertMemberPtrAccess(clang::BinaryOperator *expr) {

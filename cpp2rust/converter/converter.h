@@ -868,8 +868,9 @@ protected:
 
   void ConvertMemberPtr(clang::UnaryOperator *expr);
 
-  virtual std::string GetMemberPtrAsString(const clang::RecordDecl *record,
-                                           const clang::FieldDecl *field);
+  std::string GetMemberPtrAsString(const clang::ValueDecl *member);
+
+  virtual std::string GetFieldOffsetAsString(const clang::FieldDecl *field);
 
   void ConvertMemberPtrAccess(clang::BinaryOperator *expr);
 

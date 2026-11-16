@@ -2918,13 +2918,10 @@ void ConverterRefCount::ConvertAddrOf(clang::Expr *expr,
 }
 
 std::string
-ConverterRefCount::GetMemberPtrAsString(const clang::RecordDecl *record,
-                                        const clang::FieldDecl *field) {
-  if (record->isUnion()) {
-    llvm::report_fatal_error("pointers to members of unions are not supported");
-  }
-  return std::format("(<{} as Record>::OFFSETS.{} as isize)",
-                     GetRecordName(record), GetNamedDeclAsString(field));
+ConverterRefCount::GetFieldOffsetAsString(const clang::FieldDecl *field) {
+  return std::format("<{} as Record>::OFFSETS.{}",
+                     GetRecordName(field->getParent()),
+                     GetNamedDeclAsString(field));
 }
 
 std::string ConverterRefCount::GetMemberOfObjectAsString(std::string object,

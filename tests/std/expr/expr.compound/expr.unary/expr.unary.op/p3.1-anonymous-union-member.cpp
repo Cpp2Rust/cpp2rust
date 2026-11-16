@@ -1,4 +1,4 @@
-// translation-fail: refcount, unsafe
+// panic: refcount
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [expr.unary.op]/3.1: a qualified-id naming a variant member of some
 // class C yields a pointer to member of class C.

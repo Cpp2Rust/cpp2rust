@@ -318,8 +318,7 @@ public:
 
   void ConvertAddrOf(clang::Expr *expr, clang::QualType pointer_type) override;
 
-  std::string GetMemberPtrAsString(const clang::RecordDecl *record,
-                                   const clang::FieldDecl *field) override;
+  std::string GetFieldOffsetAsString(const clang::FieldDecl *field) override;
 
   std::string ConvertMemberPtrObject(clang::BinaryOperator *expr) override;
 
