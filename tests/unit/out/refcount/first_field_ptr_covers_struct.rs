@@ -61,10 +61,12 @@ fn main_0() -> i32 {
             && (p.with(|__s| __s.z) == 4))
     );
     let mut bz: Ptr<u8> = (field_ptr!(p, z)).reinterpret_cast::<u8>();
-    let mut i: i32 = 0;
-    'loop_: while (i < 4) {
-        elem!(bz, i).write(1_u8);
-        i.postfix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < 4) {
+            elem!(bz, i).write(1_u8);
+            i.postfix_inc();
+        }
     }
     assert!(((p.with(|__s| __s.z) == 16843009) && ((p.with(|__s| __s.in_.b) as i32) == 6)));
     libcc2rs::free_refcount((p).to_any());

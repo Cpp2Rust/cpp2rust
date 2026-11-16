@@ -36,18 +36,22 @@ unsafe fn main_0() -> i32 {
         ((::std::mem::size_of::<node>() as u64).wrapping_add((tail_size as u64)) as usize),
     ) as *mut node);
     (*n).len = tail_size;
-    let mut i: usize = 0_usize;
-    'loop_: while ((i) < (tail_size)) {
-        (*(*n).x.bytes.as_mut_ptr().add((i) as usize)) = (((i) & (255_usize)) as u8);
-        i.postfix_inc();
+    {
+        let mut i: usize = 0_usize;
+        'loop_: while ((i) < (tail_size)) {
+            (*(*n).x.bytes.as_mut_ptr().add((i) as usize)) = (((i) & (255_usize)) as u8);
+            i.postfix_inc();
+        }
     }
-    let mut i: usize = 0_usize;
-    'loop_: while ((i) < (tail_size)) {
-        assert!(
-            (((*(*n).x.bytes.as_mut_ptr().add((i) as usize)) as i32)
-                == ((((i) & (255_usize)) as u8) as i32))
-        );
-        i.postfix_inc();
+    {
+        let mut i: usize = 0_usize;
+        'loop_: while ((i) < (tail_size)) {
+            assert!(
+                (((*(*n).x.bytes.as_mut_ptr().add((i) as usize)) as i32)
+                    == ((((i) & (255_usize)) as u8) as i32))
+            );
+            i.postfix_inc();
+        }
     }
     let mut p: *mut u8 = ((*n).x.bytes.as_mut_ptr().add((10) as usize));
     assert!((((*p) as i32) == (10)));

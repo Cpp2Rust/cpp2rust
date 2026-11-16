@@ -59,12 +59,14 @@ unsafe fn main_0() -> i32 {
     let _dtor_scoped =
         std::mem::DropGuard::new(&raw mut scoped, |__p| unsafe { (*__p).destructor() });
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut ctorCount_0)) == (1)));
-    let mut index: i32 = 0;
-    'loop_: while ((index) < (3)) {
-        let mut scoped: LifetimeTracked = LifetimeTracked::new();
-        let _dtor_scoped =
-            std::mem::DropGuard::new(&raw mut scoped, |__p| unsafe { (*__p).destructor() });
-        index.prefix_inc();
+    {
+        let mut index: i32 = 0;
+        'loop_: while ((index) < (3)) {
+            let mut scoped: LifetimeTracked = LifetimeTracked::new();
+            let _dtor_scoped =
+                std::mem::DropGuard::new(&raw mut scoped, |__p| unsafe { (*__p).destructor() });
+            index.prefix_inc();
+        }
     }
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut ctorCount_0)) == (4)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut dtorCount_2)) == (3)));

@@ -28,10 +28,12 @@ pub unsafe fn total_2(v: *const Vec<i32>) -> i32 {
 }
 pub unsafe fn sum_3(mut arr: *const i32, mut n: i32) -> i32 {
     let mut s: i32 = 0;
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (n)) {
-        s += (*arr.offset((i) as isize));
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (n)) {
+            s += (*arr.offset((i) as isize));
+            i.prefix_inc();
+        }
     }
     return s;
 }

@@ -8,10 +8,12 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn inner_0(mut count: i32, mut ap: *const VaArg) -> i32 {
     let mut total: i32 = 0;
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (count)) {
-        total += ap.arg::<i32>();
-        i.postfix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (count)) {
+            total += ap.arg::<i32>();
+            i.postfix_inc();
+        }
     }
     return total;
 }

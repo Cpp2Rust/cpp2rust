@@ -14,10 +14,12 @@ fn main_0() -> i32 {
     let mut N: i32 = 10000;
     let mut arr: Ptr<u32> =
         Ptr::alloc_array((0..(N as usize)).map(|_| 0_u32).collect::<Box<[u32]>>());
-    let mut i: i32 = 0;
-    'loop_: while (i < N) {
-        elem!(arr, i).write(0_u32);
-        i.postfix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < N) {
+            elem!(arr, i).write(0_u32);
+            i.postfix_inc();
+        }
     }
     elem!(arr, (N - 1)).write(3148519816_u32);
     let mut words: Ptr<u16> = arr.reinterpret_cast::<u16>();

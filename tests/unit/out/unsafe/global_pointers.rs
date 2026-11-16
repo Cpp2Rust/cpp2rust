@@ -46,16 +46,19 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut single_entry_0)).p).is_null());
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (2)) {
-        assert!(
-            ((*std::cell::LazyCell::force_mut(&mut *&raw mut entries_1))[(i) as usize].p).is_null()
-        );
-        assert!(
-            ((*std::cell::LazyCell::force_mut(&mut *&raw mut arr_of_pointers_2))[(i) as usize])
-                .is_null()
-        );
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (2)) {
+            assert!(
+                ((*std::cell::LazyCell::force_mut(&mut *&raw mut entries_1))[(i) as usize].p)
+                    .is_null()
+            );
+            assert!(
+                ((*std::cell::LazyCell::force_mut(&mut *&raw mut arr_of_pointers_2))[(i) as usize])
+                    .is_null()
+            );
+            i.prefix_inc();
+        }
     }
     return 0;
 }

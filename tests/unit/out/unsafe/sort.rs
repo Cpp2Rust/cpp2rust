@@ -68,10 +68,12 @@ unsafe fn main_0() -> i32 {
             }
         }
     };
-    let mut i: u32 = 0_u32;
-    'loop_: while ((i as usize) < ((v.len()).wrapping_sub(1_usize))) {
-        assert!(((v[(i as usize)]) < (v[(((i).wrapping_add(1_u32)) as usize)])));
-        i.prefix_inc();
+    {
+        let mut i: u32 = 0_u32;
+        'loop_: while ((i as usize) < ((v.len()).wrapping_sub(1_usize))) {
+            assert!(((v[(i as usize)]) < (v[(((i).wrapping_add(1_u32)) as usize)])));
+            i.prefix_inc();
+        }
     }
     return 0;
 }

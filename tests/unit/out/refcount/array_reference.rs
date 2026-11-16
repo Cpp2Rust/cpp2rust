@@ -24,10 +24,12 @@ pub fn sum_2(a: Ptr<i32>) -> i32 {
     return (((elem!(a, 0).read()) + (elem!(a, 1).read())) + (elem!(a, 2).read()));
 }
 pub fn fill_3(a: Ptr<i32>, mut v: i32) {
-    let mut i: i32 = 0;
-    'loop_: while (i < 3) {
-        elem!(a, i).write(v);
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < 3) {
+            elem!(a, i).write(v);
+            i.prefix_inc();
+        }
     }
 }
 pub fn sum_twice_4(a: Ptr<i32>) -> i32 {

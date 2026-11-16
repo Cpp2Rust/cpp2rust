@@ -14,18 +14,22 @@ fn main_0() -> i32 {
     let mut outer_iterations: i32 = 0;
     let mut inner_iterations: i32 = 0;
     let mut sum: i32 = 0;
-    let mut index: i32 = 0;
-    'loop_: while (index < 2) {
-        let mut index: i32 = 10;
-        'loop_: while (index < 13) {
-            inner_iterations.prefix_inc();
-            sum += index;
-            index.prefix_inc();
+    {
+        let mut index: i32 = 0;
+        'loop_: while (index < 2) {
+            {
+                let mut index: i32 = 10;
+                'loop_: while (index < 13) {
+                    inner_iterations.prefix_inc();
+                    sum += index;
+                    index.prefix_inc();
+                }
+            }
+            {
+                index.prefix_inc();
+                outer_iterations.prefix_inc()
+            };
         }
-        {
-            index.prefix_inc();
-            outer_iterations.prefix_inc()
-        };
     }
     assert!((outer_iterations == 2));
     assert!((inner_iterations == 6));

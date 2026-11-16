@@ -61,15 +61,19 @@ fn main_0() -> i32 {
         let mut n: usize =
             libcc2rs::fread_refcount((buf.decay()).to_any(), 1_usize, 10_usize, (stream).clone());
         assert!((n == 10_usize));
-        let mut i: i32 = 0;
-        'loop_: while (i < 10) {
-            assert!(({ (((*buf.borrow())[(i) as usize] as i32) == 0) }));
-            i.prefix_inc();
+        {
+            let mut i: i32 = 0;
+            'loop_: while (i < 10) {
+                assert!(({ (((*buf.borrow())[(i) as usize] as i32) == 0) }));
+                i.prefix_inc();
+            }
         }
-        let mut i: i32 = 10;
-        'loop_: while (i < 16) {
-            assert!(({ (((*buf.borrow())[(i) as usize] as i32) == (('X' as i8) as i32)) }));
-            i.prefix_inc();
+        {
+            let mut i: i32 = 10;
+            'loop_: while (i < 16) {
+                assert!(({ (((*buf.borrow())[(i) as usize] as i32) == (('X' as i8) as i32)) }));
+                i.prefix_inc();
+            }
         }
         {
             let __r = stream.with(|__f| __f.close());
@@ -102,15 +106,19 @@ fn main_0() -> i32 {
         let mut n: usize =
             ({ (fn1).call((buf.decay()).to_any(), 1_usize, 10_usize, (stream).clone()) });
         assert!((n == 10_usize));
-        let mut i: i32 = 0;
-        'loop_: while (i < 10) {
-            assert!(({ (((*buf.borrow())[(i) as usize] as i32) == 0) }));
-            i.prefix_inc();
+        {
+            let mut i: i32 = 0;
+            'loop_: while (i < 10) {
+                assert!(({ (((*buf.borrow())[(i) as usize] as i32) == 0) }));
+                i.prefix_inc();
+            }
         }
-        let mut i: i32 = 10;
-        'loop_: while (i < 16) {
-            assert!(({ (((*buf.borrow())[(i) as usize] as i32) == (('X' as i8) as i32)) }));
-            i.prefix_inc();
+        {
+            let mut i: i32 = 10;
+            'loop_: while (i < 16) {
+                assert!(({ (((*buf.borrow())[(i) as usize] as i32) == (('X' as i8) as i32)) }));
+                i.prefix_inc();
+            }
         }
         {
             let __r = stream.with(|__f| __f.close());

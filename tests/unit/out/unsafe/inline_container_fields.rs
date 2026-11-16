@@ -97,39 +97,47 @@ impl Default for State {
 }
 pub unsafe fn sum_0(mut p: *const i32, mut n: i32) -> i32 {
     let mut s: i32 = 0;
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (n)) {
-        s += (*p.offset((i) as isize));
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (n)) {
+            s += (*p.offset((i) as isize));
+            i.prefix_inc();
+        }
     }
     return s;
 }
 pub unsafe fn fill_1(mut s: *mut State) {
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (2)) {
-        let mut j: i32 = 0;
-        'loop_: while ((j) < (3)) {
-            (*s).grid[(i) as usize][(j) as usize] = (((i) * (3)) + (j));
-            j.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (2)) {
+            {
+                let mut j: i32 = 0;
+                'loop_: while ((j) < (3)) {
+                    (*s).grid[(i) as usize][(j) as usize] = (((i) * (3)) + (j));
+                    j.prefix_inc();
+                }
+            }
+            i.prefix_inc();
         }
-        i.prefix_inc();
     }
     (&mut (*s)).arr[(1_usize)] = 7;
     {
         let __a0 = 3_usize;
         (*s).elems.resize_with(__a0, || <Elem>::default())
     };
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (3)) {
-        (&mut (*s)).elems[(i as usize)].id = i;
-        (&mut (*s)).elems[(i as usize)].hist[(i) as usize] = ((10) * (i));
-        {
-            let __a0 = 4_usize;
-            (&mut (*s)).elems[(i as usize)]
-                .coeffs
-                .resize(__a0, (i as i16))
-        };
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (3)) {
+            (&mut (*s)).elems[(i as usize)].id = i;
+            (&mut (*s)).elems[(i as usize)].hist[(i) as usize] = ((10) * (i));
+            {
+                let __a0 = 4_usize;
+                (&mut (*s)).elems[(i as usize)]
+                    .coeffs
+                    .resize(__a0, (i as i16))
+            };
+            i.prefix_inc();
+        }
     }
     {
         let __a1 = Vec::from([1, 2, 3]);
@@ -197,10 +205,12 @@ unsafe fn main_0() -> i32 {
     let mut h: *mut i32 = (*e).hist.as_mut_ptr();
     let mut c: *mut i16 = (&mut (&mut (*e)).coeffs[(1_usize)] as *mut i16);
     let mut id: *mut i32 = (&mut s.elems[(1_usize)].id as *mut i32);
-    let mut k: i32 = 0;
-    'loop_: while ((k) < (4)) {
-        (*h.offset((k) as isize)) += k;
-        k.prefix_inc();
+    {
+        let mut k: i32 = 0;
+        'loop_: while ((k) < (4)) {
+            (*h.offset((k) as isize)) += k;
+            k.prefix_inc();
+        }
     }
     (*c) = (((*c) as i32) + 5) as i16;
     (*id) = 11;

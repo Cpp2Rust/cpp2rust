@@ -92,40 +92,48 @@ impl Default for State {
 }
 pub fn sum_0(mut p: Ptr<i32>, mut n: i32) -> i32 {
     let mut s: i32 = 0;
-    let mut i: i32 = 0;
-    'loop_: while (i < n) {
-        s += { (elem!(p, i).read()) };
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < n) {
+            s += { (elem!(p, i).read()) };
+            i.prefix_inc();
+        }
     }
     return s;
 }
 pub fn fill_1(mut s: Ptr<State>) {
-    let mut i: i32 = 0;
-    'loop_: while (i < 2) {
-        let mut j: i32 = 0;
-        'loop_: while (j < 3) {
-            index!(index!(field!(s, grid), i), j).write({ ((i * 3) + j) });
-            j.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < 2) {
+            {
+                let mut j: i32 = 0;
+                'loop_: while (j < 3) {
+                    index!(index!(field!(s, grid), i), j).write({ ((i * 3) + j) });
+                    j.prefix_inc();
+                }
+            }
+            i.prefix_inc();
         }
-        i.prefix_inc();
     }
     elem!(field_ref!(s, arr).decay(), 1_usize).write(7);
     {
         let __a0 = 3_usize;
         field!(s, elems).with_mut(|__v: &mut Vec<Elem>| __v.resize_with(__a0, || <Elem>::default()))
     };
-    let mut i: i32 = 0;
-    'loop_: while (i < 3) {
-        let __rhs = i;
-        field!(vec_elem!(s, elems, (i as usize)), id).write(__rhs);
-        let __rhs = (10 * i);
-        index!(field!(vec_elem!(s, elems, (i as usize)), hist), i).write(__rhs);
-        {
-            let __a0 = 4_usize;
-            field!(vec_elem!(s, elems, (i as usize)), coeffs)
-                .with_mut(|__v: &mut Vec<i16>| __v.resize(__a0, (i as i16)))
-        };
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < 3) {
+            let __rhs = i;
+            field!(vec_elem!(s, elems, (i as usize)), id).write(__rhs);
+            let __rhs = (10 * i);
+            index!(field!(vec_elem!(s, elems, (i as usize)), hist), i).write(__rhs);
+            {
+                let __a0 = 4_usize;
+                field!(vec_elem!(s, elems, (i as usize)), coeffs)
+                    .with_mut(|__v: &mut Vec<i16>| __v.resize(__a0, (i as i16)))
+            };
+            i.prefix_inc();
+        }
     }
     {
         let __a1 = Vec::from([1, 2, 3]);
@@ -199,13 +207,15 @@ fn main_0() -> i32 {
         field_ref!(s.as_pointer(), elems).decay().offset(1_usize),
         id
     ));
-    let mut k: i32 = 0;
-    'loop_: while (k < 4) {
-        {
-            let __rhs = { k };
-            elem!(h, k).with_mut(|__v| *__v = *__v + __rhs)
-        };
-        k.prefix_inc();
+    {
+        let mut k: i32 = 0;
+        'loop_: while (k < 4) {
+            {
+                let __rhs = { k };
+                elem!(h, k).with_mut(|__v| *__v = *__v + __rhs)
+            };
+            k.prefix_inc();
+        }
     }
     c.write({ (((c.read()) as i32) + 5) as i16 });
     id.write(11);

@@ -58,12 +58,14 @@ fn main_0() -> i32 {
     let _dtor_scoped =
         std::mem::DropGuard::new(scoped.clone(), |__p| __p.as_pointer().destructor());
     assert!((ctorCount_0.with(|rc| *rc.borrow()) == 1));
-    let mut index: i32 = 0;
-    'loop_: while (index < 3) {
-        let scoped: Value<LifetimeTracked> = Rc::new(RefCell::new(LifetimeTracked::new()));
-        let _dtor_scoped =
-            std::mem::DropGuard::new(scoped.clone(), |__p| __p.as_pointer().destructor());
-        index.prefix_inc();
+    {
+        let mut index: i32 = 0;
+        'loop_: while (index < 3) {
+            let scoped: Value<LifetimeTracked> = Rc::new(RefCell::new(LifetimeTracked::new()));
+            let _dtor_scoped =
+                std::mem::DropGuard::new(scoped.clone(), |__p| __p.as_pointer().destructor());
+            index.prefix_inc();
+        }
     }
     assert!((ctorCount_0.with(|rc| *rc.borrow()) == 4));
     assert!((dtorCount_2.with(|rc| *rc.borrow()) == 3));

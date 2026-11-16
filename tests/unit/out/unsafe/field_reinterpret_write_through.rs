@@ -22,19 +22,23 @@ pub struct S {
     pub tail: i64,
 }
 pub unsafe fn set_bytes_0(mut p: *mut u8, mut n: usize, mut v: u8) {
-    let mut i: usize = 0_usize;
-    'loop_: while ((i) < (n)) {
-        (*p.offset((i) as isize)) = v;
-        i.postfix_inc();
+    {
+        let mut i: usize = 0_usize;
+        'loop_: while ((i) < (n)) {
+            (*p.offset((i) as isize)) = v;
+            i.postfix_inc();
+        }
     }
 }
 pub unsafe fn all_bytes_1(mut p: *const u8, mut n: usize, mut v: u8) -> i32 {
-    let mut i: usize = 0_usize;
-    'loop_: while ((i) < (n)) {
-        if (((*p.offset((i) as isize)) as i32) != (v as i32)) {
-            return 0;
+    {
+        let mut i: usize = 0_usize;
+        'loop_: while ((i) < (n)) {
+            if (((*p.offset((i) as isize)) as i32) != (v as i32)) {
+                return 0;
+            }
+            i.postfix_inc();
         }
-        i.postfix_inc();
     }
     return 1;
 }

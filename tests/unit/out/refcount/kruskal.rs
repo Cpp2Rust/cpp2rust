@@ -19,18 +19,20 @@ pub struct Edge {
 pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, mut start: i32, mut end: i32) -> i32 {
     let pivot: Ptr<Edge> = (*arr.upgrade().deref()).decay().offset((start as usize));
     let mut count: i32 = 0;
-    let mut i: i32 = (start + 1);
-    'loop_: while (i <= end) {
-        if ({
-            (*arr.upgrade().deref())
-                .decay()
-                .offset((i as usize))
-                .with(|__s| __s.weight)
-        } <= { pivot.with(|__s| __s.weight) })
-        {
-            count.postfix_inc();
+    {
+        let mut i: i32 = (start + 1);
+        'loop_: while (i <= end) {
+            if ({
+                (*arr.upgrade().deref())
+                    .decay()
+                    .offset((i as usize))
+                    .with(|__s| __s.weight)
+            } <= { pivot.with(|__s| __s.weight) })
+            {
+                count.postfix_inc();
+            }
+            i.prefix_inc();
         }
-        i.prefix_inc();
     }
     let mut pidx: i32 = (start + count);
     let mut tmp: Edge = Edge {
@@ -226,30 +228,32 @@ pub fn MSTKruskal_2(graph: Ptr<Graph>) -> f64 {
     }));
     ({ DisjointSetImpl::makeSet(&set.as_pointer()) });
     let mut total_weight: f64 = 0_f64;
-    let mut i: i32 = 0;
-    'loop_: while ({ i } < { graph.with(|__s| __s.E) }) {
-        let mut x: i32 = graph
-            .with(|__s| __s.edges.clone())
-            .decay()
-            .offset((i as usize))
-            .with(|__s| __s.u);
-        let mut y: i32 = graph
-            .with(|__s| __s.edges.clone())
-            .decay()
-            .offset((i as usize))
-            .with(|__s| __s.v);
-        let mut w: f64 = graph
-            .with(|__s| __s.edges.clone())
-            .decay()
-            .offset((i as usize))
-            .with(|__s| __s.weight);
-        if (({ DisjointSetImpl::find(&set.as_pointer(), x) })
-            != ({ DisjointSetImpl::find(&set.as_pointer(), y) }))
-        {
-            ({ DisjointSetImpl::merge(&set.as_pointer(), x, y) });
-            total_weight += w;
+    {
+        let mut i: i32 = 0;
+        'loop_: while ({ i } < { graph.with(|__s| __s.E) }) {
+            let mut x: i32 = graph
+                .with(|__s| __s.edges.clone())
+                .decay()
+                .offset((i as usize))
+                .with(|__s| __s.u);
+            let mut y: i32 = graph
+                .with(|__s| __s.edges.clone())
+                .decay()
+                .offset((i as usize))
+                .with(|__s| __s.v);
+            let mut w: f64 = graph
+                .with(|__s| __s.edges.clone())
+                .decay()
+                .offset((i as usize))
+                .with(|__s| __s.weight);
+            if (({ DisjointSetImpl::find(&set.as_pointer(), x) })
+                != ({ DisjointSetImpl::find(&set.as_pointer(), y) }))
+            {
+                ({ DisjointSetImpl::merge(&set.as_pointer(), x, y) });
+                total_weight += w;
+            }
+            i.prefix_inc();
         }
-        i.prefix_inc();
     }
     return total_weight;
 }
@@ -321,20 +325,22 @@ pub trait DisjointSetImpl {
 }
 impl DisjointSetImpl for Ptr<DisjointSet> {
     fn makeSet(&self) {
-        let mut i: i32 = 0;
-        'loop_: while (i < (*self).with(|__s| __s.n)) {
-            let __rhs = i;
-            (*self)
-                .with(|__s| __s.parent.clone())
-                .decay()
-                .offset((i as usize))
-                .write(__rhs);
-            (*self)
-                .with(|__s| __s.rank.clone())
-                .decay()
-                .offset((i as usize))
-                .write(1);
-            i.postfix_inc();
+        {
+            let mut i: i32 = 0;
+            'loop_: while (i < (*self).with(|__s| __s.n)) {
+                let __rhs = i;
+                (*self)
+                    .with(|__s| __s.parent.clone())
+                    .decay()
+                    .offset((i as usize))
+                    .write(__rhs);
+                (*self)
+                    .with(|__s| __s.rank.clone())
+                    .decay()
+                    .offset((i as usize))
+                    .write(1);
+                i.postfix_inc();
+            }
         }
     }
     fn find(&self, mut x: i32) -> i32 {

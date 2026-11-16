@@ -32,22 +32,27 @@ unsafe fn main_0() -> i32 {
     assert!((*std::cell::LazyCell::force_mut(&mut *&raw mut p_mut_0)).is_null());
     assert!((*std::cell::LazyCell::force_mut(&mut *&raw mut p_const_1)).is_null());
     assert!((*std::cell::LazyCell::force_mut(&mut *&raw mut cp_2)).is_null());
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (4)) {
-        assert!(
-            ((*std::cell::LazyCell::force_mut(&mut *&raw mut arr_of_ptr_3))[(i) as usize])
-                .is_null()
-        );
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (4)) {
+            assert!(
+                ((*std::cell::LazyCell::force_mut(&mut *&raw mut arr_of_ptr_3))[(i) as usize])
+                    .is_null()
+            );
+            i.prefix_inc();
+        }
     }
     assert!((*std::cell::LazyCell::force_mut(&mut *&raw mut pp_4)).is_null());
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (3)) {
-        assert!(
-            ((*std::cell::LazyCell::force_mut(&mut *&raw mut const_arr_of_ptr_5))[(i) as usize])
-                .is_null()
-        );
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (3)) {
+            assert!(
+                ((*std::cell::LazyCell::force_mut(&mut *&raw mut const_arr_of_ptr_5))
+                    [(i) as usize])
+                    .is_null()
+            );
+            i.prefix_inc();
+        }
     }
     assert!((*std::cell::LazyCell::force_mut(&mut *&raw mut cp_explicit_null_6)).is_null());
     assert!((*std::cell::LazyCell::force_mut(&mut *&raw mut p_zero_7)).is_null());

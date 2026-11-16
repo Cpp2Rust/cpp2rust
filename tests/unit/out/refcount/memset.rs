@@ -24,10 +24,12 @@ fn main_0() -> i32 {
         }
     };
     let mut sum: i32 = 0;
-    let mut i: i32 = 0;
-    'loop_: while (i < N) {
-        sum += { (elem!(arr, i).read()) };
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < N) {
+            sum += { (elem!(arr, i).read()) };
+            i.prefix_inc();
+        }
     }
     arr.delete();
     assert!((sum == 50529027));

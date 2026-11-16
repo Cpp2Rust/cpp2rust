@@ -20,19 +20,23 @@ pub struct Node {
 }
 pub fn Find_0(mut head: Ptr<Node>, mut idx: i32) -> Ptr<Node> {
     let mut curr: Ptr<Node> = (head).clone();
-    let mut i: i32 = 0;
-    'loop_: while (i < idx) {
-        curr = { curr.with(|__s| __s.next.clone()) };
-        i.postfix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < idx) {
+            curr = { curr.with(|__s| __s.next.clone()) };
+            i.postfix_inc();
+        }
     }
     return curr;
 }
 pub fn FindBack_1(mut tail: Ptr<Node>, mut idx: i32) -> Ptr<Node> {
     let mut curr: Ptr<Node> = (tail).clone();
-    let mut i: i32 = 0;
-    'loop_: while (i < idx) {
-        curr = { curr.with(|__s| __s.prev.clone()) };
-        i.postfix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < idx) {
+            curr = { curr.with(|__s| __s.prev.clone()) };
+            i.postfix_inc();
+        }
     }
     return curr;
 }

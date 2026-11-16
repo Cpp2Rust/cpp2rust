@@ -30,10 +30,12 @@ pub fn total_2(v: Ptr<Vec<i32>>) -> i32 {
 }
 pub fn sum_3(mut arr: Ptr<i32>, mut n: i32) -> i32 {
     let mut s: i32 = 0;
-    let mut i: i32 = 0;
-    'loop_: while (i < n) {
-        s += { (elem!(arr, i).read()) };
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < n) {
+            s += { (elem!(arr, i).read()) };
+            i.prefix_inc();
+        }
     }
     return s;
 }

@@ -8,26 +8,28 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn scan_0(mut n: i32) -> i32 {
     let mut total: i32 = 0;
-    let mut i: i32 = 0;
-    'loop_: while (i < n) {
-        let mut j: i32 = 0_i32;
-        goto_block!({
-            '__entry: {
-                j = 0;
-                'loop_: while (j < 10) {
-                    if (j == 5) {
-                        goto!('next);
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < n) {
+            let mut j: i32 = 0_i32;
+            goto_block!({
+                '__entry: {
+                    j = 0;
+                    'loop_: while (j < 10) {
+                        if (j == 5) {
+                            goto!('next);
+                        }
+                        total += 1;
+                        j.postfix_inc();
                     }
-                    total += 1;
-                    j.postfix_inc();
+                    total += 100;
                 }
-                total += 100;
-            }
-            'next: {
-                total += 1000;
-            }
-        });
-        i.postfix_inc();
+                'next: {
+                    total += 1000;
+                }
+            });
+            i.postfix_inc();
+        }
     }
     return total;
 }

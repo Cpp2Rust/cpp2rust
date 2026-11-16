@@ -14,13 +14,15 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut v: Vec<i32> = Vec::new();
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (10)) {
-        {
-            let a0_clone = i.clone();
-            v.push(a0_clone)
-        };
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (10)) {
+            {
+                let a0_clone = i.clone();
+                v.push(a0_clone)
+            };
+            i.prefix_inc();
+        }
     }
     let mut sum: i32 = 0;
     'loop_: for x in IterRange::new(v.begin(), v.end()) {

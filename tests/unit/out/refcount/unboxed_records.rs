@@ -68,11 +68,13 @@ pub fn first_2(mut p: Ptr<i32>) -> i32 {
 pub fn consume_3(cookie: Ptr<Cookie>) -> i32 {
     let mut c: Cookie = (*cookie.upgrade().deref()).clone();
     let mut sum: i32 = 0;
-    let mut i: i32 = 0;
-    'loop_: while (i < 4) {
-        elem!(c.data, i).write({ ({ (elem!(c.in_, i).read()) } * { c.x }) });
-        sum += { (elem!(c.data, i).read()) };
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < 4) {
+            elem!(c.data, i).write({ ({ (elem!(c.in_, i).read()) } * { c.x }) });
+            sum += { (elem!(c.data, i).read()) };
+            i.prefix_inc();
+        }
     }
     c.x = sum;
     c.inner.a += { c.x };

@@ -157,17 +157,21 @@ unsafe fn main_0() -> i32 {
     let mut s2: usize = v2.len();
     let mut v3: Vec<i32> = vec![1; 100_usize];
     assert!(((v3.len()) == (100_usize)));
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (100)) {
-        assert!(((v3[(i as usize)]) == (1)));
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (100)) {
+            assert!(((v3[(i as usize)]) == (1)));
+            i.prefix_inc();
+        }
     }
     let mut v6: Vec<f64> = vec![2_f64; s2];
     assert!(((v6.len()) == (s2)));
-    let mut i: u32 = 0_u32;
-    'loop_: while ((i as usize) < (s2)) {
-        assert!(((v6[(i as usize)]) == (2_f64)));
-        i.prefix_inc();
+    {
+        let mut i: u32 = 0_u32;
+        'loop_: while ((i as usize) < (s2)) {
+            assert!(((v6[(i as usize)]) == (2_f64)));
+            i.prefix_inc();
+        }
     }
     let mut p1: *const f64 = (v6.as_mut_ptr()).cast_const();
     assert!(((*p1) == (2_f64)));

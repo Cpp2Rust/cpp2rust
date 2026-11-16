@@ -30,14 +30,16 @@ pub fn from_loop_1(mut n: i32) -> i32 {
     goto_block!({
         '__entry: {
             ret = 0;
-            let mut i: i32 = 0;
-            'loop_: while (i < n) {
-                if (i == 3) {
-                    ret = 7;
-                    goto!('out);
+            {
+                let mut i: i32 = 0;
+                'loop_: while (i < n) {
+                    if (i == 3) {
+                        ret = 7;
+                        goto!('out);
+                    }
+                    ret += i;
+                    i.postfix_inc();
                 }
-                ret += i;
-                i.postfix_inc();
             }
             ret = 999;
         }
