@@ -51,6 +51,9 @@ impl Default for anon_13 {
         }
     }
 }
+thread_local!(
+    pub static anon_13: Value<anon_13> = Rc::new(RefCell::new(<anon_13>::default()));
+);
 pub fn test_14() {
     anon_13::whole(anon_13.with(|v| v.as_pointer())).write(5);
     ({ set_whole_in_b_15(6) });
@@ -127,99 +130,97 @@ pub fn test_34() {
     assert!((balance_33.with(|rc| *rc.borrow()) == 65));
 }
 pub fn read_remote_35() -> i32 {
-    let mut remote: i32 = 0_i32;
-    return remote;
+    return remote_36.with(|rc| *rc.borrow());
 }
-pub fn test_36() {
+pub fn test_37() {
     assert!((({ read_remote_35() }) == 70));
-    ({ set_remote_in_b_37(71) });
+    ({ set_remote_in_b_38(71) });
     assert!((({ read_remote_35() }) == 71));
 }
 thread_local!(
-    pub static hidden_38: Value<i32> = Rc::new(RefCell::new(80));
+    pub static hidden_39: Value<i32> = Rc::new(RefCell::new(80));
 );
-pub fn read_hidden_through_extern_39() -> i32 {
+pub fn read_hidden_through_extern_40() -> i32 {
     let mut hidden: i32 = 1;
     {
-        let mut hidden: i32 = 0_i32;
-        return hidden;
+        return hidden_39.with(|rc| *rc.borrow());
     }
     panic!("ub: non-void function does not return a value")
 }
-pub fn test_40() {
-    assert!((({ read_hidden_through_extern_39() }) == 80));
-    hidden_38.with(|rc| *rc.borrow_mut() = 81);
-    assert!((({ read_hidden_through_extern_39() }) == 81));
-    assert!((({ hidden_in_b_41() }) == 90));
+pub fn test_41() {
+    assert!((({ read_hidden_through_extern_40() }) == 80));
+    hidden_39.with(|rc| *rc.borrow_mut() = 81);
+    assert!((({ read_hidden_through_extern_40() }) == 81));
+    assert!((({ hidden_in_b_42() }) == 90));
 }
-pub fn next_even_42() -> i32 {
-    count_43.with(|rc| *rc.borrow_mut() += 2);
-    return count_43.with(|rc| *rc.borrow());
+pub fn next_even_43() -> i32 {
+    count_44.with(|rc| *rc.borrow_mut() += 2);
+    return count_44.with(|rc| *rc.borrow());
 }
-pub fn next_odd_44() -> i32 {
-    count_45.with(|rc| *rc.borrow_mut() += 2);
-    return count_45.with(|rc| *rc.borrow());
+pub fn next_odd_45() -> i32 {
+    count_46.with(|rc| *rc.borrow_mut() += 2);
+    return count_46.with(|rc| *rc.borrow());
 }
-pub fn test_46() {
-    assert!((({ next_even_42() }) == 2));
-    assert!((({ next_odd_44() }) == 3));
-    assert!((({ next_in_b_47() }) == 1000));
-    assert!((({ next_even_42() }) == 4));
-    assert!((({ next_odd_44() }) == 5));
-    assert!((({ next_in_b_47() }) == 2000));
+pub fn test_47() {
+    assert!((({ next_even_43() }) == 2));
+    assert!((({ next_odd_45() }) == 3));
+    assert!((({ next_in_b_48() }) == 1000));
+    assert!((({ next_even_43() }) == 4));
+    assert!((({ next_odd_45() }) == 5));
+    assert!((({ next_in_b_48() }) == 2000));
 }
 thread_local!(
-    static count_43: Value<i32> = Rc::new(RefCell::new(0));
+    static count_44: Value<i32> = Rc::new(RefCell::new(0));
 );
 thread_local!(
-    static count_45: Value<i32> = Rc::new(RefCell::new(1));
+    static count_46: Value<i32> = Rc::new(RefCell::new(1));
 );
-pub fn first_key_48() -> i32 {
-    let mut entry: Entry_49 = <Entry_49>::default();
+pub fn first_key_49() -> i32 {
+    let mut entry: Entry_50 = <Entry_50>::default();
     return entry.key;
 }
-pub fn second_key_plus_value_50() -> i32 {
-    let mut entry: Entry_51 = <Entry_51>::default();
+pub fn second_key_plus_value_51() -> i32 {
+    let mut entry: Entry_52 = <Entry_52>::default();
     return (entry.key + entry.value);
 }
-pub fn test_52() {
-    assert!((({ first_key_48() }) == 1));
-    assert!((({ second_key_plus_value_50() }) == 32));
-    assert!((({ key_in_b_53() }) == 400));
+pub fn test_53() {
+    assert!((({ first_key_49() }) == 1));
+    assert!((({ second_key_plus_value_51() }) == 32));
+    assert!((({ key_in_b_54() }) == 400));
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(4)]
-pub struct Entry_49 {
+pub struct Entry_50 {
     #[offset(0)]
     pub key: i32,
 }
-impl Default for Entry_49 {
+impl Default for Entry_50 {
     fn default() -> Self {
-        { Entry_49 { key: 1 } }
+        { Entry_50 { key: 1 } }
     }
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(8)]
-pub struct Entry_51 {
+pub struct Entry_52 {
     #[offset(0)]
     pub key: i32,
     #[offset(4)]
     pub value: i32,
 }
-impl Default for Entry_51 {
+impl Default for Entry_52 {
     fn default() -> Self {
-        { Entry_51 { key: 2, value: 30 } }
+        { Entry_52 { key: 2, value: 30 } }
     }
 }
-pub fn test_55() {
+pub fn test_56() {
     assert!(
         (({
             let __idx0 = (1) as usize;
-            table_54.with(|rc| rc.borrow()[__idx0])
+            table_55.with(|rc| rc.borrow()[__idx0])
         }) == 2)
     );
-    (*table_54.with(Value::clone).borrow_mut())[(2) as usize] = 30;
-    assert!((({ table_sum_in_b_56() }) == 33));
+    (*table_55.with(Value::clone).borrow_mut())[(2) as usize] = 30;
+    assert!((({ table_sum_in_b_57() }) == 33));
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -236,27 +237,27 @@ fn main_0() -> i32 {
     ({ test_28() });
     ({ test_31() });
     ({ test_34() });
-    ({ test_36() });
-    ({ test_40() });
-    ({ test_46() });
-    ({ test_52() });
-    ({ test_55() });
+    ({ test_37() });
+    ({ test_41() });
+    ({ test_47() });
+    ({ test_53() });
+    ({ test_56() });
     return 0;
 }
-pub fn pick_57() -> i32 {
+pub fn pick_58() -> i32 {
     return 2;
 }
 pub fn pick_in_b_2() -> i32 {
-    return ({ pick_57() });
+    return ({ pick_58() });
 }
 thread_local!(
-    pub static limit_58: Value<i32> = Rc::new(RefCell::new(20));
+    pub static limit_59: Value<i32> = Rc::new(RefCell::new(20));
 );
 pub fn limit_in_b_5() -> i32 {
-    return limit_58.with(|rc| *rc.borrow());
+    return limit_59.with(|rc| *rc.borrow());
 }
 pub fn limit_address_in_b_6() -> Ptr<i32> {
-    return (limit_58.with(|v| v.as_pointer()));
+    return (limit_59.with(|v| v.as_pointer()));
 }
 thread_local!(
     pub static threshold_7: Value<i32> = Rc::new(RefCell::new(30));
@@ -272,12 +273,12 @@ pub fn ceiling_address_in_b_12() -> Ptr<i32> {
 }
 #[derive(VaArg, FnPtrArg, ByteRepr, Clone)]
 #[byte_size(4)]
-pub struct anon_59 {
+pub struct anon_60 {
     #[offset(0)]
     #[byte_size(4)]
     __bytes: Box<[u8]>,
 }
-impl anon_59 {
+impl anon_60 {
     pub fn whole(this: Ptr<Self>) -> Ptr<i32> {
         this.reinterpret_cast()
     }
@@ -285,30 +286,33 @@ impl anon_59 {
         this.reinterpret_cast()
     }
 }
-impl Default for anon_59 {
+impl Default for anon_60 {
     fn default() -> Self {
-        anon_59 {
+        anon_60 {
             __bytes: Box::from([0u8; 4]),
         }
     }
 }
+thread_local!(
+    pub static anon_60: Value<anon_60> = Rc::new(RefCell::new(<anon_60>::default()));
+);
 pub fn set_whole_in_b_15(mut value: i32) {
-    anon_59::whole(anon_59.with(|v| v.as_pointer())).write(value);
+    anon_60::whole(anon_60.with(|v| v.as_pointer())).write(value);
 }
 pub fn whole_in_b_16() -> i32 {
-    return (anon_59::whole(anon_59.with(|v| v.as_pointer())).read());
+    return (anon_60::whole(anon_60.with(|v| v.as_pointer())).read());
 }
 thread_local!(
-    pub static counter_60: Value<i32> = Rc::new(RefCell::new(50));
+    pub static counter_61: Value<i32> = Rc::new(RefCell::new(50));
 );
-pub fn bump_61() -> i32 {
-    return (*counter_60.with(Value::clone).borrow_mut()).prefix_inc();
+pub fn bump_62() -> i32 {
+    return (*counter_61.with(Value::clone).borrow_mut()).prefix_inc();
 }
 thread_local!(
-    pub static depth_62: Value<i32> = Rc::new(RefCell::new(4));
+    pub static depth_63: Value<i32> = Rc::new(RefCell::new(4));
 );
 pub fn bump_in_b_21() -> i32 {
-    return ({ bump_61() });
+    return ({ bump_62() });
 }
 pub fn record_id_in_b_22() -> i32 {
     let mut record: p4_unnamed_namespaces_in_two_files_Record =
@@ -316,7 +320,7 @@ pub fn record_id_in_b_22() -> i32 {
     return (record.id as i32);
 }
 pub fn depth_in_b_23() -> i32 {
-    return depth_62.with(|rc| *rc.borrow());
+    return depth_63.with(|rc| *rc.borrow());
 }
 thread_local!(
     pub static shared_total_24: Value<i32> = Rc::new(RefCell::new(5));
@@ -332,7 +336,7 @@ pub fn raise_29(mut by: i32) -> i32 {
     return level_27.with(|rc| *rc.borrow());
 }
 thread_local!(
-    pub static total_63: Value<i32> = Rc::new(RefCell::new(100));
+    pub static total_64: Value<i32> = Rc::new(RefCell::new(100));
 );
 pub fn add_in_b_32(mut amount: i32) -> i32 {
     let tally: Value<p5_members_of_classes_in_unnamed_namespaces_Tally> = Rc::new(RefCell::new(
@@ -352,25 +356,25 @@ impl p5_members_of_class_with_external_linkage_Ledger {
     }
 }
 thread_local!(
-    pub static remote_64: Value<i32> = Rc::new(RefCell::new(70));
+    pub static remote_36: Value<i32> = Rc::new(RefCell::new(70));
 );
-pub fn set_remote_in_b_37(mut value: i32) {
-    remote_64.with(|rc| *rc.borrow_mut() = value);
+pub fn set_remote_in_b_38(mut value: i32) {
+    remote_36.with(|rc| *rc.borrow_mut() = value);
 }
 thread_local!(
     pub static hidden_65: Value<i32> = Rc::new(RefCell::new(90));
 );
-pub fn hidden_in_b_41() -> i32 {
+pub fn hidden_in_b_42() -> i32 {
     return hidden_65.with(|rc| *rc.borrow());
 }
-pub fn next_in_b_47() -> i32 {
+pub fn next_in_b_48() -> i32 {
     count_66.with(|rc| *rc.borrow_mut() += 1000);
     return count_66.with(|rc| *rc.borrow());
 }
 thread_local!(
     static count_66: Value<i32> = Rc::new(RefCell::new(0));
 );
-pub fn key_in_b_53() -> i32 {
+pub fn key_in_b_54() -> i32 {
     let mut entry: Entry_67 = <Entry_67>::default();
     return (entry.key as i32);
 }
@@ -386,18 +390,18 @@ impl Default for Entry_67 {
     }
 }
 thread_local!(
-    pub static table_54: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2, 3])));
+    pub static table_55: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2, 3])));
 );
-pub fn table_sum_in_b_56() -> i32 {
+pub fn table_sum_in_b_57() -> i32 {
     return ((({
         let __idx0 = (0) as usize;
-        table_54.with(|rc| rc.borrow()[__idx0])
+        table_55.with(|rc| rc.borrow()[__idx0])
     }) + ({
         let __idx0 = (1) as usize;
-        table_54.with(|rc| rc.borrow()[__idx0])
+        table_55.with(|rc| rc.borrow()[__idx0])
     })) + ({
         let __idx0 = (2) as usize;
-        table_54.with(|rc| rc.borrow()[__idx0])
+        table_55.with(|rc| rc.borrow()[__idx0])
     }));
 }
 pub trait p5_members_of_classes_in_unnamed_namespaces_TallyImpl {
@@ -411,26 +415,28 @@ impl p5_members_of_classes_in_unnamed_namespaces_TallyImpl
         return total_30.with(|rc| *rc.borrow());
     }
     fn add(&self, mut amount: i32) -> i32 {
-        total_63.with(|rc| *rc.borrow_mut() += (amount * 2));
-        return total_63.with(|rc| *rc.borrow());
+        total_64.with(|rc| *rc.borrow_mut() += (amount * 2));
+        return total_64.with(|rc| *rc.borrow());
     }
 }
 pub fn __cpp2rust_init_globals() {
     let _ = limit_3.with(|_| ());
+    let _ = anon_13.with(|_| ());
     let _ = counter_17.with(|_| ());
     let _ = depth_19.with(|_| ());
     let _ = total_30.with(|_| ());
-    let _ = hidden_38.with(|_| ());
-    let _ = limit_58.with(|_| ());
+    let _ = hidden_39.with(|_| ());
+    let _ = limit_59.with(|_| ());
     let _ = threshold_7.with(|_| ());
     let _ = ceiling_10.with(|_| ());
-    let _ = counter_60.with(|_| ());
-    let _ = depth_62.with(|_| ());
+    let _ = anon_60.with(|_| ());
+    let _ = counter_61.with(|_| ());
+    let _ = depth_63.with(|_| ());
     let _ = shared_total_24.with(|_| ());
     let _ = level_27.with(|_| ());
-    let _ = total_63.with(|_| ());
+    let _ = total_64.with(|_| ());
     let _ = balance_33.with(|_| ());
-    let _ = remote_64.with(|_| ());
+    let _ = remote_36.with(|_| ());
     let _ = hidden_65.with(|_| ());
-    let _ = table_54.with(|_| ());
+    let _ = table_55.with(|_| ());
 }
