@@ -1,5 +1,4 @@
-// panic-ub: refcount
-// nondet-result: unsafe
+// nondet-result
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [basic.scope.pdecl]/1: the locus of a declaration that is a declarator
 // is immediately after the complete declarator, so the initializer accesses

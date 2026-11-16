@@ -266,6 +266,9 @@ public:
 
   virtual bool VisitWhileStmt(clang::WhileStmt *stmt);
 
+  void ConvertConditionVariableTest(clang::DeclStmt *cond_var,
+                                    clang::Expr *cond);
+
   virtual bool VisitDoStmt(clang::DoStmt *stmt);
 
   virtual bool VisitForStmt(clang::ForStmt *stmt);

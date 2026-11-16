@@ -27,17 +27,22 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    'switch: {
-        match { ({ ConvertsToIntImpl::to_i32(&selector.as_pointer()) }) } {
-            __v if __v == 2 => {
-                (*matching_case_runs_0.with(Value::clone).borrow_mut()).prefix_inc();
-                assert!(({ ({ (*selector.borrow()).value } == 2) }));
-                assert!((dtorCount_2.with(|rc| *rc.borrow()) == 0));
-                break 'switch;
-            }
-            _ => {
-                (*other_case_runs_1.with(Value::clone).borrow_mut()).prefix_inc();
-                break 'switch;
+    {
+        let selector: Value<ConvertsToInt> = Rc::new(RefCell::new(ConvertsToInt { value: 2 }));
+        let _dtor_selector =
+            std::mem::DropGuard::new(selector.clone(), |__p| __p.as_pointer().destructor());
+        'switch: {
+            match { ({ ConvertsToIntImpl::to_i32(&selector.as_pointer()) }) } {
+                __v if __v == 2 => {
+                    (*matching_case_runs_0.with(Value::clone).borrow_mut()).prefix_inc();
+                    assert!(({ ({ (*selector.borrow()).value } == 2) }));
+                    assert!((dtorCount_2.with(|rc| *rc.borrow()) == 0));
+                    break 'switch;
+                }
+                _ => {
+                    (*other_case_runs_1.with(Value::clone).borrow_mut()).prefix_inc();
+                    break 'switch;
+                }
             }
         }
     };

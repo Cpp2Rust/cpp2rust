@@ -36,7 +36,13 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut remaining: i32 = 2;
     let mut iterations: i32 = 0;
-    'loop_: while (unsafe { ConvertsToBool::to_bool(&condition) }) {
+    'loop_: loop {
+        let mut condition: ConvertsToBool = ConvertsToBool::new({ remaining });
+        let _dtor_condition =
+            std::mem::DropGuard::new(&raw mut condition, |__p| unsafe { (*__p).destructor() });
+        if !(unsafe { ConvertsToBool::to_bool(&condition) }) {
+            break;
+        }
         iterations.prefix_inc();
         assert!(((condition.value) == (remaining)));
         assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut ctorCount_0)) == (iterations)));

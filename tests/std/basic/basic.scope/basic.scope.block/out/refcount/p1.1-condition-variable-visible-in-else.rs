@@ -26,22 +26,32 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    if ({ ConvertsToBoolImpl::to_bool(&condition.as_pointer()) }) {
-        (*then_runs_0.with(Value::clone).borrow_mut()).prefix_inc();
-    } else {
-        (*else_runs_1.with(Value::clone).borrow_mut()).prefix_inc();
-        assert!(({ ({ (*condition.borrow()).value } == 0) }));
-        assert!((dtorCount_2.with(|rc| *rc.borrow()) == 0));
+    {
+        let condition: Value<ConvertsToBool> = Rc::new(RefCell::new(ConvertsToBool { value: 0 }));
+        let _dtor_condition =
+            std::mem::DropGuard::new(condition.clone(), |__p| __p.as_pointer().destructor());
+        if ({ ConvertsToBoolImpl::to_bool(&condition.as_pointer()) }) {
+            (*then_runs_0.with(Value::clone).borrow_mut()).prefix_inc();
+        } else {
+            (*else_runs_1.with(Value::clone).borrow_mut()).prefix_inc();
+            assert!(({ ({ (*condition.borrow()).value } == 0) }));
+            assert!((dtorCount_2.with(|rc| *rc.borrow()) == 0));
+        }
     }
     assert!((then_runs_0.with(|rc| *rc.borrow()) == 0));
     assert!((else_runs_1.with(|rc| *rc.borrow()) == 1));
     assert!((dtorCount_2.with(|rc| *rc.borrow()) == 1));
-    if ({ ConvertsToBoolImpl::to_bool(&condition.as_pointer()) }) {
-        (*then_runs_0.with(Value::clone).borrow_mut()).prefix_inc();
-        assert!(({ ({ (*condition.borrow()).value } == 6) }));
-        assert!((dtorCount_2.with(|rc| *rc.borrow()) == 1));
-    } else {
-        (*else_runs_1.with(Value::clone).borrow_mut()).prefix_inc();
+    {
+        let condition: Value<ConvertsToBool> = Rc::new(RefCell::new(ConvertsToBool { value: 6 }));
+        let _dtor_condition =
+            std::mem::DropGuard::new(condition.clone(), |__p| __p.as_pointer().destructor());
+        if ({ ConvertsToBoolImpl::to_bool(&condition.as_pointer()) }) {
+            (*then_runs_0.with(Value::clone).borrow_mut()).prefix_inc();
+            assert!(({ ({ (*condition.borrow()).value } == 6) }));
+            assert!((dtorCount_2.with(|rc| *rc.borrow()) == 1));
+        } else {
+            (*else_runs_1.with(Value::clone).borrow_mut()).prefix_inc();
+        }
     }
     assert!((then_runs_0.with(|rc| *rc.borrow()) == 1));
     assert!((else_runs_1.with(|rc| *rc.borrow()) == 1));

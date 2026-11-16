@@ -60,19 +60,27 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut selector: i32 = 9;
-    'switch: {
-        match { selector } {
-            __v if __v == 2 => {
-                (*std::cell::LazyCell::force_mut(&mut *&raw mut matching_case_runs_4)).prefix_inc();
-                (unsafe { LifetimeTracked::use_(&guard) });
-                assert!(((guard.uses) == (1)));
-                assert!(((selector) == (2)));
-                assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut dtorCount_2)) == (0)));
-                break 'switch;
-            }
-            _ => {
-                (*std::cell::LazyCell::force_mut(&mut *&raw mut other_case_runs_5)).prefix_inc();
-                break 'switch;
+    {
+        let mut guard: LifetimeTracked = LifetimeTracked::new();
+        let _dtor_guard =
+            std::mem::DropGuard::new(&raw mut guard, |__p| unsafe { (*__p).destructor() });
+        let mut selector: i32 = 2;
+        'switch: {
+            match { selector } {
+                __v if __v == 2 => {
+                    (*std::cell::LazyCell::force_mut(&mut *&raw mut matching_case_runs_4))
+                        .prefix_inc();
+                    (unsafe { LifetimeTracked::use_(&guard) });
+                    assert!(((guard.uses) == (1)));
+                    assert!(((selector) == (2)));
+                    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut dtorCount_2)) == (0)));
+                    break 'switch;
+                }
+                _ => {
+                    (*std::cell::LazyCell::force_mut(&mut *&raw mut other_case_runs_5))
+                        .prefix_inc();
+                    break 'switch;
+                }
             }
         }
     };

@@ -19,16 +19,24 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    if (choice != 0) {
+    {
+        let mut choice: i32 = 4;
         if (choice != 0) {
-            (*std::cell::LazyCell::force_mut(&mut *&raw mut inner_then_runs_0)).prefix_inc();
+            {
+                let mut choice: i32 = 0;
+                if (choice != 0) {
+                    (*std::cell::LazyCell::force_mut(&mut *&raw mut inner_then_runs_0))
+                        .prefix_inc();
+                } else {
+                    (*std::cell::LazyCell::force_mut(&mut *&raw mut inner_else_runs_1))
+                        .prefix_inc();
+                    assert!(((choice) == (0)));
+                }
+            }
         } else {
-            (*std::cell::LazyCell::force_mut(&mut *&raw mut inner_else_runs_1)).prefix_inc();
+            (*std::cell::LazyCell::force_mut(&mut *&raw mut outer_else_runs_2)).prefix_inc();
             assert!(((choice) == (0)));
         }
-    } else {
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut outer_else_runs_2)).prefix_inc();
-        assert!(((choice) == (0)));
     }
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut inner_then_runs_0)) == (0)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut inner_else_runs_1)) == (1)));

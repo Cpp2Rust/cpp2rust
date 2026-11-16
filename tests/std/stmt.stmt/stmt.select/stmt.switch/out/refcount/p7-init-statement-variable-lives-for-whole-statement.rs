@@ -61,19 +61,25 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let mut selector: i32 = 9;
-    'switch: {
-        match { selector } {
-            __v if __v == 2 => {
-                (*matching_case_runs_4.with(Value::clone).borrow_mut()).prefix_inc();
-                ({ LifetimeTrackedImpl::use_(&guard.as_pointer()) });
-                assert!(({ ({ (*guard.borrow()).uses } == 1) }));
-                assert!((selector == 2));
-                assert!((dtorCount_2.with(|rc| *rc.borrow()) == 0));
-                break 'switch;
-            }
-            _ => {
-                (*other_case_runs_5.with(Value::clone).borrow_mut()).prefix_inc();
-                break 'switch;
+    {
+        let guard: Value<LifetimeTracked> = Rc::new(RefCell::new(LifetimeTracked::new()));
+        let _dtor_guard =
+            std::mem::DropGuard::new(guard.clone(), |__p| __p.as_pointer().destructor());
+        let mut selector: i32 = 2;
+        'switch: {
+            match { selector } {
+                __v if __v == 2 => {
+                    (*matching_case_runs_4.with(Value::clone).borrow_mut()).prefix_inc();
+                    ({ LifetimeTrackedImpl::use_(&guard.as_pointer()) });
+                    assert!(({ ({ (*guard.borrow()).uses } == 1) }));
+                    assert!((selector == 2));
+                    assert!((dtorCount_2.with(|rc| *rc.borrow()) == 0));
+                    break 'switch;
+                }
+                _ => {
+                    (*other_case_runs_5.with(Value::clone).borrow_mut()).prefix_inc();
+                    break 'switch;
+                }
             }
         }
     };

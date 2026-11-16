@@ -32,17 +32,24 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    'switch: {
-        match { (unsafe { ConvertsToInt::to_i32(&selector) }) } {
-            __v if __v == 2 => {
-                (*std::cell::LazyCell::force_mut(&mut *&raw mut matching_case_runs_0)).prefix_inc();
-                assert!(((selector.value) == (2)));
-                assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut dtorCount_2)) == (0)));
-                break 'switch;
-            }
-            _ => {
-                (*std::cell::LazyCell::force_mut(&mut *&raw mut other_case_runs_1)).prefix_inc();
-                break 'switch;
+    {
+        let mut selector: ConvertsToInt = ConvertsToInt { value: 2 };
+        let _dtor_selector =
+            std::mem::DropGuard::new(&raw mut selector, |__p| unsafe { (*__p).destructor() });
+        'switch: {
+            match { (unsafe { ConvertsToInt::to_i32(&selector) }) } {
+                __v if __v == 2 => {
+                    (*std::cell::LazyCell::force_mut(&mut *&raw mut matching_case_runs_0))
+                        .prefix_inc();
+                    assert!(((selector.value) == (2)));
+                    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut dtorCount_2)) == (0)));
+                    break 'switch;
+                }
+                _ => {
+                    (*std::cell::LazyCell::force_mut(&mut *&raw mut other_case_runs_1))
+                        .prefix_inc();
+                    break 'switch;
+                }
             }
         }
     };

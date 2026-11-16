@@ -1,3 +1,4 @@
+// no-compile: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [basic.scope.param]/1.1: the scope of a function's parameters extends
 // to the end of the function-definition.

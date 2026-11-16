@@ -64,6 +64,7 @@ unsafe fn main_0() -> i32 {
         let mut guard: LifetimeTracked = LifetimeTracked::new();
         let _dtor_guard =
             std::mem::DropGuard::new(&raw mut guard, |__p| unsafe { (*__p).destructor() });
+        let mut choice: i32 = 0;
         if (choice != 0) {
             (*std::cell::LazyCell::force_mut(&mut *&raw mut then_runs_4)).prefix_inc();
         } else {
@@ -81,6 +82,7 @@ unsafe fn main_0() -> i32 {
         let mut guard: LifetimeTracked = LifetimeTracked::new();
         let _dtor_guard =
             std::mem::DropGuard::new(&raw mut guard, |__p| unsafe { (*__p).destructor() });
+        let mut choice: i32 = 4;
         if (choice != 0) {
             (*std::cell::LazyCell::force_mut(&mut *&raw mut then_runs_4)).prefix_inc();
             (unsafe { LifetimeTracked::use_(&guard) });

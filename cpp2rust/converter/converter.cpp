@@ -1466,10 +1466,15 @@ void Converter::ConvertCondition(clang::Expr *cond) {
 }
 
 bool Converter::VisitIfStmt(clang::IfStmt *stmt) {
-  // The variables of the init statement are only visible in the if.
-  PushBrace scope(*this, stmt->getInit());
+  // The variables of the init statement and of the condition are only
+  // visible in the if.
+  auto *cond_var = stmt->getConditionVariableDeclStmt();
+  PushBrace scope(*this, stmt->getInit() || cond_var);
   if (auto *init = stmt->getInit()) {
     Convert(init);
+  }
+  if (cond_var) {
+    Convert(cond_var);
   }
   if (bool taken = false;
       !stmt->getConditionVariable() && !stmt->isConsteval() &&
@@ -1495,11 +1500,30 @@ bool Converter::VisitIfStmt(clang::IfStmt *stmt) {
 bool Converter::VisitWhileStmt(clang::WhileStmt *stmt) {
   ScopedPush push(break_target_, BreakTarget::Loop);
   StrCat("'loop_:");
+  ScopedPush no_inc(curr_for_inc_, nullptr);
+  if (auto *cond_var = stmt->getConditionVariableDeclStmt()) {
+    StrCat(keyword::kLoop);
+    PushBrace loop_brace(*this);
+    ConvertConditionVariableTest(cond_var, stmt->getCond());
+    ConvertBodyStmts(stmt->getBody());
+    return false;
+  }
   StrCat(keyword::kWhile);
   ConvertCondition(stmt->getCond());
-  ScopedPush no_inc(curr_for_inc_, nullptr);
   ConvertBody(stmt->getBody());
   return false;
+}
+
+// The condition variable is created and destroyed on each iteration.
+void Converter::ConvertConditionVariableTest(clang::DeclStmt *cond_var,
+                                             clang::Expr *cond) {
+  Convert(cond_var);
+  StrCat(keyword::kIf, token::kNot);
+  {
+    PushParen paren(*this);
+    ConvertCondition(cond);
+  }
+  StrCat("{ break; }");
 }
 
 bool Converter::VisitDoStmt(clang::DoStmt *stmt) {
@@ -1528,14 +1552,22 @@ bool Converter::VisitForStmt(clang::ForStmt *stmt) {
                              clang::isa<clang::DeclStmt>(stmt->getInit()));
   Convert(stmt->getInit());
   StrCat("'loop_:");
-  StrCat(keyword::kWhile);
-  if (stmt->getCond() == nullptr) {
-    StrCat("true");
+  auto *cond_var = stmt->getConditionVariableDeclStmt();
+  if (cond_var) {
+    StrCat(keyword::kLoop);
   } else {
-    ConvertCondition(stmt->getCond());
+    StrCat(keyword::kWhile);
+    if (stmt->getCond() == nullptr) {
+      StrCat("true");
+    } else {
+      ConvertCondition(stmt->getCond());
+    }
   }
   {
     PushBrace brace(*this);
+    if (cond_var) {
+      ConvertConditionVariableTest(cond_var, stmt->getCond());
+    }
     {
       ScopedPush inc(curr_for_inc_, stmt->getInc());
       ConvertBodyStmts(stmt->getBody());
@@ -4213,6 +4245,17 @@ bool Converter::VisitSwitchStmt(clang::SwitchStmt *stmt) {
   ScopedPush push(break_target_, needs_switch_macro
                                      ? BreakTarget::FallthroughSwitch
                                      : BreakTarget::Switch);
+
+  // The variables of the init statement and of the condition are only
+  // visible in the switch.
+  auto *cond_var = stmt->getConditionVariableDeclStmt();
+  PushBrace scope(*this, stmt->getInit() || cond_var);
+  if (auto *init = stmt->getInit()) {
+    Convert(init);
+  }
+  if (cond_var) {
+    Convert(cond_var);
+  }
 
   if (needs_switch_macro) {
     StrCat("switch!");

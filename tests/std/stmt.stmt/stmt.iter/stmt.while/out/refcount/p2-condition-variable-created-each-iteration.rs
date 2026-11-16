@@ -33,7 +33,14 @@ pub fn main() {
 fn main_0() -> i32 {
     let mut remaining: i32 = 2;
     let mut iterations: i32 = 0;
-    'loop_: while ({ ConvertsToBoolImpl::to_bool(&condition.as_pointer()) }) {
+    'loop_: loop {
+        let condition: Value<ConvertsToBool> =
+            Rc::new(RefCell::new(ConvertsToBool::new({ remaining })));
+        let _dtor_condition =
+            std::mem::DropGuard::new(condition.clone(), |__p| __p.as_pointer().destructor());
+        if !({ ConvertsToBoolImpl::to_bool(&condition.as_pointer()) }) {
+            break;
+        }
         iterations.prefix_inc();
         assert!(({ ({ (*condition.borrow()).value } == remaining) }));
         assert!((ctorCount_0.with(|rc| *rc.borrow()) == iterations));

@@ -31,22 +31,32 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    if (unsafe { ConvertsToBool::to_bool(&condition) }) {
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut then_runs_0)).prefix_inc();
-    } else {
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut else_runs_1)).prefix_inc();
-        assert!(((condition.value) == (0)));
-        assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut dtorCount_2)) == (0)));
+    {
+        let mut condition: ConvertsToBool = ConvertsToBool { value: 0 };
+        let _dtor_condition =
+            std::mem::DropGuard::new(&raw mut condition, |__p| unsafe { (*__p).destructor() });
+        if (unsafe { ConvertsToBool::to_bool(&condition) }) {
+            (*std::cell::LazyCell::force_mut(&mut *&raw mut then_runs_0)).prefix_inc();
+        } else {
+            (*std::cell::LazyCell::force_mut(&mut *&raw mut else_runs_1)).prefix_inc();
+            assert!(((condition.value) == (0)));
+            assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut dtorCount_2)) == (0)));
+        }
     }
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut then_runs_0)) == (0)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut else_runs_1)) == (1)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut dtorCount_2)) == (1)));
-    if (unsafe { ConvertsToBool::to_bool(&condition) }) {
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut then_runs_0)).prefix_inc();
-        assert!(((condition.value) == (6)));
-        assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut dtorCount_2)) == (1)));
-    } else {
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut else_runs_1)).prefix_inc();
+    {
+        let mut condition: ConvertsToBool = ConvertsToBool { value: 6 };
+        let _dtor_condition =
+            std::mem::DropGuard::new(&raw mut condition, |__p| unsafe { (*__p).destructor() });
+        if (unsafe { ConvertsToBool::to_bool(&condition) }) {
+            (*std::cell::LazyCell::force_mut(&mut *&raw mut then_runs_0)).prefix_inc();
+            assert!(((condition.value) == (6)));
+            assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut dtorCount_2)) == (1)));
+        } else {
+            (*std::cell::LazyCell::force_mut(&mut *&raw mut else_runs_1)).prefix_inc();
+        }
     }
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut then_runs_0)) == (1)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut else_runs_1)) == (1)));

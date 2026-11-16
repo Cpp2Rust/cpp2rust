@@ -65,6 +65,7 @@ fn main_0() -> i32 {
         let guard: Value<LifetimeTracked> = Rc::new(RefCell::new(LifetimeTracked::new()));
         let _dtor_guard =
             std::mem::DropGuard::new(guard.clone(), |__p| __p.as_pointer().destructor());
+        let mut choice: i32 = 0;
         if (choice != 0) {
             (*then_runs_4.with(Value::clone).borrow_mut()).prefix_inc();
         } else {
@@ -82,6 +83,7 @@ fn main_0() -> i32 {
         let guard: Value<LifetimeTracked> = Rc::new(RefCell::new(LifetimeTracked::new()));
         let _dtor_guard =
             std::mem::DropGuard::new(guard.clone(), |__p| __p.as_pointer().destructor());
+        let mut choice: i32 = 4;
         if (choice != 0) {
             (*then_runs_4.with(Value::clone).borrow_mut()).prefix_inc();
             ({ LifetimeTrackedImpl::use_(&guard.as_pointer()) });

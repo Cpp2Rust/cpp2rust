@@ -1,3 +1,4 @@
+// panic: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [basic.scope.block]/1.3: each handler introduces a block scope that
 // includes that handler.

@@ -37,7 +37,13 @@ unsafe fn main_0() -> i32 {
     let mut remaining: i32 = 3;
     let mut continued: i32 = 0;
     let mut completed: i32 = 0;
-    'loop_: while (unsafe { ConvertsToBool::to_bool(&condition) }) {
+    'loop_: loop {
+        let mut condition: ConvertsToBool = ConvertsToBool::new({ remaining });
+        let _dtor_condition =
+            std::mem::DropGuard::new(&raw mut condition, |__p| unsafe { (*__p).destructor() });
+        if !(unsafe { ConvertsToBool::to_bool(&condition) }) {
+            break;
+        }
         remaining.prefix_dec();
         if ((condition.value) == (3)) {
             continued.prefix_inc();

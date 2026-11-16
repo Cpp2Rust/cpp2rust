@@ -34,7 +34,14 @@ fn main_0() -> i32 {
     let mut remaining: i32 = 3;
     let mut continued: i32 = 0;
     let mut completed: i32 = 0;
-    'loop_: while ({ ConvertsToBoolImpl::to_bool(&condition.as_pointer()) }) {
+    'loop_: loop {
+        let condition: Value<ConvertsToBool> =
+            Rc::new(RefCell::new(ConvertsToBool::new({ remaining })));
+        let _dtor_condition =
+            std::mem::DropGuard::new(condition.clone(), |__p| __p.as_pointer().destructor());
+        if !({ ConvertsToBoolImpl::to_bool(&condition.as_pointer()) }) {
+            break;
+        }
         remaining.prefix_dec();
         if ({ (*condition.borrow()).value } == 3) {
             continued.prefix_inc();
