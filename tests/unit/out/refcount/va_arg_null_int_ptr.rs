@@ -12,15 +12,17 @@ pub fn first_nonnull_0(count: i32, __args: Box<[VaArg]>) -> i32 {
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
     (*ap.borrow_mut()) = __args.decay();
     let mut result: i32 = -1_i32;
-    let mut i: i32 = 0;
-    'loop_: while (i < (*count.borrow())) {
-        let mut p: Ptr<i32> = (*ap.borrow_mut()).arg::<Ptr<i32>>();
-        if (!((p).is_null())) {
-            result = { (p.read()) };
-            break;
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < (*count.borrow())) {
+            let mut p: Ptr<i32> = (*ap.borrow_mut()).arg::<Ptr<i32>>();
+            if (!((p).is_null())) {
+                result = { (p.read()) };
+                break;
+            }
+            i.postfix_inc();
         }
-        i.postfix_inc();
-    }
+    };
     return result;
 }
 pub fn main() {

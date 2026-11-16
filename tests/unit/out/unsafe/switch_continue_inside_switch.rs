@@ -8,22 +8,24 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn continue_inside_switch_0(mut n: i32) -> i32 {
     let mut r: i32 = 0;
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (n)) {
-        'switch: {
-            match { i } {
-                __v if __v == 0 || __v == 2 || __v == 4 => {
-                    i.prefix_inc();
-                    continue 'loop_;
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (n)) {
+            'switch: {
+                match { i } {
+                    __v if __v == 0 || __v == 2 || __v == 4 => {
+                        i.prefix_inc();
+                        continue 'loop_;
+                    }
+                    _ => {
+                        r += i;
+                        break 'switch;
+                    }
                 }
-                _ => {
-                    r += i;
-                    break 'switch;
-                }
-            }
-        };
-        r += 1000;
-        i.prefix_inc();
+            };
+            r += 1000;
+            i.prefix_inc();
+        }
     }
     return r;
 }

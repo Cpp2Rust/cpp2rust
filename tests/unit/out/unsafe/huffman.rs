@@ -199,31 +199,35 @@ impl MinHeap {
         freq: *mut Option<Box<[i32]>>,
         mut n: i32,
     ) {
-        let mut i: i32 = 0;
-        'loop_: while ((i) < (n)) {
-            (*self
-                .arr
-                .as_deref()
-                .map_or(::std::ptr::null_mut(), |s| {
-                    s.as_ptr() as *mut *mut MinHeapNode
-                })
-                .add((self.size.postfix_inc() as usize))) = (unsafe {
-                let _data: libc::c_char = (*(*data)
+        {
+            let mut i: i32 = 0;
+            'loop_: while ((i) < (n)) {
+                (*self
+                    .arr
                     .as_deref()
-                    .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut libc::c_char)
-                    .add((i as usize)));
-                let _freq: i32 = (*(*freq)
-                    .as_deref()
-                    .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
-                    .add((i as usize)));
-                MinHeap::Alloc(self, _data, _freq)
-            });
-            i.prefix_inc();
+                    .map_or(::std::ptr::null_mut(), |s| {
+                        s.as_ptr() as *mut *mut MinHeapNode
+                    })
+                    .add((self.size.postfix_inc() as usize))) = (unsafe {
+                    let _data: libc::c_char = (*(*data)
+                        .as_deref()
+                        .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut libc::c_char)
+                        .add((i as usize)));
+                    let _freq: i32 = (*(*freq)
+                        .as_deref()
+                        .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
+                        .add((i as usize)));
+                    MinHeap::Alloc(self, _data, _freq)
+                });
+                i.prefix_inc();
+            }
         }
-        let mut i: i32 = (((self.size) - (2)) / (2));
-        'loop_: while ((i) >= (0)) {
-            (unsafe { MinHeap::Heapify(self, i) });
-            i.prefix_dec();
+        {
+            let mut i: i32 = (((self.size) - (2)) / (2));
+            'loop_: while ((i) >= (0)) {
+                (unsafe { MinHeap::Heapify(self, i) });
+                i.prefix_dec();
+            }
         }
     }
     pub unsafe fn move_from(_a0: *mut MinHeap) -> Self {
@@ -334,28 +338,30 @@ pub unsafe fn CollectCode_3(
         .as_deref()
         .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
         .add(((*next) as usize))) = 0;
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (top)) {
-        (*(*out)
-            .as_deref()
-            .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
-            .add(((*next) as usize))) = ((*(*out)
-            .as_deref()
-            .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
-            .add(((*next) as usize)))
-            * (10));
-        (*(*out)
-            .as_deref()
-            .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
-            .add(((*next) as usize))) = ((*(*out)
-            .as_deref()
-            .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
-            .add(((*next) as usize)))
-            + (*(*arr)
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (top)) {
+            (*(*out)
                 .as_deref()
                 .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
-                .add((i as usize))));
-        i.prefix_inc();
+                .add(((*next) as usize))) = ((*(*out)
+                .as_deref()
+                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
+                .add(((*next) as usize)))
+                * (10));
+            (*(*out)
+                .as_deref()
+                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
+                .add(((*next) as usize))) = ((*(*out)
+                .as_deref()
+                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
+                .add(((*next) as usize)))
+                + (*(*arr)
+                    .as_deref()
+                    .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
+                    .add((i as usize))));
+            i.prefix_inc();
+        }
     }
     (*next).prefix_inc();
 }
@@ -453,17 +459,19 @@ unsafe fn main_0() -> i32 {
     );
     let mut freq: Option<Box<[i32]>> =
         Some((0..(size as usize)).map(|_| 0_i32).collect::<Box<[_]>>());
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (size)) {
-        (*data
-            .as_deref()
-            .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut libc::c_char)
-            .add((i as usize))) = arr1[(i) as usize];
-        (*freq
-            .as_deref()
-            .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
-            .add((i as usize))) = arr2[(i) as usize];
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (size)) {
+            (*data
+                .as_deref()
+                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut libc::c_char)
+                .add((i as usize))) = arr1[(i) as usize];
+            (*freq
+                .as_deref()
+                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
+                .add((i as usize))) = arr2[(i) as usize];
+            i.prefix_inc();
+        }
     }
     let mut out: Option<Box<[i32]>> = (unsafe { HuffmanCodes_5(&mut data, &mut freq, size) });
     assert!(

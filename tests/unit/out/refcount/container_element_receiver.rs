@@ -29,10 +29,12 @@ pub fn pick_0(a: Ptr<Vec<i32>>, b: Ptr<Vec<i32>>, mut first: bool) -> Ptr<Vec<i3
 }
 pub fn sum_1(v: Ptr<Vec<i32>>) -> i32 {
     let mut total: i32 = 0;
-    let it: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(v.decay().begin()));
-    'loop_: while (*it.borrow()) != v.decay().end() {
-        total += ((*it.borrow()).iter_deref().read());
-        (*it.borrow_mut()).iter_inc();
+    {
+        let it: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(v.decay().begin()));
+        'loop_: while (*it.borrow()) != v.decay().end() {
+            total += ((*it.borrow()).iter_deref().read());
+            (*it.borrow_mut()).iter_inc();
+        }
     }
     return ({ total } + {
         (if 0_usize >= (*v.upgrade().deref()).len() {

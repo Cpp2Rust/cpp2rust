@@ -63,10 +63,12 @@ unsafe fn main_0() -> i32 {
             && (((*p).z) == (4)))
     );
     let mut bz: *mut u8 = ((&mut (*p).z as *mut i32) as *mut u8);
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (4)) {
-        (*bz.offset((i) as isize)) = 1_u8;
-        i.postfix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (4)) {
+            (*bz.offset((i) as isize)) = 1_u8;
+            i.postfix_inc();
+        }
     }
     assert!(((((*p).z) == (16843009)) && (((*p).in_.b as i32) == (6))));
     libcc2rs::free_unsafe((p as *mut ::libc::c_void));

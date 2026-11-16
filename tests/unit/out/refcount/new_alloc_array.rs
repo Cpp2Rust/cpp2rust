@@ -23,16 +23,20 @@ fn main_0() -> i32 {
         }
     };
     elem!(array, 99).write(-1_i32);
-    let mut p1: Ptr<i32> = (array).clone();
-    'loop_: while ((p1.read()) >= 0) {
-        p1.write(1);
-        p1.prefix_inc();
+    {
+        let mut p1: Ptr<i32> = (array).clone();
+        'loop_: while ((p1.read()) >= 0) {
+            p1.write(1);
+            p1.prefix_inc();
+        }
     }
     let mut out: i32 = 0;
-    let mut p1: Ptr<i32> = (array).clone();
-    'loop_: while ((p1.read()) >= 0) {
-        out += { (p1.read()) };
-        p1.prefix_inc();
+    {
+        let mut p1: Ptr<i32> = (array).clone();
+        'loop_: while ((p1.read()) >= 0) {
+            out += { (p1.read()) };
+            p1.prefix_inc();
+        }
     }
     let mut p2: Ptr<i32> = (array).clone();
     p2.delete();

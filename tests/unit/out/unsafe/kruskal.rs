@@ -19,18 +19,20 @@ pub unsafe fn partition_0(arr: *mut Option<Box<[Edge]>>, mut start: i32, mut end
         .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Edge)
         .add((start as usize)));
     let mut count: i32 = 0;
-    let mut i: i32 = ((start) + (1));
-    'loop_: while ((i) <= (end)) {
-        if (((*(*arr)
-            .as_deref()
-            .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Edge)
-            .add((i as usize)))
-        .weight)
-            <= ((*pivot).weight))
-        {
-            count.postfix_inc();
+    {
+        let mut i: i32 = ((start) + (1));
+        'loop_: while ((i) <= (end)) {
+            if (((*(*arr)
+                .as_deref()
+                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Edge)
+                .add((i as usize)))
+            .weight)
+                <= ((*pivot).weight))
+            {
+                count.postfix_inc();
+            }
+            i.prefix_inc();
         }
-        i.prefix_inc();
     }
     let mut pidx: i32 = ((start) + (count));
     let mut tmp: Edge = Edge {
@@ -183,19 +185,21 @@ pub struct DisjointSet {
 }
 impl DisjointSet {
     pub unsafe fn makeSet(&mut self) {
-        let mut i: i32 = 0;
-        'loop_: while ((i) < (self.n)) {
-            (*self
-                .parent
-                .as_deref()
-                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
-                .add((i as usize))) = i;
-            (*self
-                .rank
-                .as_deref()
-                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
-                .add((i as usize))) = 1;
-            i.postfix_inc();
+        {
+            let mut i: i32 = 0;
+            'loop_: while ((i) < (self.n)) {
+                (*self
+                    .parent
+                    .as_deref()
+                    .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
+                    .add((i as usize))) = i;
+                (*self
+                    .rank
+                    .as_deref()
+                    .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
+                    .add((i as usize))) = 1;
+                i.postfix_inc();
+            }
         }
     }
     pub unsafe fn find(&mut self, mut x: i32) -> i32 {
@@ -340,33 +344,35 @@ pub unsafe fn MSTKruskal_2(graph: *mut Graph) -> f64 {
     };
     (unsafe { DisjointSet::makeSet(&mut set) });
     let mut total_weight: f64 = 0_f64;
-    let mut i: i32 = 0;
-    'loop_: while ((i) < ((*graph).E)) {
-        let mut x: i32 = (*(*graph)
-            .edges
-            .as_deref()
-            .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Edge)
-            .add((i as usize)))
-        .u;
-        let mut y: i32 = (*(*graph)
-            .edges
-            .as_deref()
-            .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Edge)
-            .add((i as usize)))
-        .v;
-        let mut w: f64 = (*(*graph)
-            .edges
-            .as_deref()
-            .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Edge)
-            .add((i as usize)))
-        .weight;
-        if ((unsafe { DisjointSet::find(&mut set, x) })
-            != (unsafe { DisjointSet::find(&mut set, y) }))
-        {
-            (unsafe { DisjointSet::merge(&mut set, x, y) });
-            total_weight += w;
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < ((*graph).E)) {
+            let mut x: i32 = (*(*graph)
+                .edges
+                .as_deref()
+                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Edge)
+                .add((i as usize)))
+            .u;
+            let mut y: i32 = (*(*graph)
+                .edges
+                .as_deref()
+                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Edge)
+                .add((i as usize)))
+            .v;
+            let mut w: f64 = (*(*graph)
+                .edges
+                .as_deref()
+                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Edge)
+                .add((i as usize)))
+            .weight;
+            if ((unsafe { DisjointSet::find(&mut set, x) })
+                != (unsafe { DisjointSet::find(&mut set, y) }))
+            {
+                (unsafe { DisjointSet::merge(&mut set, x, y) });
+                total_weight += w;
+            }
+            i.prefix_inc();
         }
-        i.prefix_inc();
     }
     return total_weight;
 }

@@ -80,11 +80,13 @@ fn main_0() -> i32 {
                     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
                     (*ap.borrow_mut()) = __args.decay();
                     let mut s: i32 = 0;
-                    let mut i: i32 = 0;
-                    'loop_: while (i < (*n.borrow())) {
-                        s += (*ap.borrow_mut()).arg::<i32>();
-                        i.postfix_inc();
-                    }
+                    {
+                        let mut i: i32 = 0;
+                        'loop_: while (i < (*n.borrow())) {
+                            s += (*ap.borrow_mut()).arg::<i32>();
+                            i.postfix_inc();
+                        }
+                    };
                     return s;
                 }
             },

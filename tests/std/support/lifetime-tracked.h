@@ -6,6 +6,8 @@ struct LifetimeTracked {
   static inline int dtorCount = 0;
   static inline int useCount = 0;
 
+  static void reset() { ctorCount = copyCount = dtorCount = useCount = 0; }
+
   mutable int uses = 0;
 
   LifetimeTracked() { ++ctorCount; }

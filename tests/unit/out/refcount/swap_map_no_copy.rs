@@ -610,40 +610,60 @@ pub trait ArraysImpl {
 }
 impl ArraysImpl for Ptr<Arrays> {
     fn copy_assign(&self, _a0: Ptr<Arrays>) -> Ptr<Arrays> {
-        let mut __i0: usize = 0_usize;
-        'loop_: while (__i0 != 2_usize) {
-            ({
-                let _o: Ptr<Tracked> = array_field_ptr!(_a0, a).offset((__i0) as isize);
-                TrackedImpl::copy_assign(&array_field_ptr!((*self), a).offset((__i0) as isize), _o)
-            });
-            __i0.prefix_inc();
+        {
+            let mut __i0: usize = 0_usize;
+            'loop_: while (__i0 != 2_usize) {
+                ({
+                    let _o: Ptr<Tracked> = array_field_ptr!(_a0, a).offset((__i0) as isize);
+                    TrackedImpl::copy_assign(
+                        &array_field_ptr!((*self), a).offset((__i0) as isize),
+                        _o,
+                    )
+                });
+                __i0.prefix_inc();
+            }
         }
-        let mut __i0: usize = 0_usize;
-        'loop_: while (__i0 != 2_usize) {
-            ({
-                let _o: Ptr<Tracked> = array_field_ptr!(_a0, b).offset((__i0) as isize);
-                TrackedImpl::copy_assign(&array_field_ptr!((*self), b).offset((__i0) as isize), _o)
-            });
-            __i0.prefix_inc();
+        {
+            let mut __i0: usize = 0_usize;
+            'loop_: while (__i0 != 2_usize) {
+                ({
+                    let _o: Ptr<Tracked> = array_field_ptr!(_a0, b).offset((__i0) as isize);
+                    TrackedImpl::copy_assign(
+                        &array_field_ptr!((*self), b).offset((__i0) as isize),
+                        _o,
+                    )
+                });
+                __i0.prefix_inc();
+            }
         }
         return (*self).clone();
     }
     fn move_assign(&self, _a0: Ptr<Arrays>) -> Ptr<Arrays> {
-        let mut __i0: usize = 0_usize;
-        'loop_: while (__i0 != 2_usize) {
-            ({
-                let _o: Ptr<Tracked> = array_field_ptr!(_a0, a).offset((__i0) as isize);
-                TrackedImpl::move_assign(&array_field_ptr!((*self), a).offset((__i0) as isize), _o)
-            });
-            __i0.prefix_inc();
+        {
+            let mut __i0: usize = 0_usize;
+            'loop_: while (__i0 != 2_usize) {
+                ({
+                    let _o: Ptr<Tracked> = array_field_ptr!(_a0, a).offset((__i0) as isize);
+                    TrackedImpl::move_assign(
+                        &array_field_ptr!((*self), a).offset((__i0) as isize),
+                        _o,
+                    )
+                });
+                __i0.prefix_inc();
+            }
         }
-        let mut __i0: usize = 0_usize;
-        'loop_: while (__i0 != 2_usize) {
-            ({
-                let _o: Ptr<Tracked> = array_field_ptr!(_a0, b).offset((__i0) as isize);
-                TrackedImpl::move_assign(&array_field_ptr!((*self), b).offset((__i0) as isize), _o)
-            });
-            __i0.prefix_inc();
+        {
+            let mut __i0: usize = 0_usize;
+            'loop_: while (__i0 != 2_usize) {
+                ({
+                    let _o: Ptr<Tracked> = array_field_ptr!(_a0, b).offset((__i0) as isize);
+                    TrackedImpl::move_assign(
+                        &array_field_ptr!((*self), b).offset((__i0) as isize),
+                        _o,
+                    )
+                });
+                __i0.prefix_inc();
+            }
         }
         return (*self).clone();
     }

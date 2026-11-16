@@ -16,22 +16,24 @@ pub unsafe fn sum_mixed_0(mut count: i32, __args: Box<[VaArg]>) -> i32 {
     let mut ap: *const VaArg = ::std::ptr::null();
     ap = __args.as_ptr();
     let mut total: i32 = 0;
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (count)) {
-        let mut tag: i32 = ap.arg::<i32>();
-        if ((tag) == (0)) {
-            total += ap.arg::<i32>();
-        } else if ((tag) == (1)) {
-            total += (ap.arg::<f64>() as i32);
-        } else if ((tag) == (3)) {
-            let mut p: pair = ap.arg::<pair>();
-            total += ((p.a) * (p.b));
-        } else {
-            let mut val: i64 = ap.arg::<i64>();
-            total += (val as i32);
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (count)) {
+            let mut tag: i32 = ap.arg::<i32>();
+            if ((tag) == (0)) {
+                total += ap.arg::<i32>();
+            } else if ((tag) == (1)) {
+                total += (ap.arg::<f64>() as i32);
+            } else if ((tag) == (3)) {
+                let mut p: pair = ap.arg::<pair>();
+                total += ((p.a) * (p.b));
+            } else {
+                let mut val: i64 = ap.arg::<i64>();
+                total += (val as i32);
+            }
+            i.postfix_inc();
         }
-        i.postfix_inc();
-    }
+    };
     return total;
 }
 pub fn main() {

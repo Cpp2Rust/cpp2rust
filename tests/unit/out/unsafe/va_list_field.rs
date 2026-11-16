@@ -13,10 +13,12 @@ pub unsafe fn sum_0(mut n: i32, __args: Box<[VaArg]>) -> i32 {
     let _dtor_guard =
         std::mem::DropGuard::new(&raw mut guard, |__p| unsafe { (*__p).destructor() });
     let mut total: i32 = 0;
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (n)) {
-        total += (*guard.ap).arg::<i32>();
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (n)) {
+            total += (*guard.ap).arg::<i32>();
+            i.prefix_inc();
+        }
     }
     return total;
 }
@@ -46,11 +48,13 @@ pub unsafe fn sum_ptr_2(mut n: i32, __args: Box<[VaArg]>) -> i32 {
         ap: (&mut ap as *mut *const VaArg),
     };
     let mut total: i32 = 0;
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (n)) {
-        total += (*cursor.ap).arg::<i32>();
-        i.prefix_inc();
-    }
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (n)) {
+            total += (*cursor.ap).arg::<i32>();
+            i.prefix_inc();
+        }
+    };
     return total;
 }
 #[repr(C)]

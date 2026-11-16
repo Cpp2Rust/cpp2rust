@@ -31,10 +31,12 @@ unsafe fn main_0() -> i32 {
                 as *const (),
         )),
     );
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (7)) {
-        assert!(((arr[(i) as usize]) <= (arr[((i) + (1)) as usize])));
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (7)) {
+            assert!(((arr[(i) as usize]) <= (arr[((i) + (1)) as usize])));
+            i.prefix_inc();
+        }
     }
     let mut key: i32 = 7;
     let mut hit: *mut i32 = (libc::bsearch(

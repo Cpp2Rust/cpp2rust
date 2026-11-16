@@ -16,6 +16,18 @@ pub struct LifetimeTracked {
     pub uses: i32,
 }
 impl LifetimeTracked {
+    pub unsafe fn reset() {
+        (*std::cell::LazyCell::force_mut(&mut *&raw mut ctorCount_0)) = {
+            (*std::cell::LazyCell::force_mut(&mut *&raw mut copyCount_1)) = {
+                (*std::cell::LazyCell::force_mut(&mut *&raw mut dtorCount_2)) = {
+                    (*std::cell::LazyCell::force_mut(&mut *&raw mut useCount_3)) = 0;
+                    (*std::cell::LazyCell::force_mut(&mut *&raw mut useCount_3))
+                };
+                (*std::cell::LazyCell::force_mut(&mut *&raw mut dtorCount_2))
+            };
+            (*std::cell::LazyCell::force_mut(&mut *&raw mut copyCount_1))
+        };
+    }
     pub unsafe fn new() -> Self {
         let mut this = Self { uses: 0 };
         (*std::cell::LazyCell::force_mut(&mut *&raw mut ctorCount_0)).prefix_inc();

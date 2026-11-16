@@ -46,28 +46,32 @@ fn main_0() -> i32 {
     assert!(({ (*p_mut_0.with(Value::clone).borrow()).is_null() }));
     assert!(({ (*p_const_1.with(Value::clone).borrow()).is_null() }));
     assert!(({ (*cp_2.with(Value::clone).borrow()).is_null() }));
-    let mut i: i32 = 0;
-    'loop_: while (i < 4) {
-        assert!(
-            ({
-                let __idx0 = (i) as usize;
-                arr_of_ptr_3.with(|rc| rc.borrow()[__idx0].clone())
-            })
-            .is_null()
-        );
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < 4) {
+            assert!(
+                ({
+                    let __idx0 = (i) as usize;
+                    arr_of_ptr_3.with(|rc| rc.borrow()[__idx0].clone())
+                })
+                .is_null()
+            );
+            i.prefix_inc();
+        }
     }
     assert!(({ (*pp_4.with(Value::clone).borrow()).is_null() }));
-    let mut i: i32 = 0;
-    'loop_: while (i < 3) {
-        assert!(
-            ({
-                let __idx0 = (i) as usize;
-                const_arr_of_ptr_5.with(|rc| rc.borrow()[__idx0].clone())
-            })
-            .is_null()
-        );
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < 3) {
+            assert!(
+                ({
+                    let __idx0 = (i) as usize;
+                    const_arr_of_ptr_5.with(|rc| rc.borrow()[__idx0].clone())
+                })
+                .is_null()
+            );
+            i.prefix_inc();
+        }
     }
     assert!(({ (*cp_explicit_null_6.with(Value::clone).borrow()).is_null() }));
     assert!(({ (*p_zero_7.with(Value::clone).borrow()).is_null() }));
