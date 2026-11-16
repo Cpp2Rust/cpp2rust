@@ -1,3 +1,4 @@
+// translation-fail: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [dcl.mptr]/2: the nested-name-specifier denotes a class; the class
 // need not be complete.

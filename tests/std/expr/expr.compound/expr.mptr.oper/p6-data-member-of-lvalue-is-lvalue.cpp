@@ -1,3 +1,4 @@
+// translation-fail: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [expr.mptr.oper]/6: the result of .* with a pointer to data member is
 // an lvalue if the first operand is an lvalue.

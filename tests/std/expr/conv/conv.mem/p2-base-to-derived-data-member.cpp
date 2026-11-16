@@ -1,3 +1,4 @@
+// translation-fail: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [conv.mem]/2: "pointer to member of B of type T" converts to "pointer
 // to member of D of type T"; the result refers to the member in D's instance

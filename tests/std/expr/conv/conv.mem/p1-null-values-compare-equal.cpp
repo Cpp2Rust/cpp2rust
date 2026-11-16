@@ -1,3 +1,4 @@
+// translation-fail: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [conv.mem]/1: a null pointer constant can be converted to a
 // pointer-to-member type; two null member pointer values of the same type

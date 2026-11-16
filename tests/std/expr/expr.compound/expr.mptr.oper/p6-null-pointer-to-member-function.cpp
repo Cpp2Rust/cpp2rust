@@ -1,3 +1,4 @@
+// translation-fail: refcount, unsafe
 // panic-ub: refcount
 // nondet-result: unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23

@@ -1,3 +1,4 @@
+// translation-fail: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [func.require]/1.1: INVOKE(f, t1, t2) is (t1.*f)(t2) when f is a
 // pointer to a member function of a class T and t1 is a T or derived from T.

@@ -1,3 +1,4 @@
+// translation-fail: refcount, unsafe
 // nondet-result
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [expr.eq]/4.4: if one operand refers to a member of class C1 and the

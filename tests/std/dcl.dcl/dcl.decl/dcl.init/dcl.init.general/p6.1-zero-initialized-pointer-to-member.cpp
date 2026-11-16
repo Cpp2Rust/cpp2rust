@@ -1,3 +1,4 @@
+// translation-fail: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [dcl.init.general]/6.1: zero-initializing a scalar converts the
 // integer literal 0 to its type; for a pointer to member that is the null

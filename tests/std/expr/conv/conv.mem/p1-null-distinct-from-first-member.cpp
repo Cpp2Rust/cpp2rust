@@ -1,3 +1,4 @@
+// translation-fail: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [conv.mem]/1: the null member pointer value is distinguishable from
 // any pointer to member not created from a null pointer constant.

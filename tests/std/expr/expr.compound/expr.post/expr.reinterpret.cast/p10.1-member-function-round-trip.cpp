@@ -1,3 +1,4 @@
+// translation-fail: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [expr.reinterpret.cast]/10.1: converting a pointer to member function
 // to a different pointer-to-member-function type and back yields the original

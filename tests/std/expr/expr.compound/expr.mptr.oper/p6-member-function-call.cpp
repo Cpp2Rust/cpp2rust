@@ -1,3 +1,4 @@
+// translation-fail: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [expr.mptr.oper]/6: if the result of .* or ->* is a function, it can
 // be used only as the operand of the function call operator ().

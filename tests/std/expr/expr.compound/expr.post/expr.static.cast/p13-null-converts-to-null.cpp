@@ -1,3 +1,4 @@
+// translation-fail: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [expr.static.cast]/13: the null member pointer value is converted to
 // the null member pointer value of the destination type.

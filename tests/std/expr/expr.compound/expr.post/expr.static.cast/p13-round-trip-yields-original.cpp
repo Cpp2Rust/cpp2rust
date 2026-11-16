@@ -1,3 +1,4 @@
+// translation-fail: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [expr.static.cast]/13: if class B contains the original member, the
 // resulting pointer to member points to the original member.

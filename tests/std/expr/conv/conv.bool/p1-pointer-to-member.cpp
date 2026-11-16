@@ -1,3 +1,4 @@
+// translation-fail: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [conv.bool]/1: a prvalue of pointer-to-member type can be converted to
 // bool; the null member pointer value becomes false, any other value true.

@@ -1,3 +1,4 @@
+// translation-fail: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [conv.mem]/2: indirection through the converted pointer with a D
 // object is the same as indirecting through the pointer to member of B with

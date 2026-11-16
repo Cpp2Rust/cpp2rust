@@ -1,3 +1,4 @@
+// translation-fail: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [expr.mptr.oper]/3: the first operand of ->* is a "pointer to U" where
 // U is T or a class of which T is an unambiguous and accessible base.

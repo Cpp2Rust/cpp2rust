@@ -1,3 +1,4 @@
+// translation-fail: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [expr.static.cast]/13: "pointer to member of D of type T" can be
 // converted to "pointer to member of B of type T", B a base class of D; the
