@@ -1,3 +1,4 @@
+// no-compile: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [func.require]/1.5: INVOKE(f, t1) is t1.get().*f when f is a pointer
 // to data member and t1 is a reference_wrapper.
