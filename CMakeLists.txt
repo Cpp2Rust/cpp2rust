@@ -37,6 +37,8 @@ include(AddClang)
 if (NOT CMAKE_CXX_COMPILER MATCHES "clang" AND NOT DEFINED ENV{CODEQL_EXTRACTOR_CPP_ROOT})
   set(CMAKE_CXX_COMPILER "${CLANG_CMAKE_DIR}/../../../bin/clang++")
 endif()
+# Exported for the testsuite, which builds the original programs with it
+set(CPP2RUST_CXX_COMPILER "${CMAKE_CXX_COMPILER}" CACHE INTERNAL "")
 
 message(STATUS "C++ flags: ${CMAKE_CXX_FLAGS}")
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
