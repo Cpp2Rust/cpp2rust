@@ -68,13 +68,13 @@ pub fn bump_18() -> i32 {
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(4)]
-pub struct p4_unnamed_namespaces_in_two_files_Record_19 {
+pub struct Record_19 {
     #[offset(0)]
     pub id: i32,
 }
-impl Default for p4_unnamed_namespaces_in_two_files_Record_19 {
+impl Default for Record_19 {
     fn default() -> Self {
-        { p4_unnamed_namespaces_in_two_files_Record_19 { id: 100 } }
+        { Record_19 { id: 100 } }
     }
 }
 thread_local!(
@@ -84,8 +84,7 @@ pub fn test_21() {
     assert!((({ bump_18() }) == 2));
     assert!((({ bump_in_b_22() }) == 51));
     assert!((counter_17.with(|rc| *rc.borrow()) == 2));
-    let mut record: p4_unnamed_namespaces_in_two_files_Record_19 =
-        <p4_unnamed_namespaces_in_two_files_Record_19>::default();
+    let mut record: Record_19 = <Record_19>::default();
     assert!((record.id == 100));
     assert!((({ record_id_in_b_23() }) == 200));
     assert!((depth_20.with(|rc| *rc.borrow()) == 3));
@@ -105,19 +104,13 @@ pub fn test_29() {
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
-pub struct p5_members_of_classes_in_unnamed_namespaces_Tally_31 {}
+pub struct Tally_31 {}
 thread_local!(
     pub static total_32: Value<i32> = Rc::new(RefCell::new(10));
 );
 pub fn test_33() {
-    let tally: Value<p5_members_of_classes_in_unnamed_namespaces_Tally_31> = Rc::new(RefCell::new(
-        <p5_members_of_classes_in_unnamed_namespaces_Tally_31>::default(),
-    ));
-    assert!(
-        (({
-            p5_members_of_classes_in_unnamed_namespaces_Tally_31Impl::add(&tally.as_pointer(), 1)
-        }) == 11)
-    );
+    let tally: Value<Tally_31> = Rc::new(RefCell::new(<Tally_31>::default()));
+    assert!((({ Tally_31Impl::add(&tally.as_pointer(), 1,) }) == 11));
     assert!((({ add_in_b_34(1,) }) == 102));
     assert!((total_32.with(|rc| *rc.borrow()) == 11));
 }
@@ -311,16 +304,16 @@ pub fn bump_64() -> i32 {
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(16)]
-pub struct p4_unnamed_namespaces_in_two_files_Record_65 {
+pub struct Record_65 {
     #[offset(0)]
     pub id: i64,
     #[offset(8)]
     pub extra: i32,
 }
-impl Default for p4_unnamed_namespaces_in_two_files_Record_65 {
+impl Default for Record_65 {
     fn default() -> Self {
         {
-            p4_unnamed_namespaces_in_two_files_Record_65 {
+            Record_65 {
                 id: 200_i64,
                 extra: 1,
             }
@@ -334,8 +327,7 @@ pub fn bump_in_b_22() -> i32 {
     return ({ bump_64() });
 }
 pub fn record_id_in_b_23() -> i32 {
-    let mut record: p4_unnamed_namespaces_in_two_files_Record_65 =
-        <p4_unnamed_namespaces_in_two_files_Record_65>::default();
+    let mut record: Record_65 = <Record_65>::default();
     return (record.id as i32);
 }
 pub fn depth_in_b_24() -> i32 {
@@ -356,17 +348,13 @@ pub fn raise_30(mut by: i32) -> i32 {
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
-pub struct p5_members_of_classes_in_unnamed_namespaces_Tally_67 {}
+pub struct Tally_67 {}
 thread_local!(
     pub static total_68: Value<i32> = Rc::new(RefCell::new(100));
 );
 pub fn add_in_b_34(mut amount: i32) -> i32 {
-    let tally: Value<p5_members_of_classes_in_unnamed_namespaces_Tally_67> = Rc::new(RefCell::new(
-        <p5_members_of_classes_in_unnamed_namespaces_Tally_67>::default(),
-    ));
-    return ({
-        p5_members_of_classes_in_unnamed_namespaces_Tally_67Impl::add(&tally.as_pointer(), amount)
-    });
+    let tally: Value<Tally_67> = Rc::new(RefCell::new(<Tally_67>::default()));
+    return ({ Tally_67Impl::add(&tally.as_pointer(), amount) });
 }
 thread_local!(
     pub static balance_35: Value<i32> = Rc::new(RefCell::new(50));
@@ -426,23 +414,19 @@ pub fn table_sum_in_b_59() -> i32 {
         table_57.with(|rc| rc.borrow()[__idx0])
     }));
 }
-pub trait p5_members_of_classes_in_unnamed_namespaces_Tally_31Impl {
+pub trait Tally_31Impl {
     fn add(&self, amount: i32) -> i32;
 }
-impl p5_members_of_classes_in_unnamed_namespaces_Tally_31Impl
-    for Ptr<p5_members_of_classes_in_unnamed_namespaces_Tally_31>
-{
+impl Tally_31Impl for Ptr<Tally_31> {
     fn add(&self, mut amount: i32) -> i32 {
         total_32.with(|rc| *rc.borrow_mut() += amount);
         return total_32.with(|rc| *rc.borrow());
     }
 }
-pub trait p5_members_of_classes_in_unnamed_namespaces_Tally_67Impl {
+pub trait Tally_67Impl {
     fn add(&self, amount: i32) -> i32;
 }
-impl p5_members_of_classes_in_unnamed_namespaces_Tally_67Impl
-    for Ptr<p5_members_of_classes_in_unnamed_namespaces_Tally_67>
-{
+impl Tally_67Impl for Ptr<Tally_67> {
     fn add(&self, mut amount: i32) -> i32 {
         total_68.with(|rc| *rc.borrow_mut() += (amount * 2));
         return total_68.with(|rc| *rc.borrow());

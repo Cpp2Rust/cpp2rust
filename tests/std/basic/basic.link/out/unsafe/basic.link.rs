@@ -61,12 +61,12 @@ pub unsafe fn bump_18() -> i32 {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
-pub struct p4_unnamed_namespaces_in_two_files_Record_19 {
+pub struct Record_19 {
     pub id: i32,
 }
-impl Default for p4_unnamed_namespaces_in_two_files_Record_19 {
+impl Default for Record_19 {
     fn default() -> Self {
-        unsafe { p4_unnamed_namespaces_in_two_files_Record_19 { id: 100 } }
+        unsafe { Record_19 { id: 100 } }
     }
 }
 pub static mut depth_20: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 3 });
@@ -74,8 +74,7 @@ pub unsafe fn test_21() {
     assert!(((unsafe { bump_18() }) == (2)));
     assert!(((unsafe { bump_in_b_22() }) == (51)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut counter_17)) == (2)));
-    let mut record: p4_unnamed_namespaces_in_two_files_Record_19 =
-        <p4_unnamed_namespaces_in_two_files_Record_19>::default();
+    let mut record: Record_19 = <Record_19>::default();
     assert!(((record.id) == (100)));
     assert!(((unsafe { record_id_in_b_23() }) == (200)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut depth_20)) == (3)));
@@ -95,8 +94,8 @@ pub unsafe fn test_29() {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
-pub struct p5_members_of_classes_in_unnamed_namespaces_Tally_31 {}
-impl p5_members_of_classes_in_unnamed_namespaces_Tally_31 {
+pub struct Tally_31 {}
+impl Tally_31 {
     pub unsafe fn add(&mut self, mut amount: i32) -> i32 {
         (*std::cell::LazyCell::force_mut(&mut *&raw mut total_32)) += amount;
         return (*std::cell::LazyCell::force_mut(&mut *&raw mut total_32));
@@ -104,12 +103,8 @@ impl p5_members_of_classes_in_unnamed_namespaces_Tally_31 {
 }
 pub static mut total_32: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 10 });
 pub unsafe fn test_33() {
-    let mut tally: p5_members_of_classes_in_unnamed_namespaces_Tally_31 =
-        <p5_members_of_classes_in_unnamed_namespaces_Tally_31>::default();
-    assert!(
-        ((unsafe { p5_members_of_classes_in_unnamed_namespaces_Tally_31::add(&mut tally, 1,) })
-            == (11))
-    );
+    let mut tally: Tally_31 = <Tally_31>::default();
+    assert!(((unsafe { Tally_31::add(&mut tally, 1,) }) == (11)));
     assert!(((unsafe { add_in_b_34(1,) }) == (102)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut total_32)) == (11)));
 }
@@ -272,14 +267,14 @@ pub unsafe fn bump_64() -> i32 {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
-pub struct p4_unnamed_namespaces_in_two_files_Record_65 {
+pub struct Record_65 {
     pub id: i64,
     pub extra: i32,
 }
-impl Default for p4_unnamed_namespaces_in_two_files_Record_65 {
+impl Default for Record_65 {
     fn default() -> Self {
         unsafe {
-            p4_unnamed_namespaces_in_two_files_Record_65 {
+            Record_65 {
                 id: 200_i64,
                 extra: 1,
             }
@@ -291,8 +286,7 @@ pub unsafe fn bump_in_b_22() -> i32 {
     return (unsafe { bump_64() });
 }
 pub unsafe fn record_id_in_b_23() -> i32 {
-    let mut record: p4_unnamed_namespaces_in_two_files_Record_65 =
-        <p4_unnamed_namespaces_in_two_files_Record_65>::default();
+    let mut record: Record_65 = <Record_65>::default();
     return (record.id as i32);
 }
 pub unsafe fn depth_in_b_24() -> i32 {
@@ -310,8 +304,8 @@ pub unsafe fn raise_30(mut by: i32) -> i32 {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
-pub struct p5_members_of_classes_in_unnamed_namespaces_Tally_67 {}
-impl p5_members_of_classes_in_unnamed_namespaces_Tally_67 {
+pub struct Tally_67 {}
+impl Tally_67 {
     pub unsafe fn add(&mut self, mut amount: i32) -> i32 {
         (*std::cell::LazyCell::force_mut(&mut *&raw mut total_68)) += ((amount) * (2));
         return (*std::cell::LazyCell::force_mut(&mut *&raw mut total_68));
@@ -319,11 +313,8 @@ impl p5_members_of_classes_in_unnamed_namespaces_Tally_67 {
 }
 pub static mut total_68: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 100 });
 pub unsafe fn add_in_b_34(mut amount: i32) -> i32 {
-    let mut tally: p5_members_of_classes_in_unnamed_namespaces_Tally_67 =
-        <p5_members_of_classes_in_unnamed_namespaces_Tally_67>::default();
-    return (unsafe {
-        p5_members_of_classes_in_unnamed_namespaces_Tally_67::add(&mut tally, amount)
-    });
+    let mut tally: Tally_67 = <Tally_67>::default();
+    return (unsafe { Tally_67::add(&mut tally, amount) });
 }
 pub static mut balance_35: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 50 });
 impl p5_members_of_class_with_external_linkage_Ledger {
