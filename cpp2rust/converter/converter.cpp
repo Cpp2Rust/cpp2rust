@@ -1523,6 +1523,9 @@ bool Converter::VisitDoStmt(clang::DoStmt *stmt) {
 
 bool Converter::VisitForStmt(clang::ForStmt *stmt) {
   ScopedPush push(break_target_, BreakTarget::Loop);
+  // The variables of the init statement are only visible in the for.
+  PushBrace scope(*this, stmt->getInit() &&
+                             clang::isa<clang::DeclStmt>(stmt->getInit()));
   Convert(stmt->getInit());
   StrCat("'loop_:");
   StrCat(keyword::kWhile);
