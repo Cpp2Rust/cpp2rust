@@ -36,14 +36,14 @@ pub fn main() {
 fn main_0() -> i32 {
     assert!(((static_pm_0.with(|rc| *rc.borrow())) == -1_isize));
     assert!(
-        (static_pm_0.with(|rc| *rc.borrow()) != (<HasTwoInts as Record>::OFFSETS.first as isize))
+        (static_pm_0.with(|rc| *rc.borrow()) != (offset_of_field!(HasTwoInts, first) as isize))
     );
     let mut value_initialized: isize = -1_isize;
     assert!(((value_initialized) == -1_isize));
-    assert!((value_initialized != (<HasTwoInts as Record>::OFFSETS.first as isize)));
+    assert!((value_initialized != (offset_of_field!(HasTwoInts, first) as isize)));
     let mut holder: HoldsSelector = <HoldsSelector>::default();
     assert!(((holder.selector) == -1_isize));
-    assert!((holder.selector != (<HasTwoInts as Record>::OFFSETS.first as isize)));
+    assert!((holder.selector != (offset_of_field!(HasTwoInts, first) as isize)));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {

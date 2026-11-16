@@ -52,7 +52,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let mut pm: isize = (<HoldsCounted as Record>::OFFSETS.member as isize);
+    let mut pm: isize = (offset_of_field!(HoldsCounted, member) as isize);
     let holder: Value<HoldsCounted> = Rc::new(RefCell::new(<HoldsCounted>::default()));
     let mut from_lvalue: CountsCopiesAndMoves = CountsCopiesAndMoves::copy_from({
         (holder.as_pointer()).member::<CountsCopiesAndMoves>(pm)

@@ -20,11 +20,10 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let source: Value<isize> = Rc::new(RefCell::new(
-        (<HasTwoInts as Record>::OFFSETS.second as isize),
+        (offset_of_field!(HasTwoInts, second) as isize),
     ));
-    let destination: Value<isize> = Rc::new(RefCell::new(
-        (<HasTwoInts as Record>::OFFSETS.first as isize),
-    ));
+    let destination: Value<isize> =
+        Rc::new(RefCell::new((offset_of_field!(HasTwoInts, first) as isize)));
     match ({ (destination.as_pointer()).to_any() },) {
         (mut __tmp_0,) => {
             __tmp_0.memcpy(

@@ -23,7 +23,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     assert!(((pm_0.with(|rc| *rc.borrow())) == -1_isize));
-    pm_0.with(|rc| *rc.borrow_mut() = (<CompletedLater as Record>::OFFSETS.second as isize));
+    pm_0.with(|rc| *rc.borrow_mut() = (offset_of_field!(CompletedLater, second) as isize));
     let obj: Value<CompletedLater> = Rc::new(RefCell::new(CompletedLater {
         first: 3,
         second: 4,

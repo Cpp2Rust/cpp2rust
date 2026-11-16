@@ -25,9 +25,9 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let mut converted: isize = (<HasTwoInts as Record>::OFFSETS.second as isize);
+    let mut converted: isize = (offset_of_field!(HasTwoInts, second) as isize);
     let mut back: isize = converted;
-    assert!((back == (<HasTwoInts as Record>::OFFSETS.second as isize)));
+    assert!((back == (offset_of_field!(HasTwoInts, second) as isize)));
     let obj: Value<HasTwoInts> = Rc::new(RefCell::new(HasTwoInts {
         first: 3,
         second: 4,

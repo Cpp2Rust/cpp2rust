@@ -31,9 +31,9 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let mut pm: isize = (<HoldsSelector as Record>::OFFSETS.selector as isize);
+    let mut pm: isize = (offset_of_field!(HoldsSelector, selector) as isize);
     let holder: Value<HoldsSelector> = Rc::new(RefCell::new(HoldsSelector {
-        selector: (<HasTwoInts as Record>::OFFSETS.second as isize),
+        selector: (offset_of_field!(HasTwoInts, second) as isize),
     }));
     let obj: Value<HasTwoInts> = Rc::new(RefCell::new(HasTwoInts {
         first: 3,
@@ -47,7 +47,7 @@ fn main_0() -> i32 {
     );
     (holder.as_pointer())
         .member::<isize>(pm)
-        .write((<HasTwoInts as Record>::OFFSETS.first as isize));
+        .write((offset_of_field!(HasTwoInts, first) as isize));
     assert!(
         ({
             (((obj.as_pointer())

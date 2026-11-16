@@ -30,7 +30,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let mut pm: isize = (<HasIntArray as Record>::OFFSETS.elements as isize);
+    let mut pm: isize = (offset_of_field!(HasIntArray, elements) as isize);
     let obj: Value<HasIntArray> = Rc::new(RefCell::new(HasIntArray {
         before: 1,
         elements: Box::new([2, 3, 4]),

@@ -27,7 +27,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let mut converted: isize = (<HasTwoInts as Record>::OFFSETS.second as isize);
-    return ((converted == (<AlsoHasTwoInts as Record>::OFFSETS.second as isize)) as i32);
+    let mut converted: isize = (offset_of_field!(HasTwoInts, second) as isize);
+    return ((converted == (offset_of_field!(AlsoHasTwoInts, second) as isize)) as i32);
 }
 pub fn __cpp2rust_init_globals() {}

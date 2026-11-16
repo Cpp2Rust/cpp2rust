@@ -19,9 +19,9 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let mut first_pm: isize = (<HasTwoInts as Record>::OFFSETS.first as isize);
-    let mut also_first_pm: isize = (<HasTwoInts as Record>::OFFSETS.first as isize);
-    let mut second_pm: isize = (<HasTwoInts as Record>::OFFSETS.second as isize);
+    let mut first_pm: isize = (offset_of_field!(HasTwoInts, first) as isize);
+    let mut also_first_pm: isize = (offset_of_field!(HasTwoInts, first) as isize);
+    let mut second_pm: isize = (offset_of_field!(HasTwoInts, second) as isize);
     assert!((first_pm == also_first_pm));
     assert!(!(first_pm != also_first_pm));
     assert!((first_pm != second_pm));

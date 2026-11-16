@@ -20,7 +20,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let mut null_pm: isize = -1_isize;
-    let mut first_pm: isize = (<HasTwoInts as Record>::OFFSETS.first as isize);
+    let mut first_pm: isize = (offset_of_field!(HasTwoInts, first) as isize);
     assert!((first_pm != null_pm));
     assert!(!(first_pm == null_pm));
     assert!((null_pm != first_pm));

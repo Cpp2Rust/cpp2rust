@@ -32,7 +32,7 @@ pub fn select_object_4() -> Ptr<HasValue> {
 pub fn select_member_5() -> isize {
     member_stamp_2
         .with(|rc| *rc.borrow_mut() = (*sequence_0.with(Value::clone).borrow_mut()).prefix_inc());
-    return (<HasValue as Record>::OFFSETS.value as isize);
+    return (offset_of_field!(HasValue, value) as isize);
 }
 pub fn main() {
     __cpp2rust_init_globals();

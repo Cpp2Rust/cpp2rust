@@ -19,7 +19,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let mut pm: isize = (<HasTwoInts as Record>::OFFSETS.second as isize);
+    let mut pm: isize = (offset_of_field!(HasTwoInts, second) as isize);
     let obj: Value<HasTwoInts> = Rc::new(RefCell::new(HasTwoInts {
         first: 3,
         second: 4,

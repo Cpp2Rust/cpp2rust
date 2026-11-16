@@ -20,7 +20,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let pm: Value<isize> = Rc::new(RefCell::new(
-        (<HasTwoInts as Record>::OFFSETS.second as isize),
+        (offset_of_field!(HasTwoInts, second) as isize),
     ));
     let bytes: Value<Box<[u8]>> =
         Rc::new(RefCell::new((0..8).map(|_| 0_u8).collect::<Box<[u8]>>()));
@@ -30,14 +30,14 @@ fn main_0() -> i32 {
             (__tmp_0).clone()
         }
     };
-    (*pm.borrow_mut()) = (<HasTwoInts as Record>::OFFSETS.first as isize);
+    (*pm.borrow_mut()) = (offset_of_field!(HasTwoInts, first) as isize);
     match ({ (pm.as_pointer()).to_any() },) {
         (mut __tmp_1,) => {
             __tmp_1.memcpy(&(bytes.decay()).to_any(), ::std::mem::size_of::<isize>());
             (__tmp_1).clone()
         }
     };
-    assert!(({ ((*pm.borrow()) == (<HasTwoInts as Record>::OFFSETS.second as isize)) }));
+    assert!(({ ((*pm.borrow()) == (offset_of_field!(HasTwoInts, second) as isize)) }));
     let obj: Value<HasTwoInts> = Rc::new(RefCell::new(HasTwoInts {
         first: 3,
         second: 4,
@@ -53,7 +53,7 @@ fn main_0() -> i32 {
             (__tmp_2).clone()
         }
     };
-    (*null_pm.borrow_mut()) = (<HasTwoInts as Record>::OFFSETS.first as isize);
+    (*null_pm.borrow_mut()) = (offset_of_field!(HasTwoInts, first) as isize);
     match ({ (null_pm.as_pointer()).to_any() },) {
         (mut __tmp_3,) => {
             __tmp_3.memcpy(&(bytes.decay()).to_any(), ::std::mem::size_of::<isize>());

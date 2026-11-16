@@ -42,7 +42,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let mut pm: isize = (<HasAnonymousUnion as Record>::OFFSETS.anon_0 as isize);
+    let mut pm: isize = (offset_of_field!(HasAnonymousUnion, anon_0) as isize);
     let obj: Value<HasAnonymousUnion> = Rc::new(RefCell::new(<HasAnonymousUnion>::default()));
     (*obj.borrow_mut()).before = 1;
     anon_0::as_int(field_ptr!(obj.as_pointer(), anon_0)).write(2);

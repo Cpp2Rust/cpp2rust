@@ -19,7 +19,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let mut pm: isize = (<HasTwoInts as Record>::OFFSETS.first as isize);
+    let mut pm: isize = (offset_of_field!(HasTwoInts, first) as isize);
     let obj: Value<HasTwoInts> = Rc::new(RefCell::new(HasTwoInts {
         first: 3,
         second: 4,
@@ -28,7 +28,7 @@ fn main_0() -> i32 {
     (obj.as_pointer()).member::<i32>(pm).write(5);
     assert!(({ ({ (*obj.borrow()).first } == 5) }));
     assert!(({ ({ (*obj.borrow()).second } == 4) }));
-    pm = (<HasTwoInts as Record>::OFFSETS.second as isize);
+    pm = (offset_of_field!(HasTwoInts, second) as isize);
     assert!((((obj.as_pointer()).member::<i32>(pm).read()) == 4));
     (obj.as_pointer()).member::<i32>(pm).write(6);
     assert!(({ ({ (*obj.borrow()).first } == 5) }));

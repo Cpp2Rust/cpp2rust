@@ -16,7 +16,7 @@ pub struct HasTwoInts {
 }
 pub fn second_or_null_0(mut choose_second: bool) -> isize {
     return if choose_second {
-        (<HasTwoInts as Record>::OFFSETS.second as isize)
+        (offset_of_field!(HasTwoInts, second) as isize)
     } else {
         -1_isize
     };
@@ -31,7 +31,7 @@ fn main_0() -> i32 {
         second: 4,
     }));
     assert!((({ second_or_null_0(false,) }) == -1_isize));
-    assert!((({ second_or_null_0(true,) }) == (<HasTwoInts as Record>::OFFSETS.second as isize)));
+    assert!((({ second_or_null_0(true,) }) == (offset_of_field!(HasTwoInts, second) as isize)));
     assert!(
         (((obj.as_pointer())
             .member::<i32>(({ second_or_null_0(true,) }))

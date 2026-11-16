@@ -22,9 +22,9 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let members: Value<Box<[isize]>> = Rc::new(RefCell::new(Box::new([
-        (<HasThreeInts as Record>::OFFSETS.third as isize),
-        (<HasThreeInts as Record>::OFFSETS.first as isize),
-        (<HasThreeInts as Record>::OFFSETS.second as isize),
+        (offset_of_field!(HasThreeInts, third) as isize),
+        (offset_of_field!(HasThreeInts, first) as isize),
+        (offset_of_field!(HasThreeInts, second) as isize),
     ])));
     let obj: Value<HasThreeInts> = Rc::new(RefCell::new(HasThreeInts {
         first: 4,
@@ -67,7 +67,7 @@ fn main_0() -> i32 {
     element.prefix_inc();
     assert!(({ (element).clone() } == { (members.decay().offset(2)) }));
     assert!((((obj.as_pointer()).member::<i32>((element.read())).read()) == 5));
-    (*members.borrow_mut())[(2) as usize] = (<HasThreeInts as Record>::OFFSETS.third as isize);
+    (*members.borrow_mut())[(2) as usize] = (offset_of_field!(HasThreeInts, third) as isize);
     assert!((((obj.as_pointer()).member::<i32>((element.read())).read()) == 6));
     return 0;
 }
