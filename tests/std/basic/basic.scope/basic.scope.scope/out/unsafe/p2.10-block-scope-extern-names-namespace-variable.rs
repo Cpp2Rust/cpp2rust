@@ -17,9 +17,8 @@ unsafe fn main_0() -> i32 {
     let mut level: i32 = 22;
     assert!(((level) == (22)));
     {
-        let mut level: i32 = 0_i32;
-        assert!(((level) == (11)));
-        level = 33;
+        assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut level_0)) == (11)));
+        (*std::cell::LazyCell::force_mut(&mut *&raw mut level_0)) = 33;
     }
     assert!(((level) == (22)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut level_0)) == (33)));

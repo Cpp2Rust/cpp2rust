@@ -30,7 +30,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let object: Value<HasExplicitObjectOverload> =
         Rc::new(RefCell::new(<HasExplicitObjectOverload>::default()));
-    assert!((({ pick(object.as_pointer(), 1,) }) == 11));
+    assert!((({ HasExplicitObjectOverloadImpl::pick_1(object.as_pointer(), 1,) }) == 11));
     assert!((explicit_calls_0.with(|rc| *rc.borrow()) == 1));
     assert!((rvalue_calls_1.with(|rc| *rc.borrow()) == 0));
     assert!(
@@ -46,11 +46,11 @@ fn main_0() -> i32 {
     return 0;
 }
 pub trait HasExplicitObjectOverloadImpl {
-    fn pick_1(&self, self_: Ptr<HasExplicitObjectOverload>, amount: i32) -> i32;
+    fn pick_1(self_: Ptr<HasExplicitObjectOverload>, amount: i32) -> i32;
     fn pick_2(&self, amount: i32) -> i32;
 }
 impl HasExplicitObjectOverloadImpl for Ptr<HasExplicitObjectOverload> {
-    fn pick_1(&self, self_: Ptr<HasExplicitObjectOverload>, mut amount: i32) -> i32 {
+    fn pick_1(self_: Ptr<HasExplicitObjectOverload>, mut amount: i32) -> i32 {
         (*explicit_calls_0.with(Value::clone).borrow_mut()).prefix_inc();
         return ({ self_.with(|__s| __s.base) } + { amount });
     }

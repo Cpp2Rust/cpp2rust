@@ -17,9 +17,8 @@ fn main_0() -> i32 {
     let mut level: i32 = 22;
     assert!((level == 22));
     {
-        let mut level: i32 = 0_i32;
-        assert!((level == 11));
-        level = 33;
+        assert!((level_0.with(|rc| *rc.borrow()) == 11));
+        level_0.with(|rc| *rc.borrow_mut() = 33);
     }
     assert!((level == 22));
     assert!((level_0.with(|rc| *rc.borrow()) == 33));

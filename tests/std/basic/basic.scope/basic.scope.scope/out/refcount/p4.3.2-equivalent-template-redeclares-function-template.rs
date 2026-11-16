@@ -34,10 +34,6 @@ fn main_0() -> i32 {
     assert!((pointer_calls_1.with(|rc| *rc.borrow()) == 1));
     return 0;
 }
-pub fn describe_2(mut renamed: i32) -> i32 {
-    (*value_calls_0.with(Value::clone).borrow_mut()).prefix_inc();
-    return (renamed + 10);
-}
 pub fn __cpp2rust_init_globals() {
     let _ = value_calls_0.with(|_| ());
     let _ = pointer_calls_1.with(|_| ());

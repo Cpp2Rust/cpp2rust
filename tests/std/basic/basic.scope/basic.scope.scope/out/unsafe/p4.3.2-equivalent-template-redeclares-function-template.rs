@@ -34,10 +34,6 @@ unsafe fn main_0() -> i32 {
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut pointer_calls_1)) == (1)));
     return 0;
 }
-pub unsafe fn describe_2(mut renamed: i32) -> i32 {
-    (*std::cell::LazyCell::force_mut(&mut *&raw mut value_calls_0)).prefix_inc();
-    return ((renamed) + (10));
-}
 pub unsafe fn __cpp2rust_init_globals() {
     std::cell::LazyCell::force(&*&raw const value_calls_0);
     std::cell::LazyCell::force(&*&raw const pointer_calls_1);
