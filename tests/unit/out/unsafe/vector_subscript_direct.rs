@@ -46,10 +46,12 @@ pub unsafe fn push_and_index_0(v: *mut Vec<i32>) -> i32 {
 }
 pub unsafe fn sum_ref_1(v: *const Vec<i32>) -> i32 {
     let mut s: i32 = 0;
-    let mut i: usize = 0_usize;
-    'loop_: while ((i) < ((*v).len())) {
-        s += (&(*v))[(i)];
-        i.prefix_inc();
+    {
+        let mut i: usize = 0_usize;
+        'loop_: while ((i) < ((*v).len())) {
+            s += (&(*v))[(i)];
+            i.prefix_inc();
+        }
     }
     return s;
 }

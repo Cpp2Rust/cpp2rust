@@ -107,40 +107,48 @@ impl Arrays {
         this
     }
     pub unsafe fn copy_assign(&mut self, _a0: *const Arrays) -> *mut Arrays {
-        let mut __i0: usize = 0_usize;
-        'loop_: while ((__i0) != (2_usize)) {
-            (unsafe {
-                let _o: *const Tracked = &(*_a0).a[(__i0)];
-                Tracked::copy_assign(&mut self.a[(__i0)], _o)
-            });
-            __i0.prefix_inc();
+        {
+            let mut __i0: usize = 0_usize;
+            'loop_: while ((__i0) != (2_usize)) {
+                (unsafe {
+                    let _o: *const Tracked = &(*_a0).a[(__i0)];
+                    Tracked::copy_assign(&mut self.a[(__i0)], _o)
+                });
+                __i0.prefix_inc();
+            }
         }
-        let mut __i0: usize = 0_usize;
-        'loop_: while ((__i0) != (2_usize)) {
-            (unsafe {
-                let _o: *const Tracked = &(*_a0).b[(__i0)];
-                Tracked::copy_assign(&mut self.b[(__i0)], _o)
-            });
-            __i0.prefix_inc();
+        {
+            let mut __i0: usize = 0_usize;
+            'loop_: while ((__i0) != (2_usize)) {
+                (unsafe {
+                    let _o: *const Tracked = &(*_a0).b[(__i0)];
+                    Tracked::copy_assign(&mut self.b[(__i0)], _o)
+                });
+                __i0.prefix_inc();
+            }
         }
         return &mut (*(self as *mut Arrays));
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Arrays) -> *mut Arrays {
-        let mut __i0: usize = 0_usize;
-        'loop_: while ((__i0) != (2_usize)) {
-            (unsafe {
-                let _o: *mut Tracked = &mut (*_a0).a[(__i0)];
-                Tracked::move_assign(&mut self.a[(__i0)], _o)
-            });
-            __i0.prefix_inc();
+        {
+            let mut __i0: usize = 0_usize;
+            'loop_: while ((__i0) != (2_usize)) {
+                (unsafe {
+                    let _o: *mut Tracked = &mut (*_a0).a[(__i0)];
+                    Tracked::move_assign(&mut self.a[(__i0)], _o)
+                });
+                __i0.prefix_inc();
+            }
         }
-        let mut __i0: usize = 0_usize;
-        'loop_: while ((__i0) != (2_usize)) {
-            (unsafe {
-                let _o: *mut Tracked = &mut (*_a0).b[(__i0)];
-                Tracked::move_assign(&mut self.b[(__i0)], _o)
-            });
-            __i0.prefix_inc();
+        {
+            let mut __i0: usize = 0_usize;
+            'loop_: while ((__i0) != (2_usize)) {
+                (unsafe {
+                    let _o: *mut Tracked = &mut (*_a0).b[(__i0)];
+                    Tracked::move_assign(&mut self.b[(__i0)], _o)
+                });
+                __i0.prefix_inc();
+            }
         }
         return &mut (*(self as *mut Arrays));
     }

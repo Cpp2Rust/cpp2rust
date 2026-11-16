@@ -187,23 +187,25 @@ fn main_0() -> i32 {
     );
     assert!((calls_0.with(|rc| *rc.borrow()) == 0));
     let mut largest: usize = 0_usize;
-    let mut i: i32 = 0;
-    'loop_: while (i < 3) {
-        let __rhs = ({
-            let __tmp_13: Value<u64> = Rc::new(RefCell::new((largest as u64)));
-            (match (Rc::new(RefCell::new((({ size_of_2(i) }) as u64))).as_pointer(),) {
-                (__tmp_12,) => {
-                    if CppLess::less(&__tmp_13.as_pointer(), &(__tmp_12).clone()) {
-                        (__tmp_12).clone()
-                    } else {
-                        __tmp_13.as_pointer()
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < 3) {
+            let __rhs = ({
+                let __tmp_13: Value<u64> = Rc::new(RefCell::new((largest as u64)));
+                (match (Rc::new(RefCell::new((({ size_of_2(i) }) as u64))).as_pointer(),) {
+                    (__tmp_12,) => {
+                        if CppLess::less(&__tmp_13.as_pointer(), &(__tmp_12).clone()) {
+                            (__tmp_12).clone()
+                        } else {
+                            __tmp_13.as_pointer()
+                        }
                     }
                 }
-            }
-            .read())
-        } as usize);
-        largest = __rhs;
-        i.prefix_inc();
+                .read())
+            } as usize);
+            largest = __rhs;
+            i.prefix_inc();
+        }
     }
     assert!((largest == 6_usize) && (calls_0.with(|rc| *rc.borrow()) == 3));
     return 0;

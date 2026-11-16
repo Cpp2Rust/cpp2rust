@@ -20,22 +20,24 @@ pub fn sum_mixed_0(count: i32, __args: Box<[VaArg]>) -> i32 {
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
     (*ap.borrow_mut()) = __args.decay();
     let mut total: i32 = 0;
-    let mut i: i32 = 0;
-    'loop_: while (i < (*count.borrow())) {
-        let mut tag: i32 = (*ap.borrow_mut()).arg::<i32>();
-        if (tag == 0) {
-            total += (*ap.borrow_mut()).arg::<i32>();
-        } else if (tag == 1) {
-            total += ((*ap.borrow_mut()).arg::<f64>() as i32);
-        } else if (tag == 3) {
-            let mut p: pair = (*ap.borrow_mut()).arg::<pair>();
-            total += (p.a * p.b);
-        } else {
-            let mut val: i64 = (*ap.borrow_mut()).arg::<i64>();
-            total += (val as i32);
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < (*count.borrow())) {
+            let mut tag: i32 = (*ap.borrow_mut()).arg::<i32>();
+            if (tag == 0) {
+                total += (*ap.borrow_mut()).arg::<i32>();
+            } else if (tag == 1) {
+                total += ((*ap.borrow_mut()).arg::<f64>() as i32);
+            } else if (tag == 3) {
+                let mut p: pair = (*ap.borrow_mut()).arg::<pair>();
+                total += (p.a * p.b);
+            } else {
+                let mut val: i64 = (*ap.borrow_mut()).arg::<i64>();
+                total += (val as i32);
+            }
+            i.postfix_inc();
         }
-        i.postfix_inc();
-    }
+    };
     return total;
 }
 pub fn main() {

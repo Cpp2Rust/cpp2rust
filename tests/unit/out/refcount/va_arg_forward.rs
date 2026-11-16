@@ -9,10 +9,12 @@ use std::rc::{Rc, Weak};
 pub fn inner_0(mut count: i32, ap: Ptr<VaArg>) -> i32 {
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(ap));
     let mut total: i32 = 0;
-    let mut i: i32 = 0;
-    'loop_: while (i < count) {
-        total += (*ap.borrow_mut()).arg::<i32>();
-        i.postfix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < count) {
+            total += (*ap.borrow_mut()).arg::<i32>();
+            i.postfix_inc();
+        }
     }
     return total;
 }

@@ -25,15 +25,17 @@ unsafe fn main_0() -> i32 {
     }
     assert!(((x) == (1)));
     let mut sum: i32 = 0;
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (3)) {
-        let mut y: i32 = i;
-        {
-            let mut y: i32 = 10;
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (3)) {
+            let mut y: i32 = i;
+            {
+                let mut y: i32 = 10;
+                sum += y;
+            }
             sum += y;
+            i.postfix_inc();
         }
-        sum += y;
-        i.postfix_inc();
     }
     assert!(((sum) == (33)));
     if ((x) == (1)) {

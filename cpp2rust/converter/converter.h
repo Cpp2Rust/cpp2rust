@@ -245,6 +245,8 @@ public:
 
   void ConvertDeclContext(clang::DeclContext *decl);
 
+  void ConvertNamespaceMember(clang::Decl *decl);
+
   virtual bool VisitTypedefDecl(clang::TypedefDecl *decl);
   virtual bool VisitTypeAliasDecl(clang::TypeAliasDecl *decl);
   virtual bool VisitTypeAliasTemplateDecl(clang::TypeAliasTemplateDecl *decl);
@@ -265,6 +267,9 @@ public:
   virtual bool VisitIfStmt(clang::IfStmt *stmt);
 
   virtual bool VisitWhileStmt(clang::WhileStmt *stmt);
+
+  void ConvertConditionVariableTest(clang::DeclStmt *cond_var,
+                                    clang::Expr *cond);
 
   virtual bool VisitDoStmt(clang::DoStmt *stmt);
 

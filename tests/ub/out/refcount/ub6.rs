@@ -42,12 +42,14 @@ pub fn fill_1(arr: Ptr<Option<Value<Box<[Ptr<i32>]>>>>, n1: Ptr<i32>) {
 }
 pub fn any_2(arr: Ptr<Option<Value<Box<[Ptr<i32>]>>>>, n1: Ptr<i32>) -> bool {
     let mut out: bool = false;
-    let mut i: i32 = 0;
-    'loop_: while ({ i } < { (n1.read()) }) {
-        let __rhs =
-            (out) || ((((*arr.upgrade().deref()).decay().offset((i as usize)).read()).read()) == 0);
-        out = __rhs;
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while ({ i } < { (n1.read()) }) {
+            let __rhs = (out)
+                || ((((*arr.upgrade().deref()).decay().offset((i as usize)).read()).read()) == 0);
+            out = __rhs;
+            i.prefix_inc();
+        }
     }
     return out;
 }

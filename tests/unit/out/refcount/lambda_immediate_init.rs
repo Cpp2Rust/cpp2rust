@@ -50,10 +50,12 @@ thread_local!(
             FnPtr::<fn() -> i32>::new(|| -> i32 {
                 {
                     let mut s: i32 = 0;
-                    let mut i: i32 = 1;
-                    'loop_: while (i <= 4) {
-                        s += i;
-                        i.postfix_inc();
+                    {
+                        let mut i: i32 = 1;
+                        'loop_: while (i <= 4) {
+                            s += i;
+                            i.postfix_inc();
+                        }
                     }
                     return s;
                 }

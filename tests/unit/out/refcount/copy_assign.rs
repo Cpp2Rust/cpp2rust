@@ -283,16 +283,18 @@ impl HolderImpl for Ptr<Holder> {
             let _o: Ptr<Partial> = field_ptr!(_a0, p);
             PartialImpl::copy_assign(&field_ptr!((*self), p), _o)
         });
-        let mut __i0: usize = 0_usize;
-        'loop_: while (__i0 != 2_usize) {
-            ({
-                let _o: Ptr<Partial> = array_field_ptr!(_a0, arr).offset((__i0) as isize);
-                PartialImpl::copy_assign(
-                    &array_field_ptr!((*self), arr).offset((__i0) as isize),
-                    _o,
-                )
-            });
-            __i0.prefix_inc();
+        {
+            let mut __i0: usize = 0_usize;
+            'loop_: while (__i0 != 2_usize) {
+                ({
+                    let _o: Ptr<Partial> = array_field_ptr!(_a0, arr).offset((__i0) as isize);
+                    PartialImpl::copy_assign(
+                        &array_field_ptr!((*self), arr).offset((__i0) as isize),
+                        _o,
+                    )
+                });
+                __i0.prefix_inc();
+            }
         }
         return (*self).clone();
     }

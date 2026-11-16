@@ -8,13 +8,15 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn All_0(arr: *mut Option<Box<[i32]>>, mut N: i32, mut element: i32) {
     let mut all: Option<Box<[i32]>> = Some((0..(N as usize)).map(|_| 0_i32).collect::<Box<[_]>>());
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (N)) {
-        (*all
-            .as_deref()
-            .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
-            .add((i as usize))) = element;
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (N)) {
+            (*all
+                .as_deref()
+                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
+                .add((i as usize))) = element;
+            i.prefix_inc();
+        }
     }
     (*arr) = all.take();
 }

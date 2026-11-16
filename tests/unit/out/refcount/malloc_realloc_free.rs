@@ -23,10 +23,12 @@ fn main_0() -> i32 {
             (4_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize)),
         )
         .reinterpret_cast::<i32>();
-        let mut i: i32 = 0;
-        'loop_: while (i < 4) {
-            elem!(arr, i).write({ (i * 10) });
-            i.postfix_inc();
+        {
+            let mut i: i32 = 0;
+            'loop_: while (i < 4) {
+                elem!(arr, i).write({ (i * 10) });
+                i.postfix_inc();
+            }
         }
         assert!(((elem!(arr, 0).read()) == 0));
         assert!(((elem!(arr, 3).read()) == 30));
@@ -52,10 +54,12 @@ fn main_0() -> i32 {
         libcc2rs::free_refcount((grow).to_any());
         let mut zeros: Ptr<i32> = libcc2rs::calloc_refcount(4_usize, ::std::mem::size_of::<i32>())
             .reinterpret_cast::<i32>();
-        let mut i: i32 = 0;
-        'loop_: while (i < 4) {
-            assert!(((elem!(zeros, i).read()) == 0));
-            i.postfix_inc();
+        {
+            let mut i: i32 = 0;
+            'loop_: while (i < 4) {
+                assert!(((elem!(zeros, i).read()) == 0));
+                i.postfix_inc();
+            }
         }
         libcc2rs::free_refcount((zeros).to_any());
     }
@@ -77,10 +81,12 @@ fn main_0() -> i32 {
         let mut arr: Ptr<i32> =
             ({ pmalloc.call((4_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize))) })
                 .reinterpret_cast::<i32>();
-        let mut i: i32 = 0;
-        'loop_: while (i < 4) {
-            elem!(arr, i).write({ (i * 10) });
-            i.postfix_inc();
+        {
+            let mut i: i32 = 0;
+            'loop_: while (i < 4) {
+                elem!(arr, i).write({ (i * 10) });
+                i.postfix_inc();
+            }
         }
         assert!(((elem!(arr, 0).read()) == 0));
         assert!(((elem!(arr, 3).read()) == 30));
@@ -107,10 +113,12 @@ fn main_0() -> i32 {
         ({ pfree.call((grow).to_any()) });
         let mut zeros: Ptr<i32> =
             ({ pcalloc.call(4_usize, ::std::mem::size_of::<i32>()) }).reinterpret_cast::<i32>();
-        let mut i: i32 = 0;
-        'loop_: while (i < 4) {
-            assert!(((elem!(zeros, i).read()) == 0));
-            i.postfix_inc();
+        {
+            let mut i: i32 = 0;
+            'loop_: while (i < 4) {
+                assert!(((elem!(zeros, i).read()) == 0));
+                i.postfix_inc();
+            }
         }
         ({ pfree.call((zeros).to_any()) });
     }

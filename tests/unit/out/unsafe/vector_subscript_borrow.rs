@@ -20,10 +20,12 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut v: Vec<i32> = vec![1; 4_usize];
     let mut items: Vec<u32> = (0..(3_usize) as usize).map(|_| 0_u32).collect::<Vec<_>>();
-    let mut i: u32 = 0_u32;
-    'loop_: while ((i as usize) < (items.len())) {
-        items[(i as usize)] = (i).wrapping_mul(2_u32);
-        i.prefix_inc();
+    {
+        let mut i: u32 = 0_u32;
+        'loop_: while ((i as usize) < (items.len())) {
+            items[(i as usize)] = (i).wrapping_mul(2_u32);
+            i.prefix_inc();
+        }
     }
     items[(1_usize)] = (items[(1_usize)]).wrapping_add(5_u32);
     items[(2_usize)].postfix_inc();

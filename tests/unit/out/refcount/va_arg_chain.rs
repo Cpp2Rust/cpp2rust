@@ -8,10 +8,12 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn extract_nth_0(mut n: i32, ap: Ptr<VaArg>) -> i32 {
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(ap));
-    let mut i: i32 = 0;
-    'loop_: while (i < n) {
-        (*ap.borrow_mut()).arg::<i32>();
-        i.postfix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < n) {
+            (*ap.borrow_mut()).arg::<i32>();
+            i.postfix_inc();
+        }
     }
     return (*ap.borrow_mut()).arg::<i32>();
 }

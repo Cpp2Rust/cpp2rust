@@ -50,10 +50,12 @@ fn main_0() -> i32 {
     assert!(({ ((*arr.borrow())[(5) as usize] == 99) }));
     let mut end: Ptr<i32> = p.offset((8) as isize);
     let mut sum: i32 = 0;
-    let mut it: Ptr<i32> = (p).clone();
-    'loop_: while ({ (it).clone() } != { (end).clone() }) {
-        sum += { (it.read()) };
-        it.prefix_inc();
+    {
+        let mut it: Ptr<i32> = (p).clone();
+        'loop_: while ({ (it).clone() } != { (end).clone() }) {
+            sum += { (it.read()) };
+            it.prefix_inc();
+        }
     }
     assert!((sum == (((((((10 + 11) + 12) + 13) + 14) + 99) + 16) + 17)));
     let bytes: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([

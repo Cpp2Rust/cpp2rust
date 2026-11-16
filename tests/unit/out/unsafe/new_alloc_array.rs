@@ -25,16 +25,20 @@ unsafe fn main_0() -> i32 {
         }
     };
     (*array.offset((99) as isize)) = -1_i32;
-    let mut p1: *mut i32 = array;
-    'loop_: while ((*p1) >= (0)) {
-        (*p1) = 1;
-        p1.prefix_inc();
+    {
+        let mut p1: *mut i32 = array;
+        'loop_: while ((*p1) >= (0)) {
+            (*p1) = 1;
+            p1.prefix_inc();
+        }
     }
     let mut out: i32 = 0;
-    let mut p1: *mut i32 = array;
-    'loop_: while ((*p1) >= (0)) {
-        out += (*p1);
-        p1.prefix_inc();
+    {
+        let mut p1: *mut i32 = array;
+        'loop_: while ((*p1) >= (0)) {
+            out += (*p1);
+            p1.prefix_inc();
+        }
     }
     let mut p2: *mut i32 = array;
     {

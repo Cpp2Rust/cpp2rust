@@ -27,15 +27,19 @@ unsafe fn main_0() -> i32 {
         ((*p) == (sentinel))
             && (!(c"pointer does not have correct value before insert".as_ptr()).is_null())
     );
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (sentinel)) {
-        (*m.subscript(&i)) = i;
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (sentinel)) {
+            (*m.subscript(&i)) = i;
+            i.prefix_inc();
+        }
     }
-    let mut i: i32 = ((sentinel) + (1));
-    'loop_: while ((i) <= (N)) {
-        (*m.subscript(&i)) = i;
-        i.prefix_inc();
+    {
+        let mut i: i32 = ((sentinel) + (1));
+        'loop_: while ((i) <= (N)) {
+            (*m.subscript(&i)) = i;
+            i.prefix_inc();
+        }
     }
     assert!(
         (((*it.iter_deref()).1) != (0))

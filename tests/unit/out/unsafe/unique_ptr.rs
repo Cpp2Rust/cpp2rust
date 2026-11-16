@@ -140,98 +140,112 @@ pub unsafe fn RndStuff_2() {
     let mut x2: Option<Box<[i32]>> = Some(Box::from_raw(Box::leak(
         (0..100_usize).map(|_| 0_i32).collect::<Box<[i32]>>(),
     )));
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (100)) {
-        (*x2.as_deref()
-            .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
-            .add((i as usize))) = 1;
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (100)) {
+            (*x2.as_deref()
+                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
+                .add((i as usize))) = 1;
+            i.prefix_inc();
+        }
     }
     x2 = Some(Box::from_raw(Box::leak(
         (0..200_usize).map(|_| 0_i32).collect::<Box<[i32]>>(),
     )));
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (200)) {
-        (*x2.as_deref()
-            .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
-            .add((i as usize))) = 2;
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (200)) {
+            (*x2.as_deref()
+                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
+                .add((i as usize))) = 2;
+            i.prefix_inc();
+        }
     }
     let mut p2: *mut i32 = x2
         .as_deref_mut()
         .map_or(::std::ptr::null_mut(), |s| s.as_mut_ptr());
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (200)) {
-        assert!(((*p2.offset((i) as isize)) == (2)));
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (200)) {
+            assert!(((*p2.offset((i) as isize)) == (2)));
+            i.prefix_inc();
+        }
     }
     let mut x3: Option<Box<[Pair]>> = Some(
         (0..10_usize)
             .map(|_| <Pair>::default())
             .collect::<Box<[_]>>(),
     );
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (10)) {
-        (*x3.as_deref()
-            .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Pair)
-            .add((i as usize))) = Pair { x: 1, y: 2 };
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (10)) {
+            (*x3.as_deref()
+                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Pair)
+                .add((i as usize))) = Pair { x: 1, y: 2 };
+            i.prefix_inc();
+        }
     }
     let mut p3_0: *mut Pair = x3
         .as_deref_mut()
         .map_or(::std::ptr::null_mut(), |s| s.as_mut_ptr());
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (10)) {
-        assert!((((*p3_0.offset((i) as isize)).x) == (1)));
-        assert!((((*p3_0.offset((i) as isize)).y) == (2)));
-        (unsafe {
-            Pair::inc(
-                &mut (*x3
-                    .as_deref()
-                    .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Pair)
-                    .add((i as usize))),
-                10,
-            )
-        });
-        assert!((((*p3_0.offset((i) as isize)).x) == (11)));
-        assert!((((*p3_0.offset((i) as isize)).y) == (12)));
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (10)) {
+            assert!((((*p3_0.offset((i) as isize)).x) == (1)));
+            assert!((((*p3_0.offset((i) as isize)).y) == (2)));
+            (unsafe {
+                Pair::inc(
+                    &mut (*x3
+                        .as_deref()
+                        .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Pair)
+                        .add((i as usize))),
+                    10,
+                )
+            });
+            assert!((((*p3_0.offset((i) as isize)).x) == (11)));
+            assert!((((*p3_0.offset((i) as isize)).y) == (12)));
+            i.prefix_inc();
+        }
     }
     x3 = Some(Box::from_raw(Box::leak(
         (0..50_usize)
             .map(|_| <Pair>::default())
             .collect::<Box<[Pair]>>(),
     )));
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (50)) {
-        (*x3.as_deref()
-            .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Pair)
-            .add((i as usize))) = Pair {
-            x: -1_i32,
-            y: -2_i32,
-        };
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (50)) {
+            (*x3.as_deref()
+                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Pair)
+                .add((i as usize))) = Pair {
+                x: -1_i32,
+                y: -2_i32,
+            };
+            i.prefix_inc();
+        }
     }
     let mut p3_1: *mut Pair = x3
         .as_deref_mut()
         .map_or(::std::ptr::null_mut(), |s| s.as_mut_ptr());
     assert!(((p3_0) != (p3_1)));
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (50)) {
-        assert!((((*p3_1.offset((i) as isize)).x) == (-1_i32)));
-        assert!((((*p3_1.offset((i) as isize)).y) == (-2_i32)));
-        (unsafe {
-            Pair::inc(
-                &mut (*x3
-                    .as_deref()
-                    .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Pair)
-                    .add((i as usize))),
-                -10_i32,
-            )
-        });
-        assert!((((*p3_1.offset((i) as isize)).x) == (-11_i32)));
-        assert!((((*p3_1.offset((i) as isize)).y) == (-12_i32)));
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (50)) {
+            assert!((((*p3_1.offset((i) as isize)).x) == (-1_i32)));
+            assert!((((*p3_1.offset((i) as isize)).y) == (-2_i32)));
+            (unsafe {
+                Pair::inc(
+                    &mut (*x3
+                        .as_deref()
+                        .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Pair)
+                        .add((i as usize))),
+                    -10_i32,
+                )
+            });
+            assert!((((*p3_1.offset((i) as isize)).x) == (-11_i32)));
+            assert!((((*p3_1.offset((i) as isize)).y) == (-12_i32)));
+            i.prefix_inc();
+        }
     }
 }
 pub unsafe fn unique_ptr_that_wraps_container_3() {

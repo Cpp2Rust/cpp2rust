@@ -147,34 +147,42 @@ unsafe fn main_0() -> i32 {
     let mut m2: UnsafeMap<i32, (i32, bool)> = UnsafeMap::new();
     assert!(((m2.len()) == (0_usize)));
     let mut indexes: Vec<i32> = Vec::new();
-    let mut i: u32 = 60_u32;
-    'loop_: while ((i) > (30_u32)) {
-        {
-            let __a1 = (i as i32);
-            indexes.push(__a1)
-        };
-        i.prefix_dec();
+    {
+        let mut i: u32 = 60_u32;
+        'loop_: while ((i) > (30_u32)) {
+            {
+                let __a1 = (i as i32);
+                indexes.push(__a1)
+            };
+            i.prefix_dec();
+        }
     }
-    let mut i: u32 = 100_u32;
-    'loop_: while ((i) > (60_u32)) {
-        {
-            let __a1 = (i as i32);
-            indexes.push(__a1)
-        };
-        i.prefix_dec();
+    {
+        let mut i: u32 = 100_u32;
+        'loop_: while ((i) > (60_u32)) {
+            {
+                let __a1 = (i as i32);
+                indexes.push(__a1)
+            };
+            i.prefix_dec();
+        }
     }
-    let mut i: u32 = 30_u32;
-    'loop_: while ((i) > (0_u32)) {
-        {
-            let __a1 = (i as i32);
-            indexes.push(__a1)
-        };
-        i.prefix_dec();
+    {
+        let mut i: u32 = 30_u32;
+        'loop_: while ((i) > (0_u32)) {
+            {
+                let __a1 = (i as i32);
+                indexes.push(__a1)
+            };
+            i.prefix_dec();
+        }
     }
-    let mut i: u32 = 0_u32;
-    'loop_: while ((i as usize) < (indexes.len())) {
-        (*m2.subscript(&indexes[(i as usize)])) = ((i).wrapping_rem(2_u32) != 0);
-        i.prefix_inc();
+    {
+        let mut i: u32 = 0_u32;
+        'loop_: while ((i as usize) < (indexes.len())) {
+            (*m2.subscript(&indexes[(i as usize)])) = ((i).wrapping_rem(2_u32) != 0);
+            i.prefix_inc();
+        }
     }
     assert!(((m2.len()) == (indexes.len())));
     let mut last: i32 = -1_i32;

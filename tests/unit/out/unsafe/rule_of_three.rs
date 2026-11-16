@@ -21,10 +21,12 @@ impl Buffer {
             data: [0_i32; 4],
             size: size,
         };
-        let mut i: i32 = 0;
-        'loop_: while ((i) < (4)) {
-            this.data[(i) as usize] = if ((i) < (size)) { i } else { -1_i32 };
-            i.prefix_inc();
+        {
+            let mut i: i32 = 0;
+            'loop_: while ((i) < (4)) {
+                this.data[(i) as usize] = if ((i) < (size)) { i } else { -1_i32 };
+                i.prefix_inc();
+            }
         }
         (*std::cell::LazyCell::force_mut(&mut *&raw mut alive_0)).prefix_inc();
         this
@@ -37,10 +39,12 @@ impl Buffer {
             data: [0_i32; 4],
             size: (*o).size,
         };
-        let mut i: i32 = 0;
-        'loop_: while ((i) < (4)) {
-            this.data[(i) as usize] = (*o).data[(i) as usize];
-            i.prefix_inc();
+        {
+            let mut i: i32 = 0;
+            'loop_: while ((i) < (4)) {
+                this.data[(i) as usize] = (*o).data[(i) as usize];
+                i.prefix_inc();
+            }
         }
         (*std::cell::LazyCell::force_mut(&mut *&raw mut alive_0)).prefix_inc();
         (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_1)).prefix_inc();
@@ -51,10 +55,12 @@ impl Buffer {
             return &mut (*(self as *mut Buffer));
         }
         self.size = (*o).size;
-        let mut i: i32 = 0;
-        'loop_: while ((i) < (4)) {
-            self.data[(i) as usize] = (*o).data[(i) as usize];
-            i.prefix_inc();
+        {
+            let mut i: i32 = 0;
+            'loop_: while ((i) < (4)) {
+                self.data[(i) as usize] = (*o).data[(i) as usize];
+                i.prefix_inc();
+            }
         }
         (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_1)).prefix_inc();
         return &mut (*(self as *mut Buffer));
@@ -67,10 +73,12 @@ impl Clone for Buffer {
 }
 pub unsafe fn sum_2(b: *const Buffer) -> i32 {
     let mut s: i32 = 0;
-    let mut i: i32 = 0;
-    'loop_: while ((i) < ((*b).size)) {
-        s += (*b).data[(i) as usize];
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < ((*b).size)) {
+            s += (*b).data[(i) as usize];
+            i.prefix_inc();
+        }
     }
     return s;
 }

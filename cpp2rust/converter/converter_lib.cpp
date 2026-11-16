@@ -80,7 +80,8 @@ static const char rust_keywords[][12] = {
 namespace cpp2rust {
 
 bool IsGlobalVar(const clang::VarDecl *decl) {
-  return decl->isFileVarDecl() || decl->isStaticLocal();
+  return decl->isFileVarDecl() || decl->isStaticLocal() ||
+         decl->isLocalExternDecl();
 }
 
 bool IsGlobalVar(const clang::Expr *expr) {
@@ -249,6 +250,15 @@ std::string GetNumAsString(llvm::APFloat value) {
   }
 }
 
+static bool IsAnonymousUnionObject(const clang::Decl *decl) {
+  auto *var = clang::dyn_cast<clang::VarDecl>(decl);
+  if (!var) {
+    return false;
+  }
+  auto *record = var->getType()->getAsRecordDecl();
+  return record && record->isAnonymousStructOrUnion();
+}
+
 bool IsUserDefinedDecl(const clang::Decl *decl) {
   const auto &ctx = decl->getASTContext();
   const auto &src_mgr = ctx.getSourceManager();
@@ -287,7 +297,8 @@ bool IsUserDefinedDecl(const clang::Decl *decl) {
                    clang::TSK_ExplicitInstantiationDefinition)) {
     src_loc = spec->getSpecializedTemplate()->getLocation();
   }
-  return !decl->getBeginLoc().isInvalid() && !decl->isImplicit() &&
+  return !decl->getBeginLoc().isInvalid() &&
+         (!decl->isImplicit() || IsAnonymousUnionObject(decl)) &&
          !src_mgr.isInSystemHeader(src_loc) &&
          !src_mgr.isInSystemMacro(src_loc);
 }
@@ -1186,7 +1197,7 @@ std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
       id = GetDeclId(decl, fn->getFormalLinkage() == clang::Linkage::Internal);
     }
   } else if (auto *var = clang::dyn_cast<clang::VarDecl>(decl);
-             var && (var->isFileVarDecl() || var->isStaticLocal())) {
+             var && IsGlobalVar(var)) {
     id = GetDeclId(var->getCanonicalDecl(),
                    var->getFormalLinkage() != clang::Linkage::External);
   } else if (auto *tag = clang::dyn_cast<clang::TagDecl>(decl);

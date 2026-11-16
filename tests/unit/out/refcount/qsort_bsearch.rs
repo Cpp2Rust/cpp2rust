@@ -44,10 +44,12 @@ fn main_0() -> i32 {
             }
         }
     };
-    let mut i: i32 = 0;
-    'loop_: while (i < 7) {
-        assert!(({ ((*arr.borrow())[(i) as usize] <= (*arr.borrow())[(i + 1) as usize]) }));
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < 7) {
+            assert!(({ ((*arr.borrow())[(i) as usize] <= (*arr.borrow())[(i + 1) as usize]) }));
+            i.prefix_inc();
+        }
     }
     let key: Value<i32> = Rc::new(RefCell::new(7));
     let mut hit: Ptr<i32> = match ({ (key.as_pointer()).to_any() },) {

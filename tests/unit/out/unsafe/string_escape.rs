@@ -15,17 +15,20 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut special: *const libc::c_char =
         c"\x07\x08\t\n\x0b\x0c\r !\"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~\xff".as_ptr();
-    let mut i: i32 = 0;
-    'loop_: while ((i)
-        < (((::std::mem::size_of::<[libc::c_char; 41]>() as usize)
-            .wrapping_div((::std::mem::size_of::<libc::c_char>() as usize))) as i32))
     {
-        assert!(
-            (((*special.offset((i) as isize)) as i32)
-                == ((*std::cell::LazyCell::force_mut(&mut *&raw mut expected_0))[(i) as usize]
-                    as i32))
-        );
-        i.postfix_inc();
+        let mut i: i32 = 0;
+        'loop_: while ((i)
+            < (((::std::mem::size_of::<[libc::c_char; 41]>() as usize)
+                .wrapping_div((::std::mem::size_of::<libc::c_char>() as usize)))
+                as i32))
+        {
+            assert!(
+                (((*special.offset((i) as isize)) as i32)
+                    == ((*std::cell::LazyCell::force_mut(&mut *&raw mut expected_0))[(i) as usize]
+                        as i32))
+            );
+            i.postfix_inc();
+        }
     }
     return 0;
 }

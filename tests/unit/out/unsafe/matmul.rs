@@ -9,34 +9,38 @@ use std::rc::Rc;
 pub unsafe fn matalloc_0(mut n: i32, mut p: i32, mut e: i32) -> Option<Box<[Option<Box<[i32]>>]>> {
     let mut m: Option<Box<[Option<Box<[i32]>>]>> =
         Some((0..(n as usize)).map(|_| None).collect::<Box<[_]>>());
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (n)) {
-        match (
-            (&mut Some((0..(p as usize)).map(|_| 0_i32).collect::<Box<[_]>>())
-                as *mut Option<Box<[i32]>>),
-        ) {
-            (__tmp_0,) => {
-                (*m.as_deref()
-                    .map_or(::std::ptr::null_mut(), |s| {
-                        s.as_ptr() as *mut Option<Box<[i32]>>
-                    })
-                    .add((i as usize))) = (*__tmp_0).take()
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (n)) {
+            match (
+                (&mut Some((0..(p as usize)).map(|_| 0_i32).collect::<Box<[_]>>())
+                    as *mut Option<Box<[i32]>>),
+            ) {
+                (__tmp_0,) => {
+                    (*m.as_deref()
+                        .map_or(::std::ptr::null_mut(), |s| {
+                            s.as_ptr() as *mut Option<Box<[i32]>>
+                        })
+                        .add((i as usize))) = (*__tmp_0).take()
+                }
+            };
+            {
+                let mut j: i32 = 0;
+                'loop_: while ((j) < (p)) {
+                    (*(*m
+                        .as_deref()
+                        .map_or(::std::ptr::null_mut(), |s| {
+                            s.as_ptr() as *mut Option<Box<[i32]>>
+                        })
+                        .add((i as usize)))
+                    .as_deref()
+                    .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
+                    .add((j as usize))) = e;
+                    j.prefix_inc();
+                }
             }
-        };
-        let mut j: i32 = 0;
-        'loop_: while ((j) < (p)) {
-            (*(*m
-                .as_deref()
-                .map_or(::std::ptr::null_mut(), |s| {
-                    s.as_ptr() as *mut Option<Box<[i32]>>
-                })
-                .add((i as usize)))
-            .as_deref()
-            .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
-            .add((j as usize))) = e;
-            j.prefix_inc();
+            i.prefix_inc();
         }
-        i.prefix_inc();
     }
     return m.take();
 }
@@ -49,45 +53,51 @@ pub unsafe fn matmul_1(
     mut p2: i32,
 ) -> Option<Box<[Option<Box<[i32]>>]>> {
     let mut m3: Option<Box<[Option<Box<[i32]>>]>> = (unsafe { matalloc_0(n1, p2, 0) });
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (n1)) {
-        let mut j: i32 = 0;
-        let mut sum: i32 = 0;
-        'loop_: while ((j) < (p2)) {
-            let mut k: i32 = 0;
-            'loop_: while ((k) < (p1)) {
-                sum += ((*(*m1
-                    .as_deref()
-                    .map_or(::std::ptr::null_mut(), |s| {
-                        s.as_ptr() as *mut Option<Box<[i32]>>
-                    })
-                    .add((i as usize)))
-                .as_deref()
-                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
-                .add((k as usize)))
-                    * (*(*m2
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (n1)) {
+            {
+                let mut j: i32 = 0;
+                let mut sum: i32 = 0;
+                'loop_: while ((j) < (p2)) {
+                    {
+                        let mut k: i32 = 0;
+                        'loop_: while ((k) < (p1)) {
+                            sum += ((*(*m1
+                                .as_deref()
+                                .map_or(::std::ptr::null_mut(), |s| {
+                                    s.as_ptr() as *mut Option<Box<[i32]>>
+                                })
+                                .add((i as usize)))
+                            .as_deref()
+                            .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
+                            .add((k as usize)))
+                                * (*(*m2
+                                    .as_deref()
+                                    .map_or(::std::ptr::null_mut(), |s| {
+                                        s.as_ptr() as *mut Option<Box<[i32]>>
+                                    })
+                                    .add((k as usize)))
+                                .as_deref()
+                                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
+                                .add((j as usize))));
+                            k.prefix_inc();
+                        }
+                    }
+                    (*(*m3
                         .as_deref()
                         .map_or(::std::ptr::null_mut(), |s| {
                             s.as_ptr() as *mut Option<Box<[i32]>>
                         })
-                        .add((k as usize)))
+                        .add((i as usize)))
                     .as_deref()
                     .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
-                    .add((j as usize))));
-                k.prefix_inc();
+                    .add((j as usize))) = sum;
+                    j.prefix_inc();
+                }
             }
-            (*(*m3
-                .as_deref()
-                .map_or(::std::ptr::null_mut(), |s| {
-                    s.as_ptr() as *mut Option<Box<[i32]>>
-                })
-                .add((i as usize)))
-            .as_deref()
-            .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
-            .add((j as usize))) = sum;
-            j.prefix_inc();
+            i.prefix_inc();
         }
-        i.prefix_inc();
     }
     return m3.take();
 }

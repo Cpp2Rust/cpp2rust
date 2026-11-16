@@ -47,10 +47,12 @@ pub static mut g_1: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsaf
         FnPtr::<fn() -> i32>::new(|| -> i32 {
             unsafe {
                 let mut s: i32 = 0;
-                let mut i: i32 = 1;
-                'loop_: while ((i) <= (4)) {
-                    s += i;
-                    i.postfix_inc();
+                {
+                    let mut i: i32 = 1;
+                    'loop_: while ((i) <= (4)) {
+                        s += i;
+                        i.postfix_inc();
+                    }
                 }
                 return s;
             }

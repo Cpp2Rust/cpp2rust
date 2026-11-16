@@ -26,10 +26,12 @@ pub unsafe fn pick_0(a: *mut Vec<i32>, b: *mut Vec<i32>, mut first: bool) -> *mu
 }
 pub unsafe fn sum_1(v: *const Vec<i32>) -> i32 {
     let mut total: i32 = 0;
-    let mut it: UnsafeRandomAccessIterator<i32> = (*v).begin();
-    'loop_: while it != (*v).end() {
-        total += (*it.iter_deref());
-        it.iter_inc();
+    {
+        let mut it: UnsafeRandomAccessIterator<i32> = (*v).begin();
+        'loop_: while it != (*v).end() {
+            total += (*it.iter_deref());
+            it.iter_inc();
+        }
     }
     return ((total)
         + (*if 0_usize >= (*v).len() {

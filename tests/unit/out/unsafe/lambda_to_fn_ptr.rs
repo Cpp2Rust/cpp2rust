@@ -92,11 +92,13 @@ unsafe fn main_0() -> i32 {
                 let mut ap: *const VaArg = ::std::ptr::null();
                 ap = __args.as_ptr();
                 let mut s: i32 = 0;
-                let mut i: i32 = 0;
-                'loop_: while ((i) < (n)) {
-                    s += ap.arg::<i32>();
-                    i.postfix_inc();
-                }
+                {
+                    let mut i: i32 = 0;
+                    'loop_: while ((i) < (n)) {
+                        s += ap.arg::<i32>();
+                        i.postfix_inc();
+                    }
+                };
                 return s;
             }
         });

@@ -22,10 +22,12 @@ pub struct Shape {
 }
 pub unsafe fn sum_0(mut p: *const i32, mut n: i32) -> i32 {
     let mut s: i32 = 0;
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (n)) {
-        s += (*p.offset((i) as isize));
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (n)) {
+            s += (*p.offset((i) as isize));
+            i.prefix_inc();
+        }
     }
     return s;
 }

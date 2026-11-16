@@ -24,10 +24,12 @@ pub unsafe fn sum_2(a: *const [i32; 3]) -> i32 {
     return ((((*a)[(0) as usize]) + ((*a)[(1) as usize])) + ((*a)[(2) as usize]));
 }
 pub unsafe fn fill_3(a: *mut [i32; 3], mut v: i32) {
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (3)) {
-        (*a)[(i) as usize] = v;
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (3)) {
+            (*a)[(i) as usize] = v;
+            i.prefix_inc();
+        }
     }
 }
 pub unsafe fn sum_twice_4(a: *const [i32; 3]) -> i32 {

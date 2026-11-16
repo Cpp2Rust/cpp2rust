@@ -178,17 +178,20 @@ unsafe fn main_0() -> i32 {
             (__tmp_7).clone()
         }
     };
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (4)) {
-        match ({ <UnsafeRandomAccessIterator<i32>>::from(v2.begin().iter_add(1_isize)) },) {
-            (mut __tmp_8,) => {
-                let pos = __tmp_8.iter_distance(&UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr()))
-                    as usize;
-                v2.remove(pos);
-                (__tmp_8).clone()
-            }
-        };
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (4)) {
+            match ({ <UnsafeRandomAccessIterator<i32>>::from(v2.begin().iter_add(1_isize)) },) {
+                (mut __tmp_8,) => {
+                    let pos = __tmp_8
+                        .iter_distance(&UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr()))
+                        as usize;
+                    v2.remove(pos);
+                    (__tmp_8).clone()
+                }
+            };
+            i.prefix_inc();
+        }
     }
     v2.pop();
     v2.pop();
@@ -199,44 +202,54 @@ unsafe fn main_0() -> i32 {
     let mut s2: usize = v2.len();
     let mut v3: Vec<i32> = vec![1; 100_usize];
     assert!(((v3.len()) == (100_usize)));
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (100)) {
-        assert!(((v3[(i as usize)]) == (1)));
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (100)) {
+            assert!(((v3[(i as usize)]) == (1)));
+            i.prefix_inc();
+        }
     }
     let mut v4: Vec<*mut i32> = (0..(100_usize) as usize)
         .map(|_| std::ptr::null_mut())
         .collect::<Vec<_>>();
     assert!(((v4.len()) == (100_usize)));
-    let mut i: u32 = 0_u32;
-    'loop_: while ((i as usize) < (v4.len())) {
-        assert!((v4[(i as usize)]).is_null());
-        i.prefix_inc();
+    {
+        let mut i: u32 = 0_u32;
+        'loop_: while ((i as usize) < (v4.len())) {
+            assert!((v4[(i as usize)]).is_null());
+            i.prefix_inc();
+        }
     }
     let mut v5: Vec<*const i32> = (0..(100_usize) as usize)
         .map(|_| std::ptr::null())
         .collect::<Vec<_>>();
     assert!(((v5.len()) == (100_usize)));
-    let mut i: u32 = 0_u32;
-    'loop_: while ((i as usize) < (v5.len())) {
-        assert!((v5[(i as usize)]).is_null());
-        i.prefix_inc();
+    {
+        let mut i: u32 = 0_u32;
+        'loop_: while ((i as usize) < (v5.len())) {
+            assert!((v5[(i as usize)]).is_null());
+            i.prefix_inc();
+        }
     }
     let mut v6: Vec<f64> = vec![2_f64; s2];
     assert!(((v6.len()) == (s2)));
-    let mut i: u32 = 0_u32;
-    'loop_: while ((i as usize) < (s2)) {
-        assert!(((v6[(i as usize)]) == (2_f64)));
-        i.prefix_inc();
+    {
+        let mut i: u32 = 0_u32;
+        'loop_: while ((i as usize) < (s2)) {
+            assert!(((v6[(i as usize)]) == (2_f64)));
+            i.prefix_inc();
+        }
     }
     let mut v7: Vec<(*const i32, i32)> = (0..(200_usize) as usize)
         .map(|_| <(*const i32, i32)>::default())
         .collect::<Vec<_>>();
     assert!(((v7.len()) == (200_usize)));
-    let mut i: u32 = 0_u32;
-    'loop_: while ((i) < (200_u32)) {
-        assert!(((v7[(i as usize)].0).is_null()) && ((v7[(i as usize)].1) == (0)));
-        i.prefix_inc();
+    {
+        let mut i: u32 = 0_u32;
+        'loop_: while ((i) < (200_u32)) {
+            assert!(((v7[(i as usize)].0).is_null()) && ((v7[(i as usize)].1) == (0)));
+            i.prefix_inc();
+        }
     }
     let mut p1: *const f64 = (v6.as_mut_ptr()).cast_const();
     assert!(((*p1) == (2_f64)));

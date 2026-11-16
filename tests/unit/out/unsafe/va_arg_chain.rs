@@ -7,10 +7,12 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn extract_nth_0(mut n: i32, mut ap: *const VaArg) -> i32 {
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (n)) {
-        ap.arg::<i32>();
-        i.postfix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (n)) {
+            ap.arg::<i32>();
+            i.postfix_inc();
+        }
     }
     return ap.arg::<i32>();
 }

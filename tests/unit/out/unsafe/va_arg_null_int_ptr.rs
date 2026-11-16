@@ -10,15 +10,17 @@ pub unsafe fn first_nonnull_0(mut count: i32, __args: Box<[VaArg]>) -> i32 {
     let mut ap: *const VaArg = ::std::ptr::null();
     ap = __args.as_ptr();
     let mut result: i32 = -1_i32;
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (count)) {
-        let mut p: *mut i32 = ap.arg::<*mut i32>();
-        if (!((p).is_null())) {
-            result = (*p);
-            break;
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (count)) {
+            let mut p: *mut i32 = ap.arg::<*mut i32>();
+            if (!((p).is_null())) {
+                result = (*p);
+                break;
+            }
+            i.postfix_inc();
         }
-        i.postfix_inc();
-    }
+    };
     return result;
 }
 pub fn main() {
