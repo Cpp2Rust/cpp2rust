@@ -1464,6 +1464,10 @@ std::string ConverterRefCount::ConvertFnPtrPlaceholder(clang::Expr *arg) {
 }
 
 void ConverterRefCount::ConvertEqualsNullPtr(clang::Expr *expr) {
+  if (expr->getType()->isMemberPointerType()) {
+    Converter::ConvertEqualsNullPtr(expr);
+    return;
+  }
   StrCat('(');
   Convert(expr);
   EmitFresh(").is_null()");
@@ -1535,6 +1539,9 @@ bool ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
     }
     MarkFresh();
     return false;
+  }
+  if (expr->getCastKind() == clang::CK_ReinterpretMemberPointer) {
+    return Converter::VisitExplicitCastExpr(expr);
   }
   switch (expr->getStmtClass()) {
   case clang::Stmt::CXXReinterpretCastExprClass:
@@ -2265,6 +2272,10 @@ std::string ConverterRefCount::GetDefaultAsString(clang::QualType qual_type) {
     return BoxValue(std::move(init));
   }
 
+  if (qual_type->isMemberDataPointerType()) {
+    return BoxValue("-1_isize");
+  }
+
   if (!qual_type->isPointerType()) {
     return Converter::GetDefaultAsString(qual_type);
   }
@@ -2904,6 +2915,34 @@ void ConverterRefCount::ConvertAddrOf(clang::Expr *expr,
     return;
   }
   StrCat(ConvertPointer(expr));
+}
+
+std::string
+ConverterRefCount::GetFieldOffsetAsString(const clang::FieldDecl *field) {
+  return std::format("offset_of_field!({}, {})",
+                     GetRecordName(field->getParent()),
+                     GetNamedDeclAsString(field));
+}
+
+std::string ConverterRefCount::GetMemberOfObjectAsString(std::string object,
+                                                         std::string member,
+                                                         clang::QualType type) {
+  PushConversionKind push(*this, ConversionKind::Pointee);
+  return std::format("{}.member::<{}>({})", object, ToString(type), member);
+}
+
+std::string
+ConverterRefCount::ConvertMemberPtrObject(clang::BinaryOperator *expr) {
+  auto *object = expr->getLHS();
+  if (expr->getOpcode() == clang::BO_PtrMemI) {
+    return std::format("({})", ConvertRValue(object));
+  }
+  return std::format("({})", ConvertPointer(object));
+}
+
+void ConverterRefCount::EmitMemberPtrPointee(std::string ptr,
+                                             clang::QualType type) {
+  EmitPointee(std::move(ptr), type, /*fresh=*/true);
 }
 
 void ConverterRefCount::ConvertDeref(clang::Expr *expr) {

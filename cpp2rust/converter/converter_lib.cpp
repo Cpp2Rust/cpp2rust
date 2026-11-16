@@ -385,6 +385,19 @@ bool RustSizeDivergesFromC(clang::QualType qt) {
   return false;
 }
 
+std::vector<const clang::FieldDecl *>
+GetFieldPath(const clang::ValueDecl *member) {
+  std::vector<const clang::FieldDecl *> path;
+  if (auto *indirect = clang::dyn_cast<clang::IndirectFieldDecl>(member)) {
+    for (auto *link : indirect->chain()) {
+      path.push_back(clang::cast<clang::FieldDecl>(link));
+    }
+  } else {
+    path.push_back(clang::cast<clang::FieldDecl>(member));
+  }
+  return path;
+}
+
 bool IsMutatingCall(const clang::CallExpr *expr) {
   if (auto *callee = expr->getDirectCallee()) {
     if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(callee)) {

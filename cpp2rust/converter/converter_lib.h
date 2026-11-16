@@ -70,6 +70,9 @@ bool IsMut(clang::QualType qual_type);
 
 bool RustSizeDivergesFromC(clang::QualType qt);
 
+std::vector<const clang::FieldDecl *>
+GetFieldPath(const clang::ValueDecl *member);
+
 bool IsMutatingCall(const clang::CallExpr *expr);
 
 // The method of a prefix or postfix increment or decrement, or nullptr if

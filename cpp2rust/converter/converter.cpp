@@ -376,6 +376,14 @@ bool Converter::VisitPointerType(clang::PointerType *type) {
   return Convert(pointee_type);
 }
 
+bool Converter::VisitMemberPointerType(clang::MemberPointerType *type) {
+  if (type->isMemberFunctionPointer()) {
+    llvm::report_fatal_error("pointers to member functions are not supported");
+  }
+  StrCat("isize");
+  return false;
+}
+
 bool Converter::VisitDecayedType(clang::DecayedType *type) {
   return Convert(type->getDecayedType());
 }
@@ -742,7 +750,7 @@ bool Converter::TypeDerivesDefault(clang::QualType qual_type) {
     return array_type->getSize().ule(32) &&
            TypeDerivesDefault(array_type->getElementType());
   }
-  if (qual_type->isArrayType()) {
+  if (qual_type->isArrayType() || qual_type->isMemberPointerType()) {
     return false;
   }
 
@@ -2710,6 +2718,18 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
   case clang::CastKind::CK_NullToPointer:
     EmitFresh(GetDefaultAsString(type));
     break;
+  case clang::CastKind::CK_NullToMemberPointer:
+    EmitFresh(GetUnboxedDefaultAsString(type));
+    break;
+  case clang::CastKind::CK_MemberPointerToBoolean:
+    StrCat(token::kNot);
+    ConvertEqualsNullPtr(sub_expr);
+    break;
+  case clang::CastKind::CK_BaseToDerivedMemberPointer:
+  case clang::CastKind::CK_DerivedToBaseMemberPointer:
+    llvm::report_fatal_error(
+        "conversions of pointers to members between classes are not "
+        "supported");
   default:
     // Before clang 24, a case value is a literal in a ConstantExpr.
     auto *value = sub_expr;
@@ -2777,6 +2797,25 @@ bool Converter::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
     ConvertIntegerToEnumeralCast(expr, sub_expr);
     return false;
   }
+  switch (expr->getCastKind()) {
+  case clang::CastKind::CK_NullToMemberPointer:
+    EmitFresh(GetUnboxedDefaultAsString(type));
+    return false;
+  case clang::CastKind::CK_MemberPointerToBoolean:
+    StrCat(token::kNot);
+    ConvertEqualsNullPtr(sub_expr);
+    return false;
+  case clang::CastKind::CK_ReinterpretMemberPointer:
+    Convert(sub_expr);
+    return false;
+  case clang::CastKind::CK_BaseToDerivedMemberPointer:
+  case clang::CastKind::CK_DerivedToBaseMemberPointer:
+    llvm::report_fatal_error(
+        "conversions of pointers to members between classes are not "
+        "supported");
+  default:
+    break;
+  }
   switch (expr->getStmtClass()) {
   case clang::Stmt::CXXFunctionalCastExprClass:
     Convert(sub_expr, type);
@@ -2825,6 +2864,11 @@ bool Converter::VisitCXXRewrittenBinaryOperator(
 }
 
 bool Converter::VisitBinaryOperator(clang::BinaryOperator *expr) {
+  if (expr->isPtrMemOp()) {
+    ConvertMemberPtrAccess(expr);
+    return false;
+  }
+
   if (expr->isAssignmentOp() && isAddrOf()) {
     ConvertAssignmentRef(expr);
     return false;
@@ -3100,6 +3144,10 @@ bool Converter::VisitUnaryOperator(clang::UnaryOperator *expr) {
     Convert(sub_expr);
     break;
   case clang::UO_AddrOf: {
+    if (expr->getType()->isMemberPointerType()) {
+      ConvertMemberPtr(expr);
+      break;
+    }
     PushParen paren(*this);
     ConvertAddrOf(sub_expr, expr->getType());
     break;
@@ -4192,6 +4240,9 @@ bool Converter::VisitImplicitValueInitExpr(clang::ImplicitValueInitExpr *expr) {
     auto elem_ty = arr_ty->getElementType();
     if (elem_ty->isIntegerType() && !elem_ty->isEnumeralType()) {
       StrCat(std::format("[0; {}]", arr_ty->getSize().getZExtValue()));
+    } else if (elem_ty->isMemberDataPointerType()) {
+      StrCat(std::format("[{}; {}]", GetDefaultAsString(elem_ty),
+                         arr_ty->getSize().getZExtValue()));
     } else {
       StrCat(
           std::format("std::array::from_fn::<_, {}, _>(|_| Default::default())",
@@ -4376,6 +4427,10 @@ std::string Converter::GetDefaultAsString(clang::QualType qual_type) {
 
   if (auto init = Mapper::MapInitializer(*this, qual_type); !init.empty()) {
     return init;
+  }
+
+  if (qual_type->isMemberDataPointerType()) {
+    return "-1_isize";
   }
 
   if (qual_type->isPointerType()) {
@@ -4567,6 +4622,15 @@ void Converter::ConvertUnsignedArithOperand(clang::Expr *expr,
 }
 
 void Converter::ConvertEqualsNullPtr(clang::Expr *expr) {
+  if (expr->getType()->isMemberPointerType()) {
+    PushParen outer(*this);
+    {
+      PushParen inner(*this);
+      Convert(expr);
+    }
+    EmitFresh("== -1_isize");
+    return;
+  }
   StrCat('(');
   Convert(expr);
   EmitFresh(expr->getType()->isFunctionPointerType() ? ").is_none()"
@@ -5149,6 +5213,80 @@ void Converter::ConvertAddrOf(clang::Expr *expr, clang::QualType pointer_type) {
     ConvertCast(pointer_type);
     MarkFresh();
   }
+}
+
+void Converter::ConvertMemberPtr(clang::UnaryOperator *expr) {
+  if (!expr->getType()->isMemberDataPointerType()) {
+    llvm::report_fatal_error("pointers to member functions are not supported");
+  }
+  auto *ref = clang::cast<clang::DeclRefExpr>(expr->getSubExpr());
+  EmitFresh(GetMemberPtrAsString(ref->getDecl()));
+}
+
+std::string Converter::GetMemberPtrAsString(const clang::ValueDecl *member) {
+  std::vector<std::string> offsets;
+  for (auto *field : GetFieldPath(member)) {
+    if (field->getParent()->isUnion()) {
+      continue;
+    }
+    offsets.push_back(GetFieldOffsetAsString(field));
+  }
+  if (offsets.empty()) {
+    return "0_isize";
+  }
+  if (offsets.size() == 1) {
+    return std::format("({} as isize)", offsets.front());
+  }
+  std::string sum;
+  for (const auto &offset : offsets) {
+    if (!sum.empty()) {
+      sum += " + ";
+    }
+    sum += offset;
+  }
+  return std::format("(({}) as isize)", sum);
+}
+
+std::string Converter::GetFieldOffsetAsString(const clang::FieldDecl *field) {
+  return std::format("::std::mem::offset_of!({}, {})",
+                     GetRecordName(field->getParent()),
+                     GetNamedDeclAsString(field));
+}
+
+void Converter::ConvertMemberPtrAccess(clang::BinaryOperator *expr) {
+  auto object = ConvertMemberPtrObject(expr);
+  auto member = ConvertRValue(expr->getRHS());
+  auto ptr = GetMemberOfObjectAsString(std::move(object), std::move(member),
+                                       expr->getType());
+  if (isAddrOf()) {
+    EmitFresh(ptr);
+    return;
+  }
+  EmitMemberPtrPointee(std::move(ptr), expr->getType());
+}
+
+std::string Converter::ConvertMemberPtrObject(clang::BinaryOperator *expr) {
+  auto *object = expr->getLHS();
+  if (expr->getOpcode() == clang::BO_PtrMemI) {
+    return std::format("({})", ConvertRValue(object));
+  }
+  Buffer buf(*this);
+  {
+    PushParen paren(*this);
+    ConvertAddrOf(object, ctx_.getPointerType(object->getType()));
+  }
+  return std::move(buf).str();
+}
+
+std::string Converter::GetMemberOfObjectAsString(std::string object,
+                                                 std::string member,
+                                                 clang::QualType type) {
+  return std::format("{}.wrapping_byte_offset({}).cast::<{}>()", object, member,
+                     ToString(type));
+}
+
+void Converter::EmitMemberPtrPointee(std::string ptr, clang::QualType type) {
+  EmitDeref(std::move(ptr), type);
 }
 
 void Converter::EmitDeref(std::string inner, clang::QualType pointee_type) {

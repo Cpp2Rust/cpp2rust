@@ -121,6 +121,8 @@ public:
 
   virtual bool VisitPointerType(clang::PointerType *type);
 
+  bool VisitMemberPointerType(clang::MemberPointerType *type);
+
   virtual std::string
   ConvertFunctionPointerType(const clang::FunctionProtoType *proto);
 
@@ -469,7 +471,8 @@ public:
     if (ty->isFunctionPointerType() || ty->isFunctionType()) {
       return FunctionPointerImplementsCopy();
     }
-    if (ty->isBuiltinType() || ty->isEnumeralType()) {
+    if (ty->isBuiltinType() || ty->isEnumeralType() ||
+        ty->isMemberDataPointerType()) {
       return true;
     }
     if (ty->getAsRecordDecl()) {
@@ -867,6 +870,22 @@ protected:
                                      std::string_view value = {});
 
   virtual void ConvertAddrOf(clang::Expr *expr, clang::QualType pointer_type);
+
+  void ConvertMemberPtr(clang::UnaryOperator *expr);
+
+  std::string GetMemberPtrAsString(const clang::ValueDecl *member);
+
+  virtual std::string GetFieldOffsetAsString(const clang::FieldDecl *field);
+
+  void ConvertMemberPtrAccess(clang::BinaryOperator *expr);
+
+  virtual std::string ConvertMemberPtrObject(clang::BinaryOperator *expr);
+
+  virtual std::string GetMemberOfObjectAsString(std::string object,
+                                                std::string member,
+                                                clang::QualType type);
+
+  virtual void EmitMemberPtrPointee(std::string ptr, clang::QualType type);
 
   virtual void ConvertDeref(clang::Expr *expr);
 
