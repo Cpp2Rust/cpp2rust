@@ -23,10 +23,12 @@ unsafe fn main_0() -> i32 {
         let mut arr: *mut i32 = (libcc2rs::malloc_unsafe(
             (4_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize)),
         ) as *mut i32);
-        let mut i: i32 = 0;
-        'loop_: while ((i) < (4)) {
-            (*arr.offset((i) as isize)) = ((i) * (10));
-            i.postfix_inc();
+        {
+            let mut i: i32 = 0;
+            'loop_: while ((i) < (4)) {
+                (*arr.offset((i) as isize)) = ((i) * (10));
+                i.postfix_inc();
+            }
         }
         assert!(((*arr.offset((0) as isize)) == (0)));
         assert!(((*arr.offset((3) as isize)) == (30)));
@@ -49,10 +51,12 @@ unsafe fn main_0() -> i32 {
         libcc2rs::free_unsafe((grow as *mut ::libc::c_void));
         let mut zeros: *mut i32 =
             (libcc2rs::calloc_unsafe(4_usize, ::std::mem::size_of::<i32>()) as *mut i32);
-        let mut i: i32 = 0;
-        'loop_: while ((i) < (4)) {
-            assert!(((*zeros.offset((i) as isize)) == (0)));
-            i.postfix_inc();
+        {
+            let mut i: i32 = 0;
+            'loop_: while ((i) < (4)) {
+                assert!(((*zeros.offset((i) as isize)) == (0)));
+                i.postfix_inc();
+            }
         }
         libcc2rs::free_unsafe((zeros as *mut ::libc::c_void));
     }
@@ -74,10 +78,12 @@ unsafe fn main_0() -> i32 {
         let mut arr: *mut i32 = ((unsafe {
             (pmalloc).unwrap()((4_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize)))
         }) as *mut i32);
-        let mut i: i32 = 0;
-        'loop_: while ((i) < (4)) {
-            (*arr.offset((i) as isize)) = ((i) * (10));
-            i.postfix_inc();
+        {
+            let mut i: i32 = 0;
+            'loop_: while ((i) < (4)) {
+                (*arr.offset((i) as isize)) = ((i) * (10));
+                i.postfix_inc();
+            }
         }
         assert!(((*arr.offset((0) as isize)) == (0)));
         assert!(((*arr.offset((3) as isize)) == (30)));
@@ -102,10 +108,12 @@ unsafe fn main_0() -> i32 {
         (unsafe { (pfree).unwrap()((grow as *mut ::libc::c_void)) });
         let mut zeros: *mut i32 =
             ((unsafe { (pcalloc).unwrap()(4_usize, ::std::mem::size_of::<i32>()) }) as *mut i32);
-        let mut i: i32 = 0;
-        'loop_: while ((i) < (4)) {
-            assert!(((*zeros.offset((i) as isize)) == (0)));
-            i.postfix_inc();
+        {
+            let mut i: i32 = 0;
+            'loop_: while ((i) < (4)) {
+                assert!(((*zeros.offset((i) as isize)) == (0)));
+                i.postfix_inc();
+            }
         }
         (unsafe { (pfree).unwrap()((zeros as *mut ::libc::c_void)) });
     }

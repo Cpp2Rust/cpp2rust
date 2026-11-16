@@ -14,14 +14,16 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut m: UnsafeMap<i32, (i32, f64)> = UnsafeMap::new();
-    let mut i: i32 = 0;
-    let mut k: i32 = 100;
-    'loop_: while ((i) < (100)) {
-        (*m.subscript(&i)) = ((k as f64) / (2_f64));
-        {
-            i.prefix_inc();
-            k.prefix_dec()
-        };
+    {
+        let mut i: i32 = 0;
+        let mut k: i32 = 100;
+        'loop_: while ((i) < (100)) {
+            (*m.subscript(&i)) = ((k as f64) / (2_f64));
+            {
+                i.prefix_inc();
+                k.prefix_dec()
+            };
+        }
     }
     let mut sum: f64 = 0_f64;
     'loop_: for i in IterRange::new(m.begin(), m.end()) {

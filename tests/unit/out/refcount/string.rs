@@ -69,15 +69,17 @@ fn main_0() -> i32 {
             .collect(),
     ));
     let mut p2: Ptr<i8> = s2.decay();
-    let mut i: u32 = 0_u32;
-    'loop_: while ((i as usize) < ((*s2.borrow()).len() - 1)) {
-        assert!(
-            ({
-                (((elem!(p2, i).read()) as i32) == (('a' as i8) as i32))
-                    && (({ (*s2.borrow())[(i as usize)] } as i32) == (('a' as i8) as i32))
-            })
-        );
-        i.prefix_inc();
+    {
+        let mut i: u32 = 0_u32;
+        'loop_: while ((i as usize) < ((*s2.borrow()).len() - 1)) {
+            assert!(
+                ({
+                    (((elem!(p2, i).read()) as i32) == (('a' as i8) as i32))
+                        && (({ (*s2.borrow())[(i as usize)] } as i32) == (('a' as i8) as i32))
+                })
+            );
+            i.prefix_inc();
+        }
     }
     assert!(({ (((*s2.borrow()).len() - 1) == 10_usize) }));
     assert!(({ (((*s2.borrow()).len() - 1) == ((*s2.borrow()).len() - 1)) }));
@@ -85,15 +87,17 @@ fn main_0() -> i32 {
     (*s2.borrow_mut())[1_usize] = ('c' as i8);
     assert!(({ (({ (*s2.borrow())[0_usize] } as i32) == (('b' as i8) as i32)) }));
     assert!(({ (({ (*s2.borrow())[1_usize] } as i32) == (('c' as i8) as i32)) }));
-    let mut i: u32 = 2_u32;
-    'loop_: while ((i as usize) < ((*s2.borrow()).len() - 1)) {
-        assert!(
-            ({
-                (((elem!(p2, i).read()) as i32) == (('a' as i8) as i32))
-                    && (({ (*s2.borrow())[(i as usize)] } as i32) == (('a' as i8) as i32))
-            })
-        );
-        i.prefix_inc();
+    {
+        let mut i: u32 = 2_u32;
+        'loop_: while ((i as usize) < ((*s2.borrow()).len() - 1)) {
+            assert!(
+                ({
+                    (((elem!(p2, i).read()) as i32) == (('a' as i8) as i32))
+                        && (({ (*s2.borrow())[(i as usize)] } as i32) == (('a' as i8) as i32))
+                })
+            );
+            i.prefix_inc();
+        }
     }
     let s3: Value<Vec<i8>> = Rc::new(RefCell::new(s2.as_pointer().with(|__s: &Vec<i8>| {
         let mut __tmp1 =
@@ -104,16 +108,18 @@ fn main_0() -> i32 {
     assert!(({ (((*s3.borrow()).len() - 1) == 5_usize) }));
     assert!(({ (((*s3.borrow()).len() - 1) == ((*s3.borrow()).len() - 1)) }));
     let mut p3: Ptr<i8> = s3.decay();
-    let mut i: u32 = 0_u32;
-    'loop_: while ((i as usize) < ((*s3.borrow()).len() - 1)) {
-        assert!(
-            ({
-                ({ ((elem!(p3, i).read()) as i32) } == {
-                    ({ (*s3.borrow())[(i as usize)] } as i32)
+    {
+        let mut i: u32 = 0_u32;
+        'loop_: while ((i as usize) < ((*s3.borrow()).len() - 1)) {
+            assert!(
+                ({
+                    ({ ((elem!(p3, i).read()) as i32) } == {
+                        ({ (*s3.borrow())[(i as usize)] } as i32)
+                    })
                 })
-            })
-        );
-        i.prefix_inc();
+            );
+            i.prefix_inc();
+        }
     }
     let s4: Value<Vec<i8>> = Rc::new(RefCell::new(
         match ({
@@ -138,16 +144,18 @@ fn main_0() -> i32 {
     assert!(({ (((*s4.borrow()).len() - 1) == 3_usize) }));
     assert!(({ (((*s4.borrow()).len() - 1) == ((*s4.borrow()).len() - 1)) }));
     let mut p4: Ptr<i8> = s4.decay();
-    let mut i: u32 = 0_u32;
-    'loop_: while ((i as usize) < ((*s4.borrow()).len() - 1)) {
-        assert!(
-            ({
-                ({ ((elem!(p4, i).read()) as i32) } == {
-                    ({ (*s4.borrow())[(i as usize)] } as i32)
+    {
+        let mut i: u32 = 0_u32;
+        'loop_: while ((i as usize) < ((*s4.borrow()).len() - 1)) {
+            assert!(
+                ({
+                    ({ ((elem!(p4, i).read()) as i32) } == {
+                        ({ (*s4.borrow())[(i as usize)] } as i32)
+                    })
                 })
-            })
-        );
-        i.prefix_inc();
+            );
+            i.prefix_inc();
+        }
     }
     let s5: Value<Vec<i8>> = Rc::new(RefCell::new({
         let mut r = ({ (*s1.borrow()).clone() });
@@ -159,16 +167,18 @@ fn main_0() -> i32 {
     assert!(({ (((*s5.borrow()).len() - 1) == 12_usize) }));
     assert!(({ (((*s5.borrow()).len() - 1) == ((*s5.borrow()).len() - 1)) }));
     let mut p5: Ptr<i8> = s5.decay();
-    let mut i: u32 = 0_u32;
-    'loop_: while ((i as usize) < ((*s5.borrow()).len() - 1)) {
-        assert!(
-            ({
-                ({ ((elem!(p5, i).read()) as i32) } == {
-                    ({ (*s5.borrow())[(i as usize)] } as i32)
+    {
+        let mut i: u32 = 0_u32;
+        'loop_: while ((i as usize) < ((*s5.borrow()).len() - 1)) {
+            assert!(
+                ({
+                    ({ ((elem!(p5, i).read()) as i32) } == {
+                        ({ (*s5.borrow())[(i as usize)] } as i32)
+                    })
                 })
-            })
-        );
-        i.prefix_inc();
+            );
+            i.prefix_inc();
+        }
     }
     let arr: Value<Box<[i8]>> = Rc::new(RefCell::new(Box::new([
         ('b' as i8),

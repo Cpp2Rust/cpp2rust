@@ -12,17 +12,19 @@ pub fn mixed_args_0(count: i32, __args: Box<[VaArg]>) -> i32 {
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
     (*ap.borrow_mut()) = __args.decay();
     let mut total: i32 = 0;
-    let mut i: i32 = 0;
-    'loop_: while (i < (*count.borrow())) {
-        let mut tag: i32 = (*ap.borrow_mut()).arg::<i32>();
-        if (tag == 0) {
-            total += (*ap.borrow_mut()).arg::<i32>();
-        } else {
-            let mut ptr: Ptr<i32> = (*ap.borrow_mut()).arg::<Ptr<i32>>();
-            total += { (ptr.read()) };
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < (*count.borrow())) {
+            let mut tag: i32 = (*ap.borrow_mut()).arg::<i32>();
+            if (tag == 0) {
+                total += (*ap.borrow_mut()).arg::<i32>();
+            } else {
+                let mut ptr: Ptr<i32> = (*ap.borrow_mut()).arg::<Ptr<i32>>();
+                total += { (ptr.read()) };
+            }
+            i.postfix_inc();
         }
-        i.postfix_inc();
-    }
+    };
     return total;
 }
 pub fn main() {

@@ -3225,8 +3225,14 @@ void ConverterRefCount::SetUFCSReceiver(clang::Expr *base, bool is_arrow,
 
 std::string
 ConverterRefCount::GetUFCSName(const clang::CXXMethodDecl *method) const {
-  return IsMethodOnPtr(method) ? TraitName(method->getParent())
-                               : GetRecordName(method->getParent());
+  if (!IsMethodOnPtr(method)) {
+    return GetRecordName(method->getParent());
+  }
+  if (method->isExplicitObjectMemberFunction()) {
+    return std::format("<Ptr<{}> as {}>", GetRecordName(method->getParent()),
+                       TraitName(method->getParent()));
+  }
+  return TraitName(method->getParent());
 }
 
 std::string

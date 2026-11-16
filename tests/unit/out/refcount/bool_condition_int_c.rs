@@ -48,10 +48,12 @@ fn main_0() -> i32 {
         loop_count.prefix_inc();
     }
     assert!((loop_count == 3));
-    let mut i: i32 = 5;
-    'loop_: while (i != 0) {
-        loop_count.prefix_inc();
-        i.prefix_dec();
+    {
+        let mut i: i32 = 5;
+        'loop_: while (i != 0) {
+            loop_count.prefix_inc();
+            i.prefix_dec();
+        }
     }
     assert!((loop_count == 8));
     let mut t: i32 = if (n != 0) { 100 } else { 200 };

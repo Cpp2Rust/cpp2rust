@@ -20,14 +20,16 @@ fn main_0() -> i32 {
             .map(|_| (0..6).map(|_| 0_i8).collect::<Box<[i8]>>())
             .collect::<Box<[Box<[i8]>]>>(),
     ));
-    let mut i: i32 = 0;
-    'loop_: while (i < 3) {
-        ({
-            let _row: Ptr<i8> = grid.decay().offset(i).decay();
-            let _c: i8 = ((('a' as i32) + i) as i8);
-            fill_row_0(_row, _c)
-        });
-        i.postfix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < 3) {
+            ({
+                let _row: Ptr<i8> = grid.decay().offset(i).decay();
+                let _c: i8 = ((('a' as i32) + i) as i8);
+                fill_row_0(_row, _c)
+            });
+            i.postfix_inc();
+        }
     }
     assert!(({ (((*grid.borrow())[(0) as usize][(0) as usize] as i32) == ('a' as i32)) }));
     assert!(({ (((*grid.borrow())[(1) as usize][(0) as usize] as i32) == ('b' as i32)) }));

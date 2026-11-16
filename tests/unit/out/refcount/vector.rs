@@ -174,17 +174,19 @@ fn main_0() -> i32 {
             (__tmp_9).clone()
         }
     };
-    let mut i: i32 = 0;
-    'loop_: while (i < 4) {
-        match ({ <RandomAccessIterator<i32>>::from(v2.decay().begin().iter_add(1_isize)) },) {
-            (mut __tmp_10,) => {
-                let __off = __tmp_10.index();
-                v2.as_pointer()
-                    .with_mut(|__v: &mut Vec<i32>| __v.remove(__off));
-                (__tmp_10).clone()
-            }
-        };
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < 4) {
+            match ({ <RandomAccessIterator<i32>>::from(v2.decay().begin().iter_add(1_isize)) },) {
+                (mut __tmp_10,) => {
+                    let __off = __tmp_10.index();
+                    v2.as_pointer()
+                        .with_mut(|__v: &mut Vec<i32>| __v.remove(__off));
+                    (__tmp_10).clone()
+                }
+            };
+            i.prefix_inc();
+        }
     }
     (*v2.borrow_mut()).pop();
     (*v2.borrow_mut()).pop();
@@ -195,10 +197,12 @@ fn main_0() -> i32 {
     let mut s2: usize = (*v2.borrow()).len();
     let v3: Value<Vec<i32>> = Rc::new(RefCell::new(vec![1; 100_usize]));
     assert!(({ ((*v3.borrow()).len() == 100_usize) }));
-    let mut i: i32 = 0;
-    'loop_: while (i < 100) {
-        assert!(({ ({ (*v3.borrow())[(i as usize)] } == 1) }));
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < 100) {
+            assert!(({ ({ (*v3.borrow())[(i as usize)] } == 1) }));
+            i.prefix_inc();
+        }
     }
     let v4: Value<Vec<Ptr<i32>>> = Rc::new(RefCell::new(
         (0..(100_usize) as usize)
@@ -206,10 +210,12 @@ fn main_0() -> i32 {
             .collect::<Vec<_>>(),
     ));
     assert!(({ ((*v4.borrow()).len() == 100_usize) }));
-    let mut i: u32 = 0_u32;
-    'loop_: while ((i as usize) < (*v4.borrow()).len()) {
-        assert!(({ ((*v4.borrow())[(i as usize)]).is_null() }));
-        i.prefix_inc();
+    {
+        let mut i: u32 = 0_u32;
+        'loop_: while ((i as usize) < (*v4.borrow()).len()) {
+            assert!(({ ((*v4.borrow())[(i as usize)]).is_null() }));
+            i.prefix_inc();
+        }
     }
     let v5: Value<Vec<Ptr<i32>>> = Rc::new(RefCell::new(
         (0..(100_usize) as usize)
@@ -217,17 +223,21 @@ fn main_0() -> i32 {
             .collect::<Vec<_>>(),
     ));
     assert!(({ ((*v5.borrow()).len() == 100_usize) }));
-    let mut i: u32 = 0_u32;
-    'loop_: while ((i as usize) < (*v5.borrow()).len()) {
-        assert!(({ ((*v5.borrow())[(i as usize)]).is_null() }));
-        i.prefix_inc();
+    {
+        let mut i: u32 = 0_u32;
+        'loop_: while ((i as usize) < (*v5.borrow()).len()) {
+            assert!(({ ((*v5.borrow())[(i as usize)]).is_null() }));
+            i.prefix_inc();
+        }
     }
     let v6: Value<Vec<f64>> = Rc::new(RefCell::new(vec![2_f64; s2]));
     assert!(({ ((*v6.borrow()).len() == s2) }));
-    let mut i: u32 = 0_u32;
-    'loop_: while ((i as usize) < s2) {
-        assert!(({ ({ (*v6.borrow())[(i as usize)] } == 2_f64) }));
-        i.prefix_inc();
+    {
+        let mut i: u32 = 0_u32;
+        'loop_: while ((i as usize) < s2) {
+            assert!(({ ({ (*v6.borrow())[(i as usize)] } == 2_f64) }));
+            i.prefix_inc();
+        }
     }
     let v7: Value<Vec<(Value<Ptr<i32>>, Value<i32>)>> = Rc::new(RefCell::new(
         (0..(200_usize) as usize)
@@ -240,15 +250,17 @@ fn main_0() -> i32 {
             .collect::<Vec<_>>(),
     ));
     assert!(({ ((*v7.borrow()).len() == 200_usize) }));
-    let mut i: u32 = 0_u32;
-    'loop_: while (i < 200_u32) {
-        assert!(
-            ({
-                ((*(*v7.borrow())[(i as usize)].0.borrow()).is_null())
-                    && ((*(*v7.borrow())[(i as usize)].1.borrow()) == 0)
-            })
-        );
-        i.prefix_inc();
+    {
+        let mut i: u32 = 0_u32;
+        'loop_: while (i < 200_u32) {
+            assert!(
+                ({
+                    ((*(*v7.borrow())[(i as usize)].0.borrow()).is_null())
+                        && ((*(*v7.borrow())[(i as usize)].1.borrow()) == 0)
+                })
+            );
+            i.prefix_inc();
+        }
     }
     let mut p1: Ptr<f64> = v6.decay();
     assert!(((p1.read()) == 2_f64));

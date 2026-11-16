@@ -122,10 +122,12 @@ fn main_0() -> i32 {
         } != { (pi).clone() })
     );
     let mut name: Ptr<i8> = array_field_ptr!(field_ptr!(o.as_pointer(), inner), name);
-    let mut i: i32 = 0;
-    'loop_: while (i < 3) {
-        elem!(name, i).write({ (((('a' as i8) as i32) + i) as i8) });
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < 3) {
+            elem!(name, i).write({ (((('a' as i8) as i32) + i) as i8) });
+            i.prefix_inc();
+        }
     }
     assert!(
         (array_field_ptr!(field_ptr!(o.as_pointer(), inner), name)

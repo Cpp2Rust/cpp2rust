@@ -402,7 +402,7 @@ bool Converter::VisitTranslationUnitDecl(clang::TranslationUnitDecl *decl) {
   for (auto *child : decl->decls()) {
     if (IsUserDefinedDecl(child) &&
         (IsInMainFile(child) || !decl_ids_.contains(GetID(child)))) {
-      Convert(child);
+      ConvertNamespaceMember(child);
       if (!hoisted_records_.empty()) {
         StrCat(hoisted_records_);
         hoisted_records_.clear();
@@ -520,6 +520,10 @@ void Converter::ConvertFunctionBody(clang::FunctionDecl *decl) {
 }
 
 bool Converter::VisitFunctionTemplateDecl(clang::FunctionTemplateDecl *decl) {
+  if (!clang::isa<clang::CXXMethodDecl>(decl->getTemplatedDecl()) &&
+      !decl->isCanonicalDecl()) {
+    return false;
+  }
   for (auto *function_decl : decl->specializations()) {
     if (function_decl->getTemplateSpecializationKind() ==
         clang::TSK_ExplicitSpecialization) {
@@ -1183,7 +1187,7 @@ bool Converter::ConvertCXXMethodDecl(clang::CXXMethodDecl *decl) {
 
   {
     PushParen paren(*this);
-    if (!decl->isStatic()) {
+    if (decl->isImplicitObjectMemberFunction()) {
       StrCat(GetSelfMaybeWithMut(decl), token::kComma);
     }
     ConvertFunctionParameters(decl);
@@ -1330,8 +1334,17 @@ void Converter::EmitFunctionPreamble(clang::FunctionDecl *decl) {
 void Converter::ConvertDeclContext(clang::DeclContext *decl) {
   for (auto *child : decl->decls()) {
     if (IsInMainFile(child) || !decl_ids_.contains(GetID(child))) {
-      Convert(child);
+      ConvertNamespaceMember(child);
     }
+  }
+}
+
+void Converter::ConvertNamespaceMember(clang::Decl *decl) {
+  if (auto *var = clang::dyn_cast<clang::VarDecl>(decl);
+      var && var->isImplicit()) {
+    VisitVarDecl(var);
+  } else {
+    Convert(decl);
   }
 }
 
@@ -1439,6 +1452,9 @@ bool Converter::VisitDeclStmt(clang::DeclStmt *stmt) {
     if (var && IsAliasOfInit(ctx_, var)) {
       continue;
     }
+    if (var && var->isLocalExternDecl()) {
+      continue;
+    }
     if (var && var->isImplicit()) {
       VisitVarDecl(var);
     } else {
@@ -1474,10 +1490,15 @@ void Converter::ConvertCondition(clang::Expr *cond) {
 }
 
 bool Converter::VisitIfStmt(clang::IfStmt *stmt) {
-  // The variables of the init statement are only visible in the if.
-  PushBrace scope(*this, stmt->getInit());
+  // The variables of the init statement and of the condition are only
+  // visible in the if.
+  auto *cond_var = stmt->getConditionVariableDeclStmt();
+  PushBrace scope(*this, stmt->getInit() || cond_var);
   if (auto *init = stmt->getInit()) {
     Convert(init);
+  }
+  if (cond_var) {
+    Convert(cond_var);
   }
   if (bool taken = false;
       !stmt->getConditionVariable() && !stmt->isConsteval() &&
@@ -1503,11 +1524,30 @@ bool Converter::VisitIfStmt(clang::IfStmt *stmt) {
 bool Converter::VisitWhileStmt(clang::WhileStmt *stmt) {
   ScopedPush push(break_target_, BreakTarget::Loop);
   StrCat("'loop_:");
+  ScopedPush no_inc(curr_for_inc_, nullptr);
+  if (auto *cond_var = stmt->getConditionVariableDeclStmt()) {
+    StrCat(keyword::kLoop);
+    PushBrace loop_brace(*this);
+    ConvertConditionVariableTest(cond_var, stmt->getCond());
+    ConvertBodyStmts(stmt->getBody());
+    return false;
+  }
   StrCat(keyword::kWhile);
   ConvertCondition(stmt->getCond());
-  ScopedPush no_inc(curr_for_inc_, nullptr);
   ConvertBody(stmt->getBody());
   return false;
+}
+
+// The condition variable is created and destroyed on each iteration.
+void Converter::ConvertConditionVariableTest(clang::DeclStmt *cond_var,
+                                             clang::Expr *cond) {
+  Convert(cond_var);
+  StrCat(keyword::kIf, token::kNot);
+  {
+    PushParen paren(*this);
+    ConvertCondition(cond);
+  }
+  StrCat("{ break; }");
 }
 
 bool Converter::VisitDoStmt(clang::DoStmt *stmt) {
@@ -1531,16 +1571,27 @@ bool Converter::VisitDoStmt(clang::DoStmt *stmt) {
 
 bool Converter::VisitForStmt(clang::ForStmt *stmt) {
   ScopedPush push(break_target_, BreakTarget::Loop);
+  // The variables of the init statement are only visible in the for.
+  PushBrace scope(*this, stmt->getInit() &&
+                             clang::isa<clang::DeclStmt>(stmt->getInit()));
   Convert(stmt->getInit());
   StrCat("'loop_:");
-  StrCat(keyword::kWhile);
-  if (stmt->getCond() == nullptr) {
-    StrCat("true");
+  auto *cond_var = stmt->getConditionVariableDeclStmt();
+  if (cond_var) {
+    StrCat(keyword::kLoop);
   } else {
-    ConvertCondition(stmt->getCond());
+    StrCat(keyword::kWhile);
+    if (stmt->getCond() == nullptr) {
+      StrCat("true");
+    } else {
+      ConvertCondition(stmt->getCond());
+    }
   }
   {
     PushBrace brace(*this);
+    if (cond_var) {
+      ConvertConditionVariableTest(cond_var, stmt->getCond());
+    }
     {
       ScopedPush inc(curr_for_inc_, stmt->getInc());
       ConvertBodyStmts(stmt->getBody());
@@ -3260,6 +3311,10 @@ std::string Converter::ConvertDeclRef(clang::Expr *expr,
       if (method->isStatic()) {
         return GetFunctionRefName(method);
       }
+      if (method->isExplicitObjectMemberFunction()) {
+        return std::format("{}::{}", GetUFCSName(method),
+                           GetMethodName(method));
+      }
     }
     return GetNamedDeclAsString(function->getCanonicalDecl());
   }
@@ -4261,6 +4316,17 @@ bool Converter::VisitSwitchStmt(clang::SwitchStmt *stmt) {
   ScopedPush push(break_target_, needs_switch_macro
                                      ? BreakTarget::FallthroughSwitch
                                      : BreakTarget::Switch);
+
+  // The variables of the init statement and of the condition are only
+  // visible in the switch.
+  auto *cond_var = stmt->getConditionVariableDeclStmt();
+  PushBrace scope(*this, stmt->getInit() || cond_var);
+  if (auto *init = stmt->getInit()) {
+    Convert(init);
+  }
+  if (cond_var) {
+    Convert(cond_var);
+  }
 
   if (needs_switch_macro) {
     StrCat("switch!");

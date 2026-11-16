@@ -45,19 +45,23 @@ impl Default for S {
     }
 }
 pub fn set_bytes_0(mut p: Ptr<u8>, mut n: usize, mut v: u8) {
-    let mut i: usize = 0_usize;
-    'loop_: while (i < n) {
-        elem!(p, i).write({ v });
-        i.postfix_inc();
+    {
+        let mut i: usize = 0_usize;
+        'loop_: while (i < n) {
+            elem!(p, i).write({ v });
+            i.postfix_inc();
+        }
     }
 }
 pub fn all_bytes_1(mut p: Ptr<u8>, mut n: usize, mut v: u8) -> i32 {
-    let mut i: usize = 0_usize;
-    'loop_: while (i < n) {
-        if ({ ((elem!(p, i).read()) as i32) } != { (v as i32) }) {
-            return 0;
+    {
+        let mut i: usize = 0_usize;
+        'loop_: while (i < n) {
+            if ({ ((elem!(p, i).read()) as i32) } != { (v as i32) }) {
+                return 0;
+            }
+            i.postfix_inc();
         }
-        i.postfix_inc();
     }
     return 1;
 }

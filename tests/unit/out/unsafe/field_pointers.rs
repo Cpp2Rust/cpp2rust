@@ -112,10 +112,12 @@ unsafe fn main_0() -> i32 {
     assert!(((o.items[(1) as usize].a) == (4)));
     assert!(((&mut o.items[(0) as usize].a as *mut i32) != (pi)));
     let mut name: *mut libc::c_char = o.inner.name.as_mut_ptr();
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (3)) {
-        (*name.offset((i) as isize)) = (((('a' as libc::c_char) as i32) + (i)) as libc::c_char);
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (3)) {
+            (*name.offset((i) as isize)) = (((('a' as libc::c_char) as i32) + (i)) as libc::c_char);
+            i.prefix_inc();
+        }
     }
     assert!(((libc::strlen((o.inner.name.as_mut_ptr()).cast_const())) == (3_usize)));
     assert!(

@@ -21,41 +21,47 @@ fn main_0() -> i32 {
         out.prefix_inc();
         i.prefix_inc();
     }
-    let mut j: i32 = 0;
-    'loop_: while (j < 10) {
-        if ((i % 2) == 0) {
-            j.postfix_inc();
-            continue 'loop_;
-        }
-        out.prefix_inc();
-        j.postfix_inc();
-    }
-    let mut k1: i32 = 0;
-    'loop_: while (k1 < 5) {
-        let mut k2: i32 = 0;
-        'loop_: while (k2 < 5) {
-            let mut k3: i32 = 0;
-            'loop_: while (k3 < 5) {
-                if ((((k1 + k2) + k3) % 2) == 0) {
-                    k3.postfix_inc();
-                    continue 'loop_;
-                }
-                out.prefix_inc();
-                k3.postfix_inc();
-            }
-            if (((k1 + k2) % 2) == 0) {
-                k2.postfix_inc();
+    {
+        let mut j: i32 = 0;
+        'loop_: while (j < 10) {
+            if ((i % 2) == 0) {
+                j.postfix_inc();
                 continue 'loop_;
             }
             out.prefix_inc();
-            k2.postfix_inc();
+            j.postfix_inc();
         }
-        if ((k1 % 2) == 0) {
+    }
+    {
+        let mut k1: i32 = 0;
+        'loop_: while (k1 < 5) {
+            {
+                let mut k2: i32 = 0;
+                'loop_: while (k2 < 5) {
+                    let mut k3: i32 = 0;
+                    'loop_: while (k3 < 5) {
+                        if ((((k1 + k2) + k3) % 2) == 0) {
+                            k3.postfix_inc();
+                            continue 'loop_;
+                        }
+                        out.prefix_inc();
+                        k3.postfix_inc();
+                    }
+                    if (((k1 + k2) % 2) == 0) {
+                        k2.postfix_inc();
+                        continue 'loop_;
+                    }
+                    out.prefix_inc();
+                    k2.postfix_inc();
+                }
+            }
+            if ((k1 % 2) == 0) {
+                k1.postfix_inc();
+                continue 'loop_;
+            }
+            out.prefix_inc();
             k1.postfix_inc();
-            continue 'loop_;
         }
-        out.prefix_inc();
-        k1.postfix_inc();
     }
     assert!((out == 81));
     return 0;

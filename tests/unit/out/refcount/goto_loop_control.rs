@@ -8,24 +8,26 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn loopctl_0() -> i32 {
     let mut sum: i32 = 0;
-    let mut i: i32 = 0;
-    'loop_: while (i < 5) {
-        goto_block!({
-            '__entry: {
-                if (i == 1) {
-                    i.postfix_inc();
-                    continue 'loop_;
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < 5) {
+            goto_block!({
+                '__entry: {
+                    if (i == 1) {
+                        i.postfix_inc();
+                        continue 'loop_;
+                    }
+                    if (i == 4) {
+                        break;
+                    }
+                    goto!('add);
                 }
-                if (i == 4) {
-                    break;
+                'add: {
+                    sum += 1;
                 }
-                goto!('add);
-            }
-            'add: {
-                sum += 1;
-            }
-        });
-        i.postfix_inc();
+            });
+            i.postfix_inc();
+        }
     }
     return sum;
 }

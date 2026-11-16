@@ -3,6 +3,8 @@
 struct HasConstexprCtor {
   static inline int copyCount = 0;
 
+  static void reset() { copyCount = 0; }
+
   int m;
 
   constexpr HasConstexprCtor(int v) : m(v) {}

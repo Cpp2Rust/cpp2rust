@@ -43,48 +43,54 @@ pub fn lehmer_3(mut sigma: Ptr<u32>, mut len: u32, mut code: Ptr<u32>) {
             .map(|_| 0_u32)
             .collect::<Vec<_>>(),
     ));
-    let mut i: u32 = 0_u32;
-    'loop_: while (i < len) {
-        let __rhs = i;
-        (*items.borrow_mut())[(i as usize)] = __rhs;
-        i.prefix_inc();
+    {
+        let mut i: u32 = 0_u32;
+        'loop_: while (i < len) {
+            let __rhs = i;
+            (*items.borrow_mut())[(i as usize)] = __rhs;
+            i.prefix_inc();
+        }
     }
-    let mut i: u32 = 0_u32;
-    'loop_: while (i < len) {
-        let it: Value<RandomAccessIterator<u32>> = Rc::new(RefCell::new(
-            match ({ items.decay().begin() }, { items.decay().end() }) {
-                (mut __tmp_0, mut __tmp_1) => {
-                    let mut __it = (__tmp_0).clone();
-                    while __it != __tmp_1
-                        && !CppEq::equal(&__it.iter_deref(), &sigma.offset((i) as isize))
-                    {
-                        __it.iter_inc();
+    {
+        let mut i: u32 = 0_u32;
+        'loop_: while (i < len) {
+            let it: Value<RandomAccessIterator<u32>> = Rc::new(RefCell::new(
+                match ({ items.decay().begin() }, { items.decay().end() }) {
+                    (mut __tmp_0, mut __tmp_1) => {
+                        let mut __it = (__tmp_0).clone();
+                        while __it != __tmp_1
+                            && !CppEq::equal(&__it.iter_deref(), &sigma.offset((i) as isize))
+                        {
+                            __it.iter_inc();
+                        }
+                        __it
                     }
-                    __it
+                },
+            ));
+            assert!((*it.borrow()) != items.decay().end());
+            let __rhs = ((*it.borrow()).iter_distance(&items.decay().begin()) as u32);
+            elem!(code, i).write(__rhs);
+            match ({ <RandomAccessIterator<u32>>::from(({ (*it.borrow()).clone() })) },) {
+                (mut __tmp_2,) => {
+                    let __off = __tmp_2.index();
+                    items
+                        .as_pointer()
+                        .with_mut(|__v: &mut Vec<u32>| __v.remove(__off));
+                    (__tmp_2).clone()
                 }
-            },
-        ));
-        assert!((*it.borrow()) != items.decay().end());
-        let __rhs = ((*it.borrow()).iter_distance(&items.decay().begin()) as u32);
-        elem!(code, i).write(__rhs);
-        match ({ <RandomAccessIterator<u32>>::from(({ (*it.borrow()).clone() })) },) {
-            (mut __tmp_2,) => {
-                let __off = __tmp_2.index();
-                items
-                    .as_pointer()
-                    .with_mut(|__v: &mut Vec<u32>| __v.remove(__off));
-                (__tmp_2).clone()
-            }
-        };
-        i.prefix_inc();
+            };
+            i.prefix_inc();
+        }
     }
 }
 pub fn sum_4(v: Ptr<Vec<i32>>) -> i32 {
     let mut s: i32 = 0;
-    let it: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(v.decay().begin()));
-    'loop_: while (*it.borrow()) != v.decay().end() {
-        s += ((*it.borrow()).iter_deref().read());
-        (*it.borrow_mut()).iter_inc();
+    {
+        let it: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(v.decay().begin()));
+        'loop_: while (*it.borrow()) != v.decay().end() {
+            s += ((*it.borrow()).iter_deref().read());
+            (*it.borrow_mut()).iter_inc();
+        }
     }
     return s;
 }

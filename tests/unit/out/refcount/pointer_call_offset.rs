@@ -15,10 +15,12 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let mut p1: Ptr<i32> = Ptr::alloc_array((0..10_usize).map(|_| 0_i32).collect::<Box<[i32]>>());
-    let mut i: u32 = 0_u32;
-    'loop_: while (i < 10_u32) {
-        elem!(p1, i).write({ (i as i32) });
-        i.prefix_inc();
+    {
+        let mut i: u32 = 0_u32;
+        'loop_: while (i < 10_u32) {
+            elem!(p1, i).write({ (i as i32) });
+            i.prefix_inc();
+        }
     }
     let mut out: i32 = (elem!(({ foo_0((p1.offset((1) as isize)),) }), 3).read());
     p1.delete();

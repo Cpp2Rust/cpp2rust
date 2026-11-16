@@ -128,71 +128,92 @@ unsafe fn main_0() -> i32 {
             .iter_deref())
         .1) == (10));
     let mut rows: i32 = 0;
-    let mut subset: i32 = 0;
-    'loop_: while ((subset) < (8)) {
-        let mut key: i32 = 0;
-        'loop_: while ((key) < (3)) {
-            let mut initial: i32 = 0;
-            'loop_: while ((initial) < (3)) {
-                let mut post: i32 = 0;
-                'loop_: while ((post) < (2)) {
-                    let mut m: UnsafeMap<i32, (i32, i32)> = UnsafeMap::new();
-                    let mut size: i32 = 0;
-                    let mut k: i32 = 0;
-                    'loop_: while ((k) < (3)) {
-                        if (((subset) & ((1) << (k))) != 0) {
-                            (*m.subscript(&k)) = ((10) + (k));
-                            size.prefix_inc();
+    {
+        let mut subset: i32 = 0;
+        'loop_: while ((subset) < (8)) {
+            {
+                let mut key: i32 = 0;
+                'loop_: while ((key) < (3)) {
+                    {
+                        let mut initial: i32 = 0;
+                        'loop_: while ((initial) < (3)) {
+                            {
+                                let mut post: i32 = 0;
+                                'loop_: while ((post) < (2)) {
+                                    let mut m: UnsafeMap<i32, (i32, i32)> = UnsafeMap::new();
+                                    let mut size: i32 = 0;
+                                    {
+                                        let mut k: i32 = 0;
+                                        'loop_: while ((k) < (3)) {
+                                            if (((subset) & ((1) << (k))) != 0) {
+                                                (*m.subscript(&k)) = ((10) + (k));
+                                                size.prefix_inc();
+                                            }
+                                            k.prefix_inc();
+                                        }
+                                    }
+                                    let mut counter: i32 = initial;
+                                    let mut result: (
+                                        UnsafeBidirectionalIterator<(i32, i32)>,
+                                        bool,
+                                    ) = {
+                                        let mut __tmp_3: i32;
+                                        if (post != 0) {
+                                            match (({
+                                                __tmp_3 = counter.postfix_inc();
+                                                &mut __tmp_3
+                                            }
+                                                as *mut i32),)
+                                            {
+                                                (__tmp_2,) => m.try_emplace(key, || (*__tmp_2)),
+                                            }
+                                        } else {
+                                            match (({
+                                                let __tmp_5 = &mut counter;
+                                                (*__tmp_5).prefix_inc();
+                                                __tmp_5
+                                            }
+                                                as *mut i32),)
+                                            {
+                                                (__tmp_4,) => m.try_emplace(key, || (*__tmp_4)),
+                                            }
+                                        }
+                                    };
+                                    let mut hit: bool = (((subset) & ((1) << (key))) != (0));
+                                    ok = ((ok as i32) & (((counter) == ((initial) + (1))) as i32))
+                                        != 0;
+                                    ok = ((ok as i32)
+                                        & (((result.1 as i32) == (!(hit) as i32)) as i32))
+                                        != 0;
+                                    let mut found: bool = result.0 == m.find(&key);
+                                    ok = ((ok as i32) & (found as i32)) != 0;
+                                    ok = ((ok as i32)
+                                        & ((((*result.0.iter_deref()).0) == (key)) as i32))
+                                        != 0;
+                                    ok = ((ok as i32)
+                                        & ((((*result.0.iter_deref()).1)
+                                            == (if hit {
+                                                ((10) + (key))
+                                            } else {
+                                                ((initial) + (!(post != 0) as i32))
+                                            })) as i32))
+                                        != 0;
+                                    ok = ((ok as i32)
+                                        & (((m.len()) == (((size) + (!(hit) as i32)) as usize))
+                                            as i32))
+                                        != 0;
+                                    rows.prefix_inc();
+                                    post.prefix_inc();
+                                }
+                            }
+                            initial.prefix_inc();
                         }
-                        k.prefix_inc();
                     }
-                    let mut counter: i32 = initial;
-                    let mut result: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
-                        let mut __tmp_3: i32;
-                        if (post != 0) {
-                            match (({
-                                __tmp_3 = counter.postfix_inc();
-                                &mut __tmp_3
-                            } as *mut i32),)
-                            {
-                                (__tmp_2,) => m.try_emplace(key, || (*__tmp_2)),
-                            }
-                        } else {
-                            match (({
-                                let __tmp_5 = &mut counter;
-                                (*__tmp_5).prefix_inc();
-                                __tmp_5
-                            } as *mut i32),)
-                            {
-                                (__tmp_4,) => m.try_emplace(key, || (*__tmp_4)),
-                            }
-                        }
-                    };
-                    let mut hit: bool = (((subset) & ((1) << (key))) != (0));
-                    ok = ((ok as i32) & (((counter) == ((initial) + (1))) as i32)) != 0;
-                    ok = ((ok as i32) & (((result.1 as i32) == (!(hit) as i32)) as i32)) != 0;
-                    let mut found: bool = result.0 == m.find(&key);
-                    ok = ((ok as i32) & (found as i32)) != 0;
-                    ok = ((ok as i32) & ((((*result.0.iter_deref()).0) == (key)) as i32)) != 0;
-                    ok = ((ok as i32)
-                        & ((((*result.0.iter_deref()).1)
-                            == (if hit {
-                                ((10) + (key))
-                            } else {
-                                ((initial) + (!(post != 0) as i32))
-                            })) as i32))
-                        != 0;
-                    ok = ((ok as i32)
-                        & (((m.len()) == (((size) + (!(hit) as i32)) as usize)) as i32))
-                        != 0;
-                    rows.prefix_inc();
-                    post.prefix_inc();
+                    key.prefix_inc();
                 }
-                initial.prefix_inc();
             }
-            key.prefix_inc();
+            subset.prefix_inc();
         }
-        subset.prefix_inc();
     }
     let mut items: UnsafeMap<i32, (i32, Item)> = UnsafeMap::new();
     let mut key: i32 = 0;

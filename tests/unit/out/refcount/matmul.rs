@@ -14,27 +14,31 @@ pub fn matalloc_0(
     let mut m: Option<Value<Box<[Option<Value<Box<[i32]>>>]>>> = Some(Rc::new(RefCell::new(
         (0..(n as usize)).map(|_| None).collect::<Box<[_]>>(),
     )));
-    let mut i: i32 = 0;
-    'loop_: while (i < n) {
-        match (Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
-            (0..(p as usize)).map(|_| 0_i32).collect::<Box<[_]>>(),
-        )))))
-        .as_pointer(),)
-        {
-            (__tmp_0,) => m
-                .decay()
-                .offset((i as usize))
-                .write(__tmp_0.with_mut(|__v: &mut Option<Value<Box<[i32]>>>| __v.take())),
-        };
-        let mut j: i32 = 0;
-        'loop_: while (j < p) {
-            (*m.decay().offset((i as usize)).upgrade().deref())
-                .decay()
-                .offset((j as usize))
-                .write(e);
-            j.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < n) {
+            match (Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
+                (0..(p as usize)).map(|_| 0_i32).collect::<Box<[_]>>(),
+            )))))
+            .as_pointer(),)
+            {
+                (__tmp_0,) => m
+                    .decay()
+                    .offset((i as usize))
+                    .write(__tmp_0.with_mut(|__v: &mut Option<Value<Box<[i32]>>>| __v.take())),
+            };
+            {
+                let mut j: i32 = 0;
+                'loop_: while (j < p) {
+                    (*m.decay().offset((i as usize)).upgrade().deref())
+                        .decay()
+                        .offset((j as usize))
+                        .write(e);
+                    j.prefix_inc();
+                }
+            }
+            i.prefix_inc();
         }
-        i.prefix_inc();
     }
     return m.take();
 }
@@ -47,30 +51,36 @@ pub fn matmul_1(
     mut p2: i32,
 ) -> Option<Value<Box<[Option<Value<Box<[i32]>>>]>>> {
     let mut m3: Option<Value<Box<[Option<Value<Box<[i32]>>>]>>> = ({ matalloc_0(n1, p2, 0) });
-    let mut i: i32 = 0;
-    'loop_: while (i < n1) {
-        let mut j: i32 = 0;
-        let mut sum: i32 = 0;
-        'loop_: while (j < p2) {
-            let mut k: i32 = 0;
-            'loop_: while (k < p1) {
-                sum += (((*m1.decay().offset((i as usize)).upgrade().deref())
-                    .decay()
-                    .offset((k as usize))
-                    .read())
-                    * ((*m2.decay().offset((k as usize)).upgrade().deref())
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < n1) {
+            {
+                let mut j: i32 = 0;
+                let mut sum: i32 = 0;
+                'loop_: while (j < p2) {
+                    {
+                        let mut k: i32 = 0;
+                        'loop_: while (k < p1) {
+                            sum += (((*m1.decay().offset((i as usize)).upgrade().deref())
+                                .decay()
+                                .offset((k as usize))
+                                .read())
+                                * ((*m2.decay().offset((k as usize)).upgrade().deref())
+                                    .decay()
+                                    .offset((j as usize))
+                                    .read()));
+                            k.prefix_inc();
+                        }
+                    }
+                    (*m3.decay().offset((i as usize)).upgrade().deref())
                         .decay()
                         .offset((j as usize))
-                        .read()));
-                k.prefix_inc();
+                        .write(sum);
+                    j.prefix_inc();
+                }
             }
-            (*m3.decay().offset((i as usize)).upgrade().deref())
-                .decay()
-                .offset((j as usize))
-                .write(sum);
-            j.prefix_inc();
+            i.prefix_inc();
         }
-        i.prefix_inc();
     }
     return m3.take();
 }

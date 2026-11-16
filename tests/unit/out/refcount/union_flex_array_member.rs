@@ -49,19 +49,23 @@ fn main_0() -> i32 {
         libcc2rs::malloc_refcount(((24usize as u64).wrapping_add((tail_size as u64)) as usize))
             .reinterpret_cast::<node>();
     field!(n, len).write(tail_size);
-    let mut i: usize = 0_usize;
-    'loop_: while (i < tail_size) {
-        elem!(anon_0::bytes(field_ptr!(n, x)), i).write({ ((i & 255_usize) as u8) });
-        i.postfix_inc();
+    {
+        let mut i: usize = 0_usize;
+        'loop_: while (i < tail_size) {
+            elem!(anon_0::bytes(field_ptr!(n, x)), i).write({ ((i & 255_usize) as u8) });
+            i.postfix_inc();
+        }
     }
-    let mut i: usize = 0_usize;
-    'loop_: while (i < tail_size) {
-        assert!(
-            ({ ((elem!(anon_0::bytes(field_ptr!(n, x)), i).read()) as i32) } == {
-                (((i & 255_usize) as u8) as i32)
-            })
-        );
-        i.postfix_inc();
+    {
+        let mut i: usize = 0_usize;
+        'loop_: while (i < tail_size) {
+            assert!(
+                ({ ((elem!(anon_0::bytes(field_ptr!(n, x)), i).read()) as i32) } == {
+                    (((i & 255_usize) as u8) as i32)
+                })
+            );
+            i.postfix_inc();
+        }
     }
     let mut p: Ptr<u8> = (anon_0::bytes(field_ptr!(n, x)).offset((10) as isize));
     assert!((((p.read()) as i32) == 10));

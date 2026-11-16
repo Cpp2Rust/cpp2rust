@@ -54,10 +54,12 @@ unsafe fn main_0() -> i32 {
     assert!(((arr[(5) as usize]) == (99)));
     let mut end: *mut i32 = p.offset((8) as isize);
     let mut sum: i32 = 0;
-    let mut it: *mut i32 = p;
-    'loop_: while ((it) != (end)) {
-        sum += (*it);
-        it.prefix_inc();
+    {
+        let mut it: *mut i32 = p;
+        'loop_: while ((it) != (end)) {
+            sum += (*it);
+            it.prefix_inc();
+        }
     }
     assert!(((sum) == ((((((((10) + (11)) + (12)) + (13)) + (14)) + (99)) + (16)) + (17))));
     let mut bytes: [u8; 8] = [0_u8, 1_u8, 2_u8, 3_u8, 4_u8, 5_u8, 6_u8, 7_u8];

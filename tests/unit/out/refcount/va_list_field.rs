@@ -14,10 +14,12 @@ pub fn sum_0(n: i32, __args: Box<[VaArg]>) -> i32 {
     let guard: Value<Guard_1> = Rc::new(RefCell::new(Guard_1::new({ ap.as_pointer() })));
     let _dtor_guard = std::mem::DropGuard::new(guard.clone(), |__p| __p.as_pointer().destructor());
     let mut total: i32 = 0;
-    let mut i: i32 = 0;
-    'loop_: while (i < (*n.borrow())) {
-        total += { (*guard.borrow()).ap.clone() }.with_mut(|__v| __v.arg::<i32>());
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < (*n.borrow())) {
+            total += { (*guard.borrow()).ap.clone() }.with_mut(|__v| __v.arg::<i32>());
+            i.prefix_inc();
+        }
     }
     return total;
 }
@@ -48,11 +50,13 @@ pub fn sum_ptr_2(n: i32, __args: Box<[VaArg]>) -> i32 {
         ap: (ap.as_pointer()),
     };
     let mut total: i32 = 0;
-    let mut i: i32 = 0;
-    'loop_: while (i < (*n.borrow())) {
-        total += cursor.ap.with_mut(|__v| __v.arg::<i32>());
-        i.prefix_inc();
-    }
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < (*n.borrow())) {
+            total += cursor.ap.with_mut(|__v| __v.arg::<i32>());
+            i.prefix_inc();
+        }
+    };
     return total;
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]

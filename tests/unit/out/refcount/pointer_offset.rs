@@ -13,36 +13,48 @@ pub fn main() {
 fn main_0() -> i32 {
     let mut out: i32 = 0;
     let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2, 3, 4, 0])));
+    {
+        let mut ptr: Ptr<i32> = (arr.decay().offset(0));
+        'loop_: while ((ptr.read()) != 0) {
+            out += { (ptr.read()) };
+            ptr.prefix_inc();
+        }
+    }
+    {
+        let mut ptr: Ptr<i32> = (arr.decay().offset(1));
+        'loop_: while ((ptr.read()) != 4) {
+            out += { (ptr.read()) };
+            ptr.postfix_inc();
+        }
+    }
+    {
+        let mut ptr: Ptr<i32> = (arr.decay().offset(4));
+        'loop_: while ((ptr.read()) != 1) {
+            out += { (ptr.read()) };
+            ptr.postfix_dec();
+        }
+    }
+    {
+        let mut ptr: Ptr<i32> = (arr.decay().offset(3));
+        'loop_: while ((ptr.read()) != 2) {
+            out += { (ptr.read()) };
+            ptr.prefix_dec();
+        }
+    }
+    {
+        let mut ptr: Ptr<i32> = (arr.decay().offset(0));
+        'loop_: while ((ptr.read()) != 0) {
+            out += { (ptr.read()) };
+            ptr = { ptr.offset((1) as isize) };
+        }
+    }
     let mut ptr: Ptr<i32> = (arr.decay().offset(0));
-    'loop_: while ((ptr.read()) != 0) {
-        out += { (ptr.read()) };
-        ptr.prefix_inc();
-    }
-    let mut ptr: Ptr<i32> = (arr.decay().offset(1));
-    'loop_: while ((ptr.read()) != 4) {
-        out += { (ptr.read()) };
-        ptr.postfix_inc();
-    }
-    let mut ptr: Ptr<i32> = (arr.decay().offset(4));
-    'loop_: while ((ptr.read()) != 1) {
-        out += { (ptr.read()) };
-        ptr.postfix_dec();
-    }
-    let mut ptr: Ptr<i32> = (arr.decay().offset(3));
-    'loop_: while ((ptr.read()) != 2) {
-        out += { (ptr.read()) };
-        ptr.prefix_dec();
-    }
-    let mut ptr: Ptr<i32> = (arr.decay().offset(0));
-    'loop_: while ((ptr.read()) != 0) {
-        out += { (ptr.read()) };
-        ptr = { ptr.offset((1) as isize) };
-    }
-    let mut ptr: Ptr<i32> = (arr.decay().offset(0));
-    let mut i: i32 = 0;
-    'loop_: while (i < 5) {
-        out += { (elem!(ptr, i).read()) };
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < 5) {
+            out += { (elem!(ptr, i).read()) };
+            i.prefix_inc();
+        }
     }
     assert!((out == 51));
     let mut step: i64 = 2_i64;

@@ -19,10 +19,12 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut count: i32 = 0;
-    let mut c: color = color_RED;
-    'loop_: while ((c as u32) < ((color_COLOR_LAST as i32) as u32)) {
-        count.postfix_inc();
-        c.postfix_inc();
+    {
+        let mut c: color = color_RED;
+        'loop_: while ((c as u32) < ((color_COLOR_LAST as i32) as u32)) {
+            count.postfix_inc();
+            c.postfix_inc();
+        }
     }
     assert!(((count) == (3)));
     let mut c: color = color_RED;
