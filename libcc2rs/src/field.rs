@@ -742,6 +742,13 @@ macro_rules! size_of_field {
     };
 }
 
+#[macro_export]
+macro_rules! offset_of_field {
+    ($ty:ty, $field:ident) => {
+        <$ty as $crate::Record>::OFFSETS.$field
+    };
+}
+
 // The size of the type that `f` gives a reference to.
 pub const fn size_of_pointee<S, T>(_f: fn(&S) -> &T) -> usize {
     std::mem::size_of::<T>()

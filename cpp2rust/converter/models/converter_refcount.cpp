@@ -2919,7 +2919,7 @@ void ConverterRefCount::ConvertAddrOf(clang::Expr *expr,
 
 std::string
 ConverterRefCount::GetFieldOffsetAsString(const clang::FieldDecl *field) {
-  return std::format("<{} as Record>::OFFSETS.{}",
+  return std::format("offset_of_field!({}, {})",
                      GetRecordName(field->getParent()),
                      GetNamedDeclAsString(field));
 }
