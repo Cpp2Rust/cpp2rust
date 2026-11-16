@@ -512,6 +512,10 @@ void Converter::ConvertFunctionBody(clang::FunctionDecl *decl) {
 }
 
 bool Converter::VisitFunctionTemplateDecl(clang::FunctionTemplateDecl *decl) {
+  if (!clang::isa<clang::CXXMethodDecl>(decl->getTemplatedDecl()) &&
+      !decl->isCanonicalDecl()) {
+    return false;
+  }
   for (auto *function_decl : decl->specializations()) {
     if (function_decl->getTemplateSpecializationKind() ==
         clang::TSK_ExplicitSpecialization) {
