@@ -395,6 +395,11 @@ std::string ConverterRefCount::ConvertPointerReceiver(
   if (clang::isa<clang::MaterializeTemporaryExpr>(arg->IgnoreImpCasts())) {
     return ConvertTemporaryPointer(arg, implicit_convert_to);
   }
+  if (retain_bound_temporaries_ && arg->getType()->isArrayType()) {
+    auto ptr = ConvertElementPtr(arg);
+    object_shape_ = ObjectShape::Whole;
+    return ptr;
+  }
   return isObject() ? ConvertObject(arg) : ConvertFreshObject(arg);
 }
 
@@ -437,6 +442,9 @@ std::string ConverterRefCount::ConvertFreshObject(clang::Expr *expr) {
 
 std::string ConverterRefCount::ConvertTemporaryPointer(
     clang::Expr *expr, std::optional<clang::QualType> implicit_convert_to) {
+  if (retain_bound_temporaries_ && full_expression_temporaries_) {
+    return Converter::ConvertTemporaryPointer(expr, implicit_convert_to);
+  }
   return std::format("Rc::new(RefCell::new({})).as_pointer()",
                      ConvertFreshRValue(expr, implicit_convert_to));
 }
@@ -456,7 +464,8 @@ std::string ConverterRefCount::ConvertFreshRValue(
   {
     ScopedValue<const clang::Expr *> copied(copied_expr_,
                                             expr->IgnoreParenImpCasts());
-    str = ConvertRValue(expr, implicit_convert_to);
+    PushExprKind push(*this, ExprKind::FreshRValue);
+    str = ToString(expr, implicit_convert_to);
   }
   if (expr->getType()->isVoidType()) {
     MarkFresh();
@@ -490,29 +499,39 @@ std::string ConverterRefCount::ConvertPointeeCast(std::string str,
                      ToString(element.getUnqualifiedType()));
 }
 
-std::pair<std::string, std::string>
-ConverterRefCount::MaterializeTemp(const std::string &binding_name,
-                                   clang::QualType param_type,
-                                   clang::Expr *expr) {
+std::pair<std::string, std::string> ConverterRefCount::MaterializeTemp(
+    const std::string &binding_name, clang::QualType param_type,
+    clang::Expr *expr, std::string *declarations) {
+  if (!declarations && retain_bound_temporaries_) {
+    declarations = full_expression_temporaries_;
+  }
   auto pointee = param_type.getNonReferenceType();
-  const auto *decl = in_const_initializer_ ? keyword::kStatic : keyword::kLet;
-  std::string binding;
+  bool is_static = in_const_initializer_ && !declarations;
+  const auto *decl = is_static ? keyword::kStatic : keyword::kLet;
+  std::string type, value;
   if (pointee->isConstantArrayType()) {
     PushConversionKind push(*this, ConversionKind::FullRefCount);
-    binding =
-        std::format("{} {} : {} = {};", decl, binding_name, ToString(pointee),
-                    BoxValue(ConvertVarInitValue(pointee, expr)));
+    type = ToString(pointee);
+    value = BoxValue(ConvertVarInitValue(pointee, expr));
   } else {
-    auto value = ConvertFreshRValue(expr, pointee);
-    auto type_str = ToStringBase(pointee);
-    binding = std::format("{} {} : Value<{}> = Rc::new(RefCell::new({}));",
-                          decl, binding_name, type_str, value);
+    auto unboxed = ConvertFreshRValue(expr, pointee);
+    type = std::format("Value<{}>", ToStringBase(pointee));
+    value = std::format("Rc::new(RefCell::new({}))", unboxed);
   }
-  auto ref =
-      in_const_initializer_ ? ".with(Value::as_pointer)" : ".as_pointer()";
+  std::string binding;
+  if (declarations) {
+    *declarations += std::format("let {} : {};", binding_name, type);
+    binding = std::format("{} = {};", binding_name, value);
+  } else {
+    binding = std::format("{} {} : {} = {};", decl, binding_name, type, value);
+  }
+  auto ref = is_static ? ".with(Value::as_pointer)" : ".as_pointer()";
   // A reference to an array is a pointer to its first element.
   if (pointee->isConstantArrayType()) {
-    ref = in_const_initializer_ ? ".with(|__v| __v.decay())" : ".decay()";
+    ref = is_static ? ".with(|__v| __v.decay())" : ".decay()";
+    if (retain_bound_temporaries_ && isObject()) {
+      object_shape_ = ObjectShape::Whole;
+    }
   }
   return {binding, binding_name + ref};
 }
@@ -903,6 +922,16 @@ bool ConverterRefCount::ConvertIncAndDec(clang::UnaryOperator *expr) {
     return false;
   }
 
+  if (expr->isPrefix() && isAddrOf()) {
+    auto ptr = ConvertFreshObject(sub_expr);
+    auto name = NewTempName();
+    StrCat(
+        std::format("{{ let {0} = {1}; {0}.with_mut(|__v| __v.{2}()); {0} }}",
+                    name, ptr, method));
+    MarkFresh();
+    return true;
+  }
+
   auto str = ConvertLValue(sub_expr);
   if (!pending_deref_.empty()) {
     StrCat(pending_deref_.take(), ".with_mut(|__v| __v.", method, "())");
@@ -917,6 +946,14 @@ bool ConverterRefCount::ConvertIncAndDec(clang::UnaryOperator *expr) {
   }
   MarkFresh();
   return true;
+}
+
+bool ConverterRefCount::ConvertLValueConditional(
+    clang::ConditionalOperator *expr) {
+  if (isRValue()) {
+    return false;
+  }
+  return Converter::ConvertLValueConditional(expr);
 }
 
 void ConverterRefCount::ConvertConditionalBranch(clang::Expr *expr,
@@ -2725,10 +2762,12 @@ void ConverterRefCount::ConvertArraySubscript(clang::Expr *base,
       StrCat(std::format("{}.offset({})", ConvertStringLiteralPtr(base),
                          ConvertSubscriptIndex(idx)));
     } else {
-      StrCat(std::format(
-          "{}.offset({})",
-          ConvertObject(base->IgnoreImplicit(), ObjectShape::Element),
-          ConvertSubscriptIndex(idx)));
+      StrCat(std::format("{}.offset({})",
+                         ConvertObject(retain_bound_temporaries_
+                                           ? base->IgnoreImpCasts()
+                                           : base->IgnoreImplicit(),
+                                       ObjectShape::Element),
+                         ConvertSubscriptIndex(idx)));
     }
     MarkFresh();
   } else if (auto *global = GetGlobalArrayRValue(SubscriptedArray(base))) {
@@ -2750,7 +2789,8 @@ void ConverterRefCount::ConvertArraySubscript(clang::Expr *base,
                           ConvertDeclRef(global, global->getDecl()), path,
                           TypeIsCopyable(type) ? "" : ".clone()"));
   } else {
-    Convert(base->IgnoreImplicit());
+    Convert(retain_bound_temporaries_ ? base->IgnoreImpCasts()
+                                      : base->IgnoreImplicit());
     // An array reached through a pointer is indexed in place.
     if (!pending_deref_.empty()) {
       auto place = pending_deref_.take();
@@ -2983,6 +3023,12 @@ std::string ConverterRefCount::DerefPtrExpr(std::string_view ptr_expr,
                      GetPointerDerefSuffix(pointee_type));
 }
 
+std::string ConverterRefCount::AssignPtrExpr(
+    std::string_view ptr, clang::QualType,
+    llvm::function_ref<std::string(std::string_view)> value) {
+  return std::format("{}.with_mut(|__v| *__v = {})", ptr, value("(*__v)"));
+}
+
 bool ConverterRefCount::IsReferenceType(const clang::Expr *expr) const {
   if (Converter::IsReferenceType(expr)) {
     return true;
@@ -3125,6 +3171,10 @@ void ConverterRefCount::SetUFCSReceiver(clang::Expr *base, bool is_arrow,
   }
   if (IsTemporaryObject(base) && base->getType()->isRecordType() &&
       !IsReferenceType(base->IgnoreImplicit())) {
+    if (retain_bound_temporaries_ && full_expression_temporaries_) {
+      ufcs_receiver_ = token::kRef + ConvertTemporaryPointer(base, {});
+      return;
+    }
     PushConversionKind push(*this, ConversionKind::FullRefCount);
     ufcs_receiver_ =
         token::kRef + BoxValue(ConvertRValue(base)) + ".as_pointer()";

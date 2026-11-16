@@ -4,6 +4,7 @@
 #include "converter/models/boxed_vars.h"
 
 #include <clang/AST/RecursiveASTVisitor.h>
+#include <clang/AST/StmtVisitor.h>
 #include <clang/Basic/SourceManager.h>
 
 #include <algorithm>
@@ -231,6 +232,63 @@ public:
   }
 
 private:
+  // Follow only the object whose address a bound lvalue needs, not the
+  // operands that merely compute that address.
+  class AddressUseVisitor : public clang::ConstStmtVisitor<AddressUseVisitor> {
+  public:
+    explicit AddressUseVisitor(AddressTakenVisitor &owner) : owner_(owner) {}
+
+    void Traverse(const clang::Expr *expr) {
+      Visit(expr->IgnoreParenImpCasts());
+    }
+
+    void VisitDeclRefExpr(const clang::DeclRefExpr *expr) {
+      owner_.AddressTaken(expr->getDecl());
+    }
+
+    void VisitExpr(const clang::Expr *expr) {
+      if (auto *object = GetEnclosingObject(expr)) {
+        Traverse(object);
+      }
+    }
+
+    void VisitCallExpr(const clang::CallExpr *expr) {
+      if (IsTransparentStdCall(expr)) {
+        Traverse(expr->getArg(0));
+      } else {
+        VisitExpr(expr);
+      }
+    }
+
+    void VisitCastExpr(const clang::CastExpr *expr) {
+      if (expr->isGLValue()) {
+        Traverse(expr->getSubExpr());
+      }
+    }
+
+    void VisitUnaryOperator(const clang::UnaryOperator *expr) {
+      if (expr->isIncrementDecrementOp()) {
+        Traverse(expr->getSubExpr());
+      }
+    }
+
+    void VisitBinaryOperator(const clang::BinaryOperator *expr) {
+      if (expr->isAssignmentOp()) {
+        Traverse(expr->getLHS());
+      } else if (expr->isCommaOp()) {
+        Traverse(expr->getRHS());
+      }
+    }
+
+    void VisitConditionalOperator(const clang::ConditionalOperator *expr) {
+      Traverse(expr->getTrueExpr());
+      Traverse(expr->getFalseExpr());
+    }
+
+  private:
+    AddressTakenVisitor &owner_;
+  };
+
   // The arguments of a call translated by a rule are passed by value or
   // borrowed, unless the rule takes a pointer to them, other than to a
   // temporary copy of them, or they are bound to references. A pointer
@@ -241,11 +299,17 @@ private:
     if (!rule) {
       return;
     }
-    // Variadic arguments are not considered.
     auto all_args = BuildUnifiedArgs(expr, args, num_args);
     auto bound = rule->argsToBind(ctx_, expr, all_args);
-    for (unsigned i = 0; i < all_args.size() && i < rule->params.size(); ++i) {
+    for (unsigned i = 0; i < all_args.size(); ++i) {
       if (bound[i]) {
+        if (all_args[i]->isGLValue()) {
+          AddressUseVisitor(*this).Traverse(all_args[i]);
+        }
+        continue;
+      }
+      // Unbound variadic arguments are not considered.
+      if (i >= rule->params.size()) {
         continue;
       }
       auto *arg = IgnoreNoOpCasts(all_args[i]);
