@@ -25,9 +25,9 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let mut pm: MemberPtr<HasTwoInts, i32> = <MemberPtr<HasTwoInts, i32>>::default();
-    let mut converted: MemberPtr<HasChar, i8> = <MemberPtr<HasChar, i8>>::cast_from(pm);
-    assert!((converted).is_null());
+    let mut pm: isize = -1_isize;
+    let mut converted: isize = pm;
+    assert!(((converted) == -1_isize));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

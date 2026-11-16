@@ -30,14 +30,14 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let mut pm: MemberPtr<HasIntArray, Box<[i32]>> = member_ptr!(HasIntArray, elements);
+    let mut pm: isize = (<HasIntArray as Record>::OFFSETS.elements as isize);
     let obj: Value<HasIntArray> = Rc::new(RefCell::new(HasIntArray {
         before: 1,
         elements: Box::new([2, 3, 4]),
     }));
-    assert!((((obj.as_pointer()).member(pm).read())[(0) as usize] == 2));
-    assert!((((obj.as_pointer()).member(pm).read())[(2) as usize] == 4));
-    index!((obj.as_pointer()).member(pm), 1).write(7);
+    assert!((((obj.as_pointer()).member::<Box<[i32]>>(pm).read())[(0) as usize] == 2));
+    assert!((((obj.as_pointer()).member::<Box<[i32]>>(pm).read())[(2) as usize] == 4));
+    index!((obj.as_pointer()).member::<Box<[i32]>>(pm), 1).write(7);
     assert!(((array_elem!(obj.as_pointer(), elements, 1).read()) == 7));
     assert!(({ ({ (*obj.borrow()).before } == 1) }));
     return 0;

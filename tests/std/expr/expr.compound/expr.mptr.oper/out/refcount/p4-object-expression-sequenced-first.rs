@@ -29,10 +29,10 @@ pub fn select_object_4() -> Ptr<HasValue> {
         .with(|rc| *rc.borrow_mut() = (*sequence_0.with(Value::clone).borrow_mut()).prefix_inc());
     return object_3.with(|v| v.as_pointer());
 }
-pub fn select_member_5() -> MemberPtr<HasValue, i32> {
+pub fn select_member_5() -> isize {
     member_stamp_2
         .with(|rc| *rc.borrow_mut() = (*sequence_0.with(Value::clone).borrow_mut()).prefix_inc());
-    return member_ptr!(HasValue, value);
+    return (<HasValue as Record>::OFFSETS.value as isize);
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -41,7 +41,7 @@ pub fn main() {
 fn main_0() -> i32 {
     assert!(
         ((({ select_object_4() })
-            .member(({ select_member_5() }))
+            .member::<i32>(({ select_member_5() }))
             .read())
             == 7)
     );

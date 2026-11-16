@@ -27,8 +27,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let mut converted: MemberPtr<AlsoHasTwoInts, i32> =
-        <MemberPtr<AlsoHasTwoInts, i32>>::cast_from(member_ptr!(HasTwoInts, second));
-    return ((converted == member_ptr!(AlsoHasTwoInts, second)) as i32);
+    let mut converted: isize = (<HasTwoInts as Record>::OFFSETS.second as isize);
+    return ((converted == (<AlsoHasTwoInts as Record>::OFFSETS.second as isize)) as i32);
 }
 pub fn __cpp2rust_init_globals() {}

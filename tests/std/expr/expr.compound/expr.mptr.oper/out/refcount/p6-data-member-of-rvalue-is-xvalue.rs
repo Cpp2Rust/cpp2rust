@@ -52,14 +52,16 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let mut pm: MemberPtr<HoldsCounted, CountsCopiesAndMoves> = member_ptr!(HoldsCounted, member);
+    let mut pm: isize = (<HoldsCounted as Record>::OFFSETS.member as isize);
     let holder: Value<HoldsCounted> = Rc::new(RefCell::new(<HoldsCounted>::default()));
-    let mut from_lvalue: CountsCopiesAndMoves =
-        CountsCopiesAndMoves::copy_from({ (holder.as_pointer()).member(pm) });
+    let mut from_lvalue: CountsCopiesAndMoves = CountsCopiesAndMoves::copy_from({
+        (holder.as_pointer()).member::<CountsCopiesAndMoves>(pm)
+    });
     assert!((copyCount_0.with(|rc| *rc.borrow()) == 1));
     assert!((moveCount_1.with(|rc| *rc.borrow()) == 0));
-    let mut from_xvalue: CountsCopiesAndMoves =
-        CountsCopiesAndMoves::move_from({ (holder.as_pointer()).member(pm) });
+    let mut from_xvalue: CountsCopiesAndMoves = CountsCopiesAndMoves::move_from({
+        (holder.as_pointer()).member::<CountsCopiesAndMoves>(pm)
+    });
     assert!((copyCount_0.with(|rc| *rc.borrow()) == 1));
     assert!((moveCount_1.with(|rc| *rc.borrow()) == 1));
     return 0;

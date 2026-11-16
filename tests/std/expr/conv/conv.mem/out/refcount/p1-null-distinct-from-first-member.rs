@@ -19,9 +19,9 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let mut null_pm: MemberPtr<HasTwoInts, i32> = <MemberPtr<HasTwoInts, i32>>::default();
-    let mut first_pm: MemberPtr<HasTwoInts, i32> = member_ptr!(HasTwoInts, first);
-    let mut second_pm: MemberPtr<HasTwoInts, i32> = member_ptr!(HasTwoInts, second);
+    let mut null_pm: isize = -1_isize;
+    let mut first_pm: isize = (<HasTwoInts as Record>::OFFSETS.first as isize);
+    let mut second_pm: isize = (<HasTwoInts as Record>::OFFSETS.second as isize);
     assert!((first_pm != null_pm));
     assert!((second_pm != null_pm));
     return 0;

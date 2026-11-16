@@ -19,11 +19,11 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let mut pm: MemberPtr<HasTwoInts, i32> = <MemberPtr<HasTwoInts, i32>>::default();
+    let mut pm: isize = -1_isize;
     let obj: Value<HasTwoInts> = Rc::new(RefCell::new(HasTwoInts {
         first: 3,
         second: 4,
     }));
-    return ((obj.as_pointer()).member(pm).read());
+    return ((obj.as_pointer()).member::<i32>(pm).read());
 }
 pub fn __cpp2rust_init_globals() {}

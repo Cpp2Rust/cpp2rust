@@ -19,13 +19,18 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let source: Value<MemberPtr<HasTwoInts, i32>> =
-        Rc::new(RefCell::new(member_ptr!(HasTwoInts, second)));
-    let destination: Value<MemberPtr<HasTwoInts, i32>> =
-        Rc::new(RefCell::new(member_ptr!(HasTwoInts, first)));
+    let source: Value<isize> = Rc::new(RefCell::new(
+        (<HasTwoInts as Record>::OFFSETS.second as isize),
+    ));
+    let destination: Value<isize> = Rc::new(RefCell::new(
+        (<HasTwoInts as Record>::OFFSETS.first as isize),
+    ));
     match ({ (destination.as_pointer()).to_any() },) {
         (mut __tmp_0,) => {
-            __tmp_0.memcpy(&(source.as_pointer()).to_any(), 8usize);
+            __tmp_0.memcpy(
+                &(source.as_pointer()).to_any(),
+                ::std::mem::size_of::<isize>(),
+            );
             (__tmp_0).clone()
         }
     };
@@ -34,16 +39,25 @@ fn main_0() -> i32 {
         first: 3,
         second: 4,
     }));
-    assert!(({ (((obj.as_pointer()).member((*destination.borrow())).read()) == 4) }));
-    let null_source: Value<MemberPtr<HasTwoInts, i32>> =
-        Rc::new(RefCell::new(<MemberPtr<HasTwoInts, i32>>::default()));
+    assert!(
+        ({
+            (((obj.as_pointer())
+                .member::<i32>((*destination.borrow()))
+                .read())
+                == 4)
+        })
+    );
+    let null_source: Value<isize> = Rc::new(RefCell::new(-1_isize));
     match ({ (destination.as_pointer()).to_any() },) {
         (mut __tmp_1,) => {
-            __tmp_1.memcpy(&(null_source.as_pointer()).to_any(), 8usize);
+            __tmp_1.memcpy(
+                &(null_source.as_pointer()).to_any(),
+                ::std::mem::size_of::<isize>(),
+            );
             (__tmp_1).clone()
         }
     };
-    assert!(({ (*destination.borrow()).is_null() }));
+    assert!(({ ((*destination.borrow()) == -1_isize) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

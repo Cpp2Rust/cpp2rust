@@ -14,11 +14,11 @@ pub struct HasTwoInts {
     #[offset(4)]
     pub second: i32,
 }
-pub fn second_or_null_0(mut choose_second: bool) -> MemberPtr<HasTwoInts, i32> {
+pub fn second_or_null_0(mut choose_second: bool) -> isize {
     return if choose_second {
-        member_ptr!(HasTwoInts, second)
+        (<HasTwoInts as Record>::OFFSETS.second as isize)
     } else {
-        <MemberPtr<HasTwoInts, i32>>::default()
+        -1_isize
     };
 }
 pub fn main() {
@@ -30,11 +30,11 @@ fn main_0() -> i32 {
         first: 3,
         second: 4,
     }));
-    assert!(({ second_or_null_0(false,) }).is_null());
-    assert!((({ second_or_null_0(true,) }) == member_ptr!(HasTwoInts, second)));
+    assert!((({ second_or_null_0(false,) }) == -1_isize));
+    assert!((({ second_or_null_0(true,) }) == (<HasTwoInts as Record>::OFFSETS.second as isize)));
     assert!(
         (((obj.as_pointer())
-            .member(({ second_or_null_0(true,) }))
+            .member::<i32>(({ second_or_null_0(true,) }))
             .read())
             == 4)
     );

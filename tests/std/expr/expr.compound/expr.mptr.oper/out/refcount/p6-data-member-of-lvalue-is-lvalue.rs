@@ -19,13 +19,13 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let mut pm: MemberPtr<HasTwoInts, i32> = member_ptr!(HasTwoInts, second);
+    let mut pm: isize = (<HasTwoInts as Record>::OFFSETS.second as isize);
     let obj: Value<HasTwoInts> = Rc::new(RefCell::new(HasTwoInts {
         first: 3,
         second: 4,
     }));
-    assert!((((obj.as_pointer()).member(pm)) == (field_ptr!(obj.as_pointer(), second))));
-    let ref_: Ptr<i32> = (obj.as_pointer()).member(pm);
+    assert!((((obj.as_pointer()).member::<i32>(pm)) == (field_ptr!(obj.as_pointer(), second))));
+    let ref_: Ptr<i32> = (obj.as_pointer()).member::<i32>(pm);
     ref_.write(5);
     assert!(({ ({ (*obj.borrow()).second } == 5) }));
     assert!(({ ({ (*obj.borrow()).first } == 3) }));

@@ -7,8 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 thread_local!(
-    pub static pm_0: Value<MemberPtr<CompletedLater, i32>> =
-        Rc::new(RefCell::new(<MemberPtr<CompletedLater, i32>>::default()));
+    pub static pm_0: Value<isize> = Rc::new(RefCell::new(-1_isize));
 );
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
@@ -23,15 +22,15 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((pm_0.with(|rc| *rc.borrow())).is_null());
-    pm_0.with(|rc| *rc.borrow_mut() = member_ptr!(CompletedLater, second));
+    assert!(((pm_0.with(|rc| *rc.borrow())) == -1_isize));
+    pm_0.with(|rc| *rc.borrow_mut() = (<CompletedLater as Record>::OFFSETS.second as isize));
     let obj: Value<CompletedLater> = Rc::new(RefCell::new(CompletedLater {
         first: 3,
         second: 4,
     }));
     assert!(
         (((obj.as_pointer())
-            .member(pm_0.with(|rc| *rc.borrow()))
+            .member::<i32>(pm_0.with(|rc| *rc.borrow()))
             .read())
             == 4)
     );

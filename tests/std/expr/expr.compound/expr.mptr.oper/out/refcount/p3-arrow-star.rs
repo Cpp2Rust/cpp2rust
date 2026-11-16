@@ -19,17 +19,17 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let mut pm: MemberPtr<HasTwoInts, i32> = member_ptr!(HasTwoInts, second);
+    let mut pm: isize = (<HasTwoInts as Record>::OFFSETS.second as isize);
     let obj: Value<HasTwoInts> = Rc::new(RefCell::new(HasTwoInts {
         first: 3,
         second: 4,
     }));
     let mut p: Ptr<HasTwoInts> = (obj.as_pointer());
-    assert!((((p).member(pm).read()) == 4));
-    (p).member(pm).write(5);
+    assert!((((p).member::<i32>(pm).read()) == 4));
+    (p).member::<i32>(pm).write(5);
     assert!(({ ({ (*obj.borrow()).second } == 5) }));
     assert!(({ ({ (*obj.borrow()).first } == 3) }));
-    assert!((((p).member(pm)) == ((p).member(pm))));
+    assert!((((p).member::<i32>(pm)) == ((p).member::<i32>(pm))));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

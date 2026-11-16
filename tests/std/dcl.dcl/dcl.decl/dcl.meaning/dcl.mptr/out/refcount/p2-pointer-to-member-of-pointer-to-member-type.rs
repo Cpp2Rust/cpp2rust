@@ -14,22 +14,26 @@ pub struct HasTwoInts {
     #[offset(4)]
     pub second: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(8)]
 pub struct HoldsSelector {
     #[offset(0)]
     #[byte_size(8)]
-    pub selector: MemberPtr<HasTwoInts, i32>,
+    pub selector: isize,
+}
+impl Default for HoldsSelector {
+    fn default() -> Self {
+        { HoldsSelector { selector: -1_isize } }
+    }
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let mut pm: MemberPtr<HoldsSelector, MemberPtr<HasTwoInts, i32>> =
-        member_ptr!(HoldsSelector, selector);
+    let mut pm: isize = (<HoldsSelector as Record>::OFFSETS.selector as isize);
     let holder: Value<HoldsSelector> = Rc::new(RefCell::new(HoldsSelector {
-        selector: member_ptr!(HasTwoInts, second),
+        selector: (<HasTwoInts as Record>::OFFSETS.second as isize),
     }));
     let obj: Value<HasTwoInts> = Rc::new(RefCell::new(HasTwoInts {
         first: 3,
@@ -37,17 +41,17 @@ fn main_0() -> i32 {
     }));
     assert!(
         (((obj.as_pointer())
-            .member(((holder.as_pointer()).member(pm).read()))
+            .member::<i32>(((holder.as_pointer()).member::<isize>(pm).read()))
             .read())
             == 4)
     );
     (holder.as_pointer())
-        .member(pm)
-        .write(member_ptr!(HasTwoInts, first));
+        .member::<isize>(pm)
+        .write((<HasTwoInts as Record>::OFFSETS.first as isize));
     assert!(
         ({
             (((obj.as_pointer())
-                .member(({ (*holder.borrow()).selector }))
+                .member::<i32>(({ (*holder.borrow()).selector }))
                 .read())
                 == 3)
         })

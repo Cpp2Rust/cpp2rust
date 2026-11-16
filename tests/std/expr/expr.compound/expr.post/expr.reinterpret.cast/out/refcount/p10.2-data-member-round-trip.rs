@@ -25,15 +25,14 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let mut converted: MemberPtr<HasChar, i8> =
-        <MemberPtr<HasChar, i8>>::cast_from(member_ptr!(HasTwoInts, second));
-    let mut back: MemberPtr<HasTwoInts, i32> = <MemberPtr<HasTwoInts, i32>>::cast_from(converted);
-    assert!((back == member_ptr!(HasTwoInts, second)));
+    let mut converted: isize = (<HasTwoInts as Record>::OFFSETS.second as isize);
+    let mut back: isize = converted;
+    assert!((back == (<HasTwoInts as Record>::OFFSETS.second as isize)));
     let obj: Value<HasTwoInts> = Rc::new(RefCell::new(HasTwoInts {
         first: 3,
         second: 4,
     }));
-    assert!((((obj.as_pointer()).member(back).read()) == 4));
+    assert!((((obj.as_pointer()).member::<i32>(back).read()) == 4));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

@@ -14,30 +14,36 @@ pub struct HasTwoInts {
     #[offset(4)]
     pub second: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(8)]
 pub struct HoldsSelector {
     #[offset(0)]
     #[byte_size(8)]
-    pub selector: MemberPtr<HasTwoInts, i32>,
+    pub selector: isize,
+}
+impl Default for HoldsSelector {
+    fn default() -> Self {
+        { HoldsSelector { selector: -1_isize } }
+    }
 }
 thread_local!(
-    pub static static_pm_0: Value<MemberPtr<HasTwoInts, i32>> =
-        <Value<MemberPtr<HasTwoInts, i32>>>::default();
+    pub static static_pm_0: Value<isize> = Rc::new(RefCell::new(-1_isize));
 );
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((static_pm_0.with(|rc| *rc.borrow())).is_null());
-    assert!((static_pm_0.with(|rc| *rc.borrow()) != member_ptr!(HasTwoInts, first)));
-    let mut value_initialized: MemberPtr<HasTwoInts, i32> = <MemberPtr<HasTwoInts, i32>>::default();
-    assert!((value_initialized).is_null());
-    assert!((value_initialized != member_ptr!(HasTwoInts, first)));
+    assert!(((static_pm_0.with(|rc| *rc.borrow())) == -1_isize));
+    assert!(
+        (static_pm_0.with(|rc| *rc.borrow()) != (<HasTwoInts as Record>::OFFSETS.first as isize))
+    );
+    let mut value_initialized: isize = -1_isize;
+    assert!(((value_initialized) == -1_isize));
+    assert!((value_initialized != (<HasTwoInts as Record>::OFFSETS.first as isize)));
     let mut holder: HoldsSelector = <HoldsSelector>::default();
-    assert!((holder.selector).is_null());
-    assert!((holder.selector != member_ptr!(HasTwoInts, first)));
+    assert!(((holder.selector) == -1_isize));
+    assert!((holder.selector != (<HasTwoInts as Record>::OFFSETS.first as isize)));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {
