@@ -19,11 +19,13 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut pm: MemberPtrUnsafe<HasTwoInts, i32> = <MemberPtrUnsafe<HasTwoInts, i32>>::default();
+    let mut pm: isize = -1_isize;
     let mut obj: HasTwoInts = HasTwoInts {
         first: 3,
         second: 4,
     };
-    return (*(&mut obj as *mut HasTwoInts).member(pm));
+    return (*(&mut obj as *mut HasTwoInts)
+        .wrapping_byte_offset(pm)
+        .cast::<i32>());
 }
 pub unsafe fn __cpp2rust_init_globals() {}

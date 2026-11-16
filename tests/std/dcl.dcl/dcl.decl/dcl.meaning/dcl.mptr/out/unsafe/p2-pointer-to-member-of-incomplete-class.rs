@@ -6,8 +6,7 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub static mut pm_0: std::cell::LazyCell<MemberPtrUnsafe<CompletedLater, i32>> =
-    std::cell::LazyCell::new(|| unsafe { <MemberPtrUnsafe<CompletedLater, i32>>::default() });
+pub static mut pm_0: std::cell::LazyCell<isize> = std::cell::LazyCell::new(|| unsafe { -1_isize });
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct CompletedLater {
@@ -21,19 +20,17 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!((*std::cell::LazyCell::force_mut(&mut *&raw mut pm_0)).is_null());
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut pm_0)) == -1_isize));
     (*std::cell::LazyCell::force_mut(&mut *&raw mut pm_0)) =
-        <MemberPtrUnsafe<CompletedLater, i32>>::from_offset(::std::mem::offset_of!(
-            CompletedLater,
-            second
-        ));
+        (::std::mem::offset_of!(CompletedLater, second) as isize);
     let mut obj: CompletedLater = CompletedLater {
         first: 3,
         second: 4,
     };
     assert!(
         ((*(&mut obj as *mut CompletedLater)
-            .member((*std::cell::LazyCell::force_mut(&mut *&raw mut pm_0))))
+            .wrapping_byte_offset((*std::cell::LazyCell::force_mut(&mut *&raw mut pm_0)))
+            .cast::<i32>())
             == (4))
     );
     return 0;

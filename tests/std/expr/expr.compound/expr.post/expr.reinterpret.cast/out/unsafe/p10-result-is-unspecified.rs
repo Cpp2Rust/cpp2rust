@@ -25,16 +25,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut converted: MemberPtrUnsafe<AlsoHasTwoInts, i32> =
-        <MemberPtrUnsafe<AlsoHasTwoInts, i32>>::cast_from(
-            <MemberPtrUnsafe<HasTwoInts, i32>>::from_offset(::std::mem::offset_of!(
-                HasTwoInts, second
-            )),
-        );
-    return (((converted)
-        == (<MemberPtrUnsafe<AlsoHasTwoInts, i32>>::from_offset(::std::mem::offset_of!(
-            AlsoHasTwoInts,
-            second
-        )))) as i32);
+    let mut converted: isize = (::std::mem::offset_of!(HasTwoInts, second) as isize);
+    return (((converted) == (::std::mem::offset_of!(AlsoHasTwoInts, second) as isize)) as i32);
 }
 pub unsafe fn __cpp2rust_init_globals() {}

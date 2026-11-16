@@ -12,11 +12,11 @@ pub struct HasTwoInts {
     pub first: i32,
     pub second: i32,
 }
-pub unsafe fn second_or_null_0(mut choose_second: bool) -> MemberPtrUnsafe<HasTwoInts, i32> {
+pub unsafe fn second_or_null_0(mut choose_second: bool) -> isize {
     return if choose_second {
-        <MemberPtrUnsafe<HasTwoInts, i32>>::from_offset(::std::mem::offset_of!(HasTwoInts, second))
+        (::std::mem::offset_of!(HasTwoInts, second) as isize)
     } else {
-        <MemberPtrUnsafe<HasTwoInts, i32>>::default()
+        -1_isize
     };
 }
 pub fn main() {
@@ -30,14 +30,17 @@ unsafe fn main_0() -> i32 {
         first: 3,
         second: 4,
     };
-    assert!((unsafe { second_or_null_0(false,) }).is_null());
+    assert!(((unsafe { second_or_null_0(false,) }) == -1_isize));
     assert!(
         ((unsafe { second_or_null_0(true,) })
-            == (<MemberPtrUnsafe<HasTwoInts, i32>>::from_offset(::std::mem::offset_of!(
-                HasTwoInts, second
-            ))))
+            == (::std::mem::offset_of!(HasTwoInts, second) as isize))
     );
-    assert!(((*(&mut obj as *mut HasTwoInts).member((unsafe { second_or_null_0(true,) }))) == (4)));
+    assert!(
+        ((*(&mut obj as *mut HasTwoInts)
+            .wrapping_byte_offset((unsafe { second_or_null_0(true,) }))
+            .cast::<i32>())
+            == (4))
+    );
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

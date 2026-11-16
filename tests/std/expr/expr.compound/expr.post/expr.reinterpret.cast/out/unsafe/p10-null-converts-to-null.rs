@@ -24,10 +24,9 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut pm: MemberPtrUnsafe<HasTwoInts, i32> = <MemberPtrUnsafe<HasTwoInts, i32>>::default();
-    let mut converted: MemberPtrUnsafe<HasChar, libc::c_char> =
-        <MemberPtrUnsafe<HasChar, libc::c_char>>::cast_from(pm);
-    assert!((converted).is_null());
+    let mut pm: isize = -1_isize;
+    let mut converted: isize = pm;
+    assert!(((converted) == -1_isize));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

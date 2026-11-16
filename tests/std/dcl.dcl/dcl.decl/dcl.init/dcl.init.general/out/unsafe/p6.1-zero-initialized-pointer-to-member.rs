@@ -13,12 +13,17 @@ pub struct HasTwoInts {
     pub second: i32,
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg)]
 pub struct HoldsSelector {
-    pub selector: MemberPtrUnsafe<HasTwoInts, i32>,
+    pub selector: isize,
 }
-pub static mut static_pm_0: std::cell::LazyCell<MemberPtrUnsafe<HasTwoInts, i32>> =
-    std::cell::LazyCell::new(|| unsafe { <MemberPtrUnsafe<HasTwoInts, i32>>::default() });
+impl Default for HoldsSelector {
+    fn default() -> Self {
+        unsafe { HoldsSelector { selector: -1_isize } }
+    }
+}
+pub static mut static_pm_0: std::cell::LazyCell<isize> =
+    std::cell::LazyCell::new(|| unsafe { -1_isize });
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -26,30 +31,17 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!((*std::cell::LazyCell::force_mut(&mut *&raw mut static_pm_0)).is_null());
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut static_pm_0)) == -1_isize));
     assert!(
         ((*std::cell::LazyCell::force_mut(&mut *&raw mut static_pm_0))
-            != (<MemberPtrUnsafe<HasTwoInts, i32>>::from_offset(::std::mem::offset_of!(
-                HasTwoInts, first
-            ))))
+            != (::std::mem::offset_of!(HasTwoInts, first) as isize))
     );
-    let mut value_initialized: MemberPtrUnsafe<HasTwoInts, i32> =
-        <MemberPtrUnsafe<HasTwoInts, i32>>::default();
-    assert!((value_initialized).is_null());
-    assert!(
-        ((value_initialized)
-            != (<MemberPtrUnsafe<HasTwoInts, i32>>::from_offset(::std::mem::offset_of!(
-                HasTwoInts, first
-            ))))
-    );
+    let mut value_initialized: isize = -1_isize;
+    assert!(((value_initialized) == -1_isize));
+    assert!(((value_initialized) != (::std::mem::offset_of!(HasTwoInts, first) as isize)));
     let mut holder: HoldsSelector = <HoldsSelector>::default();
-    assert!((holder.selector).is_null());
-    assert!(
-        ((holder.selector)
-            != (<MemberPtrUnsafe<HasTwoInts, i32>>::from_offset(::std::mem::offset_of!(
-                HasTwoInts, first
-            ))))
-    );
+    assert!(((holder.selector) == -1_isize));
+    assert!(((holder.selector) != (::std::mem::offset_of!(HasTwoInts, first) as isize)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {

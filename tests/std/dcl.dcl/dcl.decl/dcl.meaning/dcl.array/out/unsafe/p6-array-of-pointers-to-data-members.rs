@@ -20,42 +20,58 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut members: [MemberPtrUnsafe<HasThreeInts, i32>; 3] = [
-        <MemberPtrUnsafe<HasThreeInts, i32>>::from_offset(::std::mem::offset_of!(
-            HasThreeInts,
-            third
-        )),
-        <MemberPtrUnsafe<HasThreeInts, i32>>::from_offset(::std::mem::offset_of!(
-            HasThreeInts,
-            first
-        )),
-        <MemberPtrUnsafe<HasThreeInts, i32>>::from_offset(::std::mem::offset_of!(
-            HasThreeInts,
-            second
-        )),
+    let mut members: [isize; 3] = [
+        (::std::mem::offset_of!(HasThreeInts, third) as isize),
+        (::std::mem::offset_of!(HasThreeInts, first) as isize),
+        (::std::mem::offset_of!(HasThreeInts, second) as isize),
     ];
     let mut obj: HasThreeInts = HasThreeInts {
         first: 4,
         second: 5,
         third: 6,
     };
-    assert!(((*(&mut obj as *mut HasThreeInts).member(members[(0) as usize])) == (6)));
-    assert!(((*(&mut obj as *mut HasThreeInts).member(members[(1) as usize])) == (4)));
-    assert!(((*(&mut obj as *mut HasThreeInts).member(members[(2) as usize])) == (5)));
-    let mut element: *mut MemberPtrUnsafe<HasThreeInts, i32> = members.as_mut_ptr();
     assert!(
-        ((element.offset((1) as isize))
-            == (&mut members[(1) as usize] as *mut MemberPtrUnsafe<HasThreeInts, i32>))
+        ((*(&mut obj as *mut HasThreeInts)
+            .wrapping_byte_offset(members[(0) as usize])
+            .cast::<i32>())
+            == (6))
     );
-    assert!(((*(&mut obj as *mut HasThreeInts).member((*element.offset((1) as isize)))) == (4)));
+    assert!(
+        ((*(&mut obj as *mut HasThreeInts)
+            .wrapping_byte_offset(members[(1) as usize])
+            .cast::<i32>())
+            == (4))
+    );
+    assert!(
+        ((*(&mut obj as *mut HasThreeInts)
+            .wrapping_byte_offset(members[(2) as usize])
+            .cast::<i32>())
+            == (5))
+    );
+    let mut element: *mut isize = members.as_mut_ptr();
+    assert!(((element.offset((1) as isize)) == (&mut members[(1) as usize] as *mut isize)));
+    assert!(
+        ((*(&mut obj as *mut HasThreeInts)
+            .wrapping_byte_offset((*element.offset((1) as isize)))
+            .cast::<i32>())
+            == (4))
+    );
     element.prefix_inc();
     element.prefix_inc();
-    assert!(((element) == (&mut members[(2) as usize] as *mut MemberPtrUnsafe<HasThreeInts, i32>)));
-    assert!(((*(&mut obj as *mut HasThreeInts).member((*element))) == (5)));
-    members[(2) as usize] = <MemberPtrUnsafe<HasThreeInts, i32>>::from_offset(
-        ::std::mem::offset_of!(HasThreeInts, third),
+    assert!(((element) == (&mut members[(2) as usize] as *mut isize)));
+    assert!(
+        ((*(&mut obj as *mut HasThreeInts)
+            .wrapping_byte_offset((*element))
+            .cast::<i32>())
+            == (5))
     );
-    assert!(((*(&mut obj as *mut HasThreeInts).member((*element))) == (6)));
+    members[(2) as usize] = (::std::mem::offset_of!(HasThreeInts, third) as isize);
+    assert!(
+        ((*(&mut obj as *mut HasThreeInts)
+            .wrapping_byte_offset((*element))
+            .cast::<i32>())
+            == (6))
+    );
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

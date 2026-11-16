@@ -24,10 +24,8 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut first_pm: MemberPtrUnsafe<HasTwoIntMembers, i32> =
-        <MemberPtrUnsafe<HasTwoIntMembers, i32>>::from_offset(0);
-    let mut second_pm: MemberPtrUnsafe<HasTwoIntMembers, i32> =
-        <MemberPtrUnsafe<HasTwoIntMembers, i32>>::from_offset(0);
+    let mut first_pm: isize = 0_isize;
+    let mut second_pm: isize = 0_isize;
     assert!(((first_pm) == (second_pm)));
     assert!(!((first_pm) != (second_pm)));
     return 0;

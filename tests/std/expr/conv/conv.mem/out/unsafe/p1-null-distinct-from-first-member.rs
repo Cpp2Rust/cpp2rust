@@ -19,12 +19,9 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut null_pm: MemberPtrUnsafe<HasTwoInts, i32> =
-        <MemberPtrUnsafe<HasTwoInts, i32>>::default();
-    let mut first_pm: MemberPtrUnsafe<HasTwoInts, i32> =
-        <MemberPtrUnsafe<HasTwoInts, i32>>::from_offset(::std::mem::offset_of!(HasTwoInts, first));
-    let mut second_pm: MemberPtrUnsafe<HasTwoInts, i32> =
-        <MemberPtrUnsafe<HasTwoInts, i32>>::from_offset(::std::mem::offset_of!(HasTwoInts, second));
+    let mut null_pm: isize = -1_isize;
+    let mut first_pm: isize = (::std::mem::offset_of!(HasTwoInts, first) as isize);
+    let mut second_pm: isize = (::std::mem::offset_of!(HasTwoInts, second) as isize);
     assert!(((first_pm) != (null_pm)));
     assert!(((second_pm) != (null_pm)));
     return 0;

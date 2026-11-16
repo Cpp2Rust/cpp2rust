@@ -41,19 +41,12 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let k: HasConstexprCtor = HasConstexprCtor::new({ 5 });
-    let pm: MemberPtrUnsafe<HasConstexprCtor, i32> =
-        <MemberPtrUnsafe<HasConstexprCtor, i32>>::from_offset(::std::mem::offset_of!(
-            HasConstexprCtor,
-            m
-        ));
+    let pm: isize = (::std::mem::offset_of!(HasConstexprCtor, m) as isize);
     let mut f: FnPtr<fn() -> i32> = FnPtr::<fn() -> i32>::new(|| -> i32 {
         unsafe {
-            return (*(&HasConstexprCtor::new({ 5 }) as *const HasConstexprCtor).member(
-                <MemberPtrUnsafe<HasConstexprCtor, i32>>::from_offset(::std::mem::offset_of!(
-                    HasConstexprCtor,
-                    m
-                )),
-            ));
+            return (*(&HasConstexprCtor::new({ 5 }) as *const HasConstexprCtor)
+                .wrapping_byte_offset((::std::mem::offset_of!(HasConstexprCtor, m) as isize))
+                .cast::<i32>());
         }
     });
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copyCount_0)) == (0)));

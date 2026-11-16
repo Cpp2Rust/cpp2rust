@@ -23,10 +23,10 @@ pub unsafe fn select_object_4() -> *mut HasValue {
         (*std::cell::LazyCell::force_mut(&mut *&raw mut sequence_0)).prefix_inc();
     return &mut (*std::cell::LazyCell::force_mut(&mut *&raw mut object_3));
 }
-pub unsafe fn select_member_5() -> MemberPtrUnsafe<HasValue, i32> {
+pub unsafe fn select_member_5() -> isize {
     (*std::cell::LazyCell::force_mut(&mut *&raw mut member_stamp_2)) =
         (*std::cell::LazyCell::force_mut(&mut *&raw mut sequence_0)).prefix_inc();
-    return <MemberPtrUnsafe<HasValue, i32>>::from_offset(::std::mem::offset_of!(HasValue, value));
+    return (::std::mem::offset_of!(HasValue, value) as isize);
 }
 pub fn main() {
     unsafe {
@@ -35,7 +35,12 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(((*(unsafe { select_object_4() }).member((unsafe { select_member_5() }))) == (7)));
+    assert!(
+        ((*(unsafe { select_object_4() })
+            .wrapping_byte_offset((unsafe { select_member_5() }))
+            .cast::<i32>())
+            == (7))
+    );
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut object_stamp_1)) == (1)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut member_stamp_2)) == (2)));
     return 0;

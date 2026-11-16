@@ -48,18 +48,20 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut pm: MemberPtrUnsafe<HoldsCounted, CountsCopiesAndMoves> =
-        <MemberPtrUnsafe<HoldsCounted, CountsCopiesAndMoves>>::from_offset(::std::mem::offset_of!(
-            HoldsCounted,
-            member
-        ));
+    let mut pm: isize = (::std::mem::offset_of!(HoldsCounted, member) as isize);
     let mut holder: HoldsCounted = <HoldsCounted>::default();
-    let mut from_lvalue: CountsCopiesAndMoves =
-        CountsCopiesAndMoves::copy_from({ &(*(&mut holder as *mut HoldsCounted).member(pm)) });
+    let mut from_lvalue: CountsCopiesAndMoves = CountsCopiesAndMoves::copy_from({
+        &(*(&mut holder as *mut HoldsCounted)
+            .wrapping_byte_offset(pm)
+            .cast::<CountsCopiesAndMoves>())
+    });
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copyCount_0)) == (1)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut moveCount_1)) == (0)));
-    let mut from_xvalue: CountsCopiesAndMoves =
-        CountsCopiesAndMoves::move_from({ &mut (*(&mut holder as *mut HoldsCounted).member(pm)) });
+    let mut from_xvalue: CountsCopiesAndMoves = CountsCopiesAndMoves::move_from({
+        &mut (*(&mut holder as *mut HoldsCounted)
+            .wrapping_byte_offset(pm)
+            .cast::<CountsCopiesAndMoves>())
+    });
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copyCount_0)) == (1)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut moveCount_1)) == (1)));
     return 0;

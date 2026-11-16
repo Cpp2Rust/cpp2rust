@@ -24,25 +24,19 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut converted: MemberPtrUnsafe<HasChar, libc::c_char> =
-        <MemberPtrUnsafe<HasChar, libc::c_char>>::cast_from(
-            <MemberPtrUnsafe<HasTwoInts, i32>>::from_offset(::std::mem::offset_of!(
-                HasTwoInts, second
-            )),
-        );
-    let mut back: MemberPtrUnsafe<HasTwoInts, i32> =
-        <MemberPtrUnsafe<HasTwoInts, i32>>::cast_from(converted);
-    assert!(
-        ((back)
-            == (<MemberPtrUnsafe<HasTwoInts, i32>>::from_offset(::std::mem::offset_of!(
-                HasTwoInts, second
-            ))))
-    );
+    let mut converted: isize = (::std::mem::offset_of!(HasTwoInts, second) as isize);
+    let mut back: isize = converted;
+    assert!(((back) == (::std::mem::offset_of!(HasTwoInts, second) as isize)));
     let mut obj: HasTwoInts = HasTwoInts {
         first: 3,
         second: 4,
     };
-    assert!(((*(&mut obj as *mut HasTwoInts).member(back)) == (4)));
+    assert!(
+        ((*(&mut obj as *mut HasTwoInts)
+            .wrapping_byte_offset(back)
+            .cast::<i32>())
+            == (4))
+    );
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}
