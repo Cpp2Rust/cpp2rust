@@ -1214,8 +1214,9 @@ std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
     id = GetDeclId(var->getCanonicalDecl(),
                    var->getFormalLinkage() != clang::Linkage::External);
   } else if (auto *tag = clang::dyn_cast<clang::TagDecl>(decl);
-             tag && tag->getDeclContext()->isFunctionOrMethod()) {
-    id = GetUniqueNumber(GetID(tag));
+             tag && (tag->getDeclContext()->isFunctionOrMethod() ||
+                     tag->isInAnonymousNamespace())) {
+    id = GetUniqueNumber(GetID(tag->getCanonicalDecl()));
   }
   if (id) {
     name += '_';
