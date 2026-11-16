@@ -316,6 +316,16 @@ public:
 
   void ConvertAddrOf(clang::Expr *expr, clang::QualType pointer_type) override;
 
+  std::string GetMemberPtrAsString(const clang::RecordDecl *record,
+                                   const clang::FieldDecl *field) override;
+
+  std::string ConvertMemberPtrObject(clang::BinaryOperator *expr) override;
+
+  std::string GetMemberOfObjectAsString(std::string object, std::string member,
+                                        clang::QualType type) override;
+
+  void EmitMemberPtrPointee(std::string ptr, clang::QualType type) override;
+
   void ConvertDeref(clang::Expr *expr) override;
 
   void ConvertArrow(clang::Expr *expr) override;

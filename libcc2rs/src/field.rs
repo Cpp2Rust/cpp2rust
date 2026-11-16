@@ -236,7 +236,43 @@ impl<S: Record> FieldPtr<S> for Ptr<S> {
         G: Fn(&S) -> &T + Copy + 'static,
         M: Fn(&mut S) -> &mut T + Copy + 'static,
     {
-        let offset = offset(&S::OFFSETS);
+        self.field_ptr_at(get, get_mut, offset(&S::OFFSETS))
+    }
+
+    #[inline]
+    fn array_field_ptr<T, G, M>(
+        &self,
+        get: G,
+        get_mut: M,
+        offset: fn(&S::Offsets) -> usize,
+    ) -> Ptr<T>
+    where
+        T: ByteRepr,
+        G: Fn(&S) -> &Box<[T]> + Copy + 'static,
+        M: Fn(&mut S) -> &mut Box<[T]> + Copy + 'static,
+    {
+        match &self.kind {
+            PtrKind::Reinterpreted(_) => {
+                let (alloc, byte_offset) = self.original_alloc().unwrap();
+                Ptr::from_original_alloc(alloc, byte_offset.wrapping_add(offset(&S::OFFSETS)))
+            }
+            PtrKind::Field(_, _, FieldShape::Single) => {
+                self.field_ptr(get, get_mut, offset).decay()
+            }
+            PtrKind::Address(_) => Ptr::from_int(self.offset.wrapping_add(offset(&S::OFFSETS))),
+            _ => self.elems_of(get, get_mut, offset(&S::OFFSETS)),
+        }
+    }
+}
+
+impl<S: Record> Ptr<S> {
+    #[inline]
+    pub(crate) fn field_ptr_at<T, G, M>(&self, get: G, get_mut: M, offset: usize) -> Ptr<T>
+    where
+        T: ByteRepr,
+        G: Fn(&S) -> &T + Copy + 'static,
+        M: Fn(&mut S) -> &mut T + Copy + 'static,
+    {
         // The byte offset of the struct in its allocation.
         let start = || self.offset.wrapping_mul(S::byte_size());
         let (root, start): (Weak<dyn Root>, usize) = match &self.kind {
@@ -268,31 +304,6 @@ impl<S: Record> FieldPtr<S> for Ptr<S> {
         Ptr {
             offset: start.wrapping_add(offset),
             kind: PtrKind::Field(root, 0, FieldShape::Single),
-        }
-    }
-
-    #[inline]
-    fn array_field_ptr<T, G, M>(
-        &self,
-        get: G,
-        get_mut: M,
-        offset: fn(&S::Offsets) -> usize,
-    ) -> Ptr<T>
-    where
-        T: ByteRepr,
-        G: Fn(&S) -> &Box<[T]> + Copy + 'static,
-        M: Fn(&mut S) -> &mut Box<[T]> + Copy + 'static,
-    {
-        match &self.kind {
-            PtrKind::Reinterpreted(_) => {
-                let (alloc, byte_offset) = self.original_alloc().unwrap();
-                Ptr::from_original_alloc(alloc, byte_offset.wrapping_add(offset(&S::OFFSETS)))
-            }
-            PtrKind::Field(_, _, FieldShape::Single) => {
-                self.field_ptr(get, get_mut, offset).decay()
-            }
-            PtrKind::Address(_) => Ptr::from_int(self.offset.wrapping_add(offset(&S::OFFSETS))),
-            _ => self.elems_of(get, get_mut, offset(&S::OFFSETS)),
         }
     }
 }

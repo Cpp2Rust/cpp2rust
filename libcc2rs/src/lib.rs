@@ -22,6 +22,8 @@ pub mod __field {
     };
 }
 
+mod member_ptr;
+
 mod cstr;
 pub use cstr::CChar;
 
