@@ -621,26 +621,6 @@ bool MovesRuleArg(clang::Expr *expr, unsigned arg_idx, clang::Expr *arg,
   return moved && !clang::isa<clang::MaterializeTemporaryExpr>(arg);
 }
 
-clang::CXXConstructExpr *BuildMoveConstruction(clang::ASTContext &ctx,
-                                               clang::Expr *expr,
-                                               unsigned arg_idx,
-                                               clang::Expr *arg,
-                                               TranslationRule::Access access) {
-  if (!MovesRuleArg(expr, arg_idx, arg, access)) {
-    return nullptr;
-  }
-  auto *record = arg->getType()->getAsCXXRecordDecl();
-  if (!record || !IsUserDefinedDecl(record)) {
-    return nullptr;
-  }
-  for (auto *ctor : record->ctors()) {
-    if (IsConvertibleMoveConstructor(ctor)) {
-      return MakeConstructExpr(ctx, arg->getType(), ctor, arg);
-    }
-  }
-  return nullptr;
-}
-
 static bool
 IsImplicitConvertingConstructor(const clang::CXXConstructorDecl *ctor) {
   return !ctor->isCopyOrMoveConstructor() && !ctor->isImplicit() &&

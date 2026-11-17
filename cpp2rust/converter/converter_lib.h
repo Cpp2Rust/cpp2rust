@@ -114,12 +114,6 @@ bool IsConvertibleMoveConstructor(const clang::CXXConstructorDecl *ctor);
 bool MovesRuleArg(clang::Expr *expr, unsigned arg_idx, clang::Expr *arg,
                   TranslationRule::Access access);
 
-clang::CXXConstructExpr *BuildMoveConstruction(clang::ASTContext &ctx,
-                                               clang::Expr *expr,
-                                               unsigned arg_idx,
-                                               clang::Expr *arg,
-                                               TranslationRule::Access access);
-
 // Whether decl has a move constructor converted to a move_from method.
 bool HasMoveFromConstructor(const clang::RecordDecl *decl);
 

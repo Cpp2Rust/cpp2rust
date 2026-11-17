@@ -5443,24 +5443,13 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
 
   // The rule takes the argument by value from an rvalue reference parameter,
   // e.g., push_back(T &&), and so C++ moves it.
-  if (auto *init = BuildMoveConstruction(ctx_, expr, ph_ctx.arg_idx, arg,
-                                         ph_ctx.access)) {
-    Buffer buf(*this);
-    Convert(init);
-    return std::move(buf).str();
-  }
   if (MovesRuleArg(expr, ph_ctx.arg_idx, arg, ph_ctx.access)) {
     auto *ref = clang::dyn_cast<clang::DeclRefExpr>(arg->IgnoreParenImpCasts());
     auto *var = ref ? clang::dyn_cast<clang::VarDecl>(ref->getDecl()) : nullptr;
-    auto *record = arg->getType()->getAsCXXRecordDecl();
-    if (record && IsUserDefinedDecl(record)) {
-      if (TypeIsCopyable(arg->getType())) {
-        return ConvertRValue(arg);
-      }
-      return ConvertFreshRValue(arg);
-    }
-    if (record && ph_ctx.access == TranslationRule::Access::kMove &&
-        bound_init_args_.contains(var)) {
+    if (auto *record = arg->getType()->getAsCXXRecordDecl();
+        record && (IsUserDefinedDecl(record) ||
+                   (ph_ctx.access == TranslationRule::Access::kMove &&
+                    bound_init_args_.contains(var)))) {
       for (auto *ctor : record->ctors()) {
         if (!ctor->isMoveConstructor() || ctor->isDeleted()) {
           continue;
@@ -5475,6 +5464,12 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
         Buffer buf(*this);
         Convert(init);
         return std::move(buf).str();
+      }
+      if (IsUserDefinedDecl(record)) {
+        if (TypeIsCopyable(arg->getType())) {
+          return ConvertRValue(arg);
+        }
+        return ConvertFreshRValue(arg);
       }
     }
   }
