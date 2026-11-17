@@ -44,7 +44,8 @@ unsafe fn f38(a0: usize, a1: bool) -> Vec<bool> {
 }
 
 unsafe fn f40<T1>(a0: Vec<T1>) -> *const T1 {
-    a0.as_ptr().add(a0.len())
+    let __array = &a0;
+    __array.as_ptr().add(__array.len())
 }
 
 unsafe fn f47(a0: *mut bool) -> bool {

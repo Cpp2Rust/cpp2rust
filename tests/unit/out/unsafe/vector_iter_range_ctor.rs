@@ -83,7 +83,13 @@ unsafe fn main_0() -> i32 {
     assert!(((v3.len()) == (3_usize)));
     assert!((((v3[(0_usize)]) == (1)) && ((v3[(1_usize)]) == (2))) && ((v3[(2_usize)]) == (3)));
     let src1: [u32; 3] = [1_u32, 2_u32, 3_u32];
-    let mut v4: Vec<u32> = match ({ src1.as_ptr().add(src1.len()) },) {
+    let mut v4: Vec<u32> = match ({
+        {
+            let __array = &src1;
+            __array.as_ptr().add(__array.len())
+        }
+    },)
+    {
         (mut __tmp_3,) => {
             let mut __v = Vec::new();
             let mut __it = src1.as_ptr();
@@ -99,22 +105,15 @@ unsafe fn main_0() -> i32 {
         (((v4[(0_usize)]) == (1_u32)) && ((v4[(1_usize)]) == (2_u32)))
             && ((v4[(2_usize)]) == (3_u32))
     );
-    let mut lit_end: *const libc::c_char = (&[
-        (97 as libc::c_char),
-        (98 as libc::c_char),
-        (99 as libc::c_char),
-        (0 as libc::c_char),
-    ])
-        .as_ptr()
-        .add(
-            (&[
-                (97 as libc::c_char),
-                (98 as libc::c_char),
-                (99 as libc::c_char),
-                (0 as libc::c_char),
-            ])
-                .len(),
-        );
+    let mut lit_end: *const libc::c_char = {
+        let __array = &(&[
+            (97 as libc::c_char),
+            (98 as libc::c_char),
+            (99 as libc::c_char),
+            (0 as libc::c_char),
+        ]);
+        __array.as_ptr().add(__array.len())
+    };
     assert!((((*(lit_end.offset(-((1) as isize)))) as i32) == (('\0' as libc::c_char) as i32)));
     assert!((((*(lit_end.offset(-((4) as isize)))) as i32) == (('a' as libc::c_char) as i32)));
     let mut buf: [u8; 5] = [10_u8, 20_u8, 30_u8, 40_u8, 50_u8];
