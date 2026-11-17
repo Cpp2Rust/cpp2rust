@@ -913,15 +913,10 @@ protected:
   // parameters.
   std::string GetMovedFromValue(clang::Expr *arg);
 
-  // The value to leave behind when moving from an object of type, or empty.
   std::string GetMovedFromValue(clang::QualType type);
 
-  // Moves the value out of `arg`, an object of a library type, as its C++
-  // move constructor does.
   std::string ConvertLibraryMove(clang::Expr *arg);
 
-  // Moves the value out of the object of type that ptr points to, as its C++
-  // move constructor does.
   virtual std::string ConvertMove(clang::QualType type, const std::string &ptr);
 
   // The place of `arg`, which is borrowed mutably by a rule.
