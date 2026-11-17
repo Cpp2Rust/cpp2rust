@@ -303,6 +303,16 @@ bool IsUserDefinedDecl(const clang::Decl *decl) {
          !src_mgr.isInSystemMacro(src_loc);
 }
 
+static clang::QualType StripPointersAndArrays(clang::QualType type) {
+  while (type->isPointerType() || type->isReferenceType() ||
+         type->isArrayType()) {
+    type = type->isArrayType()
+               ? clang::QualType(type->getArrayElementTypeNoTypeQual(), 0)
+               : type->getPointeeType();
+  }
+  return type;
+}
+
 static bool
 HasLibraryInternalArgument(clang::ASTContext &ctx,
                            llvm::ArrayRef<clang::TemplateArgument> args) {
@@ -310,15 +320,9 @@ HasLibraryInternalArgument(clang::ASTContext &ctx,
     if (arg.getKind() != clang::TemplateArgument::Type) {
       return false;
     }
-    auto type = arg.getAsType().getCanonicalType();
-    while (type->isPointerType() || type->isReferenceType() ||
-           type->isArrayType()) {
-      type = type->isArrayType()
-                 ? clang::QualType(type->getArrayElementTypeNoTypeQual(), 0)
-                 : type->getPointeeType();
-    }
-    auto tag = type->getAsTagDecl();
-    return tag && ctx.getSourceManager().isInSystemHeader(tag->getLocation()) &&
+    auto tag =
+        StripPointersAndArrays(arg.getAsType().getCanonicalType())->getAsTagDecl();
+    return tag && !IsUserDefinedDecl(tag) &&
            clang::isReservedInAllContexts(tag->isReserved(ctx.getLangOpts()));
   });
 }
