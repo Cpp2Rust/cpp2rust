@@ -134,6 +134,7 @@ public:
       range_iterators_.insert(
           clang::cast<clang::VarDecl>(begin->getSingleDecl()));
     }
+    AddDiscardedUse(stmt->getBody());
     return true;
   }
 
@@ -204,9 +205,52 @@ public:
   }
 
   bool VisitBinaryOperator(clang::BinaryOperator *expr) {
-    if (expr->isAssignmentOp()) {
+    if (expr->isAssignmentOp() && expr->isPRValue()) {
       AddValueUse(expr->getLHS(), /*write=*/true);
     }
+    if (expr->getOpcode() == clang::BO_Comma) {
+      AddDiscardedUse(expr->getLHS());
+    }
+    return true;
+  }
+
+  bool VisitCompoundStmt(clang::CompoundStmt *stmt) {
+    for (auto *child : stmt->body()) {
+      AddDiscardedUse(child);
+    }
+    return true;
+  }
+
+  bool VisitForStmt(clang::ForStmt *stmt) {
+    AddDiscardedUse(stmt->getInit());
+    AddDiscardedUse(stmt->getInc());
+    AddDiscardedUse(stmt->getBody());
+    return true;
+  }
+
+  bool VisitWhileStmt(clang::WhileStmt *stmt) {
+    AddDiscardedUse(stmt->getBody());
+    return true;
+  }
+
+  bool VisitDoStmt(clang::DoStmt *stmt) {
+    AddDiscardedUse(stmt->getBody());
+    return true;
+  }
+
+  bool VisitIfStmt(clang::IfStmt *stmt) {
+    AddDiscardedUse(stmt->getThen());
+    AddDiscardedUse(stmt->getElse());
+    return true;
+  }
+
+  bool VisitSwitchCase(clang::SwitchCase *stmt) {
+    AddDiscardedUse(stmt->getSubStmt());
+    return true;
+  }
+
+  bool VisitLabelStmt(clang::LabelStmt *stmt) {
+    AddDiscardedUse(stmt->getSubStmt());
     return true;
   }
 
@@ -357,6 +401,9 @@ private:
       }
     } else if (auto *ref = clang::dyn_cast<clang::DeclRefExpr>(expr)) {
       value_uses_.insert(ref);
+    } else if (auto *assign = clang::dyn_cast<clang::BinaryOperator>(expr);
+               assign && assign->isAssignmentOp() && !write) {
+      AddValueUse(assign->getLHS(), /*write=*/true);
     } else if (auto *object = GetEnclosingObject(expr)) {
       // Rust doesn't let the index of an element that is written to read the
       // vector, as the vector is borrowed mutably first.
@@ -364,6 +411,26 @@ private:
       if (!write || !op || !ReferToCommonVar(object, op->getArg(1))) {
         AddValueUse(object, write);
       }
+    }
+  }
+
+  void AddDiscardedUse(clang::Stmt *stmt) {
+    auto *expr = clang::dyn_cast_or_null<clang::Expr>(stmt);
+    if (!expr) {
+      return;
+    }
+    expr = expr->IgnoreParens();
+    if (auto *cleanups = clang::dyn_cast<clang::ExprWithCleanups>(expr)) {
+      expr = cleanups->getSubExpr()->IgnoreParens();
+    }
+    auto *binary = clang::dyn_cast<clang::BinaryOperator>(expr);
+    if (!binary) {
+      return;
+    }
+    if (binary->getOpcode() == clang::BO_Comma) {
+      AddDiscardedUse(binary->getRHS());
+    } else if (binary->isAssignmentOp()) {
+      AddValueUse(binary->getLHS(), /*write=*/true);
     }
   }
 

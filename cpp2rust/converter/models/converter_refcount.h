@@ -325,8 +325,6 @@ public:
   std::string GetMemberOfObjectAsString(std::string object, std::string member,
                                         clang::QualType type) override;
 
-  void EmitMemberPtrPointee(std::string ptr, clang::QualType type) override;
-
   void ConvertDeref(clang::Expr *expr) override;
 
   void ConvertArrow(clang::Expr *expr) override;
@@ -419,7 +417,8 @@ private:
 
   // Emits the object that ptr points to: a pending dereference, which is
   // written through ptr, if an lvalue is converted, or a read otherwise.
-  void EmitPointee(std::string ptr, clang::QualType pointee_type, bool fresh);
+  void EmitPointee(std::string ptr, clang::QualType pointee_type,
+                   bool fresh) override;
 
   void EmitSetOrAssign(clang::Expr *lhs, std::string_view rhs);
 
