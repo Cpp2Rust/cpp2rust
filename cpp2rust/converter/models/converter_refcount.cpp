@@ -935,6 +935,7 @@ bool ConverterRefCount::ConvertIncAndDec(clang::UnaryOperator *expr) {
   bool is_prefix = expr->isPrefix();
   auto str = ConvertLValue(sub_expr);
   if (!pending_deref_.empty()) {
+    bool fresh = pending_deref_.is_fresh();
     auto ptr = pending_deref_.take();
     if (!is_prefix) {
       StrCat(ptr, ".with_mut(|__v| __v.", method, "())");
@@ -942,11 +943,11 @@ bool ConverterRefCount::ConvertIncAndDec(clang::UnaryOperator *expr) {
       StrCat(ptr, ".with_mut(|__v| { __v.", method, "(); })");
     } else if (isLValue()) {
       auto name = NewTempName();
-      pending_deref_.set(
-          std::format(
-              "{{ let {0} = {1}; {0}.with_mut(|__v| {{ __v.{2}(); }}); {0} }}",
-              name, ptr, method),
-          /*fresh=*/true);
+      pending_deref_.set(std::format("{{ let {0} = {1}{2}; {0}.with_mut(|__v| "
+                                     "{{ __v.{3}(); }}); {0} }}",
+                                     name, ptr, fresh ? "" : ".clone()",
+                                     method),
+                         /*fresh=*/true);
       return true;
     } else {
       StrCat(ptr, ".with_mut(|__v| __v.", method, "().clone())");

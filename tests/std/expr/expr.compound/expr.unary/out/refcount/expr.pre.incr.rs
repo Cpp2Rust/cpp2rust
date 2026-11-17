@@ -30,7 +30,7 @@ pub fn test_0() {
     assert!(({ (y == 8) && ((*x.borrow()) == 8) }));
     let s: Ptr<i32> = (r).clone();
     {
-        let __tmp_1 = s;
+        let __tmp_1 = s.clone();
         __tmp_1.with_mut(|__v| {
             __v.prefix_inc();
         });
@@ -88,7 +88,7 @@ pub fn test_1() {
     });
     assert!(({ ((*x.borrow()) == 4) }));
     {
-        let __tmp_4 = r;
+        let __tmp_4 = r.clone();
         __tmp_4.with_mut(|__v| {
             __v.prefix_dec();
         });

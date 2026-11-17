@@ -25,11 +25,11 @@ fn main_0() -> i32 {
         }
     }
     assert!((count == 3));
-    let c: Value<color> = Rc::new(RefCell::new(color_RED));
-    assert!(({ (((*c.borrow_mut()).postfix_inc() as u32) == ((color_RED as i32) as u32)) }));
-    assert!(({ (((*(*c.borrow_mut()).prefix_inc()) as u32) == ((color_BLUE as i32) as u32)) }));
-    assert!(({ (((*c.borrow_mut()).postfix_dec() as u32) == ((color_BLUE as i32) as u32)) }));
-    assert!(({ (((*(*c.borrow_mut()).prefix_dec()) as u32) == ((color_RED as i32) as u32)) }));
+    let mut c: color = color_RED;
+    assert!(((c.postfix_inc() as u32) == ((color_RED as i32) as u32)));
+    assert!((((*c.prefix_inc()) as u32) == ((color_BLUE as i32) as u32)));
+    assert!(((c.postfix_dec() as u32) == ((color_BLUE as i32) as u32)));
+    assert!((((*c.prefix_dec()) as u32) == ((color_RED as i32) as u32)));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}
