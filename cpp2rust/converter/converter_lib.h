@@ -108,6 +108,11 @@ bool IsConvertibleMoveConstructor(const clang::CXXConstructorDecl *ctor);
 // Whether decl has a move constructor converted to a move_from method.
 bool HasMoveFromConstructor(const clang::RecordDecl *decl);
 
+// Whether a rule takes the value of arg, a non-const object of a library type
+// whose move isn't a copy, from an rvalue reference parameter.
+bool MovesLibraryArg(clang::ASTContext &ctx, clang::Expr *expr,
+                     unsigned arg_idx, clang::Expr *arg);
+
 void ForEachConvertingConstructor(
     clang::CXXRecordDecl *decl,
     llvm::function_ref<void(clang::CXXConstructorDecl *)> fn);

@@ -5479,6 +5479,9 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
   }
 
   if (ph_ctx.access == TranslationRule::Access::kMove) {
+    if (MovesLibraryArg(ctx_, expr, ph_ctx.arg_idx, arg)) {
+      return ConvertLibraryMove(arg);
+    }
     return ConvertFreshRValue(arg, ph_ctx.implicit_convert_to);
   }
 
@@ -5501,10 +5504,6 @@ std::string Converter::ConvertTake(clang::Expr *arg) {
 }
 
 std::string Converter::GetMovedFromValue(clang::Expr *arg) {
-  auto type = arg->getType();
-  if (!IsStdDecl(type->getAsCXXRecordDecl(), "basic_string")) {
-    return {};
-  }
   // An implicit return move consumes a local or by-value parameter. There is
   // no need to allocate a terminator for the object about to be destroyed.
   auto *returned = return_value_ ? return_value_->IgnoreImplicit() : nullptr;
@@ -5519,9 +5518,30 @@ std::string Converter::GetMovedFromValue(clang::Expr *arg) {
       }
     }
   }
+  return GetMovedFromValue(arg->getType());
+}
+
+std::string Converter::GetMovedFromValue(clang::QualType type) {
+  if (!IsStdDecl(type->getAsCXXRecordDecl(), "basic_string")) {
+    return {};
+  }
   // A string is translated as a vector that ends with a null terminator, so an
   // empty vector is not a valid empty string.
   return Mapper::MapInitializer(*this, type);
+}
+
+std::string Converter::ConvertLibraryMove(clang::Expr *arg) {
+  auto ptr = ConvertPointer(arg);
+  MarkFresh();
+  return ConvertMove(arg->getType(), ptr);
+}
+
+std::string Converter::ConvertMove(clang::QualType type,
+                                   const std::string &ptr) {
+  if (auto moved_from = GetMovedFromValue(type); !moved_from.empty()) {
+    return std::format("std::mem::replace(&mut *{}, {})", ptr, moved_from);
+  }
+  return std::format("cpp_move_unsafe!({})", ptr);
 }
 
 std::string Converter::ConvertMappedMethodCall(
@@ -5790,6 +5810,9 @@ std::string Converter::ConvertConversion(clang::QualType to,
       return std::format("({} as u8 as {})", value, GetUnsafeTypeAsString(to));
     }
     return std::format("({} as {})", value, GetUnsafeTypeAsString(to));
+  }
+  if (is_move && ctx_.hasSameUnqualifiedType(to, from)) {
+    return ConvertMove(to, ptr);
   }
   return std::format("<{} as {}<{}>>::{}({})", GetUnboxedTypeAsString(to),
                      GetConversionTraitName(), GetUnboxedTypeAsString(from),

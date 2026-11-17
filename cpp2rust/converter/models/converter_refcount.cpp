@@ -3092,6 +3092,15 @@ std::string ConverterRefCount::ConvertBorrowMut(clang::Expr *arg) {
   return lvalue;
 }
 
+std::string ConverterRefCount::ConvertMove(clang::QualType type,
+                                           const std::string &ptr) {
+  if (auto moved_from = GetMovedFromValue(type); !moved_from.empty()) {
+    return std::format("{}.with_mut(|__v| std::mem::replace(__v, {}))", ptr,
+                       moved_from);
+  }
+  return std::format("cpp_move!({})", ptr);
+}
+
 std::string ConverterRefCount::ConvertTake(clang::Expr *arg) {
   auto moved_from = GetMovedFromValue(arg);
   auto lvalue = ConvertLValue(arg);
