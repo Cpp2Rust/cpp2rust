@@ -3122,6 +3122,11 @@ bool Converter::ConvertIncAndDec(clang::UnaryOperator *expr) {
     MarkFresh();
     return true;
   }
+  bool deref_prefix = expr->isPrefix() && !isVoid();
+  PushParen paren(*this, deref_prefix);
+  if (deref_prefix) {
+    StrCat(token::kStar);
+  }
   {
     PushExprKind push(*this, ExprKind::LValue);
     Convert(expr->getSubExpr());

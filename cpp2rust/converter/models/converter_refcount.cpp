@@ -925,22 +925,50 @@ bool ConverterRefCount::ConvertIncAndDec(clang::UnaryOperator *expr) {
   if (expr->isPrefix() && isAddrOf()) {
     auto ptr = ConvertFreshObject(sub_expr);
     auto name = NewTempName();
-    StrCat(
-        std::format("{{ let {0} = {1}; {0}.with_mut(|__v| __v.{2}()); {0} }}",
-                    name, ptr, method));
+    StrCat(std::format(
+        "{{ let {0} = {1}; {0}.with_mut(|__v| {{ __v.{2}(); }}); {0} }}", name,
+        ptr, method));
     MarkFresh();
     return true;
   }
 
+  bool is_prefix = expr->isPrefix();
   auto str = ConvertLValue(sub_expr);
   if (!pending_deref_.empty()) {
-    StrCat(pending_deref_.take(), ".with_mut(|__v| __v.", method, "())");
+    auto ptr = pending_deref_.take();
+    if (!is_prefix) {
+      StrCat(ptr, ".with_mut(|__v| __v.", method, "())");
+    } else if (isVoid()) {
+      StrCat(ptr, ".with_mut(|__v| { __v.", method, "(); })");
+    } else if (isLValue()) {
+      auto name = NewTempName();
+      pending_deref_.set(
+          std::format(
+              "{{ let {0} = {1}; {0}.with_mut(|__v| {{ __v.{2}(); }}); {0} }}",
+              name, ptr, method),
+          /*fresh=*/true);
+      return true;
+    } else {
+      StrCat(ptr, ".with_mut(|__v| __v.", method, "().clone())");
+    }
   } else if (!isVoid() &&
              clang::isa<clang::MemberExpr>(sub_expr->IgnoreParens()) &&
              !IsUnboxedPlace(sub_expr)) {
     // The struct is borrowed in a block, which ends the borrow before the
     // result is used, e.g., to write through a pointer into the struct.
-    StrCat(std::format("{{ {}.{}() }}", str, method));
+    if (!is_prefix) {
+      StrCat(std::format("{{ {}.{}() }}", str, method));
+    } else if (isLValue()) {
+      StrCat(std::format("(*{}.{}())", str, method));
+    } else {
+      StrCat(std::format("{{ {}.{}().clone() }}", str, method));
+    }
+  } else if (is_prefix && !isVoid()) {
+    StrCat(std::format("(*{}.{}())", str, method));
+    if (!isLValue()) {
+      SetValueFreshness(expr->getType());
+      return true;
+    }
   } else {
     StrCat(str, '.', method, "()");
   }
