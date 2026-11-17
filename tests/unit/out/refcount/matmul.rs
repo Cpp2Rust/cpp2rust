@@ -91,15 +91,13 @@ pub fn main() {
 fn main_0() -> i32 {
     let mut n: i32 = 1;
     let mut p: i32 = 10;
-    let m1: Value<Option<Value<Box<[Option<Value<Box<[i32]>>>]>>>> =
-        Rc::new(RefCell::new(({ matalloc_0(n, p, 1) })));
-    let m2: Value<Option<Value<Box<[Option<Value<Box<[i32]>>>]>>>> =
-        Rc::new(RefCell::new(({ matalloc_0(p, n, 2) })));
+    let mut m1: Option<Value<Box<[Option<Value<Box<[i32]>>>]>>> = ({ matalloc_0(n, p, 1) });
+    let mut m2: Option<Value<Box<[Option<Value<Box<[i32]>>>]>>> = ({ matalloc_0(p, n, 2) });
     let mut m3: Option<Value<Box<[Option<Value<Box<[i32]>>>]>>> = ({
-        let _m1: Option<Value<Box<[Option<Value<Box<[i32]>>>]>>> = (*m1.borrow_mut()).take();
+        let _m1: Option<Value<Box<[Option<Value<Box<[i32]>>>]>>> = m1.take();
         let _n1: i32 = n;
         let _p1: i32 = p;
-        let _m2: Option<Value<Box<[Option<Value<Box<[i32]>>>]>>> = (*m2.borrow_mut()).take();
+        let _m2: Option<Value<Box<[Option<Value<Box<[i32]>>>]>>> = m2.take();
         let _n2: i32 = p;
         let _p2: i32 = n;
         matmul_1(_m1, _n1, _p1, _m2, _n2, _p2)

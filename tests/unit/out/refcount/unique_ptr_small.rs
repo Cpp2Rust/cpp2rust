@@ -7,8 +7,8 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn change_0(n: Ptr<Option<Value<i32>>>) {
-    let m: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(20)))));
-    n.write((*m.borrow_mut()).take());
+    let mut m: Option<Value<i32>> = Some(Rc::new(RefCell::new(20)));
+    n.write(m.take());
 }
 pub fn main() {
     __cpp2rust_init_globals();

@@ -20,6 +20,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "converter/translation_rule.h"
 #include "logging.h"
 
 namespace clang {
@@ -109,6 +110,9 @@ bool IsConvertibleCopyOrMoveConstructor(const clang::CXXConstructorDecl *ctor);
 bool IsDefaultedMoveConstructor(const clang::CXXConstructorDecl *ctor);
 
 bool IsConvertibleMoveConstructor(const clang::CXXConstructorDecl *ctor);
+
+bool MovesRuleArg(clang::Expr *expr, unsigned arg_idx, clang::Expr *arg,
+                  TranslationRule::Access access);
 
 // Whether decl has a move constructor converted to a move_from method.
 bool HasMoveFromConstructor(const clang::RecordDecl *decl);

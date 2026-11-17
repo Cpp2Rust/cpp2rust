@@ -54,12 +54,12 @@ pub fn test_1() {
             })
         })
     );
-    let values: Value<Vec<i32>> = Rc::new(RefCell::new(vec![7; 2_usize]));
+    let mut values: Vec<i32> = vec![7; 2_usize];
     let copied: Value<(Value<Vec<i32>>, Value<i32>)> = Rc::new(RefCell::new((
-        Rc::new(RefCell::new(({ (*values.borrow()).clone() }))),
+        Rc::new(RefCell::new((values).clone())),
         Rc::new(RefCell::new(3)),
     )));
-    assert!(({ ((*values.borrow()).len() == 2_usize) }));
+    assert!((values.len() == 2_usize));
     assert!(
         ({
             ((*(*copied.borrow()).0.borrow()).len() == 2_usize)
