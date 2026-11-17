@@ -320,13 +320,15 @@ private:
         continue;
       }
       auto *record = arg->getType()->getAsRecordDecl();
-      if (record && HasMoveFromConstructor(record) &&
-          TranslationRule::AnyFragment(
+      if (TranslationRule::AnyFragment(
               rule->body, [&](const TranslationRule::BodyFragment &fragment) {
                 auto *ph = std::get_if<TranslationRule::PlaceholderFragment>(
                     &fragment);
                 return ph && ph->n == i &&
-                       MovesRuleArg(expr, i, all_args[i], ph->access);
+                       ((ph->access == TranslationRule::Access::kMove &&
+                         MovesFromArg(expr, i, all_args[i])) ||
+                        (record && HasMoveFromConstructor(record) &&
+                         MovesRuleArg(expr, i, all_args[i], ph->access)));
               })) {
         continue;
       }
