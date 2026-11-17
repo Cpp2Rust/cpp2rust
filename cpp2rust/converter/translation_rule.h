@@ -110,6 +110,7 @@ struct TypeInfo {
   bool is_refcount_pointer = false;
   bool is_unsafe_pointer = false;
   std::optional<Elems> elems;
+  unsigned generic = 0;
 
   bool is_pointer() const { return is_refcount_pointer || is_unsafe_pointer; }
 
@@ -140,7 +141,7 @@ struct ExprRule {
 
   // Whether the body takes a pointer to arg, its argument i, which is not a
   // pointer.
-  bool takesAddress(clang::ASTContext &ctx, unsigned i,
+  bool takesAddress(clang::ASTContext &ctx, const clang::Expr *expr, unsigned i,
                     const clang::Expr *arg) const;
 
   // Whether the body takes a pointer to a temporary copy of arg, argument i

@@ -5592,7 +5592,8 @@ std::string Converter::GetMappedAsString(clang::Expr *expr, clang::Expr **args,
     // The rule takes the value of a transparent union.
     auto *arg = IgnoreTransparentUnion(all_args[i]);
     auto type = arg->getType();
-    bool by_value = arg->isPRValue() && !tgt_ir->takesAddress(ctx_, i, arg);
+    bool by_value =
+        arg->isPRValue() && !tgt_ir->takesAddress(ctx_, expr, i, arg);
     if (!by_value && arg->isPRValue()) {
       arg = new (ctx_) clang::MaterializeTemporaryExpr(type, arg, false);
     }

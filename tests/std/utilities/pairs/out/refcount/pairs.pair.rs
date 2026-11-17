@@ -66,6 +66,17 @@ pub fn test_1() {
                 && ((elem!((*copied.borrow()).0.decay(), 1_usize).read()) == 7)
         })
     );
+    let referent: Value<i32> = Rc::new(RefCell::new(5));
+    let bound: Value<(Value<Ptr<i32>>, Value<i8>)> = Rc::new(RefCell::new((
+        Rc::new(RefCell::new(referent.as_pointer())),
+        Rc::new(RefCell::new(('c' as i8))),
+    )));
+    (*referent.borrow_mut()) = 6;
+    assert!(({ (((*bound.borrow()).0.borrow().clone().read()) == 6) }));
+    assert!(
+        ({ ({ ((*bound.borrow()).0.borrow().clone()).clone() } == { (referent.as_pointer()) }) })
+    );
+    assert!(({ (((*(*bound.borrow()).1.borrow()) as i32) == (('c' as i8) as i32)) }));
 }
 pub fn test_2() {
     let source: Value<(Value<i32>, Value<Option<Value<i32>>>)> = Rc::new(RefCell::new((

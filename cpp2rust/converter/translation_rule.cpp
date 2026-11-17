@@ -28,6 +28,8 @@ TypeInfo ParseTypeInfoJSON(const llvm::json::Object &obj) {
     info.is_refcount_pointer = *v;
   if (auto v = obj.getBoolean("is_unsafe_pointer"))
     info.is_unsafe_pointer = *v;
+  if (auto v = obj.getInteger("generic"))
+    info.generic = *v;
   assert(!(info.is_refcount_pointer && info.is_unsafe_pointer));
   if (auto *arr = obj.getArray("derives")) {
     for (const auto &elem : *arr) {
@@ -332,13 +334,14 @@ ExprRule::argsToBind(clang::ASTContext &ctx, const clang::Expr *expr,
   return bind;
 }
 
-bool ExprRule::takesAddress(clang::ASTContext &ctx, unsigned i,
-                            const clang::Expr *arg) const {
+bool ExprRule::takesAddress(clang::ASTContext &ctx, const clang::Expr *expr,
+                            unsigned i, const clang::Expr *arg) const {
   // An init pack forwards references to its arguments, not their values.
   if (i >= params.size()) {
     return usesInit();
   }
-  return params[i].is_pointer() && !arg->getType()->isPointerType() &&
+  return RuleRegistry::ParamIsPointer(ctx, expr, i) &&
+         !arg->getType()->isPointerType() &&
          !RuleRegistry::MapsToPointer(ctx, arg->getType());
 }
 
@@ -347,7 +350,7 @@ bool ExprRule::takesTemporaryAddress(clang::ASTContext &ctx,
                                      const clang::Expr *arg) const {
   auto *call = clang::dyn_cast<clang::CallExpr>(expr);
   unsigned first_arg = clang::isa<clang::CXXMemberCallExpr>(expr);
-  return call && i >= first_arg && takesAddress(ctx, i, arg) &&
+  return call && i >= first_arg && takesAddress(ctx, expr, i, arg) &&
          GetRefBindingTempType(ctx, call, i - first_arg).has_value();
 }
 

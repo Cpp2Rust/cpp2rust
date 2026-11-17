@@ -381,7 +381,7 @@ private:
               })) {
         continue;
       }
-      if (!rule->takesAddress(ctx_, i, arg) ||
+      if (!rule->takesAddress(ctx_, expr, i, arg) ||
           rule->takesTemporaryAddress(ctx_, expr, i, arg)) {
         AddValueUse(arg);
       }
