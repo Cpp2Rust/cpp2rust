@@ -71,10 +71,12 @@ template <typename E> E *IgnoreNoOpCasts(E *expr) {
 }
 
 // The object copied by a trivial copy or move constructor, which copies its
-// value, like an lvalue-to-rvalue conversion in C.
+// value, like an lvalue-to-rvalue conversion in C, unless it is translated to
+// a call to the constructor.
 clang::Expr *GetTrivialCopySource(clang::CXXConstructExpr *expr) {
   auto *ctor = expr->getConstructor();
-  if (!ctor->isCopyOrMoveConstructor() || !ctor->isTrivial()) {
+  if (!ctor->isCopyOrMoveConstructor() || !ctor->isTrivial() ||
+      IsConvertibleCopyOrMoveConstructor(ctor)) {
     return nullptr;
   }
   return IgnoreNoOpCasts(expr->getArg(0));

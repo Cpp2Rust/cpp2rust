@@ -117,6 +117,8 @@ bool MovesRuleArg(clang::Expr *expr, unsigned arg_idx, clang::Expr *arg,
 // Whether decl has a move constructor converted to a move_from method.
 bool HasMoveFromConstructor(const clang::RecordDecl *decl);
 
+bool MovesFromArg(clang::Expr *expr, unsigned arg_idx, clang::Expr *arg);
+
 void ForEachConvertingConstructor(
     clang::CXXRecordDecl *decl,
     llvm::function_ref<void(clang::CXXConstructorDecl *)> fn);
