@@ -32,6 +32,15 @@ int main() {
   std::swap(halves[0], halves[3]);
   assert(words[0] == 0x01020506 && words[1] == 0x03040708);
 
+  int s1 = 1, s2 = 2;
+  int *sp = &s1, *sq = &s2;
+  std::swap(sp, sq);
+  assert(sp == &s2 && sq == &s1);
+  assert(s1 == 1 && s2 == 2);
+  int *null_ptr = nullptr;
+  std::swap(null_ptr, sp);
+  assert(null_ptr == &s2 && sp == nullptr);
+
   free(other);
   free(buf);
   return 0;
