@@ -4609,11 +4609,12 @@ void Converter::ConvertVarInit(clang::QualType qual_type, clang::Expr *expr) {
       StrCat(EmitMaterializedTempBinding(qual_type, expr));
       return;
     }
-    if (auto *cond = clang::dyn_cast<clang::ConditionalOperator>(
-            expr->IgnoreParenImpCasts());
-        cond && cond->isLValue()) {
+    auto *inner = expr->IgnoreParenImpCasts();
+    auto *assign = clang::dyn_cast<clang::BinaryOperator>(inner);
+    if (inner->isLValue() && (clang::isa<clang::ConditionalOperator>(inner) ||
+                              (assign && assign->isAssignmentOp()))) {
       PushExprKind push(*this, ExprKind::AddrOf);
-      Convert(cond);
+      Convert(inner);
       return;
     }
     StrCat(token::kRef);
@@ -5284,7 +5285,7 @@ void Converter::ConvertMemberPtrAccess(clang::BinaryOperator *expr) {
     EmitFresh(ptr);
     return;
   }
-  EmitMemberPtrPointee(std::move(ptr), expr->getType());
+  EmitPointee(std::move(ptr), expr->getType(), /*fresh=*/true);
 }
 
 std::string Converter::ConvertMemberPtrObject(clang::BinaryOperator *expr) {
@@ -5305,10 +5306,6 @@ std::string Converter::GetMemberOfObjectAsString(std::string object,
                                                  clang::QualType type) {
   return std::format("{}.wrapping_byte_offset({}).cast::<{}>()", object, member,
                      ToString(type));
-}
-
-void Converter::EmitMemberPtrPointee(std::string ptr, clang::QualType type) {
-  EmitDeref(std::move(ptr), type);
 }
 
 void Converter::EmitDeref(std::string inner, clang::QualType pointee_type) {

@@ -885,8 +885,6 @@ protected:
                                                 std::string member,
                                                 clang::QualType type);
 
-  virtual void EmitMemberPtrPointee(std::string ptr, clang::QualType type);
-
   virtual void ConvertDeref(clang::Expr *expr);
 
   void EmitDeref(std::string inner, clang::QualType pointee_type);

@@ -325,8 +325,6 @@ public:
   std::string GetMemberOfObjectAsString(std::string object, std::string member,
                                         clang::QualType type) override;
 
-  void EmitMemberPtrPointee(std::string ptr, clang::QualType type) override;
-
   void ConvertDeref(clang::Expr *expr) override;
 
   void ConvertArrow(clang::Expr *expr) override;
