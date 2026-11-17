@@ -474,16 +474,14 @@ fn main_0() -> i32 {
     };
     assert!(({ (v12[0_usize] == 5) && ((*moved.borrow()) == 5) }));
     let mut v13: Vec<Ptr<i32>> = Vec::new();
-    let moved_ptr: Value<Ptr<i32>> = Rc::new(RefCell::new((moved.as_pointer())));
+    let mut moved_ptr: Ptr<i32> = (moved.as_pointer());
     {
-        let __a1 = ({ (*moved_ptr.borrow()).clone() });
+        let __a1 = (moved_ptr).clone();
         v13.push(__a1)
     };
     assert!(
-        ({
-            (v13[0_usize] == (moved.as_pointer()))
-                && ({ (*moved_ptr.borrow()).clone() } == { (moved.as_pointer()) })
-        })
+        (v13[0_usize] == (moved.as_pointer()))
+            && ({ (moved_ptr).clone() } == { (moved.as_pointer()) })
     );
     return 0;
 }
