@@ -297,15 +297,15 @@ fn main_0() -> i32 {
         ({ same_0(g.as_pointer(), f.as_pointer(),) })
             && ({ same_0(e.as_pointer(), f.as_pointer(),) })
     );
-    let i: Value<Implicit> = Rc::new(RefCell::new(Implicit {
+    let mut i: Implicit = Implicit {
         v: 5,
         inner: Inner { x: 50 },
         arr: Box::new([5, 6]),
-    }));
-    let mut j: Implicit = (*i.borrow()).clone();
-    let mut k: Implicit = (*i.borrow()).clone();
+    };
+    let mut j: Implicit = (i).clone();
+    let mut k: Implicit = (i).clone();
     assert!(((j.v == 5) && (j.inner.x == 50)) && (j.arr[(1) as usize] == 6));
-    assert!(({ ({ (*i.borrow()).v } == 5) && (k.v == 5) }));
+    assert!((i.v == 5) && (k.v == 5));
     let mut l: Implicit = Implicit {
         v: 0,
         inner: Inner { x: 0 },
