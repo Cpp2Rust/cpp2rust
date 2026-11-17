@@ -111,14 +111,9 @@ bool IsDefaultedMoveConstructor(const clang::CXXConstructorDecl *ctor);
 
 bool IsConvertibleMoveConstructor(const clang::CXXConstructorDecl *ctor);
 
-// Whether a rule moves arg, its argument arg_idx of expr, out of an object
-// rather than a temporary: it takes it by value, or by value from an rvalue
-// reference parameter, e.g., push_back(T &&).
 bool MovesRuleArg(clang::Expr *expr, unsigned arg_idx, clang::Expr *arg,
                   TranslationRule::Access access);
 
-// The call to the move constructor of a user-defined record that moves arg,
-// its argument arg_idx of expr, into a rule, which takes a pointer to arg.
 clang::CXXConstructExpr *BuildMoveConstruction(clang::ASTContext &ctx,
                                                clang::Expr *expr,
                                                unsigned arg_idx,
