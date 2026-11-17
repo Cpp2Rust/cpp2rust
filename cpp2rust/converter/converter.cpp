@@ -5444,11 +5444,7 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
 
   // The rule takes the argument by value from an rvalue reference parameter,
   // e.g., push_back(T &&), and so C++ moves it.
-  auto param_type = GetParamType(expr, ph_ctx.arg_idx);
-  bool moved = ph_ctx.access == TranslationRule::Access::kTake ||
-               (ph_ctx.access == TranslationRule::Access::kMove && param_type &&
-                (*param_type)->isRValueReferenceType());
-  if (moved && !clang::isa<clang::MaterializeTemporaryExpr>(arg)) {
+  if (MovesRuleArg(expr, ph_ctx.arg_idx, arg, ph_ctx.access)) {
     auto *ref = clang::dyn_cast<clang::DeclRefExpr>(arg->IgnoreParenImpCasts());
     auto *var = ref ? clang::dyn_cast<clang::VarDecl>(ref->getDecl()) : nullptr;
     if (auto *record = arg->getType()->getAsCXXRecordDecl();

@@ -121,9 +121,8 @@ pub struct Box_int_ {
     pub val: i32,
 }
 impl Box_int_ {
-    pub fn new(v: i32) -> Self {
-        let v: Value<i32> = Rc::new(RefCell::new(v));
-        Self { val: (*v.borrow()) }
+    pub fn new(mut v: i32) -> Self {
+        Self { val: v }
     }
     pub fn copy_from(o: Ptr<Box_int_>) -> Self {
         Self {
