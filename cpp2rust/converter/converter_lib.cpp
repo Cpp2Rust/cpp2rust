@@ -1444,7 +1444,9 @@ void ForEachLambdaCallOperator(
     return;
   }
   for (auto spec : decl->getDependentLambdaCallOperator()->specializations()) {
-    fn(clang::cast<clang::CXXMethodDecl>(spec));
+    if (spec->hasBody()) {
+      fn(clang::cast<clang::CXXMethodDecl>(spec));
+    }
   }
 }
 
