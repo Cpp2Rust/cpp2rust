@@ -5472,7 +5472,8 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
   }
 
   if (ph_ctx.access == TranslationRule::Access::kTake) {
-    if (clang::isa<clang::MaterializeTemporaryExpr>(arg)) {
+    if (clang::isa<clang::MaterializeTemporaryExpr>(arg) ||
+        arg->getType().isTriviallyCopyableType(ctx_)) {
       return ConvertFreshRValue(arg);
     }
     return ConvertTake(arg);
