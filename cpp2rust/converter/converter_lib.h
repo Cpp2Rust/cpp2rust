@@ -57,6 +57,13 @@ bool IsUserDefinedDecl(const clang::Decl *decl);
 
 bool IsAbstractUserClass(const clang::RecordDecl *decl);
 
+// A specialization instantiated by the library with one of its internal
+// types, e.g. a user allocator rebound to a library node type.
+bool IsLibraryOnlySpecialization(
+    const clang::ClassTemplateSpecializationDecl *decl);
+
+bool IsLibraryOnlySpecialization(const clang::FunctionDecl *decl);
+
 bool ExprHasUserDefinedDecl(const clang::Expr *expr);
 
 bool IsUnsignedArithOp(const clang::BinaryOperator *expr);

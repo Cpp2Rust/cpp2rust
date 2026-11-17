@@ -303,6 +303,47 @@ bool IsUserDefinedDecl(const clang::Decl *decl) {
          !src_mgr.isInSystemMacro(src_loc);
 }
 
+static bool
+HasLibraryInternalArgument(clang::ASTContext &ctx,
+                           llvm::ArrayRef<clang::TemplateArgument> args) {
+  return llvm::any_of(args, [&](const clang::TemplateArgument &arg) {
+    if (arg.getKind() != clang::TemplateArgument::Type) {
+      return false;
+    }
+    auto type = arg.getAsType().getCanonicalType();
+    while (type->isPointerType() || type->isReferenceType() ||
+           type->isArrayType()) {
+      type = type->isArrayType()
+                 ? clang::QualType(type->getArrayElementTypeNoTypeQual(), 0)
+                 : type->getPointeeType();
+    }
+    auto tag = type->getAsTagDecl();
+    return tag && ctx.getSourceManager().isInSystemHeader(tag->getLocation()) &&
+           clang::isReservedInAllContexts(tag->isReserved(ctx.getLangOpts()));
+  });
+}
+
+static bool IsInstantiatedInSystemHeader(clang::ASTContext &ctx,
+                                         clang::SourceLocation loc) {
+  return loc.isValid() && ctx.getSourceManager().isInSystemHeader(
+                              ctx.getSourceManager().getExpansionLoc(loc));
+}
+
+bool IsLibraryOnlySpecialization(
+    const clang::ClassTemplateSpecializationDecl *decl) {
+  auto &ctx = decl->getASTContext();
+  return IsInstantiatedInSystemHeader(ctx, decl->getPointOfInstantiation()) &&
+         HasLibraryInternalArgument(ctx, decl->getTemplateArgs().asArray());
+}
+
+bool IsLibraryOnlySpecialization(const clang::FunctionDecl *decl) {
+  auto &ctx = decl->getASTContext();
+  auto args = decl->getTemplateSpecializationArgs();
+  return args &&
+         IsInstantiatedInSystemHeader(ctx, decl->getPointOfInstantiation()) &&
+         HasLibraryInternalArgument(ctx, args->asArray());
+}
+
 bool IsAbstractUserClass(const clang::RecordDecl *decl) {
   auto cxx = llvm::dyn_cast<clang::CXXRecordDecl>(decl);
   auto definition = cxx ? cxx->getDefinition() : nullptr;
@@ -416,7 +457,7 @@ static void ForEachTemplateInstantiation(
             llvm::dyn_cast<clang::FunctionTemplateDecl>(d)) {
       for (auto s : function_template_decl->specializations()) {
         if (auto m = clang::dyn_cast<clang::CXXMethodDecl>(s);
-            m && m->getDefinition()) {
+            m && m->getDefinition() && !IsLibraryOnlySpecialization(m)) {
           fn(m);
         }
       }
