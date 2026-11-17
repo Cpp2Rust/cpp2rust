@@ -79,6 +79,9 @@ pub fn count_4() -> i32 {
 pub fn count_7() -> i32 {
     return (*n_9.with(Value::clone).borrow_mut()).prefix_inc();
 }
+pub fn count_10() -> i32 {
+    return (*n_12.with(Value::clone).borrow_mut()).prefix_inc();
+}
 thread_local!(
     static t_5: Value<LifetimeTracked> = Rc::new(RefCell::new(LifetimeTracked::new()));
 );
@@ -92,8 +95,14 @@ thread_local!(
     static n_9: Value<i32> = Rc::new(RefCell::new(0));
 );
 thread_local!(
-    pub static check_10: Value<AssertsDtorCountAtExit> =
-        Rc::new(RefCell::new(AssertsDtorCountAtExit { expected: 2 }));
+    static t_11: Value<LifetimeTracked> = Rc::new(RefCell::new(LifetimeTracked::new()));
+);
+thread_local!(
+    static n_12: Value<i32> = Rc::new(RefCell::new(0));
+);
+thread_local!(
+    pub static check_13: Value<AssertsDtorCountAtExit> =
+        Rc::new(RefCell::new(AssertsDtorCountAtExit { expected: 4 }));
 );
 pub fn main() {
     __cpp2rust_init_globals();
@@ -102,20 +111,41 @@ pub fn main() {
 fn main_0() -> i32 {
     assert!((ctorCount_0.with(|rc| *rc.borrow()) == 0));
     assert!((({ count_4() }) == 1));
-    assert!((({ b_count_int_11() }) == 2));
-    assert!((({ count_4() }) == 3));
-    assert!((ctorCount_0.with(|rc| *rc.borrow()) == 1));
+    assert!((({ b_count_local_15() }) == 1));
+    assert!((({ count_4() }) == 2));
     assert!((({ count_7() }) == 1));
-    assert!((({ b_count_long_12() }) == 2));
-    assert!((ctorCount_0.with(|rc| *rc.borrow()) == 2));
+    assert!((({ b_count_int_16() }) == 2));
+    assert!((({ count_7() }) == 3));
+    assert!((ctorCount_0.with(|rc| *rc.borrow()) == 3));
+    assert!((({ count_10() }) == 1));
+    assert!((({ b_count_long_17() }) == 2));
+    assert!((ctorCount_0.with(|rc| *rc.borrow()) == 4));
     return 0;
 }
-pub fn b_count_int_11() -> i32 {
-    return ({ count_4() });
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(1)]
+pub struct S_14 {}
+pub fn count_18() -> i32 {
+    return (*n_20.with(Value::clone).borrow_mut()).prefix_inc();
 }
-pub fn b_count_long_12() -> i32 {
+thread_local!(
+    static t_19: Value<LifetimeTracked> = Rc::new(RefCell::new(LifetimeTracked::new()));
+);
+thread_local!(
+    static n_20: Value<i32> = Rc::new(RefCell::new(0));
+);
+pub fn b_count_int_16() -> i32 {
     return ({ count_7() });
 }
+pub fn b_count_long_17() -> i32 {
+    return ({ count_10() });
+}
+pub fn b_count_local_15() -> i32 {
+    return ({ count_18() });
+}
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(1)]
+pub struct S_21 {}
 pub trait AssertsDtorCountAtExitImpl {
     fn destructor(&self);
 }
@@ -147,5 +177,5 @@ pub fn __cpp2rust_init_globals() {
     let _ = copyCount_1.with(|_| ());
     let _ = dtorCount_2.with(|_| ());
     let _ = useCount_3.with(|_| ());
-    let _ = check_10.with(|_| ());
+    let _ = check_13.with(|_| ());
 }

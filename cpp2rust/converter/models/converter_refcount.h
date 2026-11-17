@@ -339,6 +339,9 @@ public:
 
   std::string ConvertTake(clang::Expr *arg) override;
 
+  std::string ConvertMoveThroughPointer(clang::QualType type,
+                                        const std::string &ptr) override;
+
   std::string ConvertBorrowMut(clang::Expr *arg) override;
 
   // Whether the receiver of a method call translated by a rule is being

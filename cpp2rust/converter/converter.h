@@ -908,10 +908,12 @@ protected:
   // Moves the value out of `arg`, leaving a default value behind.
   virtual std::string ConvertTake(clang::Expr *arg);
 
-  // The value to leave behind when moving from `arg`. Empty if std::mem::take
-  // suffices, including implicit return moves of locals and by-value
-  // parameters.
-  std::string GetMovedFromValue(clang::Expr *arg);
+  bool IsImplicitReturnMove(clang::Expr *arg) const;
+
+  std::string GetMovedFromValue(clang::QualType type);
+
+  virtual std::string ConvertMoveThroughPointer(clang::QualType type,
+                                                const std::string &ptr);
 
   // The place of `arg`, which is borrowed mutably by a rule.
   virtual std::string ConvertBorrowMut(clang::Expr *arg);
