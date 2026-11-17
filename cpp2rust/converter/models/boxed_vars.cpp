@@ -205,7 +205,7 @@ public:
   }
 
   bool VisitBinaryOperator(clang::BinaryOperator *expr) {
-    if (expr->isAssignmentOp()) {
+    if (expr->isAssignmentOp() && expr->isPRValue()) {
       AddValueUse(expr->getLHS(), /*write=*/true);
     }
     if (expr->getOpcode() == clang::BO_Comma) {
@@ -407,6 +407,9 @@ private:
       }
     } else if (auto *ref = clang::dyn_cast<clang::DeclRefExpr>(expr)) {
       value_uses_.insert(ref);
+    } else if (auto *assign = clang::dyn_cast<clang::BinaryOperator>(expr);
+               assign && assign->isAssignmentOp() && !write) {
+      AddValueUse(assign->getLHS(), /*write=*/true);
     } else if (auto *object = GetEnclosingObject(expr)) {
       // Rust doesn't let the index of an element that is written to read the
       // vector, as the vector is borrowed mutably first.
@@ -432,6 +435,16 @@ private:
     } else if (auto *comma = clang::dyn_cast<clang::BinaryOperator>(expr);
                comma && comma->getOpcode() == clang::BO_Comma) {
       AddDiscardedUse(comma->getRHS());
+    }
+
+    auto *binary = clang::dyn_cast<clang::BinaryOperator>(expr);
+    if (!binary) {
+      return;
+    }
+    if (binary->getOpcode() == clang::BO_Comma) {
+      AddDiscardedUse(binary->getRHS());
+    } else if (binary->isAssignmentOp()) {
+      AddValueUse(binary->getLHS(), /*write=*/true);
     }
   }
 

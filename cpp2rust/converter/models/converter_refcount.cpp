@@ -2969,11 +2969,6 @@ ConverterRefCount::ConvertMemberPtrObject(clang::BinaryOperator *expr) {
   return std::format("({})", ConvertPointer(object));
 }
 
-void ConverterRefCount::EmitMemberPtrPointee(std::string ptr,
-                                             clang::QualType type) {
-  EmitPointee(std::move(ptr), type, /*fresh=*/true);
-}
-
 void ConverterRefCount::ConvertDeref(clang::Expr *expr) {
   auto pointee_type = expr->getType()->getPointeeType();
 
