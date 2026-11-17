@@ -846,7 +846,8 @@ bool IsPassThroughConstructor(const clang::CXXConstructorDecl *ctor) {
 }
 
 bool IsConvertibleCXXRecordDecl(const clang::CXXRecordDecl *decl) {
-  return decl->isThisDeclarationADefinition() && !decl->isDependentContext();
+  return decl->isThisDeclarationADefinition() && !decl->isDependentContext() &&
+         !decl->isInvalidDecl();
 }
 
 bool IsConvertibleCXXMethodDecl(const clang::CXXMethodDecl *decl) {
