@@ -1039,6 +1039,10 @@ static std::string GetLexicalSpecializationID(const clang::Decl *decl) {
           clang::dyn_cast<clang::VarTemplateSpecializationDecl>(decl)) {
     id += GetMangledName(var);
   }
+  if (const auto *fn = clang::dyn_cast<clang::FunctionDecl>(decl);
+      fn && fn->getTemplateSpecializationArgs()) {
+    id += GetMangledName(fn);
+  }
   if (const auto *self =
           clang::dyn_cast<clang::ClassTemplateSpecializationDecl>(decl)) {
     id += GetMangledTypeName(self);
