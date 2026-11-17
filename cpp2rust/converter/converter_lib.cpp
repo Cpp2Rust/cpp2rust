@@ -1384,6 +1384,14 @@ const char *GetOverloadedOperator(const clang::FunctionDecl *decl) {
     return "operator_call";
   case clang::OO_Subscript:
     return "operator_index";
+  case clang::OO_New:
+    return "operator_new";
+  case clang::OO_Delete:
+    return "operator_delete";
+  case clang::OO_Array_New:
+    return "operator_new_arr";
+  case clang::OO_Array_Delete:
+    return "operator_delete_arr";
   default:
     assert(0 && "unsupported overloaded operator");
     return "";
