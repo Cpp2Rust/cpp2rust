@@ -339,8 +339,8 @@ public:
 
   std::string ConvertTake(clang::Expr *arg) override;
 
-  std::string ConvertMove(clang::QualType type,
-                          const std::string &ptr) override;
+  std::string ConvertMoveThroughPointer(clang::QualType type,
+                                        const std::string &ptr) override;
 
   std::string ConvertBorrowMut(clang::Expr *arg) override;
 
