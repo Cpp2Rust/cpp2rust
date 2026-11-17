@@ -57,6 +57,11 @@ bool IsUserDefinedDecl(const clang::Decl *decl);
 
 bool IsAbstractUserClass(const clang::RecordDecl *decl);
 
+bool IsLibraryOnlySpecialization(
+    const clang::ClassTemplateSpecializationDecl *decl);
+
+bool IsLibraryOnlySpecialization(const clang::FunctionDecl *decl);
+
 bool ExprHasUserDefinedDecl(const clang::Expr *expr);
 
 bool IsUnsignedArithOp(const clang::BinaryOperator *expr);
@@ -107,6 +112,8 @@ bool IsConvertibleMoveConstructor(const clang::CXXConstructorDecl *ctor);
 
 // Whether decl has a move constructor converted to a move_from method.
 bool HasMoveFromConstructor(const clang::RecordDecl *decl);
+
+bool MovesFromArg(clang::Expr *expr, unsigned arg_idx, clang::Expr *arg);
 
 void ForEachConvertingConstructor(
     clang::CXXRecordDecl *decl,

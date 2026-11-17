@@ -61,9 +61,7 @@ fn main_0() -> i32 {
     .as_pointer(),)
     {
         (__tmp_1,) => {
-            let __first = <Ptr<i32> as CppFrom<Ptr<i32>>>::cpp_from_move(
-                (*__tmp_1.upgrade().deref()).0.as_pointer(),
-            );
+            let __first = cpp_move!((*__tmp_1.upgrade().deref()).0.as_pointer());
             let __second = (((*__tmp_1.upgrade().deref()).1.as_pointer().read()) as u64);
             const_ptr_pairs.decay().offset(0_usize).with(|__dst| {
                 *__dst.0.borrow_mut() = __first;

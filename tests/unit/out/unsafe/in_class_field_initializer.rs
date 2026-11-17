@@ -51,12 +51,7 @@ impl Boxed_int_ {
 }
 impl Default for Boxed_int_ {
     fn default() -> Self {
-        unsafe {
-            Boxed_int_ {
-                v: 0_i32,
-                tag: 0_i32,
-            }
-        }
+        unsafe { Boxed_int_ { v: 0_i32, tag: 7 } }
     }
 }
 pub fn main() {
