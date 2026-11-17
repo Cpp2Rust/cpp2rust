@@ -57,9 +57,6 @@ bool ReturnsReference(const clang::Expr *expr);
 bool ParamIsPointer(clang::ASTContext &ctx, const clang::Expr *expr,
                     unsigned index);
 
-// A pointer argument is passed to a pointer parameter as its value, unless
-// the rule's C++ parameter is a reference, which is bound to the argument
-// itself; the receiver of a call through a pointer is that pointer.
 bool ParamTakesPointerValue(const clang::Expr *expr, unsigned index);
 
 clang::Expr *BuildParamConversion(clang::ASTContext &ctx,
