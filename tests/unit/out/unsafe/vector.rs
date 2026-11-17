@@ -362,6 +362,22 @@ unsafe fn main_0() -> i32 {
     assert!(
         (((foo.a.len()) == (1_usize)) && ((foo.a[(0_usize)]) == (4))) && ((v10[(1_usize)]) == (7))
     );
+    let mut v12: Vec<i32> = Vec::new();
+    let mut moved: i32 = 5;
+    {
+        let __a1 = moved;
+        v12.push(__a1)
+    };
+    assert!(((v12[(0_usize)]) == (5)) && ((moved) == (5)));
+    let mut v13: Vec<*mut i32> = Vec::new();
+    let mut moved_ptr: *mut i32 = (&mut moved as *mut i32);
+    {
+        let __a1 = moved_ptr;
+        v13.push(__a1)
+    };
+    assert!(
+        ((v13[(0_usize)]) == (&mut moved as *mut i32)) && ((moved_ptr) == (&mut moved as *mut i32))
+    );
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

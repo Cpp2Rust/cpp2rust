@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <utility>
 #include <vector>
 
 struct S {
@@ -177,5 +178,14 @@ int main() {
   assert(foo.a.size() == 2 && foo.a[1] == 7 && foo.b[0] == 5);
   exchange(foo.a, v10);
   assert(foo.a.size() == 1 && foo.a[0] == 4 && v10[1] == 7);
+
+  std::vector<int> v12;
+  int moved = 5;
+  v12.push_back(std::move(moved));
+  assert(v12[0] == 5 && moved == 5);
+  std::vector<int *> v13;
+  int *moved_ptr = &moved;
+  v13.push_back(std::move(moved_ptr));
+  assert(v13[0] == &moved && moved_ptr == &moved);
   return 0;
 }

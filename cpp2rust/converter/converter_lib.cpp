@@ -1788,7 +1788,11 @@ void DefineImplicitMembers(clang::Sema &sema, clang::CXXRecordDecl *decl) {
       RuleDecls::Trial trial(sema);
       clang::Sema::GlobalEagerInstantiationScope instantiations(
           sema, /*Enabled=*/true, /*AtEndOfTU=*/false);
+#if CLANG_VERSION_MAJOR >= 24
+      sema.BuildCXXCtorDefaultInitExpr(decl->getLocation(), field);
+#else
       sema.BuildCXXDefaultInitExpr(decl->getLocation(), field);
+#endif
       instantiations.perform();
     }
   }
