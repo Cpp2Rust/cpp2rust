@@ -16,7 +16,7 @@ pub struct p16_rebind_member_Alloc_std_pair_const_int__int__ {
 }
 impl Default for p16_rebind_member_Alloc_std_pair_const_int__int__ {
     fn default() -> Self {
-        unsafe { p16_rebind_member_Alloc_std_pair_const_int__int__ { id: 0_i32 } }
+        unsafe { p16_rebind_member_Alloc_std_pair_const_int__int__ { id: 0 } }
     }
 }
 pub unsafe fn test_0() {
