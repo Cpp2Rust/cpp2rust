@@ -883,8 +883,7 @@ void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
       if (auto *tmpl = clang::dyn_cast_or_null<clang::FunctionTemplateDecl>(
               friend_decl->getFriendDecl())) {
         for (auto *spec : tmpl->specializations()) {
-          if (spec->isThisDeclarationADefinition() &&
-              !IsLibraryOnlySpecialization(spec)) {
+          if (spec->isThisDeclarationADefinition()) {
             VisitFunctionDecl(spec);
           }
         }

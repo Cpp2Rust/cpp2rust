@@ -320,8 +320,8 @@ HasLibraryInternalArgument(clang::ASTContext &ctx,
     if (arg.getKind() != clang::TemplateArgument::Type) {
       return false;
     }
-    auto tag =
-        StripPointersAndArrays(arg.getAsType().getCanonicalType())->getAsTagDecl();
+    auto tag = StripPointersAndArrays(arg.getAsType().getCanonicalType())
+                   ->getAsTagDecl();
     return tag && !IsUserDefinedDecl(tag) &&
            clang::isReservedInAllContexts(tag->isReserved(ctx.getLangOpts()));
   });
