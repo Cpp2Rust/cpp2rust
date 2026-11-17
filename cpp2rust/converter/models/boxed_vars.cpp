@@ -317,6 +317,23 @@ private:
         TraverseStmt(init);
         continue;
       }
+      bool moved_by_ctor = false;
+      TranslationRule::AnyFragment(
+          rule->body, [&](const TranslationRule::BodyFragment &fragment) {
+            auto *ph =
+                std::get_if<TranslationRule::PlaceholderFragment>(&fragment);
+            if (ph && ph->n == i) {
+              if (auto *init = BuildMoveConstruction(ctx_, expr, i, all_args[i],
+                                                     ph->access)) {
+                TraverseStmt(init);
+                moved_by_ctor = true;
+              }
+            }
+            return false;
+          });
+      if (moved_by_ctor) {
+        continue;
+      }
       if (!rule->takesAddress(ctx_, i, arg) ||
           rule->takesTemporaryAddress(ctx_, expr, i, arg)) {
         AddValueUse(arg);
@@ -327,7 +344,7 @@ private:
   // An element of an array or vector, or a field of a struct, is accessed
   // without making a pointer to it.
   void AddValueUse(const clang::Expr *expr, bool write = false) {
-    expr = IgnoreNoOpCasts(expr->IgnoreParens());
+    expr = IgnoreNoOpCasts(IgnoreTransparentStdCall(expr)->IgnoreParens());
     // The value of a conditional lvalue is the value of either operand; it is
     // written through a pointer to the operand.
     if (auto *cond = clang::dyn_cast<clang::ConditionalOperator>(expr)) {
