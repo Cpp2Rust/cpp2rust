@@ -5,6 +5,20 @@
 #include <utility>
 #include <vector>
 
+// N4950 [pairs.pair]/2: the defaulted move constructor of pair moves its
+// elements.
+namespace p2_move_constructor {
+void test() {
+  std::pair<std::unique_ptr<int>, int> source(std::unique_ptr<int>(new int(1)),
+                                              2);
+  std::pair<std::unique_ptr<int>, int> target(std::move(source));
+  assert(*target.first == 1);
+  assert(target.second == 2);
+  assert(source.first == nullptr);
+  assert(source.second == 2);
+}
+} // namespace p2_move_constructor
+
 // N4950 [pairs.pair]/12: pair(U1&& x, U2&& y) initializes first with
 // std::forward<U1>(x) and second with std::forward<U2>(y).
 namespace p12_forwarding_constructor {
@@ -58,6 +72,7 @@ void test() {
 } // namespace p40_converting_move_assignment
 
 int main() {
+  p2_move_constructor::test();
   p12_forwarding_constructor::test();
   p16_converting_move_constructor::test();
   p40_converting_move_assignment::test();

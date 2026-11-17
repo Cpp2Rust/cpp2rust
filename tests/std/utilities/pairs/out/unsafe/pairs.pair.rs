@@ -7,6 +7,24 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn test_0() {
+    let mut source: (Option<Box<i32>>, i32) =
+        (Some(Box::from_raw((Box::leak(Box::new(1)) as *mut i32))), 2);
+    let mut target: (Option<Box<i32>>, i32) = (
+        cpp_move_unsafe!(&mut source.0),
+        cpp_move_unsafe!(&mut source.1),
+    );
+    assert!(
+        ((*target
+            .0
+            .as_deref()
+            .map_or(::std::ptr::null_mut(), |v| v as *const i32 as *mut i32))
+            == (1))
+    );
+    assert!(((target.1) == (2)));
+    assert!(source.0.is_none());
+    assert!(((source.1) == (2)));
+}
+pub unsafe fn test_1() {
     let mut owner: Option<Box<i32>> = Some(Box::from_raw((Box::leak(Box::new(3)) as *mut i32)));
     let mut moved: (Option<Box<i32>>, i32) = (cpp_move_unsafe!(&mut owner), 1);
     assert!(
@@ -43,7 +61,7 @@ pub unsafe fn test_0() {
     assert!(((values.len()) == (2_usize)));
     assert!(((copied.0.len()) == (2_usize)) && ((copied.0[(1_usize)]) == (7)));
 }
-pub unsafe fn test_1() {
+pub unsafe fn test_2() {
     let mut source: (i32, Option<Box<i32>>) = (
         0,
         Some(Box::from_raw((Box::leak(Box::new(81)) as *mut i32))),
@@ -77,7 +95,7 @@ pub unsafe fn test_1() {
         .is_null()
     );
 }
-pub unsafe fn test_2() {
+pub unsafe fn test_3() {
     let mut source: (i32, Option<Box<i32>>) =
         (4, Some(Box::from_raw((Box::leak(Box::new(9)) as *mut i32))));
     let mut original: *mut i32 = source
@@ -119,6 +137,7 @@ unsafe fn main_0() -> i32 {
     (unsafe { test_0() });
     (unsafe { test_1() });
     (unsafe { test_2() });
+    (unsafe { test_3() });
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

@@ -7,6 +7,24 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn test_0() {
+    let source: Value<(Value<Option<Value<i32>>>, Value<i32>)> = Rc::new(RefCell::new((
+        Rc::new(RefCell::new(Ptr::alloc(1).to_owned_opt())),
+        Rc::new(RefCell::new(2)),
+    )));
+    let target: Value<(Value<Option<Value<i32>>>, Value<i32>)> = Rc::new(RefCell::new({
+        let __first: Ptr<Option<Value<i32>>> = (*source.borrow()).0.as_pointer();
+        let __second: Ptr<i32> = (*source.borrow()).1.as_pointer();
+        (
+            Rc::new(RefCell::new(cpp_move!(__first))),
+            Rc::new(RefCell::new(cpp_move!(__second))),
+        )
+    }));
+    assert!(({ (((*(*target.borrow()).0.borrow()).as_pointer().read()) == 1) }));
+    assert!(({ ((*(*target.borrow()).1.borrow()) == 2) }));
+    assert!(({ (*(*source.borrow()).0.borrow()).is_none() }));
+    assert!(({ ((*(*source.borrow()).1.borrow()) == 2) }));
+}
+pub fn test_1() {
     let owner: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Ptr::alloc(3).to_owned_opt()));
     let moved: Value<(Value<Option<Value<i32>>>, Value<i32>)> = Rc::new(RefCell::new((
         Rc::new(RefCell::new(cpp_move!(owner.as_pointer()))),
@@ -49,7 +67,7 @@ pub fn test_0() {
         })
     );
 }
-pub fn test_1() {
+pub fn test_2() {
     let source: Value<(Value<i32>, Value<Option<Value<i32>>>)> = Rc::new(RefCell::new((
         Rc::new(RefCell::new(0)),
         Rc::new(RefCell::new(Ptr::alloc(81).to_owned_opt())),
@@ -66,7 +84,7 @@ pub fn test_1() {
     assert!(({ (((*(*converted.borrow()).1.borrow()).as_pointer().read()) == 81) }));
     assert!(({ ((*(*source.borrow()).1.borrow()).as_pointer()).is_null() }));
 }
-pub fn test_2() {
+pub fn test_3() {
     let source: Value<(Value<i32>, Value<Option<Value<i32>>>)> = Rc::new(RefCell::new((
         Rc::new(RefCell::new(4)),
         Rc::new(RefCell::new(Ptr::alloc(9).to_owned_opt())),
@@ -97,6 +115,7 @@ fn main_0() -> i32 {
     ({ test_0() });
     ({ test_1() });
     ({ test_2() });
+    ({ test_3() });
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}
