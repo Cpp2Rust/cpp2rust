@@ -60,12 +60,7 @@ impl Boxed_int_ {
 }
 impl Default for Boxed_int_ {
     fn default() -> Self {
-        {
-            Boxed_int_ {
-                v: 0_i32,
-                tag: 0_i32,
-            }
-        }
+        { Boxed_int_ { v: 0_i32, tag: 7 } }
     }
 }
 pub fn main() {
