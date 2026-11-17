@@ -526,7 +526,8 @@ bool Converter::VisitFunctionTemplateDecl(clang::FunctionTemplateDecl *decl) {
   }
   for (auto *function_decl : decl->specializations()) {
     if (function_decl->getTemplateSpecializationKind() ==
-        clang::TSK_ExplicitSpecialization) {
+            clang::TSK_ExplicitSpecialization ||
+        IsLibraryOnlySpecialization(function_decl)) {
       continue;
     }
     VisitFunctionDecl(function_decl);
@@ -904,6 +905,9 @@ void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
     }
     if (auto *nested_tmpl = clang::dyn_cast<clang::ClassTemplateDecl>(d)) {
       for (auto *spec : nested_tmpl->specializations()) {
+        if (IsLibraryOnlySpecialization(spec)) {
+          continue;
+        }
         inner_structs_[GetID(spec)] = GetRecordName(spec);
         VisitCXXRecordDecl(spec);
       }
@@ -4377,6 +4381,9 @@ bool Converter::VisitPredefinedExpr(clang::PredefinedExpr *expr) {
 
 bool Converter::VisitClassTemplateDecl(clang::ClassTemplateDecl *decl) {
   for (auto decl : decl->specializations()) {
+    if (IsLibraryOnlySpecialization(decl)) {
+      continue;
+    }
     VisitCXXRecordDecl(decl);
   }
   return false;

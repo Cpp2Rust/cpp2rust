@@ -58,6 +58,11 @@ bool IsUserDefinedDecl(const clang::Decl *decl);
 
 bool IsAbstractUserClass(const clang::RecordDecl *decl);
 
+bool IsLibraryOnlySpecialization(
+    const clang::ClassTemplateSpecializationDecl *decl);
+
+bool IsLibraryOnlySpecialization(const clang::FunctionDecl *decl);
+
 bool ExprHasUserDefinedDecl(const clang::Expr *expr);
 
 bool IsUnsignedArithOp(const clang::BinaryOperator *expr);

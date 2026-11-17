@@ -14,3 +14,5 @@ template <class T> int count() {
 
 int b_count_int();
 int b_count_long();
+
+int b_count_local();
