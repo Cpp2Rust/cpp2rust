@@ -317,7 +317,15 @@ private:
         TraverseStmt(init);
         continue;
       }
-      if (MovesIntoMoveConstructor(rule, expr, i, all_args[i])) {
+      auto *record = arg->getType()->getAsRecordDecl();
+      if (record && HasMoveFromConstructor(record) &&
+          TranslationRule::AnyFragment(
+              rule->body, [&](const TranslationRule::BodyFragment &fragment) {
+                auto *ph = std::get_if<TranslationRule::PlaceholderFragment>(
+                    &fragment);
+                return ph && ph->n == i &&
+                       MovesRuleArg(expr, i, all_args[i], ph->access);
+              })) {
         continue;
       }
       if (!rule->takesAddress(ctx_, i, arg) ||
@@ -325,23 +333,6 @@ private:
         AddValueUse(arg);
       }
     }
-  }
-
-  bool MovesIntoMoveConstructor(const TranslationRule::ExprRule *rule,
-                                clang::Expr *expr, unsigned arg_idx,
-                                clang::Expr *arg) {
-    auto *record = arg->getType()->getAsCXXRecordDecl();
-    if (!record || !IsUserDefinedDecl(record) ||
-        !llvm::any_of(record->ctors(), IsConvertibleMoveConstructor)) {
-      return false;
-    }
-    return TranslationRule::AnyFragment(
-        rule->body, [&](const TranslationRule::BodyFragment &fragment) {
-          auto *ph =
-              std::get_if<TranslationRule::PlaceholderFragment>(&fragment);
-          return ph && ph->n == arg_idx &&
-                 MovesRuleArg(expr, arg_idx, arg, ph->access);
-        });
   }
 
   // An element of an array or vector, or a field of a struct, is accessed
