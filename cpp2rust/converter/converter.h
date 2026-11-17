@@ -885,11 +885,12 @@ protected:
                                                 std::string member,
                                                 clang::QualType type);
 
-  virtual void EmitMemberPtrPointee(std::string ptr, clang::QualType type);
-
   virtual void ConvertDeref(clang::Expr *expr);
 
   void EmitDeref(std::string inner, clang::QualType pointee_type);
+
+  virtual void EmitPointee(std::string ptr, clang::QualType pointee_type,
+                           bool fresh);
 
   virtual void ConvertArrow(clang::Expr *expr);
 

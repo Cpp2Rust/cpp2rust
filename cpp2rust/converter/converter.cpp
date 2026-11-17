@@ -2877,6 +2877,11 @@ bool Converter::VisitBinaryOperator(clang::BinaryOperator *expr) {
     ConvertAssignmentRef(expr);
     return false;
   }
+  if (expr->isAssignmentOp() && isLValue()) {
+    EmitPointee(std::format("({})", ConvertFreshPointer(expr)), expr->getType(),
+                /*fresh=*/true);
+    return false;
+  }
   if (expr->getOpcode() == clang::BO_Cmp) {
     EmitFresh(std::format("std::cmp::Ord::cmp(&({}), &({}))",
                           ConvertRValue(expr->getLHS()),
@@ -2973,6 +2978,15 @@ void Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
     if (expr->isCompoundAssignmentOp() &&
         expr->getLHS()->getType()->isPointerType() &&
         expr->getRHS()->getType()->isIntegralOrEnumerationType()) {
+      if (lhs->HasSideEffects(ctx_)) {
+        auto ptr = std::format("({})", ConvertFreshPointer(expr));
+        if (isVoid()) {
+          StrCat(ptr);
+        } else {
+          EmitDeref(std::move(ptr), lhs_type);
+        }
+        return;
+      }
       PushBrace brace(*this, !isVoid());
       Convert(lhs);
       StrCat(token::kAssign);
@@ -4595,11 +4609,12 @@ void Converter::ConvertVarInit(clang::QualType qual_type, clang::Expr *expr) {
       StrCat(EmitMaterializedTempBinding(qual_type, expr));
       return;
     }
-    if (auto *cond = clang::dyn_cast<clang::ConditionalOperator>(
-            expr->IgnoreParenImpCasts());
-        cond && cond->isLValue()) {
+    auto *inner = expr->IgnoreParenImpCasts();
+    auto *assign = clang::dyn_cast<clang::BinaryOperator>(inner);
+    if (inner->isLValue() && (clang::isa<clang::ConditionalOperator>(inner) ||
+                              (assign && assign->isAssignmentOp()))) {
       PushExprKind push(*this, ExprKind::AddrOf);
-      Convert(cond);
+      Convert(inner);
       return;
     }
     StrCat(token::kRef);
@@ -5270,7 +5285,7 @@ void Converter::ConvertMemberPtrAccess(clang::BinaryOperator *expr) {
     EmitFresh(ptr);
     return;
   }
-  EmitMemberPtrPointee(std::move(ptr), expr->getType());
+  EmitPointee(std::move(ptr), expr->getType(), /*fresh=*/true);
 }
 
 std::string Converter::ConvertMemberPtrObject(clang::BinaryOperator *expr) {
@@ -5293,10 +5308,6 @@ std::string Converter::GetMemberOfObjectAsString(std::string object,
                      ToString(type));
 }
 
-void Converter::EmitMemberPtrPointee(std::string ptr, clang::QualType type) {
-  EmitDeref(std::move(ptr), type);
-}
-
 void Converter::EmitDeref(std::string inner, clang::QualType pointee_type) {
   auto wrap = std::exchange(autoref_mut_, std::nullopt);
   PushParen outer(*this, wrap.has_value());
@@ -5306,6 +5317,11 @@ void Converter::EmitDeref(std::string inner, clang::QualType pointee_type) {
   PushParen paren(*this);
   StrCat(GetPointerDerefPrefix(pointee_type), std::move(inner));
   SetValueFreshness(pointee_type);
+}
+
+void Converter::EmitPointee(std::string ptr, clang::QualType pointee_type,
+                            bool fresh) {
+  EmitDeref(std::move(ptr), pointee_type);
 }
 
 void Converter::ConvertDeref(clang::Expr *expr) {
@@ -5476,7 +5492,8 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
   }
 
   if (ph_ctx.access == TranslationRule::Access::kTake) {
-    if (clang::isa<clang::MaterializeTemporaryExpr>(arg)) {
+    if (clang::isa<clang::MaterializeTemporaryExpr>(arg) ||
+        arg->getType().isTriviallyCopyableType(ctx_)) {
       return ConvertFreshRValue(arg);
     }
     return ConvertTake(arg);
