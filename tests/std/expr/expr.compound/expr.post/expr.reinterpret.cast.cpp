@@ -8,8 +8,7 @@ void test() {
   int value = 5;
   int *ptr = &value;
   int **ptr_ptr = &ptr;
-  const int *const *converted =
-      reinterpret_cast<const int *const *>(ptr_ptr);
+  const int *const *converted = reinterpret_cast<const int *const *>(ptr_ptr);
   assert(converted == ptr_ptr);
   assert(*converted == ptr);
   value = 7;

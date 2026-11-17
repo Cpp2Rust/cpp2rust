@@ -11,7 +11,7 @@ pub unsafe fn test_0() {
     let mut ptr: *mut i32 = (&mut value as *mut i32);
     let mut ptr_ptr: *mut *mut i32 = (&mut ptr as *mut *mut i32);
     let mut converted: *const *const i32 = (ptr_ptr as *const *const i32);
-    assert!(((converted) == ((ptr_ptr).cast_const())));
+    assert!(((converted) == (ptr_ptr as *const *const i32)));
     assert!(((*converted) == ((ptr).cast_const())));
     value = 7;
     assert!(((*(*converted)) == (7)));
