@@ -7,7 +7,9 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn next_0(mut pp: Ptr<Ptr<i32>>, calls: Ptr<i32>) -> Ptr<Ptr<i32>> {
-    calls.with_mut(|__v| __v.prefix_inc());
+    calls.with_mut(|__v| {
+        __v.prefix_inc();
+    });
     return (pp).clone();
 }
 pub fn test_1() {
