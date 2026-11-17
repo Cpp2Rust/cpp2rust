@@ -3,7 +3,6 @@
 
 #include "converter/models/boxed_vars.h"
 
-#include <clang/AST/ParentMapContext.h>
 #include <clang/AST/RecursiveASTVisitor.h>
 #include <clang/AST/StmtVisitor.h>
 #include <clang/Basic/SourceManager.h>
@@ -135,6 +134,7 @@ public:
       range_iterators_.insert(
           clang::cast<clang::VarDecl>(begin->getSingleDecl()));
     }
+    AddDiscardedUse(stmt->getBody());
     return true;
   }
 
@@ -208,12 +208,55 @@ public:
     if (expr->isAssignmentOp()) {
       AddValueUse(expr->getLHS(), /*write=*/true);
     }
+    if (expr->getOpcode() == clang::BO_Comma) {
+      AddDiscardedUse(expr->getLHS());
+    }
+    return true;
+  }
+
+  bool VisitCompoundStmt(clang::CompoundStmt *stmt) {
+    for (auto *child : stmt->body()) {
+      AddDiscardedUse(child);
+    }
+    return true;
+  }
+
+  bool VisitForStmt(clang::ForStmt *stmt) {
+    AddDiscardedUse(stmt->getInit());
+    AddDiscardedUse(stmt->getInc());
+    AddDiscardedUse(stmt->getBody());
+    return true;
+  }
+
+  bool VisitWhileStmt(clang::WhileStmt *stmt) {
+    AddDiscardedUse(stmt->getBody());
+    return true;
+  }
+
+  bool VisitDoStmt(clang::DoStmt *stmt) {
+    AddDiscardedUse(stmt->getBody());
+    return true;
+  }
+
+  bool VisitIfStmt(clang::IfStmt *stmt) {
+    AddDiscardedUse(stmt->getThen());
+    AddDiscardedUse(stmt->getElse());
+    return true;
+  }
+
+  bool VisitSwitchCase(clang::SwitchCase *stmt) {
+    AddDiscardedUse(stmt->getSubStmt());
+    return true;
+  }
+
+  bool VisitLabelStmt(clang::LabelStmt *stmt) {
+    AddDiscardedUse(stmt->getSubStmt());
     return true;
   }
 
   bool VisitUnaryOperator(clang::UnaryOperator *expr) {
     if (expr->isIncrementDecrementOp() &&
-        (expr->isPostfix() || IsDiscarded(expr))) {
+        (expr->isPostfix() || expr->isPRValue())) {
       AddValueUse(expr->getSubExpr(), /*write=*/true);
     }
     return true;
@@ -374,30 +417,21 @@ private:
     }
   }
 
-  bool IsDiscarded(const clang::Expr *expr) const {
-    const clang::Stmt *cur = expr;
-    while (true) {
-      auto parents = ctx_.getParents(*cur);
-      if (parents.empty()) {
-        return true;
-      }
-      auto *parent = parents[0].get<clang::Stmt>();
-      if (!parent) {
-        return false;
-      }
-      if (clang::isa<clang::ParenExpr, clang::ExprWithCleanups>(parent)) {
-        cur = parent;
-        continue;
-      }
-      if (auto *comma = clang::dyn_cast<clang::BinaryOperator>(parent);
-          comma && comma->getOpcode() == clang::BO_Comma) {
-        if (comma->getLHS() == cur) {
-          return true;
-        }
-        cur = comma;
-        continue;
-      }
-      return !clang::isa<clang::Expr, clang::ReturnStmt>(parent);
+  void AddDiscardedUse(clang::Stmt *stmt) {
+    auto *expr = clang::dyn_cast_or_null<clang::Expr>(stmt);
+    if (!expr) {
+      return;
+    }
+    expr = expr->IgnoreParens();
+    if (auto *cleanups = clang::dyn_cast<clang::ExprWithCleanups>(expr)) {
+      expr = cleanups->getSubExpr()->IgnoreParens();
+    }
+    if (auto *op = clang::dyn_cast<clang::UnaryOperator>(expr);
+        op && op->isIncrementDecrementOp()) {
+      AddValueUse(op->getSubExpr(), /*write=*/true);
+    } else if (auto *comma = clang::dyn_cast<clang::BinaryOperator>(expr);
+               comma && comma->getOpcode() == clang::BO_Comma) {
+      AddDiscardedUse(comma->getRHS());
     }
   }
 
