@@ -433,6 +433,9 @@ bool ConverterRefCount::ParamIsElementPtr(clang::Expr *expr, clang::Expr *arg,
 }
 
 std::string ConverterRefCount::ConvertElementPtr(clang::Expr *arg) {
+  if (IsStringLiteralExpr(arg)) {
+    return ConvertStringLiteralPtr(arg);
+  }
   return ConvertObject(arg, ObjectShape::Element);
 }
 
