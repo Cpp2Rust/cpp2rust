@@ -2877,6 +2877,11 @@ bool Converter::VisitBinaryOperator(clang::BinaryOperator *expr) {
     ConvertAssignmentRef(expr);
     return false;
   }
+  if (expr->isAssignmentOp() && isLValue()) {
+    EmitPointee(std::format("({})", ConvertFreshPointer(expr)), expr->getType(),
+                /*fresh=*/true);
+    return false;
+  }
   if (expr->getOpcode() == clang::BO_Cmp) {
     EmitFresh(std::format("std::cmp::Ord::cmp(&({}), &({}))",
                           ConvertRValue(expr->getLHS()),
@@ -2973,6 +2978,15 @@ void Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
     if (expr->isCompoundAssignmentOp() &&
         expr->getLHS()->getType()->isPointerType() &&
         expr->getRHS()->getType()->isIntegralOrEnumerationType()) {
+      if (lhs->HasSideEffects(ctx_)) {
+        auto ptr = std::format("({})", ConvertFreshPointer(expr));
+        if (isVoid()) {
+          StrCat(ptr);
+        } else {
+          EmitDeref(std::move(ptr), lhs_type);
+        }
+        return;
+      }
       PushBrace brace(*this, !isVoid());
       Convert(lhs);
       StrCat(token::kAssign);
@@ -5306,6 +5320,11 @@ void Converter::EmitDeref(std::string inner, clang::QualType pointee_type) {
   PushParen paren(*this);
   StrCat(GetPointerDerefPrefix(pointee_type), std::move(inner));
   SetValueFreshness(pointee_type);
+}
+
+void Converter::EmitPointee(std::string ptr, clang::QualType pointee_type,
+                            bool fresh) {
+  EmitDeref(std::move(ptr), pointee_type);
 }
 
 void Converter::ConvertDeref(clang::Expr *expr) {

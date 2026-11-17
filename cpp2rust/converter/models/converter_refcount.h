@@ -419,7 +419,8 @@ private:
 
   // Emits the object that ptr points to: a pending dereference, which is
   // written through ptr, if an lvalue is converted, or a read otherwise.
-  void EmitPointee(std::string ptr, clang::QualType pointee_type, bool fresh);
+  void EmitPointee(std::string ptr, clang::QualType pointee_type,
+                   bool fresh) override;
 
   void EmitSetOrAssign(clang::Expr *lhs, std::string_view rhs);
 

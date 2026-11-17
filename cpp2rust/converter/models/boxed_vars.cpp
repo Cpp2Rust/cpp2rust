@@ -3,6 +3,7 @@
 
 #include "converter/models/boxed_vars.h"
 
+#include <clang/AST/ParentMapContext.h>
 #include <clang/AST/RecursiveASTVisitor.h>
 #include <clang/AST/StmtVisitor.h>
 #include <clang/Basic/SourceManager.h>
@@ -204,7 +205,7 @@ public:
   }
 
   bool VisitBinaryOperator(clang::BinaryOperator *expr) {
-    if (expr->isAssignmentOp()) {
+    if (expr->isAssignmentOp() && (expr->isPRValue() || IsDiscarded(expr))) {
       AddValueUse(expr->getLHS(), /*write=*/true);
     }
     return true;
@@ -357,6 +358,9 @@ private:
       }
     } else if (auto *ref = clang::dyn_cast<clang::DeclRefExpr>(expr)) {
       value_uses_.insert(ref);
+    } else if (auto *assign = clang::dyn_cast<clang::BinaryOperator>(expr);
+               assign && assign->isAssignmentOp() && !write) {
+      AddValueUse(assign->getLHS(), /*write=*/true);
     } else if (auto *object = GetEnclosingObject(expr)) {
       // Rust doesn't let the index of an element that is written to read the
       // vector, as the vector is borrowed mutably first.
@@ -364,6 +368,33 @@ private:
       if (!write || !op || !ReferToCommonVar(object, op->getArg(1))) {
         AddValueUse(object, write);
       }
+    }
+  }
+
+  bool IsDiscarded(const clang::Expr *expr) const {
+    const clang::Stmt *cur = expr;
+    while (true) {
+      auto parents = ctx_.getParents(*cur);
+      if (parents.empty()) {
+        return true;
+      }
+      auto *parent = parents[0].get<clang::Stmt>();
+      if (!parent) {
+        return false;
+      }
+      if (clang::isa<clang::ParenExpr, clang::ExprWithCleanups>(parent)) {
+        cur = parent;
+        continue;
+      }
+      if (auto *comma = clang::dyn_cast<clang::BinaryOperator>(parent);
+          comma && comma->getOpcode() == clang::BO_Comma) {
+        if (comma->getLHS() == cur) {
+          return true;
+        }
+        cur = comma;
+        continue;
+      }
+      return !clang::isa<clang::Expr, clang::ReturnStmt>(parent);
     }
   }
 

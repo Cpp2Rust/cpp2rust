@@ -891,6 +891,9 @@ protected:
 
   void EmitDeref(std::string inner, clang::QualType pointee_type);
 
+  virtual void EmitPointee(std::string ptr, clang::QualType pointee_type,
+                           bool fresh);
+
   virtual void ConvertArrow(clang::Expr *expr);
 
   virtual void ConvertCast(clang::QualType qual_type,
