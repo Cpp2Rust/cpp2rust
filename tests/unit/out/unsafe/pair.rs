@@ -32,7 +32,7 @@ unsafe fn main_0() -> i32 {
     match ((&mut (arr.as_ptr().offset((1) as isize), n) as *mut (*const i32, u32)),) {
         (__tmp_1,) => {
             const_ptr_pairs[(0_usize)] = (
-                <*const i32 as CppFromUnsafe<*const i32>>::cpp_from_move(&mut (*__tmp_1).0),
+                cpp_move_unsafe!(&mut (*__tmp_1).0),
                 ((*&mut (*__tmp_1).1) as u64),
             )
         }
@@ -50,7 +50,7 @@ unsafe fn main_0() -> i32 {
     assert!(((*f) == (3)));
     let mut a: (i32, i32) = (1, 2);
     let mut pa: *mut i32 = (&mut a.0 as *mut i32);
-    let mut b: (i32, i32) = std::mem::take(&mut a);
+    let mut b: (i32, i32) = (cpp_move_unsafe!(&mut a.0), cpp_move_unsafe!(&mut a.1));
     (*pa) = 9;
     assert!(((b.0) == (1)));
     assert!(((a.0) == (9)));

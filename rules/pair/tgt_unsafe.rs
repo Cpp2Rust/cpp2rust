@@ -28,8 +28,8 @@ unsafe fn f10<T1, T2>(a0: T1, a1: T2) -> (T1, T2) {
     (a0, a1)
 }
 
-unsafe fn f12<T1: Default, T2: Default>(a0: &mut (T1, T2)) -> (T1, T2) {
-    std::mem::take(&mut *a0)
+unsafe fn f12<T1, T2>(a0: &mut (T1, T2)) -> (T1, T2) {
+    (cpp_move_unsafe!(&mut a0.0), cpp_move_unsafe!(&mut a0.1))
 }
 
 unsafe fn f13<T1: Clone, T2: Clone>(a0: &mut (T1, T2), a1: (T1, T2)) {

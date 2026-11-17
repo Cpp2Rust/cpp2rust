@@ -5486,6 +5486,11 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
   }
 
   if (ph_ctx.access == TranslationRule::Access::kMove) {
+    if (MovesFromArg(expr, ph_ctx.arg_idx, arg)) {
+      auto ptr = ConvertPointer(arg);
+      MarkFresh();
+      return ConvertMoveThroughPointer(arg->getType(), ptr);
+    }
     return ConvertFreshRValue(arg, ph_ctx.implicit_convert_to);
   }
 
@@ -5497,7 +5502,8 @@ std::string Converter::ConvertBorrowMut(clang::Expr *arg) {
 }
 
 std::string Converter::ConvertTake(clang::Expr *arg) {
-  auto moved_from = GetMovedFromValue(arg);
+  auto moved_from =
+      IsImplicitReturnMove(arg) ? "" : GetMovedFromValue(arg->getType());
   auto lvalue = ConvertLValue(arg);
   MarkFresh();
   if (!moved_from.empty()) {
@@ -5507,28 +5513,33 @@ std::string Converter::ConvertTake(clang::Expr *arg) {
   return std::format("std::mem::take(&mut {})", std::move(lvalue));
 }
 
-std::string Converter::GetMovedFromValue(clang::Expr *arg) {
-  auto type = arg->getType();
+bool Converter::IsImplicitReturnMove(clang::Expr *arg) const {
+  auto *returned = return_value_ ? return_value_->IgnoreImplicit() : nullptr;
+  auto *ctor = clang::dyn_cast_or_null<clang::CXXConstructExpr>(returned);
+  if (!ctor || !ctor->getConstructor()->isMoveConstructor() ||
+      ctor->getArg(0)->IgnoreParenImpCasts() != arg->IgnoreParenImpCasts()) {
+    return false;
+  }
+  auto *ref = clang::dyn_cast<clang::DeclRefExpr>(arg->IgnoreParenImpCasts());
+  auto *var = ref ? clang::dyn_cast<clang::VarDecl>(ref->getDecl()) : nullptr;
+  return var && var->hasLocalStorage() && !var->getType()->isReferenceType();
+}
+
+std::string Converter::GetMovedFromValue(clang::QualType type) {
   if (!IsStdDecl(type->getAsCXXRecordDecl(), "basic_string")) {
     return {};
-  }
-  // An implicit return move consumes a local or by-value parameter. There is
-  // no need to allocate a terminator for the object about to be destroyed.
-  auto *returned = return_value_ ? return_value_->IgnoreImplicit() : nullptr;
-  if (auto *ctor = clang::dyn_cast_or_null<clang::CXXConstructExpr>(returned);
-      ctor && ctor->getConstructor()->isMoveConstructor() &&
-      ctor->getArg(0)->IgnoreParenImpCasts() == arg->IgnoreParenImpCasts()) {
-    if (auto *ref =
-            clang::dyn_cast<clang::DeclRefExpr>(arg->IgnoreParenImpCasts())) {
-      if (auto *var = clang::dyn_cast<clang::VarDecl>(ref->getDecl());
-          var && var->hasLocalStorage() && !var->getType()->isReferenceType()) {
-        return {};
-      }
-    }
   }
   // A string is translated as a vector that ends with a null terminator, so an
   // empty vector is not a valid empty string.
   return Mapper::MapInitializer(*this, type);
+}
+
+std::string Converter::ConvertMoveThroughPointer(clang::QualType type,
+                                                 const std::string &ptr) {
+  if (auto moved_from = GetMovedFromValue(type); !moved_from.empty()) {
+    return std::format("std::mem::replace(&mut *{}, {})", ptr, moved_from);
+  }
+  return std::format("cpp_move_unsafe!({})", ptr);
 }
 
 std::string Converter::ConvertMappedMethodCall(
@@ -5797,6 +5808,9 @@ std::string Converter::ConvertConversion(clang::QualType to,
       return std::format("({} as u8 as {})", value, GetUnsafeTypeAsString(to));
     }
     return std::format("({} as {})", value, GetUnsafeTypeAsString(to));
+  }
+  if (is_move && ctx_.hasSameUnqualifiedType(to, from)) {
+    return ConvertMoveThroughPointer(to, ptr);
   }
   return std::format("<{} as {}<{}>>::{}({})", GetUnboxedTypeAsString(to),
                      GetConversionTraitName(), GetUnboxedTypeAsString(from),

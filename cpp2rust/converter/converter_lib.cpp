@@ -664,6 +664,13 @@ bool HasMoveFromConstructor(const clang::RecordDecl *decl) {
          });
 }
 
+bool MovesFromArg(clang::Expr *expr, unsigned arg_idx, clang::Expr *arg) {
+  auto param_type = GetParamType(expr, arg_idx);
+  return param_type && (*param_type)->isRValueReferenceType() &&
+         !(*param_type)->getPointeeType().isConstQualified() &&
+         !clang::isa<clang::MaterializeTemporaryExpr>(arg);
+}
+
 // Whether move assigning a field of decl isn't a copy: the field is a record
 // with a move_assign method, or a library type that moves its contents.
 static bool HasFieldWithMoveAssign(const clang::RecordDecl *decl) {
