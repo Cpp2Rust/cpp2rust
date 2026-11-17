@@ -5400,20 +5400,20 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
     return ConvertElementPtr(arg);
   }
 
-  if (auto *literal = clang::dyn_cast<clang::StringLiteral>(
-          arg->IgnoreParens()->IgnoreImplicit());
-      literal && arg->getType()->isArrayType() &&
-      !IsCodeUnitStringLiteral(literal)) {
-    MarkFresh();
-    return GetCharArrayLiteral(literal);
-  }
-
   if (auto *init =
           RuleRegistry::BuildParamConversion(ctx_, expr, ph_ctx.arg_idx, arg)) {
     Buffer buf(*this);
     PushExprKind push(*this, ExprKind::RValue);
     ConvertInit(init->getType(), init);
     return std::move(buf).str();
+  }
+
+  if (auto *literal = clang::dyn_cast<clang::StringLiteral>(
+          arg->IgnoreParens()->IgnoreImplicit());
+      literal && arg->getType()->isArrayType() &&
+      !IsCodeUnitStringLiteral(literal)) {
+    MarkFresh();
+    return GetCharArrayLiteral(literal);
   }
 
   if (ph_ctx.needs_materialization()) {

@@ -99,6 +99,24 @@ unsafe fn main_0() -> i32 {
         (((v4[(0_usize)]) == (1_u32)) && ((v4[(1_usize)]) == (2_u32)))
             && ((v4[(2_usize)]) == (3_u32))
     );
+    let mut lit_end: *const libc::c_char = (&[
+        (97 as libc::c_char),
+        (98 as libc::c_char),
+        (99 as libc::c_char),
+        (0 as libc::c_char),
+    ])
+        .as_ptr()
+        .add(
+            (&[
+                (97 as libc::c_char),
+                (98 as libc::c_char),
+                (99 as libc::c_char),
+                (0 as libc::c_char),
+            ])
+                .len(),
+        );
+    assert!((((*(lit_end.offset(-((1) as isize)))) as i32) == (('\0' as libc::c_char) as i32)));
+    assert!((((*(lit_end.offset(-((4) as isize)))) as i32) == (('a' as libc::c_char) as i32)));
     let mut buf: [u8; 5] = [10_u8, 20_u8, 30_u8, 40_u8, 50_u8];
     let mut start: *const u8 = (buf.as_mut_ptr()).cast_const();
     let mut len: usize = 5_usize;
