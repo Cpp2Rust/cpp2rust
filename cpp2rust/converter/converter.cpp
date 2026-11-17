@@ -5560,7 +5560,8 @@ std::string Converter::GetMappedAsString(clang::Expr *expr, clang::Expr **args,
     // The rule takes the value of a transparent union.
     auto *arg = IgnoreTransparentUnion(all_args[i]);
     auto type = arg->getType();
-    bool by_value = arg->isPRValue() && !tgt_ir->takesAddress(ctx_, i, arg);
+    bool by_value =
+        arg->isPRValue() && !tgt_ir->takesAddress(ctx_, expr, i, arg);
     if (!by_value && arg->isPRValue()) {
       arg = new (ctx_) clang::MaterializeTemporaryExpr(type, arg, false);
     }
@@ -5655,7 +5656,9 @@ std::string Converter::ConvertIRFragment(
       assert(arg_idx < all_args.size());
       auto *arg = all_args[arg_idx];
       bool is_receiver = HasReceiver(expr) && arg_idx == 0;
-      bool is_cpp_ptr = arg->getType()->isPointerType();
+      bool cpp_ptr = arg->getType()->isPointerType();
+      bool is_cpp_ptr =
+          cpp_ptr && RuleRegistry::ParamTakesPointerValue(expr, arg_idx);
 
       PlaceholderCtx ph_ctx{
           .arg_idx = arg_idx,
@@ -5668,9 +5671,8 @@ std::string Converter::ConvertIRFragment(
           .is_cpp_ptr = is_cpp_ptr,
           // Whatever its spelling, a pointer in C++ is converted as one.
           .maps_to_rust_ptr =
-              !is_cpp_ptr &&
-              RuleRegistry::MapsToPointer(
-                  ctx_, arg->IgnoreParenNoopCasts(ctx_)->getType()),
+              !cpp_ptr && RuleRegistry::MapsToPointer(
+                              ctx_, arg->IgnoreParenNoopCasts(ctx_)->getType()),
           .declared_in_rule_as_rust_ptr =
               RuleRegistry::ParamIsPointer(ctx_, expr, arg_idx),
           .is_index_base = ph->is_index_base,
