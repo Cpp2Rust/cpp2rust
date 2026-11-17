@@ -272,7 +272,9 @@ fn main_0() -> i32 {
     assert!(({ ((*(*(*it4.borrow()).iter_deref().upgrade().deref()).1.borrow()) == 5_u32) }));
     assert!(((p.read()) == 5_u32));
     assert!((x5 == 5_u32));
-    p.with_mut(|__v| __v.prefix_inc());
+    p.with_mut(|__v| {
+        __v.prefix_inc();
+    });
     assert!(
         ((Map::subscript_move(
             m.as_pointer(),
@@ -737,6 +739,34 @@ fn main_0() -> i32 {
             == 6)
     );
     assert!(({ ((*points.borrow()).len() == 2_usize) }));
+    let mi: Value<BidirectionalIterator<(Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(
+        m3.as_pointer()
+            .with(|__m: &Map<i32, (Value<i32>, Value<i32>)>| __m.begin()),
+    ));
+    let mr: Ptr<BidirectionalIterator<(Value<i32>, Value<i32>)>> = {
+        mi.as_pointer().with_mut(|__it| {
+            __it.iter_inc();
+        });
+        mi.as_pointer()
+    };
+    assert!(
+        ({
+            ({ (mr).clone() } == { (mi.as_pointer()) })
+                && ((*(*(*mi.borrow()).iter_deref().upgrade().deref()).0.borrow()) == 4)
+        })
+    );
+    let md: Ptr<BidirectionalIterator<(Value<i32>, Value<i32>)>> = {
+        mi.as_pointer().with_mut(|__it| {
+            __it.iter_dec();
+        });
+        mi.as_pointer()
+    };
+    assert!(
+        ({
+            ({ (md).clone() } == { (mi.as_pointer()) })
+                && ((*(*(*mi.borrow()).iter_deref().upgrade().deref()).0.borrow()) == 1)
+        })
+    );
     k = 0;
     let value_0: Ptr<u32> = ({
         let __tmp_15: Value<i16> = Rc::new(RefCell::new((k as i16)));

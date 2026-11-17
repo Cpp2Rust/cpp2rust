@@ -113,11 +113,15 @@ pub trait CounterImpl {
 }
 impl CounterImpl for Ptr<Counter> {
     fn Get(&self) -> i32 {
-        field!((*self), calls).with_mut(|__v| __v.prefix_inc());
+        field!((*self), calls).with_mut(|__v| {
+            __v.prefix_inc();
+        });
         return (*self).with(|__s| __s.v);
     }
     fn operator_eq(&self, o: Ptr<Counter>) -> bool {
-        field!((*self), calls).with_mut(|__v| __v.prefix_inc());
+        field!((*self), calls).with_mut(|__v| {
+            __v.prefix_inc();
+        });
         return ({ (*self).with(|__s| __s.v) } == { o.with(|__s| __s.v) });
     }
 }

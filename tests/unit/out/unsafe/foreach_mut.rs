@@ -29,7 +29,7 @@ unsafe fn main_0() -> i32 {
     let mut sum: i32 = 0;
     'loop_: for x in IterRange::new(v1.begin(), v1.end()) {
         let mut x: i32 = (*x.iter_deref());
-        sum += x.prefix_inc();
+        sum += (*x.prefix_inc());
     }
     'loop_: for x in IterRange::new(v1.begin(), v1.end()) {
         let x: i32 = (*x.iter_deref());

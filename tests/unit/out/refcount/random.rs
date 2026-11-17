@@ -241,7 +241,9 @@ pub trait PairImpl {
 impl PairImpl for Ptr<Pair> {
     fn method(&self) {
         field!((*self), x).with_mut(|__v| __v.postfix_inc());
-        field!((*self), y).with_mut(|__v| __v.prefix_inc());
+        field!((*self), y).with_mut(|__v| {
+            __v.prefix_inc();
+        });
         array_elem!((*self), a, 4).write(1);
         (*self).with(|__s| __s.r.clone()).write(1);
         field!((*self), p).write(Ptr::<i32>::null());

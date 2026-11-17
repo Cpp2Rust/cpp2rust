@@ -64,7 +64,7 @@ thread_local!(
     pub static counter_17: Value<i32> = Rc::new(RefCell::new(1));
 );
 pub fn bump_18() -> i32 {
-    return (*counter_17.with(Value::clone).borrow_mut()).prefix_inc();
+    return (*(*counter_17.with(Value::clone).borrow_mut()).prefix_inc());
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(4)]
@@ -300,7 +300,7 @@ thread_local!(
     pub static counter_63: Value<i32> = Rc::new(RefCell::new(50));
 );
 pub fn bump_64() -> i32 {
-    return (*counter_63.with(Value::clone).borrow_mut()).prefix_inc();
+    return (*(*counter_63.with(Value::clone).borrow_mut()).prefix_inc());
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(16)]

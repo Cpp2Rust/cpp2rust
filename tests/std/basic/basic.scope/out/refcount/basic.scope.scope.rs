@@ -582,10 +582,10 @@ pub fn test_59() {
     assert!((revision_57.with(|rc| *rc.borrow()) == 41));
 }
 pub fn next_id_60() -> i32 {
-    return (*last_61.with(Value::clone).borrow_mut()).prefix_inc();
+    return (*(*last_61.with(Value::clone).borrow_mut()).prefix_inc());
 }
 pub fn next_id_62() -> i32 {
-    return (*last_63.with(Value::clone).borrow_mut()).prefix_inc();
+    return (*(*last_63.with(Value::clone).borrow_mut()).prefix_inc());
 }
 pub fn test_64() {
     assert!((({ next_id_60() }) == 1));
@@ -656,11 +656,15 @@ impl p3_2_const_qualified_member_is_distinct_HasConstOverloadImpl
     for Ptr<p3_2_const_qualified_member_is_distinct_HasConstOverload>
 {
     fn get_1(&self) -> i32 {
-        field!((*self), plain_calls).with_mut(|__v| __v.prefix_inc());
+        field!((*self), plain_calls).with_mut(|__v| {
+            __v.prefix_inc();
+        });
         return 1;
     }
     fn get_2(&self) -> i32 {
-        field!((*self), const_calls).with_mut(|__v| __v.prefix_inc());
+        field!((*self), const_calls).with_mut(|__v| {
+            __v.prefix_inc();
+        });
         return 2;
     }
 }
@@ -710,11 +714,15 @@ impl p3_4_const_qualified_member_templates_are_distinct_HasConstTemplateOverload
     for Ptr<p3_4_const_qualified_member_templates_are_distinct_HasConstTemplateOverload>
 {
     fn get_1_int(&self, mut value: i32) -> i32 {
-        field!((*self), plain_calls).with_mut(|__v| __v.prefix_inc());
+        field!((*self), plain_calls).with_mut(|__v| {
+            __v.prefix_inc();
+        });
         return (value + 1);
     }
     fn get_2_int(&self, mut value: i32) -> i32 {
-        field!((*self), const_calls).with_mut(|__v| __v.prefix_inc());
+        field!((*self), const_calls).with_mut(|__v| {
+            __v.prefix_inc();
+        });
         return (value + 2);
     }
 }

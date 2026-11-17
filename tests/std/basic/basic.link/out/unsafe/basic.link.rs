@@ -57,7 +57,7 @@ pub unsafe fn test_14() {
 }
 pub static mut counter_17: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 1 });
 pub unsafe fn bump_18() -> i32 {
-    return (*std::cell::LazyCell::force_mut(&mut *&raw mut counter_17)).prefix_inc();
+    return (*(*std::cell::LazyCell::force_mut(&mut *&raw mut counter_17)).prefix_inc());
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
@@ -263,7 +263,7 @@ pub unsafe fn whole_in_b_16() -> i32 {
 }
 pub static mut counter_63: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 50 });
 pub unsafe fn bump_64() -> i32 {
-    return (*std::cell::LazyCell::force_mut(&mut *&raw mut counter_63)).prefix_inc();
+    return (*(*std::cell::LazyCell::force_mut(&mut *&raw mut counter_63)).prefix_inc());
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]

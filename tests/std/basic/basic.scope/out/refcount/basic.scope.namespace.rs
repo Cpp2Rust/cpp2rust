@@ -62,7 +62,7 @@ thread_local!(
     pub static count_14: Value<i32> = Rc::new(RefCell::new(100));
 );
 pub fn next_15() -> i32 {
-    return (*count_13.with(Value::clone).borrow_mut()).prefix_inc();
+    return (*(*count_13.with(Value::clone).borrow_mut()).prefix_inc());
 }
 pub fn test_16() {
     assert!((({ next_15() }) == 5));

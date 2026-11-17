@@ -13,6 +13,6 @@ pub fn main() {
 fn main_0() -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(5));
     let mut p: Ptr<i32> = (x.as_pointer());
-    return (p.prefix_inc().read());
+    return ((*p.prefix_inc()).read());
 }
 pub fn __cpp2rust_init_globals() {}

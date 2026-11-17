@@ -35,7 +35,7 @@ thread_local!(
     pub static next_ticket_calls_5: Value<i32> = Rc::new(RefCell::new(0_i32));
 );
 pub fn next_ticket_6() -> i32 {
-    return ((*next_ticket_calls_5.with(Value::clone).borrow_mut()).prefix_inc() * 100);
+    return ((*(*next_ticket_calls_5.with(Value::clone).borrow_mut()).prefix_inc()) * 100);
 }
 pub fn issue_7(ticket: Option<i32>) -> i32 {
     let mut ticket: i32 = ticket.unwrap_or_else(|| ({ next_ticket_6() }));

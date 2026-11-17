@@ -111,7 +111,7 @@ fn main_0() -> i32 {
         ))
     })
     .read());
-    let mut bar_inc: i32 = ({ bar_2(x1.as_pointer()) }).with_mut(|__v| __v.prefix_inc());
+    let mut bar_inc: i32 = ({ bar_2(x1.as_pointer()) }).with_mut(|__v| __v.prefix_inc().clone());
     bar_inc = ({ bar_2(x1.as_pointer()) }).with_mut(|__v| __v.postfix_inc());
     bar_inc = (((({ bar_2(x1.as_pointer()) }).read()) + ({ foo_0(x4) })) + 1);
     {
@@ -136,7 +136,7 @@ fn main_0() -> i32 {
             v
         ))
     })
-    .with_mut(|__v| __v.prefix_inc());
+    .with_mut(|__v| __v.prefix_inc().clone());
     bar_inc2 = ({
         bar_2(field_ptr!(
             ({ X2Impl::get(&({ X3Impl::get(&({ X4Impl::get(&d.as_pointer(),) }),) }),) }),
@@ -144,7 +144,9 @@ fn main_0() -> i32 {
         ))
     })
     .with_mut(|__v| __v.postfix_inc());
-    ({ ptr_1((x1.as_pointer())) }).with_mut(|__v| __v.prefix_inc());
+    ({ ptr_1((x1.as_pointer())) }).with_mut(|__v| {
+        __v.prefix_inc();
+    });
     {
         ({ ptr_1((x1.as_pointer())) }).with_mut(|__v| *__v = *__v + 1)
     };
@@ -156,7 +158,9 @@ fn main_0() -> i32 {
             )),
         )
     })
-    .with_mut(|__v| __v.prefix_inc());
+    .with_mut(|__v| {
+        __v.prefix_inc();
+    });
     {
         ({
             ptr_1(

@@ -124,7 +124,9 @@ pub fn test_st_mtime_access_2() {
     };
     assert!(((field_ptr!(sp, st_mtime).read()) == (7 as ::libc::time_t)));
     field_ptr!(st.as_pointer(), st_mtime).with_mut(|__v| __v.postfix_inc());
-    field_ptr!(sp, st_mtime).with_mut(|__v| __v.prefix_inc());
+    field_ptr!(sp, st_mtime).with_mut(|__v| {
+        __v.prefix_inc();
+    });
     assert!(((field_ptr!(st.as_pointer(), st_mtime).read()) == (9 as ::libc::time_t)));
     let mut mtime: Ptr<::libc::time_t> = (field_ptr!(st.as_pointer(), st_mtime));
     mtime.write((10 as ::libc::time_t));

@@ -13,7 +13,12 @@ pub fn main() {
 fn main_0() -> i32 {
     let v: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::from([1, 2, 3, 4])));
     let it: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(v.decay().begin()));
-    (*it.borrow_mut()).iter_inc();
+    {
+        it.as_pointer().with_mut(|__it| {
+            __it.iter_inc();
+        });
+        it.as_pointer()
+    };
     let r: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(
         match ({ <RandomAccessIterator<i32>>::from((*it.borrow_mut()).iter_post_inc()) },) {
             (mut __tmp_0,) => {
@@ -56,6 +61,91 @@ fn main_0() -> i32 {
         .read())
             == 1)
             && (i == 2)
+    );
+    let w: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::from([10, 20, 30, 40])));
+    let a: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(w.decay().end()));
+    let ra: Ptr<RandomAccessIterator<i32>> = ({
+        a.as_pointer().with_mut(|__it| {
+            __it.iter_add_assign(-3_isize);
+        });
+        a.as_pointer()
+    });
+    assert!(
+        ({
+            ({ (ra).clone() } == { (a.as_pointer()) })
+                && (((*a.borrow()).iter_deref().read()) == 20)
+        })
+    );
+    let rb: Ptr<RandomAccessIterator<i32>> = {
+        a.as_pointer().with_mut(|__it| {
+            __it.iter_inc();
+        });
+        a.as_pointer()
+    };
+    assert!(
+        ({
+            ({ (rb).clone() } == { (a.as_pointer()) })
+                && (((*a.borrow()).iter_deref().read()) == 30)
+        })
+    );
+    let rc: Ptr<RandomAccessIterator<i32>> = {
+        a.as_pointer().with_mut(|__it| {
+            __it.iter_dec();
+        });
+        a.as_pointer()
+    };
+    assert!(
+        ({
+            ({ (rc).clone() } == { (a.as_pointer()) })
+                && (((*a.borrow()).iter_deref().read()) == 20)
+        })
+    );
+    let rd: Ptr<RandomAccessIterator<i32>> = ({
+        a.as_pointer().with_mut(|__it| {
+            __it.iter_add_assign(2_isize);
+        });
+        a.as_pointer()
+    });
+    assert!(
+        ({
+            ({ (rd).clone() } == { (a.as_pointer()) })
+                && (((*a.borrow()).iter_deref().read()) == 40)
+        })
+    );
+    let b: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(w.decay().begin()));
+    let mut x: i32 = ((*{
+        b.as_pointer().with_mut(|__it| {
+            __it.iter_inc();
+        });
+        b.as_pointer()
+    }
+    .upgrade()
+    .deref())
+    .iter_deref()
+    .read());
+    assert!((x == 20));
+    let k: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(
+        (*{
+            b.as_pointer().with_mut(|__it| {
+                __it.iter_inc();
+            });
+            b.as_pointer()
+        }
+        .upgrade()
+        .deref())
+        .clone(),
+    ));
+    {
+        k.as_pointer().with_mut(|__it| {
+            __it.iter_inc();
+        });
+        k.as_pointer()
+    };
+    assert!(
+        ({
+            (((*k.borrow()).iter_deref().read()) == 40)
+                && (((*b.borrow()).iter_deref().read()) == 30)
+        })
     );
     return 0;
 }

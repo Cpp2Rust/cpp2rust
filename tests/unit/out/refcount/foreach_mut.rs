@@ -27,7 +27,7 @@ fn main_0() -> i32 {
     let mut sum: i32 = 0;
     'loop_: for x in IterRange::new(v1.decay().begin(), v1.decay().end()) {
         let mut x: i32 = (x.iter_deref().read());
-        sum += x.prefix_inc();
+        sum += (*x.prefix_inc());
     }
     'loop_: for x in IterRange::new(v1.decay().begin(), v1.decay().end()) {
         let mut x: i32 = (x.iter_deref().read());

@@ -48,13 +48,15 @@ thread_local!(
     );
 );
 pub fn select_object_5() -> Ptr<p4_object_expression_sequenced_first_HasValue> {
-    object_stamp_2
-        .with(|rc| *rc.borrow_mut() = (*sequence_1.with(Value::clone).borrow_mut()).prefix_inc());
+    object_stamp_2.with(|rc| {
+        *rc.borrow_mut() = (*(*sequence_1.with(Value::clone).borrow_mut()).prefix_inc())
+    });
     return object_4.with(|v| v.as_pointer());
 }
 pub fn select_member_6() -> isize {
-    member_stamp_3
-        .with(|rc| *rc.borrow_mut() = (*sequence_1.with(Value::clone).borrow_mut()).prefix_inc());
+    member_stamp_3.with(|rc| {
+        *rc.borrow_mut() = (*(*sequence_1.with(Value::clone).borrow_mut()).prefix_inc())
+    });
     return (offset_of_field!(p4_object_expression_sequenced_first_HasValue, value) as isize);
 }
 pub fn test_7() {

@@ -36,7 +36,7 @@ thread_local!(
     pub static counter_2: Value<i32> = Rc::new(RefCell::new(0));
 );
 pub fn next_3() -> i32 {
-    return (*counter_2.with(Value::clone).borrow_mut()).prefix_inc();
+    return (*(*counter_2.with(Value::clone).borrow_mut()).prefix_inc());
 }
 pub fn lazy_4(x: Option<i32>) -> i32 {
     let mut x: i32 = x.unwrap_or_else(|| ({ next_3() }));

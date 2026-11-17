@@ -74,13 +74,13 @@ pub struct AssertsDtorCountAtExit {
     pub expected: i32,
 }
 pub fn count_4() -> i32 {
-    return (*n_6.with(Value::clone).borrow_mut()).prefix_inc();
+    return (*(*n_6.with(Value::clone).borrow_mut()).prefix_inc());
 }
 pub fn count_7() -> i32 {
-    return (*n_9.with(Value::clone).borrow_mut()).prefix_inc();
+    return (*(*n_9.with(Value::clone).borrow_mut()).prefix_inc());
 }
 pub fn count_10() -> i32 {
-    return (*n_12.with(Value::clone).borrow_mut()).prefix_inc();
+    return (*(*n_12.with(Value::clone).borrow_mut()).prefix_inc());
 }
 thread_local!(
     static t_5: Value<LifetimeTracked> = Rc::new(RefCell::new(LifetimeTracked::new()));
@@ -126,7 +126,7 @@ fn main_0() -> i32 {
 #[byte_size(1)]
 pub struct S_14 {}
 pub fn count_18() -> i32 {
-    return (*n_20.with(Value::clone).borrow_mut()).prefix_inc();
+    return (*(*n_20.with(Value::clone).borrow_mut()).prefix_inc());
 }
 thread_local!(
     static t_19: Value<LifetimeTracked> = Rc::new(RefCell::new(LifetimeTracked::new()));
@@ -164,7 +164,9 @@ impl LifetimeTrackedImpl for Ptr<LifetimeTracked> {
         (*dtorCount_2.with(Value::clone).borrow_mut()).prefix_inc();
     }
     fn use_(&self) {
-        field!((*self), uses).with_mut(|__v| __v.prefix_inc());
+        field!((*self), uses).with_mut(|__v| {
+            __v.prefix_inc();
+        });
         (*useCount_3.with(Value::clone).borrow_mut()).prefix_inc();
     }
     fn copy_assign(&self, _a0: Ptr<LifetimeTracked>) -> Ptr<LifetimeTracked> {

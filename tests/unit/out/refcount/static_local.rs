@@ -51,7 +51,7 @@ pub trait S_8Impl {
 }
 impl S_8Impl for Ptr<S_8> {
     fn get(&self) -> i32 {
-        return (*x_7.with(Value::clone).borrow_mut()).prefix_inc();
+        return (*(*x_7.with(Value::clone).borrow_mut()).prefix_inc());
     }
 }
 pub fn __cpp2rust_init_globals() {}
