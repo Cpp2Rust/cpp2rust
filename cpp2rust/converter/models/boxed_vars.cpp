@@ -230,6 +230,11 @@ public:
         AddressTaken(capture.getCapturedVar());
       }
     }
+    if (expr->getLambdaClass()->isGenericLambda()) {
+      ForEachLambdaCallOperator(
+          expr->getLambdaClass(),
+          [&](clang::CXXMethodDecl *op) { TraverseDecl(op); });
+    }
     return true;
   }
 
