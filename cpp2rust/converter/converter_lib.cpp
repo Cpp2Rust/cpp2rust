@@ -1753,6 +1753,15 @@ void DefineImplicitMembers(clang::Sema &sema, clang::CXXRecordDecl *decl) {
   tu_scope.setEntity(sema.Context.getTranslationUnitDecl());
   auto *saved_tu_scope = std::exchange(sema.TUScope, &tu_scope);
   sema.ForceDeclarationOfImplicitMembers(decl);
+  for (auto *field : decl->fields()) {
+    if (field->hasInClassInitializer() && !field->getInClassInitializer()) {
+      RuleDecls::Trial trial(sema);
+      clang::Sema::GlobalEagerInstantiationScope instantiations(
+          sema, /*Enabled=*/true, /*AtEndOfTU=*/false);
+      sema.BuildCXXDefaultInitExpr(decl->getLocation(), field);
+      instantiations.perform();
+    }
+  }
   auto define = [&](clang::FunctionDecl *fn, auto &&definer) {
     RuleDecls::Trial trial(sema);
     clang::DiagnosticErrorTrap errors(sema.getDiagnostics());
