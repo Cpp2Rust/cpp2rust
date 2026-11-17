@@ -5479,7 +5479,7 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
   }
 
   if (ph_ctx.access == TranslationRule::Access::kMove) {
-    if (MovesLibraryArg(ctx_, expr, ph_ctx.arg_idx, arg)) {
+    if (MovesFromArg(expr, ph_ctx.arg_idx, arg)) {
       auto ptr = ConvertPointer(arg);
       MarkFresh();
       return ConvertMoveThroughPointer(arg->getType(), ptr);

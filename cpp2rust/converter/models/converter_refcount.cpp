@@ -3092,8 +3092,9 @@ std::string ConverterRefCount::ConvertBorrowMut(clang::Expr *arg) {
   return lvalue;
 }
 
-std::string ConverterRefCount::ConvertMoveThroughPointer(
-    clang::QualType type, const std::string &ptr) {
+std::string
+ConverterRefCount::ConvertMoveThroughPointer(clang::QualType type,
+                                             const std::string &ptr) {
   if (auto moved_from = GetMovedFromValue(type); !moved_from.empty()) {
     return std::format("{}.with_mut(|__v| std::mem::replace(__v, {}))", ptr,
                        moved_from);

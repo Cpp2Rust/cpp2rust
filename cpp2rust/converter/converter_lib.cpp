@@ -619,17 +619,11 @@ bool HasMoveFromConstructor(const clang::RecordDecl *decl) {
          });
 }
 
-bool MovesLibraryArg(clang::ASTContext &ctx, clang::Expr *expr,
-                     unsigned arg_idx, clang::Expr *arg) {
+bool MovesFromArg(clang::Expr *expr, unsigned arg_idx, clang::Expr *arg) {
   auto param_type = GetParamType(expr, arg_idx);
-  if (!param_type || !(*param_type)->isRValueReferenceType() ||
-      clang::isa<clang::MaterializeTemporaryExpr>(arg) ||
-      arg->getType().isConstQualified()) {
-    return false;
-  }
-  auto *record = arg->getType()->getAsCXXRecordDecl();
-  return record && !IsUserDefinedDecl(record) &&
-         !arg->getType().isTriviallyCopyableType(ctx);
+  return param_type && (*param_type)->isRValueReferenceType() &&
+         !(*param_type)->getPointeeType().isConstQualified() &&
+         !clang::isa<clang::MaterializeTemporaryExpr>(arg);
 }
 
 // Whether move assigning a field of decl isn't a copy: the field is a record
