@@ -125,32 +125,43 @@ pub fn CollectCode_3(
     out: Ptr<Option<Value<Box<[i32]>>>>,
     next: Ptr<i32>,
 ) {
-    (*out.upgrade().deref())
-        .decay()
-        .offset(((next.read()) as usize))
-        .write(0);
+    ({
+        (*out.upgrade().deref())
+            .decay()
+            .offset(((next.read()) as usize))
+    })
+    .write(0);
     {
         let mut i: i32 = 0;
         'loop_: while (i < top) {
-            let __rhs = (((*out.upgrade().deref())
-                .decay()
-                .offset(((next.read()) as usize))
-                .read())
-                * 10);
-            (*out.upgrade().deref())
-                .decay()
-                .offset(((next.read()) as usize))
-                .write(__rhs);
-            let __rhs = ({
-                ((*out.upgrade().deref())
+            let __rhs = ((({
+                (*out.upgrade().deref())
                     .decay()
                     .offset(((next.read()) as usize))
+            })
+            .read())
+                * 10);
+            ({
+                (*out.upgrade().deref())
+                    .decay()
+                    .offset(((next.read()) as usize))
+            })
+            .write(__rhs);
+            let __rhs =
+                ({
+                    (({
+                        (*out.upgrade().deref())
+                            .decay()
+                            .offset(((next.read()) as usize))
+                    })
                     .read())
-            } + { ((*arr.upgrade().deref()).decay().offset((i as usize)).read()) });
-            (*out.upgrade().deref())
-                .decay()
-                .offset(((next.read()) as usize))
-                .write(__rhs);
+                } + { (({ (*arr.upgrade().deref()).decay().offset((i as usize)) }).read()) });
+            ({
+                (*out.upgrade().deref())
+                    .decay()
+                    .offset(((next.read()) as usize))
+            })
+            .write(__rhs);
             i.prefix_inc();
         }
     }
@@ -166,10 +177,7 @@ pub fn CollectCodes_4(
     next: Ptr<i32>,
 ) {
     if !((root.with(|__s| __s.left.clone())).is_null()) {
-        (*arr.upgrade().deref())
-            .decay()
-            .offset((top as usize))
-            .write(0);
+        ({ (*arr.upgrade().deref()).decay().offset((top as usize)) }).write(0);
         ({
             let _root: Ptr<MinHeapNode> = root.with(|__s| __s.left.clone());
             let _arr: Ptr<Option<Value<Box<[i32]>>>> = (arr).clone();
@@ -180,10 +188,7 @@ pub fn CollectCodes_4(
         });
     }
     if !((root.with(|__s| __s.right.clone())).is_null()) {
-        (*arr.upgrade().deref())
-            .decay()
-            .offset((top as usize))
-            .write(1);
+        ({ (*arr.upgrade().deref()).decay().offset((top as usize)) }).write(1);
         ({
             let _root: Ptr<MinHeapNode> = root.with(|__s| __s.right.clone());
             let _arr: Ptr<Option<Value<Box<[i32]>>>> = (arr).clone();
@@ -259,9 +264,9 @@ fn main_0() -> i32 {
         let mut i: i32 = 0;
         'loop_: while (i < size) {
             let __rhs = arr1[(i) as usize];
-            (*data.borrow()).decay().offset((i as usize)).write(__rhs);
+            ({ (*data.borrow()).decay().offset((i as usize)) }).write(__rhs);
             let __rhs = arr2[(i) as usize];
-            (*freq.borrow()).decay().offset((i as usize)).write(__rhs);
+            ({ (*freq.borrow()).decay().offset((i as usize)) }).write(__rhs);
             i.prefix_inc();
         }
     }
@@ -430,14 +435,12 @@ impl MinHeapImpl for Ptr<MinHeap> {
                     .offset((field!((*self), size).with_mut(|__v| __v.postfix_inc()) as usize))
                     .write(
                         ({
-                            let _data: i8 = ((*data.upgrade().deref())
-                                .decay()
-                                .offset((i as usize))
-                                .read());
-                            let _freq: i32 = ((*freq.upgrade().deref())
-                                .decay()
-                                .offset((i as usize))
-                                .read());
+                            let _data: i8 =
+                                (({ (*data.upgrade().deref()).decay().offset((i as usize)) })
+                                    .read());
+                            let _freq: i32 =
+                                (({ (*freq.upgrade().deref()).decay().offset((i as usize)) })
+                                    .read());
                             MinHeapImpl::Alloc(self, _data, _freq)
                         }),
                     );
@@ -455,21 +458,15 @@ impl MinHeapImpl for Ptr<MinHeap> {
     fn move_assign(&self, _a0: Ptr<MinHeap>) -> Ptr<MinHeap> {
         field!((*self), size).write({ { (*_a0.upgrade().deref()).size } });
         field!((*self), capacity).write({ { (*_a0.upgrade().deref()).capacity } });
-        {
-            field_ptr!((*self), arr).write(
-                field!(_a0, arr)
-                    .with_mut(|__v: &mut Option<Value<Box<[Ptr<MinHeapNode>]>>>| __v.take()),
-            );
-            field_ptr!((*self), arr)
-        };
+        field!((*self), arr).with_mut(|__b0| {
+            (*__b0) = field!(_a0, arr)
+                .with_mut(|__v: &mut Option<Value<Box<[Ptr<MinHeapNode>]>>>| __v.take());
+        });
         field!((*self), next).write({ { (*_a0.upgrade().deref()).next } });
-        {
-            field_ptr!((*self), alloc).write(
-                field!(_a0, alloc)
-                    .with_mut(|__v: &mut Option<Value<Box<[MinHeapNode]>>>| __v.take()),
-            );
-            field_ptr!((*self), alloc)
-        };
+        field!((*self), alloc).with_mut(|__b0| {
+            (*__b0) = field!(_a0, alloc)
+                .with_mut(|__v: &mut Option<Value<Box<[MinHeapNode]>>>| __v.take());
+        });
         return (*self).clone();
     }
 }

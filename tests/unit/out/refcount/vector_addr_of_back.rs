@@ -17,10 +17,16 @@ fn main_0() -> i32 {
         let a0_clone = inner.clone();
         (*outer.borrow_mut()).push(a0_clone)
     };
-    let mut sink: Ptr<Vec<i32>> = (outer.decay().to_last());
+    let mut sink: Ptr<Vec<i32>> = ({
+        let __n = (*outer.borrow()).len() - 1;
+        outer.decay().offset((__n) as isize)
+    });
     assert!(({ ((*sink.upgrade().deref()).len() == 0_usize) }));
     let mut p: Ptr<Vec<Vec<i32>>> = (outer.as_pointer());
-    sink = (p.decay().to_last());
+    sink = ({
+        let __n = (*p.upgrade().deref()).len() - 1;
+        p.decay().offset((__n) as isize)
+    });
     assert!(({ ((*sink.upgrade().deref()).len() == 0_usize) }));
     return 0;
 }

@@ -24,19 +24,19 @@ pub fn matalloc_0(
                 )))))
                 .as_pointer(),
             ) {
-                (__tmp_0, __tmp_1) => {
-                    __tmp_0
-                        .write(__tmp_1.with_mut(|__v: &mut Option<Value<Box<[i32]>>>| __v.take()));
-                    (__tmp_0).clone()
-                }
+                (__tmp_0, __tmp_1) => __tmp_0.with_mut(|__b0| {
+                    (*__b0) = __tmp_1.with_mut(|__v: &mut Option<Value<Box<[i32]>>>| __v.take());
+                }),
             };
             {
                 let mut j: i32 = 0;
                 'loop_: while (j < p) {
-                    (*m.decay().offset((i as usize)).upgrade().deref())
-                        .decay()
-                        .offset((j as usize))
-                        .write(e);
+                    ({
+                        (*m.decay().offset((i as usize)).upgrade().deref())
+                            .decay()
+                            .offset((j as usize))
+                    })
+                    .write(e);
                     j.prefix_inc();
                 }
             }
@@ -64,21 +64,27 @@ pub fn matmul_1(
                     {
                         let mut k: i32 = 0;
                         'loop_: while (k < p1) {
-                            sum += (((*m1.decay().offset((i as usize)).upgrade().deref())
-                                .decay()
-                                .offset((k as usize))
-                                .read())
-                                * ((*m2.decay().offset((k as usize)).upgrade().deref())
+                            sum += ((({
+                                (*m1.decay().offset((i as usize)).upgrade().deref())
                                     .decay()
-                                    .offset((j as usize))
-                                    .read()));
+                                    .offset((k as usize))
+                            })
+                            .read())
+                                * (({
+                                    (*m2.decay().offset((k as usize)).upgrade().deref())
+                                        .decay()
+                                        .offset((j as usize))
+                                })
+                                .read()));
                             k.prefix_inc();
                         }
                     }
-                    (*m3.decay().offset((i as usize)).upgrade().deref())
-                        .decay()
-                        .offset((j as usize))
-                        .write(sum);
+                    ({
+                        (*m3.decay().offset((i as usize)).upgrade().deref())
+                            .decay()
+                            .offset((j as usize))
+                    })
+                    .write(sum);
                     j.prefix_inc();
                 }
             }
@@ -106,13 +112,13 @@ fn main_0() -> i32 {
         matmul_1(_m1, _n1, _p1, _m2, _n2, _p2)
     });
     assert!(
-        ({
-            (((*m3.decay().offset(0_usize).upgrade().deref())
+        ((({
+            (*m3.decay().offset(0_usize).upgrade().deref())
                 .decay()
                 .offset(0_usize)
-                .read())
-                == 20)
         })
+        .read())
+            == 20)
     );
     return 0;
 }

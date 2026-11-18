@@ -51,12 +51,9 @@ pub trait OuterImpl {
 }
 impl OuterImpl for Ptr<Outer> {
     fn move_assign(&self, _a0: Ptr<Outer>) -> Ptr<Outer> {
-        {
-            field_ref!((*self), runs)
-                .as_pointer()
-                .write(field!(_a0, runs).with_mut(std::mem::take));
-            field_ref!((*self), runs).as_pointer()
-        };
+        field!((*self), runs).with_mut(|__b0| {
+            (*__b0) = field!(_a0, runs).with_mut(std::mem::take);
+        });
         return (*self).clone();
     }
 }

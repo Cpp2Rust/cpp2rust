@@ -13,20 +13,21 @@ fn t5<T1>() -> Ptr<T1> {
     Ptr::null()
 }
 
-fn f1<T1>(a0: Ptr<T1>) -> Ptr<T1> {
-    a0.to_last()
+fn f1<T1>(a0: &mut Vec<T1>) -> &mut T1 {
+    let __n = a0.len() - 1;
+    &mut a0[__n]
 }
 
-fn f2<T1>(a0: Ptr<T1>) -> Ptr<T1> {
+fn f2<T1>(a0: &mut Vec<T1>) -> &mut T1 {
+    &mut a0[0]
+}
+
+fn f10<T1>(a0: &mut Vec<T1>, a1: Vec<T1>) -> &mut Vec<T1> {
+    *a0 = a1;
     a0
 }
 
-fn f10<T1: Clone + ByteRepr>(a0: Ptr<Vec<T1>>, a1: Vec<T1>) -> Ptr<Vec<T1>> {
-    a0.write(a1);
-    a0
-}
-
-fn f11<T1: ByteRepr + Clone>(a0: Ptr<Vec<T1>>, a1: &mut Vec<T1>) -> Ptr<Vec<T1>> {
-    a0.write(std::mem::take(&mut *a1));
+fn f11<'a, T1>(a0: &'a mut Vec<T1>, a1: &mut Vec<T1>) -> &'a mut Vec<T1> {
+    *a0 = std::mem::take(&mut *a1);
     a0
 }

@@ -11,15 +11,13 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let v: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
+    let mut v: Vec<i32> = Vec::new();
     {
         let __a1 = 10;
-        (*v.borrow_mut()).push(__a1)
+        v.push(__a1)
     };
-    {
-        v.decay().with_mut(|__v| *__v = *__v + 5)
-    };
-    assert!(((v.decay().read()) == 15));
+    v[0] += 5;
+    assert!((v[0] == 15));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

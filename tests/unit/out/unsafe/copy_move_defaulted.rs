@@ -138,12 +138,10 @@ impl Buffer {
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Buffer) -> *mut Buffer {
         {
-            *(&mut self.data as *mut Vec<i32>) = std::mem::take(&mut (*_a0).data);
-            (&mut self.data as *mut Vec<i32>)
+            self.data = std::mem::take(&mut (*_a0).data);
         };
         {
-            *(&mut self.rows as *mut Vec<Vec<i32>>) = std::mem::take(&mut (*_a0).rows);
-            (&mut self.rows as *mut Vec<Vec<i32>>)
+            self.rows = std::mem::take(&mut (*_a0).rows);
         };
         self.n = (*_a0).n;
         match (
@@ -180,8 +178,7 @@ impl Owner {
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Owner) -> *mut Owner {
         {
-            *(&mut self.data as *mut Vec<i32>) = std::mem::take(&mut (*_a0).data);
-            (&mut self.data as *mut Vec<i32>)
+            self.data = std::mem::take(&mut (*_a0).data);
         };
         self.n = (*_a0).n;
         match (
@@ -196,8 +193,7 @@ impl Owner {
             }
         };
         {
-            *(&mut self.p as *mut Option<Box<i32>>) = (*_a0).p.take();
-            (&mut self.p as *mut Option<Box<i32>>)
+            self.p = (*_a0).p.take();
         };
         return &mut (*(self as *mut Owner));
     }
@@ -216,8 +212,7 @@ impl Copyable {
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Copyable) -> *mut Copyable {
         {
-            *(&mut self.data as *mut Vec<i32>) = std::mem::take(&mut (*_a0).data);
-            (&mut self.data as *mut Vec<i32>)
+            self.data = std::mem::take(&mut (*_a0).data);
         };
         return &mut (*(self as *mut Copyable));
     }
@@ -251,8 +246,7 @@ impl Holder {
         self.inner = (*_a0).inner;
         self.e = ((*_a0).e).clone();
         {
-            *(&mut self.p as *mut Option<Box<i32>>) = (*_a0).p.take();
-            (&mut self.p as *mut Option<Box<i32>>)
+            self.p = (*_a0).p.take();
         };
         return &mut (*(self as *mut Holder));
     }

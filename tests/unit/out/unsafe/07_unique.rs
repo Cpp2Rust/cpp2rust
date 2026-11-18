@@ -31,12 +31,10 @@ unsafe fn main_0() -> i32 {
         as *mut i32);
     (*f_ptr2) = 11;
     {
-        *(&mut f as *mut Option<Box<i32>>) = Some(Box::new(9)).take();
-        (&mut f as *mut Option<Box<i32>>)
+        f = Some(Box::new(9)).take();
     };
     {
-        *(&mut f as *mut Option<Box<i32>>) = (unsafe { fn_0(f.take()) }).take();
-        (&mut f as *mut Option<Box<i32>>)
+        f = (unsafe { fn_0(f.take()) }).take();
     };
     assert!(
         ((*f.as_deref()

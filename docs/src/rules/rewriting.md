@@ -61,6 +61,44 @@ reference usages (`r.push_back(20)` with `std::vector<int> &r = *p`); both are
 [translated as a `Ptr`](../codegen/pointers.md), and that `Ptr` is what
 `with_mut` is called on.
 
+## Borrowing for the whole call
+
+A rule that uses a `&mut` parameter more than once, such as `append` above,
+would borrow the pointee once for each use. When the argument is reached through
+a pointer, the converter instead borrows it once around the whole body and
+substitutes the borrow for every use of the parameter:
+
+```rust
+r.with_mut(|__b0| {
+    (*__b0).pop();
+    Ptr::<i8>::from_string_literal(b"y")
+        .with_slice(1_usize, |__s| (*__b0).extend_from_slice(__s));
+    (*__b0).push(0);
+});
+```
+
+## Evaluating arguments first
+
+While a rule borrows an argument mutably through a `RefCell`, whether through a
+`with_mut` closure, a `borrow_mut()` guard, or for the whole call, the other
+arguments it evaluates must not borrow the same value, or the program panics.
+C++ evaluates the arguments before the call anyway, so the refcount converter
+binds them first, as it does with arguments that have side effects. Exempt are
+those that borrow nothing, constants and the values of local scalars and
+pointers, and objects the rule only reads, which would otherwise be copied just
+to be read. For `s.append(2, s[0])` on a boxed `s`:
+
+```rust
+match ({ { (*s.borrow())[0_usize] } },) {
+    (mut __tmp_0,) => {
+        (*s.borrow_mut()).pop();
+        let __len = (*s.borrow()).len() + 2_usize;
+        (*s.borrow_mut()).resize(__len, __tmp_0);
+        (*s.borrow_mut()).push(0);
+    }
+};
+```
+
 ## The read-access counterpart
 
 For read access the converter does not emit a closure. A pointer receiver whose

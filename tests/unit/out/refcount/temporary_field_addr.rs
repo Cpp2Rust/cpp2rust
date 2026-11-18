@@ -102,11 +102,10 @@ fn main_0() -> i32 {
         { (((*calls.borrow()) - 2) as usize) },
     ) {
         (__tmp_3, mut __tmp_5) => {
-            if __tmp_5 >= __tmp_3.decay().len() {
+            if __tmp_5 >= (*__tmp_3.upgrade().deref()).len() {
                 panic!("out of bounds access")
-            } else {
-                __tmp_3.decay().offset(__tmp_5 as isize)
             }
+            __tmp_3.decay().offset((__tmp_5) as isize)
         }
     }
     .read());
@@ -147,12 +146,9 @@ pub trait InnerImpl {
 }
 impl InnerImpl for Ptr<Inner> {
     fn move_assign(&self, _a0: Ptr<Inner>) -> Ptr<Inner> {
-        {
-            field_ref!((*self), values)
-                .as_pointer()
-                .write(field!(_a0, values).with_mut(std::mem::take));
-            field_ref!((*self), values).as_pointer()
-        };
+        field!((*self), values).with_mut(|__b0| {
+            (*__b0) = field!(_a0, values).with_mut(std::mem::take);
+        });
         return (*self).clone();
     }
 }
@@ -161,12 +157,9 @@ pub trait OuterImpl {
 }
 impl OuterImpl for Ptr<Outer> {
     fn move_assign(&self, _a0: Ptr<Outer>) -> Ptr<Outer> {
-        {
-            field_ref!((*self), values)
-                .as_pointer()
-                .write(field!(_a0, values).with_mut(std::mem::take));
-            field_ref!((*self), values).as_pointer()
-        };
+        field!((*self), values).with_mut(|__b0| {
+            (*__b0) = field!(_a0, values).with_mut(std::mem::take);
+        });
         ({
             let _arg0: Ptr<Inner> = field_ptr!(_a0, inner);
             InnerImpl::move_assign(&field_ptr!((*self), inner), _arg0)

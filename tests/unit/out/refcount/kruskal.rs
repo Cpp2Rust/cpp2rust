@@ -17,16 +17,13 @@ pub struct Edge {
     pub weight: f64,
 }
 pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, mut start: i32, mut end: i32) -> i32 {
-    let pivot: Ptr<Edge> = (*arr.upgrade().deref()).decay().offset((start as usize));
+    let pivot: Ptr<Edge> = ({ (*arr.upgrade().deref()).decay().offset((start as usize)) });
     let mut count: i32 = 0;
     {
         let mut i: i32 = (start + 1);
         'loop_: while (i <= end) {
             if ({
-                (*arr.upgrade().deref())
-                    .decay()
-                    .offset((i as usize))
-                    .with(|__s| __s.weight)
+                ({ (*arr.upgrade().deref()).decay().offset((i as usize)) }).with(|__s| __s.weight)
             } <= { pivot.with(|__s| __s.weight) })
             {
                 count.postfix_inc();
@@ -36,107 +33,57 @@ pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, mut start: i32, mut end
     }
     let mut pidx: i32 = (start + count);
     let mut tmp: Edge = Edge {
-        u: (*arr.upgrade().deref())
-            .decay()
-            .offset((pidx as usize))
-            .with(|__s| __s.u),
-        v: (*arr.upgrade().deref())
-            .decay()
-            .offset((pidx as usize))
-            .with(|__s| __s.v),
-        weight: (*arr.upgrade().deref())
-            .decay()
-            .offset((pidx as usize))
+        u: ({ (*arr.upgrade().deref()).decay().offset((pidx as usize)) }).with(|__s| __s.u),
+        v: ({ (*arr.upgrade().deref()).decay().offset((pidx as usize)) }).with(|__s| __s.v),
+        weight: ({ (*arr.upgrade().deref()).decay().offset((pidx as usize)) })
             .with(|__s| __s.weight),
     };
     let __rhs = Edge {
-        u: (*arr.upgrade().deref())
-            .decay()
-            .offset((start as usize))
-            .with(|__s| __s.u),
-        v: (*arr.upgrade().deref())
-            .decay()
-            .offset((start as usize))
-            .with(|__s| __s.v),
-        weight: (*arr.upgrade().deref())
-            .decay()
-            .offset((start as usize))
+        u: ({ (*arr.upgrade().deref()).decay().offset((start as usize)) }).with(|__s| __s.u),
+        v: ({ (*arr.upgrade().deref()).decay().offset((start as usize)) }).with(|__s| __s.v),
+        weight: ({ (*arr.upgrade().deref()).decay().offset((start as usize)) })
             .with(|__s| __s.weight),
     };
-    (*arr.upgrade().deref())
-        .decay()
-        .offset((pidx as usize))
-        .write(__rhs);
-    (*arr.upgrade().deref())
-        .decay()
-        .offset((start as usize))
-        .write(Edge {
-            u: tmp.u,
-            v: tmp.v,
-            weight: tmp.weight,
-        });
+    ({ (*arr.upgrade().deref()).decay().offset((pidx as usize)) }).write(__rhs);
+    ({ (*arr.upgrade().deref()).decay().offset((start as usize)) }).write(Edge {
+        u: tmp.u,
+        v: tmp.v,
+        weight: tmp.weight,
+    });
     let mut i: i32 = start;
     let mut j: i32 = end;
     'loop_: while (i < pidx) && (j > pidx) {
         'loop_: while ({
-            (*arr.upgrade().deref())
-                .decay()
-                .offset((i as usize))
-                .with(|__s| __s.weight)
+            ({ (*arr.upgrade().deref()).decay().offset((i as usize)) }).with(|__s| __s.weight)
         } <= { pivot.with(|__s| __s.weight) })
         {
             i.prefix_inc();
         }
         'loop_: while ({
-            (*arr.upgrade().deref())
-                .decay()
-                .offset((j as usize))
-                .with(|__s| __s.weight)
+            ({ (*arr.upgrade().deref()).decay().offset((j as usize)) }).with(|__s| __s.weight)
         } > { pivot.with(|__s| __s.weight) })
         {
             j.prefix_dec();
         }
         if (i < pidx) && (j > pidx) {
             tmp = Edge {
-                u: (*arr.upgrade().deref())
-                    .decay()
-                    .offset((i as usize))
-                    .with(|__s| __s.u),
-                v: (*arr.upgrade().deref())
-                    .decay()
-                    .offset((i as usize))
-                    .with(|__s| __s.v),
-                weight: (*arr.upgrade().deref())
-                    .decay()
-                    .offset((i as usize))
+                u: ({ (*arr.upgrade().deref()).decay().offset((i as usize)) }).with(|__s| __s.u),
+                v: ({ (*arr.upgrade().deref()).decay().offset((i as usize)) }).with(|__s| __s.v),
+                weight: ({ (*arr.upgrade().deref()).decay().offset((i as usize)) })
                     .with(|__s| __s.weight),
             };
             let __rhs = Edge {
-                u: (*arr.upgrade().deref())
-                    .decay()
-                    .offset((j as usize))
-                    .with(|__s| __s.u),
-                v: (*arr.upgrade().deref())
-                    .decay()
-                    .offset((j as usize))
-                    .with(|__s| __s.v),
-                weight: (*arr.upgrade().deref())
-                    .decay()
-                    .offset((j as usize))
+                u: ({ (*arr.upgrade().deref()).decay().offset((j as usize)) }).with(|__s| __s.u),
+                v: ({ (*arr.upgrade().deref()).decay().offset((j as usize)) }).with(|__s| __s.v),
+                weight: ({ (*arr.upgrade().deref()).decay().offset((j as usize)) })
                     .with(|__s| __s.weight),
             };
-            (*arr.upgrade().deref())
-                .decay()
-                .offset((i as usize))
-                .write(__rhs);
-            (*arr.upgrade().deref())
-                .decay()
-                .offset((j as usize))
-                .write(Edge {
-                    u: tmp.u,
-                    v: tmp.v,
-                    weight: tmp.weight,
-                });
+            ({ (*arr.upgrade().deref()).decay().offset((i as usize)) }).write(__rhs);
+            ({ (*arr.upgrade().deref()).decay().offset((j as usize)) }).write(Edge {
+                u: tmp.u,
+                v: tmp.v,
+                weight: tmp.weight,
+            });
             i.postfix_inc();
             j.postfix_dec();
         }
@@ -429,18 +376,13 @@ impl DisjointSetImpl for Ptr<DisjointSet> {
         }
     }
     fn move_assign(&self, _a0: Ptr<DisjointSet>) -> Ptr<DisjointSet> {
-        {
-            field_ptr!((*self), rank).write(
-                field!(_a0, rank).with_mut(|__v: &mut Option<Value<Box<[i32]>>>| __v.take()),
-            );
-            field_ptr!((*self), rank)
-        };
-        {
-            field_ptr!((*self), parent).write(
-                field!(_a0, parent).with_mut(|__v: &mut Option<Value<Box<[i32]>>>| __v.take()),
-            );
-            field_ptr!((*self), parent)
-        };
+        field!((*self), rank).with_mut(|__b0| {
+            (*__b0) = field!(_a0, rank).with_mut(|__v: &mut Option<Value<Box<[i32]>>>| __v.take());
+        });
+        field!((*self), parent).with_mut(|__b0| {
+            (*__b0) =
+                field!(_a0, parent).with_mut(|__v: &mut Option<Value<Box<[i32]>>>| __v.take());
+        });
         field!((*self), n).write({ { (*_a0.upgrade().deref()).n } });
         return (*self).clone();
     }
@@ -450,12 +392,10 @@ pub trait GraphImpl {
 }
 impl GraphImpl for Ptr<Graph> {
     fn move_assign(&self, _a0: Ptr<Graph>) -> Ptr<Graph> {
-        {
-            field_ptr!((*self), edges).write(
-                field!(_a0, edges).with_mut(|__v: &mut Option<Value<Box<[Edge]>>>| __v.take()),
-            );
-            field_ptr!((*self), edges)
-        };
+        field!((*self), edges).with_mut(|__b0| {
+            (*__b0) =
+                field!(_a0, edges).with_mut(|__v: &mut Option<Value<Box<[Edge]>>>| __v.take());
+        });
         field!((*self), V).write({ { (*_a0.upgrade().deref()).V } });
         field!((*self), E).write({ { (*_a0.upgrade().deref()).E } });
         return (*self).clone();

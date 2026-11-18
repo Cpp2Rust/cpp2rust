@@ -312,7 +312,7 @@ public:
 
   // args are the arguments of expr, including its receiver.
   std::string
-  ConvertIRFragment(const std::vector<TranslationRule::BodyFragment> &fragments,
+  ConvertIRFragment(llvm::ArrayRef<TranslationRule::BodyFragment> fragments,
                     llvm::ArrayRef<clang::TemplateArgument> bindings,
                     clang::Expr *expr, llvm::ArrayRef<clang::Expr *> args,
                     TempMaterializationCtx *ctx);
@@ -926,6 +926,12 @@ protected:
   // through, with the names they are borrowed as, e.g., a pointer and the
   // closure parameter of its with_mut.
   std::vector<std::pair<std::string, std::string>> mut_borrows_;
+  // Whether the last rule converted returned a place, rather than a pointer,
+  // for a reference.
+  bool returned_place_ = false;
+  // The arguments of the rule being converted that are borrowed for the whole
+  // call, with the names they are borrowed as.
+  std::unordered_map<const clang::Expr *, std::string> borrowed_args_;
 
   // Whether the expression being converted borrows a value in a temporary,
   // e.g., a guard of a RefCell, which lives until the end of the statement.
@@ -934,6 +940,12 @@ protected:
   // The variables that arguments of rules are bound to by value, whose
   // address is not taken.
   std::unordered_set<const clang::VarDecl *> bound_values_;
+  // The variables bound to values, or pointers, that are moved into the body
+  // of a rule.
+  std::unordered_set<const clang::VarDecl *> moved_values_;
+
+  // Whether the body of rule evaluates argument n once.
+  static bool UsedOnce(const TranslationRule::ExprRule &rule, unsigned n);
 
   // Bound initializer arguments may need a mapped move constructor when
   // forwarding the original rvalue from its pointer binding.
@@ -958,6 +970,28 @@ protected:
 
   virtual void ConvertConstructedValue(clang::QualType type,
                                        clang::CXXConstructExpr *ctor);
+
+  // The arguments of a rule to evaluate before its body, besides those bound
+  // by argsToBind, e.g., so that they are not evaluated while the body
+  // borrows another argument.
+  virtual std::vector<bool>
+  ArgsToEvaluateFirst(clang::Expr *expr, const TranslationRule::ExprRule &rule,
+                      llvm::ArrayRef<clang::Expr *> args,
+                      const std::vector<bool> &bind);
+
+  // Borrows the arguments that the body of a rule borrows mutably and uses
+  // more than once for the whole call, rather than once for each use.
+  virtual void BorrowArgsForCall(clang::Expr *expr,
+                                 const TranslationRule::ExprRule &rule,
+                                 llvm::ArrayRef<clang::Expr *> args) {}
+
+  // Whether the reference that a rule returns to arg, or to an element of it,
+  // is made a pointer to it, rather than a place.
+  virtual bool ReturnsPointerToArg(clang::Expr *arg);
+
+  // A pointer to arg, or to its element at index, unless that is empty.
+  virtual std::string ConvertPointerToArg(clang::Expr *arg,
+                                          std::string_view index);
 
   virtual std::string ConvertMappedMethodCall(
       clang::Expr *expr, const TranslationRule::MethodCallFragment &mc,

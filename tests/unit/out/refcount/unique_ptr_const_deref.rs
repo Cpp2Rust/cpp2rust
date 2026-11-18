@@ -33,8 +33,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let h: Value<Holder> = Rc::new(RefCell::new(<Holder>::default()));
     {
-        field_ptr!(h.as_pointer(), val).write(Some(Rc::new(RefCell::new(10))).take());
-        field_ptr!(h.as_pointer(), val)
+        (*h.borrow_mut()).val = Some(Rc::new(RefCell::new(10))).take();
     };
     ({ write_val_1((h.as_pointer()), 42) });
     assert!((({ read_val_0((h.as_pointer()),) }) == 42));
@@ -45,11 +44,9 @@ pub trait HolderImpl {
 }
 impl HolderImpl for Ptr<Holder> {
     fn move_assign(&self, _a0: Ptr<Holder>) -> Ptr<Holder> {
-        {
-            field_ptr!((*self), val)
-                .write(field!(_a0, val).with_mut(|__v: &mut Option<Value<i32>>| __v.take()));
-            field_ptr!((*self), val)
-        };
+        field!((*self), val).with_mut(|__b0| {
+            (*__b0) = field!(_a0, val).with_mut(|__v: &mut Option<Value<i32>>| __v.take());
+        });
         return (*self).clone();
     }
 }

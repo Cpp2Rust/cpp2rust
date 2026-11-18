@@ -34,11 +34,10 @@ unsafe fn main_0() -> i32 {
         (&mut (arr.as_ptr().offset((1) as isize), n) as *mut (*const i32, u32)),
     ) {
         (__tmp_1, __tmp_2) => {
-            *(__tmp_1 as *mut (*const i32, u64)) = (
+            (*__tmp_1) = (
                 cpp_move_unsafe!(&mut (*__tmp_2).0),
                 ((*&mut (*__tmp_2).1) as u64),
             );
-            (__tmp_1 as *mut (*const i32, u64))
         }
     };
     assert!(
@@ -48,14 +47,12 @@ unsafe fn main_0() -> i32 {
     let mut q: (i32, i32) = (3, 4);
     let mut f: *mut i32 = (&mut p.0 as *mut i32);
     {
-        *(&mut p as *mut (i32, i32)) = q.clone();
-        (&mut p as *mut (i32, i32))
+        p = q.clone();
     };
     assert!(((*f) == (3)));
     let alias: *mut (i32, i32) = &mut p;
     {
-        *(&mut p as *mut (i32, i32)) = (*alias).clone();
-        (&mut p as *mut (i32, i32))
+        p = (*alias).clone();
     };
     assert!(((*f) == (3)));
     let mut a: (i32, i32) = (1, 2);
@@ -69,8 +66,7 @@ unsafe fn main_0() -> i32 {
     let mut pd: *mut i32 = (&mut d.0 as *mut i32);
     let mut ps: *mut i32 = (&mut s.0 as *mut i32);
     {
-        *(&mut d as *mut (i32, i32)) = std::mem::take(&mut s);
-        (&mut d as *mut (i32, i32))
+        d = std::mem::take(&mut s);
     };
     assert!(((*pd) == (3)));
     (*ps) = 5;
@@ -80,37 +76,35 @@ unsafe fn main_0() -> i32 {
     let mut narrow: (i32, i32) = (3, 4);
     let mut pw: *mut i64 = (&mut w.0 as *mut i64);
     {
-        *(&mut w as *mut (i64, i64)) = (((*&narrow.0) as i64), ((*&narrow.1) as i64));
-        (&mut w as *mut (i64, i64))
+        w = (((*&narrow.0) as i64), ((*&narrow.1) as i64));
     };
     assert!(((*pw) == (3_i64)));
     let mut m: (i32, i32) = (5, 6);
     {
-        *(&mut w as *mut (i64, i64)) = (((*&mut m.0) as i64), ((*&mut m.1) as i64));
-        (&mut w as *mut (i64, i64))
+        w = (((*&mut m.0) as i64), ((*&mut m.1) as i64));
     };
     assert!(((*pw) == (5_i64)));
     (*{
-        *(&mut p as *mut (i32, i32)) = q.clone();
-        (&mut p as *mut (i32, i32))
+        p = q.clone();
+        &mut p
     })
     .1 = 7;
     assert!(((p.1) == (7)) && ((q.1) == (4)));
     (*{
-        *(&mut d as *mut (i32, i32)) = std::mem::take(&mut q);
-        (&mut d as *mut (i32, i32))
+        d = std::mem::take(&mut q);
+        &mut d
     })
     .0 = 8;
     assert!(((d.0) == (8)) && ((d.1) == (4)));
     (*{
-        *(&mut w as *mut (i64, i64)) = (((*&narrow.0) as i64), ((*&narrow.1) as i64));
-        (&mut w as *mut (i64, i64))
+        w = (((*&narrow.0) as i64), ((*&narrow.1) as i64));
+        &mut w
     })
     .1 = 9_i64;
     assert!(((w.0) == (3_i64)) && ((w.1) == (9_i64)));
     (*{
-        *(&mut w as *mut (i64, i64)) = (((*&mut narrow.0) as i64), ((*&mut narrow.1) as i64));
-        (&mut w as *mut (i64, i64))
+        w = (((*&mut narrow.0) as i64), ((*&mut narrow.1) as i64));
+        &mut w
     })
     .0 = 10_i64;
     assert!(((*pw) == (10_i64)) && ((w.1) == (4_i64)));

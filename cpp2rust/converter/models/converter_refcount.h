@@ -353,6 +353,26 @@ public:
       llvm::ArrayRef<clang::TemplateArgument> bindings,
       llvm::ArrayRef<clang::Expr *> args, TempMaterializationCtx *ctx) override;
 
+  std::vector<bool> ArgsToEvaluateFirst(clang::Expr *expr,
+                                        const TranslationRule::ExprRule &rule,
+                                        llvm::ArrayRef<clang::Expr *> args,
+                                        const std::vector<bool> &bind) override;
+
+  void BorrowArgsForCall(clang::Expr *expr,
+                         const TranslationRule::ExprRule &rule,
+                         llvm::ArrayRef<clang::Expr *> args) override;
+
+  // Whether evaluating arg borrows no value that another expression may
+  // borrow mutably: constants, and the values of local scalars and pointers,
+  // other than those of vars.
+  bool BorrowsNothing(const clang::Expr *arg,
+                      llvm::ArrayRef<const clang::VarDecl *> vars) const;
+
+  bool ReturnsPointerToArg(clang::Expr *arg) override;
+
+  std::string ConvertPointerToArg(clang::Expr *arg,
+                                  std::string_view index) override;
+
 private:
   void SetUFCSReceiver(clang::Expr *base, bool is_arrow,
                        const clang::CXXMethodDecl *method) override;

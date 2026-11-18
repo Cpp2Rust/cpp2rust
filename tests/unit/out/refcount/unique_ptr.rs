@@ -29,38 +29,35 @@ pub struct Pair {
     pub y: i32,
 }
 pub fn DoStuffWithSafePointer_0(safe_ptr: Ptr<Option<Value<SafePointer>>>) {
-    let x1: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(0)))));
+    let mut x1: Option<Value<i32>> = Some(Rc::new(RefCell::new(0)));
     let mut x2: Option<Value<i32>> = Some(Rc::new(RefCell::new(0)));
     x2.as_pointer().write(1);
     {
-        x1.as_pointer().write(x2.take());
-        x1.as_pointer()
+        x1 = x2.take();
     };
-    let mut raw_ptr1: Ptr<i32> = ((*x1.borrow()).as_pointer());
+    let mut raw_ptr1: Ptr<i32> = (x1.as_pointer());
     raw_ptr1.with_mut(|__v| {
         __v.prefix_inc();
     });
     match (field_ptr!(
-        ((*safe_ptr.upgrade().deref()).as_pointer()),
+        ({ (*safe_ptr.upgrade().deref()).as_pointer() }),
         ptr
     ),)
     {
-        (__tmp_0,) => {
-            __tmp_0.write((*x1.borrow_mut()).take());
-            (__tmp_0).clone()
-        }
+        (__tmp_0,) => __tmp_0.with_mut(|__b0| {
+            (*__b0) = x1.take();
+        }),
     };
-    ({ SafePointerImpl::inc(&((*safe_ptr.upgrade().deref()).as_pointer())) });
-    ({ SafePointerImpl::inc(&((*safe_ptr.upgrade().deref()).as_pointer())) });
+    ({ SafePointerImpl::inc(&({ (*safe_ptr.upgrade().deref()).as_pointer() })) });
+    ({ SafePointerImpl::inc(&({ (*safe_ptr.upgrade().deref()).as_pointer() })) });
     let mut x3: Option<Value<i32>> = Some(Rc::new(RefCell::new(10)));
-    let x4: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(20)))));
-    let __rhs = ((x3.as_pointer().read()) + ((*x4.borrow()).as_pointer().read()));
+    let mut x4: Option<Value<i32>> = Some(Rc::new(RefCell::new(20)));
+    let __rhs = ((x3.as_pointer().read()) + (x4.as_pointer().read()));
     x3.as_pointer().write(__rhs);
     {
-        x4.as_pointer().write(x3.take());
-        x4.as_pointer()
+        x4 = x3.take();
     };
-    let mut raw_ptr2: Ptr<i32> = ((*x4.borrow()).as_pointer());
+    let mut raw_ptr2: Ptr<i32> = (x4.as_pointer());
     {
         raw_ptr2.with_mut(|__v| *__v = *__v + 1)
     };
@@ -71,22 +68,16 @@ pub fn DoStuffWithSafePointer_0(safe_ptr: Ptr<Option<Value<SafePointer>>>) {
     ({ PairImpl::inc(&(pair.as_pointer()), 10) });
     let __rhs = ({
         ({
-            (({
-                (*safe_ptr.upgrade().deref())
-                    .as_pointer()
-                    .with(|__s| (__s).ptr.clone())
-            })
-            .as_pointer()
-            .read())
+            (({ (*safe_ptr.upgrade().deref()).as_pointer() })
+                .with(|__s| (__s).ptr.clone())
+                .as_pointer()
+                .read())
         } + { pair.as_pointer().with(|__s| (__s).x) })
     } + { pair.as_pointer().with(|__s| (__s).y) });
-    ({
-        (*safe_ptr.upgrade().deref())
-            .as_pointer()
-            .with(|__s| (__s).ptr.clone())
-    })
-    .as_pointer()
-    .write(__rhs);
+    ({ (*safe_ptr.upgrade().deref()).as_pointer() })
+        .with(|__s| (__s).ptr.clone())
+        .as_pointer()
+        .write(__rhs);
 }
 pub fn Consume_1(mut safe_ptr: Option<Value<SafePointer>>) -> i32 {
     let mut x: Option<Value<SafePointer>> = safe_ptr.take();
@@ -106,7 +97,7 @@ pub fn RndStuff_2() {
     {
         let mut i: i32 = 0;
         'loop_: while (i < 100) {
-            (*x2.borrow()).decay().offset((i as usize)).write(1);
+            ({ (*x2.borrow()).decay().offset((i as usize)) }).write(1);
             i.prefix_inc();
         }
     }
@@ -116,11 +107,11 @@ pub fn RndStuff_2() {
     {
         let mut i: i32 = 0;
         'loop_: while (i < 200) {
-            (*x2.borrow()).decay().offset((i as usize)).write(2);
+            ({ (*x2.borrow()).decay().offset((i as usize)) }).write(2);
             i.prefix_inc();
         }
     }
-    let mut p2: Ptr<i32> = (*x2.borrow()).decay();
+    let mut p2: Ptr<i32> = ({ (*x2.borrow()).decay() });
     {
         let mut i: i32 = 0;
         'loop_: while (i < 200) {
@@ -136,20 +127,17 @@ pub fn RndStuff_2() {
     {
         let mut i: i32 = 0;
         'loop_: while (i < 10) {
-            (*x3.borrow())
-                .decay()
-                .offset((i as usize))
-                .write(Pair { x: 1, y: 2 });
+            ({ (*x3.borrow()).decay().offset((i as usize)) }).write(Pair { x: 1, y: 2 });
             i.prefix_inc();
         }
     }
-    let mut p3_0: Ptr<Pair> = (*x3.borrow()).decay();
+    let mut p3_0: Ptr<Pair> = ({ (*x3.borrow()).decay() });
     {
         let mut i: i32 = 0;
         'loop_: while (i < 10) {
             assert!((elem!(p3_0, i).with(|__s| __s.x) == 1));
             assert!((elem!(p3_0, i).with(|__s| __s.y) == 2));
-            ({ PairImpl::inc(&(*x3.borrow()).decay().offset((i as usize)), 10) });
+            ({ PairImpl::inc(&({ (*x3.borrow()).decay().offset((i as usize)) }), 10) });
             assert!((elem!(p3_0, i).with(|__s| __s.x) == 11));
             assert!((elem!(p3_0, i).with(|__s| __s.y) == 12));
             i.prefix_inc();
@@ -166,21 +154,21 @@ pub fn RndStuff_2() {
     {
         let mut i: i32 = 0;
         'loop_: while (i < 50) {
-            (*x3.borrow()).decay().offset((i as usize)).write(Pair {
+            ({ (*x3.borrow()).decay().offset((i as usize)) }).write(Pair {
                 x: -1_i32,
                 y: -2_i32,
             });
             i.prefix_inc();
         }
     }
-    let mut p3_1: Ptr<Pair> = (*x3.borrow()).decay();
+    let mut p3_1: Ptr<Pair> = ({ (*x3.borrow()).decay() });
     assert!(({ (p3_0).clone() } != { (p3_1).clone() }));
     {
         let mut i: i32 = 0;
         'loop_: while (i < 50) {
             assert!((elem!(p3_1, i).with(|__s| __s.x) == -1_i32));
             assert!((elem!(p3_1, i).with(|__s| __s.y) == -2_i32));
-            ({ PairImpl::inc(&(*x3.borrow()).decay().offset((i as usize)), -10_i32) });
+            ({ PairImpl::inc(&({ (*x3.borrow()).decay().offset((i as usize)) }), -10_i32) });
             assert!((elem!(p3_1, i).with(|__s| __s.x) == -11_i32));
             assert!((elem!(p3_1, i).with(|__s| __s.y) == -12_i32));
             i.prefix_inc();
@@ -211,7 +199,7 @@ fn main_0() -> i32 {
         let _p: Ptr<_> = Ptr::alloc(2);
         p.as_pointer().write(_p.to_owned_opt())
     };
-    assert!(({ (((*p.borrow()).as_pointer().read()) == 2) }));
+    assert!(((({ (*p.borrow()).as_pointer() }).read()) == 2));
     p.as_pointer().write(None);
     assert!(({ (*p.borrow()).is_none() }));
     ({ unique_ptr_that_wraps_container_3() });
@@ -246,11 +234,9 @@ impl SafePointerImpl for Ptr<SafePointer> {
             });
     }
     fn move_assign(&self, _a0: Ptr<SafePointer>) -> Ptr<SafePointer> {
-        {
-            field_ptr!((*self), ptr)
-                .write(field!(_a0, ptr).with_mut(|__v: &mut Option<Value<i32>>| __v.take()));
-            field_ptr!((*self), ptr)
-        };
+        field!((*self), ptr).with_mut(|__b0| {
+            (*__b0) = field!(_a0, ptr).with_mut(|__v: &mut Option<Value<i32>>| __v.take());
+        });
         return (*self).clone();
     }
 }

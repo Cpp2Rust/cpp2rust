@@ -53,17 +53,23 @@ fn main_0() -> i32 {
         let __init = Vec::new();
         elem!(v.decay(), 1_usize).with_mut(|__v: &mut Vec<Vec<Vec<i8>>>| __v.push(__init))
     };
-    match (v.decay().offset(1_usize).decay().to_last(),) {
+    match (match (v.decay().offset(1_usize),) {
+        (__tmp_1,) => {
+            let __n = (*__tmp_1.upgrade().deref()).len() - 1;
+            __tmp_1.decay().offset((__n) as isize)
+        }
+    },)
+    {
         (__tmp_0,) => {
             let __a1 = {
                 let mut r = ({
-                    (*v.decay()
-                        .offset(0_usize)
-                        .decay()
-                        .decay()
-                        .offset(1_usize)
-                        .upgrade()
-                        .deref())
+                    (*match (v.decay().offset(0_usize),) {
+                        (__tmp_2,) => __tmp_2.decay(),
+                    }
+                    .decay()
+                    .offset(1_usize)
+                    .upgrade()
+                    .deref())
                     .clone()
                 });
                 r.pop();
@@ -74,14 +80,35 @@ fn main_0() -> i32 {
             __tmp_0.with_mut(|__v: &mut Vec<Vec<i8>>| __v.push(__a1))
         }
     };
-    assert!(({ ((*v.decay().offset(0_usize).decay().upgrade().deref()).len() == 2_usize) }));
     assert!(
         ({
-            ((*v.decay().offset(1_usize).decay().upgrade().deref()).len() == 3_usize)
-                && (match (v.decay().offset(1_usize).decay().decay().offset(2_usize),) {
-                    (__tmp_1,) => Ptr::<i8>::from_string_literal(b"def").with_c_str(|__s| {
-                        (*__tmp_1.upgrade().deref())
-                            [..(*__tmp_1.upgrade().deref()).len().saturating_sub(1)]
+            ((*match (v.decay().offset(0_usize),) {
+                (__tmp_3,) => __tmp_3.decay(),
+            }
+            .upgrade()
+            .deref())
+            .len()
+                == 2_usize)
+        })
+    );
+    assert!(
+        ({
+            ((*match (v.decay().offset(1_usize),) {
+                (__tmp_4,) => __tmp_4.decay(),
+            }
+            .upgrade()
+            .deref())
+            .len()
+                == 3_usize)
+                && (match (match (v.decay().offset(1_usize),) {
+                    (__tmp_6,) => __tmp_6.decay(),
+                }
+                .decay()
+                .offset(2_usize),)
+                {
+                    (__tmp_5,) => Ptr::<i8>::from_string_literal(b"def").with_c_str(|__s| {
+                        (*__tmp_5.upgrade().deref())
+                            [..(*__tmp_5.upgrade().deref()).len().saturating_sub(1)]
                             == *__s
                     }),
                 })
@@ -89,17 +116,18 @@ fn main_0() -> i32 {
     );
     assert!(
         ({
-            match (v
-                .decay()
-                .offset(1_usize)
-                .decay()
-                .to_last()
-                .decay()
-                .offset(0_usize),)
+            match (match (v.decay().offset(1_usize),) {
+                (__tmp_8,) => {
+                    let __n = (*__tmp_8.upgrade().deref()).len() - 1;
+                    __tmp_8.decay().offset((__n) as isize)
+                }
+            }
+            .decay()
+            .offset(0_usize),)
             {
-                (__tmp_2,) => Ptr::<i8>::from_string_literal(b"bcx").with_c_str(|__s| {
-                    (*__tmp_2.upgrade().deref())
-                        [..(*__tmp_2.upgrade().deref()).len().saturating_sub(1)]
+                (__tmp_7,) => Ptr::<i8>::from_string_literal(b"bcx").with_c_str(|__s| {
+                    (*__tmp_7.upgrade().deref())
+                        [..(*__tmp_7.upgrade().deref()).len().saturating_sub(1)]
                         == *__s
                 }),
             }
@@ -107,7 +135,11 @@ fn main_0() -> i32 {
     );
     let copy: Value<Vec<Vec<Vec<Vec<i8>>>>> = Rc::new(RefCell::new((*v.borrow()).clone()));
     match (
-        copy.decay().offset(0_usize).decay().decay().offset(0_usize),
+        match (copy.decay().offset(0_usize),) {
+            (__tmp_10,) => __tmp_10.decay(),
+        }
+        .decay()
+        .offset(0_usize),
         Rc::new(RefCell::new({
             let mut __bytes = Ptr::<i8>::from_string_literal(b"z").to_c_bytes();
             __bytes.push(0);
@@ -115,33 +147,46 @@ fn main_0() -> i32 {
         }))
         .as_pointer(),
     ) {
-        (__tmp_3, __tmp_4) => {
-            __tmp_3.write(__tmp_4.with_mut(|__v| std::mem::replace(__v, vec![0])));
-            (__tmp_3).clone()
-        }
+        (__tmp_9, __tmp_11) => __tmp_9.with_mut(|__b0| {
+            (*__b0) = __tmp_11.with_mut(|__v| std::mem::replace(__v, vec![0]));
+        }),
     };
-    match (v.decay().offset(0_usize).decay().decay().offset(1_usize),) {
-        (__tmp_5,) => {
-            if 0_usize >= (*__tmp_5.upgrade().deref()).len().saturating_sub(1) {
+    match (match (v.decay().offset(0_usize),) {
+        (__tmp_13,) => __tmp_13.decay(),
+    }
+    .decay()
+    .offset(1_usize),)
+    {
+        (__tmp_12,) => {
+            if 0_usize >= (*__tmp_12.upgrade().deref()).len() - 1 {
                 panic!("out of bounds access")
-            } else {
-                __tmp_5.decay().offset(0_usize as isize)
             }
+            __tmp_12.decay().offset((0_usize) as isize)
         }
     }
     .write(('B' as i8));
     assert!(
         ({
-            (match (v.decay().offset(0_usize).decay().decay().offset(0_usize),) {
-                (__tmp_6,) => Ptr::<i8>::from_string_literal(b"a").with_c_str(|__s| {
-                    (*__tmp_6.upgrade().deref())
-                        [..(*__tmp_6.upgrade().deref()).len().saturating_sub(1)]
+            (match (match (v.decay().offset(0_usize),) {
+                (__tmp_15,) => __tmp_15.decay(),
+            }
+            .decay()
+            .offset(0_usize),)
+            {
+                (__tmp_14,) => Ptr::<i8>::from_string_literal(b"a").with_c_str(|__s| {
+                    (*__tmp_14.upgrade().deref())
+                        [..(*__tmp_14.upgrade().deref()).len().saturating_sub(1)]
                         == *__s
                 }),
-            }) && (match (copy.decay().offset(0_usize).decay().decay().offset(0_usize),) {
-                (__tmp_7,) => Ptr::<i8>::from_string_literal(b"z").with_c_str(|__s| {
-                    (*__tmp_7.upgrade().deref())
-                        [..(*__tmp_7.upgrade().deref()).len().saturating_sub(1)]
+            }) && (match (match (copy.decay().offset(0_usize),) {
+                (__tmp_17,) => __tmp_17.decay(),
+            }
+            .decay()
+            .offset(0_usize),)
+            {
+                (__tmp_16,) => Ptr::<i8>::from_string_literal(b"z").with_c_str(|__s| {
+                    (*__tmp_16.upgrade().deref())
+                        [..(*__tmp_16.upgrade().deref()).len().saturating_sub(1)]
                         == *__s
                 }),
             })
@@ -149,16 +194,26 @@ fn main_0() -> i32 {
     );
     assert!(
         ({
-            (match (v.decay().offset(0_usize).decay().decay().offset(1_usize),) {
-                (__tmp_8,) => Ptr::<i8>::from_string_literal(b"Bc").with_c_str(|__s| {
-                    (*__tmp_8.upgrade().deref())
-                        [..(*__tmp_8.upgrade().deref()).len().saturating_sub(1)]
+            (match (match (v.decay().offset(0_usize),) {
+                (__tmp_19,) => __tmp_19.decay(),
+            }
+            .decay()
+            .offset(1_usize),)
+            {
+                (__tmp_18,) => Ptr::<i8>::from_string_literal(b"Bc").with_c_str(|__s| {
+                    (*__tmp_18.upgrade().deref())
+                        [..(*__tmp_18.upgrade().deref()).len().saturating_sub(1)]
                         == *__s
                 }),
-            }) && (match (copy.decay().offset(0_usize).decay().decay().offset(1_usize),) {
-                (__tmp_9,) => Ptr::<i8>::from_string_literal(b"bc").with_c_str(|__s| {
-                    (*__tmp_9.upgrade().deref())
-                        [..(*__tmp_9.upgrade().deref()).len().saturating_sub(1)]
+            }) && (match (match (copy.decay().offset(0_usize),) {
+                (__tmp_21,) => __tmp_21.decay(),
+            }
+            .decay()
+            .offset(1_usize),)
+            {
+                (__tmp_20,) => Ptr::<i8>::from_string_literal(b"bc").with_c_str(|__s| {
+                    (*__tmp_20.upgrade().deref())
+                        [..(*__tmp_20.upgrade().deref()).len().saturating_sub(1)]
                         == *__s
                 }),
             })
@@ -167,16 +222,31 @@ fn main_0() -> i32 {
     elem!(v.decay(), 1_usize).with_mut(|__v: &mut Vec<Vec<Vec<i8>>>| __v.remove(0));
     assert!(
         ({
-            match (v.decay().offset(1_usize).decay().decay().offset(0_usize),) {
-                (__tmp_10,) => Ptr::<i8>::from_string_literal(b"bcx").with_c_str(|__s| {
-                    (*__tmp_10.upgrade().deref())
-                        [..(*__tmp_10.upgrade().deref()).len().saturating_sub(1)]
+            match (match (v.decay().offset(1_usize),) {
+                (__tmp_23,) => __tmp_23.decay(),
+            }
+            .decay()
+            .offset(0_usize),)
+            {
+                (__tmp_22,) => Ptr::<i8>::from_string_literal(b"bcx").with_c_str(|__s| {
+                    (*__tmp_22.upgrade().deref())
+                        [..(*__tmp_22.upgrade().deref()).len().saturating_sub(1)]
                         == *__s
                 }),
             }
         })
     );
-    assert!(({ ((*copy.decay().offset(1_usize).decay().upgrade().deref()).len() == 3_usize) }));
+    assert!(
+        ({
+            ((*match (copy.decay().offset(1_usize),) {
+                (__tmp_24,) => __tmp_24.decay(),
+            }
+            .upgrade()
+            .deref())
+            .len()
+                == 3_usize)
+        })
+    );
     assert!(({ ((*row.borrow()).len() == 3_usize) }));
     let d: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
     let mut first: i32 = 1;
@@ -185,7 +255,10 @@ fn main_0() -> i32 {
     (*d.borrow_mut()).push(last);
     let r: Ptr<i32> = d.decay();
     r.write(5);
-    let c: Ptr<i32> = d.decay().to_last();
+    let c: Ptr<i32> = {
+        let __n = (*d.borrow()).len() - 1;
+        d.decay().offset((__n) as isize)
+    };
     assert!(((d.decay().read()) == 5) && ((c.read()) == 2));
     return 0;
 }

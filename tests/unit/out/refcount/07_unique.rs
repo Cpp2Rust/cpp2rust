@@ -15,22 +15,19 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let f: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(8)))));
-    (*f.borrow()).as_pointer().write(9);
-    let mut f_ptr1: Ptr<i32> = (*f.borrow()).as_pointer();
+    let mut f: Option<Value<i32>> = Some(Rc::new(RefCell::new(8)));
+    f.as_pointer().write(9);
+    let mut f_ptr1: Ptr<i32> = f.as_pointer();
     f_ptr1.write(10);
-    let mut f_ptr2: Ptr<i32> = ((*f.borrow()).as_pointer());
+    let mut f_ptr2: Ptr<i32> = (f.as_pointer());
     f_ptr2.write(11);
     {
-        f.as_pointer().write(Some(Rc::new(RefCell::new(9))).take());
-        f.as_pointer()
+        f = Some(Rc::new(RefCell::new(9))).take();
     };
     {
-        f.as_pointer()
-            .write(({ fn_0((*f.borrow_mut()).take()) }).take());
-        f.as_pointer()
+        f = ({ fn_0(f.take()) }).take();
     };
-    assert!(({ (((*f.borrow()).as_pointer().read()) == 10) }));
+    assert!(((f.as_pointer().read()) == 10));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

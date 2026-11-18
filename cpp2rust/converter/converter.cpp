@@ -796,7 +796,13 @@ bool Converter::IsPassThroughRule(clang::Expr *expr) {
   if (!rule || rule->body.size() != 1) {
     return false;
   }
-  auto *ph = std::get_if<TranslationRule::PlaceholderFragment>(&rule->body[0]);
+  // The rule returns its argument, or a reference to it.
+  auto *operand = rule->refExprOperand();
+  auto &body = operand ? *operand : rule->body;
+  if (body.size() != 1) {
+    return false;
+  }
+  auto *ph = std::get_if<TranslationRule::PlaceholderFragment>(&body[0]);
   if (!ph) {
     return false;
   }
@@ -2956,8 +2962,8 @@ void Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
       expr->isCompoundAssignmentOp() &&
       GetUnsafeTypeAsString(lhs_type) !=
           GetUnsafeTypeAsString(cmpd_assign_op->getComputationResultType())) {
-    Convert(lhs);
-    StrCat(token::kAssign, ConvertCompoundAssignValue(cmpd_assign_op));
+    StrCat(ConvertLValue(lhs), token::kAssign,
+           ConvertCompoundAssignValue(cmpd_assign_op));
   } else if (expr->isCommaOp()) {
     PushBrace brace(*this);
     {
@@ -5647,7 +5653,37 @@ std::string Converter::GetMappedAsString(clang::Expr *expr, clang::Expr **args,
   // objects are bound to live until the end of the statement, like those of
   // the C++ arguments.
   auto all_args = BuildUnifiedArgs(expr, args, num_args);
+  // An argument that is the reference that another rule returns to its own
+  // argument is that argument, after the rest of the other rule, unless the
+  // rule may return a place, which can't be computed after something else.
+  std::string effects;
+  bool may_be_place = expr->isGLValue() && !isAddrOf() && !isVoid();
+  for (size_t i = 0; !may_be_place && i < all_args.size(); ++i) {
+    auto *returned = RuleRegistry::GetReturnedArg(ctx_, all_args[i]);
+    if (!returned || returned->HasSideEffects(ctx_) ||
+        llvm::any_of(all_args, [&](clang::Expr *arg) {
+          return arg != all_args[i] && arg->HasSideEffects(ctx_);
+        })) {
+      continue;
+    }
+    PushExprKind push(*this, ExprKind::Void);
+    effects += ToString(all_args[i]) + token::kSemiColon;
+    all_args[i] = returned;
+  }
   auto bind = tgt_ir->argsToBind(ctx_, expr, all_args);
+  auto *operand = tgt_ir->refExprOperand();
+  auto effect = tgt_ir->refExprEffect();
+  // The C++ expression is a reference to the argument, or an element of it.
+  auto *base = expr->isGLValue() ? tgt_ir->refExprBase() : nullptr;
+  bool discards_ref =
+      base && operand->size() == 1 && !effect.empty() && isVoid();
+  // The temporaries of an argument that a pointer is returned to live as long
+  // as the binding.
+  if (base && !discards_ref && all_args[base->n]->HasSideEffects(ctx_) &&
+      ReturnsPointerToArg(all_args[base->n])) {
+    bind[base->n] = true;
+  }
+  auto first = ArgsToEvaluateFirst(expr, *tgt_ir, all_args, bind);
   std::vector<std::string> values, names;
   // Bindings in a global initializer are local to the expansion too.
   clang::DeclContext *binding_context = curr_function_;
@@ -5656,14 +5692,14 @@ std::string Converter::GetMappedAsString(clang::Expr *expr, clang::Expr **args,
         ctx_, ctx_.getTranslationUnitDecl(), expr->getExprLoc());
   }
   for (size_t i = 0; binding_context && i < all_args.size(); ++i) {
-    if (!bind[i]) {
+    if (!bind[i] && !first[i]) {
       continue;
     }
     // The rule takes the value of a transparent union.
     auto *arg = IgnoreTransparentUnion(all_args[i]);
     auto type = arg->getType();
-    bool by_value =
-        arg->isPRValue() && !tgt_ir->takesAddress(ctx_, expr, i, arg);
+    bool by_value = (arg->isPRValue() || first[i]) &&
+                    !tgt_ir->takesAddress(ctx_, expr, i, arg);
     if (!by_value && arg->isPRValue()) {
       arg = new (ctx_) clang::MaterializeTemporaryExpr(type, arg, false);
     }
@@ -5680,6 +5716,10 @@ std::string Converter::GetMappedAsString(clang::Expr *expr, clang::Expr **args,
         var_type, ctx_.getTrivialTypeSourceInfo(var_type, loc), clang::SC_None);
     if (tgt_ir->usesInit() && i >= tgt_ir->params.size()) {
       bound_init_args_.insert(var);
+    }
+    // The value, or the pointer, is moved into the body, which uses it once.
+    if (first[i] && UsedOnce(*tgt_ir, i)) {
+      moved_values_.insert(var);
     }
     // The temporaries of a value, e.g., borrows, end with its block.
     if (by_value) {
@@ -5714,34 +5754,110 @@ std::string Converter::GetMappedAsString(clang::Expr *expr, clang::Expr **args,
   }
 
   auto saved_borrows = std::exchange(mut_borrows_, {});
-  auto *operand = tgt_ir->refExprOperand();
-  bool lvalue = operand && !isAddrOf();
-  auto result =
-      ConvertIRFragment(lvalue && values.empty() ? *operand : tgt_ir->body,
-                        bindings, expr, all_args, ctx);
-  if (tgt_ir->multi_statement) {
-    result = '{' + result + '}';
+  auto saved_borrowed_args = std::exchange(borrowed_args_, {});
+  auto outer_borrows = std::exchange(borrows_, false);
+  BorrowArgsForCall(expr, *tgt_ir, all_args);
+  bool place = false;
+  std::string result;
+  if (discards_ref) {
+    // The reference to the argument is not used.
+    result =
+        '{' + ConvertIRFragment(effect, bindings, expr, all_args, ctx) + '}';
+  } else if (base && ReturnsPointerToArg(all_args[base->n])) {
+    auto str = ConvertIRFragment(effect, bindings, expr, all_args, ctx);
+    std::string index;
+    if (operand->size() > 1) {
+      index = ConvertIRFragment(llvm::ArrayRef(*operand).drop_front(), bindings,
+                                expr, all_args, ctx);
+      index = index.substr(1, index.size() - 2);
+    }
+    result = ConvertPointerToArg(all_args[base->n], index);
+    if (!str.empty()) {
+      result = std::format("{{ {} {} }}", str, result);
+    }
+  } else if (base && isAddrOf()) {
+    // A pointer to the place is a raw one.
+    auto &prefix = std::get<std::unique_ptr<TranslationRule::RefExprFragment>>(
+                       tgt_ir->body.back())
+                       ->prefix;
+    result = std::format(
+        "{}{} {}", ConvertIRFragment(effect, bindings, expr, all_args, ctx),
+        prefix == "&mut" ? "&raw mut"
+        : prefix == "&"  ? "&raw const"
+                         : prefix,
+        ConvertIRFragment(*operand, bindings, expr, all_args, ctx));
+    if (!effect.empty()) {
+      result = '{' + result + '}';
+    }
+  } else {
+    place = operand && !isAddrOf() && !isVoid();
+    result = ConvertIRFragment(
+        place && values.empty() && effect.empty() ? *operand : tgt_ir->body,
+        bindings, expr, all_args, ctx);
+    if (tgt_ir->multi_statement) {
+      result = '{' + result + '}';
+    }
   }
   // The arguments borrowed through pointers are borrowed for the whole call.
   for (auto &[place, name] : std::ranges::reverse_view(mut_borrows_)) {
     result = std::format("{}.with_mut(|{}| {})", place, name, result);
   }
   mut_borrows_ = std::move(saved_borrows);
-  // A place is reached through a reference to it, out of the match, so that it
-  // can be assigned.
+  borrowed_args_ = std::move(saved_borrowed_args);
+  // A pointer that the rule returns doesn't need the borrows of its arguments,
+  // e.g., of the map that std::map::operator[] inserts into, which end with
+  // the block, unless it may point to a temporary, which would end too.
+  if (borrows_ && tgt_ir->return_type.is_pointer() &&
+      llvm::none_of(all_args,
+                    [&](clang::Expr *arg) { return CreatesTemporary(arg); })) {
+    result = std::format("({{ {} }})", result);
+    borrows_ = false;
+  }
+  borrows_ |= outer_borrows;
   if (!values.empty()) {
     result =
         std::format("match ({},) {{ ({},) => {{ {} }} }}",
                     llvm::join(values, ", "), llvm::join(names, ", "), result);
-    if (lvalue) {
-      result = std::format("(*{})", result);
-    }
+  }
+  // A place is reached through a reference to it, out of the match or the
+  // block that computes it, so that it can be assigned.
+  if (place && (!values.empty() || !effect.empty())) {
+    result = std::format("(*{})", result);
+  }
+  returned_place_ = place && base;
+  if (!effects.empty()) {
+    result = std::format("{{ {} {} }}", effects, result);
   }
   return result;
 }
 
+bool Converter::UsedOnce(const TranslationRule::ExprRule &rule, unsigned n) {
+  unsigned uses = 0;
+  TranslationRule::AnyFragment(rule.body, [&](const auto &frag) {
+    auto *ph = std::get_if<TranslationRule::PlaceholderFragment>(&frag);
+    if (ph && ph->n == n) {
+      uses += ph->conditional ? 2 : 1;
+    }
+    return false;
+  });
+  return uses == 1;
+}
+
+std::vector<bool>
+Converter::ArgsToEvaluateFirst(clang::Expr *, const TranslationRule::ExprRule &,
+                               llvm::ArrayRef<clang::Expr *> args,
+                               const std::vector<bool> &) {
+  return std::vector<bool>(args.size());
+}
+
+bool Converter::ReturnsPointerToArg(clang::Expr *) { return false; }
+
+std::string Converter::ConvertPointerToArg(clang::Expr *, std::string_view) {
+  llvm_unreachable("the reference to the argument is a place");
+}
+
 std::string Converter::ConvertIRFragment(
-    const std::vector<TranslationRule::BodyFragment> &fragments,
+    llvm::ArrayRef<TranslationRule::BodyFragment> fragments,
     llvm::ArrayRef<clang::TemplateArgument> bindings, clang::Expr *expr,
     llvm::ArrayRef<clang::Expr *> all_args, TempMaterializationCtx *ctx) {
   using namespace TranslationRule;
@@ -5757,6 +5873,12 @@ std::string Converter::ConvertIRFragment(
       auto arg_idx = ph->n;
       assert(arg_idx < all_args.size());
       auto *arg = all_args[arg_idx];
+      // The argument is borrowed for the whole call.
+      if (auto it = borrowed_args_.find(arg); it != borrowed_args_.end()) {
+        result += std::format("(*{})", it->second);
+        MarkNotFresh();
+        continue;
+      }
       bool is_receiver = HasReceiver(expr) && arg_idx == 0;
       bool cpp_ptr = arg->getType()->isPointerType();
       bool is_cpp_ptr =

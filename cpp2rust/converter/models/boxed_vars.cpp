@@ -310,6 +310,9 @@ private:
     void VisitCallExpr(const clang::CallExpr *expr) {
       if (IsTransparentStdCall(owner_.ctx_, expr)) {
         Traverse(expr->getArg(0));
+      } else if (auto *arg =
+                     RuleRegistry::GetReferencedArg(owner_.ctx_, expr)) {
+        Traverse(arg);
       } else {
         VisitExpr(expr);
       }
@@ -356,6 +359,9 @@ private:
     }
     auto all_args = BuildUnifiedArgs(expr, args, num_args);
     auto bound = rule->argsToBind(ctx_, expr, all_args);
+    // The use of the argument that the rule returns a reference to is that of
+    // the reference.
+    auto *referenced = RuleRegistry::GetReferencedArg(ctx_, expr);
     for (unsigned i = 0; i < all_args.size(); ++i) {
       if (bound[i]) {
         if (all_args[i]->isGLValue()) {
@@ -385,8 +391,9 @@ private:
               })) {
         continue;
       }
-      if (!rule->takesAddress(ctx_, expr, i, arg) ||
-          rule->takesTemporaryAddress(ctx_, expr, i, arg)) {
+      if (all_args[i] != referenced &&
+          (!rule->takesAddress(ctx_, expr, i, arg) ||
+           rule->takesTemporaryAddress(ctx_, expr, i, arg))) {
         AddValueUse(arg);
       }
     }
@@ -414,6 +421,17 @@ private:
     } else if (auto *assign = clang::dyn_cast<clang::BinaryOperator>(expr);
                assign && assign->isAssignmentOp() && !write) {
       AddValueUse(assign->getLHS(), /*write=*/true);
+    } else if (bool element; auto *arg = RuleRegistry::GetReferencedArg(
+                                 ctx_, expr, &element)) {
+      // The reference that a rule returns to its argument, or to an element
+      // of it, is the argument, or the element of it, in place.
+      auto *call = clang::cast<clang::CallExpr>(expr);
+      if (!write || !element ||
+          llvm::none_of(call->arguments(), [&](const clang::Expr *other) {
+            return other != arg && ReferToCommonVar(arg, other);
+          })) {
+        AddValueUse(arg, write);
+      }
     } else if (auto *object = GetEnclosingObject(expr)) {
       // Rust doesn't let the index of an element that is written to read the
       // vector, as the vector is borrowed mutably first.
@@ -436,6 +454,8 @@ private:
     if (auto *op = clang::dyn_cast<clang::UnaryOperator>(expr);
         op && op->isIncrementDecrementOp()) {
       AddValueUse(op->getSubExpr(), /*write=*/true);
+    } else if (RuleRegistry::GetReferencedArg(ctx_, expr)) {
+      AddValueUse(expr);
     } else if (auto *comma = clang::dyn_cast<clang::BinaryOperator>(expr);
                comma && comma->getOpcode() == clang::BO_Comma) {
       AddDiscardedUse(comma->getRHS());

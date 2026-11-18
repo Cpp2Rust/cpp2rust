@@ -84,10 +84,7 @@ fn main_0() -> i32 {
         __bytes
     }));
     {
-        assigned
-            .as_pointer()
-            .write(({ std::mem::replace(&mut (*long_word.borrow_mut()), vec![0]) }));
-        assigned.as_pointer()
+        (*assigned.borrow_mut()) = ({ std::mem::replace(&mut (*long_word.borrow_mut()), vec![0]) });
     };
     ({
         print_moved_from_0(
@@ -103,10 +100,8 @@ fn main_0() -> i32 {
     }));
     let assigned_short: Value<Vec<i8>> = Rc::new(RefCell::new(vec![0]));
     {
-        assigned_short
-            .as_pointer()
-            .write(({ std::mem::replace(&mut (*short_word.borrow_mut()), vec![0]) }));
-        assigned_short.as_pointer()
+        (*assigned_short.borrow_mut()) =
+            ({ std::mem::replace(&mut (*short_word.borrow_mut()), vec![0]) });
     };
     ({
         print_moved_from_0(
@@ -116,13 +111,10 @@ fn main_0() -> i32 {
         )
     });
     {
-        word.as_pointer().with_mut(|__v: &mut Vec<i8>| {
-            __v.pop();
-            Ptr::<i8>::from_string_literal(b"again")
-                .with_slice(5_usize, |__s| __v.extend_from_slice(__s));
-            __v.push(0);
-        });
-        word.as_pointer()
+        (*word.borrow_mut()).pop();
+        Ptr::<i8>::from_string_literal(b"again")
+            .with_slice(5_usize, |__s| (*word.borrow_mut()).extend_from_slice(__s));
+        (*word.borrow_mut()).push(0);
     };
     println!("reuse: {} {}", ((*word.borrow()).len() - 1), word.decay());
     let local: Value<Vec<i8>> = Rc::new(RefCell::new(({ return_local_1() })));
@@ -152,13 +144,11 @@ fn main_0() -> i32 {
         )
     });
     {
-        source.as_pointer().with_mut(|__v: &mut Vec<i8>| {
-            __v.pop();
-            Ptr::<i8>::from_string_literal(b"rvalue reference")
-                .with_slice(16_usize, |__s| __v.extend_from_slice(__s));
-            __v.push(0);
+        (*source.borrow_mut()).pop();
+        Ptr::<i8>::from_string_literal(b"rvalue reference").with_slice(16_usize, |__s| {
+            (*source.borrow_mut()).extend_from_slice(__s)
         });
-        source.as_pointer()
+        (*source.borrow_mut()).push(0);
     };
     let rvalue_reference: Value<Vec<i8>> = Rc::new(RefCell::new(
         ({ return_rvalue_reference_4(source.as_pointer()) }),

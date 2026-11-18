@@ -76,10 +76,15 @@ pub unsafe fn fn_1(v: *mut Vec<i32>, mut v3: Vec<i32>) {
     }))[(0_usize)] = 7;
     (&mut (*v4))[(1_usize)] = 13;
     assert!(((x) == (6)));
-    assert!(((*((*v).first_mut().unwrap())) == (4)));
+    assert!((((&mut (*v))[0]) == (4)));
     assert!((((&mut (*v))[(1_usize)]) == (5)));
     assert!((((&mut (*v))[(2_usize)]) == (6)));
-    assert!(((*((*v).last_mut().unwrap())) == (20)));
+    assert!(
+        ((*{
+            let __n = (*v).len() - 1;
+            &mut (&mut (*v))[__n]
+        }) == (20))
+    );
     assert!(((v3[(0_usize)]) == (7)));
     assert!(((v3[(1_usize)]) == (13)));
     {
@@ -105,10 +110,7 @@ unsafe fn main_0() -> i32 {
     v1.pop();
     assert!(v1.is_empty());
     let mut s1: usize = v1.len();
-    {
-        let __a0 = 100_usize;
-        v1.resize_with(__a0, || 0_i32)
-    };
+    v1.resize_with(100_usize, || 0_i32);
     assert!(((v1.len()) == (100_usize)));
     assert!(((v1[(99_usize)]) == (0)));
     v1[(0_usize)] = 40;
@@ -213,26 +215,57 @@ unsafe fn main_0() -> i32 {
     };
     assert!(((v3.capacity()) == (201_usize)));
     assert!(((v3.len()) == (100_usize)));
-    assert!(((*((v2).last_mut().unwrap())) == (3)));
-    assert!(((*((v3).last_mut().unwrap())) == (1)));
-    assert!(((*((v6).last_mut().unwrap())) == (2_f64)));
-    let ref0: *mut f64 = ((v6).last_mut().unwrap());
+    assert!(
+        ((*{
+            let __n = v2.len() - 1;
+            &mut v2[__n]
+        }) == (3))
+    );
+    assert!(
+        ((*{
+            let __n = v3.len() - 1;
+            &mut v3[__n]
+        }) == (1))
+    );
+    assert!(
+        ((*{
+            let __n = v6.len() - 1;
+            &mut v6[__n]
+        }) == (2_f64))
+    );
+    let ref0: *mut f64 = {
+        let __n = v6.len() - 1;
+        &raw mut v6[__n]
+    };
     (*ref0) = 5_f64;
-    assert!(((*((v6).last_mut().unwrap())) == (5_f64)));
-    let mut x0: f64 = (*((v6).last_mut().unwrap()));
+    assert!(
+        ((*{
+            let __n = v6.len() - 1;
+            &mut v6[__n]
+        }) == (5_f64))
+    );
+    let mut x0: f64 = (*{
+        let __n = v6.len() - 1;
+        &mut v6[__n]
+    });
     assert!(((x0) == (5_f64)));
     x0 = 6_f64;
-    assert!(((*((v6).last_mut().unwrap())) == (5_f64)));
+    assert!(
+        ((*{
+            let __n = v6.len() - 1;
+            &mut v6[__n]
+        }) == (5_f64))
+    );
     let mut idx: i32 = 0;
-    assert!(((*(&mut (v6)[(idx as usize)] as *mut f64)) == (2_f64)));
-    assert!(((*(&mut (v6)[(s2).wrapping_sub(1_usize)] as *mut f64)) == (5_f64)));
-    let ref1: *mut f64 = (&mut (v6)[(s2).wrapping_sub(1_usize)] as *mut f64);
+    assert!(((v6[(idx as usize)]) == (2_f64)));
+    assert!(((v6[(s2).wrapping_sub(1_usize)]) == (5_f64)));
+    let ref1: *mut f64 = &raw mut v6[(s2).wrapping_sub(1_usize)];
     (*ref1) += 1.5_f64;
-    assert!(((*(&mut (v6)[(s2).wrapping_sub(1_usize)] as *mut f64)) == (6.5_f64)));
-    let mut x1: f64 = (*(&mut (v6)[(s2).wrapping_sub(1_usize)] as *mut f64));
+    assert!(((v6[(s2).wrapping_sub(1_usize)]) == (6.5_f64)));
+    let mut x1: f64 = v6[(s2).wrapping_sub(1_usize)];
     assert!(((x1) == (6.5_f64)));
     x1 -= 1.5_f64;
-    assert!(((*(&mut (v6)[(s2).wrapping_sub(1_usize)] as *mut f64)) == (6.5_f64)));
+    assert!(((v6[(s2).wrapping_sub(1_usize)]) == (6.5_f64)));
     let mut v7: Vec<i32> = Vec::new();
     let mut v8: Vec<i32> = Vec::new();
     {
@@ -335,10 +368,7 @@ unsafe fn main_0() -> i32 {
     };
     assert!(((v13.len()) == (5_usize)));
     assert!(((v13[(0_usize)] as i32) == (10)) && ((v13[(4_usize)] as i32) == (50)));
-    assert!(
-        ((((s1).wrapping_add(s2)).wrapping_add(((*(&mut (v2)[0_usize] as *mut i32)) as usize)))
-            == (103_usize))
-    );
+    assert!(((((s1).wrapping_add(s2)).wrapping_add((v2[0_usize] as usize))) == (103_usize)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

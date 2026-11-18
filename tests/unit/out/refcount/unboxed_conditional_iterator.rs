@@ -90,12 +90,9 @@ pub fn sum_4(v: Ptr<Vec<i32>>) -> i32 {
     {
         let it: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(v.decay().begin()));
         'loop_: while (*it.borrow()) != v.decay().end() {
-            s += ((*it.borrow()).iter_deref().read());
+            s += (({ (*it.borrow()).iter_deref() }).read());
             {
-                it.as_pointer().with_mut(|__it| {
-                    __it.iter_inc();
-                });
-                it.as_pointer()
+                (*it.borrow_mut()).iter_inc();
             };
         }
     }

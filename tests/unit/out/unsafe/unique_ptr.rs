@@ -27,8 +27,7 @@ impl SafePointer {
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut SafePointer) -> *mut SafePointer {
         {
-            *(&mut self.ptr as *mut Option<Box<i32>>) = (*_a0).ptr.take();
-            (&mut self.ptr as *mut Option<Box<i32>>)
+            self.ptr = (*_a0).ptr.take();
         };
         return &mut (*(self as *mut SafePointer));
     }
@@ -51,8 +50,7 @@ pub unsafe fn DoStuffWithSafePointer_0(safe_ptr: *mut Option<Box<SafePointer>>) 
     (*x2.as_deref()
         .map_or(::std::ptr::null_mut(), |v| v as *const i32 as *mut i32)) = 1;
     {
-        *(&mut x1 as *mut Option<Box<i32>>) = x2.take();
-        (&mut x1 as *mut Option<Box<i32>>)
+        x1 = x2.take();
     };
     let mut raw_ptr1: *mut i32 = (&mut (*x1
         .as_deref()
@@ -66,8 +64,7 @@ pub unsafe fn DoStuffWithSafePointer_0(safe_ptr: *mut Option<Box<SafePointer>>) 
         .ptr as *mut Option<Box<i32>>),
     ) {
         (__tmp_0,) => {
-            *(__tmp_0 as *mut Option<Box<i32>>) = x1.take();
-            (__tmp_0 as *mut Option<Box<i32>>)
+            (*__tmp_0) = x1.take();
         }
     };
     (unsafe {
@@ -94,8 +91,7 @@ pub unsafe fn DoStuffWithSafePointer_0(safe_ptr: *mut Option<Box<SafePointer>>) 
             .as_deref()
             .map_or(::std::ptr::null_mut(), |v| v as *const i32 as *mut i32)));
     {
-        *(&mut x4 as *mut Option<Box<i32>>) = x3.take();
-        (&mut x4 as *mut Option<Box<i32>>)
+        x4 = x3.take();
     };
     let mut raw_ptr2: *mut i32 = (&mut (*x4
         .as_deref()

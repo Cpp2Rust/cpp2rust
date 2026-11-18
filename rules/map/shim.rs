@@ -232,26 +232,26 @@ impl<K: CppLess + 'static, V> Map<K, Entry<K, V>> {
 // their arguments are evaluated, which may access the map.
 impl<K: CppLess + 'static, V: 'static> Map<K, Entry<K, V>> {
     // operator[] with a key that is copied if inserted.
-    pub fn subscript(map: Ptr<Self>, key: Ptr<K>) -> Ptr<V>
+    pub fn subscript(&mut self, key: Ptr<K>) -> Ptr<V>
     where
         K: Clone + ByteRepr,
         V: Default,
     {
-        map.with_mut(|map| match map.search(&key) {
+        match self.search(&key) {
             Ok(node) => Self::mapped(&node),
-            Err(prev) => map.insert_after(prev, key.read()),
-        })
+            Err(prev) => self.insert_after(prev, key.read()),
+        }
     }
 
     // operator[] with a key that is moved, by new_key, if inserted.
-    pub fn subscript_move(map: Ptr<Self>, key: Ptr<K>, new_key: impl FnOnce(Ptr<K>) -> K) -> Ptr<V>
+    pub fn subscript_move(&mut self, key: Ptr<K>, new_key: impl FnOnce(Ptr<K>) -> K) -> Ptr<V>
     where
         V: Default,
     {
-        map.with_mut(|map| match map.search(&key) {
+        match self.search(&key) {
             Ok(node) => Self::mapped(&node),
-            Err(prev) => map.insert_after(prev, new_key(key)),
-        })
+            Err(prev) => self.insert_after(prev, new_key(key)),
+        }
     }
 
     // emplace and try_emplace: inserts the entry that `entry` makes, unless

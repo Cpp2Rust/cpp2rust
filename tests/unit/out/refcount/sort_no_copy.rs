@@ -389,17 +389,13 @@ fn main_0() -> i32 {
     );
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
     let bag_map: Value<Map<Bag, (Value<Bag>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
-    Map::subscript_move(
-        bag_map.as_pointer(),
-        bag_vec.decay().offset(2_usize),
-        |__k| cpp_move!(__k),
-    )
+    match (bag_vec.decay().offset(2_usize),) {
+        (__tmp_11,) => ({ (*bag_map.borrow_mut()).subscript_move(__tmp_11, |__k| cpp_move!(__k)) }),
+    }
     .write(2);
-    Map::subscript_move(
-        bag_map.as_pointer(),
-        bag_vec.decay().offset(0_usize),
-        |__k| cpp_move!(__k),
-    )
+    match (bag_vec.decay().offset(0_usize),) {
+        (__tmp_12,) => ({ (*bag_map.borrow_mut()).subscript_move(__tmp_12, |__k| cpp_move!(__k)) }),
+    }
     .write(0);
     assert!(
         ((*(*bag_map
@@ -435,11 +431,11 @@ fn main_0() -> i32 {
         (*moves.borrow_mut()).push(__init)
     };
     match ({ moves.decay().begin() },) {
-        (mut __tmp_11,) => {
-            let __n = moves.decay().end().iter_distance(&__tmp_11);
+        (mut __tmp_13,) => {
+            let __n = moves.decay().end().iter_distance(&__tmp_13);
             let mut __order: Vec<isize> = (0..__n).collect();
-            __order.sort_by(|&__x, &__y| cpp_cmp(&__tmp_11.iter_at(__x), &__tmp_11.iter_at(__y)));
-            reorder(__order, |__i| __tmp_11.iter_at(__i));
+            __order.sort_by(|&__x, &__y| cpp_cmp(&__tmp_13.iter_at(__x), &__tmp_13.iter_at(__y)));
+            reorder(__order, |__i| __tmp_13.iter_at(__i));
         }
     };
     assert!(
@@ -449,12 +445,12 @@ fn main_0() -> i32 {
         })
     );
     match ({ moves.decay().begin() },) {
-        (mut __tmp_12,) => {
-            let __n = moves.decay().end().iter_distance(&__tmp_12);
+        (mut __tmp_14,) => {
+            let __n = moves.decay().end().iter_distance(&__tmp_14);
             let mut __order: Vec<isize> = (0..__n).collect();
             __order.sort_by(|&__x, &__y| {
-                let __a = __tmp_12.iter_at(__x);
-                let __b = __tmp_12.iter_at(__y);
+                let __a = __tmp_14.iter_at(__x);
+                let __b = __tmp_14.iter_at(__y);
                 if FnPtr::<fn(Ptr<MoveOnly>, Ptr<MoveOnly>) -> bool>::new(
                     |a: Ptr<MoveOnly>, b: Ptr<MoveOnly>| -> bool {
                         {
@@ -479,7 +475,7 @@ fn main_0() -> i32 {
                     std::cmp::Ordering::Equal
                 }
             });
-            reorder(__order, |__i| __tmp_12.iter_at(__i));
+            reorder(__order, |__i| __tmp_14.iter_at(__i));
         }
     };
     assert!(
@@ -495,12 +491,9 @@ pub trait BagImpl {
 }
 impl BagImpl for Ptr<Bag> {
     fn move_assign(&self, _a0: Ptr<Bag>) -> Ptr<Bag> {
-        {
-            field_ref!((*self), items)
-                .as_pointer()
-                .write(field!(_a0, items).with_mut(std::mem::take));
-            field_ref!((*self), items).as_pointer()
-        };
+        field!((*self), items).with_mut(|__b0| {
+            (*__b0) = field!(_a0, items).with_mut(std::mem::take);
+        });
         return (*self).clone();
     }
 }

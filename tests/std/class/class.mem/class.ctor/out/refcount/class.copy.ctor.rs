@@ -40,7 +40,7 @@ pub fn test_1() {
 }
 pub fn read_by_value_2(it: RandomAccessIterator<i32>) -> i32 {
     let it: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(it));
-    return ((*it.borrow()).iter_deref().read());
+    return (({ (*it.borrow()).iter_deref() }).read());
 }
 pub fn test_3() {
     let source: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::from([1, 2, 3])));
@@ -50,10 +50,10 @@ pub fn test_3() {
     let values: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::from([7, 8])));
     let it: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(values.decay().begin()));
     assert!(({ (({ read_by_value_2((*it.borrow()).clone(),) }) == 7) }));
-    assert!(({ (((*it.borrow()).iter_deref().read()) == 7) }));
+    assert!(((({ (*it.borrow()).iter_deref() }).read()) == 7));
     let moved_it: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new((*it.borrow()).clone()));
-    assert!(({ (((*moved_it.borrow()).iter_deref().read()) == 7) }));
-    assert!(({ (((*it.borrow()).iter_deref().read()) == 7) }));
+    assert!(((({ (*moved_it.borrow()).iter_deref() }).read()) == 7));
+    assert!(((({ (*it.borrow()).iter_deref() }).read()) == 7));
 }
 pub fn main() {
     __cpp2rust_init_globals();

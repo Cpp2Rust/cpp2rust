@@ -244,13 +244,11 @@ impl MinHeap {
         self.size = (*_a0).size;
         self.capacity = (*_a0).capacity;
         {
-            *(&mut self.arr as *mut Option<Box<[*mut MinHeapNode]>>) = (*_a0).arr.take();
-            (&mut self.arr as *mut Option<Box<[*mut MinHeapNode]>>)
+            self.arr = (*_a0).arr.take();
         };
         self.next = (*_a0).next;
         {
-            *(&mut self.alloc as *mut Option<Box<[MinHeapNode]>>) = (*_a0).alloc.take();
-            (&mut self.alloc as *mut Option<Box<[MinHeapNode]>>)
+            self.alloc = (*_a0).alloc.take();
         };
         return &mut (*(self as *mut MinHeap));
     }

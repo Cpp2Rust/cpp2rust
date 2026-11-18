@@ -15,17 +15,20 @@ fn main_0() -> i32 {
     let sentinel: Value<i32> = Rc::new(RefCell::new((N / 2)));
     let m: Value<Map<i32, (Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
     let __rhs = (*sentinel.borrow());
-    Map::subscript(m.as_pointer(), sentinel.as_pointer()).write(__rhs);
+    ({ (*m.borrow_mut()).subscript(sentinel.as_pointer()) }).write(__rhs);
     let it: Value<BidirectionalIterator<(Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(
         m.as_pointer()
             .with(|__m: &Map<i32, (Value<i32>, Value<i32>)>| __m.find(&sentinel.as_pointer())),
     ));
-    let mut p: Ptr<i32> = ((*(*it.borrow()).iter_deref().upgrade().deref())
+    let mut p: Ptr<i32> = ((*({ (*it.borrow()).iter_deref() }).upgrade().deref())
         .1
         .as_pointer());
     assert!(
         ({
-            ((*(*(*it.borrow()).iter_deref().upgrade().deref()).1.borrow()) == (*sentinel.borrow()))
+            ((*(*({ (*it.borrow()).iter_deref() }).upgrade().deref())
+                .1
+                .borrow())
+                == (*sentinel.borrow()))
                 && (!(Ptr::<i8>::from_string_literal(
                     b"iterator does not have correct value before insert",
                 ))
@@ -45,7 +48,7 @@ fn main_0() -> i32 {
         let i: Value<i32> = Rc::new(RefCell::new(0));
         'loop_: while ((*i.borrow()) < (*sentinel.borrow())) {
             let __rhs = (*i.borrow());
-            Map::subscript(m.as_pointer(), i.as_pointer()).write(__rhs);
+            ({ (*m.borrow_mut()).subscript(i.as_pointer()) }).write(__rhs);
             (*i.borrow_mut()).prefix_inc();
         }
     }
@@ -53,13 +56,16 @@ fn main_0() -> i32 {
         let i: Value<i32> = Rc::new(RefCell::new(((*sentinel.borrow()) + 1)));
         'loop_: while ((*i.borrow()) <= N) {
             let __rhs = (*i.borrow());
-            Map::subscript(m.as_pointer(), i.as_pointer()).write(__rhs);
+            ({ (*m.borrow_mut()).subscript(i.as_pointer()) }).write(__rhs);
             (*i.borrow_mut()).prefix_inc();
         }
     }
     assert!(
         ({
-            ((*(*(*it.borrow()).iter_deref().upgrade().deref()).1.borrow()) != 0)
+            ((*(*({ (*it.borrow()).iter_deref() }).upgrade().deref())
+                .1
+                .borrow())
+                != 0)
                 && (!(Ptr::<i8>::from_string_literal(
                     b"in refcount, iterator points to index 0 instead of sentinel",
                 ))
@@ -68,7 +74,10 @@ fn main_0() -> i32 {
     );
     assert!(
         ({
-            ((*(*(*it.borrow()).iter_deref().upgrade().deref()).1.borrow()) == (*sentinel.borrow()))
+            ((*(*({ (*it.borrow()).iter_deref() }).upgrade().deref())
+                .1
+                .borrow())
+                == (*sentinel.borrow()))
                 && (!(Ptr::<i8>::from_string_literal(
                     b"iterator does not have correct value after insert",
                 ))
@@ -84,10 +93,10 @@ fn main_0() -> i32 {
                 .is_null())
         })
     );
-    (*(*(*it.borrow()).iter_deref().upgrade().deref())
+    (*(*({ (*it.borrow()).iter_deref() }).upgrade().deref())
         .1
         .borrow_mut()) = 57005;
-    assert!(((Map::subscript(m.as_pointer(), sentinel.as_pointer()).read()) == 57005));
+    assert!(((({ (*m.borrow_mut()).subscript(sentinel.as_pointer()) }).read()) == 57005));
     assert!(((p.read()) == 57005));
     assert!(({ ((*m.borrow()).len() == (((N + 1) as u32) as usize)) }));
     let mut prev: i32 = -1_i32;

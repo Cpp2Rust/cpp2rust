@@ -36,8 +36,7 @@ impl Elem {
             }
         };
         {
-            *(&mut self.coeffs as *mut Vec<i16>) = std::mem::take(&mut (*_a0).coeffs);
-            (&mut self.coeffs as *mut Vec<i16>)
+            self.coeffs = std::mem::take(&mut (*_a0).coeffs);
         };
         return &mut (*(self as *mut Elem));
     }
@@ -79,17 +78,14 @@ impl State {
         };
         {
             for __i in 0..3 {
-                *&mut (*(&mut self.arr as *mut [i32; 3]))[__i] = (*&mut (&mut (*_a0)).arr[__i]);
+                *&mut self.arr[__i] = (*&mut (&mut (*_a0)).arr[__i]);
             }
-            (&mut self.arr as *mut [i32; 3])
         };
         {
-            *(&mut self.elems as *mut Vec<Elem>) = std::mem::take(&mut (*_a0).elems);
-            (&mut self.elems as *mut Vec<Elem>)
+            self.elems = std::mem::take(&mut (*_a0).elems);
         };
         {
-            *(&mut self.rows as *mut Vec<Vec<i32>>) = std::mem::take(&mut (*_a0).rows);
-            (&mut self.rows as *mut Vec<Vec<i32>>)
+            self.rows = std::mem::take(&mut (*_a0).rows);
         };
         return &mut (*(self as *mut State));
     }
@@ -133,21 +129,15 @@ pub unsafe fn fill_1(mut s: *mut State) {
         }
     }
     (&mut (*s)).arr[(1_usize)] = 7;
-    {
-        let __a0 = 3_usize;
-        (*s).elems.resize_with(__a0, || <Elem>::default())
-    };
+    (*s).elems.resize_with(3_usize, || <Elem>::default());
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (3)) {
             (&mut (*s)).elems[(i as usize)].id = i;
             (&mut (*s)).elems[(i as usize)].hist[(i) as usize] = ((10) * (i));
-            {
-                let __a0 = 4_usize;
-                (&mut (*s)).elems[(i as usize)]
-                    .coeffs
-                    .resize(__a0, (i as i16))
-            };
+            (&mut (*s)).elems[(i as usize)]
+                .coeffs
+                .resize(4_usize, (i as i16));
             i.prefix_inc();
         }
     }
@@ -265,10 +255,7 @@ unsafe fn main_0() -> i32 {
         .map(|_| <Elem>::default())
         .collect::<Vec<_>>();
     let mut first: *mut Elem = (&mut elems[(0_usize)] as *mut Elem);
-    {
-        let __a0 = 2_usize;
-        elems[(1_usize)].coeffs.resize_with(__a0, || 0_i16)
-    };
+    elems[(1_usize)].coeffs.resize_with(2_usize, || 0_i16);
     elems[(1_usize)].coeffs[(1_usize)] = 4_i16;
     elems[(1_usize)].hist[(2) as usize] = ((elems[(1_usize)].coeffs[(1_usize)] as i32) + (1));
     assert!(
@@ -310,9 +297,8 @@ unsafe fn main_0() -> i32 {
     cc[(2_usize)].v = 8;
     {
         for __i in 0..3 {
-            (*&mut (*(&mut cb as *mut [Counted; 3]))[__i]).copy_assign(&cc[__i]);
+            (*&mut cb[__i]).copy_assign(&cc[__i]);
         }
-        (&mut cb as *mut [Counted; 3])
     };
     assert!(
         (((*std::cell::LazyCell::force_mut(&mut *&raw mut copy_assigns_4)) == (3))
@@ -321,9 +307,8 @@ unsafe fn main_0() -> i32 {
     );
     {
         for __i in 0..3 {
-            (*&mut (*(&mut ca as *mut [Counted; 3]))[__i]).move_assign(&mut cb[__i]);
+            (*&mut ca[__i]).move_assign(&mut cb[__i]);
         }
-        (&mut ca as *mut [Counted; 3])
     };
     assert!(
         (((*std::cell::LazyCell::force_mut(&mut *&raw mut move_assigns_5)) == (3))
@@ -346,10 +331,8 @@ unsafe fn main_0() -> i32 {
     let mut vc: [Vec<i32>; 2] = std::array::from_fn::<_, 2, _>(|_| Default::default());
     {
         for __i in 0..2 {
-            *&mut (*(&mut vc as *mut [Vec<i32>; 2]))[__i] =
-                <Vec<i32> as MoveCtorUnsafe>::move_ctor(&mut vb[__i]);
+            *&mut vc[__i] = <Vec<i32> as MoveCtorUnsafe>::move_ctor(&mut vb[__i]);
         }
-        (&mut vc as *mut [Vec<i32>; 2])
     };
     assert!(((vc[(0_usize)].len()) == (1_usize)) && (vb[(0_usize)].is_empty()));
     return 0;

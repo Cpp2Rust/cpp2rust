@@ -56,12 +56,9 @@ pub trait NonCopyImpl {
 }
 impl NonCopyImpl for Ptr<NonCopy> {
     fn move_assign(&self, _a0: Ptr<NonCopy>) -> Ptr<NonCopy> {
-        {
-            field_ref!((*self), data)
-                .as_pointer()
-                .write(field!(_a0, data).with_mut(std::mem::take));
-            field_ref!((*self), data).as_pointer()
-        };
+        field!((*self), data).with_mut(|__b0| {
+            (*__b0) = field!(_a0, data).with_mut(std::mem::take);
+        });
         field!((*self), tag).write({ { (*_a0.upgrade().deref()).tag } });
         return (*self).clone();
     }

@@ -3,22 +3,22 @@
 
 use libcc2rs::*;
 
-fn f2<T1>(a0: Ptr<T1>) -> Ptr<T1> {
+fn f2<T1>(a0: &mut T1) -> &mut T1 {
     a0
 }
 
-fn f3<T1>(a0: Ptr<T1>) -> Ptr<T1> {
+fn f3<T1>(a0: &mut T1) -> &mut T1 {
     a0
 }
 
-fn f5<T1>(a0: Ptr<T1>) -> Ptr<T1> {
+fn f5<T1>(a0: &mut T1) -> &mut T1 {
     a0
 }
 
-fn f6<T1>(a0: Ptr<T1>) -> Ptr<T1> {
+fn f6<T1>(a0: &T1) -> &T1 {
     a0
 }
 
-fn f7<T1, T2>(a0: Ptr<T2>) -> Ptr<T2> {
+fn f7<T1, T2>(a0: &mut T2) -> &mut T2 {
     a0
 }

@@ -26,8 +26,7 @@ impl Outer {
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Outer) -> *mut Outer {
         {
-            *(&mut self.inner as *mut Option<Box<Inner>>) = (*_a0).inner.take();
-            (&mut self.inner as *mut Option<Box<Inner>>)
+            self.inner = (*_a0).inner.take();
         };
         return &mut (*(self as *mut Outer));
     }

@@ -22,8 +22,7 @@ pub unsafe fn matalloc_0(mut n: i32, mut p: i32, mut e: i32) -> Option<Box<[Opti
                     as *mut Option<Box<[i32]>>),
             ) {
                 (__tmp_0, __tmp_1) => {
-                    *(__tmp_0 as *mut Option<Box<[i32]>>) = (*__tmp_1).take();
-                    (__tmp_0 as *mut Option<Box<[i32]>>)
+                    (*__tmp_0) = (*__tmp_1).take();
                 }
             };
             {

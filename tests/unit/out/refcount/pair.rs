@@ -65,11 +65,8 @@ fn main_0() -> i32 {
         (__tmp_1, __tmp_2) => {
             let __first = cpp_move!((*__tmp_2.upgrade().deref()).0.as_pointer());
             let __second = (((*__tmp_2.upgrade().deref()).1.as_pointer().read()) as u64);
-            __tmp_1.with(|__dst| {
-                *__dst.0.borrow_mut() = __first;
-                *__dst.1.borrow_mut() = __second;
-            });
-            (__tmp_1).clone()
+            *(*__tmp_1.upgrade().deref()).0.borrow_mut() = __first;
+            *(*__tmp_1.upgrade().deref()).1.borrow_mut() = __second;
         }
     };
     assert!(
@@ -90,22 +87,16 @@ fn main_0() -> i32 {
     {
         let __first = (*q.borrow()).0.borrow().clone();
         let __second = (*q.borrow()).1.borrow().clone();
-        p.as_pointer().with(|__dst| {
-            *__dst.0.borrow_mut() = __first;
-            *__dst.1.borrow_mut() = __second;
-        });
-        p.as_pointer()
+        *(*p.borrow()).0.borrow_mut() = __first;
+        *(*p.borrow()).1.borrow_mut() = __second;
     };
     assert!(((f.read()) == 3));
     let alias: Ptr<(Value<i32>, Value<i32>)> = p.as_pointer();
     {
         let __first = (*alias.upgrade().deref()).0.borrow().clone();
         let __second = (*alias.upgrade().deref()).1.borrow().clone();
-        p.as_pointer().with(|__dst| {
-            *__dst.0.borrow_mut() = __first;
-            *__dst.1.borrow_mut() = __second;
-        });
-        p.as_pointer()
+        *(*p.borrow()).0.borrow_mut() = __first;
+        *(*p.borrow()).1.borrow_mut() = __second;
     };
     assert!(((f.read()) == 3));
     let a: Value<(Value<i32>, Value<i32>)> = Rc::new(RefCell::new((
@@ -139,11 +130,8 @@ fn main_0() -> i32 {
         let __src_second: Ptr<i32> = (*s.borrow()).1.as_pointer();
         let __first = cpp_move!(__src_first);
         let __second = cpp_move!(__src_second);
-        d.as_pointer().with(|__dst| {
-            *__dst.0.borrow_mut() = __first;
-            *__dst.1.borrow_mut() = __second;
-        });
-        d.as_pointer()
+        *(*d.borrow()).0.borrow_mut() = __first;
+        *(*d.borrow()).1.borrow_mut() = __second;
     };
     assert!(((pd.read()) == 3));
     ps.write(5);
@@ -161,11 +149,8 @@ fn main_0() -> i32 {
     {
         let __first = (((*narrow.borrow()).0.as_pointer().read()) as i64);
         let __second = (((*narrow.borrow()).1.as_pointer().read()) as i64);
-        w.as_pointer().with(|__dst| {
-            *__dst.0.borrow_mut() = __first;
-            *__dst.1.borrow_mut() = __second;
-        });
-        w.as_pointer()
+        *(*w.borrow()).0.borrow_mut() = __first;
+        *(*w.borrow()).1.borrow_mut() = __second;
     };
     assert!(((pw.read()) == 3_i64));
     let m: Value<(Value<i32>, Value<i32>)> = Rc::new(RefCell::new((
@@ -175,20 +160,15 @@ fn main_0() -> i32 {
     {
         let __first = (((*m.borrow()).0.as_pointer().read()) as i64);
         let __second = (((*m.borrow()).1.as_pointer().read()) as i64);
-        w.as_pointer().with(|__dst| {
-            *__dst.0.borrow_mut() = __first;
-            *__dst.1.borrow_mut() = __second;
-        });
-        w.as_pointer()
+        *(*w.borrow()).0.borrow_mut() = __first;
+        *(*w.borrow()).1.borrow_mut() = __second;
     };
     assert!(((pw.read()) == 5_i64));
     (*(*{
         let __first = (*q.borrow()).0.borrow().clone();
         let __second = (*q.borrow()).1.borrow().clone();
-        p.as_pointer().with(|__dst| {
-            *__dst.0.borrow_mut() = __first;
-            *__dst.1.borrow_mut() = __second;
-        });
+        *(*p.borrow()).0.borrow_mut() = __first;
+        *(*p.borrow()).1.borrow_mut() = __second;
         p.as_pointer()
     }
     .upgrade()
@@ -201,10 +181,8 @@ fn main_0() -> i32 {
         let __src_second: Ptr<i32> = (*q.borrow()).1.as_pointer();
         let __first = cpp_move!(__src_first);
         let __second = cpp_move!(__src_second);
-        d.as_pointer().with(|__dst| {
-            *__dst.0.borrow_mut() = __first;
-            *__dst.1.borrow_mut() = __second;
-        });
+        *(*d.borrow()).0.borrow_mut() = __first;
+        *(*d.borrow()).1.borrow_mut() = __second;
         d.as_pointer()
     }
     .upgrade()
@@ -215,10 +193,8 @@ fn main_0() -> i32 {
     (*(*{
         let __first = (((*narrow.borrow()).0.as_pointer().read()) as i64);
         let __second = (((*narrow.borrow()).1.as_pointer().read()) as i64);
-        w.as_pointer().with(|__dst| {
-            *__dst.0.borrow_mut() = __first;
-            *__dst.1.borrow_mut() = __second;
-        });
+        *(*w.borrow()).0.borrow_mut() = __first;
+        *(*w.borrow()).1.borrow_mut() = __second;
         w.as_pointer()
     }
     .upgrade()
@@ -229,10 +205,8 @@ fn main_0() -> i32 {
     (*(*{
         let __first = (((*narrow.borrow()).0.as_pointer().read()) as i64);
         let __second = (((*narrow.borrow()).1.as_pointer().read()) as i64);
-        w.as_pointer().with(|__dst| {
-            *__dst.0.borrow_mut() = __first;
-            *__dst.1.borrow_mut() = __second;
-        });
+        *(*w.borrow()).0.borrow_mut() = __first;
+        *(*w.borrow()).1.borrow_mut() = __second;
         w.as_pointer()
     }
     .upgrade()

@@ -37,7 +37,7 @@ fn main_0() -> i32 {
         }),
     ));
     assert!((*it.borrow()) != v.decay().end());
-    assert!(({ (((*it.borrow()).iter_deref().read()) == 7) }));
+    assert!(((({ (*it.borrow()).iter_deref() }).read()) == 7));
     match ({ v.decay().begin() },) {
         (mut __tmp_3,) => {
             let __n = v.decay().end().iter_distance(&__tmp_3);

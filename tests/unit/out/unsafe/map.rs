@@ -126,8 +126,7 @@ unsafe fn main_0() -> i32 {
     let mut next: UnsafeBidirectionalIterator<(i16, u32)> = m.erase(&(cit).clone());
     assert!(next == m.find(&8_i16));
     {
-        *(&mut next as *mut UnsafeBidirectionalIterator<(i16, u32)>) = m.erase(&(next).clone());
-        (&mut next as *mut UnsafeBidirectionalIterator<(i16, u32)>)
+        next = m.erase(&(next).clone());
     };
     assert!(next == m.end());
     assert!((((*r).len()) == (3_usize)));
@@ -234,16 +233,16 @@ unsafe fn main_0() -> i32 {
     assert!(((points.len()) == (2_usize)));
     let mut mi: UnsafeBidirectionalIterator<(i32, i32)> = m3.begin();
     let mr: *mut UnsafeBidirectionalIterator<(i32, i32)> = &mut (*{
-        (*(&mut mi as *mut UnsafeBidirectionalIterator<(i32, i32)>)).iter_inc();
-        (&mut mi as *mut UnsafeBidirectionalIterator<(i32, i32)>)
+        mi.iter_inc();
+        &mut mi
     });
     assert!(
         ((mr) == (&mut mi as *mut UnsafeBidirectionalIterator<(i32, i32)>))
             && (((*mi.iter_deref()).0) == (4))
     );
     let md: *mut UnsafeBidirectionalIterator<(i32, i32)> = &mut (*{
-        (*(&mut mi as *mut UnsafeBidirectionalIterator<(i32, i32)>)).iter_dec();
-        (&mut mi as *mut UnsafeBidirectionalIterator<(i32, i32)>)
+        mi.iter_dec();
+        &mut mi
     });
     assert!(
         ((md) == (&mut mi as *mut UnsafeBidirectionalIterator<(i32, i32)>))

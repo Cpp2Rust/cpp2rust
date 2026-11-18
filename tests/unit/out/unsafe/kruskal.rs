@@ -295,12 +295,10 @@ impl DisjointSet {
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut DisjointSet) -> *mut DisjointSet {
         {
-            *(&mut self.rank as *mut Option<Box<[i32]>>) = (*_a0).rank.take();
-            (&mut self.rank as *mut Option<Box<[i32]>>)
+            self.rank = (*_a0).rank.take();
         };
         {
-            *(&mut self.parent as *mut Option<Box<[i32]>>) = (*_a0).parent.take();
-            (&mut self.parent as *mut Option<Box<[i32]>>)
+            self.parent = (*_a0).parent.take();
         };
         self.n = (*_a0).n;
         return &mut (*(self as *mut DisjointSet));
@@ -324,8 +322,7 @@ impl Graph {
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Graph) -> *mut Graph {
         {
-            *(&mut self.edges as *mut Option<Box<[Edge]>>) = (*_a0).edges.take();
-            (&mut self.edges as *mut Option<Box<[Edge]>>)
+            self.edges = (*_a0).edges.take();
         };
         self.V = (*_a0).V;
         self.E = (*_a0).E;

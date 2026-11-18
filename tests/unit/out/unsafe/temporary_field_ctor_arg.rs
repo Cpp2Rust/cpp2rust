@@ -20,8 +20,7 @@ impl Outer {
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Outer) -> *mut Outer {
         {
-            *(&mut self.values as *mut Vec<i32>) = std::mem::take(&mut (*_a0).values);
-            (&mut self.values as *mut Vec<i32>)
+            self.values = std::mem::take(&mut (*_a0).values);
         };
         return &mut (*(self as *mut Outer));
     }

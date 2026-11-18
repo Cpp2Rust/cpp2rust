@@ -97,12 +97,9 @@ pub trait SImpl {
 }
 impl SImpl for Ptr<S> {
     fn move_assign(&self, _a0: Ptr<S>) -> Ptr<S> {
-        {
-            field_ref!((*self), v)
-                .as_pointer()
-                .write(field!(_a0, v).with_mut(std::mem::take));
-            field_ref!((*self), v).as_pointer()
-        };
+        field!((*self), v).with_mut(|__b0| {
+            (*__b0) = field!(_a0, v).with_mut(std::mem::take);
+        });
         match ({ (array_field_ptr!((*self), n)).to_any() },) {
             (mut __tmp_0,) => {
                 __tmp_0.memcpy(&(array_field_ptr!(_a0, n)).to_any(), 8_usize);
@@ -121,12 +118,9 @@ impl TImpl for Ptr<T> {
         return ((*(*self).upgrade().deref()).v.len() as i32);
     }
     fn move_assign(&self, _a0: Ptr<T>) -> Ptr<T> {
-        {
-            field_ref!((*self), v)
-                .as_pointer()
-                .write(field!(_a0, v).with_mut(std::mem::take));
-            field_ref!((*self), v).as_pointer()
-        };
+        field!((*self), v).with_mut(|__b0| {
+            (*__b0) = field!(_a0, v).with_mut(std::mem::take);
+        });
         return (*self).clone();
     }
 }

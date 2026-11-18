@@ -43,14 +43,8 @@ pub fn fft_3(a: Ptr<Option<Value<Box<[Complex]>>>>, mut N: i32) -> Option<Value<
     )));
     if (N == 1) {
         let __rhs = Complex {
-            re: (*a.upgrade().deref())
-                .decay()
-                .offset(0_usize)
-                .with(|__s| __s.re),
-            img: (*a.upgrade().deref())
-                .decay()
-                .offset(0_usize)
-                .with(|__s| __s.img),
+            re: ({ (*a.upgrade().deref()).decay().offset(0_usize) }).with(|__s| __s.re),
+            img: ({ (*a.upgrade().deref()).decay().offset(0_usize) }).with(|__s| __s.img),
         };
         y.decay().offset(0_usize).write(__rhs);
         return y.take();
@@ -89,27 +83,27 @@ pub fn fft_3(a: Ptr<Option<Value<Box<[Complex]>>>>, mut N: i32) -> Option<Value<
         let mut i: i32 = 0;
         'loop_: while (i < (N / 2)) {
             let __rhs = Complex {
-                re: (*a.upgrade().deref())
-                    .decay()
-                    .offset(((i * 2) as usize))
+                re: ({ (*a.upgrade().deref()).decay().offset(((i * 2) as usize)) })
                     .with(|__s| __s.re),
-                img: (*a.upgrade().deref())
-                    .decay()
-                    .offset(((i * 2) as usize))
+                img: ({ (*a.upgrade().deref()).decay().offset(((i * 2) as usize)) })
                     .with(|__s| __s.img),
             };
-            (*A0.borrow()).decay().offset((i as usize)).write(__rhs);
+            ({ (*A0.borrow()).decay().offset((i as usize)) }).write(__rhs);
             let __rhs = Complex {
-                re: (*a.upgrade().deref())
-                    .decay()
-                    .offset((((i * 2) + 1) as usize))
-                    .with(|__s| __s.re),
-                img: (*a.upgrade().deref())
-                    .decay()
-                    .offset((((i * 2) + 1) as usize))
-                    .with(|__s| __s.img),
+                re: ({
+                    (*a.upgrade().deref())
+                        .decay()
+                        .offset((((i * 2) + 1) as usize))
+                })
+                .with(|__s| __s.re),
+                img: ({
+                    (*a.upgrade().deref())
+                        .decay()
+                        .offset((((i * 2) + 1) as usize))
+                })
+                .with(|__s| __s.img),
             };
-            (*A1.borrow()).decay().offset((i as usize)).write(__rhs);
+            ({ (*A1.borrow()).decay().offset((i as usize)) }).write(__rhs);
             i.postfix_inc();
         }
     }
@@ -172,7 +166,7 @@ fn main_0() -> i32 {
                 re: ((i as f64) + 1_f64),
                 img: 0_f64,
             };
-            (*a.borrow()).decay().offset((i as usize)).write(__rhs);
+            ({ (*a.borrow()).decay().offset((i as usize)) }).write(__rhs);
             i.postfix_inc();
         }
     }

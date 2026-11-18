@@ -65,8 +65,7 @@ impl S {
             }
         };
         {
-            *(&mut self.v as *mut Vec<i32>) = std::mem::take(&mut (*_a0).v);
-            (&mut self.v as *mut Vec<i32>)
+            self.v = std::mem::take(&mut (*_a0).v);
         };
         return &mut (*(self as *mut S));
     }

@@ -69,12 +69,9 @@ pub trait SImpl {
 impl SImpl for Ptr<S> {
     fn move_assign(&self, _a0: Ptr<S>) -> Ptr<S> {
         field!((*self), tag).write({ { (*_a0.upgrade().deref()).tag } });
-        {
-            field_ref!((*self), v)
-                .as_pointer()
-                .write(field!(_a0, v).with_mut(std::mem::take));
-            field_ref!((*self), v).as_pointer()
-        };
+        field!((*self), v).with_mut(|__b0| {
+            (*__b0) = field!(_a0, v).with_mut(std::mem::take);
+        });
         return (*self).clone();
     }
 }

@@ -2484,7 +2484,12 @@ bool IsTransparentStdCall(clang::ASTContext &ctx, const clang::CallExpr *expr) {
       clang::isa<clang::CXXMemberCallExpr>(expr) || expr->getNumArgs() == 0) {
     return false;
   }
-  auto *ph = std::get_if<TranslationRule::PlaceholderFragment>(&rule->body[0]);
+  // The rule returns its argument, or a reference to it.
+  auto *operand = rule->refExprOperand();
+  auto &body = operand ? *operand : rule->body;
+  auto *ph = body.size() == 1
+                 ? std::get_if<TranslationRule::PlaceholderFragment>(&body[0])
+                 : nullptr;
   return ph && ph->n == 0 &&
          ctx.hasSameUnqualifiedType(expr->getArg(0)->getType(),
                                     expr->getType());

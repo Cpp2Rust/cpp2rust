@@ -176,12 +176,9 @@ pub trait VecHolderImpl {
 }
 impl VecHolderImpl for Ptr<VecHolder> {
     fn move_assign(&self, _a0: Ptr<VecHolder>) -> Ptr<VecHolder> {
-        {
-            field_ref!((*self), items)
-                .as_pointer()
-                .write(field!(_a0, items).with_mut(std::mem::take));
-            field_ref!((*self), items).as_pointer()
-        };
+        field!((*self), items).with_mut(|__b0| {
+            (*__b0) = field!(_a0, items).with_mut(std::mem::take);
+        });
         return (*self).clone();
     }
 }

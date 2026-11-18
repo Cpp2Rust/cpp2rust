@@ -223,7 +223,7 @@ fn main_0() -> i32 {
         let i: Value<i32> = Rc::new(RefCell::new(0));
         'loop_: while ((*i.borrow()) < N) {
             let __rhs = (*i.borrow());
-            Map::subscript(map1.as_pointer(), i.as_pointer()).write(__rhs);
+            ({ (*map1.borrow_mut()).subscript(i.as_pointer()) }).write(__rhs);
             (*i.borrow_mut()).prefix_inc();
         }
     }
@@ -233,9 +233,11 @@ fn main_0() -> i32 {
         let i: Value<i32> = Rc::new(RefCell::new(0));
         'loop_: while ((*i.borrow()) < N) {
             assert!(
-                ({ ((Map::subscript(map2.as_pointer(), i.as_pointer()).read()) == (*i.borrow())) })
+                ({
+                    ((({ (*map2.borrow_mut()).subscript(i.as_pointer()) }).read()) == (*i.borrow()))
+                })
             );
-            Map::subscript(map2.as_pointer(), i.as_pointer()).with_mut(|__v| {
+            ({ (*map2.borrow_mut()).subscript(i.as_pointer()) }).with_mut(|__v| {
                 __v.prefix_inc();
             });
             (*i.borrow_mut()).prefix_inc();
@@ -245,11 +247,13 @@ fn main_0() -> i32 {
         let i: Value<i32> = Rc::new(RefCell::new(0));
         'loop_: while ((*i.borrow()) < N) {
             assert!(
-                ({ ((Map::subscript(map1.as_pointer(), i.as_pointer()).read()) == (*i.borrow())) })
+                ({
+                    ((({ (*map1.borrow_mut()).subscript(i.as_pointer()) }).read()) == (*i.borrow()))
+                })
             );
             assert!(
                 ({
-                    ((Map::subscript(map2.as_pointer(), i.as_pointer()).read())
+                    ((({ (*map2.borrow_mut()).subscript(i.as_pointer()) }).read())
                         == ((*i.borrow()) + 1))
                 })
             );
@@ -310,23 +314,22 @@ fn main_0() -> i32 {
     b2.w.postfix_inc();
     assert!((b1.w == 1));
     assert!((b2.w == 2));
-    let v4: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
+    let mut v4: Vec<i32> = Vec::new();
     {
-        v4.as_pointer().write((v2).clone());
-        v4.as_pointer()
+        v4 = (v2).clone();
     };
     {
         let mut i: i32 = 0;
         'loop_: while (i < N) {
-            assert!(({ ({ (*v4.borrow())[(i as usize)] } == (i + 1)) }));
-            (*v4.borrow_mut())[(i as usize)].prefix_inc();
+            assert!((v4[(i as usize)] == (i + 1)));
+            v4[(i as usize)].prefix_inc();
             i.prefix_inc();
         }
     }
     {
         let mut i: i32 = 0;
         'loop_: while (i < N) {
-            assert!(({ ({ (*v4.borrow())[(i as usize)] } == (i + 2)) }));
+            assert!((v4[(i as usize)] == (i + 2)));
             assert!((v2[(i as usize)] == (i + 1)));
             i.prefix_inc();
         }

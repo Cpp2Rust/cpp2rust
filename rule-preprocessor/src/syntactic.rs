@@ -43,6 +43,28 @@ fn pointer_flags(ty: &ast::Type) -> (bool, bool) {
     flags
 }
 
+/// The text of a type without its lifetimes, which only matter to rustc when
+/// it checks the rule.
+fn type_text(ty: &ast::Type) -> String {
+    let mut text = String::new();
+    let mut skip_space = false;
+    for token in ty
+        .syntax()
+        .descendants_with_tokens()
+        .filter_map(|element| element.into_token())
+    {
+        if token.kind() == SyntaxKind::LIFETIME_IDENT {
+            skip_space = true;
+            continue;
+        }
+        if !(skip_space && token.kind() == SyntaxKind::WHITESPACE) {
+            text.push_str(token.text());
+        }
+        skip_space = false;
+    }
+    text
+}
+
 fn elems(ty: &ast::Type) -> Option<Elems> {
     match ty {
         ast::Type::ArrayType(array) => Some(Elems {
@@ -469,7 +491,7 @@ impl<'a> FnIrBuilder<'a> {
             );
             params.push(ParamInfo {
                 name,
-                ty: ty.syntax().text().to_string(),
+                ty: type_text(&ty),
                 is_refcount_pointer,
                 is_unsafe_pointer,
                 is_mut_ref: matches!(&ty, ast::Type::RefType(r) if r.mut_token().is_some()),
@@ -491,7 +513,7 @@ impl<'a> FnIrBuilder<'a> {
 
     fn return_type(&self) -> Option<TypeInfo> {
         let ty = self.fn_item.ret_type()?.ty()?;
-        let ty_str = ty.syntax().text().to_string();
+        let ty_str = type_text(&ty);
         if ty_str == "()" {
             None
         } else {
@@ -705,30 +727,8 @@ impl<'a> FnIrBuilder<'a> {
             return Vec::new();
         };
         let stmt_list = body.stmt_list().unwrap();
-
-        if stmt_list.statements().next().is_none()
-            && let Some(ast::Expr::RefExpr(ref_expr)) = stmt_list.tail_expr()
-        {
-            let mut prefix = String::from("&");
-            if ref_expr.raw_token().is_some() {
-                prefix.push_str("raw ");
-            }
-            if ref_expr.mut_token().is_some() {
-                prefix.push_str("mut");
-            } else if ref_expr.const_token().is_some() {
-                prefix.push_str("const");
-            }
-            let mut inner_ctx = FragmentCtx::new(self, params, generic_names);
-            inner_ctx.visit(ra_ap_syntax::NodeOrToken::Node(
-                ref_expr.expr().unwrap().syntax().clone(),
-            ));
-            return vec![BodyFragment::RefExpr {
-                ref_expr: RefExprInner {
-                    prefix: prefix.trim_end().to_string(),
-                    inner: inner_ctx.finish(),
-                },
-            }];
-        }
+        let tail = stmt_list.tail_expr();
+        let ref_tail = tail.as_ref().and_then(|tail| self.ref_tail(tail, params));
 
         let mut ctx = FragmentCtx::new(self, params, generic_names);
         for child in stmt_list.syntax().children_with_tokens() {
@@ -738,9 +738,71 @@ impl<'a> FnIrBuilder<'a> {
             {
                 continue;
             }
+            if ref_tail.is_some()
+                && let ra_ap_syntax::NodeOrToken::Node(ref node) = child
+                && tail.as_ref().is_some_and(|tail| tail.syntax() == node)
+            {
+                continue;
+            }
             ctx.visit(child);
         }
-        ctx.finish()
+        let mut fragments = ctx.finish();
+
+        // The reference that the rule returns is a fragment of its own, after
+        // the statements that compute it.
+        if let Some((prefix, place)) = ref_tail {
+            let mut inner_ctx = FragmentCtx::new(self, params, generic_names);
+            inner_ctx.visit(ra_ap_syntax::NodeOrToken::Node(place));
+            fragments.push(BodyFragment::RefExpr {
+                ref_expr: RefExprInner {
+                    prefix,
+                    inner: inner_ctx.finish(),
+                },
+            });
+        }
+        fragments
+    }
+
+    /// The prefix and the operand of the reference that a tail expression
+    /// returns: `&mut place`, or a reference parameter returned as is.
+    fn ref_tail(
+        &self,
+        tail: &ast::Expr,
+        params: &[ParamInfo],
+    ) -> Option<(String, ra_ap_syntax::SyntaxNode)> {
+        if let ast::Expr::RefExpr(ref_expr) = tail {
+            let mut prefix = String::from("&");
+            if ref_expr.raw_token().is_some() {
+                prefix.push_str("raw ");
+            }
+            if ref_expr.mut_token().is_some() {
+                prefix.push_str("mut");
+            } else if ref_expr.const_token().is_some() {
+                prefix.push_str("const");
+            }
+            return Some((
+                prefix.trim_end().to_string(),
+                ref_expr.expr()?.syntax().clone(),
+            ));
+        }
+        let ast::Type::RefType(ret) = self.fn_item.ret_type()?.ty()? else {
+            return None;
+        };
+        let ast::Expr::PathExpr(path) = tail else {
+            return None;
+        };
+        let name = path.path()?.as_single_name_ref()?;
+        params
+            .iter()
+            .any(|p| p.name == name.text() && p.ty.starts_with('&'))
+            .then(|| {
+                let prefix = if ret.mut_token().is_some() {
+                    "&mut"
+                } else {
+                    "&"
+                };
+                (prefix.to_string(), tail.syntax().clone())
+            })
     }
 
     fn build(&self, path: &Path) -> FnIr {

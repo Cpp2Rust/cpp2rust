@@ -107,8 +107,7 @@ impl VecHolder {
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut VecHolder) -> *mut VecHolder {
         {
-            *(&mut self.items as *mut Vec<NoCopy>) = std::mem::take(&mut (*_a0).items);
-            (&mut self.items as *mut Vec<NoCopy>)
+            self.items = std::mem::take(&mut (*_a0).items);
         };
         return &mut (*(self as *mut VecHolder));
     }

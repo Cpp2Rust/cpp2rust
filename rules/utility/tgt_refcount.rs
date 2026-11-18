@@ -3,6 +3,6 @@
 
 use libcc2rs::*;
 
-fn f7<T1>(a0: Ptr<T1>) -> Ptr<T1> {
+fn f7<T1>(a0: &T1) -> &T1 {
     a0
 }

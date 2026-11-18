@@ -19,7 +19,7 @@ pub fn test_0() {
             Rc::new(RefCell::new(cpp_move!(__second))),
         )
     }));
-    assert!(({ (((*(*target.borrow()).0.borrow()).as_pointer().read()) == 1) }));
+    assert!(((({ (*(*target.borrow()).0.borrow()).as_pointer() }).read()) == 1));
     assert!(({ ((*(*target.borrow()).1.borrow()) == 2) }));
     assert!(({ (*(*source.borrow()).0.borrow()).is_none() }));
     assert!(({ ((*(*source.borrow()).1.borrow()) == 2) }));
@@ -30,8 +30,8 @@ pub fn test_1() {
         Rc::new(RefCell::new(cpp_move!(owner.as_pointer()))),
         Rc::new(RefCell::new(1)),
     )));
-    assert!(({ ((*owner.borrow()).as_pointer()).is_null() }));
-    assert!(({ (((*(*moved.borrow()).0.borrow()).as_pointer().read()) == 3) }));
+    assert!(({ (*owner.borrow()).as_pointer() }).is_null());
+    assert!(((({ (*(*moved.borrow()).0.borrow()).as_pointer() }).read()) == 3));
     assert!(({ ((*(*moved.borrow()).1.borrow()) == 1) }));
     let text: Value<Vec<i8>> = Rc::new(RefCell::new({
         let mut __bytes = Ptr::<i8>::from_string_literal(b"abc").to_c_bytes();
@@ -83,7 +83,7 @@ pub fn test_2() {
         Rc::new(RefCell::new(0)),
         Rc::new(RefCell::new(Ptr::alloc(81).to_owned_opt())),
     )));
-    let mut original: Ptr<i32> = (*(*source.borrow()).1.borrow()).as_pointer();
+    let mut original: Ptr<i32> = ({ (*(*source.borrow()).1.borrow()).as_pointer() });
     let converted: Value<(Value<i64>, Value<Option<Value<i32>>>)> = Rc::new(RefCell::new((
         Rc::new(RefCell::new(
             (((*source.borrow()).0.as_pointer().read()) as i64),
@@ -91,16 +91,16 @@ pub fn test_2() {
         Rc::new(RefCell::new(cpp_move!((*source.borrow()).1.as_pointer()))),
     )));
     assert!(({ ((*(*converted.borrow()).0.borrow()) == 0_i64) }));
-    assert!(({ ({ (*(*converted.borrow()).1.borrow()).as_pointer() } == { (original).clone() }) }));
-    assert!(({ (((*(*converted.borrow()).1.borrow()).as_pointer().read()) == 81) }));
-    assert!(({ ((*(*source.borrow()).1.borrow()).as_pointer()).is_null() }));
+    assert!(({ ({ (*(*converted.borrow()).1.borrow()).as_pointer() }) } == { (original).clone() }));
+    assert!(((({ (*(*converted.borrow()).1.borrow()).as_pointer() }).read()) == 81));
+    assert!(({ (*(*source.borrow()).1.borrow()).as_pointer() }).is_null());
 }
 pub fn test_3() {
     let source: Value<(Value<i32>, Value<Option<Value<i32>>>)> = Rc::new(RefCell::new((
         Rc::new(RefCell::new(4)),
         Rc::new(RefCell::new(Ptr::alloc(9).to_owned_opt())),
     )));
-    let mut original: Ptr<i32> = (*(*source.borrow()).1.borrow()).as_pointer();
+    let mut original: Ptr<i32> = ({ (*(*source.borrow()).1.borrow()).as_pointer() });
     let target: Value<(Value<i64>, Value<Option<Value<i32>>>)> = Rc::new(RefCell::new((
         Rc::new(RefCell::new(0_i64)),
         Rc::new(RefCell::new(None)),
@@ -108,16 +108,13 @@ pub fn test_3() {
     {
         let __first = (((*source.borrow()).0.as_pointer().read()) as i64);
         let __second = cpp_move!((*source.borrow()).1.as_pointer());
-        target.as_pointer().with(|__dst| {
-            *__dst.0.borrow_mut() = __first;
-            *__dst.1.borrow_mut() = __second;
-        });
-        target.as_pointer()
+        *(*target.borrow()).0.borrow_mut() = __first;
+        *(*target.borrow()).1.borrow_mut() = __second;
     };
     assert!(({ ((*(*target.borrow()).0.borrow()) == 4_i64) }));
-    assert!(({ ({ (*(*target.borrow()).1.borrow()).as_pointer() } == { (original).clone() }) }));
-    assert!(({ (((*(*target.borrow()).1.borrow()).as_pointer().read()) == 9) }));
-    assert!(({ ((*(*source.borrow()).1.borrow()).as_pointer()).is_null() }));
+    assert!(({ ({ (*(*target.borrow()).1.borrow()).as_pointer() }) } == { (original).clone() }));
+    assert!(((({ (*(*target.borrow()).1.borrow()).as_pointer() }).read()) == 9));
+    assert!(({ (*(*source.borrow()).1.borrow()).as_pointer() }).is_null());
 }
 pub fn test_4() {
     let a: Value<(Value<i32>, Value<i32>)> = Rc::new(RefCell::new((

@@ -33,12 +33,10 @@ impl Holder {
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Holder) -> *mut Holder {
         {
-            *(&mut self.values as *mut Vec<i32>) = std::mem::take(&mut (*_a0).values);
-            (&mut self.values as *mut Vec<i32>)
+            self.values = std::mem::take(&mut (*_a0).values);
         };
         {
-            *(&mut self.points as *mut Vec<Point>) = std::mem::take(&mut (*_a0).points);
-            (&mut self.points as *mut Vec<Point>)
+            self.points = std::mem::take(&mut (*_a0).points);
         };
         return &mut (*(self as *mut Holder));
     }
@@ -102,10 +100,7 @@ unsafe fn main_0() -> i32 {
     assert!(((v[(2_usize)]) == (9)));
     assert!(((unsafe { sum_ref_1(&v,) }) == (((((3) + (0)) + (9)) + (42)) + (5))));
     let mut h: Holder = <Holder>::default();
-    {
-        let __a0 = 2_usize;
-        h.values.resize_with(__a0, || 0_i32)
-    };
+    h.values.resize_with(2_usize, || 0_i32);
     h.values[(1_usize)] = 6;
     {
         let __a1 = (Point { x: 1, y: 2 });

@@ -58,10 +58,11 @@ fn main_0() -> i32 {
     assert!(((vec_elem!((hp), v, 1_usize).read()) == 60));
     ({
         write_through_0(
-            (if 0_usize >= p.decay().len() {
-                panic!("out of bounds access")
-            } else {
-                p.decay().offset(0_usize as isize)
+            ({
+                if 0_usize >= (*p.upgrade().deref()).len() {
+                    panic!("out of bounds access")
+                }
+                p.decay().offset((0_usize) as isize)
             }),
         )
     });
@@ -73,12 +74,9 @@ pub trait HolderImpl {
 }
 impl HolderImpl for Ptr<Holder> {
     fn move_assign(&self, _a0: Ptr<Holder>) -> Ptr<Holder> {
-        {
-            field_ref!((*self), v)
-                .as_pointer()
-                .write(field!(_a0, v).with_mut(std::mem::take));
-            field_ref!((*self), v).as_pointer()
-        };
+        field!((*self), v).with_mut(|__b0| {
+            (*__b0) = field!(_a0, v).with_mut(std::mem::take);
+        });
         return (*self).clone();
     }
 }

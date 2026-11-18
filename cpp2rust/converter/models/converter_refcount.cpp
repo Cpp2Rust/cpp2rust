@@ -4,6 +4,7 @@
 #include "converter/models/converter_refcount.h"
 
 #include <clang/AST/RecordLayout.h>
+#include <clang/AST/StmtVisitor.h>
 #include <clang/Basic/OperatorKinds.h>
 #include <clang/Lex/Lexer.h>
 #include <llvm/Support/ErrorHandling.h>
@@ -1040,7 +1041,11 @@ void ConverterRefCount::ConvertDeclRefValue(clang::Expr *expr,
     // references are not boxed
     if (isAddrOf()) {
       StrCat(str);
-      MarkNotFresh();
+      if (moved_values_.contains(clang::dyn_cast<clang::VarDecl>(decl))) {
+        MarkFresh();
+      } else {
+        MarkNotFresh();
+      }
     } else {
       if (str == "self") {
         StrCat(str);
@@ -1057,7 +1062,8 @@ void ConverterRefCount::ConvertDeclRefValue(clang::Expr *expr,
     assert(!isAddrOf() && "pointer to an unboxed variable");
     StrCat(str);
     if (isRValue() &&
-        moved_reads_.contains(clang::dyn_cast<clang::DeclRefExpr>(expr))) {
+        (moved_reads_.contains(clang::dyn_cast<clang::DeclRefExpr>(expr)) ||
+         moved_values_.contains(clang::dyn_cast<clang::VarDecl>(decl)))) {
       MarkFresh();
     } else {
       SetValueFreshness(expr->getType());
@@ -1277,6 +1283,11 @@ ConverterRefCount::ConvertCallExpr(clang::CallExpr *expr) {
 
 void ConverterRefCount::EmitCallResult(clang::CallExpr *expr, std::string str,
                                        const TempMaterializationCtx *temps) {
+  // The rule of the call, converted last, returned a place.
+  if (std::exchange(returned_place_, false) && Mapper::IsRefExpr(ctx_, expr)) {
+    Converter::EmitCallResult(expr, std::move(str), temps);
+    return;
+  }
   auto wrap = [temps](std::string s) {
     return temps ? temps->Wrap(std::move(s)) : s;
   };
@@ -3166,8 +3177,10 @@ std::string ConverterRefCount::ConvertMappedMethodCall(
     llvm::ArrayRef<clang::TemplateArgument> bindings,
     llvm::ArrayRef<clang::Expr *> args, TempMaterializationCtx *ctx) {
   auto receiver_ph = mc.getReceiverPlaceholder();
+  // A receiver borrowed for the whole call is used through that borrow.
   if (!receiver_ph || receiver_ph->access == TranslationRule::Access::kBorrow ||
-      receiver_ph->access == TranslationRule::Access::kMove) {
+      receiver_ph->access == TranslationRule::Access::kMove ||
+      borrowed_args_.contains(args[receiver_ph->n])) {
     return Converter::ConvertMappedMethodCall(expr, mc, bindings, args, ctx);
   }
 
@@ -3202,6 +3215,232 @@ std::string ConverterRefCount::ConvertMappedMethodCall(
   MarkFresh();
 
   return std::format("{}.with_mut(|__v: {}| __v{})", ptr, param_type, body);
+}
+
+namespace {
+// How the body of a rule uses an argument: the number of its placeholders,
+// whether any borrows it mutably, and whether all only read it or move it.
+struct ArgUses {
+  unsigned count = 0;
+  bool borrow_mut = false;
+  bool only_read = true;
+  bool only_moved = true;
+};
+
+std::vector<ArgUses> GetArgUses(const TranslationRule::ExprRule &rule,
+                                size_t num_args) {
+  std::vector<ArgUses> uses(num_args);
+  // The reference returned to an argument is not a use of it, in place or as
+  // a pointer to it, other than the index of an element.
+  auto body = llvm::ArrayRef(rule.body);
+  if (rule.refExprBase()) {
+    body = rule.refExprEffect();
+  }
+  auto add = [&](const TranslationRule::BodyFragment &frag) {
+    auto *ph = std::get_if<TranslationRule::PlaceholderFragment>(&frag);
+    if (ph && ph->n < num_args) {
+      auto &use = uses[ph->n];
+      ++use.count;
+      use.borrow_mut |= ph->access == TranslationRule::Access::kBorrowMut;
+      use.only_read &= ph->access == TranslationRule::Access::kBorrow ||
+                       ph->access == TranslationRule::Access::kMove;
+      use.only_moved &= ph->access == TranslationRule::Access::kMove;
+    }
+    return false;
+  };
+  TranslationRule::AnyFragment(body, add);
+  if (rule.refExprBase()) {
+    TranslationRule::AnyFragment(
+        llvm::ArrayRef(*rule.refExprOperand()).drop_front(), add);
+  }
+  return uses;
+}
+
+const clang::VarDecl *GetReferencedVar(const clang::Expr *expr) {
+  auto *ref = clang::dyn_cast<clang::DeclRefExpr>(expr->IgnoreParenImpCasts());
+  return ref ? clang::dyn_cast<clang::VarDecl>(ref->getDecl()) : nullptr;
+}
+} // namespace
+
+namespace {
+// Whether evaluating an expression borrows no value that another expression
+// may borrow mutably: constants, and the values of the variables that are
+// values of their own, as is_own_value tells.
+class BorrowsNothingVisitor
+    : public clang::ConstStmtVisitor<BorrowsNothingVisitor, bool> {
+public:
+  BorrowsNothingVisitor(
+      clang::ASTContext &ctx,
+      llvm::function_ref<bool(const clang::DeclRefExpr *)> is_own_value)
+      : ctx_(ctx), is_own_value_(is_own_value) {}
+
+  bool Traverse(const clang::Expr *expr) {
+    return expr->isEvaluatable(ctx_) || Visit(expr);
+  }
+
+  bool VisitExpr(const clang::Expr *) { return false; }
+
+  bool VisitStringLiteral(const clang::StringLiteral *) { return true; }
+
+  bool VisitCXXThisExpr(const clang::CXXThisExpr *) { return true; }
+
+  bool VisitParenExpr(const clang::ParenExpr *expr) {
+    return Traverse(expr->getSubExpr());
+  }
+
+  bool
+  VisitMaterializeTemporaryExpr(const clang::MaterializeTemporaryExpr *expr) {
+    return Traverse(expr->getSubExpr());
+  }
+
+  bool
+  VisitCXXStdInitializerListExpr(const clang::CXXStdInitializerListExpr *expr) {
+    return Traverse(expr->getSubExpr());
+  }
+
+  bool VisitInitListExpr(const clang::InitListExpr *expr) {
+    return llvm::all_of(
+        expr->inits(), [&](const clang::Expr *init) { return Traverse(init); });
+  }
+
+  bool VisitCastExpr(const clang::CastExpr *expr) {
+    return !expr->getConversionFunction() && Traverse(expr->getSubExpr());
+  }
+
+  bool VisitUnaryOperator(const clang::UnaryOperator *expr) {
+    return !expr->isIncrementDecrementOp() &&
+           expr->getOpcode() != clang::UO_Deref && Traverse(expr->getSubExpr());
+  }
+
+  bool VisitBinaryOperator(const clang::BinaryOperator *expr) {
+    return !expr->isAssignmentOp() && !expr->isCommaOp() &&
+           !expr->isPtrMemOp() && Traverse(expr->getLHS()) &&
+           Traverse(expr->getRHS());
+  }
+
+  bool VisitDeclRefExpr(const clang::DeclRefExpr *expr) {
+    return is_own_value_(expr);
+  }
+
+private:
+  clang::ASTContext &ctx_;
+  llvm::function_ref<bool(const clang::DeclRefExpr *)> is_own_value_;
+};
+} // namespace
+
+bool ConverterRefCount::BorrowsNothing(
+    const clang::Expr *arg, llvm::ArrayRef<const clang::VarDecl *> vars) const {
+  // A scalar is a value of its own, unless it is accessed through a
+  // reference, as is an unboxed variable.
+  return BorrowsNothingVisitor(
+             ctx_,
+             [&](const clang::DeclRefExpr *ref) {
+               auto *var = clang::dyn_cast<clang::VarDecl>(ref->getDecl());
+               return var && var->hasLocalStorage() &&
+                      !llvm::is_contained(vars, var) &&
+                      !GetDeclRefType(curr_function_, ref, var)
+                           ->isReferenceType() &&
+                      (var->getType()->isScalarType() || IsUnboxedVar(var));
+             })
+      .Traverse(arg);
+}
+
+// The arguments that the rule reads, evaluated while it borrows another one
+// mutably through a RefCell, are evaluated first, as a borrow of the same value
+// would panic. An object is copied first only if the rule moves the copy,
+// which it would make anyway; a pointer to it is taken first otherwise, if the
+// rule takes one.
+std::vector<bool> ConverterRefCount::ArgsToEvaluateFirst(
+    clang::Expr *expr, const TranslationRule::ExprRule &rule,
+    llvm::ArrayRef<clang::Expr *> args, const std::vector<bool> &bind) {
+  std::vector<bool> first(args.size());
+  auto uses = GetArgUses(rule, args.size());
+  std::vector<const clang::VarDecl *> borrowed;
+  for (unsigned i = 0; i < args.size(); ++i) {
+    // The receiver of a call through a pointer is reached through it.
+    if (uses[i].borrow_mut && !RuleRegistry::ParamIsPointer(ctx_, expr, i) &&
+        (args[i]->getType()->isPointerType() || !IsUnboxedPlace(args[i]))) {
+      borrowed.push_back(GetReferencedVar(args[i]));
+    }
+  }
+  if (borrowed.empty()) {
+    return first;
+  }
+  // Those evaluated after others with side effects stay in order.
+  auto num_args = std::min(args.size(), rule.params.size());
+  for (unsigned i = 0; i < num_args; ++i) {
+    auto *arg = args[i];
+    if (bind[i]) {
+      continue;
+    }
+    // The temporaries that a returned pointer may point to are made first, so
+    // that they outlive the borrows, which end with the call.
+    first[i] = uses[i].count && !uses[i].borrow_mut && uses[i].only_read &&
+               (!BorrowsNothing(arg, borrowed) ||
+                (rule.return_type.is_pointer() && CreatesTemporary(arg))) &&
+               (arg->isPRValue() || rule.takesAddress(ctx_, expr, i, arg) ||
+                (arg->isLValue() && uses[i].only_moved));
+    if (!first[i] && arg->HasSideEffects(ctx_)) {
+      break;
+    }
+  }
+  return first;
+}
+
+// An argument reached through a pointer is borrowed once for the whole call,
+// rather than once for each use, which would also panic if nested.
+void ConverterRefCount::BorrowArgsForCall(clang::Expr *expr,
+                                          const TranslationRule::ExprRule &rule,
+                                          llvm::ArrayRef<clang::Expr *> args) {
+  auto uses = GetArgUses(rule, args.size());
+  for (unsigned i = 0; i < args.size(); ++i) {
+    auto *arg = args[i];
+    if (!uses[i].borrow_mut || uses[i].count < 2 ||
+        RuleRegistry::ParamIsPointer(ctx_, expr, i) ||
+        arg->HasSideEffects(ctx_) || borrowed_args_.contains(arg)) {
+      continue;
+    }
+    // The receiver of a call through a pointer is reached through it.
+    std::string ptr;
+    if (arg->getType()->isPointerType()) {
+      ptr = ConvertRValue(arg);
+    } else {
+      ConvertLValue(arg);
+      if (pending_deref_.empty()) {
+        continue;
+      }
+      ptr = pending_deref_.take();
+    }
+    auto name = std::format("__b{}", mut_borrows_.size());
+    mut_borrows_.emplace_back(std::move(ptr), name);
+    borrowed_args_.emplace(arg, std::move(name));
+  }
+}
+
+// A reference to an unboxed place is the place itself, unless a pointer to
+// it is needed.
+bool ConverterRefCount::ReturnsPointerToArg(clang::Expr *arg) {
+  return isAddrOf() || arg->getType()->isPointerType() || !IsUnboxedPlace(arg);
+}
+
+std::string ConverterRefCount::ConvertPointerToArg(clang::Expr *arg,
+                                                   std::string_view index) {
+  // The receiver of a call through a pointer is the object it points to.
+  if (index.empty() && arg->getType()->isPointerType()) {
+    return ConvertFreshRValue(arg);
+  }
+  if (index.empty()) {
+    PushExprKind push(*this, ExprKind::Object);
+    return ConvertPointerReceiver(arg, {}, std::nullopt);
+  }
+  PushConversionKind push(*this, ConversionKind::Unboxed);
+  auto elems = ConvertObject(arg, ObjectShape::Element);
+  MarkFresh();
+  // A pointer to the elements is one to the first.
+  if (index == "0") {
+    return elems;
+  }
+  return std::format("{}.offset(({}) as isize)", elems, index);
 }
 
 std::string ConverterRefCount::ConvertPointeeType(clang::QualType ptr_type) {

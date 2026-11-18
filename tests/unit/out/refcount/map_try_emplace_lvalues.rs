@@ -294,10 +294,12 @@ fn main_0() -> i32 {
             (*(*global_temporary_14.with(Value::clone).borrow())
                 .1
                 .borrow())
-                && ((*(*(*(*global_temporary_14.with(Value::clone).borrow())
-                    .0
-                    .borrow())
-                .iter_deref()
+                && ((*(*({
+                    (*(*global_temporary_14.with(Value::clone).borrow())
+                        .0
+                        .borrow())
+                    .iter_deref()
+                })
                 .upgrade()
                 .deref())
                 .1
@@ -308,10 +310,11 @@ fn main_0() -> i32 {
     assert!(
         ({
             (*(*global_owned_16.with(Value::clone).borrow()).1.borrow())
-                && ((*(*(*(*global_owned_16.with(Value::clone).borrow()).0.borrow())
-                    .iter_deref()
-                    .upgrade()
-                    .deref())
+                && ((*(*({
+                    (*(*global_owned_16.with(Value::clone).borrow()).0.borrow()).iter_deref()
+                })
+                .upgrade()
+                .deref())
                 .1
                 .borrow())
                     == 5)
@@ -322,10 +325,12 @@ fn main_0() -> i32 {
             (((*(*global_conditional_15.with(Value::clone).borrow())
                 .1
                 .borrow())
-                && ((*(*(*(*global_conditional_15.with(Value::clone).borrow())
-                    .0
-                    .borrow())
-                .iter_deref()
+                && ((*(*({
+                    (*(*global_conditional_15.with(Value::clone).borrow())
+                        .0
+                        .borrow())
+                    .iter_deref()
+                })
                 .upgrade()
                 .deref())
                 .1
@@ -481,13 +486,11 @@ fn main_0() -> i32 {
     );
     assert!(
         ({
-            ((*(*inserted.borrow()).0.borrow())
-                .iter_deref()
-                .with(|__s| (*({ __s }).1.borrow()).value)
+            (({ (*(*inserted.borrow()).0.borrow()).iter_deref() })
+                .with(|__s| (*__s.1.borrow()).value)
                 == 7)
-                && ((*(*compound.borrow()).0.borrow())
-                    .iter_deref()
-                    .with(|__s| (*({ __s }).1.borrow()).value)
+                && (({ (*(*compound.borrow()).0.borrow()).iter_deref() })
+                    .with(|__s| (*__s.1.borrow()).value)
                     == 15)
         })
     );
@@ -698,8 +701,7 @@ fn main_0() -> i32 {
     assert!(
         ({
             ((*n.borrow()) == 0_u32)
-                && ((*(*(*(*wrapped.borrow()).0.borrow())
-                    .iter_deref()
+                && ((*(*({ (*(*wrapped.borrow()).0.borrow()).iter_deref() })
                     .upgrade()
                     .deref())
                 .1
@@ -739,8 +741,7 @@ fn main_0() -> i32 {
     assert!(
         ({
             ((index == 1) && (((*bytes.borrow())[(0) as usize] as i32) == 1))
-                && ((*(*(*(*narrowed.borrow()).0.borrow())
-                    .iter_deref()
+                && ((*(*({ (*(*narrowed.borrow()).0.borrow()).iter_deref() })
                     .upgrade()
                     .deref())
                 .1
@@ -749,7 +750,7 @@ fn main_0() -> i32 {
         })
     );
     let changed: Value<Map<i32, (Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
-    Map::subscript(changed.as_pointer(), key.as_pointer()).write(10);
+    ({ (*changed.borrow_mut()).subscript(key.as_pointer()) }).write(10);
     let effects: Value<i32> = Rc::new(RefCell::new(0));
     let erased: Value<(
         Value<BidirectionalIterator<(Value<i32>, Value<i32>)>>,
@@ -784,8 +785,7 @@ fn main_0() -> i32 {
     assert!(
         ({
             (((*effects.borrow()) == 1) && (*(*erased.borrow()).1.borrow()))
-                && ((*(*(*(*erased.borrow()).0.borrow())
-                    .iter_deref()
+                && ((*(*({ (*(*erased.borrow()).0.borrow()).iter_deref() })
                     .upgrade()
                     .deref())
                 .1
@@ -798,7 +798,7 @@ fn main_0() -> i32 {
         Value<bool>,
     )> = Rc::new(RefCell::new(
         match ({
-            Map::subscript(changed.as_pointer(), key.as_pointer()).with_mut(|__v| {
+            ({ (*changed.borrow_mut()).subscript(key.as_pointer()) }).with_mut(|__v| {
                 __v.prefix_inc();
             });
             {
@@ -828,8 +828,7 @@ fn main_0() -> i32 {
     assert!(
         ({
             (((*effects.borrow()) == 2) && (!(*(*updated.borrow()).1.borrow())))
-                && ((*(*(*(*updated.borrow()).0.borrow())
-                    .iter_deref()
+                && ((*(*({ (*(*updated.borrow()).0.borrow()).iter_deref() })
                     .upgrade()
                     .deref())
                 .1
@@ -870,8 +869,7 @@ fn main_0() -> i32 {
         ({
             ({ (*p.borrow()).clone() } == { array.decay().offset((1) as isize) })
                 && ({
-                    (*(*(*(*pointer.borrow()).0.borrow())
-                        .iter_deref()
+                    (*(*({ (*(*pointer.borrow()).0.borrow()).iter_deref() })
                         .upgrade()
                         .deref())
                     .1
@@ -890,7 +888,7 @@ fn main_0() -> i32 {
                 'loop_: for k in IterRange::new(keys.decay(), keys.decay().offset((6_i64) as isize))
                 {
                     let k: Value<i32> = Rc::new(RefCell::new((k.read())));
-                    Map::subscript(values.as_pointer(), k.as_pointer()).write(42);
+                    ({ (*values.borrow_mut()).subscript(k.as_pointer()) }).write(42);
                 }
             }
             let moved: Value<i32> = Rc::new(RefCell::new(0));
@@ -1083,7 +1081,7 @@ fn main_0() -> i32 {
                 let k: Value<i32> = Rc::new(RefCell::new((k.read())));
                 assert!(
                     ({
-                        ((Map::subscript(values.as_pointer(), k.as_pointer()).read())
+                        ((({ (*values.borrow_mut()).subscript(k.as_pointer()) }).read())
                             == (if (hit != 0) {
                                 42
                             } else {
@@ -1109,8 +1107,11 @@ fn main_0() -> i32 {
                             IterRange::new(keys.decay(), keys.decay().offset((3_i64) as isize))
                         {
                             let k: Value<i32> = Rc::new(RefCell::new((k.read())));
-                            field!(Map::subscript(selected.as_pointer(), k.as_pointer()), value)
-                                .write(42);
+                            field!(
+                                ({ (*selected.borrow_mut()).subscript(k.as_pointer()) }),
+                                value
+                            )
+                            .write(42);
                         }
                     }
                     let a: Value<i32> = Rc::new(RefCell::new(0));
@@ -1307,17 +1308,15 @@ fn main_0() -> i32 {
                     );
                     assert!(
                         ({
-                            ((*(*prefix.borrow()).0.borrow())
-                                .iter_deref()
-                                .with(|__s| (*({ __s }).1.borrow()).value)
+                            (({ (*(*prefix.borrow()).0.borrow()).iter_deref() })
+                                .with(|__s| (*__s.1.borrow()).value)
                                 == (if (hit != 0) { 42 } else { 3 }))
                         })
                     );
                     assert!(
                         ({
-                            ((*(*assignment.borrow()).0.borrow())
-                                .iter_deref()
-                                .with(|__s| (*({ __s }).1.borrow()).value)
+                            (({ (*(*assignment.borrow()).0.borrow()).iter_deref() })
+                                .with(|__s| (*__s.1.borrow()).value)
                                 == (if (hit != 0) {
                                     42
                                 } else {
@@ -1327,9 +1326,8 @@ fn main_0() -> i32 {
                     );
                     assert!(
                         ({
-                            ((*(*compound.borrow()).0.borrow())
-                                .iter_deref()
-                                .with(|__s| (*({ __s }).1.borrow()).value)
+                            (({ (*(*compound.borrow()).0.borrow()).iter_deref() })
+                                .with(|__s| (*__s.1.borrow()).value)
                                 == (if (hit != 0) {
                                     42
                                 } else {
@@ -1347,7 +1345,7 @@ fn main_0() -> i32 {
                 'loop_: for k in IterRange::new(keys.decay(), keys.decay().offset((3_i64) as isize))
                 {
                     let k: Value<i32> = Rc::new(RefCell::new((k.read())));
-                    Map::subscript(values.as_pointer(), k.as_pointer()).write(42);
+                    ({ (*values.borrow_mut()).subscript(k.as_pointer()) }).write(42);
                 }
             }
             let mut before: i32 = temporary_calls_4.with(|rc| *rc.borrow());
@@ -1444,22 +1442,19 @@ fn main_0() -> i32 {
             );
             assert!(
                 ({
-                    (((*(*(*(*member.borrow()).0.borrow())
-                        .iter_deref()
+                    (((*(*({ (*(*member.borrow()).0.borrow()).iter_deref() })
                         .upgrade()
                         .deref())
                     .1
                     .borrow())
                         == (if (hit != 0) { 42 } else { 5 }))
-                        && ((*(*(*(*nested.borrow()).0.borrow())
-                            .iter_deref()
+                        && ((*(*({ (*(*nested.borrow()).0.borrow()).iter_deref() })
                             .upgrade()
                             .deref())
                         .1
                         .borrow())
                             == (if (hit != 0) { 42 } else { 5 })))
-                        && ((*(*(*(*element.borrow()).0.borrow())
-                            .iter_deref()
+                        && ((*(*({ (*(*element.borrow()).0.borrow()).iter_deref() })
                             .upgrade()
                             .deref())
                         .1
@@ -1533,9 +1528,10 @@ fn main_0() -> i32 {
                                     )
                                 }
                             };
-                            let __rhs = (Map::subscript(references.as_pointer(), key.as_pointer())
-                                .with(|__s| __s.ptr.clone())
-                                .read());
+                            let __rhs =
+                                (({ (*references.borrow_mut()).subscript(key.as_pointer()) })
+                                    .with(|__s| __s.ptr.clone())
+                                    .read());
                             value = __rhs
                         }
                     };
@@ -1615,7 +1611,7 @@ fn main_0() -> i32 {
                                 }
                             };
                             let __rhs = (elem!(
-                                Map::subscript(arrays.as_pointer(), key.as_pointer())
+                                ({ (*arrays.borrow_mut()).subscript(key.as_pointer()) })
                                     .with(|__s| __s.ptr.clone()),
                                 1
                             )
@@ -1643,7 +1639,7 @@ fn main_0() -> i32 {
                 'loop_: for k in IterRange::new(keys.decay(), keys.decay().offset((6_i64) as isize))
                 {
                     let k: Value<i32> = Rc::new(RefCell::new((k.read())));
-                    Map::subscript(values.as_pointer(), k.as_pointer()).write(42);
+                    ({ (*values.borrow_mut()).subscript(k.as_pointer()) }).write(42);
                 }
             }
             let mut before: i32 = temporary_calls_4.with(|rc| *rc.borrow());
@@ -1846,7 +1842,7 @@ fn main_0() -> i32 {
                 let k: Value<i32> = Rc::new(RefCell::new((k.read())));
                 assert!(
                     ({
-                        ((Map::subscript(values.as_pointer(), k.as_pointer()).read())
+                        ((({ (*values.borrow_mut()).subscript(k.as_pointer()) }).read())
                             == (if (hit != 0) {
                                 42
                             } else {
@@ -1925,9 +1921,10 @@ fn main_0() -> i32 {
                                     )
                                 }
                             };
-                            let __rhs = (Map::subscript(references.as_pointer(), key.as_pointer())
-                                .with(|__s| __s.ptr.clone())
-                                .read());
+                            let __rhs =
+                                (({ (*references.borrow_mut()).subscript(key.as_pointer()) })
+                                    .with(|__s| __s.ptr.clone())
+                                    .read());
                             value = __rhs
                         }
                     };
@@ -1974,7 +1971,7 @@ fn main_0() -> i32 {
                                     )
                                 }
                             };
-                            let __rhs = (Map::subscript(owners.as_pointer(), key.as_pointer())
+                            let __rhs = (({ (*owners.borrow_mut()).subscript(key.as_pointer()) })
                                 .with(|__s| __s.ptr.clone())
                                 .read());
                             value = __rhs
@@ -2075,19 +2072,19 @@ fn main_0() -> i32 {
     assert!(({ (*(*move_new.borrow()).1.borrow()) && (!(*(*move_hit.borrow()).1.borrow())) }));
     assert!(
         ({
-            ((*(*(*(*(*move_new.borrow()).0.borrow())
-                .iter_deref()
-                .upgrade()
-                .deref())
-            .1
-            .borrow())
-            .0
-            .borrow())
-            .as_pointer()
+            (({
+                (*(*(*({ (*(*move_new.borrow()).0.borrow()).iter_deref() })
+                    .upgrade()
+                    .deref())
+                .1
+                .borrow())
+                .0
+                .borrow())
+                .as_pointer()
+            })
             .with(|__s| __s.n)
                 == 5)
-                && ((*(*(*(*(*move_hit.borrow()).0.borrow())
-                    .iter_deref()
+                && ((*(*(*({ (*(*move_hit.borrow()).0.borrow()).iter_deref() })
                     .upgrade()
                     .deref())
                 .1
@@ -2183,8 +2180,7 @@ fn main_0() -> i32 {
     assert!(
         ({
             ((visits_1.with(|rc| *rc.borrow()) == 4) && (*(*string_new.borrow()).1.borrow()))
-                && (match ((*(*(*string_new.borrow()).0.borrow())
-                    .iter_deref()
+                && (match ((*({ (*(*string_new.borrow()).0.borrow()).iter_deref() })
                     .upgrade()
                     .deref())
                 .1
@@ -2209,11 +2205,9 @@ impl OwnerImpl for Ptr<Owner> {
         return field_ptr!((*self).with(|__s| __s.ptr.clone()).as_pointer(), n);
     }
     fn move_assign(&self, _a0: Ptr<Owner>) -> Ptr<Owner> {
-        {
-            field_ptr!((*self), ptr)
-                .write(field!(_a0, ptr).with_mut(|__v: &mut Option<Value<Temporary>>| __v.take()));
-            field_ptr!((*self), ptr)
-        };
+        field!((*self), ptr).with_mut(|__b0| {
+            (*__b0) = field!(_a0, ptr).with_mut(|__v: &mut Option<Value<Temporary>>| __v.take());
+        });
         return (*self).clone();
     }
 }

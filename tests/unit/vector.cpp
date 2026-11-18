@@ -187,5 +187,17 @@ int main() {
   int *moved_ptr = &moved;
   v13.push_back(std::move(moved_ptr));
   assert(v13[0] == &moved && moved_ptr == &moved);
+  std::vector<int> v14 = {1, 2, 3};
+  v14.at(0) = v14.at(1) + v14.back();
+  v14.front() += 1;
+  assert(v14[0] == 6 && v14.at(2) == 3);
+  std::vector<int> v15 = {1, 2, 3};
+  int &front = v15.front();
+  front += 1;
+  std::vector<int> *vp = &v15;
+  vp->back() = vp->at(0);
+  int *last = &vp->back();
+  *last += 1;
+  assert(v15[0] == 2 && v15[2] == 3);
   return 0;
 }

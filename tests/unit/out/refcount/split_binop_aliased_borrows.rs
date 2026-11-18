@@ -15,7 +15,7 @@ fn main_0() -> i32 {
     let p: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(v.decay().begin()));
     let r: Ptr<i32> = v.decay().offset(1_usize);
     let __rhs = (r.read());
-    (*p.borrow()).iter_deref().write(__rhs);
+    ({ (*p.borrow()).iter_deref() }).write(__rhs);
     assert!(({ ({ (*v.borrow())[0_usize] } == 2) }));
     return 0;
 }

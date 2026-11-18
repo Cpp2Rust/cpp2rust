@@ -37,8 +37,7 @@ impl Holder {
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Holder) -> *mut Holder {
         {
-            *(&mut self.data as *mut Option<Box<Data>>) = (*_a0).data.take();
-            (&mut self.data as *mut Option<Box<Data>>)
+            self.data = (*_a0).data.take();
         };
         self.n = (*_a0).n;
         return &mut (*(self as *mut Holder));

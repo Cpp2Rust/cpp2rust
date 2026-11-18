@@ -110,9 +110,7 @@ pub unsafe fn test_3() {
         .map_or(::std::ptr::null_mut(), |v| v as *mut i32);
     let mut target: (i64, Option<Box<i32>>) = <(i64, Option<Box<i32>>)>::default();
     {
-        *(&mut target as *mut (i64, Option<Box<i32>>)) =
-            (((*&mut source.0) as i64), cpp_move_unsafe!(&mut source.1));
-        (&mut target as *mut (i64, Option<Box<i32>>))
+        target = (((*&mut source.0) as i64), cpp_move_unsafe!(&mut source.1));
     };
     assert!(((target.0) == (4_i64)));
     assert!(

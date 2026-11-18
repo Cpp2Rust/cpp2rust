@@ -101,12 +101,9 @@ impl UserDefinedImpl for Ptr<UserDefined> {
             }
             field_ref!((*self), a).as_pointer()
         };
-        {
-            field_ref!((*self), v)
-                .as_pointer()
-                .write(field!(_a0, v).with_mut(std::mem::take));
-            field_ref!((*self), v).as_pointer()
-        };
+        field!((*self), v).with_mut(|__b0| {
+            (*__b0) = field!(_a0, v).with_mut(std::mem::take);
+        });
         return (*self).clone();
     }
 }

@@ -112,10 +112,10 @@ thread_local!(
 );
 thread_local!(
     pub static seed_9: Value<i32> = Rc::new(RefCell::new({
-        Map::subscript(
-            global_map_6.with(|v| v.as_pointer()),
-            global_key_7.with(|v| v.as_pointer()),
-        )
+        ({
+            (*global_map_6.with(Value::clone).borrow_mut())
+                .subscript(global_key_7.with(|v| v.as_pointer()))
+        })
         .write(10);
         0
     }));
@@ -159,8 +159,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let mut ok: bool = ((global_counter_8.with(|rc| *rc.borrow()) == 1)
         && (!(*(*global_hit_10.with(Value::clone).borrow()).1.borrow())))
-        && ((*(*(*(*global_hit_10.with(Value::clone).borrow()).0.borrow())
-            .iter_deref()
+        && ((*(*({ (*(*global_hit_10.with(Value::clone).borrow()).0.borrow()).iter_deref() })
             .upgrade()
             .deref())
         .1
@@ -187,7 +186,7 @@ fn main_0() -> i32 {
                                         'loop_: while ((*k.borrow()) < 3) {
                                             if ((subset & (1 << (*k.borrow()))) != 0) {
                                                 let __rhs = (10 + (*k.borrow()));
-                                                Map::subscript(m.as_pointer(), k.as_pointer())
+                                                ({ (*m.borrow_mut()).subscript(k.as_pointer()) })
                                                     .write(__rhs);
                                                 size.prefix_inc();
                                             }
@@ -283,10 +282,11 @@ fn main_0() -> i32 {
                                     ok = { ((ok as i32) & (found as i32)) != 0 };
                                     {
                                         let rhs_0 = ((ok as i32)
-                                            & (((*(*(*(*result.borrow()).0.borrow())
-                                                .iter_deref()
-                                                .upgrade()
-                                                .deref())
+                                            & (((*(*({
+                                                (*(*result.borrow()).0.borrow()).iter_deref()
+                                            })
+                                            .upgrade()
+                                            .deref())
                                             .0
                                             .borrow())
                                                 == (*key.borrow()))
@@ -296,10 +296,11 @@ fn main_0() -> i32 {
                                     };
                                     {
                                         let rhs_0 = ((ok as i32)
-                                            & (((*(*(*(*result.borrow()).0.borrow())
-                                                .iter_deref()
-                                                .upgrade()
-                                                .deref())
+                                            & (((*(*({
+                                                (*(*result.borrow()).0.borrow()).iter_deref()
+                                            })
+                                            .upgrade()
+                                            .deref())
                                             .1
                                             .borrow())
                                                 == (if hit {
@@ -388,9 +389,8 @@ fn main_0() -> i32 {
     {
         let rhs_0 = ((ok as i32)
             & (((!(*(*hit.borrow()).1.borrow()))
-                && ((*(*hit.borrow()).0.borrow())
-                    .iter_deref()
-                    .with(|__s| (*({ __s }).1.borrow()).value)
+                && (({ (*(*hit.borrow()).0.borrow()).iter_deref() })
+                    .with(|__s| (*__s.1.borrow()).value)
                     == 10)) as i32))
             != 0;
         ok = rhs_0
@@ -459,9 +459,8 @@ fn main_0() -> i32 {
     {
         let rhs_0 = ((ok as i32)
             & (((*(*copied.borrow()).1.borrow())
-                && ((*(*copied.borrow()).0.borrow())
-                    .iter_deref()
-                    .with(|__s| (*({ __s }).1.borrow()).value)
+                && (({ (*(*copied.borrow()).0.borrow()).iter_deref() })
+                    .with(|__s| (*__s.1.borrow()).value)
                     == 20)) as i32))
             != 0;
         ok = rhs_0
@@ -497,9 +496,8 @@ fn main_0() -> i32 {
     {
         let rhs_0 = ((ok as i32)
             & ((((*(*moved.borrow()).1.borrow())
-                && ((*(*moved.borrow()).0.borrow())
-                    .iter_deref()
-                    .with(|__s| (*({ __s }).1.borrow()).value)
+                && (({ (*(*moved.borrow()).0.borrow()).iter_deref() })
+                    .with(|__s| (*__s.1.borrow()).value)
                     == 20))
                 && ({ (*source.borrow()).value } == -1_i32)) as i32))
             != 0;
@@ -578,13 +576,11 @@ fn main_0() -> i32 {
     };
     {
         let rhs_0 = ((ok as i32)
-            & ((((*(*ref_hit.borrow()).0.borrow())
-                .iter_deref()
-                .with(|__s| (*({ __s }).1.borrow()).value)
+            & (((({ (*(*ref_hit.borrow()).0.borrow()).iter_deref() })
+                .with(|__s| (*__s.1.borrow()).value)
                 == 5)
-                && ((*(*ref_new.borrow()).0.borrow())
-                    .iter_deref()
-                    .with(|__s| (*({ __s }).1.borrow()).value)
+                && (({ (*(*ref_new.borrow()).0.borrow()).iter_deref() })
+                    .with(|__s| (*__s.1.borrow()).value)
                     == 7)) as i32))
             != 0;
         ok = rhs_0
@@ -672,9 +668,8 @@ fn main_0() -> i32 {
     };
     {
         let rhs_0 = ((ok as i32)
-            & (((*(*temporary_new.borrow()).0.borrow())
-                .iter_deref()
-                .with(|__s| (*({ __s }).1.borrow()).value)
+            & ((({ (*(*temporary_new.borrow()).0.borrow()).iter_deref() })
+                .with(|__s| (*__s.1.borrow()).value)
                 == 40) as i32))
             != 0;
         ok = rhs_0

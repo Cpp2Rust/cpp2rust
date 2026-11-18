@@ -16,7 +16,7 @@ fn main_0() -> i32 {
         let i: Value<i32> = Rc::new(RefCell::new(0));
         let mut k: i32 = 100;
         'loop_: while ((*i.borrow()) < 100) {
-            Map::subscript(m.as_pointer(), i.as_pointer()).write(((k as f64) / 2_f64));
+            ({ (*m.borrow_mut()).subscript(i.as_pointer()) }).write(((k as f64) / 2_f64));
             {
                 (*i.borrow_mut()).prefix_inc();
                 k.prefix_dec()

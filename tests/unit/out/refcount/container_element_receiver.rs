@@ -32,20 +32,18 @@ pub fn sum_1(v: Ptr<Vec<i32>>) -> i32 {
     {
         let it: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(v.decay().begin()));
         'loop_: while (*it.borrow()) != v.decay().end() {
-            total += ((*it.borrow()).iter_deref().read());
+            total += (({ (*it.borrow()).iter_deref() }).read());
             {
-                it.as_pointer().with_mut(|__it| {
-                    __it.iter_inc();
-                });
-                it.as_pointer()
+                (*it.borrow_mut()).iter_inc();
             };
         }
     }
     return ({ total } + {
-        (if 0_usize >= (*v.upgrade().deref()).len() {
-            panic!("out of bounds access")
-        } else {
-            v.decay().offset(0_usize as isize)
+        ({
+            if 0_usize >= (*v.upgrade().deref()).len() {
+                panic!("out of bounds access")
+            }
+            v.decay().offset((0_usize) as isize)
         }
         .read())
     });
@@ -61,38 +59,49 @@ fn main_0() -> i32 {
         vec_: Vec::from([4, 5]),
     }));
     assert!(((({ { (*h.borrow()).ref_.clone() }.decay() }).read()) == 1));
-    ({ { (*h.borrow()).ref_.clone() }.decay() }).write(9);
+    { (*h.borrow()).ref_.clone() }.decay().write(9);
     assert!(({ ({ (*v.borrow())[0_usize] } == 9) }));
-    ({ { (*h.borrow()).ref_.clone() }.decay() }).write(1);
-    assert!(((field_ref!(h.as_pointer(), vec_).decay().to_last().read()) == 5));
+    { (*h.borrow()).ref_.clone() }.decay().write(1);
+    assert!(
+        ({
+            (({
+                let __n = (*h.borrow()).vec_.len() - 1;
+                field_ref!(h.as_pointer(), vec_)
+                    .decay()
+                    .offset((__n) as isize)
+            }
+            .read())
+                == 5)
+        })
+    );
     let mut p: Ptr<Vec<i32>> = (field_ref!(h.as_pointer(), vec_).as_pointer());
     assert!(((p.decay().read()) == 4));
-    ({
+    match (({
         pick_0(
             v.as_pointer(),
             field_ref!(h.as_pointer(), vec_).as_pointer(),
             false,
         )
-    })
-    .decay()
+    }),)
+    {
+        (__tmp_0,) => __tmp_0.decay(),
+    }
     .write(7);
     assert!(((vec_elem!(h.as_pointer(), vec_, 0_usize).read()) == 7));
     let m: Value<Map<i32, (Value<i32>, Value<Vec<i32>>)>> = Rc::new(RefCell::new(Map::new()));
     {
         let __a1 = 8;
-        Map::subscript_move(
-            m.as_pointer(),
-            Rc::new(RefCell::new(1)).as_pointer(),
-            |__k| cpp_move!(__k),
-        )
+        match (Rc::new(RefCell::new(1)).as_pointer(),) {
+            (__tmp_1,) => ({ (*m.borrow_mut()).subscript_move(__tmp_1, |__k| cpp_move!(__k)) }),
+        }
         .with_mut(|__v: &mut Vec<i32>| __v.push(__a1))
     };
     assert!(
-        ((Map::subscript_move(
-            m.as_pointer(),
-            Rc::new(RefCell::new(1)).as_pointer(),
-            |__k| cpp_move!(__k)
-        )
+        ((match (Rc::new(RefCell::new(1)).as_pointer(),) {
+            (__tmp_2,) => {
+                ({ (*m.borrow_mut()).subscript_move(__tmp_2, |__k| cpp_move!(__k)) })
+            }
+        }
         .decay()
         .begin()
         .iter_deref()
@@ -101,13 +110,16 @@ fn main_0() -> i32 {
     );
     let c: Ptr<Vec<i32>> = v.as_pointer();
     assert!(
-        ((if 2_usize >= (*c.upgrade().deref()).len() {
-            panic!("out of bounds access")
-        } else {
-            c.decay().offset(2_usize as isize)
-        }
-        .read())
-            == 3)
+        ({
+            (({
+                if 2_usize >= (*c.upgrade().deref()).len() {
+                    panic!("out of bounds access")
+                }
+                c.decay().offset((2_usize) as isize)
+            }
+            .read())
+                == 3)
+        })
     );
     assert!((({ sum_1(v.as_pointer(),) }) == 7));
     return 0;

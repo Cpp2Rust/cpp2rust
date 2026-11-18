@@ -54,6 +54,13 @@ bool HasExprRule(const clang::FunctionDecl *decl);
 bool IsLibcPassthrough(clang::ASTContext &ctx, const clang::Expr *expr);
 bool ReturnsPointer(clang::ASTContext &ctx, const clang::Expr *expr);
 bool ReturnsReference(const clang::Expr *expr);
+// The argument of expr, a call, that its rule returns a reference to, or to an
+// element of, which element is then set to.
+clang::Expr *GetReferencedArg(clang::ASTContext &ctx, const clang::Expr *expr,
+                              bool *element = nullptr);
+// The argument of expr, a call, that its rule returns a reference to, after
+// computing something else, e.g., the receiver of std::string::append.
+clang::Expr *GetReturnedArg(clang::ASTContext &ctx, const clang::Expr *expr);
 bool ParamIsPointer(clang::ASTContext &ctx, const clang::Expr *expr,
                     unsigned index);
 

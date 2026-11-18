@@ -45,8 +45,7 @@ impl Bag {
     pub unsafe fn move_assign(&mut self, _a0: *mut Bag) -> *mut Bag {
         self.n = (*_a0).n;
         {
-            *(&mut self.items as *mut Vec<i32>) = std::mem::take(&mut (*_a0).items);
-            (&mut self.items as *mut Vec<i32>)
+            self.items = std::mem::take(&mut (*_a0).items);
         };
         return &mut (*(self as *mut Bag));
     }

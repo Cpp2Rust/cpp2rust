@@ -31,8 +31,8 @@ fn main_0() -> i32 {
                 Rc::new(RefCell::new(Some(Rc::new(RefCell::new(5)))));
         },
         || -> i32 {
-            return if !((*u.borrow()).as_pointer()).is_null() {
-                ((*u.borrow()).as_pointer().read())
+            return if !({ (*u.borrow()).as_pointer() }).is_null() {
+                (({ (*u.borrow()).as_pointer() }).read())
             } else {
                 0
             };
