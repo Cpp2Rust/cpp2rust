@@ -14,7 +14,7 @@ pub fn baz_1(mut a: Ptr<i32>, b: Option<Ptr<i32>>) -> bool {
     let mut b: Ptr<i32> = b.unwrap_or_else(|| Ptr::<i32>::null());
     return ({ a } == { b });
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom)]
 #[cpp_from(i32, new, some_value)]
 #[byte_size(4)]
 pub struct Bar {
@@ -65,7 +65,7 @@ pub fn shifted_8(mut x: i32, y: Option<i32>) -> i32 {
 pub fn first_9(r: Ptr<i32>) -> i32 {
     return (elem!(r, 0).read());
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Holder_int_ {
     #[offset(0)]

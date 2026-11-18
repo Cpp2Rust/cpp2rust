@@ -12,7 +12,7 @@ thread_local!(
 thread_local!(
     pub static calls_1: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct p3_2_static_member_is_ordinary_pointer_HasStaticMembers {}
 impl p3_2_static_member_is_ordinary_pointer_HasStaticMembers {
@@ -30,7 +30,7 @@ pub fn test_2() {
     ({ function_pointer.call() });
     assert!((calls_1.with(|rc| *rc.borrow()) == 1));
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct p4_parenthesized_qualified_id_is_object_pointer_TakesAddressOfOwnMember {
     #[offset(0)]

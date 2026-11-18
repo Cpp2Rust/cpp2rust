@@ -11,7 +11,7 @@ const _: () = assert!(
     (::std::mem::size_of::<i32>() == 4_usize),
     "sizeof(int) == 4"
 );
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct Sized {}
 pub fn is_small_0() -> bool {

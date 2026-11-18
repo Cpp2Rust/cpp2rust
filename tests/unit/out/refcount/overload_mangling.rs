@@ -20,16 +20,16 @@ pub fn add_1(mut p: Ptr<i32>, mut n: i32) {
 pub fn twice_2(mut n: i32) -> i32 {
     return (n * 2);
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct Access_S_ {}
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct S {
     #[offset(0)]
     pub base: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Box_ {
     #[offset(0)]

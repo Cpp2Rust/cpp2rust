@@ -14,7 +14,7 @@ pub fn inc_1(r: Ptr<i32>) {
         __v.prefix_inc();
     });
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct Pair {
     #[offset(0)]
@@ -53,7 +53,7 @@ pub fn countdown_4(mut n: i32, step: Option<i32>) -> i32 {
 pub trait Shape {
     fn scale(&mut self, factor: i32) -> i32;
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(16)]
 pub struct Square {
     #[offset(8)]

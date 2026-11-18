@@ -61,7 +61,7 @@ pub fn fill_and_sum_9(a: Ptr<i32>, mut v: i32, out: Ptr<i32>) {
 pub fn pick_10(s: Ptr<i8>) -> Ptr<i8> {
     return (s).clone();
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct Point {
     #[offset(0)]

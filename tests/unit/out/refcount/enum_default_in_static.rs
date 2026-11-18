@@ -10,7 +10,7 @@ pub type Mode = u32;
 pub const Mode_MODE_NONE: Mode = 0;
 pub const Mode_MODE_ONE: Mode = 1;
 pub const Mode_MODE_TWO: Mode = 2;
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct Config {
     #[offset(0)]
@@ -26,12 +26,9 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!(({ ({ (*config_0.with(Value::clone).borrow()).count } == 0) }));
+    assert!(({ config_0.with(|rc| *rc.borrow()).count } == 0));
     assert!(
-        ({
-            (({ (*config_0.with(Value::clone).borrow()).mode } as u32)
-                == ((Mode_MODE_NONE as i32) as u32))
-        })
+        (({ config_0.with(|rc| *rc.borrow()).mode } as u32) == ((Mode_MODE_NONE as i32) as u32))
     );
     return 0;
 }

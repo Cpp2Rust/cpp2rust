@@ -9,7 +9,7 @@ use std::rc::{Rc, Weak};
 thread_local!(
     pub static balance_0: Value<i32> = Rc::new(RefCell::new(50));
 );
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(4)]
 pub struct p1_member_hides_namespace_variable_HasBalance {
     #[offset(0)]
@@ -45,7 +45,7 @@ pub fn test_1() {
 thread_local!(
     pub static initial_2: Value<i32> = Rc::new(RefCell::new(100));
 );
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(4)]
 pub struct p1_out_of_class_definition_is_in_class_scope_HasStaticTotal {
     #[offset(0)]

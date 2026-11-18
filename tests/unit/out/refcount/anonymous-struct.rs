@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct Outer_Named {
     #[offset(0)]
@@ -14,7 +14,7 @@ pub struct Outer_Named {
     #[offset(4)]
     pub b: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct anon_0 {
     #[offset(0)]
@@ -22,7 +22,7 @@ pub struct anon_0 {
     #[offset(4)]
     pub d: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct anon_1 {
     #[offset(0)]
@@ -30,7 +30,7 @@ pub struct anon_1 {
     #[offset(4)]
     pub h: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct anon_2 {
     #[offset(0)]
@@ -38,19 +38,19 @@ pub struct anon_2 {
     #[offset(4)]
     pub f: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct anon_4 {
     #[offset(0)]
     pub j: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct anon_5 {
     #[offset(0)]
     pub k: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(12)]
 pub struct anon_3 {
     #[offset(0)]
@@ -62,7 +62,7 @@ pub struct anon_3 {
     #[byte_size(4)]
     pub anon_5: anon_5,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(44)]
 pub struct Outer {
     #[offset(0)]
@@ -126,7 +126,7 @@ fn main_0() -> i32 {
     );
     return 0;
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct anon_6 {
     #[offset(0)]

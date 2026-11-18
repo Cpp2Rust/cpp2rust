@@ -18,7 +18,7 @@ pub fn scaled_2(v: Ptr<V>, mut k: i32) -> i32 {
 pub fn scaled_3(v: Ptr<V>, mut k: f64) -> f64 {
     return ({ (v.with(|__s| __s.x) as f64) } * { k });
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct V {
     #[offset(0)]
@@ -32,7 +32,7 @@ impl CppEq for V {
 pub fn get_4(w: Ptr<W_int_>) -> i32 {
     return w.with(|__s| __s.x);
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct W_int_ {
     #[offset(0)]
@@ -41,13 +41,13 @@ pub struct W_int_ {
 pub fn get_5(w: Ptr<W_long_>) -> i64 {
     return w.with(|__s| __s.x);
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct W_long_ {
     #[offset(0)]
     pub x: i64,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct D {
     #[offset(0)]

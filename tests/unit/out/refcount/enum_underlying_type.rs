@@ -25,7 +25,7 @@ pub type Scoped = i8;
 pub const Scoped_NEG: Scoped = -2;
 pub const Scoped_POS: Scoped = 2;
 pub type Empty = bool;
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(1)]
 pub struct HoldsEmpty {
     #[offset(0)]

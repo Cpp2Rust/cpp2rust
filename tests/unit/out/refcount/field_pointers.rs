@@ -25,7 +25,7 @@ impl Default for Inner {
         }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct Header {
     #[offset(0)]
@@ -263,12 +263,9 @@ impl OuterImpl for Ptr<Outer> {
                 (__tmp_0).clone()
             }
         };
-        {
-            field_ref!((*self), v)
-                .as_pointer()
-                .write(field!(_a0, v).with_mut(std::mem::take));
-            field_ref!((*self), v).as_pointer()
-        };
+        field_ref!((*self), v)
+            .as_pointer()
+            .write(field!(_a0, v).with_mut(std::mem::take));
         field!((*self), cursor).write({ { (*_a0.upgrade().deref()).cursor.clone() } });
         match ({ (array_field_ptr!((*self), buf)).to_any() },) {
             (mut __tmp_1,) => {

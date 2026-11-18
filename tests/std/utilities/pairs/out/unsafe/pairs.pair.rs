@@ -137,6 +137,24 @@ pub unsafe fn test_3() {
         .is_null()
     );
 }
+pub unsafe fn test_4() {
+    let mut a: (i32, i32) = (1, 2);
+    let mut b: (i32, i32) = (1, 3);
+    let mut c: (i32, i32) = (2, 0);
+    assert!(a != b);
+    assert!(!(a != a));
+    assert!(a < b);
+    assert!(!(b < a));
+    assert!(b < c);
+    assert!(a <= a);
+    assert!(!(c <= b));
+    assert!(c > b);
+    assert!(!(a > a));
+    assert!(c >= a);
+    assert!(!(a >= b));
+    let mut ordered: bool = (a < b) && (b < c);
+    assert!(ordered);
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -148,6 +166,7 @@ unsafe fn main_0() -> i32 {
     (unsafe { test_1() });
     (unsafe { test_2() });
     (unsafe { test_3() });
+    (unsafe { test_4() });
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

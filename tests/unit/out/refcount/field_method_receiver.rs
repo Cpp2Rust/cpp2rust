@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Counter {
     #[offset(0)]
@@ -31,9 +31,9 @@ impl S {
     pub fn move_from(_a0: Ptr<S>) -> Self {
         Self {
             tag: { (*_a0.upgrade().deref()).tag },
-            c: { (*_a0.upgrade().deref()).c.clone() },
+            c: { (*_a0.upgrade().deref()).c },
             arr: Box::new(std::array::from_fn::<_, 2, _>(|__i: usize| {
-                ((*_a0.upgrade().deref()).arr[(__i) as usize]).clone()
+                (*_a0.upgrade().deref()).arr[(__i) as usize]
             })),
             v: field!(_a0, v).with_mut(std::mem::take),
         }
@@ -141,19 +141,16 @@ impl SImpl for Ptr<S> {
     }
     fn move_assign(&self, _a0: Ptr<S>) -> Ptr<S> {
         field!((*self), tag).write({ { (*_a0.upgrade().deref()).tag } });
-        field!((*self), c).write({ { (*_a0.upgrade().deref()).c.clone() } });
+        field!((*self), c).write({ { (*_a0.upgrade().deref()).c } });
         match ({ (array_field_ptr!((*self), arr)).to_any() },) {
             (mut __tmp_0,) => {
                 __tmp_0.memcpy(&(array_field_ptr!(_a0, arr)).to_any(), 8_usize);
                 (__tmp_0).clone()
             }
         };
-        {
-            field_ref!((*self), v)
-                .as_pointer()
-                .write(field!(_a0, v).with_mut(std::mem::take));
-            field_ref!((*self), v).as_pointer()
-        };
+        field_ref!((*self), v)
+            .as_pointer()
+            .write(field!(_a0, v).with_mut(std::mem::take));
         return (*self).clone();
     }
 }

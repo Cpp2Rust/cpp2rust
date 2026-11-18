@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct S {
     #[offset(0)]
@@ -46,7 +46,7 @@ fn main_0() -> i32 {
     assert!((({ SImpl::operator_eq_3(&s.as_pointer(), 6_f64,) }) == 3));
     assert!((({ SImpl::operator_eq_1(&s.as_pointer(), 7,) }) == 0));
     assert!((({ SImpl::operator_add(&s.as_pointer(), t.as_pointer(),) }) == 10));
-    assert!(({ (({ SImpl::operator_sub(&s.as_pointer(), (*t.borrow()).clone(),) }) == 2) }));
+    assert!(({ (({ SImpl::operator_sub(&s.as_pointer(), (*t.borrow()),) }) == 2) }));
     assert!((({ SImpl::operator_mul_6(&s.as_pointer(), t.as_pointer(),) }) == 24));
     assert!((({ SImpl::operator_mul_7(&s.as_pointer(), 2,) }) == 13));
     assert!(
@@ -58,7 +58,7 @@ fn main_0() -> i32 {
     assert!(
         ({
             (({
-                let _a: S = (*s.borrow()).clone();
+                let _a: S = (*s.borrow());
                 operator_div_1(_a, 4)
             }) == 2)
         })
@@ -66,8 +66,8 @@ fn main_0() -> i32 {
     assert!(
         ({
             (({
-                let _a: S = (*s.borrow()).clone();
-                operator_rem_2(_a, (*t.borrow()).clone())
+                let _a: S = (*s.borrow());
+                operator_rem_2(_a, (*t.borrow()))
             }) == 2)
         })
     );
@@ -77,7 +77,7 @@ fn main_0() -> i32 {
             operator_rem_3(_a, 4)
         }) == 3)
     );
-    assert!(({ (({ operator_eq_4(6, (*s.borrow()).clone(),) }) == 4) }));
+    assert!(({ (({ operator_eq_4(6, (*s.borrow()),) }) == 4) }));
     assert!((({ operator_eq_5(6_i64, s.as_pointer(),) }) == 5));
     return 0;
 }

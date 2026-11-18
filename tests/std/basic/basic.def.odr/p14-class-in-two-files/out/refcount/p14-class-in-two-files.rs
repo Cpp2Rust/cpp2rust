@@ -80,7 +80,7 @@ thread_local!(
 thread_local!(
     pub static shared_5: Value<LifetimeTracked> = Rc::new(RefCell::new(LifetimeTracked::new()));
 );
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct HasInlineMembers {}
 impl HasInlineMembers {

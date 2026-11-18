@@ -12,7 +12,7 @@ pub fn foo_0(mut x: u32) {
 pub fn bar_1(x: Ptr<u32>) {
     x.write({ (x.read()).wrapping_add(1_u32) });
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(8)]
 pub struct Point {
     #[offset(0)]
@@ -385,11 +385,7 @@ fn main_0() -> i32 {
                     })
             })
     );
-    {
-        next.as_pointer()
-            .write(Map::erase(m.as_pointer(), &({ (*next.borrow()).clone() })));
-        next.as_pointer()
-    };
+    (*next.borrow_mut()) = Map::erase(m.as_pointer(), &({ (*next.borrow()).clone() }));
     assert!(
         (*next.borrow())
             == m.as_pointer()

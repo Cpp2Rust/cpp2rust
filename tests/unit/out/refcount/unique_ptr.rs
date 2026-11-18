@@ -20,7 +20,7 @@ impl SafePointer {
         }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct Pair {
     #[offset(0)]
@@ -32,34 +32,20 @@ pub fn DoStuffWithSafePointer_0(safe_ptr: Ptr<Option<Value<SafePointer>>>) {
     let x1: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(0)))));
     let mut x2: Option<Value<i32>> = Some(Rc::new(RefCell::new(0)));
     x2.as_pointer().write(1);
-    {
-        x1.as_pointer().write(x2.take());
-        x1.as_pointer()
-    };
+    x1.as_pointer().write(x2.take());
     let mut raw_ptr1: Ptr<i32> = ((*x1.borrow()).as_pointer());
     raw_ptr1.with_mut(|__v| {
         __v.prefix_inc();
     });
-    match (field_ptr!(
-        ((*safe_ptr.upgrade().deref()).as_pointer()),
-        ptr
-    ),)
-    {
-        (__tmp_0,) => {
-            __tmp_0.write((*x1.borrow_mut()).take());
-            (__tmp_0).clone()
-        }
-    };
+    ({ field_ptr!(((*safe_ptr.upgrade().deref()).as_pointer()), ptr) })
+        .write((*x1.borrow_mut()).take());
     ({ SafePointerImpl::inc(&((*safe_ptr.upgrade().deref()).as_pointer())) });
     ({ SafePointerImpl::inc(&((*safe_ptr.upgrade().deref()).as_pointer())) });
     let mut x3: Option<Value<i32>> = Some(Rc::new(RefCell::new(10)));
     let x4: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(20)))));
     let __rhs = ((x3.as_pointer().read()) + ((*x4.borrow()).as_pointer().read()));
     x3.as_pointer().write(__rhs);
-    {
-        x4.as_pointer().write(x3.take());
-        x4.as_pointer()
-    };
+    x4.as_pointer().write(x3.take());
     let mut raw_ptr2: Ptr<i32> = ((*x4.borrow()).as_pointer());
     {
         raw_ptr2.with_mut(|__v| *__v = *__v + 1)
@@ -246,11 +232,8 @@ impl SafePointerImpl for Ptr<SafePointer> {
             });
     }
     fn move_assign(&self, _a0: Ptr<SafePointer>) -> Ptr<SafePointer> {
-        {
-            field_ptr!((*self), ptr)
-                .write(field!(_a0, ptr).with_mut(|__v: &mut Option<Value<i32>>| __v.take()));
-            field_ptr!((*self), ptr)
-        };
+        field_ptr!((*self), ptr)
+            .write(field!(_a0, ptr).with_mut(|__v: &mut Option<Value<i32>>| __v.take()));
         return (*self).clone();
     }
 }

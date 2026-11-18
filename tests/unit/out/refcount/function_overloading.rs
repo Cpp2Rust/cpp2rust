@@ -21,7 +21,7 @@ pub fn foo_3(mut x: Ptr<i32>, mut y: Ptr<i32>, z: Ptr<i32>) -> i32 {
 pub fn bar_4(x: Ptr<i32>) -> i32 {
     return (x.read());
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct Foo {}
 pub fn func_5(mut x: i32) -> i32 {

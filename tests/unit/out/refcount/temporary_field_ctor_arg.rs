@@ -25,7 +25,7 @@ pub fn make_0() -> Outer {
         values: Vec::from([1, 2, 3, 4]),
     };
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
 #[cpp_from(Vec<i32  >  , new, ptr)]
 #[byte_size(4)]
 pub struct H {
@@ -57,12 +57,9 @@ pub trait OuterImpl {
 }
 impl OuterImpl for Ptr<Outer> {
     fn move_assign(&self, _a0: Ptr<Outer>) -> Ptr<Outer> {
-        {
-            field_ref!((*self), values)
-                .as_pointer()
-                .write(field!(_a0, values).with_mut(std::mem::take));
-            field_ref!((*self), values).as_pointer()
-        };
+        field_ref!((*self), values)
+            .as_pointer()
+            .write(field!(_a0, values).with_mut(std::mem::take));
         return (*self).clone();
     }
 }

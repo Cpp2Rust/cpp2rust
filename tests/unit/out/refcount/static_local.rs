@@ -33,7 +33,7 @@ pub fn from_local_class_6() -> i32 {
 thread_local!(
     static x_7: Value<i32> = Rc::new(RefCell::new(3));
 );
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct S_8 {}
 pub fn main() {

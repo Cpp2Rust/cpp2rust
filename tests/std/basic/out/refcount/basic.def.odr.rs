@@ -180,7 +180,7 @@ thread_local!(
 pub trait p4_1_pure_virtual_without_definition_HasPureVirtual {
     fn f(&mut self);
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct p4_1_pure_virtual_without_definition_OverridesPureVirtual {}
 pub fn test_11() {
@@ -442,7 +442,7 @@ pub fn test_26() {
 thread_local!(
     pub static t_ctors_27: Value<i32> = Rc::new(RefCell::new(0_i32));
 );
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(1)]
 pub struct p9_destructor_not_potentially_invoked_HasUndefinedDestructor {}
 impl p9_destructor_not_potentially_invoked_HasUndefinedDestructor {
@@ -497,7 +497,7 @@ pub fn test_31() {
 thread_local!(
     pub static m_ctors_32: Value<i32> = Rc::new(RefCell::new(0_i32));
 );
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(1)]
 pub struct p9_unused_implicit_assignment_HasUndefinedCopyAssignment {}
 impl p9_unused_implicit_assignment_HasUndefinedCopyAssignment {
@@ -512,7 +512,7 @@ impl Default for p9_unused_implicit_assignment_HasUndefinedCopyAssignment {
         { p9_unused_implicit_assignment_HasUndefinedCopyAssignment::new() }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct p9_unused_implicit_assignment_HasMemberWithUndefinedCopyAssignment {
     #[offset(0)]

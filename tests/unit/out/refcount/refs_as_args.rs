@@ -31,7 +31,7 @@ pub fn more_refs_0(x1: i32, x2: i32, r1: Ptr<i32>, r2: Ptr<i32>) {
     };
     r1.write({ (rx2.read()) });
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Val {
     #[offset(0)]
@@ -51,23 +51,23 @@ fn main_0() -> i32 {
     assert!(({ (((*x1.borrow()) + (*x2.borrow())) == 21) }));
     let v: Value<Val> = Rc::new(RefCell::new(Val { x: 5 }));
     let mut acc: i32 = ({
-        let _a: Val = (*v.borrow()).clone();
-        let _b: Val = (*v.borrow()).clone();
+        let _a: Val = (*v.borrow());
+        let _b: Val = (*v.borrow());
         sum_1(_a, _b)
     });
     acc += ({
-        let _a: Val = (*v.borrow()).clone();
-        let _b: Val = (*v.borrow()).clone();
+        let _a: Val = (*v.borrow());
+        let _b: Val = (*v.borrow());
         sum_1(_a, _b)
     });
     acc += ({
-        let _a: Val = (*v.borrow()).clone();
-        let _b: Val = (*v.borrow()).clone();
+        let _a: Val = (*v.borrow());
+        let _b: Val = (*v.borrow());
         sum_1(_a, _b)
     });
     acc += ({
-        let _a: Val = (*v.borrow()).clone();
-        let _b: Val = (*v.borrow()).clone();
+        let _a: Val = (*v.borrow());
+        let _b: Val = (*v.borrow());
         sum_1(_a, _b)
     });
     assert!((acc == 40));
