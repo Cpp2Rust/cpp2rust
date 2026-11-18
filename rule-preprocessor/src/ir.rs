@@ -202,6 +202,8 @@ pub enum BodyFragment {
         init: std::marker::PhantomData<()>,
         #[serde(default, skip_serializing_if = "std::ops::Not::not")]
         conditional: bool,
+        #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+        no_struct_literal: bool,
     },
     GenericCall {
         generic_call: GenericCallInner,
@@ -228,6 +230,8 @@ pub struct PlaceholderInner {
     /// evaluate it other than once.
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub conditional: bool,
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub no_struct_literal: bool,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

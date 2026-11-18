@@ -278,6 +278,7 @@ impl<'a> FragmentCtx<'a> {
                     self.fragments.push(BodyFragment::Init {
                         init: std::marker::PhantomData,
                         conditional: Self::is_conditional(token),
+                        no_struct_literal: Self::excludes_struct_literal(token),
                     });
                     return;
                 }
@@ -300,6 +301,7 @@ impl<'a> FragmentCtx<'a> {
                         access,
                         is_index_base: false,
                         conditional: Self::is_conditional(token),
+                        no_struct_literal: Self::excludes_struct_literal(token),
                     },
                 });
                 return;
@@ -343,6 +345,41 @@ impl<'a> FragmentCtx<'a> {
                 }
             }
         })
+    }
+
+    fn excludes_struct_literal(token: &ra_ap_syntax::SyntaxToken) -> bool {
+        fn contains(node: Option<impl AstNode>, token: &ra_ap_syntax::SyntaxToken) -> bool {
+            node.is_some_and(|node| {
+                node.syntax()
+                    .text_range()
+                    .contains_range(token.text_range())
+            })
+        }
+        for node in token.parent_ancestors() {
+            let excludes = match_ast! {
+                match node {
+                    ast::ParenExpr(_) => Some(false),
+                    ast::ArgList(_) => Some(false),
+                    ast::ArrayExpr(_) => Some(false),
+                    ast::TupleExpr(_) => Some(false),
+                    ast::StmtList(_) => Some(false),
+                    ast::TokenTree(_) => Some(false),
+                    ast::IndexExpr(it) => contains(it.index(), token).then_some(false),
+                    ast::WhileExpr(it) => Some(contains(it.condition(), token)),
+                    ast::IfExpr(it) => Some(contains(it.condition(), token)),
+                    ast::MatchExpr(it) => Some(contains(it.expr(), token)),
+                    ast::ForExpr(it) => Some(contains(it.iterable(), token)),
+                    ast::LetStmt(it) => Some(
+                        it.let_else().is_some() && contains(it.initializer(), token),
+                    ),
+                    _ => None,
+                }
+            };
+            if let Some(excludes) = excludes {
+                return excludes;
+            }
+        }
+        false
     }
 
     fn generic_of_path(&self, path: &ast::Path) -> Option<i32> {

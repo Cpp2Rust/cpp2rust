@@ -6,6 +6,22 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+#[repr(C)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+pub struct P {
+    pub x: i32,
+}
+impl P {
+    pub unsafe fn operator_eq(&self, o: *const P) -> bool {
+        return ((self.x) == ((*o).x));
+    }
+}
+impl std::cmp::PartialEq for P {
+    fn eq(&self, other: &Self) -> bool {
+        unsafe { P::operator_eq(self, other as *const P) }
+    }
+}
+impl std::cmp::Eq for P {}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -101,6 +117,20 @@ unsafe fn main_0() -> i32 {
                 }
             }
         } == w.begin().iter_add(4_isize)
+    );
+    let mut p: Vec<P> = Vec::from([P { x: 0 }, P { x: 1 }, P { x: 2 }]);
+    assert!(
+        match ({ p.begin() }, { p.end() },) {
+            (mut __tmp_9, mut __tmp_10) => {
+                {
+                    let mut __it = (__tmp_9).clone();
+                    while __it != __tmp_10 && *__it.iter_deref() != (P { x: 1 }) {
+                        __it.iter_inc();
+                    }
+                    __it
+                }
+            }
+        } == p.begin().iter_add(1_isize)
     );
     return 0;
 }

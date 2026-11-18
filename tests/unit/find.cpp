@@ -3,6 +3,11 @@
 #include <map>
 #include <vector>
 
+struct P {
+  int x;
+  bool operator==(const P &o) const { return x == o.x; }
+};
+
 int main() {
   std::vector<int> v;
   v.push_back(1);
@@ -25,5 +30,7 @@ int main() {
   assert(std::find(w.begin() + 2, w.end(), 4) == w.begin() + 3);
   assert(std::find(w.begin() + 2, w.end(), 1) == w.end());
   assert(std::find(w.begin() + 2, w.begin() + 4, 5) == w.begin() + 4);
+  std::vector<P> p = {P{0}, P{1}, P{2}};
+  assert(std::find(p.begin(), p.end(), P{1}) == p.begin() + 1);
   return 0;
 }

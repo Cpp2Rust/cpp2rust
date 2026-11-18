@@ -5819,15 +5819,20 @@ std::string Converter::ConvertIRFragment(
       if (borrows_ && isFresh() && !CreatesTemporary(arg)) {
         value = std::format("({{ {} }})", value);
         borrows_ = false;
+      } else if (ph->no_struct_literal && arg->getType()->isRecordType() &&
+                 !AsLambdaClass(arg->getType()) &&
+                 arg->IgnoreImplicit()->isPRValue()) {
+        value = std::format("({})", value);
       }
       borrows_ |= outer_borrows;
       result += value;
     } else if (std::get_if<TranslationRule::VaArgsFragment>(&frag)) {
       assert(expr && "variadic arguments outside an expression rule");
       result += ConvertVariadicTail(expr, all_args);
-    } else if (std::get_if<TranslationRule::InitFragment>(&frag)) {
+    } else if (auto *init = std::get_if<TranslationRule::InitFragment>(&frag)) {
       assert(expr && "init outside an expression rule");
-      result += ConvertInitFragment(expr, all_args);
+      auto value = ConvertInitFragment(expr, all_args);
+      result += init->no_struct_literal ? std::format("({})", value) : value;
     } else if (auto *mc =
                    std::get_if<std::unique_ptr<MethodCallFragment>>(&frag)) {
       result += ConvertMappedMethodCall(expr, **mc, bindings, all_args, ctx);
