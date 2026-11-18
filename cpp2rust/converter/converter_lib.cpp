@@ -233,8 +233,10 @@ bool IsCodeUnitStringLiteral(const clang::StringLiteral *expr) {
 std::string GetNumAsString(llvm::APFloat value) {
   auto format = [&](std::string_view ty, std::string finite) {
     if (value.isNaN()) {
-      return std::format("{}::from_bits({:#x})", ty,
-                         value.bitcastToAPInt().getZExtValue());
+      if (value.isNegative()) {
+        return std::format("(-{}::NAN)", ty);
+      }
+      return std::format("{}::NAN", ty);
     }
     if (value.isInfinity()) {
       return std::format("{}::{}INFINITY", ty,
