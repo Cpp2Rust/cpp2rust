@@ -78,7 +78,7 @@ thread_local!(
 thread_local!(
     static calls_3: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct P_4 {
     #[offset(0)]

@@ -9,7 +9,7 @@ use std::rc::{Rc, Weak};
 pub type Overload = u32;
 pub const Overload_kMutableOverload: Overload = 1;
 pub const Overload_kConstOverload: Overload = 2;
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct S {
     #[offset(0)]

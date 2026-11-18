@@ -16,7 +16,7 @@ pub fn test_0() {
     (*value.borrow_mut()) = 7;
     assert!((((converted.read()).read()) == 7));
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct p10_null_converts_to_null_HasTwoInts {
     #[offset(0)]
@@ -24,7 +24,7 @@ pub struct p10_null_converts_to_null_HasTwoInts {
     #[offset(4)]
     pub second: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct p10_null_converts_to_null_HasChar {
     #[offset(0)]
@@ -35,7 +35,7 @@ pub fn test_1() {
     let mut converted: isize = pm;
     assert!(((converted) == -1_isize));
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct p10_2_data_member_round_trip_HasTwoInts {
     #[offset(0)]
@@ -43,7 +43,7 @@ pub struct p10_2_data_member_round_trip_HasTwoInts {
     #[offset(4)]
     pub second: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct p10_2_data_member_round_trip_HasChar {
     #[offset(0)]

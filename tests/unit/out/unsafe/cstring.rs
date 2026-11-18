@@ -8,14 +8,7 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn test_memcpy_0() {
     let src: [libc::c_char; 6] = std::mem::transmute(*b"hello\0");
-    let mut dst: [libc::c_char; 6] = [
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-    ];
+    let mut dst: [libc::c_char; 6] = [(0 as libc::c_char); 6];
     let mut r: *mut ::libc::c_void = match ({ (dst.as_mut_ptr() as *mut ::libc::c_void) }, {
         (src.as_ptr() as *const ::libc::c_void)
     }) {

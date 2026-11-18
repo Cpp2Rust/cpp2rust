@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(16)]
 pub struct S {
     #[offset(0)]
@@ -27,7 +27,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let mut arr: [i64; 4] = [0_i64, 0_i64, 0_i64, 0_i64];
+    let mut arr: [i64; 4] = [0_i64; 4];
     let mut s: S = <S>::default();
     assert!((::std::mem::size_of::<i32>() == 4_usize));
     assert!((::std::mem::size_of::<[i64; 4]>() == 32_usize));

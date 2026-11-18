@@ -6,32 +6,32 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Point {
     #[offset(0)]
     pub x: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Box_int_ {
     #[offset(0)]
     pub val: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Box_Point_ {
     #[offset(0)]
     #[byte_size(4)]
     pub val: Point,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Deduced_int_ {
     #[offset(0)]
     pub val: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Deduced_Point_ {
     #[offset(0)]
@@ -65,7 +65,7 @@ pub trait Box_Point_Impl {
 }
 impl Box_Point_Impl for Ptr<Box_Point_> {
     fn get(&self) -> Point {
-        return (*self).with(|__s| __s.val.clone());
+        return (*self).with(|__s| __s.val);
     }
 }
 pub trait Box_int_Impl {
@@ -84,7 +84,7 @@ pub trait Deduced_Point_Impl {
 }
 impl Deduced_Point_Impl for Ptr<Deduced_Point_> {
     fn get(&self) -> Point {
-        return (*self).with(|__s| __s.val.clone());
+        return (*self).with(|__s| __s.val);
     }
 }
 pub trait Deduced_int_Impl {

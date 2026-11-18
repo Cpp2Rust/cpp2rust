@@ -31,10 +31,7 @@ pub struct Container {
     pub view: anon_0,
 }
 pub unsafe fn fill_1(mut out: *mut ::libc::c_void, mut cap: usize) {
-    let mut src: [u8; 16] = [
-        0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8,
-        0_u8,
-    ];
+    let mut src: [u8; 16] = [0_u8; 16];
     src[(0) as usize] = 2_u8;
     src[(1) as usize] = 0_u8;
     src[(2) as usize] = 0_u8;

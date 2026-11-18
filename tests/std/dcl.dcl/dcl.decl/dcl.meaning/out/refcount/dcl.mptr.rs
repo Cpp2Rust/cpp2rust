@@ -39,7 +39,7 @@ pub fn test_0() {
     assert!(((array_elem!(obj.as_pointer(), elements, 1).read()) == 7));
     assert!(({ ({ (*obj.borrow()).before } == 1) }));
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct p2_pointer_to_data_member_HasTwoInts {
     #[offset(0)]
@@ -67,7 +67,7 @@ pub fn test_1() {
 thread_local!(
     pub static pm_2: Value<isize> = Rc::new(RefCell::new(-1_isize));
 );
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct p2_pointer_to_member_of_incomplete_class_CompletedLater {
     #[offset(0)]
@@ -96,7 +96,7 @@ pub fn test_3() {
             == 4)
     );
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct p2_pointer_to_member_of_pointer_to_member_type_HasTwoInts {
     #[offset(0)]
@@ -104,7 +104,7 @@ pub struct p2_pointer_to_member_of_pointer_to_member_type_HasTwoInts {
     #[offset(4)]
     pub second: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(8)]
 pub struct p2_pointer_to_member_of_pointer_to_member_type_HoldsSelector {
     #[offset(0)]

@@ -21,7 +21,7 @@ pub fn double_it_0(mut x: i32) -> i32 {
 pub fn negate_1(mut x: i32) -> i32 {
     return -x;
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct S {}
 impl S {

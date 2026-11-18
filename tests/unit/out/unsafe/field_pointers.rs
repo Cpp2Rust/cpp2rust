@@ -163,7 +163,7 @@ unsafe fn main_0() -> i32 {
         }
     };
     assert!(((y) == (4)));
-    let mut bytes: [u8; 8] = [0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8];
+    let mut bytes: [u8; 8] = [0_u8; 8];
     let mut view: *mut Header = (bytes.as_mut_ptr() as *mut Header);
     (*view).tag = 16909060;
     assert!(((bytes[(0) as usize] as i32) == (4)) || ((bytes[(3) as usize] as i32) == (4)));

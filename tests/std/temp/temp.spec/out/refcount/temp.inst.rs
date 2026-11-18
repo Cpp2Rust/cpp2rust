@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(4)]
 pub struct p2_reference_does_not_instantiate_Member {
     #[offset(0)]
@@ -32,7 +32,7 @@ pub struct p2_reference_does_not_instantiate_Holder {
 impl p2_reference_does_not_instantiate_Holder {
     pub fn move_from(_a0: Ptr<p2_reference_does_not_instantiate_Holder>) -> Self {
         Self {
-            member: { (*_a0.upgrade().deref()).member.clone() },
+            member: { (*_a0.upgrade().deref()).member },
         }
     }
 }

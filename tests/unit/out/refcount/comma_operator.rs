@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct Pair {
     #[offset(0)]
@@ -83,7 +83,7 @@ fn main_0() -> i32 {
     }));
     let mut p2: Pair = {
         b = 6;
-        (*p1.borrow()).clone()
+        (*p1.borrow())
     };
     p2.first = 10;
     assert!(({ ({ (*p1.borrow()).first } == 1) }));

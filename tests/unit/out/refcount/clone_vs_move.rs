@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Bar {
     #[offset(0)]
@@ -306,7 +306,7 @@ fn main_0() -> i32 {
     assert!(((s1[2_usize] as i32) == (('a' as i8) as i32)));
     let mut b1: Bar = Bar { w: 1 };
     let mut b2: Bar = Bar { w: 2 };
-    b2 = (b1).clone();
+    b2 = b1;
     b2.w.postfix_inc();
     assert!((b1.w == 1));
     assert!((b2.w == 2));

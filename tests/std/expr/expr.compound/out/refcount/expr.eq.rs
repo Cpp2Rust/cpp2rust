@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct p4_1_both_null_HasTwoInts {
     #[offset(0)]
@@ -20,7 +20,7 @@ pub fn test_0() {
     assert!((first_null == second_null));
     assert!(!(first_null != second_null));
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct p4_2_one_null_HasTwoInts {
     #[offset(0)]
@@ -64,7 +64,7 @@ pub fn test_2() {
     assert!((first_pm == second_pm));
     assert!(!(first_pm != second_pm));
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct p4_6_data_members_HasTwoInts {
     #[offset(0)]

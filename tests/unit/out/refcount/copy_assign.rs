@@ -37,7 +37,7 @@ impl Clone for Partial {
         Partial::copy_from(__src.as_pointer())
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(4)]
 pub struct NonConstAssign {
     #[offset(0)]
@@ -53,7 +53,7 @@ impl Default for NonConstAssign {
         { NonConstAssign::new() }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CopyAssign)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, CopyAssign)]
 #[byte_size(4)]
 pub struct RefQualified {
     #[offset(0)]

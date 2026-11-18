@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct Degrees {
@@ -77,8 +77,8 @@ fn main_0() -> i32 {
     };
     assert!(
         ({
-            ({ (*constructed.borrow())[0_usize].value } == 1)
-                && ({ (*constructed.borrow())[2_usize].value } == 3)
+            ({ { (*constructed.borrow())[0_usize] }.value } == 1)
+                && ({ { (*constructed.borrow())[2_usize] }.value } == 3)
         })
     );
     let wide: Value<Box<[i64]>> = Rc::new(RefCell::new(Box::new([7_i64, 8_i64])));

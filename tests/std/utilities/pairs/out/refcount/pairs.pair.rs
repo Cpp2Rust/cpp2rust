@@ -118,6 +118,33 @@ pub fn test_3() {
     assert!(({ (((*(*target.borrow()).1.borrow()).as_pointer().read()) == 9) }));
     assert!(({ ((*(*source.borrow()).1.borrow()).as_pointer()).is_null() }));
 }
+pub fn test_4() {
+    let a: Value<(Value<i32>, Value<i32>)> = Rc::new(RefCell::new((
+        Rc::new(RefCell::new(1)),
+        Rc::new(RefCell::new(2)),
+    )));
+    let b: Value<(Value<i32>, Value<i32>)> = Rc::new(RefCell::new((
+        Rc::new(RefCell::new(1)),
+        Rc::new(RefCell::new(3)),
+    )));
+    let c: Value<(Value<i32>, Value<i32>)> = Rc::new(RefCell::new((
+        Rc::new(RefCell::new(2)),
+        Rc::new(RefCell::new(0)),
+    )));
+    assert!((*a.borrow()) != (*b.borrow()));
+    assert!(({ !((*a.borrow()) != (*a.borrow())) }));
+    assert!((*a.borrow()) < (*b.borrow()));
+    assert!(({ !((*b.borrow()) < (*a.borrow())) }));
+    assert!((*b.borrow()) < (*c.borrow()));
+    assert!((*a.borrow()) <= (*a.borrow()));
+    assert!(({ !((*c.borrow()) <= (*b.borrow())) }));
+    assert!((*c.borrow()) > (*b.borrow()));
+    assert!(({ !((*a.borrow()) > (*a.borrow())) }));
+    assert!((*c.borrow()) >= (*a.borrow()));
+    assert!(({ !((*a.borrow()) >= (*b.borrow())) }));
+    let mut ordered: bool = ((*a.borrow()) < (*b.borrow())) && ((*b.borrow()) < (*c.borrow()));
+    assert!(ordered);
+}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
@@ -127,6 +154,7 @@ fn main_0() -> i32 {
     ({ test_1() });
     ({ test_2() });
     ({ test_3() });
+    ({ test_4() });
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

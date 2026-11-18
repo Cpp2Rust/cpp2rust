@@ -577,6 +577,7 @@ public:
   virtual void ConvertUnionInitList(clang::InitListExpr *expr,
                                     const clang::FieldDecl *field);
   virtual void ConvertArrayInitList(clang::InitListExpr *expr);
+  bool IsBroadcastArrayInitList(clang::InitListExpr *expr);
   bool VisitOpaqueValueExpr(clang::OpaqueValueExpr *expr);
   bool VisitArrayInitIndexExpr(clang::ArrayInitIndexExpr *expr);
   virtual bool VisitArrayInitLoopExpr(clang::ArrayInitLoopExpr *expr);

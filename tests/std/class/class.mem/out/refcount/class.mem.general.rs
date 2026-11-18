@@ -14,7 +14,7 @@ pub fn minimum_1() -> i32 {
 }
 pub type anon_2 = u32;
 pub const anon_2_reserve: anon_2 = 30;
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(4)]
 pub struct p7_1_function_body_names_later_member_HasLaterMembers {
     #[offset(0)]
@@ -43,7 +43,7 @@ thread_local!(
 thread_local!(
     pub static step_5: Value<i32> = Rc::new(RefCell::new(4));
 );
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(4)]
 pub struct p7_2_default_argument_names_later_member_HasLaterStaticStep {
     #[offset(0)]

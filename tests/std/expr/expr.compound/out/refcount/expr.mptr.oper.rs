@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct p3_arrow_star_HasTwoInts {
     #[offset(0)]
@@ -27,7 +27,7 @@ pub fn test_0() {
     assert!(({ ({ (*obj.borrow()).first } == 3) }));
     assert!((((p).member::<i32>(pm)) == ((p).member::<i32>(pm))));
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct p4_object_expression_sequenced_first_HasValue {
     #[offset(0)]
@@ -69,7 +69,7 @@ pub fn test_7() {
     assert!((object_stamp_2.with(|rc| *rc.borrow()) == 1));
     assert!((member_stamp_3.with(|rc| *rc.borrow()) == 2));
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct p6_data_member_of_lvalue_is_lvalue_HasTwoInts {
     #[offset(0)]

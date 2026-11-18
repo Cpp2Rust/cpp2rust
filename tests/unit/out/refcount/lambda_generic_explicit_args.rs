@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Val {
     #[offset(0)]
@@ -59,8 +59,8 @@ fn main_0() -> i32 {
         || {
             {
                 let __rhs = ({
-                    let _a: Val = (*v.upgrade().deref()).clone();
-                    let _b: Val = (*v.upgrade().deref()).clone();
+                    let _a: Val = (*v.upgrade().deref());
+                    let _b: Val = (*v.upgrade().deref());
                     sum_0(_a, _b)
                 });
                 acc.with_mut(|__v| *__v = *__v + __rhs)
@@ -69,8 +69,8 @@ fn main_0() -> i32 {
         || {
             {
                 let __rhs = ({
-                    let _a: Val = (*v.upgrade().deref()).clone();
-                    let _b: Val = (*v.upgrade().deref()).clone();
+                    let _a: Val = (*v.upgrade().deref());
+                    let _b: Val = (*v.upgrade().deref());
                     sum_0(_a, _b)
                 });
                 acc.with_mut(|__v| *__v = *__v + __rhs)
@@ -79,8 +79,8 @@ fn main_0() -> i32 {
         || {
             {
                 let __rhs = ({
-                    let _a: Val = (*v.upgrade().deref()).clone();
-                    let _b: Val = (*v.upgrade().deref()).clone();
+                    let _a: Val = (*v.upgrade().deref());
+                    let _b: Val = (*v.upgrade().deref());
                     sum_0(_a, _b)
                 });
                 acc.with_mut(|__v| *__v = *__v + __rhs)

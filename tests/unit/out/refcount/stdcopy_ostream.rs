@@ -47,11 +47,7 @@ fn main_0() -> i32 {
         Some(__f) => Ptr::alloc(__f),
         None => Ptr::null(),
     };
-    let buf: Value<Box<[i8]>> = Rc::new(RefCell::new(Box::new([
-        0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8,
-        0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8,
-        0_i8, 0_i8,
-    ])));
+    let buf: Value<Box<[i8]>> = Rc::new(RefCell::new(Box::new([0_i8; 32])));
     let mut n: usize = libcc2rs::fread_refcount(
         (buf.decay()).to_any(),
         1_usize,

@@ -61,10 +61,7 @@ pub struct Container {
     pub view: anon_0,
 }
 pub fn fill_1(mut out: AnyPtr, mut cap: usize) {
-    let src: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
-        0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8,
-        0_u8,
-    ])));
+    let src: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([0_u8; 16])));
     (*src.borrow_mut())[(0) as usize] = 2_u8;
     (*src.borrow_mut())[(1) as usize] = 0_u8;
     (*src.borrow_mut())[(2) as usize] = 0_u8;
