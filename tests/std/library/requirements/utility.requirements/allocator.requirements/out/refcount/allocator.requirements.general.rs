@@ -33,7 +33,8 @@ pub fn test_0() {
         let __src = m
             .as_pointer()
             .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<i32>)>| std::mem::take(__m));
-        n.as_pointer().write(__src)
+        n.as_pointer().write(__src);
+        n.as_pointer()
     };
     assert!(
         ((Map::subscript_move(

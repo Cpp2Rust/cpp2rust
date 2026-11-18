@@ -21,9 +21,15 @@ fn main_0() -> i32 {
     f_ptr1.write(10);
     let mut f_ptr2: Ptr<i32> = ((*f.borrow()).as_pointer());
     f_ptr2.write(11);
-    f.as_pointer().write(Some(Rc::new(RefCell::new(9))).take());
-    f.as_pointer()
-        .write(({ fn_0((*f.borrow_mut()).take()) }).take());
+    {
+        f.as_pointer().write(Some(Rc::new(RefCell::new(9))).take());
+        f.as_pointer()
+    };
+    {
+        f.as_pointer()
+            .write(({ fn_0((*f.borrow_mut()).take()) }).take());
+        f.as_pointer()
+    };
     assert!(({ (((*f.borrow()).as_pointer().read()) == 10) }));
     return 0;
 }

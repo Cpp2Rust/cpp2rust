@@ -2209,8 +2209,11 @@ impl OwnerImpl for Ptr<Owner> {
         return field_ptr!((*self).with(|__s| __s.ptr.clone()).as_pointer(), n);
     }
     fn move_assign(&self, _a0: Ptr<Owner>) -> Ptr<Owner> {
-        field_ptr!((*self), ptr)
-            .write(field!(_a0, ptr).with_mut(|__v: &mut Option<Value<Temporary>>| __v.take()));
+        {
+            field_ptr!((*self), ptr)
+                .write(field!(_a0, ptr).with_mut(|__v: &mut Option<Value<Temporary>>| __v.take()));
+            field_ptr!((*self), ptr)
+        };
         return (*self).clone();
     }
 }

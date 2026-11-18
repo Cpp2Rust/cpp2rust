@@ -17,15 +17,18 @@ pub fn matalloc_0(
     {
         let mut i: i32 = 0;
         'loop_: while (i < n) {
-            match (Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
-                (0..(p as usize)).map(|_| 0_i32).collect::<Box<[_]>>(),
-            )))))
-            .as_pointer(),)
-            {
-                (__tmp_0,) => m
-                    .decay()
-                    .offset((i as usize))
-                    .write(__tmp_0.with_mut(|__v: &mut Option<Value<Box<[i32]>>>| __v.take())),
+            match (
+                m.decay().offset((i as usize)),
+                Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
+                    (0..(p as usize)).map(|_| 0_i32).collect::<Box<[_]>>(),
+                )))))
+                .as_pointer(),
+            ) {
+                (__tmp_0, __tmp_1) => {
+                    __tmp_0
+                        .write(__tmp_1.with_mut(|__v: &mut Option<Value<Box<[i32]>>>| __v.take()));
+                    (__tmp_0).clone()
+                }
             };
             {
                 let mut j: i32 = 0;

@@ -13,15 +13,17 @@ pub unsafe fn matalloc_0(mut n: i32, mut p: i32, mut e: i32) -> Option<Box<[Opti
         let mut i: i32 = 0;
         'loop_: while ((i) < (n)) {
             match (
+                (m.as_deref()
+                    .map_or(::std::ptr::null_mut(), |s| {
+                        s.as_ptr() as *mut Option<Box<[i32]>>
+                    })
+                    .add((i as usize)) as *mut Option<Box<[i32]>>),
                 (&mut Some((0..(p as usize)).map(|_| 0_i32).collect::<Box<[_]>>())
                     as *mut Option<Box<[i32]>>),
             ) {
-                (__tmp_0,) => {
-                    (*m.as_deref()
-                        .map_or(::std::ptr::null_mut(), |s| {
-                            s.as_ptr() as *mut Option<Box<[i32]>>
-                        })
-                        .add((i as usize))) = (*__tmp_0).take()
+                (__tmp_0, __tmp_1) => {
+                    *(__tmp_0 as *mut Option<Box<[i32]>>) = (*__tmp_1).take();
+                    (__tmp_0 as *mut Option<Box<[i32]>>)
                 }
             };
             {

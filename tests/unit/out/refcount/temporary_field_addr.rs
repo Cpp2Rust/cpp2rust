@@ -147,9 +147,12 @@ pub trait InnerImpl {
 }
 impl InnerImpl for Ptr<Inner> {
     fn move_assign(&self, _a0: Ptr<Inner>) -> Ptr<Inner> {
-        field_ref!((*self), values)
-            .as_pointer()
-            .write(field!(_a0, values).with_mut(std::mem::take));
+        {
+            field_ref!((*self), values)
+                .as_pointer()
+                .write(field!(_a0, values).with_mut(std::mem::take));
+            field_ref!((*self), values).as_pointer()
+        };
         return (*self).clone();
     }
 }
@@ -158,9 +161,12 @@ pub trait OuterImpl {
 }
 impl OuterImpl for Ptr<Outer> {
     fn move_assign(&self, _a0: Ptr<Outer>) -> Ptr<Outer> {
-        field_ref!((*self), values)
-            .as_pointer()
-            .write(field!(_a0, values).with_mut(std::mem::take));
+        {
+            field_ref!((*self), values)
+                .as_pointer()
+                .write(field!(_a0, values).with_mut(std::mem::take));
+            field_ref!((*self), values).as_pointer()
+        };
         ({
             let _arg0: Ptr<Inner> = field_ptr!(_a0, inner);
             InnerImpl::move_assign(&field_ptr!((*self), inner), _arg0)

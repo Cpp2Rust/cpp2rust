@@ -89,25 +89,28 @@ unsafe fn main_0() -> i32 {
         }
     );
     let mut copy: Vec<Vec<Vec<Vec<libc::c_char>>>> = v.clone();
-    match ((&mut std::slice::from_raw_parts(
-        c"z".as_ptr(),
-        (0..).take_while(|&i| *c"z".as_ptr().add(i) != 0).count() + 1,
-    )
-    .to_vec() as *mut Vec<libc::c_char>),)
-    {
-        (__tmp_1,) => {
-            (&mut (*((copy[(0_usize)]).first_mut().unwrap())))[(0_usize)] =
-                std::mem::replace(&mut (*__tmp_1), vec![0])
+    match (
+        (&mut (&mut (*((copy[(0_usize)]).first_mut().unwrap())))[(0_usize)]
+            as *mut Vec<libc::c_char>),
+        (&mut std::slice::from_raw_parts(
+            c"z".as_ptr(),
+            (0..).take_while(|&i| *c"z".as_ptr().add(i) != 0).count() + 1,
+        )
+        .to_vec() as *mut Vec<libc::c_char>),
+    ) {
+        (__tmp_1, __tmp_2) => {
+            *(__tmp_1 as *mut Vec<libc::c_char>) = std::mem::replace(&mut (*__tmp_2), vec![0]);
+            (__tmp_1 as *mut Vec<libc::c_char>)
         }
     };
     (*match (
         (&mut (&mut (*((v[(0_usize)]).first_mut().unwrap())))[(1_usize)] as *mut Vec<libc::c_char>),
     ) {
-        (__tmp_2,) => {
-            if 0_usize >= (*__tmp_2).len() - 1 {
+        (__tmp_3,) => {
+            if 0_usize >= (*__tmp_3).len() - 1 {
                 panic!("out of bounds access")
             } else {
-                (&mut (&mut (*__tmp_2))[0_usize] as *mut libc::c_char)
+                (&mut (&mut (*__tmp_3))[0_usize] as *mut libc::c_char)
             }
         }
     }) = ('B' as libc::c_char);

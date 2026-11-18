@@ -490,12 +490,18 @@ pub trait FooImpl {
 }
 impl FooImpl for Ptr<Foo> {
     fn move_assign(&self, _a0: Ptr<Foo>) -> Ptr<Foo> {
-        field_ref!((*self), a)
-            .as_pointer()
-            .write(field!(_a0, a).with_mut(std::mem::take));
-        field_ref!((*self), b)
-            .as_pointer()
-            .write(field!(_a0, b).with_mut(std::mem::take));
+        {
+            field_ref!((*self), a)
+                .as_pointer()
+                .write(field!(_a0, a).with_mut(std::mem::take));
+            field_ref!((*self), a).as_pointer()
+        };
+        {
+            field_ref!((*self), b)
+                .as_pointer()
+                .write(field!(_a0, b).with_mut(std::mem::take));
+            field_ref!((*self), b).as_pointer()
+        };
         return (*self).clone();
     }
 }
