@@ -84,6 +84,9 @@ fn main_0() -> i32 {
     };
     assert!((v4.len() == 3_usize));
     assert!(((v4[0_usize] == 1_u32) && (v4[1_usize] == 2_u32)) && (v4[2_usize] == 3_u32));
+    let mut lit_end: Ptr<i8> = Ptr::<i8>::from_string_literal(b"abc").to_end();
+    assert!(((((lit_end.offset(-((1) as isize))).read()) as i32) == (('\0' as i8) as i32)));
+    assert!(((((lit_end.offset(-((4) as isize))).read()) as i32) == (('a' as i8) as i32)));
     let buf: Value<Box<[u8]>> =
         Rc::new(RefCell::new(Box::new([10_u8, 20_u8, 30_u8, 40_u8, 50_u8])));
     let mut start: Ptr<u8> = buf.decay();

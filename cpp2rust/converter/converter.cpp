@@ -2510,6 +2510,18 @@ bool Converter::VisitSourceLocExpr(clang::SourceLocExpr *expr) {
   }
 }
 
+std::string Converter::GetCharArrayLiteral(const clang::StringLiteral *expr) {
+  std::string out = "(&[";
+  for (char c : expr->getString()) {
+    auto value = CharRustTypeIsSigned()
+                     ? std::to_string(static_cast<signed char>(c))
+                     : std::to_string(static_cast<unsigned char>(c));
+    out += getTypedLiteral(value.c_str(), CharRustType()) + ", ";
+  }
+  out += getTypedLiteral("0", CharRustType()) + "])";
+  return out;
+}
+
 bool Converter::VisitStringLiteral(clang::StringLiteral *expr) {
   if (IsCodeUnitStringLiteral(expr)) {
     EmitFresh(GetCodeUnitArrayLiteral(expr));
@@ -2539,15 +2551,7 @@ bool Converter::VisitStringLiteral(clang::StringLiteral *expr) {
     return false;
   }
   if (expr->getString().contains('\0')) {
-    std::string out = "(&[";
-    for (char c : expr->getString()) {
-      auto value = CharRustTypeIsSigned()
-                       ? std::to_string(static_cast<signed char>(c))
-                       : std::to_string(static_cast<unsigned char>(c));
-      out += getTypedLiteral(value.c_str(), CharRustType()) + ", ";
-    }
-    out += getTypedLiteral("0", CharRustType()) + "])";
-    EmitFresh(out);
+    EmitFresh(GetCharArrayLiteral(expr));
     return false;
   }
   EmitFresh(std::format("c{}", GetEscapedStringLiteral(expr, 0)));
@@ -5407,6 +5411,14 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
     PushExprKind push(*this, ExprKind::RValue);
     ConvertInit(init->getType(), init);
     return std::move(buf).str();
+  }
+
+  if (auto *literal = clang::dyn_cast<clang::StringLiteral>(
+          arg->IgnoreParens()->IgnoreImplicit());
+      literal && arg->getType()->isArrayType() &&
+      !IsCodeUnitStringLiteral(literal)) {
+    MarkFresh();
+    return GetCharArrayLiteral(literal);
   }
 
   if (ph_ctx.needs_materialization()) {

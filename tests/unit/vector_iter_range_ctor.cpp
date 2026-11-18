@@ -37,6 +37,10 @@ int main() {
   assert(v4.size() == 3);
   assert(v4[0] == 1 && v4[1] == 2 && v4[2] == 3);
 
+  const char *lit_end = std::end("abc");
+  assert(*(lit_end - 1) == '\0');
+  assert(*(lit_end - 4) == 'a');
+
   uint8_t buf[5] = {10, 20, 30, 40, 50};
   const uint8_t *start = buf;
   size_t len = 5;
