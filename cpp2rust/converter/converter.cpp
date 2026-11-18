@@ -5760,9 +5760,7 @@ std::string Converter::ConvertIRFragment(
       if (borrows_ && isFresh() && !CreatesTemporary(arg)) {
         value = std::format("({{ {} }})", value);
         borrows_ = false;
-      } else if (ph->no_struct_literal && arg->getType()->isRecordType() &&
-                 !AsLambdaClass(arg->getType()) &&
-                 arg->IgnoreImplicit()->isPRValue()) {
+      } else if (IsStructLiteral(arg)) {
         value = std::format("({})", value);
       }
       borrows_ |= outer_borrows;
@@ -5770,10 +5768,9 @@ std::string Converter::ConvertIRFragment(
     } else if (std::get_if<TranslationRule::VaArgsFragment>(&frag)) {
       assert(expr && "variadic arguments outside an expression rule");
       result += ConvertVariadicTail(expr, all_args);
-    } else if (auto *init = std::get_if<TranslationRule::InitFragment>(&frag)) {
+    } else if (std::get_if<TranslationRule::InitFragment>(&frag)) {
       assert(expr && "init outside an expression rule");
-      auto value = ConvertInitFragment(expr, all_args);
-      result += init->no_struct_literal ? std::format("({})", value) : value;
+      result += ConvertInitFragment(expr, all_args);
     } else if (auto *mc =
                    std::get_if<std::unique_ptr<MethodCallFragment>>(&frag)) {
       result += ConvertMappedMethodCall(expr, **mc, bindings, all_args, ctx);
@@ -5942,22 +5939,25 @@ Converter::ConvertInitFragment(clang::Expr *expr,
 
   Buffer buf(*this);
   PushExprKind push(*this, ExprKind::RValue);
-  ConvertConstructFromArgs(type, all_args.drop_front(tgt_ir->params.size()),
-                           expr->getExprLoc());
-  return std::move(buf).str();
+  auto *init = ConvertConstructFromArgs(
+      type, all_args.drop_front(tgt_ir->params.size()), expr->getExprLoc());
+  auto value = std::move(buf).str();
+  return IsStructLiteral(init) ? std::format("({})", value) : value;
 }
 
-void Converter::ConvertConstructFromArgs(clang::QualType type,
-                                         llvm::ArrayRef<clang::Expr *> args,
-                                         clang::SourceLocation loc) {
+clang::Expr *
+Converter::ConvertConstructFromArgs(clang::QualType type,
+                                    llvm::ArrayRef<clang::Expr *> args,
+                                    clang::SourceLocation loc) {
   auto *init = BuildInitExpr(GetSema(), type, args, loc);
   assert(init && "type cannot be initialized from the arguments");
   if (args.empty() &&
       !clang::isa<clang::CXXConstructExpr>(init->IgnoreImplicit())) {
     StrCat(GetDefaultAsString(type));
-    return;
+    return init;
   }
   ConvertInit(type, init);
+  return init;
 }
 
 void Converter::ConvertInit(clang::QualType type, clang::Expr *init) {

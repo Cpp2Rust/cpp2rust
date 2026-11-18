@@ -162,7 +162,7 @@ fn main_0() -> i32 {
                 (mut __tmp_14, mut __tmp_15) => {
                     let mut __it = (__tmp_14).clone();
                     while __it != __tmp_15
-                        && !CppEq::equal(&__it.iter_deref(), &__tmp_16.as_pointer())
+                        && !CppEq::equal(&__it.iter_deref(), &(__tmp_16.as_pointer()))
                     {
                         __it.iter_inc();
                     }

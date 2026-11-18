@@ -74,7 +74,6 @@ ParsePlaceholderFragmentJSON(const llvm::json::Object &obj) {
       ParseAccessJSON(*access),
       obj.getBoolean("is_index_base").value_or(false),
       obj.getBoolean("conditional").value_or(false),
-      obj.getBoolean("no_struct_literal").value_or(false),
   };
 }
 
@@ -139,9 +138,8 @@ std::vector<BodyFragment> ParseBodyFragmentsJSON(const llvm::json::Array &arr) {
     } else if (frag_obj->get("va_args")) {
       result.push_back(VaArgsFragment{});
     } else if (frag_obj->get("init")) {
-      result.push_back(InitFragment{
-          frag_obj->getBoolean("conditional").value_or(false),
-          frag_obj->getBoolean("no_struct_literal").value_or(false)});
+      result.push_back(
+          InitFragment{frag_obj->getBoolean("conditional").value_or(false)});
     }
   }
   return result;

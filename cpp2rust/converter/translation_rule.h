@@ -35,7 +35,6 @@ struct PlaceholderFragment {
   // Whether it is in a loop, a closure or a branch, which may evaluate it other
   // than once.
   bool conditional = false;
-  bool no_struct_literal = false;
 
   void dump() const;
 };
@@ -52,7 +51,6 @@ struct VaArgsFragment {
 
 struct InitFragment {
   bool conditional = false;
-  bool no_struct_literal = false;
 
   void dump() const;
 };

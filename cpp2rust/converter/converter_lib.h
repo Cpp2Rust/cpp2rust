@@ -56,6 +56,8 @@ bool IsCodeUnitStringLiteral(const clang::StringLiteral *expr);
 
 bool IsUserDefinedDecl(const clang::Decl *decl);
 
+bool IsStructLiteral(const clang::Expr *expr);
+
 bool IsAbstractUserClass(const clang::RecordDecl *decl);
 
 bool IsLibraryOnlySpecialization(

@@ -24,15 +24,15 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut v: Vec<Item> = Vec::new();
     {
-        let __a1 = Item { key: 3, value: 30 };
+        let __a1 = (Item { key: 3, value: 30 });
         v.push(__a1)
     };
     {
-        let __a1 = Item { key: 1, value: 10 };
+        let __a1 = (Item { key: 1, value: 10 });
         v.push(__a1)
     };
     {
-        let __a1 = Item { key: 2, value: 20 };
+        let __a1 = (Item { key: 2, value: 20 });
         v.push(__a1)
     };
     match ({ v.begin() },) {

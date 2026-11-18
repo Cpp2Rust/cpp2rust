@@ -94,7 +94,7 @@ fn main_0() -> i32 {
     };
     vec_elem!(h.as_pointer(), values, 1_usize).write(6);
     {
-        let __a1 = Point { x: 1, y: 2 };
+        let __a1 = (Point { x: 1, y: 2 });
         (*h.borrow_mut()).points.push(__a1)
     };
     field!(vec_elem!(h.as_pointer(), points, 0_usize), y).write(5);

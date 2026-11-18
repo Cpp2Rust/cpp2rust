@@ -359,6 +359,24 @@ bool IsLibraryOnlySpecialization(const clang::FunctionDecl *decl) {
          HasLibraryInternalArgument(ctx, args->asArray());
 }
 
+bool IsStructLiteral(const clang::Expr *expr) {
+  expr = expr->IgnoreImplicit();
+  if (auto *cast = clang::dyn_cast<clang::CXXFunctionalCastExpr>(expr)) {
+    expr = cast->getSubExpr()->IgnoreImplicit();
+  }
+  auto *list = clang::dyn_cast<clang::InitListExpr>(expr);
+  if (!list) {
+    return false;
+  }
+  auto *syntactic = list->isSyntacticForm() ? list : list->getSyntacticForm();
+  if (auto *form = list->getSemanticForm()) {
+    list = form;
+  }
+  auto *record = list->getType()->getAsRecordDecl();
+  return record && IsUserDefinedDecl(record) && !list->isTransparent() &&
+         syntactic->getNumInits() != 0;
+}
+
 bool IsAbstractUserClass(const clang::RecordDecl *decl) {
   auto cxx = llvm::dyn_cast<clang::CXXRecordDecl>(decl);
   auto definition = cxx ? cxx->getDefinition() : nullptr;
