@@ -1,3 +1,4 @@
+// ADDITIONAL_COMPILE_FLAGS: -std=c++20
 #include <cassert>
 
 int runtime_only(int x) { return x * 2; }
@@ -37,6 +38,8 @@ constexpr bool in_constant_context() {
 
 static_assert(in_constant_context());
 
+consteval bool imm(bool b) { return b; }
+
 struct P {
   int v;
   constexpr int get() const { return v; }
@@ -63,5 +66,15 @@ int main() {
   assert(p.get() == 9);
   constexpr int k = scaled(4);
   assert(k == 4);
+  constexpr bool ce = __builtin_is_constant_evaluated();
+  assert(ce);
+  const int n = __builtin_is_constant_evaluated() ? 13 : 17;
+  assert(n == 13);
+  static bool s = __builtin_is_constant_evaluated();
+  assert(s);
+  bool rt = __builtin_is_constant_evaluated();
+  assert(!rt);
+  bool b = imm(__builtin_is_constant_evaluated());
+  assert(b);
   return 0;
 }

@@ -609,6 +609,8 @@ bool Converter::ConvertVarDeclSkipInit(clang::VarDecl *decl) {
 
 void Converter::ConvertVarDeclInitializer(clang::VarDecl *decl) {
   if (decl->hasInit()) {
+    ScopedValue constant(constant_evaluated_,
+                         HasConstantEvaluatedInit(ctx_, decl));
     ConvertVarInit(decl->getType(), decl->getInit());
   } else if (!clang::isa<clang::ParmVarDecl>(decl)) {
     StrCat(ConvertVarDefaultInit(decl));
@@ -620,6 +622,8 @@ void Converter::EmitHoistedInArmAssignment(clang::VarDecl *decl) {
     return;
   }
   StrCat(GetNamedDeclAsString(decl), token::kAssign);
+  ScopedValue constant(constant_evaluated_,
+                       HasConstantEvaluatedInit(ctx_, decl));
   ConvertVarInit(decl->getType(), decl->getInit());
   StrCat(token::kSemiColon);
 }
@@ -1925,6 +1929,11 @@ bool Converter::VisitCallExpr(clang::CallExpr *expr) {
 }
 
 bool Converter::ConvertSpecialCall(clang::CallExpr *expr) {
+  if (IsConstantEvaluatedQuery(expr)) {
+    EmitBoolLiteral(constant_evaluated_);
+    return true;
+  }
+
   if (IsBuiltinVaStart(expr) || IsBuiltinVaEnd(expr) || IsBuiltinVaCopy(expr)) {
     ConvertVAArgCall(expr);
     MarkFresh();
@@ -3397,6 +3406,10 @@ bool Converter::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
   }
 
   if (auto init = AsLambdaUncapturedConstant(curr_function_, expr)) {
+    ScopedValue constant(
+        constant_evaluated_,
+        HasConstantEvaluatedInit(ctx_,
+                                 clang::cast<clang::VarDecl>(expr->getDecl())));
     Convert(init);
     return false;
   }
@@ -4264,6 +4277,8 @@ bool Converter::VisitCXXDefaultArgExpr(clang::CXXDefaultArgExpr *expr) {
 }
 
 bool Converter::VisitConstantExpr(clang::ConstantExpr *expr) {
+  ScopedValue constant(constant_evaluated_,
+                       constant_evaluated_ || expr->isImmediateInvocation());
   Convert(expr->getSubExpr());
   MarkFresh();
   return false;
@@ -4329,6 +4344,7 @@ void Converter::ConvertLambdaClosure(const clang::CXXRecordDecl *decl,
   EmitFunctionPreamble(call_operator);
   ScopedValue push_fn(curr_function_, call_operator);
   ScopedValue function_body(in_const_initializer_, false);
+  ScopedValue runtime_body(constant_evaluated_, false);
   ConvertFunctionBody(curr_function_);
 }
 

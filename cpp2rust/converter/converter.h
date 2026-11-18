@@ -1011,6 +1011,7 @@ protected:
 
   std::string ufcs_receiver_;
   bool in_const_initializer_ = false;
+  bool constant_evaluated_ = false;
   std::optional<bool> autoref_mut_;
 
   std::vector<clang::Expr *> curr_for_inc_;

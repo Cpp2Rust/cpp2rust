@@ -2299,6 +2299,18 @@ bool IsBuiltinVaCopy(const clang::CallExpr *expr) {
   return IsBuiltinCall(expr, clang::Builtin::BI__builtin_va_copy);
 }
 
+bool IsConstantEvaluatedQuery(const clang::CallExpr *expr) {
+  return expr->getBuiltinCallee() ==
+             clang::Builtin::BI__builtin_is_constant_evaluated ||
+         IsStdDecl(expr->getDirectCallee(), "is_constant_evaluated");
+}
+
+bool HasConstantEvaluatedInit(const clang::ASTContext &ctx,
+                              const clang::VarDecl *decl) {
+  return decl->isUsableInConstantExpressions(ctx) ||
+         decl->hasConstantInitialization();
+}
+
 bool NeedsImplicitScalarCast(clang::ASTContext &ctx, clang::QualType from,
                              clang::QualType to) {
   return !from.isNull() && !to.isNull() && from->isIntegerType() &&
