@@ -555,11 +555,20 @@ bool ReturnsReference(const clang::Expr *expr) {
                                 ->isReferenceType();
 }
 
+static bool BindsGenericToReference(const TranslationRule::TypeInfo &param,
+                                    const Matcher::Bindings &bindings) {
+  auto n = param.generic;
+  return n && n <= bindings.size() &&
+         bindings[n - 1].getKind() == clang::TemplateArgument::Type &&
+         bindings[n - 1].getAsType()->isReferenceType();
+}
+
 bool ParamIsPointer(clang::ASTContext &ctx, const clang::Expr *expr,
                     unsigned index) {
-  auto rule = Search(ctx, expr).first;
+  auto [rule, bindings] = Search(ctx, expr);
   assert(rule && "expression must have a translation rule");
-  return rule->params.at(index).is_pointer();
+  auto &param = rule->params.at(index);
+  return param.is_pointer() || BindsGenericToReference(param, bindings);
 }
 
 bool ParamTakesPointerValue(const clang::Expr *expr, unsigned index) {
@@ -585,9 +594,8 @@ clang::Expr *BuildParamConversion(clang::ASTContext &ctx,
                                   clang::Expr *arg) {
   auto [rule, bindings] = Search(ctx, expr);
   assert(rule && "expression must have a translation rule");
-  llvm::StringRef type = rule->params.at(index).type;
-  unsigned n = 0;
-  if (!type.consume_front("T") || type.empty() || type.getAsInteger(10, n)) {
+  auto n = rule->params.at(index).generic;
+  if (!n) {
     return nullptr;
   }
   auto &binding = bindings.at(n - 1);
@@ -596,7 +604,7 @@ clang::Expr *BuildParamConversion(clang::ASTContext &ctx,
   auto target = binding.getAsType();
   if ((arg->getType()->isArrayType() && target->isPointerType()) ||
       ctx.hasSameUnqualifiedType(arg->getType().getNonReferenceType(),
-                                 target)) {
+                                 target.getNonReferenceType())) {
     return nullptr;
   }
   auto *init = BuildInitExpr(*sema_, target, arg, arg->getExprLoc());

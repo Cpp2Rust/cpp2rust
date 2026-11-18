@@ -503,6 +503,7 @@ impl<'a> FnIrBuilder<'a> {
                 derives: Vec::new(),
                 cpp_type: None,
                 elems: None,
+                generic: None,
             })
         }
     }
@@ -714,6 +715,8 @@ impl<'a> FnIrBuilder<'a> {
             .map(|n| n.text().to_string())
             .unwrap_or_default();
         let params = self.params();
+        let generics = self.generics();
+        let generic_names: Vec<String> = generics.keys().cloned().collect();
 
         let params_map: BTreeMap<String, TypeInfo> = params
             .iter()
@@ -728,13 +731,13 @@ impl<'a> FnIrBuilder<'a> {
                         derives: Vec::new(),
                         cpp_type: p.cpp_type.clone(),
                         elems: None,
+                        generic: generic_names
+                            .contains(&p.ty)
+                            .then(|| p.ty[1..].parse().unwrap_or(0)),
                     },
                 )
             })
             .collect();
-
-        let generics = self.generics();
-        let generic_names: Vec<String> = generics.keys().cloned().collect();
 
         let multi_statement = self.fn_item.body().and_then(|body| {
             body.stmt_list().and_then(|stmt_list| {
@@ -840,6 +843,7 @@ impl<'a> TypeIrBuilder<'a> {
                 derives: Vec::new(),
                 cpp_type: None,
                 elems: elems(&ty),
+                generic: None,
             },
         }
     }

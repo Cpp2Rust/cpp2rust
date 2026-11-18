@@ -74,6 +74,8 @@ pub struct TypeInfo {
     pub cpp_type: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub elems: Option<Elems>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub generic: Option<i32>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
