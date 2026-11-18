@@ -88,15 +88,26 @@ pub fn f_4(mut cond: bool, mut p: FnPtr<fn()>) {
     }
 }
 thread_local!(
-    static local_5: Value<LifetimeTracked> = Rc::new(RefCell::new(LifetimeTracked::new()));
+    static local_5: Value<LifetimeTracked> = {
+        let __static = Rc::new(RefCell::new(LifetimeTracked::new()));
+        libcc2rs::register_static_destructor(|| {
+            local_5.with(Value::clone).as_pointer().destructor()
+        });
+        __static
+    };
 );
 thread_local!(
-    pub static check_6: Value<AssertsDtorCountAtExit> =
-        Rc::new(RefCell::new(AssertsDtorCountAtExit { expected: 1 }));
+    pub static check_6: Value<AssertsDtorCountAtExit> = {
+        let __static = Rc::new(RefCell::new(AssertsDtorCountAtExit { expected: 1 }));
+        libcc2rs::register_static_destructor(|| {
+            check_6.with(Value::clone).as_pointer().destructor()
+        });
+        __static
+    };
 );
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     assert!((ctorCount_0.with(|rc| *rc.borrow()) == 0));

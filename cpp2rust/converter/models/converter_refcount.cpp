@@ -936,6 +936,15 @@ void ConverterRefCount::EmitScopedDestructor(const clang::VarDecl *decl) {
                      GetNamedDeclAsString(decl), destroy));
 }
 
+std::string
+ConverterRefCount::StaticDestructorCall(const clang::VarDecl *decl) {
+  auto destroy = AsLambdaClass(decl->getType())
+                     ? std::string("with(|__f| __f.destroy())")
+                     : std::format("{}()", kDestructorName);
+  return std::format("{}.with(Value::clone).as_pointer().{}",
+                     GetNamedDeclAsString(decl), destroy);
+}
+
 bool ConverterRefCount::ConvertIncAndDec(clang::UnaryOperator *expr) {
   auto *sub_expr = expr->getSubExpr();
   const char *method = GetIncDecMethod(expr->getOpcode());
@@ -2957,13 +2966,13 @@ pub fn main() {{
             .collect(),
     ));
     __cpp2rust_init_globals();
-    ::std::process::exit({}(::std::env::args().len() as i32,
+    libcc2rs::cpp2rust_exit({}(::std::env::args().len() as i32,
                                 argv.decay()));
 }})",
                        main_function_name));
   } else {
     StrCat(std::format("pub fn main() {{ __cpp2rust_init_globals(); "
-                       "std::process::exit({}()); }}",
+                       "libcc2rs::cpp2rust_exit({}()); }}",
                        main_function_name));
   }
 }

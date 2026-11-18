@@ -608,12 +608,21 @@ bool Converter::ConvertVarDeclSkipInit(clang::VarDecl *decl) {
 }
 
 void Converter::ConvertVarDeclInitializer(clang::VarDecl *decl) {
+  bool registers_destructor = NeedsStaticDestructor(decl);
+  if (registers_destructor) {
+    StrCat("{ let __static = ");
+  }
   if (decl->hasInit()) {
     ScopedValue constant(constant_evaluated_,
                          HasConstantEvaluatedInit(ctx_, decl));
     ConvertVarInit(decl->getType(), decl->getInit());
   } else if (!clang::isa<clang::ParmVarDecl>(decl)) {
     StrCat(ConvertVarDefaultInit(decl));
+  }
+  if (registers_destructor) {
+    StrCat(std::format(
+        "; libcc2rs::register_static_destructor(|| {}); __static }}",
+        StaticDestructorCall(decl)));
   }
 }
 
@@ -713,13 +722,27 @@ bool Converter::NeedsScopedDestructor(const clang::VarDecl *decl) const {
   if (in_function_formals_ || !decl->isLocalVarDecl() || IsGlobalVar(decl)) {
     return false;
   }
-  auto type = decl->getType();
+  return VarTypeNeedsDestructor(decl->getType());
+}
+
+bool Converter::NeedsStaticDestructor(const clang::VarDecl *decl) const {
+  return IsGlobalVar(decl) && VarTypeNeedsDestructor(decl->getType());
+}
+
+bool Converter::VarTypeNeedsDestructor(clang::QualType type) const {
   if (auto lambda = AsLambdaClass(type);
       lambda && LambdaNeedsDestruction(lambda)) {
     return true;
   }
   return !type->isReferenceType() && !type->isArrayType() &&
          TypeNeedsDestruction(type);
+}
+
+std::string Converter::StaticDestructorCall(const clang::VarDecl *decl) {
+  auto destroy = AsLambdaClass(decl->getType()) ? "destroy" : kDestructorName;
+  return std::format(
+      "(*std::cell::LazyCell::force_mut(&mut *&raw mut {})).{}()",
+      GetNamedDeclAsString(decl), destroy);
 }
 
 void Converter::EmitScopedDestructor(const clang::VarDecl *decl) {
@@ -4901,13 +4924,13 @@ pub fn main() {{
     argv.push(::std::ptr::null_mut());
     unsafe {{
         __cpp2rust_init_globals();
-        ::std::process::exit(main_0((argv.len() - 1) as i32, argv.as_mut_ptr()) as i32)
+        libcc2rs::cpp2rust_exit(main_0((argv.len() - 1) as i32, argv.as_mut_ptr()) as i32)
     }}
 }})",
                        main_function_name));
   } else {
     StrCat(std::format("pub fn main() {{ unsafe {{ __cpp2rust_init_globals(); "
-                       "std::process::exit({}() as i32); }} }}",
+                       "libcc2rs::cpp2rust_exit({}() as i32); }} }}",
                        main_function_name));
   }
 }

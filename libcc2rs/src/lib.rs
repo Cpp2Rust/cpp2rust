@@ -100,6 +100,9 @@ pub use va_args::*;
 mod fd;
 pub use fd::*;
 
+mod static_storage;
+pub use static_storage::*;
+
 mod format;
 pub use format::*;
 

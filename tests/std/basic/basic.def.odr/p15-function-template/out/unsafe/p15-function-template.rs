@@ -79,21 +79,50 @@ pub unsafe fn count_7() -> i32 {
 pub unsafe fn count_10() -> i32 {
     return (*(*std::cell::LazyCell::force_mut(&mut *&raw mut n_12)).prefix_inc());
 }
-static mut t_5: std::cell::LazyCell<LifetimeTracked> =
-    std::cell::LazyCell::new(|| unsafe { LifetimeTracked::new() });
+static mut t_5: std::cell::LazyCell<LifetimeTracked> = std::cell::LazyCell::new(|| unsafe {
+    {
+        let __static = LifetimeTracked::new();
+        libcc2rs::register_static_destructor(|| {
+            (*std::cell::LazyCell::force_mut(&mut *&raw mut t_5)).destructor()
+        });
+        __static
+    }
+});
 static mut n_6: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
-static mut t_8: std::cell::LazyCell<LifetimeTracked> =
-    std::cell::LazyCell::new(|| unsafe { LifetimeTracked::new() });
+static mut t_8: std::cell::LazyCell<LifetimeTracked> = std::cell::LazyCell::new(|| unsafe {
+    {
+        let __static = LifetimeTracked::new();
+        libcc2rs::register_static_destructor(|| {
+            (*std::cell::LazyCell::force_mut(&mut *&raw mut t_8)).destructor()
+        });
+        __static
+    }
+});
 static mut n_9: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
-static mut t_11: std::cell::LazyCell<LifetimeTracked> =
-    std::cell::LazyCell::new(|| unsafe { LifetimeTracked::new() });
+static mut t_11: std::cell::LazyCell<LifetimeTracked> = std::cell::LazyCell::new(|| unsafe {
+    {
+        let __static = LifetimeTracked::new();
+        libcc2rs::register_static_destructor(|| {
+            (*std::cell::LazyCell::force_mut(&mut *&raw mut t_11)).destructor()
+        });
+        __static
+    }
+});
 static mut n_12: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 pub static mut check_13: std::cell::LazyCell<AssertsDtorCountAtExit> =
-    std::cell::LazyCell::new(|| unsafe { AssertsDtorCountAtExit { expected: 4 } });
+    std::cell::LazyCell::new(|| unsafe {
+        {
+            let __static = AssertsDtorCountAtExit { expected: 4 };
+            libcc2rs::register_static_destructor(|| {
+                (*std::cell::LazyCell::force_mut(&mut *&raw mut check_13)).destructor()
+            });
+            __static
+        }
+    });
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
-        std::process::exit(main_0() as i32);
+        libcc2rs::cpp2rust_exit(main_0() as i32);
     }
 }
 unsafe fn main_0() -> i32 {
@@ -116,8 +145,15 @@ pub struct S_14 {}
 pub unsafe fn count_18() -> i32 {
     return (*(*std::cell::LazyCell::force_mut(&mut *&raw mut n_20)).prefix_inc());
 }
-static mut t_19: std::cell::LazyCell<LifetimeTracked> =
-    std::cell::LazyCell::new(|| unsafe { LifetimeTracked::new() });
+static mut t_19: std::cell::LazyCell<LifetimeTracked> = std::cell::LazyCell::new(|| unsafe {
+    {
+        let __static = LifetimeTracked::new();
+        libcc2rs::register_static_destructor(|| {
+            (*std::cell::LazyCell::force_mut(&mut *&raw mut t_19)).destructor()
+        });
+        __static
+    }
+});
 static mut n_20: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 pub unsafe fn b_count_int_16() -> i32 {
     return (unsafe { count_7() });

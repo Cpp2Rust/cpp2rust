@@ -376,6 +376,8 @@ private:
 
   void EmitScopedDestructor(const clang::VarDecl *decl) override;
 
+  std::string StaticDestructorCall(const clang::VarDecl *decl) override;
+
   std::pair<std::string, std::string>
   MaterializeTemp(const std::string &binding_name, clang::QualType param_type,
                   clang::Expr *expr,

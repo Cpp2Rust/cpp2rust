@@ -219,6 +219,12 @@ public:
 
   bool NeedsScopedDestructor(const clang::VarDecl *decl) const;
 
+  bool NeedsStaticDestructor(const clang::VarDecl *decl) const;
+
+  bool VarTypeNeedsDestructor(clang::QualType type) const;
+
+  virtual std::string StaticDestructorCall(const clang::VarDecl *decl);
+
   virtual void EmitScopedDestructor(const clang::VarDecl *decl);
 
   void EmitDeallocation(clang::CXXDeleteExpr *expr,
