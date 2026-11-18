@@ -31,7 +31,7 @@ pub unsafe fn operator_cmp_1(
             return cmp;
         }
     }
-    return std::cmp::Ordering::Equal;
+    return libcc2rs::STRONG_ORDERING_EQUAL;
 }
 pub unsafe fn operator_eq_2(_a0: *const DefaultedOrd, _a1: *const DefaultedOrd) -> bool {
     return (((*_a0).a) == ((*_a1).a));
@@ -236,7 +236,7 @@ unsafe fn main_0() -> i32 {
         (unsafe {
             let _arg0: *const DefaultedOrd = &o1;
             operator_cmp_1(_arg0, &o2)
-        }) == std::cmp::Ordering::Less
+        }) == libcc2rs::STRONG_ORDERING_LESS
     );
     let mut i1: Inline = Inline { a: 1 };
     let mut i2: Inline = Inline { a: 2 };

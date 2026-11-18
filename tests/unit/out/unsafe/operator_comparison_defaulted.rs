@@ -46,7 +46,7 @@ impl Cmp {
                 return cmp;
             }
         }
-        return std::cmp::Ordering::Equal;
+        return libcc2rs::STRONG_ORDERING_EQUAL;
     }
     pub unsafe fn operator_eq(&self, _a0: *const Cmp) -> bool {
         return (((*(self as *const Cmp)).a) == ((*_a0).a))
@@ -86,7 +86,7 @@ impl Both {
                 return cmp;
             }
         }
-        return std::cmp::Ordering::Equal;
+        return libcc2rs::STRONG_ORDERING_EQUAL;
     }
 }
 impl std::cmp::Ord for Both {
@@ -119,7 +119,7 @@ impl OrdOnly {
                 return cmp;
             }
         }
-        return std::cmp::Ordering::Equal;
+        return libcc2rs::STRONG_ORDERING_EQUAL;
     }
 }
 impl std::cmp::Ord for OrdOnly {
@@ -152,7 +152,7 @@ impl Inner {
                 return cmp;
             }
         }
-        return std::cmp::Ordering::Equal;
+        return libcc2rs::STRONG_ORDERING_EQUAL;
     }
     pub unsafe fn operator_eq(&self, _a0: *const Inner) -> bool {
         return (((*(self as *const Inner)).x) == ((*_a0).x));
@@ -198,7 +198,7 @@ impl Outer {
                 return cmp;
             }
         }
-        return std::cmp::Ordering::Equal;
+        return libcc2rs::STRONG_ORDERING_EQUAL;
     }
     pub unsafe fn operator_eq(&self, _a0: *const Outer) -> bool {
         return (unsafe {
@@ -246,7 +246,7 @@ impl Secondary {
                 return cmp;
             }
         }
-        return std::cmp::Ordering::Equal;
+        return libcc2rs::STRONG_ORDERING_EQUAL;
     }
     pub unsafe fn operator_lt(&self, _a0: *const Secondary) -> bool {
         return (unsafe {
@@ -291,7 +291,7 @@ impl PtrMember {
                 return cmp;
             }
         }
-        return std::cmp::Ordering::Equal;
+        return libcc2rs::STRONG_ORDERING_EQUAL;
     }
     pub unsafe fn operator_eq(&self, _a0: *const PtrMember) -> bool {
         return (((*(self as *const PtrMember)).p) == ((*_a0).p));
@@ -339,7 +339,7 @@ unsafe fn main_0() -> i32 {
             Cmp::operator_eq(&c1, _arg0)
         })
     );
-    assert!((unsafe { Cmp::operator_cmp(&c1, &c2,) }) == std::cmp::Ordering::Less);
+    assert!((unsafe { Cmp::operator_cmp(&c1, &c2,) }) == libcc2rs::STRONG_ORDERING_LESS);
     let mut b1: Both = Both { a: 1 };
     let mut b2: Both = Both { a: 2 };
     assert!((unsafe { Both::operator_cmp(&b1, &b2,) }) == std::cmp::Ordering::Less);
@@ -352,7 +352,7 @@ unsafe fn main_0() -> i32 {
     let mut o1: OrdOnly = OrdOnly { a: 1 };
     let mut o2: OrdOnly = OrdOnly { a: 2 };
     assert!((unsafe { OrdOnly::operator_cmp(&o1, &o2,) }) == std::cmp::Ordering::Less);
-    assert!((unsafe { OrdOnly::operator_cmp(&o2, &o1,) }) == std::cmp::Ordering::Greater);
+    assert!((unsafe { OrdOnly::operator_cmp(&o2, &o1,) }) == libcc2rs::STRONG_ORDERING_GREATER);
     let mut x1: Outer = Outer {
         i: Inner { x: 1 },
         y: 9,
@@ -367,7 +367,7 @@ unsafe fn main_0() -> i32 {
     };
     assert!((unsafe { Outer::operator_cmp(&x1, &x2,) }) == std::cmp::Ordering::Less);
     assert!((unsafe { Outer::operator_eq(&x1, &x3,) }));
-    assert!((unsafe { Outer::operator_cmp(&x2, &x1,) }) == std::cmp::Ordering::Greater);
+    assert!((unsafe { Outer::operator_cmp(&x2, &x1,) }) == libcc2rs::STRONG_ORDERING_GREATER);
     let mut s1: Secondary = Secondary { a: 1 };
     let mut s2: Secondary = Secondary { a: 2 };
     assert!((unsafe { Secondary::operator_ne(&s1, &s2,) }));
@@ -386,7 +386,7 @@ unsafe fn main_0() -> i32 {
     };
     assert!((unsafe { PtrMember::operator_cmp(&p1, &p2,) }) == std::cmp::Ordering::Less);
     assert!((unsafe { PtrMember::operator_eq(&p1, &p3,) }));
-    assert!((unsafe { PtrMember::operator_cmp(&p2, &p1,) }) == std::cmp::Ordering::Greater);
+    assert!((unsafe { PtrMember::operator_cmp(&p2, &p1,) }) == libcc2rs::STRONG_ORDERING_GREATER);
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}
