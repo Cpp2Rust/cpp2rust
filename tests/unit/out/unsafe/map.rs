@@ -125,7 +125,10 @@ unsafe fn main_0() -> i32 {
         <UnsafeBidirectionalIterator<(i16, u32)>>::from(m.find(&7_i16));
     let mut next: UnsafeBidirectionalIterator<(i16, u32)> = m.erase(&(cit).clone());
     assert!(next == m.find(&8_i16));
-    next = m.erase(&(next).clone());
+    {
+        *(&mut next as *mut UnsafeBidirectionalIterator<(i16, u32)>) = m.erase(&(next).clone());
+        (&mut next as *mut UnsafeBidirectionalIterator<(i16, u32)>)
+    };
     assert!(next == m.end());
     assert!((((*r).len()) == (3_usize)));
     assert!(m.find(&8_i16) == m.end());

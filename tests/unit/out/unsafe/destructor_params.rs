@@ -23,8 +23,7 @@ pub unsafe fn by_value_2(mut s: S) -> i32 {
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut destroyed_0)) == (0)));
     return s.v;
 }
-pub unsafe fn with_default_3(mut s: Option<S>) -> i32 {
-    let mut s: S = s.unwrap_or_else(|| unsafe { S { v: 5 } });
+pub unsafe fn with_default_3(mut s: S) -> i32 {
     return s.v;
 }
 #[repr(C)]
@@ -44,7 +43,7 @@ impl Holder {
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
-        libcc2rs::cpp2rust_exit(main_0() as i32);
+        std::process::exit(main_0() as i32);
     }
 }
 unsafe fn main_0() -> i32 {
@@ -65,7 +64,7 @@ unsafe fn main_0() -> i32 {
             && ((*std::cell::LazyCell::force_mut(&mut *&raw mut last_1)) == (2))
     );
     (*std::cell::LazyCell::force_mut(&mut *&raw mut destroyed_0)) = 0;
-    assert!(((unsafe { with_default_3(None,) }) == (5)));
+    assert!(((unsafe { with_default_3(S { v: 5 },) }) == (5)));
     assert!(
         ((*std::cell::LazyCell::force_mut(&mut *&raw mut destroyed_0)) == (1))
             && ((*std::cell::LazyCell::force_mut(&mut *&raw mut last_1)) == (5))

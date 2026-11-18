@@ -296,12 +296,18 @@ pub trait JPEGDataImpl {
 }
 impl JPEGDataImpl for Ptr<JPEGData> {
     fn move_assign(&self, _a0: Ptr<JPEGData>) -> Ptr<JPEGData> {
-        field_ref!((*self), com_data)
-            .as_pointer()
-            .write(field!(_a0, com_data).with_mut(std::mem::take));
-        field_ref!((*self), app_data)
-            .as_pointer()
-            .write(field!(_a0, app_data).with_mut(std::mem::take));
+        {
+            field_ref!((*self), com_data)
+                .as_pointer()
+                .write(field!(_a0, com_data).with_mut(std::mem::take));
+            field_ref!((*self), com_data).as_pointer()
+        };
+        {
+            field_ref!((*self), app_data)
+                .as_pointer()
+                .write(field!(_a0, app_data).with_mut(std::mem::take));
+            field_ref!((*self), app_data).as_pointer()
+        };
         return (*self).clone();
     }
 }

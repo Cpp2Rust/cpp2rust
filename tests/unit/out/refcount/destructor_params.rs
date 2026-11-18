@@ -23,8 +23,8 @@ pub fn by_value_2(s: S) -> i32 {
     assert!((destroyed_0.with(|rc| *rc.borrow()) == 0));
     return { (*s.borrow()).v };
 }
-pub fn with_default_3(s: Option<S>) -> i32 {
-    let s: Value<S> = Rc::new(RefCell::new(s.unwrap_or_else(|| S { v: 5 })));
+pub fn with_default_3(s: S) -> i32 {
+    let s: Value<S> = Rc::new(RefCell::new(s));
     return { (*s.borrow()).v };
 }
 #[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
@@ -43,7 +43,7 @@ impl Holder {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    libcc2rs::cpp2rust_exit(main_0());
+    std::process::exit(main_0());
 }
 fn main_0() -> i32 {
     {
@@ -59,7 +59,7 @@ fn main_0() -> i32 {
     assert!((({ by_value_2(S { v: 2 },) }) == 2));
     assert!((destroyed_0.with(|rc| *rc.borrow()) == 1) && (last_1.with(|rc| *rc.borrow()) == 2));
     destroyed_0.with(|rc| *rc.borrow_mut() = 0);
-    assert!((({ with_default_3(None,) }) == 5));
+    assert!((({ with_default_3(S { v: 5 },) }) == 5));
     assert!((destroyed_0.with(|rc| *rc.borrow()) == 1) && (last_1.with(|rc| *rc.borrow()) == 5));
     destroyed_0.with(|rc| *rc.borrow_mut() = 0);
     {

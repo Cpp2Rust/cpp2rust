@@ -19,7 +19,10 @@ impl Inner {
         this
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Inner) -> *mut Inner {
-        self.values = std::mem::take(&mut (*_a0).values);
+        {
+            *(&mut self.values as *mut Vec<i32>) = std::mem::take(&mut (*_a0).values);
+            (&mut self.values as *mut Vec<i32>)
+        };
         return &mut (*(self as *mut Inner));
     }
 }
@@ -38,7 +41,10 @@ impl Outer {
         this
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Outer) -> *mut Outer {
-        self.values = std::mem::take(&mut (*_a0).values);
+        {
+            *(&mut self.values as *mut Vec<i32>) = std::mem::take(&mut (*_a0).values);
+            (&mut self.values as *mut Vec<i32>)
+        };
         (unsafe {
             let _arg0: *mut Inner = &mut (*_a0).inner;
             Inner::move_assign(&mut self.inner, _arg0)

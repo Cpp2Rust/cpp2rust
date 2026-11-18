@@ -29,7 +29,10 @@ impl S {
         this
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut S) -> *mut S {
-        self.v = std::mem::take(&mut (*_a0).v);
+        {
+            *(&mut self.v as *mut Vec<i32>) = std::mem::take(&mut (*_a0).v);
+            (&mut self.v as *mut Vec<i32>)
+        };
         match (
             { ((&mut self.n as *mut [i32; 2]) as *mut ::libc::c_void) },
             { ((&mut (*_a0).n as *mut [i32; 2]) as *const ::libc::c_void) },
@@ -60,7 +63,10 @@ impl T {
         this
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut T) -> *mut T {
-        self.v = std::mem::take(&mut (*_a0).v);
+        {
+            *(&mut self.v as *mut Vec<i32>) = std::mem::take(&mut (*_a0).v);
+            (&mut self.v as *mut Vec<i32>)
+        };
         return &mut (*(self as *mut T));
     }
 }

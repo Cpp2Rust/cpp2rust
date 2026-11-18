@@ -136,13 +136,7 @@ public:
 
   virtual bool VisitFunctionDecl(clang::FunctionDecl *decl);
 
-  virtual void EmitFunctionPreamble(clang::FunctionDecl *decl);
-
-  // Declares the storage of the temporary temp that the default argument of
-  // param is bound to, and returns its name.
-  std::string
-  EmitDefaultArgStorage(const clang::ParmVarDecl *param,
-                        const clang::MaterializeTemporaryExpr *temp);
+  virtual void EmitFunctionPreamble(clang::FunctionDecl *) {}
 
   virtual void ConvertFunctionBody(clang::FunctionDecl *decl);
 
@@ -410,7 +404,6 @@ public:
     std::string ref_temp_name;
     clang::QualType param_type;
     clang::Expr *expr;
-    bool has_default;
     Kind kind;
   };
 
