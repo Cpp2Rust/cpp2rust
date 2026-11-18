@@ -49,7 +49,7 @@ impl Default for Pair {
 pub fn zero_0() -> i32 {
     return 0;
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct X1 {}
 pub fn foo_1(mut x1: i32, x2: Ptr<i32>, mut x3: Ptr<i32>, p2: Ptr<Pair>, mut p3: Ptr<Pair>) {}

@@ -15,7 +15,7 @@ pub fn ptr_1(mut x: Ptr<i32>) -> Ptr<i32> {
 pub fn bar_2(x: Ptr<i32>) -> Ptr<i32> {
     return (x).clone();
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct X1 {
     #[offset(0)]

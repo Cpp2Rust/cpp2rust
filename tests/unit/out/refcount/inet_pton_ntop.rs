@@ -317,10 +317,7 @@ fn main_0() -> i32 {
             }
         } == 0)
     );
-    let sixteen: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
-        0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8,
-        0_u8,
-    ])));
+    let sixteen: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([0_u8; 16])));
     (*sixteen.borrow_mut())[(15) as usize] = 1_u8;
     assert!(
         ({

@@ -12,7 +12,7 @@ pub fn test_0() {
     assert!((target == 1));
     assert!((source == 1));
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct p9_move_trivially_copyable_Point {
     #[offset(0)]
@@ -23,21 +23,21 @@ pub struct p9_move_trivially_copyable_Point {
 pub fn test_1() {
     let mut source: p9_move_trivially_copyable_Point =
         p9_move_trivially_copyable_Point { x: 1, y: 2 };
-    let mut target: p9_move_trivially_copyable_Point = (source).clone();
+    let mut target: p9_move_trivially_copyable_Point = source;
     assert!((target.x == 1) && (target.y == 2));
     assert!((source.x == 1) && (source.y == 2));
     let mut assigned: p9_move_trivially_copyable_Point =
         p9_move_trivially_copyable_Point { x: 0, y: 0 };
     let mut other: p9_move_trivially_copyable_Point =
         p9_move_trivially_copyable_Point { x: 3, y: 4 };
-    assigned = (other).clone();
+    assigned = other;
     assert!((assigned.x == 3) && (assigned.y == 4));
     assert!((other.x == 3) && (other.y == 4));
     let mut points: Vec<p9_move_trivially_copyable_Point> = Vec::new();
     let mut element: p9_move_trivially_copyable_Point =
         p9_move_trivially_copyable_Point { x: 5, y: 6 };
     {
-        let __a1 = (element).clone();
+        let __a1 = element;
         points.push(__a1)
     };
     assert!((points[0_usize].x == 5) && (points[0_usize].y == 6));

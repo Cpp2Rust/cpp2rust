@@ -73,7 +73,7 @@ pub struct AssertsDtorCountAtExit {
     #[offset(0)]
     pub expected: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct X {}
 thread_local!(

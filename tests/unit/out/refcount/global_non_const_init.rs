@@ -32,7 +32,7 @@ thread_local!(
     pub static depends_on_call_6: Value<i32> =
         Rc::new(RefCell::new((from_call_5.with(|rc| *rc.borrow()) + 1)));
 );
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(4)]
 pub struct Ctor {
     #[offset(0)]
@@ -67,14 +67,14 @@ thread_local!(
 thread_local!(
     pub static inline_member_11: Value<Ctor> = Rc::new(RefCell::new(Ctor::new_2({ 5 })));
 );
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct Holder {}
 thread_local!(
     pub static member_10: Value<i32> = Rc::new(RefCell::new(({ next_0() })));
 );
 pub fn local_static_12() -> i32 {
-    return (once_13.with(|rc| *rc.borrow()) + { (*local_ctor_14.with(Value::clone).borrow()).v });
+    return (once_13.with(|rc| *rc.borrow()) + { local_ctor_14.with(|rc| *rc.borrow()).v });
 }
 thread_local!(
     static once_13: Value<i32> = Rc::new(RefCell::new(({ next_0() })));
@@ -82,7 +82,7 @@ thread_local!(
 thread_local!(
     static local_ctor_14: Value<Ctor> = Rc::new(RefCell::new(Ctor::new_2({ 3 })));
 );
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(4)]
 pub struct Singleton {
     #[offset(0)]
@@ -126,8 +126,8 @@ fn main_0() -> i32 {
     assert!(((single_4.with(|rc| *rc.borrow()) as i32) == 18));
     assert!((from_call_5.with(|rc| *rc.borrow()) == 1));
     assert!((depends_on_call_6.with(|rc| *rc.borrow()) == 2));
-    assert!(({ ({ (*default_ctor_7.with(Value::clone).borrow()).v } == 2) }));
-    assert!(({ ({ (*arg_ctor_8.with(Value::clone).borrow()).v } == 7) }));
+    assert!(({ default_ctor_7.with(|rc| *rc.borrow()).v } == 2));
+    assert!(({ arg_ctor_8.with(|rc| *rc.borrow()).v } == 7));
     assert!(
         ({
             Ptr::<i8>::from_string_literal(b"abc").with_c_str(|__s| {
@@ -138,7 +138,7 @@ fn main_0() -> i32 {
         })
     );
     assert!((member_10.with(|rc| *rc.borrow()) == 3));
-    assert!(({ ({ (*inline_member_11.with(Value::clone).borrow()).v } == 5) }));
+    assert!(({ inline_member_11.with(|rc| *rc.borrow()).v } == 5));
     assert!((({ local_static_12() }) == 7));
     assert!((({ local_static_12() }) == 7));
     field!(({ Singleton::instance() }), hits).with_mut(|__v| __v.postfix_inc());

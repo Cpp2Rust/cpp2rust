@@ -21,7 +21,7 @@ pub fn scaled_2(mut x: i32) -> i32 {
 pub fn half_3(mut x: f64) -> f64 {
     return (x / 2_f64);
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Flag {
     #[offset(0)]
@@ -41,7 +41,7 @@ pub fn in_constant_context_6() -> bool {
     return (({ runtime_only_0(1) }) == 0);
 }
 const _: () = assert!(true, "in_constant_context()");
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct P {
     #[offset(0)]

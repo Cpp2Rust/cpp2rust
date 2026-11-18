@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct In {
     #[offset(0)]
@@ -933,7 +933,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
         a: (((72340172838076673_u64 as u64).wrapping_mul((((35) as u8) as u64))) as i16),
         b: (((72340172838076673_u64 as u64).wrapping_mul((((51) as u8) as u64))) as i32),
     };
-    field!(s, in_).write((in_).clone());
+    field!(s, in_).write(in_);
     assert!(
         (({
             all_bytes_1(

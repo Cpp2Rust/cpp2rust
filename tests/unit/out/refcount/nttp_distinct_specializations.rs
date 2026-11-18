@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct S_2_ {
     #[offset(0)]
@@ -14,13 +14,13 @@ pub struct S_2_ {
     #[offset(4)]
     pub w: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct S_1_ {
     #[offset(0)]
     pub v: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct S_3_ {
     #[offset(0)]
@@ -34,24 +34,6 @@ pub fn scale_1(mut x: i32) -> i32 {
 }
 pub fn scale_2(mut x: i32) -> i32 {
     return (x - 2);
-}
-pub fn get_float_3() -> f32 {
-    return f32::from_bits(0x7fc00000);
-}
-pub fn get_float_4() -> f32 {
-    return f32::NEG_INFINITY;
-}
-pub fn get_double_5() -> f64 {
-    return f64::from_bits(0x7ff8000000000005);
-}
-pub fn get_double_6() -> f64 {
-    return f64::NEG_INFINITY;
-}
-pub fn get_long_double_7() -> f64 {
-    return f64::from_bits(0x7ff8000000000000);
-}
-pub fn get_long_double_8() -> f64 {
-    return f64::NEG_INFINITY;
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -67,18 +49,6 @@ fn main_0() -> i32 {
     assert!((({ scale_0(7,) }) == 7));
     assert!((({ scale_2(7,) }) == 5));
     assert!((({ scale_1(7,) }) == 21));
-    let mut f_nan: f32 = ({ get_float_3() });
-    let mut f_inf: f32 = ({ get_float_4() });
-    assert!((f_nan != f_nan));
-    assert!((f_inf < 0_f32));
-    let mut d_nan: f64 = ({ get_double_5() });
-    let mut d_inf: f64 = ({ get_double_6() });
-    assert!((d_nan != d_nan));
-    assert!((d_inf < 0_f64));
-    let mut ld_nan: f64 = ({ get_long_double_7() });
-    let mut ld_inf: f64 = ({ get_long_double_8() });
-    assert!((ld_nan != ld_nan));
-    assert!((ld_inf < 0_f64));
     return 0;
 }
 pub trait S_1_Impl {

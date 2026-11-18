@@ -27,7 +27,7 @@ pub fn with_default_3(s: Option<S>) -> i32 {
     let s: Value<S> = Rc::new(RefCell::new(s.unwrap_or_else(|| S { v: 5 })));
     return { (*s.borrow()).v };
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Holder {
     #[offset(0)]

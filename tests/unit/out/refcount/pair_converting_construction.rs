@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct Celsius {
@@ -18,14 +18,14 @@ impl Celsius {
         Self { degrees: d }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
 #[cpp_into(i32, to_i32)]
 #[byte_size(4)]
 pub struct Meters {
     #[offset(0)]
     pub value: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
 #[cpp_from(Celsius, new, ptr)]
 #[byte_size(4)]
 pub struct Label {
@@ -39,7 +39,7 @@ impl Label {
         }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
 #[cpp_from(Celsius, new_1, ptr)]
 #[cpp_from_move(Celsius, new_2, ptr)]
 #[byte_size(8)]
@@ -63,7 +63,7 @@ impl Owner {
         }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
 #[cpp_from(Celsius, new, value)]
 #[byte_size(4)]
 pub struct Holder {
@@ -75,7 +75,7 @@ impl Holder {
         Self { value: c.degrees }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom)]
 #[cpp_from(i32, new, some_value)]
 #[byte_size(4)]
 pub struct Fallback {
@@ -93,13 +93,13 @@ impl Default for Fallback {
         { Fallback::new(None) }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Counter {
     #[offset(0)]
     pub hits: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
 #[cpp_from(Counter, new, mut_ptr)]
 #[byte_size(4)]
 pub struct Observer {
@@ -122,14 +122,14 @@ impl Tag {
         }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
 #[cpp_from(Celsius, new, ptr)]
 #[byte_size(4)]
 pub struct Tag {
     #[offset(0)]
     pub code: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
 #[cpp_from(Ptr< i8  >  , new, value)]
 #[byte_size(4)]
 pub struct Name {

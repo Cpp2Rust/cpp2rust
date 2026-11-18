@@ -51,7 +51,7 @@ impl S {
 pub fn bump_0(mut p: Ptr<S>) {
     field!(p, a_).with_mut(|__v| __v.postfix_inc());
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct D {

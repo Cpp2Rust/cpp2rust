@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct X {
     #[offset(0)]
@@ -31,8 +31,8 @@ fn main_0() -> i32 {
     q = (field_ptr!(xx.as_pointer(), x));
     q = (field_ptr!(zz, x));
     field!(zz, x).write(2);
-    let mut ww: X = (*xx.borrow()).clone();
-    ww = (*xx.borrow()).clone();
+    let mut ww: X = (*xx.borrow());
+    ww = (*xx.borrow());
     let mut aa: i32 = ({ func_0() });
     aa = ({ func_0() });
     return 0;

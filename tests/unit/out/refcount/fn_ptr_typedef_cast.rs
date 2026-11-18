@@ -18,7 +18,7 @@ pub fn via_size_t_param_2(mut b: usize) -> u64 {
 pub fn via_size_t_return_3(mut b: u64) -> usize {
     return (b as usize);
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct pair {
     #[offset(0)]
@@ -64,7 +64,7 @@ fn main_0() -> i32 {
     let mut scaled: FnPtr<fn(pair, u64) -> u64> =
         FnPtr::<fn(pair, usize) -> u64>::new(pair_scaled_4).cast::<fn(pair, u64) -> u64>();
     let mut p: pair = pair { a: 3, b: 4 };
-    assert!((({ scaled.call((p).clone(), 10_u64,) }) == 34_u64));
+    assert!((({ scaled.call(p, 10_u64,) }) == 34_u64));
     let mut make: FnPtr<fn(u64) -> pair> =
         FnPtr::<fn(usize) -> pair>::new(make_pair_5).cast::<fn(u64) -> pair>();
     let mut q: pair = ({ make.call(5_u64) });

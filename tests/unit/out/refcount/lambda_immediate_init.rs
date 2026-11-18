@@ -19,7 +19,7 @@ pub fn pick_0(x: Option<i32>) -> i32 {
     });
     return x;
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(8)]
 pub struct S {
     #[offset(0)]

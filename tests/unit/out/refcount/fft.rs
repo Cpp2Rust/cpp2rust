@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(16)]
 pub struct Complex {
     #[offset(0)]
@@ -119,10 +119,10 @@ pub fn fft_3(a: Ptr<Option<Value<Box<[Complex]>>>>, mut N: i32) -> Option<Value<
         let mut k: i32 = 0;
         'loop_: while (k < (N / 2)) {
             let mut yk: Complex = ({
-                let _z1: Complex = (*y0.decay().offset((k as usize)).upgrade().deref()).clone();
+                let _z1: Complex = (*y0.decay().offset((k as usize)).upgrade().deref());
                 let _z2: Complex = ({
-                    let _z1: Complex = (*w.decay().offset((k as usize)).upgrade().deref()).clone();
-                    let _z2: Complex = (*y1.decay().offset((k as usize)).upgrade().deref()).clone();
+                    let _z1: Complex = (*w.decay().offset((k as usize)).upgrade().deref());
+                    let _z2: Complex = (*y1.decay().offset((k as usize)).upgrade().deref());
                     Product_0(_z1, _z2)
                 });
                 Sum_1(_z1, _z2)
@@ -132,14 +132,12 @@ pub fn fft_3(a: Ptr<Option<Value<Box<[Complex]>>>>, mut N: i32) -> Option<Value<
                 img: yk.img,
             });
             let mut yk_n2: Complex = ({
-                let _z1: Complex = (*y0.decay().offset((k as usize)).upgrade().deref()).clone();
+                let _z1: Complex = (*y0.decay().offset((k as usize)).upgrade().deref());
                 let _z2: Complex = ({
                     Neg_2(
                         ({
-                            let _z1: Complex =
-                                (*w.decay().offset((k as usize)).upgrade().deref()).clone();
-                            let _z2: Complex =
-                                (*y1.decay().offset((k as usize)).upgrade().deref()).clone();
+                            let _z1: Complex = (*w.decay().offset((k as usize)).upgrade().deref());
+                            let _z2: Complex = (*y1.decay().offset((k as usize)).upgrade().deref());
                             Product_0(_z1, _z2)
                         }),
                     )

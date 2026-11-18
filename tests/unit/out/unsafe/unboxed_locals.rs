@@ -113,10 +113,7 @@ unsafe fn main_0() -> i32 {
         ((str[(0) as usize] as i32) == (('x' as libc::c_char) as i32))
             && ((str[(3) as usize] as i32) == (('\0' as libc::c_char) as i32))
     );
-    let mut zeros: [f64; 16] = [
-        0_f64, 0_f64, 0_f64, 0_f64, 0_f64, 0_f64, 0_f64, 0_f64, 0_f64, 0_f64, 0_f64, 0_f64, 0_f64,
-        0_f64, 0_f64, 0_f64,
-    ];
+    let mut zeros: [f64; 16] = [0_f64; 16];
     zeros[(15) as usize] = 1.5_f64;
     assert!(((zeros[(0) as usize]) == (0_f64)) && ((zeros[(15) as usize]) == (1.5_f64)));
     assert!(((unsafe { countdown_4(10, None,) }) == (10)));

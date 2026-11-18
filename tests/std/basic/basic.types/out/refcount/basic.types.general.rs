@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct p2_pointer_to_data_member_bytes_round_trip_HasTwoInts {
     #[offset(0)]
@@ -73,7 +73,7 @@ pub fn test_0() {
     };
     assert!(({ ((*null_pm.borrow()) == -1_isize) }));
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct p3_pointer_to_data_member_bytes_copied_to_other_object_HasTwoInts {
     #[offset(0)]

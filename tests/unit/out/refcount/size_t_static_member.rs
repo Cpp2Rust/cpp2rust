@@ -9,13 +9,13 @@ use std::rc::{Rc, Weak};
 thread_local!(
     pub static c_0: Value<usize> = Rc::new(RefCell::new(5_usize));
 );
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct S {}
 thread_local!(
     pub static table_size_1: Value<usize> = Rc::new(RefCell::new(256_usize));
 );
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct Table_char_ {}
 pub fn main() {

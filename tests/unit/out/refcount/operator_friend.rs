@@ -10,7 +10,7 @@ pub fn operator_eq_0(_a0: Ptr<Defaulted>, _a1: Ptr<Defaulted>) -> bool {
     return ({ _a0.with(|__s| __s.a) } == { _a1.with(|__s| __s.a) })
         && ({ _a0.with(|__s| __s.b) } == { _a1.with(|__s| __s.b) });
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct Defaulted {
     #[offset(0)]
@@ -38,7 +38,7 @@ pub fn operator_cmp_1(_a0: Ptr<DefaultedOrd>, _a1: Ptr<DefaultedOrd>) -> std::cm
 pub fn operator_eq_2(_a0: Ptr<DefaultedOrd>, _a1: Ptr<DefaultedOrd>) -> bool {
     return ({ _a0.with(|__s| __s.a) } == { _a1.with(|__s| __s.a) });
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct DefaultedOrd {
     #[offset(0)]
@@ -65,7 +65,7 @@ pub fn operator_add_5(x: Ptr<Inline>, y: Ptr<Inline>) -> Inline {
         a: ({ x.with(|__s| __s.a) } + { y.with(|__s| __s.a) }),
     };
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Inline {
     #[offset(0)]
@@ -81,7 +81,7 @@ impl CppEq for Inline {
         operator_eq_3(__lhs.clone(), __rhs.clone())
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct OutOfLine {
     #[offset(0)]
@@ -111,7 +111,7 @@ pub fn operator_lt_9(x: Ptr<Tmpl_int_>, y: Ptr<Tmpl_int_>) -> bool {
 pub fn operator_eq_10(x: Ptr<Tmpl_int_>, y: Ptr<Tmpl_long_>) -> bool {
     return ({ (x.with(|__s| __s.v) as i64) } == { y.with(|__s| __s.v) });
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Tmpl_int_ {
     #[offset(0)]
@@ -127,7 +127,7 @@ impl CppEq for Tmpl_int_ {
         operator_eq_8(__lhs.clone(), __rhs.clone())
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct Tmpl_long_ {
     #[offset(0)]
@@ -136,7 +136,7 @@ pub struct Tmpl_long_ {
 pub fn operator_eq_11(_a0: Ptr<TmplDefaulted_int_>, _a1: Ptr<TmplDefaulted_int_>) -> bool {
     return ({ _a0.with(|__s| __s.v) } == { _a1.with(|__s| __s.v) });
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct TmplDefaulted_int_ {
     #[offset(0)]

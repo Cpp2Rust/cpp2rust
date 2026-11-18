@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct S {
     #[offset(0)]
@@ -54,7 +54,7 @@ pub fn operator_inc_7(a: Ptr<S>) -> Ptr<S> {
     return (a).clone();
 }
 pub fn operator_post_inc_8(a: Ptr<S>, mut _a1: i32) -> S {
-    let mut old: S = (*a.upgrade().deref()).clone();
+    let mut old: S = (*a.upgrade().deref());
     field!(a, v).with_mut(|__v| {
         __v.prefix_inc();
     });
@@ -67,7 +67,7 @@ pub fn operator_dec_9(a: Ptr<S>) -> Ptr<S> {
     return (a).clone();
 }
 pub fn operator_post_dec_10(a: Ptr<S>, mut _a1: i32) -> S {
-    let mut old: S = (*a.upgrade().deref()).clone();
+    let mut old: S = (*a.upgrade().deref());
     field!(a, v).with_mut(|__v| {
         __v.prefix_dec();
     });

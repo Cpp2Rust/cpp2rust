@@ -12,7 +12,7 @@ thread_local!(
 thread_local!(
     pub static visits_1: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(4)]
 pub struct Item {
     #[offset(0)]

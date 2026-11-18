@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct Eq {
     #[offset(0)]
@@ -19,7 +19,7 @@ impl CppEq for Eq {
         EqImpl::operator_eq(__lhs, __rhs.clone())
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct Cmp {
     #[offset(0)]
@@ -37,7 +37,7 @@ impl CppEq for Cmp {
         CmpImpl::operator_cmp(__lhs, __rhs.clone()) == std::cmp::Ordering::Equal
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Both {
     #[offset(0)]
@@ -53,7 +53,7 @@ impl CppEq for Both {
         BothImpl::operator_eq(__lhs, __rhs.clone())
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct OrdOnly {
     #[offset(0)]
@@ -69,7 +69,7 @@ impl CppEq for OrdOnly {
         OrdOnlyImpl::operator_cmp(__lhs, __rhs.clone()) == std::cmp::Ordering::Equal
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Inner {
     #[offset(0)]
@@ -85,7 +85,7 @@ impl CppEq for Inner {
         InnerImpl::operator_cmp(__lhs, __rhs.clone()) == std::cmp::Ordering::Equal
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct Outer {
     #[offset(0)]
@@ -104,7 +104,7 @@ impl CppEq for Outer {
         OuterImpl::operator_cmp(__lhs, __rhs.clone()) == std::cmp::Ordering::Equal
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Secondary {
     #[offset(0)]
