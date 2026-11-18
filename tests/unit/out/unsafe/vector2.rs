@@ -33,7 +33,10 @@ pub unsafe fn fn_0(v: *mut Vec<i32>, mut v3: Vec<i32>) {
     } else {
         (v)
     }))[(0_usize)] = 7;
-    v2 = (*v).clone();
+    {
+        *(&mut v2 as *mut Vec<i32>) = (*v).clone();
+        (&mut v2 as *mut Vec<i32>)
+    };
     (&mut (*v4))[(1_usize)] = 13;
     assert!(((x) == (6)));
     assert!(((*((*v).first_mut().unwrap())) == (4)));

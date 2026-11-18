@@ -432,15 +432,18 @@ unsafe fn main_0() -> i32 {
         )
     });
     let mut substr_count: usize = 2_usize;
-    once = {
-        let __range = 1_usize
-            ..::std::cmp::min(
-                1_usize + substr_count.postfix_inc(),
-                (*(&mut s1 as *const Vec<libc::c_char>)).len() - 1,
-            );
-        let mut __tmp1 = (&*(&mut s1 as *const Vec<libc::c_char>))[__range].to_vec();
-        __tmp1.push(0);
-        __tmp1
+    {
+        *(&mut once as *mut Vec<libc::c_char>) = {
+            let __range = 1_usize
+                ..::std::cmp::min(
+                    1_usize + substr_count.postfix_inc(),
+                    (*(&mut s1 as *const Vec<libc::c_char>)).len() - 1,
+                );
+            let mut __tmp1 = (&*(&mut s1 as *const Vec<libc::c_char>))[__range].to_vec();
+            __tmp1.push(0);
+            __tmp1
+        };
+        (&mut once as *mut Vec<libc::c_char>)
     };
     (unsafe {
         libc::printf(
@@ -450,19 +453,23 @@ unsafe fn main_0() -> i32 {
         )
     });
     let mut receiver_calls: i32 = 0;
-    once = match (
-        (&mut (unsafe { counted_string_0(&mut receiver_calls) }) as *const Vec<libc::c_char>),
-    ) {
-        (__tmp_1,) => {
-            let __range = 1_usize
-                ..::std::cmp::min(
-                    1_usize + 2_usize,
-                    (*(__tmp_1 as *const Vec<libc::c_char>)).len() - 1,
-                );
-            let mut __tmp1 = (&*(__tmp_1 as *const Vec<libc::c_char>))[__range].to_vec();
-            __tmp1.push(0);
-            __tmp1
-        }
+    {
+        *(&mut once as *mut Vec<libc::c_char>) =
+            match ((&mut (unsafe { counted_string_0(&mut receiver_calls) })
+                as *const Vec<libc::c_char>),)
+            {
+                (__tmp_1,) => {
+                    let __range = 1_usize
+                        ..::std::cmp::min(
+                            1_usize + 2_usize,
+                            (*(__tmp_1 as *const Vec<libc::c_char>)).len() - 1,
+                        );
+                    let mut __tmp1 = (&*(__tmp_1 as *const Vec<libc::c_char>))[__range].to_vec();
+                    __tmp1.push(0);
+                    __tmp1
+                }
+            };
+        (&mut once as *mut Vec<libc::c_char>)
     };
     (unsafe {
         libc::printf(
@@ -552,6 +559,80 @@ unsafe fn main_0() -> i32 {
             (receiver_calls),
         )
     });
+    let mut chained: Vec<libc::c_char> = vec![0];
+    match ((match ((({
+        *(&mut chained as *mut Vec<libc::c_char>) = target.clone();
+        (&mut chained as *mut Vec<libc::c_char>)
+    }) as *mut Vec<libc::c_char>),)
+    {
+        (__tmp_7,) => {
+            (*(__tmp_7 as *mut Vec<libc::c_char>)).splice(
+                (*(__tmp_7 as *mut Vec<libc::c_char>))
+                    .len()
+                    .saturating_sub(1)
+                    ..(*(__tmp_7 as *mut Vec<libc::c_char>)).len(),
+                {
+                    let mut v = ::std::slice::from_raw_parts(c"bc".as_ptr(), 2_usize).to_vec();
+                    v.push(0);
+                    v
+                },
+            );
+            (__tmp_7 as *mut Vec<libc::c_char>)
+        }
+    } as *mut Vec<libc::c_char>),)
+    {
+        (__tmp_6,) => {
+            (*(__tmp_6 as *mut Vec<libc::c_char>)).splice(
+                0_usize..0_usize + 1_usize,
+                ::std::slice::from_raw_parts(c"X".as_ptr(), 1_usize).to_vec(),
+            );
+            (__tmp_6 as *mut Vec<libc::c_char>)
+        }
+    };
+    assert!(
+        (chained == {
+            std::slice::from_raw_parts(
+                c"Xbc".as_ptr(),
+                (0..).take_while(|&i| *c"Xbc".as_ptr().add(i) != 0).count() + 1,
+            )
+            .to_vec()
+        }) && (target == {
+            std::slice::from_raw_parts(
+                c"A".as_ptr(),
+                (0..).take_while(|&i| *c"A".as_ptr().add(i) != 0).count() + 1,
+            )
+            .to_vec()
+        })
+    );
+    match ((({
+        *(&mut chained as *mut Vec<libc::c_char>) = std::mem::replace(&mut once, vec![0]);
+        (&mut chained as *mut Vec<libc::c_char>)
+    }) as *mut Vec<libc::c_char>),)
+    {
+        (__tmp_8,) => {
+            (*(__tmp_8 as *mut Vec<libc::c_char>)).splice(
+                (*(__tmp_8 as *mut Vec<libc::c_char>))
+                    .len()
+                    .saturating_sub(1)
+                    ..(*(__tmp_8 as *mut Vec<libc::c_char>)).len(),
+                {
+                    let mut v = ::std::slice::from_raw_parts(c"!".as_ptr(), 1_usize).to_vec();
+                    v.push(0);
+                    v
+                },
+            );
+            (__tmp_8 as *mut Vec<libc::c_char>)
+        }
+    };
+    assert!(
+        chained == {
+            std::slice::from_raw_parts(
+                c"el!".as_ptr(),
+                (0..).take_while(|&i| *c"el!".as_ptr().add(i) != 0).count() + 1,
+            )
+            .to_vec()
+        }
+    );
     let mut t0: usize = (s1.len() - 1);
     let mut t1: usize = (t0).wrapping_add(((*p1) as usize));
     let mut t2: usize = (t1).wrapping_add((s2.len() - 1));

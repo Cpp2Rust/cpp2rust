@@ -6,17 +6,7 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn pick_0(mut x: Option<i32>) -> i32 {
-    let mut x: i32 = x.unwrap_or_else(|| unsafe {
-        (unsafe {
-            FnPtr::<fn() -> i32>::new(|| -> i32 {
-                unsafe {
-                    return 237;
-                }
-            })
-            .call()
-        })
-    });
+pub unsafe fn pick_0(mut x: i32) -> i32 {
     return x;
 }
 #[repr(C)]
@@ -67,8 +57,21 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(((unsafe { pick_0(None,) }) == (237)));
-    assert!(((unsafe { pick_0(Some(1),) }) == (1)));
+    assert!(
+        ((unsafe {
+            pick_0(
+                (unsafe {
+                    FnPtr::<fn() -> i32>::new(|| -> i32 {
+                        unsafe {
+                            return 237;
+                        }
+                    })
+                    .call()
+                }),
+            )
+        }) == (237))
+    );
+    assert!(((unsafe { pick_0(1,) }) == (1)));
     let mut s: S = <S>::default();
     assert!(((s.k) == (4)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut g_1)) == (10)));

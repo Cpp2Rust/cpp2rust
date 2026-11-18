@@ -109,12 +109,18 @@ impl HolderImpl for Ptr<Holder> {
         };
     }
     fn move_assign(&self, _a0: Ptr<Holder>) -> Ptr<Holder> {
-        field_ref!((*self), xs)
-            .as_pointer()
-            .write(field!(_a0, xs).with_mut(std::mem::take));
-        field_ref!((*self), ys)
-            .as_pointer()
-            .write(field!(_a0, ys).with_mut(std::mem::take));
+        {
+            field_ref!((*self), xs)
+                .as_pointer()
+                .write(field!(_a0, xs).with_mut(std::mem::take));
+            field_ref!((*self), xs).as_pointer()
+        };
+        {
+            field_ref!((*self), ys)
+                .as_pointer()
+                .write(field!(_a0, ys).with_mut(std::mem::take));
+            field_ref!((*self), ys).as_pointer()
+        };
         return (*self).clone();
     }
 }

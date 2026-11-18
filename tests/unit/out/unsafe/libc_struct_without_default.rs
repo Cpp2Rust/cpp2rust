@@ -15,16 +15,22 @@ pub struct UserDefined {
 impl UserDefined {
     pub unsafe fn move_from(_a0: *mut UserDefined) -> Self {
         let mut this = Self {
-            a: (*_a0).a.clone(),
+            a: std::array::from_fn(|__i| (*&mut (&mut (*_a0)).a[__i])),
             v: std::mem::take(&mut (*_a0).v),
         };
         this
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut UserDefined) -> *mut UserDefined {
-        for __i in 0..1 {
-            *&mut self.a[__i] = (*&mut (&mut (*_a0)).a[__i]);
-        }
-        self.v = std::mem::take(&mut (*_a0).v);
+        {
+            for __i in 0..1 {
+                *&mut (*(&mut self.a as *mut [i32; 1]))[__i] = (*&mut (&mut (*_a0)).a[__i]);
+            }
+            (&mut self.a as *mut [i32; 1])
+        };
+        {
+            *(&mut self.v as *mut Vec<i32>) = std::mem::take(&mut (*_a0).v);
+            (&mut self.v as *mut Vec<i32>)
+        };
         return &mut (*(self as *mut UserDefined));
     }
 }

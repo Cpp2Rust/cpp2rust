@@ -51,9 +51,7 @@ pub struct p7_2_default_argument_names_later_member_HasLaterStaticStep {
     pub total: i32,
 }
 impl p7_2_default_argument_names_later_member_HasLaterStaticStep {
-    pub unsafe fn advance(&mut self, mut amount: Option<i32>) -> i32 {
-        let mut amount: i32 = amount
-            .unwrap_or_else(|| unsafe { (*std::cell::LazyCell::force_mut(&mut *&raw mut step_5)) });
+    pub unsafe fn advance(&mut self, mut amount: i32) -> i32 {
         self.total += amount;
         return self.total;
     }
@@ -68,15 +66,15 @@ pub unsafe fn test_6() {
         <p7_2_default_argument_names_later_member_HasLaterStaticStep>::default();
     assert!(
         ((unsafe {
-            p7_2_default_argument_names_later_member_HasLaterStaticStep::advance(&mut object, None)
+            p7_2_default_argument_names_later_member_HasLaterStaticStep::advance(
+                &mut object,
+                (*std::cell::LazyCell::force_mut(&mut *&raw mut step_5)),
+            )
         }) == (5))
     );
     assert!(
         ((unsafe {
-            p7_2_default_argument_names_later_member_HasLaterStaticStep::advance(
-                &mut object,
-                Some(2),
-            )
+            p7_2_default_argument_names_later_member_HasLaterStaticStep::advance(&mut object, 2)
         }) == (7))
     );
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut step_4)) == (100)));

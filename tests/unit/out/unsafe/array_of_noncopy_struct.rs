@@ -21,7 +21,10 @@ impl NonCopy {
         this
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut NonCopy) -> *mut NonCopy {
-        self.data = std::mem::take(&mut (*_a0).data);
+        {
+            *(&mut self.data as *mut Vec<i32>) = std::mem::take(&mut (*_a0).data);
+            (&mut self.data as *mut Vec<i32>)
+        };
         self.tag = (*_a0).tag;
         return &mut (*(self as *mut NonCopy));
     }

@@ -9,8 +9,7 @@ use std::rc::Rc;
 pub unsafe fn identity_0(mut x: i32) -> i32 {
     return x;
 }
-pub unsafe fn apply_1(mut x: i32, mut fn_: Option<Option<unsafe fn(i32) -> i32>>) -> i32 {
-    let mut fn_: Option<unsafe fn(i32) -> i32> = fn_.unwrap_or_else(|| unsafe { None });
+pub unsafe fn apply_1(mut x: i32, mut fn_: Option<unsafe fn(i32) -> i32>) -> i32 {
     if !(fn_).is_none() {
         return (unsafe { (fn_).unwrap()(x) });
     }
@@ -24,14 +23,14 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     assert!(((unsafe { apply_1(5, None,) }) == (5)));
-    assert!(((unsafe { apply_1(5, Some(None),) }) == (5)));
-    assert!(((unsafe { apply_1(5, Some(Some(identity_0)),) }) == (5)));
+    assert!(((unsafe { apply_1(5, None,) }) == (5)));
+    assert!(((unsafe { apply_1(5, Some(identity_0),) }) == (5)));
     let mut negate: Option<unsafe fn(i32) -> i32> = Some(|mut x: i32| -> i32 {
         unsafe {
             return -x;
         }
     });
-    assert!(((unsafe { apply_1(5, Some(negate),) }) == (-5_i32)));
+    assert!(((unsafe { apply_1(5, negate,) }) == (-5_i32)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

@@ -19,7 +19,10 @@ impl Holder {
         this
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Holder) -> *mut Holder {
-        self.val = (*_a0).val.take();
+        {
+            *(&mut self.val as *mut Option<Box<i32>>) = (*_a0).val.take();
+            (&mut self.val as *mut Option<Box<i32>>)
+        };
         return &mut (*(self as *mut Holder));
     }
 }
@@ -43,7 +46,10 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut h: Holder = <Holder>::default();
-    h.val = Some(Box::new(10)).take();
+    {
+        *(&mut h.val as *mut Option<Box<i32>>) = Some(Box::new(10)).take();
+        (&mut h.val as *mut Option<Box<i32>>)
+    };
     (unsafe { write_val_1((&mut h as *mut Holder).cast_const(), 42) });
     assert!(((unsafe { read_val_0((&mut h as *mut Holder).cast_const(),) }) == (42)));
     return 0;

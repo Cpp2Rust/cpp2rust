@@ -34,7 +34,10 @@ pub fn fn_0(v: Ptr<Vec<i32>>, v3: Vec<i32>) {
         0_usize
     )
     .write(7);
-    v2.as_pointer().write(({ (*v.upgrade().deref()).clone() }));
+    {
+        v2.as_pointer().write(({ (*v.upgrade().deref()).clone() }));
+        v2.as_pointer()
+    };
     index!(v4, 1_usize).write(13);
     assert!((x == 6));
     assert!(((v.decay().read()) == 4));

@@ -196,12 +196,14 @@ fn f28(a0: &mut Vec<i8>) -> Vec<i8> {
     std::mem::take(&mut *a0)
 }
 
-fn f29(a0: Ptr<Vec<i8>>, a1: Vec<i8>) {
-    a0.write(a1)
+fn f29(a0: Ptr<Vec<i8>>, a1: Vec<i8>) -> Ptr<Vec<i8>> {
+    a0.write(a1);
+    a0
 }
 
-fn f30(a0: Ptr<Vec<i8>>, a1: &mut Vec<i8>) {
-    a0.write(std::mem::take(&mut *a1))
+fn f30(a0: Ptr<Vec<i8>>, a1: &mut Vec<i8>) -> Ptr<Vec<i8>> {
+    a0.write(std::mem::take(&mut *a1));
+    a0
 }
 
 fn f31(a0: Vec<i8>, a1: Ptr<i8>) -> bool {
