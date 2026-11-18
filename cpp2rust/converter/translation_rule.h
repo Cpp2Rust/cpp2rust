@@ -109,6 +109,7 @@ struct TypeInfo {
   std::string cpp_type;
   bool is_refcount_pointer = false;
   bool is_unsafe_pointer = false;
+  bool is_reference = false;
   std::optional<Elems> elems;
   unsigned generic = 0;
 
@@ -125,6 +126,7 @@ struct ExprRule {
   std::vector<BodyFragment> body;
   bool multi_statement = false;
   bool is_extern = false;
+  bool returns_place = false;
 
   void dump() const;
   bool usesInit() const;

@@ -52,5 +52,14 @@ int main() {
   std::pair<int, int> m{5, 6};
   w = std::move(m);
   assert(*pw == 5);
+
+  (p = q).second = 7;
+  assert(p.second == 7 && q.second == 4);
+  (d = std::move(q)).first = 8;
+  assert(d.first == 8 && d.second == 4);
+  (w = narrow).second = 9;
+  assert(w.first == 3 && w.second == 9);
+  (w = std::move(narrow)).first = 10;
+  assert(*pw == 10 && w.second == 4);
   return 0;
 }
