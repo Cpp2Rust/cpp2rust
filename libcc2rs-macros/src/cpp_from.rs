@@ -9,7 +9,6 @@ use syn::{DeriveInput, Ident, Token, Type, parse_macro_input};
 
 //     #[derive(CppFrom)]
 //     #[cpp_from(i32, new, value)]        // S(int)
-//     #[cpp_from(i32, new_1, some_value)] // S(int = 0)
 //     #[cpp_from(T, new_2, ptr)]          // S(const T &)
 //     #[cpp_from(T, new_3, mut_ptr)]      // S(T &)
 //     #[cpp_from_move(T, new_4, ptr)]     // S(T &&)
@@ -21,9 +20,8 @@ use syn::{DeriveInput, Ident, Token, Type, parse_macro_input};
 // of S, and libcc2rs::CppFrom<S> for each type S converts to with a
 // conversion operator, such that the rules convert values as C++ does
 // implicitly. `value` passes the pointee to the constructor, `ptr` the
-// pointer, `mut_ptr` a mutable pointer, and `some_` wraps the argument in
-// Some for a defaulted parameter. CppFromUnsafe is the same for the unsafe
-// model.
+// pointer and `mut_ptr` a mutable pointer. CppFromUnsafe is the same for the
+// unsafe model.
 
 #[derive(Clone, Copy)]
 enum Kind {
@@ -36,7 +34,6 @@ struct Conversion {
     ty: Type,
     method: Ident,
     kind: Kind,
-    some: bool,
 }
 
 impl Parse for Conversion {
@@ -45,36 +42,22 @@ impl Parse for Conversion {
         input.parse::<Token![,]>()?;
         let method = input.parse()?;
         let mut kind = Kind::Ptr;
-        let mut some = false;
         if input.peek(Token![,]) {
             input.parse::<Token![,]>()?;
             let spelled: Ident = input.parse()?;
-            let name = spelled.to_string();
-            let name = match name.strip_prefix("some_") {
-                Some(rest) => {
-                    some = true;
-                    rest
-                }
-                None => name.as_str(),
-            };
-            kind = match name {
+            kind = match spelled.to_string().as_str() {
                 "value" => Kind::Value,
                 "ptr" => Kind::Ptr,
                 "mut_ptr" => Kind::MutPtr,
                 _ => {
                     return Err(syn::Error::new(
                         spelled.span(),
-                        "expected `value`, `ptr` or `mut_ptr`, optionally prefixed by `some_`",
+                        "expected `value`, `ptr` or `mut_ptr`",
                     ));
                 }
             };
         }
-        Ok(Conversion {
-            ty,
-            method,
-            kind,
-            some,
-        })
+        Ok(Conversion { ty, method, kind })
     }
 }
 
@@ -96,11 +79,6 @@ fn ctor_call(
         (Kind::Value, false) => quote!(src.read()),
         (Kind::MutPtr, true) if !is_move => quote!(src.cast_mut()),
         (Kind::Ptr | Kind::MutPtr, _) => quote!(src),
-    };
-    let arg = if conversion.some {
-        quote!(Some(#arg))
-    } else {
-        arg
     };
     quote!(#name::#method(#arg))
 }

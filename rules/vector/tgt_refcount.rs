@@ -132,16 +132,18 @@ fn f101<T1: Clone + ByteRepr, T2, T3: CppInputIterator<T1>>(
     a1
 }
 
-fn f103<T1: ByteRepr + Clone>(a0: Ptr<Vec<T1>>, a1: &mut Vec<T1>) {
-    a0.write(std::mem::take(&mut *a1))
+fn f103<T1: ByteRepr + Clone>(a0: Ptr<Vec<T1>>, a1: &mut Vec<T1>) -> Ptr<Vec<T1>> {
+    a0.write(std::mem::take(&mut *a1));
+    a0
 }
 
 fn f104<T1>(a0: Ptr<T1>) -> RandomAccessIterator<T1> {
     a0.end()
 }
 
-fn f105<T1: Clone + ByteRepr>(a0: Ptr<Vec<T1>>, a1: Vec<T1>) {
-    a0.write(a1)
+fn f105<T1: Clone + ByteRepr>(a0: Ptr<Vec<T1>>, a1: Vec<T1>) -> Ptr<Vec<T1>> {
+    a0.write(a1);
+    a0
 }
 
 fn f115<T1: Clone + ByteRepr>(a0: &mut Vec<T1>, a1: RandomAccessIterator<T1>, a2: usize, a3: T1) -> RandomAccessIterator<T1> {

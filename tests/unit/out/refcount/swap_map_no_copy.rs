@@ -762,8 +762,11 @@ pub trait OwnerImpl {
 }
 impl OwnerImpl for Ptr<Owner> {
     fn move_assign(&self, _a0: Ptr<Owner>) -> Ptr<Owner> {
-        field_ptr!((*self), p)
-            .write(field!(_a0, p).with_mut(|__v: &mut Option<Value<i32>>| __v.take()));
+        {
+            field_ptr!((*self), p)
+                .write(field!(_a0, p).with_mut(|__v: &mut Option<Value<i32>>| __v.take()));
+            field_ptr!((*self), p)
+        };
         return (*self).clone();
     }
 }

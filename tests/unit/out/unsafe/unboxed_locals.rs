@@ -37,8 +37,7 @@ pub unsafe fn sum_3(mut arr: *const i32, mut n: i32) -> i32 {
     }
     return s;
 }
-pub unsafe fn countdown_4(mut n: i32, mut step: Option<i32>) -> i32 {
-    let mut step: i32 = step.unwrap_or_else(|| unsafe { 1 });
+pub unsafe fn countdown_4(mut n: i32, mut step: i32) -> i32 {
     let mut steps: i32 = 0;
     'loop_: while ((n) > (0)) {
         n -= step;
@@ -116,8 +115,8 @@ unsafe fn main_0() -> i32 {
     let mut zeros: [f64; 16] = [0_f64; 16];
     zeros[(15) as usize] = 1.5_f64;
     assert!(((zeros[(0) as usize]) == (0_f64)) && ((zeros[(15) as usize]) == (1.5_f64)));
-    assert!(((unsafe { countdown_4(10, None,) }) == (10)));
-    assert!(((unsafe { countdown_4(10, Some(3),) }) == (4)));
+    assert!(((unsafe { countdown_4(10, 1,) }) == (10)));
+    assert!(((unsafe { countdown_4(10, 3,) }) == (4)));
     let mut init: i32 = 3;
     let mut pair: Pair = Pair {
         first: init,

@@ -455,14 +455,21 @@ impl MinHeapImpl for Ptr<MinHeap> {
     fn move_assign(&self, _a0: Ptr<MinHeap>) -> Ptr<MinHeap> {
         field!((*self), size).write({ { (*_a0.upgrade().deref()).size } });
         field!((*self), capacity).write({ { (*_a0.upgrade().deref()).capacity } });
-        field_ptr!((*self), arr).write(
-            field!(_a0, arr)
-                .with_mut(|__v: &mut Option<Value<Box<[Ptr<MinHeapNode>]>>>| __v.take()),
-        );
+        {
+            field_ptr!((*self), arr).write(
+                field!(_a0, arr)
+                    .with_mut(|__v: &mut Option<Value<Box<[Ptr<MinHeapNode>]>>>| __v.take()),
+            );
+            field_ptr!((*self), arr)
+        };
         field!((*self), next).write({ { (*_a0.upgrade().deref()).next } });
-        field_ptr!((*self), alloc).write(
-            field!(_a0, alloc).with_mut(|__v: &mut Option<Value<Box<[MinHeapNode]>>>| __v.take()),
-        );
+        {
+            field_ptr!((*self), alloc).write(
+                field!(_a0, alloc)
+                    .with_mut(|__v: &mut Option<Value<Box<[MinHeapNode]>>>| __v.take()),
+            );
+            field_ptr!((*self), alloc)
+        };
         return (*self).clone();
     }
 }

@@ -32,8 +32,14 @@ impl JPEGData {
         this
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut JPEGData) -> *mut JPEGData {
-        self.com_data = std::mem::take(&mut (*_a0).com_data);
-        self.app_data = std::mem::take(&mut (*_a0).app_data);
+        {
+            *(&mut self.com_data as *mut Vec<Vec<u8>>) = std::mem::take(&mut (*_a0).com_data);
+            (&mut self.com_data as *mut Vec<Vec<u8>>)
+        };
+        {
+            *(&mut self.app_data as *mut Vec<Vec<u8>>) = std::mem::take(&mut (*_a0).app_data);
+            (&mut self.app_data as *mut Vec<Vec<u8>>)
+        };
         return &mut (*(self as *mut JPEGData));
     }
 }

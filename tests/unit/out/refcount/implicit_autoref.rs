@@ -73,9 +73,12 @@ pub trait HolderImpl {
 }
 impl HolderImpl for Ptr<Holder> {
     fn move_assign(&self, _a0: Ptr<Holder>) -> Ptr<Holder> {
-        field_ref!((*self), v)
-            .as_pointer()
-            .write(field!(_a0, v).with_mut(std::mem::take));
+        {
+            field_ref!((*self), v)
+                .as_pointer()
+                .write(field!(_a0, v).with_mut(std::mem::take));
+            field_ref!((*self), v).as_pointer()
+        };
         return (*self).clone();
     }
 }
