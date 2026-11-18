@@ -46,6 +46,24 @@ pub unsafe fn scale_1(mut x: i32) -> i32 {
 pub unsafe fn scale_2(mut x: i32) -> i32 {
     return ((x) - (2));
 }
+pub unsafe fn get_float_3() -> f32 {
+    return f32::from_bits(0x7fc00000);
+}
+pub unsafe fn get_float_4() -> f32 {
+    return f32::NEG_INFINITY;
+}
+pub unsafe fn get_double_5() -> f64 {
+    return f64::from_bits(0x7ff8000000000005);
+}
+pub unsafe fn get_double_6() -> f64 {
+    return f64::NEG_INFINITY;
+}
+pub unsafe fn get_long_double_7() -> f64 {
+    return f64::from_bits(0x7ff8000000000000);
+}
+pub unsafe fn get_long_double_8() -> f64 {
+    return f64::NEG_INFINITY;
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -62,6 +80,18 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { scale_0(7,) }) == (7)));
     assert!(((unsafe { scale_2(7,) }) == (5)));
     assert!(((unsafe { scale_1(7,) }) == (21)));
+    let mut f_nan: f32 = (unsafe { get_float_3() });
+    let mut f_inf: f32 = (unsafe { get_float_4() });
+    assert!(((f_nan) != (f_nan)));
+    assert!(((f_inf) < (0_f32)));
+    let mut d_nan: f64 = (unsafe { get_double_5() });
+    let mut d_inf: f64 = (unsafe { get_double_6() });
+    assert!(((d_nan) != (d_nan)));
+    assert!(((d_inf) < (0_f64)));
+    let mut ld_nan: f64 = (unsafe { get_long_double_7() });
+    let mut ld_inf: f64 = (unsafe { get_long_double_8() });
+    assert!(((ld_nan) != (ld_nan)));
+    assert!(((ld_inf) < (0_f64)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}
