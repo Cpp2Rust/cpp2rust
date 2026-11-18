@@ -47,6 +47,18 @@ pub static mut total_7: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| u
 pub unsafe fn add_to_total_8(mut x: i32) {
     (*std::cell::LazyCell::force_mut(&mut *&raw mut total_7)) += x;
 }
+pub unsafe fn pair_sum_9(mut p: (i32, i32)) -> i32 {
+    return ((p.0) + (p.1));
+}
+pub unsafe fn string_size_10(mut s: Vec<libc::c_char>) -> usize {
+    return (s.len() - 1);
+}
+pub unsafe fn vector_sum_11(mut v: Vec<i32>) -> i32 {
+    return ((v[(0_usize)]) + (v[(1_usize)]));
+}
+pub unsafe fn is_less_12(mut o: std::cmp::Ordering) -> bool {
+    return o == std::cmp::Ordering::Less;
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -85,6 +97,28 @@ unsafe fn main_0() -> i32 {
     (unsafe { (handler).unwrap()(2) });
     (unsafe { (handler).unwrap()(3) });
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut total_7)) == (5)));
+    let mut pf: Option<unsafe fn((i32, i32)) -> i32> = Some(pair_sum_9);
+    assert!(((unsafe { (pf).unwrap()((1, 2),) }) == (3)));
+    let mut sf: Option<unsafe fn(Vec<libc::c_char>) -> usize> = Some(string_size_10);
+    assert!(
+        ((unsafe {
+            (sf).unwrap()(
+                std::slice::from_raw_parts(
+                    c"abc".as_ptr(),
+                    (0..).take_while(|&i| *c"abc".as_ptr().add(i) != 0).count() + 1,
+                )
+                .to_vec(),
+            )
+        }) == (3_usize))
+    );
+    let mut vf: Option<unsafe fn(Vec<i32>) -> i32> = Some(vector_sum_11);
+    assert!(((unsafe { (vf).unwrap()(Vec::from([1, 2,]),) }) == (3)));
+    let mut of: Option<unsafe fn(std::cmp::Ordering) -> bool> = Some(is_less_12);
+    assert!((unsafe { (of).unwrap()(std::cmp::Ord::cmp(&(1), &(2)),) }));
+    assert!(!(unsafe { (of).unwrap()(std::cmp::Ord::cmp(&(2), &(1)),) }));
+    let mut o: std::cmp::Ordering = std::cmp::Ord::cmp(&(1), &(2));
+    let mut op: *mut std::cmp::Ordering = (&mut o as *mut std::cmp::Ordering);
+    assert!((*op) == std::cmp::Ordering::Less);
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
