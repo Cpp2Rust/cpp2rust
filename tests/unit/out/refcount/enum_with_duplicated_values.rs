@@ -13,7 +13,7 @@ pub const E_C: E = 2;
 pub const E_D: E = 4;
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     assert!(((E_A as i32) == (1 << 1)));

@@ -52,7 +52,7 @@ pub fn none_match_7(pred: FnPtr<fn(i32) -> bool>, mut a: i32, mut b: i32) -> boo
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let factor: Value<i32> = Rc::new(RefCell::new(3));

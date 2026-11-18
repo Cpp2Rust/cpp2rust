@@ -169,7 +169,15 @@ pub unsafe fn test_11() {
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut derived_calls_10)) == (1)));
 }
 pub static mut global_12: std::cell::LazyCell<LifetimeTracked> =
-    std::cell::LazyCell::new(|| unsafe { LifetimeTracked::new() });
+    std::cell::LazyCell::new(|| unsafe {
+        {
+            let __static = LifetimeTracked::new();
+            libcc2rs::register_static_destructor(|| {
+                (*std::cell::LazyCell::force_mut(&mut *&raw mut global_12)).destructor()
+            });
+            __static
+        }
+    });
 pub unsafe fn test_13() {
     (unsafe { LifetimeTracked::reset() });
     let r: *mut LifetimeTracked = &mut (*std::cell::LazyCell::force_mut(&mut *&raw mut global_12));
@@ -629,7 +637,7 @@ pub unsafe fn test_51() {
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
-        std::process::exit(main_0() as i32);
+        libcc2rs::cpp2rust_exit(main_0() as i32);
     }
 }
 unsafe fn main_0() -> i32 {

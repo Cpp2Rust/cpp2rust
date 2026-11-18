@@ -35,7 +35,7 @@ impl Default for NonCopy {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let mut arr: [NonCopy; 3] = std::array::from_fn::<_, 3, _>(|_| <NonCopy>::default());

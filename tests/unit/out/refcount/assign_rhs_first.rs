@@ -30,7 +30,7 @@ pub fn by_ref_2(r: Ptr<Ptr<i32>>) {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let a: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2, 3, 4, 5, 6, 7, 8])));

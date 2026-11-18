@@ -97,7 +97,7 @@ pub fn is_active_0(mut w: Ptr<widget>) -> i32 {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let w: Value<widget> = <Value<widget>>::default();

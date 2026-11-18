@@ -31,7 +31,7 @@ pub fn continue_inside_switch_0(mut n: i32) -> i32 {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     assert!((({ continue_inside_switch_0(6,) }) == (((1 + 3) + 5) + (3 * 1000))));

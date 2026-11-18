@@ -10,7 +10,7 @@ pub fn foo_mut_0(mut str: Ptr<i8>) {}
 pub fn foo_const_1(mut str: Ptr<i8>) {}
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let mut mutable_strings: [Ptr<i8>; 3] = [

@@ -79,7 +79,7 @@ pub struct Wrapped_int_ {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let mut w: Wrapped_int_ = Wrapped_int_ { v: 2 };

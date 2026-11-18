@@ -28,7 +28,7 @@ pub fn write_val_1(mut h: Ptr<Holder>, mut v: i32) {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let h: Value<Holder> = Rc::new(RefCell::new(<Holder>::default()));

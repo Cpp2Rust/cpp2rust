@@ -193,7 +193,13 @@ pub fn test_11() {
     assert!((derived_calls_10.with(|rc| *rc.borrow()) == 1));
 }
 thread_local!(
-    pub static global_12: Value<LifetimeTracked> = Rc::new(RefCell::new(LifetimeTracked::new()));
+    pub static global_12: Value<LifetimeTracked> = {
+        let __static = Rc::new(RefCell::new(LifetimeTracked::new()));
+        libcc2rs::register_static_destructor(|| {
+            global_12.with(Value::clone).as_pointer().destructor()
+        });
+        __static
+    };
 );
 pub fn test_13() {
     ({ LifetimeTracked::reset() });
@@ -619,7 +625,7 @@ pub fn test_51() {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     ({ test_5() });

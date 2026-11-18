@@ -23,7 +23,7 @@ pub fn operator_or_2(a: Ptr<S>, b: Ptr<S>) -> bool {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let t: Value<S> = Rc::new(RefCell::new(S { v: 1 }));

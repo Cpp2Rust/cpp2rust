@@ -28,7 +28,7 @@ pub fn outer_1(count: i32, __args: Box<[VaArg]>) -> i32 {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     assert!((({ outer_1(3, Box::new([(10).into(), (20).into(), (30).into(),])) }) == 60));

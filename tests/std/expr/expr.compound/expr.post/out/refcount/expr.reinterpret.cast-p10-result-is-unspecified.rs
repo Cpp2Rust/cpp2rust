@@ -24,7 +24,7 @@ pub struct AlsoHasTwoInts {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let mut converted: isize = (offset_of_field!(HasTwoInts, second) as isize);

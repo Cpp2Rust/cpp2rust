@@ -15,7 +15,7 @@ pub fn strlen_0(mut s: Ptr<i8>, mut n: i32) -> i32 {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let s: Value<Box<[i8]>> = Rc::new(RefCell::new(Box::new([

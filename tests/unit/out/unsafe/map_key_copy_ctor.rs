@@ -73,7 +73,7 @@ pub unsafe fn make_key_3(mut k: i32) -> Key {
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
-        std::process::exit(main_0() as i32);
+        libcc2rs::cpp2rust_exit(main_0() as i32);
     }
 }
 unsafe fn main_0() -> i32 {

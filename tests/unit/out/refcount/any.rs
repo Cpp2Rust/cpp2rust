@@ -21,7 +21,7 @@ impl Point {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let a: Value<Option<Rc<dyn std::any::Any>>> = Rc::new(RefCell::new(Some(Rc::new(

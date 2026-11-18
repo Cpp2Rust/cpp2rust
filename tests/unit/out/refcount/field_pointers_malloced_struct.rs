@@ -24,7 +24,7 @@ pub fn bump_0(mut s: Ptr<S>) -> i32 {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let mut s: Ptr<S> = libcc2rs::calloc_refcount(1_usize, 12usize).reinterpret_cast::<S>();

@@ -39,7 +39,7 @@ pub fn not_supported_5(mut ctx: AnyPtr, mut fn_: FnPtr<fn(i32) -> i32>, mut extr
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     assert!(

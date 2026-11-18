@@ -12,7 +12,7 @@ pub fn fill_row_0(mut row: Ptr<i8>, mut c: i8) {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let grid: Value<Box<[Box<[i8]>]>> = Rc::new(RefCell::new(

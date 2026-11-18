@@ -55,7 +55,7 @@ pub struct X1 {}
 pub fn foo_1(mut x1: i32, x2: Ptr<i32>, mut x3: Ptr<i32>, p2: Ptr<Pair>, mut p3: Ptr<Pair>) {}
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let x1: Value<i32> = Rc::new(RefCell::new(1));
