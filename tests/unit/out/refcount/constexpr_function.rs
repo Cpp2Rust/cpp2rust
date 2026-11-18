@@ -41,6 +41,9 @@ pub fn in_constant_context_6() -> bool {
     return (({ runtime_only_0(1) }) == 0);
 }
 const _: () = assert!(true, "in_constant_context()");
+pub fn imm_7(mut b: bool) -> bool {
+    return b;
+}
 #[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct P {
@@ -72,8 +75,20 @@ fn main_0() -> i32 {
     assert!((({ PImpl::get(&p.as_pointer(),) }) == 9));
     let mut k: i32 = ({ scaled_2(4) });
     assert!((k == 4));
+    let mut ce: bool = true;
+    assert!(ce);
+    let mut n: i32 = if true { 13 } else { 17 };
+    assert!((n == 13));
+    assert!(s_8.with(|rc| *rc.borrow()));
+    let mut rt: bool = false;
+    assert!(!(rt));
+    let mut b: bool = ({ imm_7(true) });
+    assert!(b);
     return 0;
 }
+thread_local!(
+    static s_8: Value<bool> = Rc::new(RefCell::new(true));
+);
 pub trait FlagImpl {
     fn to_bool(&self) -> bool;
 }
