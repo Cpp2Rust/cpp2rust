@@ -20,7 +20,7 @@ impl UserDefined {
     pub fn move_from(_a0: Ptr<UserDefined>) -> Self {
         Self {
             a: (0..1)
-                .map(|__i| field_ref!(_a0, a).decay().offset(__i).read())
+                .map(|__i| field_ref!(_a0, a).decay().read_at(__i))
                 .collect(),
             v: field!(_a0, v).with_mut(std::mem::take),
         }

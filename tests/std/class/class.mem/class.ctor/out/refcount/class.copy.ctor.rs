@@ -40,7 +40,7 @@ pub fn test_1() {
 }
 pub fn test_2() {
     let source: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::from([1, 2, 3])));
-    let moved: Value<Vec<i32>> = Rc::new(RefCell::new((*source.borrow_mut()).clone()));
+    let moved: Value<Vec<i32>> = Rc::new(RefCell::new((*source.borrow()).clone()));
     assert!(({ ((*moved.borrow()).len() == 3_usize) }));
     assert!(({ ((*source.borrow()).len() == 3_usize) }));
 }

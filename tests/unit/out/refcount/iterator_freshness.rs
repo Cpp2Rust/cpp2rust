@@ -9,6 +9,10 @@ use std::rc::{Rc, Weak};
 pub fn foo_0(a0: RandomAccessIterator<i32>) {
     let a0: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(a0));
 }
+pub fn deref_1(a0: RandomAccessIterator<i32>) -> i32 {
+    let a0: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(a0));
+    return ((*a0.borrow()).iter_deref().read());
+}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
@@ -19,6 +23,12 @@ fn main_0() -> i32 {
     ));
     let it: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(vec_.decay().begin()));
     ({ foo_0((*it.borrow()).clone()) });
+    (*vec_.borrow_mut())[0_usize] = 7;
+    assert!(({ (({ deref_1((*it.borrow()).clone(),) }) == 7) }));
+    assert!(({ (((*it.borrow()).iter_deref().read()) == 7) }));
+    let moved: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new((*it.borrow()).clone()));
+    assert!(({ (((*moved.borrow()).iter_deref().read()) == 7) }));
+    assert!(({ (((*it.borrow()).iter_deref().read()) == 7) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

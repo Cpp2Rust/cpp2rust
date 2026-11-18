@@ -596,6 +596,8 @@ public:
 
   virtual bool VisitCXXConstructExpr(clang::CXXConstructExpr *expr);
 
+  clang::CXXConstructExpr *AsCopyConstruction(clang::CXXConstructExpr *expr);
+
   void ConvertCXXConstructExprArgs(clang::CXXConstructExpr *expr);
 
   virtual void ConvertArrayCXXConstructExpr(clang::CXXConstructExpr *expr);

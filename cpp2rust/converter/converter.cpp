@@ -4128,9 +4128,29 @@ void Converter::ConvertCXXConstructExprArgs(clang::CXXConstructExpr *expr) {
   }
 }
 
+clang::CXXConstructExpr *
+Converter::AsCopyConstruction(clang::CXXConstructExpr *expr) {
+  auto *ctor = expr->getConstructor();
+  if (!ctor->isMoveConstructor() || !ctor->isTrivial() ||
+      IsLambdaCopyOrMoveConstructor(ctor)) {
+    return nullptr;
+  }
+  auto *copy = GetSema().LookupCopyingConstructor(ctor->getParent(),
+                                                  clang::Qualifiers::Const);
+  if (!copy || copy->isDeleted() || !copy->isTrivial()) {
+    return nullptr;
+  }
+  return MakeConstructExpr(ctx_, expr->getType(), copy, expr->getArg(0));
+}
+
 bool Converter::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
   if (expr->isElidable()) {
     Convert(expr->getArg(0));
+    return false;
+  }
+
+  if (auto *copy = AsCopyConstruction(expr)) {
+    Convert(copy);
     return false;
   }
 

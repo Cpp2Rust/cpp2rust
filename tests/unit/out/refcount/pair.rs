@@ -108,14 +108,10 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new(2)),
     )));
     let mut pa: Ptr<i32> = ((*a.borrow()).0.as_pointer());
-    let b: Value<(Value<i32>, Value<i32>)> = Rc::new(RefCell::new({
-        let __first: Ptr<i32> = (*a.borrow()).0.as_pointer();
-        let __second: Ptr<i32> = (*a.borrow()).1.as_pointer();
-        (
-            Rc::new(RefCell::new(cpp_move!(__first))),
-            Rc::new(RefCell::new(cpp_move!(__second))),
-        )
-    }));
+    let b: Value<(Value<i32>, Value<i32>)> = Rc::new(RefCell::new((
+        Rc::new(RefCell::new((*a.borrow()).0.borrow().clone())),
+        Rc::new(RefCell::new((*a.borrow()).1.borrow().clone())),
+    )));
     pa.write(9);
     assert!(({ ((*(*b.borrow()).0.borrow()) == 1) }));
     assert!(({ ((*(*a.borrow()).0.borrow()) == 9) }));

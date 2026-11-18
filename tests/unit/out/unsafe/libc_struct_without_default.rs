@@ -15,7 +15,7 @@ pub struct UserDefined {
 impl UserDefined {
     pub unsafe fn move_from(_a0: *mut UserDefined) -> Self {
         let mut this = Self {
-            a: std::array::from_fn(|__i| (*&mut (&mut (*_a0)).a[__i])),
+            a: (*_a0).a.clone(),
             v: std::mem::take(&mut (*_a0).v),
         };
         this
