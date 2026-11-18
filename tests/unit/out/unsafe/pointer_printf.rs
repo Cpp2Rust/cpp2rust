@@ -16,6 +16,8 @@ unsafe fn main_0() -> i32 {
     let mut a: i32 = 1;
     let mut p: *mut i32 = (&mut a as *mut i32);
     (unsafe { libc::printf(c"%p %d".as_ptr() as *const libc::c_char, (p), (*p)) });
+    let mut q: *mut ::libc::c_void = ((&mut a as *mut i32) as *mut ::libc::c_void);
+    (unsafe { libc::printf(c" %p\n".as_ptr() as *const libc::c_char, (q)) });
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}
