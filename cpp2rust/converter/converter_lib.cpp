@@ -990,15 +990,6 @@ bool HasUsableDefaultArg(const clang::ParmVarDecl *param) {
   return param->hasDefaultArg() && !param->hasUninstantiatedDefaultArg();
 }
 
-const clang::MaterializeTemporaryExpr *
-GetDefaultArgTemporary(const clang::ParmVarDecl *param) {
-  if (!param->getType()->isReferenceType()) {
-    return nullptr;
-  }
-  return clang::dyn_cast<clang::MaterializeTemporaryExpr>(
-      param->getDefaultArg()->IgnoreParens());
-}
-
 std::string GetFileName(const clang::Decl *decl) {
   const auto &ctx = decl->getASTContext();
   const auto full_location = ctx.getFullLoc(decl->getBeginLoc());

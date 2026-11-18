@@ -588,21 +588,9 @@ bool Converter::ConvertVarDeclSkipInit(clang::VarDecl *decl) {
     StrCat(keyword::kMut);
   }
   StrCat(name, token::kColon);
-
-  bool is_parm_with_default_value = false;
-  if (auto parm = clang::dyn_cast<clang::ParmVarDecl>(decl)) {
-    is_parm_with_default_value = HasUsableDefaultArg(parm);
-  }
-
-  if (is_parm_with_default_value) {
-    StrCat("Option<");
-  }
   {
     PushLazyType lazy(*this, IsGlobalVar(decl) && LazyStaticInit());
     Convert(qual_type);
-  }
-  if (is_parm_with_default_value) {
-    StrCat('>');
   }
   return true;
 }
@@ -1024,9 +1012,9 @@ void Converter::EmitConversionAttrs(clang::CXXRecordDecl *decl) {
         !type->isReferenceType()                                   ? "value"
         : is_move || type.getNonReferenceType().isConstQualified() ? "ptr"
                                                                    : "mut_ptr";
-    StrCat(std::format(
-        "#[{}({}, {}, {}{})]", is_move ? "cpp_from_move" : "cpp_from", source,
-        GetCtorName(ctor), param->hasDefaultArg() ? "some_" : "", kind));
+    StrCat(std::format("#[{}({}, {}, {})]",
+                       is_move ? "cpp_from_move" : "cpp_from", source,
+                       GetCtorName(ctor), kind));
   });
   std::unordered_set<std::string> into_types;
   ForEachMethod(decl, [&](clang::CXXMethodDecl *method) {
@@ -1304,41 +1292,6 @@ bool Converter::VisitFieldDecl(clang::FieldDecl *decl) {
   Convert(decl->getType());
   StrCat(token::kComma);
   return false;
-}
-
-std::string
-Converter::EmitDefaultArgStorage(const clang::ParmVarDecl *param,
-                                 const clang::MaterializeTemporaryExpr *temp) {
-  auto storage = std::format("__{}_default", GetNamedDeclAsString(param));
-  StrCat(std::format("let mut {} : Option<{}> = None", storage,
-                     ToString(temp->getType().getUnqualifiedType())),
-         token::kSemiColon);
-  return storage;
-}
-
-void Converter::EmitFunctionPreamble(clang::FunctionDecl *decl) {
-  for (auto *param : DefinitionParameters(decl)) {
-    if (!HasUsableDefaultArg(param)) {
-      continue;
-    }
-    auto name = GetNamedDeclAsString(param);
-    auto type = ToString(param->getType());
-    std::string value;
-    if (auto *temp = GetDefaultArgTemporary(param)) {
-      auto storage = EmitDefaultArgStorage(param, temp);
-      value = std::format("{}.insert({}) as {}", storage,
-                          ToString(temp->getSubExpr()), type);
-    } else if (param->getType()->isReferenceType()) {
-      Buffer buf(*this);
-      ConvertVarInit(param->getType(), param->getDefaultArg());
-      value = std::move(buf).str();
-    } else {
-      value = ToString(param->getDefaultArg());
-    }
-    StrCat(std::format("let mut {} : {} = {}.unwrap_or_else(|| {} {{ {} }})",
-                       name, type, name, keyword_unsafe_, value),
-           token::kSemiColon);
-  }
 }
 
 void Converter::ConvertDeclContext(clang::DeclContext *decl) {
@@ -2124,6 +2077,9 @@ Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
 
   for (unsigned i = 0; i < num_named_params && i < num_args; ++i) {
     auto *arg = expr->getArg(i + arg_begin);
+    if (auto *default_arg = clang::dyn_cast<clang::CXXDefaultArgExpr>(arg)) {
+      arg = default_arg->getExpr();
+    }
     CallArg ca{
         .param_name =
             function && !function->getParamDecl(i)->getName().empty()
@@ -2132,8 +2088,6 @@ Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
         .param_type = function ? function->getParamDecl(i)->getType()
                                : proto->getParamType(i),
         .expr = arg,
-        .has_default =
-            function && HasUsableDefaultArg(function->getParamDecl(i)),
         .kind = (IsLiteral(arg) || info.is_libc_passthrough) ? Kind::Inline
                                                              : Kind::Hoisted,
     };
@@ -2237,33 +2191,19 @@ void Converter::EmitArgList(const CallInfo &info) {
 
   for (unsigned i = 0; i < info.args.size(); i++) {
     const auto &ca = info.args[i];
-
-    if (ca.has_default && clang::isa<clang::CXXDefaultArgExpr>(ca.expr)) {
-      StrCat("None", token::kComma);
-      continue;
-    }
-
-    if (ca.has_default) {
-      StrCat("Some");
-    }
-
-    {
-      PushParen push(*this, ca.has_default);
-      switch (ca.kind) {
-      case Kind::Hoisted:
-        StrCat(ca.param_name);
-        break;
-      case Kind::Materialized:
-        StrCat(ca.ref_temp_name);
-        break;
-      case Kind::Inline:
-        ConvertParamTy(ca.param_type, ca.expr);
-        if (info.is_libc_passthrough) {
-          StrCat(
-              std::format("as {}", Mapper::GetParamType(*this, info.expr, i)));
-        }
-        break;
+    switch (ca.kind) {
+    case Kind::Hoisted:
+      StrCat(ca.param_name);
+      break;
+    case Kind::Materialized:
+      StrCat(ca.ref_temp_name);
+      break;
+    case Kind::Inline:
+      ConvertParamTy(ca.param_type, ca.expr);
+      if (info.is_libc_passthrough) {
+        StrCat(std::format("as {}", Mapper::GetParamType(*this, info.expr, i)));
       }
+      break;
     }
 
     StrCat(token::kComma);
@@ -4078,31 +4018,15 @@ void Converter::ConvertCXXConstructExprArgs(clang::CXXConstructExpr *expr) {
          GetCtorName(ctor));
   PushParen paren(*this);
 
-  unsigned arg_idx = 0;
-  for (unsigned param_idx = 0; param_idx < ctor->getNumParams(); ++param_idx) {
-    auto param = ctor->getParamDecl(param_idx);
-    auto param_type = param->getType();
-    bool has_default = HasUsableDefaultArg(param);
-
-    if (arg_idx < expr->getNumArgs() &&
-        clang::isa<clang::CXXDefaultArgExpr>(expr->getArg(arg_idx))) {
-      assert(has_default);
-      ++arg_idx;
-      StrCat("None", token::kComma);
-      continue;
+  for (unsigned i = 0; i < ctor->getNumParams(); ++i) {
+    assert(i < expr->getNumArgs());
+    clang::Expr *arg = expr->getArg(i);
+    if (auto *default_arg = clang::dyn_cast<clang::CXXDefaultArgExpr>(arg)) {
+      arg = default_arg->getExpr();
     }
-
-    if (arg_idx < expr->getNumArgs()) {
-      clang::Expr *arg = expr->getArg(arg_idx++);
+    {
       PushBrace brace(*this);
-      if (has_default) {
-        StrCat("Some");
-      }
-      PushParen some(*this, has_default);
-      ConvertVarInit(param_type, arg);
-    } else {
-      assert(has_default);
-      StrCat("None");
+      ConvertVarInit(ctor->getParamDecl(i)->getType(), arg);
     }
     StrCat(token::kComma);
   }
@@ -5180,8 +5104,13 @@ void Converter::AddDefaultTrait(const clang::RecordDecl *decl) {
     auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
     if (auto *default_ctor =
             cxx ? GetUserDefinedDefaultConstructor(cxx) : nullptr) {
+      std::vector<clang::Expr *> args;
+      for (auto *param : default_ctor->parameters()) {
+        args.push_back(clang::CXXDefaultArgExpr::Create(
+            ctx_, param->getLocation(), param, nullptr, default_ctor));
+      }
       Convert(MakeConstructExpr(ctx_, ctx_.getCanonicalTagType(decl),
-                                default_ctor, {}));
+                                default_ctor, args));
     } else {
       EmitDefaultStructLiteral(decl);
     }
