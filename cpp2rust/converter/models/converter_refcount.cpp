@@ -1558,6 +1558,12 @@ bool ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
     EmitFresh(GetDefaultAsString(expr->getType()));
     return false;
   }
+  if (auto type = expr->getTypeAsWritten();
+      type->isReferenceType() &&
+      ctx_.hasSameUnqualifiedType(type.getNonReferenceType(),
+                                  expr->getSubExpr()->getType())) {
+    return Convert(expr->getSubExpr());
+  }
   if (expr->getCastKind() == clang::CK_PointerToIntegral ||
       expr->getCastKind() == clang::CK_IntegralToPointer) {
     std::string dst_type;

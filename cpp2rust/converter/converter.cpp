@@ -2811,6 +2811,18 @@ bool Converter::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
   }
   // A cast to a reference type only rebinds the operand, it converts nothing
   if (type->isReferenceType()) {
+    if (auto to = type.getNonReferenceType();
+        !isAddrOf() && sub_expr->isLValue() && !to.isConstQualified() &&
+        sub_expr->getType().isConstQualified() &&
+        ctx_.hasSameUnqualifiedType(to, sub_expr->getType())) {
+      std::string object;
+      {
+        ScopedValue no_autoref(autoref_mut_, std::nullopt);
+        object = ToString(sub_expr);
+      }
+      EmitDeref(std::format("(&raw const {}).cast_mut()", object), to);
+      return false;
+    }
     const char *suffix = isAddrOf()
                              ? GetConstCastSuffix(type.getNonReferenceType(),
                                                   sub_expr->getType())
