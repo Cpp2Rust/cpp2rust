@@ -22,6 +22,28 @@ void test() {
 }
 } // namespace p3_2_static_member_is_ordinary_pointer
 
+// N4950 [expr.unary.op]/3.2: "Otherwise, the result has type "pointer to T" and
+// points to the designated object (6.7.1) or function (6.8.4). If the operand
+// names an explicit object member function (9.3.4.6), the operand shall be a
+// qualified-id."
+namespace p3_2_explicit_object_member_is_ordinary_pointer {
+struct HasExplicitObjectMember {
+  int base;
+  int add(this const HasExplicitObjectMember &self, int amount) {
+    return self.base + amount;
+  }
+};
+
+void test() {
+  int (*function_pointer)(const HasExplicitObjectMember &, int) =
+      &HasExplicitObjectMember::add;
+  HasExplicitObjectMember object{3};
+  assert(function_pointer(object, 4) == 7);
+  object.base = 5;
+  assert(function_pointer(object, 1) == 6);
+}
+} // namespace p3_2_explicit_object_member_is_ordinary_pointer
+
 // N4950 [expr.unary.op]/4: a pointer to member is only formed when an explicit
 // & is used and its operand is a qualified-id not enclosed in parentheses.
 namespace p4_parenthesized_qualified_id_is_object_pointer {
@@ -49,6 +71,7 @@ void test() {
 
 int main() {
   p3_2_static_member_is_ordinary_pointer::test();
+  p3_2_explicit_object_member_is_ordinary_pointer::test();
   p4_parenthesized_qualified_id_is_object_pointer::test();
   return 0;
 }
