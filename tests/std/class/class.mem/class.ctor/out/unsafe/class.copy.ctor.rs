@@ -37,7 +37,7 @@ pub unsafe fn test_1() {
     });
     assert!(((result.value) == (7)));
 }
-pub unsafe fn deref_2(mut it: UnsafeRandomAccessIterator<i32>) -> i32 {
+pub unsafe fn read_by_value_2(mut it: UnsafeRandomAccessIterator<i32>) -> i32 {
     return (*it.iter_deref());
 }
 pub unsafe fn test_3() {
@@ -47,7 +47,7 @@ pub unsafe fn test_3() {
     assert!(((source.len()) == (3_usize)));
     let mut values: Vec<i32> = Vec::from([7, 8]);
     let mut it: UnsafeRandomAccessIterator<i32> = values.begin();
-    assert!(((unsafe { deref_2(it.clone(),) }) == (7)));
+    assert!(((unsafe { read_by_value_2(it.clone(),) }) == (7)));
     assert!(((*it.iter_deref()) == (7)));
     let mut moved_it: UnsafeRandomAccessIterator<i32> = it.clone();
     assert!(((*moved_it.iter_deref()) == (7)));
