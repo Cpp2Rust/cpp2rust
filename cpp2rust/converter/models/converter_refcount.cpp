@@ -1576,9 +1576,9 @@ bool ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
   case clang::Stmt::CXXReinterpretCastExprClass:
     assert(expr->getType()->isPointerType() &&
            "Only pointer casts are supported in reinterpret_cast");
-    EmitFresh(
-        std::format("{}.reinterpret_cast::<{}>()", ToString(expr->getSubExpr()),
-                    GetUnsafeTypeAsString(expr->getType()->getPointeeType())));
+    EmitFresh(std::format("{}.reinterpret_cast::<{}>()",
+                          ToString(expr->getSubExpr()),
+                          ConvertPointeeType(expr->getType())));
     return false;
   case clang::Stmt::CStyleCastExprClass:
   case clang::Stmt::CXXStaticCastExprClass:

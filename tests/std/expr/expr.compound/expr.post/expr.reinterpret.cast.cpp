@@ -1,6 +1,21 @@
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 #include <cassert>
 
+// N4950 [expr.reinterpret.cast]/7: an object pointer can be explicitly
+// converted to an object pointer of a different type.
+namespace p7_object_pointer_conversion {
+void test() {
+  int value = 5;
+  int *ptr = &value;
+  int **ptr_ptr = &ptr;
+  const int *const *converted = reinterpret_cast<const int *const *>(ptr_ptr);
+  assert(converted == ptr_ptr);
+  assert(*converted == ptr);
+  value = 7;
+  assert(**converted == 7);
+}
+} // namespace p7_object_pointer_conversion
+
 // N4950 [expr.reinterpret.cast]/10: the null member pointer value is converted
 // to the null member pointer value of the destination type.
 namespace p10_null_converts_to_null {
@@ -44,6 +59,7 @@ void test() {
 } // namespace p10_2_data_member_round_trip
 
 int main() {
+  p7_object_pointer_conversion::test();
   p10_null_converts_to_null::test();
   p10_2_data_member_round_trip::test();
   return 0;
