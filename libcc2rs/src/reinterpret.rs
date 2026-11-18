@@ -116,8 +116,6 @@ impl ByteRepr for bool {
 }
 
 impl ByteRepr for () {}
-impl ByteRepr for std::fs::File {}
-impl<T: ByteRepr> ByteRepr for Vec<T> {}
 impl<T: ByteRepr> ByteRepr for Option<T> {}
 // The bytes of a Value, like a field stored in one, are those of its value.
 impl<T: ByteRepr> ByteRepr for std::rc::Rc<T> {
@@ -192,9 +190,6 @@ impl<T: ByteRepr> ByteRepr for Box<[T]> {
 impl<T: ByteRepr> ByteRepr for Box<T> {}
 impl<T: 'static> ByteRepr for *const T {}
 impl<T: 'static> ByteRepr for *mut T {}
-impl<A: ByteRepr, B: ByteRepr> ByteRepr for (A, B) {}
-impl<K: 'static, V: 'static> ByteRepr for std::collections::BTreeMap<K, V> {}
-impl ByteRepr for std::rc::Rc<dyn std::any::Any> {}
 
 // Runs `f` with a zeroed scratch buffer of `len` elements. Small buffers live
 // on the stack so that accessing memory through a reinterpreted pointer does

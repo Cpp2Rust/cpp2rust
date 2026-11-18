@@ -1,7 +1,7 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use crate::Value;
+use crate::{ArgRepr, ByteRepr, FnPtrArg, Value, record_from_repr};
 
 pub trait TupleElement<const N: usize> {
     type Type;
@@ -76,3 +76,15 @@ macro_rules! impl_tuple_get {
 }
 
 impl_tuple_get!((T0, T1); 0 T0, 1 T1);
+
+impl<A: ByteRepr, B: ByteRepr> ByteRepr for (A, B) {}
+
+impl<A: 'static, B: 'static> FnPtrArg for (A, B) {
+    #[inline]
+    fn to_repr(self) -> ArgRepr {
+        ArgRepr::Record(Box::new(self))
+    }
+    fn from_repr(r: ArgRepr) -> Self {
+        record_from_repr(r)
+    }
+}
