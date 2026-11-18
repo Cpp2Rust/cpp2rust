@@ -41,7 +41,7 @@ fn main() {
         );
 
         buf.push_str(&format!(
-            "#[path = r#\"{}\"#]\nmod {};\npub use {}::*;\n",
+            "#[path = r#\"{}\"#]\nmod {};\n#[allow(unused_imports)]\npub use {}::*;\n",
             shim.display(),
             module_name,
             module_name

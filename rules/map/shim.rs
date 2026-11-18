@@ -12,6 +12,8 @@ use crate::{
     UnsafeBidirectionalIterator, UnsafeCppIterator, Value, cpp_cmp,
 };
 
+impl<K: 'static, V: 'static> ByteRepr for BTreeMap<K, V> {}
+
 // A map keeps a single copy of each key, as C++ does, since copying a key may
 // have side effects. Its index points to the keys of the entries, is ordered
 // by them with operator< (CppLess), and is searched for a key through a
