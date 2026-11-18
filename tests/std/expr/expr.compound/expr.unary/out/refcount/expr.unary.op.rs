@@ -32,11 +32,27 @@ pub fn test_2() {
 }
 #[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
+pub struct p3_2_explicit_object_member_is_ordinary_pointer_HasExplicitObjectMember {
+    #[offset(0)]
+    pub base: i32,
+}
+pub fn test_3() {
+    let mut function_pointer : FnPtr<fn(Ptr< p3_2_explicit_object_member_is_ordinary_pointer_HasExplicitObjectMember  > ,i32  ,) -> i32  >  = ( FnPtr::<fn(Ptr< p3_2_explicit_object_member_is_ordinary_pointer_HasExplicitObjectMember  > ,i32  ,) -> i32  >::new(<Ptr<p3_2_explicit_object_member_is_ordinary_pointer_HasExplicitObjectMember> as p3_2_explicit_object_member_is_ordinary_pointer_HasExplicitObjectMemberImpl>::add)  )  ;
+    let object: Value<p3_2_explicit_object_member_is_ordinary_pointer_HasExplicitObjectMember> =
+        Rc::new(RefCell::new(
+            p3_2_explicit_object_member_is_ordinary_pointer_HasExplicitObjectMember { base: 3 },
+        ));
+    assert!((({ function_pointer.call(object.as_pointer(), 4,) }) == 7));
+    (*object.borrow_mut()).base = 5;
+    assert!((({ function_pointer.call(object.as_pointer(), 1,) }) == 6));
+}
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct p4_parenthesized_qualified_id_is_object_pointer_TakesAddressOfOwnMember {
     #[offset(0)]
     pub value: i32,
 }
-pub fn test_3() {
+pub fn test_4() {
     let first: Value<p4_parenthesized_qualified_id_is_object_pointer_TakesAddressOfOwnMember> =
         Rc::new(RefCell::new(
             p4_parenthesized_qualified_id_is_object_pointer_TakesAddressOfOwnMember { value: 3 },
@@ -71,7 +87,24 @@ pub fn main() {
 fn main_0() -> i32 {
     ({ test_2() });
     ({ test_3() });
+    ({ test_4() });
     return 0;
+}
+pub trait p3_2_explicit_object_member_is_ordinary_pointer_HasExplicitObjectMemberImpl {
+    fn add(
+        self_: Ptr<p3_2_explicit_object_member_is_ordinary_pointer_HasExplicitObjectMember>,
+        amount: i32,
+    ) -> i32;
+}
+impl p3_2_explicit_object_member_is_ordinary_pointer_HasExplicitObjectMemberImpl
+    for Ptr<p3_2_explicit_object_member_is_ordinary_pointer_HasExplicitObjectMember>
+{
+    fn add(
+        self_: Ptr<p3_2_explicit_object_member_is_ordinary_pointer_HasExplicitObjectMember>,
+        mut amount: i32,
+    ) -> i32 {
+        return ({ self_.with(|__s| __s.base) } + { amount });
+    }
 }
 pub trait p4_parenthesized_qualified_id_is_object_pointer_TakesAddressOfOwnMemberImpl {
     fn parenthesized(&self) -> Ptr<i32>;
