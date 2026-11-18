@@ -44,6 +44,9 @@ pub unsafe fn in_constant_context_6() -> bool {
     return ((unsafe { runtime_only_0(1) }) == (0));
 }
 const _: () = assert!(true, "in_constant_context()");
+pub unsafe fn imm_7(mut b: bool) -> bool {
+    return b;
+}
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct P {
@@ -81,6 +84,16 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { P::get(&p,) }) == (9)));
     let k: i32 = (unsafe { scaled_2(4) });
     assert!(((k) == (4)));
+    let ce: bool = true;
+    assert!(ce);
+    let n: i32 = if true { 13 } else { 17 };
+    assert!(((n) == (13)));
+    assert!((*std::cell::LazyCell::force_mut(&mut *&raw mut s_8)));
+    let mut rt: bool = false;
+    assert!(!(rt));
+    let mut b: bool = (unsafe { imm_7(true) });
+    assert!(b);
     return 0;
 }
+static mut s_8: std::cell::LazyCell<bool> = std::cell::LazyCell::new(|| unsafe { true });
 pub unsafe fn __cpp2rust_init_globals() {}

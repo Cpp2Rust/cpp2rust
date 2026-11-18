@@ -401,6 +401,11 @@ bool IsBuiltinVaEnd(const clang::CallExpr *expr);
 
 bool IsBuiltinVaCopy(const clang::CallExpr *expr);
 
+bool IsConstantEvaluatedQuery(const clang::CallExpr *expr);
+
+bool HasConstantEvaluatedInit(const clang::ASTContext &ctx,
+                              const clang::VarDecl *decl);
+
 bool IsTransparentStdCall(const clang::CallExpr *expr);
 
 const clang::Expr *IgnoreTransparentStdCall(const clang::Expr *expr);

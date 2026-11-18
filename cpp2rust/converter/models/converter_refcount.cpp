@@ -891,6 +891,8 @@ void ConverterRefCount::EmitHoistedInArmAssignment(clang::VarDecl *decl) {
 
   PushConversionKind push(*this, VarConversionKind(decl));
   StrCat(token::kAssign);
+  ScopedValue constant(constant_evaluated_,
+                       HasConstantEvaluatedInit(ctx_, decl));
   StrCat(ConvertVarInitValue(type, decl->getInit()));
   StrCat(token::kSemiColon);
 }
