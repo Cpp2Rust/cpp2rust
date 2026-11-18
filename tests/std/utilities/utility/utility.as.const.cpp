@@ -1,5 +1,6 @@
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 #include <cassert>
+#include <type_traits>
 #include <utility>
 
 // N4950 [utility.as.const]/1: as_const(t) returns t.
