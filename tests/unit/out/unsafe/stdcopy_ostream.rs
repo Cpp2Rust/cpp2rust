@@ -41,7 +41,55 @@ unsafe fn main_0() -> i32 {
                 __out.try_clone().unwrap()
             }
         };
+        write!(ofs, "{:}", 42,);
     }
+    let mut f: *mut ::libc::FILE = libc::fopen(file.as_ptr(), c"rb".as_ptr());
+    let mut buf: [libc::c_char; 32] = [
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+    ];
+    let mut n: usize = libcc2rs::fread_unsafe(
+        (buf.as_mut_ptr() as *mut ::libc::c_void),
+        1_usize,
+        ::std::mem::size_of::<[libc::c_char; 32]>(),
+        f,
+    );
+    libc::fclose(f);
+    assert!(((n) == (16_usize)));
+    assert!(
+        ((buf[(14) as usize] as i32) == (('4' as libc::c_char) as i32))
+            && ((buf[(15) as usize] as i32) == (('2' as libc::c_char) as i32))
+    );
     libc::unlink(file.as_ptr());
     return 0;
 }

@@ -110,6 +110,7 @@ struct TypeInfo {
   bool is_refcount_pointer = false;
   bool is_unsafe_pointer = false;
   std::optional<Elems> elems;
+  unsigned generic = 0;
 
   bool is_pointer() const { return is_refcount_pointer || is_unsafe_pointer; }
 

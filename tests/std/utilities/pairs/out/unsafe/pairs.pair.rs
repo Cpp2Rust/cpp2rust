@@ -60,6 +60,12 @@ pub unsafe fn test_1() {
     let mut copied: (Vec<i32>, i32) = ((values).clone(), 3);
     assert!(((values.len()) == (2_usize)));
     assert!(((copied.0.len()) == (2_usize)) && ((copied.0[(1_usize)]) == (7)));
+    let mut referent: i32 = 5;
+    let mut bound: (*const i32, libc::c_char) = (&mut referent, ('c' as libc::c_char));
+    referent = 6;
+    assert!(((*bound.0) == (6)));
+    assert!(((bound.0) == ((&mut referent as *mut i32).cast_const())));
+    assert!(((bound.1 as i32) == (('c' as libc::c_char) as i32)));
 }
 pub unsafe fn test_2() {
     let mut source: (i32, Option<Box<i32>>) = (

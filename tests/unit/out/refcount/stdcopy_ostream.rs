@@ -38,7 +38,38 @@ fn main_0() -> i32 {
                 __out.try_clone().unwrap()
             }
         };
+        write!(ofs.as_pointer(), "{:}", 42,);
     }
+    let mut f: Ptr<CFile> = match CFile::open(
+        &file.decay().to_rust_string(),
+        &Ptr::<i8>::from_string_literal(b"rb").to_rust_string(),
+    ) {
+        Some(__f) => Ptr::alloc(__f),
+        None => Ptr::null(),
+    };
+    let buf: Value<Box<[i8]>> = Rc::new(RefCell::new(Box::new([
+        0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8,
+        0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8,
+        0_i8, 0_i8,
+    ])));
+    let mut n: usize = libcc2rs::fread_refcount(
+        (buf.decay()).to_any(),
+        1_usize,
+        ::std::mem::size_of::<[i8; 32]>(),
+        (f).clone(),
+    );
+    {
+        let __r = f.with(|__f| __f.close());
+        f.delete();
+        __r
+    };
+    assert!((n == 16_usize));
+    assert!(
+        ({
+            (((*buf.borrow())[(14) as usize] as i32) == (('4' as i8) as i32))
+                && (((*buf.borrow())[(15) as usize] as i32) == (('2' as i8) as i32))
+        })
+    );
     match nix::unistd::unlink(file.decay().to_rust_string().as_str()) {
         Ok(()) => 0,
         Err(__e) => {

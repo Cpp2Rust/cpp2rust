@@ -28,6 +28,8 @@ TypeInfo ParseTypeInfoJSON(const llvm::json::Object &obj) {
     info.is_refcount_pointer = *v;
   if (auto v = obj.getBoolean("is_unsafe_pointer"))
     info.is_unsafe_pointer = *v;
+  if (auto v = obj.getInteger("generic"))
+    info.generic = *v;
   assert(!(info.is_refcount_pointer && info.is_unsafe_pointer));
   if (auto *arr = obj.getArray("derives")) {
     for (const auto &elem : *arr) {
@@ -351,7 +353,9 @@ bool ExprRule::takesAddress(clang::ASTContext &ctx, const clang::Expr *expr,
   if (arg->getType()->isPointerType()) {
     return !RuleRegistry::ParamTakesPointerValue(expr, i);
   }
-  return !RuleRegistry::MapsToPointer(ctx, arg->getType());
+  return RuleRegistry::ParamIsPointer(ctx, expr, i) &&
+         !arg->getType()->isPointerType() &&
+         !RuleRegistry::MapsToPointer(ctx, arg->getType());
 }
 
 bool ExprRule::takesTemporaryAddress(clang::ASTContext &ctx,
