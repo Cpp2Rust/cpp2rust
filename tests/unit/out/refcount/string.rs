@@ -387,31 +387,37 @@ fn main_0() -> i32 {
     }));
     println!("position: {} {}", once.decay(), substr_pos);
     let mut substr_count: usize = 2_usize;
-    once.as_pointer()
-        .write(match ({ substr_count.postfix_inc() },) {
-            (mut __tmp_2,) => s1.as_pointer().with(|__s: &Vec<i8>| {
+    {
+        once.as_pointer()
+            .write(match ({ substr_count.postfix_inc() },) {
+                (mut __tmp_2,) => s1.as_pointer().with(|__s: &Vec<i8>| {
+                    let mut __tmp1 = __s
+                        [1_usize..::std::cmp::min(1_usize + __tmp_2, __s.len().saturating_sub(1))]
+                        .to_vec();
+                    __tmp1.push(0);
+                    __tmp1
+                }),
+            });
+        once.as_pointer()
+    };
+    println!("count: {} {}", once.decay(), substr_count);
+    let receiver_calls: Value<i32> = Rc::new(RefCell::new(0));
+    {
+        once.as_pointer().write(
+            Rc::new(RefCell::new(
+                ({ counted_string_0(receiver_calls.as_pointer()) }),
+            ))
+            .as_pointer()
+            .with(|__s: &Vec<i8>| {
                 let mut __tmp1 = __s
-                    [1_usize..::std::cmp::min(1_usize + __tmp_2, __s.len().saturating_sub(1))]
+                    [1_usize..::std::cmp::min(1_usize + 2_usize, __s.len().saturating_sub(1))]
                     .to_vec();
                 __tmp1.push(0);
                 __tmp1
             }),
-        });
-    println!("count: {} {}", once.decay(), substr_count);
-    let receiver_calls: Value<i32> = Rc::new(RefCell::new(0));
-    once.as_pointer().write(
-        Rc::new(RefCell::new(
-            ({ counted_string_0(receiver_calls.as_pointer()) }),
-        ))
-        .as_pointer()
-        .with(|__s: &Vec<i8>| {
-            let mut __tmp1 = __s
-                [1_usize..::std::cmp::min(1_usize + 2_usize, __s.len().saturating_sub(1))]
-                .to_vec();
-            __tmp1.push(0);
-            __tmp1
-        }),
-    );
+        );
+        once.as_pointer()
+    };
     println!("receiver: {} {}", once.decay(), (*receiver_calls.borrow()));
     let ref_calls: Value<i32> = Rc::new(RefCell::new(0));
     let target: Value<Vec<i8>> = Rc::new(RefCell::new({
@@ -486,6 +492,71 @@ fn main_0() -> i32 {
         "temporary end: {} {}",
         (before_end as i32) as u8 as char,
         (*receiver_calls.borrow())
+    );
+    let chained: Value<Vec<i8>> = Rc::new(RefCell::new(vec![0]));
+    match (
+        match (({
+            chained.as_pointer().write(({ (*target.borrow()).clone() }));
+            chained.as_pointer()
+        }),)
+        {
+            (__tmp_7,) => {
+                __tmp_7.with_mut(|__v: &mut Vec<i8>| {
+                    __v.pop();
+                    Ptr::<i8>::from_string_literal(b"bc")
+                        .with_slice(2_usize, |__s| __v.extend_from_slice(__s));
+                    __v.push(0);
+                });
+                (__tmp_7).clone()
+            }
+        },
+    ) {
+        (__tmp_6,) => {
+            let pos = 0_usize;
+            let end = std::cmp::min(
+                pos + 1_usize,
+                (*__tmp_6.upgrade().deref()).len().saturating_sub(1),
+            );
+            __tmp_6.with_mut(|__v: &mut Vec<i8>| {
+                Ptr::<i8>::from_string_literal(b"X").with_slice(1_usize, |__s| {
+                    __v.splice(pos..end, __s.iter().copied());
+                });
+            });
+            (__tmp_6).clone()
+        }
+    };
+    assert!(
+        ({
+            (Ptr::<i8>::from_string_literal(b"Xbc").with_c_str(|__s| {
+                (*chained.borrow())[..(*chained.borrow()).len().saturating_sub(1)] == *__s
+            })) && (Ptr::<i8>::from_string_literal(b"A").with_c_str(|__s| {
+                (*target.borrow())[..(*target.borrow()).len().saturating_sub(1)] == *__s
+            }))
+        })
+    );
+    match (({
+        chained
+            .as_pointer()
+            .write(({ std::mem::replace(&mut (*once.borrow_mut()), vec![0]) }));
+        chained.as_pointer()
+    }),)
+    {
+        (__tmp_8,) => {
+            __tmp_8.with_mut(|__v: &mut Vec<i8>| {
+                __v.pop();
+                Ptr::<i8>::from_string_literal(b"!")
+                    .with_slice(1_usize, |__s| __v.extend_from_slice(__s));
+                __v.push(0);
+            });
+            (__tmp_8).clone()
+        }
+    };
+    assert!(
+        ({
+            Ptr::<i8>::from_string_literal(b"el!").with_c_str(|__s| {
+                (*chained.borrow())[..(*chained.borrow()).len().saturating_sub(1)] == *__s
+            })
+        })
     );
     let mut t0: usize = ((*s1.borrow()).len() - 1);
     let mut t1: usize = (t0).wrapping_add(((p1.read()) as usize));

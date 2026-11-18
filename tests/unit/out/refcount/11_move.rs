@@ -8,7 +8,10 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn change_0(n: Ptr<Option<Value<i32>>>) {
     let mut m: Option<Value<i32>> = Some(Rc::new(RefCell::new(20)));
-    n.write(m.take());
+    {
+        n.write(m.take());
+        (n).clone()
+    };
     assert!((m.as_pointer()).is_null());
 }
 pub fn main() {

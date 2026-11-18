@@ -429,10 +429,18 @@ impl DisjointSetImpl for Ptr<DisjointSet> {
         }
     }
     fn move_assign(&self, _a0: Ptr<DisjointSet>) -> Ptr<DisjointSet> {
-        field_ptr!((*self), rank)
-            .write(field!(_a0, rank).with_mut(|__v: &mut Option<Value<Box<[i32]>>>| __v.take()));
-        field_ptr!((*self), parent)
-            .write(field!(_a0, parent).with_mut(|__v: &mut Option<Value<Box<[i32]>>>| __v.take()));
+        {
+            field_ptr!((*self), rank).write(
+                field!(_a0, rank).with_mut(|__v: &mut Option<Value<Box<[i32]>>>| __v.take()),
+            );
+            field_ptr!((*self), rank)
+        };
+        {
+            field_ptr!((*self), parent).write(
+                field!(_a0, parent).with_mut(|__v: &mut Option<Value<Box<[i32]>>>| __v.take()),
+            );
+            field_ptr!((*self), parent)
+        };
         field!((*self), n).write({ { (*_a0.upgrade().deref()).n } });
         return (*self).clone();
     }
@@ -442,8 +450,12 @@ pub trait GraphImpl {
 }
 impl GraphImpl for Ptr<Graph> {
     fn move_assign(&self, _a0: Ptr<Graph>) -> Ptr<Graph> {
-        field_ptr!((*self), edges)
-            .write(field!(_a0, edges).with_mut(|__v: &mut Option<Value<Box<[Edge]>>>| __v.take()));
+        {
+            field_ptr!((*self), edges).write(
+                field!(_a0, edges).with_mut(|__v: &mut Option<Value<Box<[Edge]>>>| __v.take()),
+            );
+            field_ptr!((*self), edges)
+        };
         field!((*self), V).write({ { (*_a0.upgrade().deref()).V } });
         field!((*self), E).write({ { (*_a0.upgrade().deref()).E } });
         return (*self).clone();

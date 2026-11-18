@@ -38,7 +38,10 @@ impl MyContainer_int_ {
         this
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut MyContainer_int_) -> *mut MyContainer_int_ {
-        self.vec_ = std::mem::take(&mut (*_a0).vec_);
+        {
+            *(&mut self.vec_ as *mut Vec<i32>) = std::mem::take(&mut (*_a0).vec_);
+            (&mut self.vec_ as *mut Vec<i32>)
+        };
         return &mut (*(self as *mut MyContainer_int_));
     }
 }
@@ -74,7 +77,10 @@ impl MyContainer_char_ {
         this
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut MyContainer_char_) -> *mut MyContainer_char_ {
-        self.vec_ = std::mem::take(&mut (*_a0).vec_);
+        {
+            *(&mut self.vec_ as *mut Vec<libc::c_char>) = std::mem::take(&mut (*_a0).vec_);
+            (&mut self.vec_ as *mut Vec<libc::c_char>)
+        };
         return &mut (*(self as *mut MyContainer_char_));
     }
 }
@@ -110,7 +116,10 @@ impl MyContainer_float_ {
         this
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut MyContainer_float_) -> *mut MyContainer_float_ {
-        self.vec_ = std::mem::take(&mut (*_a0).vec_);
+        {
+            *(&mut self.vec_ as *mut Vec<f32>) = std::mem::take(&mut (*_a0).vec_);
+            (&mut self.vec_ as *mut Vec<f32>)
+        };
         return &mut (*(self as *mut MyContainer_float_));
     }
 }

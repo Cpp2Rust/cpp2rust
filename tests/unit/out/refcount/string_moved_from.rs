@@ -83,9 +83,12 @@ fn main_0() -> i32 {
         __bytes.push(0);
         __bytes
     }));
-    assigned
-        .as_pointer()
-        .write(({ std::mem::replace(&mut (*long_word.borrow_mut()), vec![0]) }));
+    {
+        assigned
+            .as_pointer()
+            .write(({ std::mem::replace(&mut (*long_word.borrow_mut()), vec![0]) }));
+        assigned.as_pointer()
+    };
     ({
         print_moved_from_0(
             Ptr::<i8>::from_string_literal(b"assign long"),
@@ -99,9 +102,12 @@ fn main_0() -> i32 {
         __bytes
     }));
     let assigned_short: Value<Vec<i8>> = Rc::new(RefCell::new(vec![0]));
-    assigned_short
-        .as_pointer()
-        .write(({ std::mem::replace(&mut (*short_word.borrow_mut()), vec![0]) }));
+    {
+        assigned_short
+            .as_pointer()
+            .write(({ std::mem::replace(&mut (*short_word.borrow_mut()), vec![0]) }));
+        assigned_short.as_pointer()
+    };
     ({
         print_moved_from_0(
             Ptr::<i8>::from_string_literal(b"assign short"),

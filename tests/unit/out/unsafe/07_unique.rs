@@ -30,8 +30,14 @@ unsafe fn main_0() -> i32 {
         .map_or(::std::ptr::null_mut(), |v| v as *const i32 as *mut i32))
         as *mut i32);
     (*f_ptr2) = 11;
-    f = Some(Box::new(9)).take();
-    f = (unsafe { fn_0(f.take()) }).take();
+    {
+        *(&mut f as *mut Option<Box<i32>>) = Some(Box::new(9)).take();
+        (&mut f as *mut Option<Box<i32>>)
+    };
+    {
+        *(&mut f as *mut Option<Box<i32>>) = (unsafe { fn_0(f.take()) }).take();
+        (&mut f as *mut Option<Box<i32>>)
+    };
     assert!(
         ((*f.as_deref()
             .map_or(::std::ptr::null_mut(), |v| v as *const i32 as *mut i32))

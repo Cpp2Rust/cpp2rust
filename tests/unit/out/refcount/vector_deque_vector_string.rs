@@ -106,27 +106,26 @@ fn main_0() -> i32 {
         })
     );
     let copy: Value<Vec<Vec<Vec<Vec<i8>>>>> = Rc::new(RefCell::new((*v.borrow()).clone()));
-    match (Rc::new(RefCell::new({
-        let mut __bytes = Ptr::<i8>::from_string_literal(b"z").to_c_bytes();
-        __bytes.push(0);
-        __bytes
-    }))
-    .as_pointer(),)
-    {
-        (__tmp_3,) => copy
-            .decay()
-            .offset(0_usize)
-            .decay()
-            .decay()
-            .offset(0_usize)
-            .write(__tmp_3.with_mut(|__v| std::mem::replace(__v, vec![0]))),
+    match (
+        copy.decay().offset(0_usize).decay().decay().offset(0_usize),
+        Rc::new(RefCell::new({
+            let mut __bytes = Ptr::<i8>::from_string_literal(b"z").to_c_bytes();
+            __bytes.push(0);
+            __bytes
+        }))
+        .as_pointer(),
+    ) {
+        (__tmp_3, __tmp_4) => {
+            __tmp_3.write(__tmp_4.with_mut(|__v| std::mem::replace(__v, vec![0])));
+            (__tmp_3).clone()
+        }
     };
     match (v.decay().offset(0_usize).decay().decay().offset(1_usize),) {
-        (__tmp_4,) => {
-            if 0_usize >= (*__tmp_4.upgrade().deref()).len().saturating_sub(1) {
+        (__tmp_5,) => {
+            if 0_usize >= (*__tmp_5.upgrade().deref()).len().saturating_sub(1) {
                 panic!("out of bounds access")
             } else {
-                __tmp_4.decay().offset(0_usize as isize)
+                __tmp_5.decay().offset(0_usize as isize)
             }
         }
     }
@@ -134,15 +133,15 @@ fn main_0() -> i32 {
     assert!(
         ({
             (match (v.decay().offset(0_usize).decay().decay().offset(0_usize),) {
-                (__tmp_5,) => Ptr::<i8>::from_string_literal(b"a").with_c_str(|__s| {
-                    (*__tmp_5.upgrade().deref())
-                        [..(*__tmp_5.upgrade().deref()).len().saturating_sub(1)]
+                (__tmp_6,) => Ptr::<i8>::from_string_literal(b"a").with_c_str(|__s| {
+                    (*__tmp_6.upgrade().deref())
+                        [..(*__tmp_6.upgrade().deref()).len().saturating_sub(1)]
                         == *__s
                 }),
             }) && (match (copy.decay().offset(0_usize).decay().decay().offset(0_usize),) {
-                (__tmp_6,) => Ptr::<i8>::from_string_literal(b"z").with_c_str(|__s| {
-                    (*__tmp_6.upgrade().deref())
-                        [..(*__tmp_6.upgrade().deref()).len().saturating_sub(1)]
+                (__tmp_7,) => Ptr::<i8>::from_string_literal(b"z").with_c_str(|__s| {
+                    (*__tmp_7.upgrade().deref())
+                        [..(*__tmp_7.upgrade().deref()).len().saturating_sub(1)]
                         == *__s
                 }),
             })
@@ -151,15 +150,15 @@ fn main_0() -> i32 {
     assert!(
         ({
             (match (v.decay().offset(0_usize).decay().decay().offset(1_usize),) {
-                (__tmp_7,) => Ptr::<i8>::from_string_literal(b"Bc").with_c_str(|__s| {
-                    (*__tmp_7.upgrade().deref())
-                        [..(*__tmp_7.upgrade().deref()).len().saturating_sub(1)]
+                (__tmp_8,) => Ptr::<i8>::from_string_literal(b"Bc").with_c_str(|__s| {
+                    (*__tmp_8.upgrade().deref())
+                        [..(*__tmp_8.upgrade().deref()).len().saturating_sub(1)]
                         == *__s
                 }),
             }) && (match (copy.decay().offset(0_usize).decay().decay().offset(1_usize),) {
-                (__tmp_8,) => Ptr::<i8>::from_string_literal(b"bc").with_c_str(|__s| {
-                    (*__tmp_8.upgrade().deref())
-                        [..(*__tmp_8.upgrade().deref()).len().saturating_sub(1)]
+                (__tmp_9,) => Ptr::<i8>::from_string_literal(b"bc").with_c_str(|__s| {
+                    (*__tmp_9.upgrade().deref())
+                        [..(*__tmp_9.upgrade().deref()).len().saturating_sub(1)]
                         == *__s
                 }),
             })
@@ -169,9 +168,9 @@ fn main_0() -> i32 {
     assert!(
         ({
             match (v.decay().offset(1_usize).decay().decay().offset(0_usize),) {
-                (__tmp_9,) => Ptr::<i8>::from_string_literal(b"bcx").with_c_str(|__s| {
-                    (*__tmp_9.upgrade().deref())
-                        [..(*__tmp_9.upgrade().deref()).len().saturating_sub(1)]
+                (__tmp_10,) => Ptr::<i8>::from_string_literal(b"bcx").with_c_str(|__s| {
+                    (*__tmp_10.upgrade().deref())
+                        [..(*__tmp_10.upgrade().deref()).len().saturating_sub(1)]
                         == *__s
                 }),
             }

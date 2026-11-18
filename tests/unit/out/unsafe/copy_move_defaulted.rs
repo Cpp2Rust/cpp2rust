@@ -137,8 +137,14 @@ impl Buffer {
         this
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Buffer) -> *mut Buffer {
-        self.data = std::mem::take(&mut (*_a0).data);
-        self.rows = std::mem::take(&mut (*_a0).rows);
+        {
+            *(&mut self.data as *mut Vec<i32>) = std::mem::take(&mut (*_a0).data);
+            (&mut self.data as *mut Vec<i32>)
+        };
+        {
+            *(&mut self.rows as *mut Vec<Vec<i32>>) = std::mem::take(&mut (*_a0).rows);
+            (&mut self.rows as *mut Vec<Vec<i32>>)
+        };
         self.n = (*_a0).n;
         match (
             { ((&mut self.arr as *mut [i32; 2]) as *mut ::libc::c_void) },
@@ -173,7 +179,10 @@ impl Owner {
         this
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Owner) -> *mut Owner {
-        self.data = std::mem::take(&mut (*_a0).data);
+        {
+            *(&mut self.data as *mut Vec<i32>) = std::mem::take(&mut (*_a0).data);
+            (&mut self.data as *mut Vec<i32>)
+        };
         self.n = (*_a0).n;
         match (
             { ((&mut self.arr as *mut [i32; 2]) as *mut ::libc::c_void) },
@@ -186,7 +195,10 @@ impl Owner {
                 __tmp_2
             }
         };
-        self.p = (*_a0).p.take();
+        {
+            *(&mut self.p as *mut Option<Box<i32>>) = (*_a0).p.take();
+            (&mut self.p as *mut Option<Box<i32>>)
+        };
         return &mut (*(self as *mut Owner));
     }
 }
@@ -203,7 +215,10 @@ impl Copyable {
         this
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Copyable) -> *mut Copyable {
-        self.data = std::mem::take(&mut (*_a0).data);
+        {
+            *(&mut self.data as *mut Vec<i32>) = std::mem::take(&mut (*_a0).data);
+            (&mut self.data as *mut Vec<i32>)
+        };
         return &mut (*(self as *mut Copyable));
     }
 }
@@ -235,7 +250,10 @@ impl Holder {
     pub unsafe fn move_assign(&mut self, _a0: *mut Holder) -> *mut Holder {
         self.inner = (*_a0).inner;
         self.e = ((*_a0).e).clone();
-        self.p = (*_a0).p.take();
+        {
+            *(&mut self.p as *mut Option<Box<i32>>) = (*_a0).p.take();
+            (&mut self.p as *mut Option<Box<i32>>)
+        };
         return &mut (*(self as *mut Holder));
     }
 }

@@ -200,9 +200,6 @@ GetUserDefinedDefaultConstructor(const clang::CXXRecordDecl *decl);
 
 bool HasUsableDefaultArg(const clang::ParmVarDecl *param);
 
-const clang::MaterializeTemporaryExpr *
-GetDefaultArgTemporary(const clang::ParmVarDecl *param);
-
 std::string GetFileName(const clang::Decl *decl);
 
 unsigned GetLineNumber(const clang::Decl *decl);

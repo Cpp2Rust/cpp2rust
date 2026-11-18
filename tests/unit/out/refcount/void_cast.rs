@@ -114,8 +114,11 @@ pub trait NonCopyableImpl {
 }
 impl NonCopyableImpl for Ptr<NonCopyable> {
     fn move_assign(&self, _a0: Ptr<NonCopyable>) -> Ptr<NonCopyable> {
-        field_ptr!((*self), value)
-            .write(field!(_a0, value).with_mut(|__v: &mut Option<Value<i32>>| __v.take()));
+        {
+            field_ptr!((*self), value)
+                .write(field!(_a0, value).with_mut(|__v: &mut Option<Value<i32>>| __v.take()));
+            field_ptr!((*self), value)
+        };
         return (*self).clone();
     }
 }
@@ -124,9 +127,12 @@ pub trait NonTrivialImpl {
 }
 impl NonTrivialImpl for Ptr<NonTrivial> {
     fn move_assign(&self, _a0: Ptr<NonTrivial>) -> Ptr<NonTrivial> {
-        field_ref!((*self), data)
-            .as_pointer()
-            .write(field!(_a0, data).with_mut(std::mem::take));
+        {
+            field_ref!((*self), data)
+                .as_pointer()
+                .write(field!(_a0, data).with_mut(std::mem::take));
+            field_ref!((*self), data).as_pointer()
+        };
         return (*self).clone();
     }
 }
