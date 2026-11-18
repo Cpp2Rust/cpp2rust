@@ -14,6 +14,7 @@ use syn::{DeriveInput, Ident, Token, Type, parse_macro_input};
 //     #[cpp_from(T, new_3, mut_ptr)]      // S(T &)
 //     #[cpp_from_move(T, new_4, ptr)]     // S(T &&)
 //     #[cpp_into(i32, to_i32)]            // operator int() const
+//     #[cpp_into(i64, to_i64, mut_ptr)]   // operator long()
 //     pub struct S { ... }
 //
 // Implements libcc2rs::CppFrom<Source> for S with each converting constructor
@@ -199,7 +200,9 @@ pub fn expand(input: TokenStream, is_unsafe: bool) -> TokenStream {
         let op = &conversion.method;
         let self_ty = quote!(#name #ty_generics);
         let src = pointer(&syn::parse_quote!(#self_ty), false);
-        let body = if is_unsafe {
+        let body = if is_unsafe && matches!(conversion.kind, Kind::MutPtr) {
+            quote!((*src.cast_mut()).#op())
+        } else if is_unsafe {
             quote!((*src).#op())
         } else {
             quote!(#impl_trait::#op(&src))

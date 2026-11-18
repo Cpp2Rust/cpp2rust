@@ -1009,6 +1009,11 @@ void Converter::EmitConversionAttrs(clang::CXXRecordDecl *decl) {
   ForEachConvertingConstructor(decl, [&](clang::CXXConstructorDecl *ctor) {
     auto *param = ctor->getParamDecl(0);
     auto type = param->getType();
+    if (ctx_.hasSameUnqualifiedType(type.getNonReferenceType(),
+                                    ctx_.getCanonicalTagType(decl)) &&
+        RecordImplementsClone(decl)) {
+      return;
+    }
     auto source =
         GetUnboxedTypeAsString(type.getNonReferenceType().getUnqualifiedType());
     bool is_move = type->isRValueReferenceType();
@@ -1034,8 +1039,9 @@ void Converter::EmitConversionAttrs(clang::CXXRecordDecl *decl) {
     if (!into_types.insert(target).second) {
       return;
     }
-    StrCat(
-        std::format("#[cpp_into({}, {})]", target, GetMethodName(conversion)));
+    StrCat(std::format("#[cpp_into({}, {}{})]", target,
+                       GetMethodName(conversion),
+                       conversion->isConst() ? "" : ", mut_ptr"));
   });
 }
 
