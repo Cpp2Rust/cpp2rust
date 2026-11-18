@@ -192,6 +192,9 @@ public:
   }
 
   bool VisitCallExpr(clang::CallExpr *expr) {
+    if (IsTransparentStdCall(ctx_, expr)) {
+      return true;
+    }
     AddRuleArgs(expr, expr->getArgs(), expr->getNumArgs());
     return true;
   }
@@ -305,7 +308,7 @@ private:
     }
 
     void VisitCallExpr(const clang::CallExpr *expr) {
-      if (IsTransparentStdCall(expr)) {
+      if (IsTransparentStdCall(owner_.ctx_, expr)) {
         Traverse(expr->getArg(0));
       } else {
         VisitExpr(expr);
@@ -392,7 +395,8 @@ private:
   // An element of an array or vector, or a field of a struct, is accessed
   // without making a pointer to it.
   void AddValueUse(const clang::Expr *expr, bool write = false) {
-    expr = IgnoreNoOpCasts(IgnoreTransparentStdCall(expr)->IgnoreParens());
+    expr =
+        IgnoreNoOpCasts(IgnoreTransparentStdCall(ctx_, expr)->IgnoreParens());
     if (auto *op = clang::dyn_cast<clang::UnaryOperator>(expr);
         op && op->isPrefix() && op->isIncrementDecrementOp()) {
       AddValueUse(op->getSubExpr(), /*write=*/true);

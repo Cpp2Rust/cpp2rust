@@ -3165,7 +3165,7 @@ std::string ConverterRefCount::ConvertMappedMethodCall(
   auto arg_idx = receiver_ph->n;
   auto *arg = args[arg_idx];
   if (auto *call = clang::dyn_cast<clang::CallExpr>(arg->IgnoreCasts());
-      call && IsTransparentStdCall(call)) {
+      call && IsTransparentStdCall(ctx_, call)) {
     arg = call->getArg(0);
   }
 
@@ -3249,7 +3249,7 @@ void ConverterRefCount::SetUFCSReceiver(clang::Expr *base, bool is_arrow,
     }
     return;
   }
-  if (IsTemporaryObject(base) && base->getType()->isRecordType() &&
+  if (IsTemporaryObject(ctx_, base) && base->getType()->isRecordType() &&
       !IsReferenceType(base->IgnoreImplicit())) {
     if (retain_bound_temporaries_ && full_expression_temporaries_) {
       ufcs_receiver_ = token::kRef + ConvertTemporaryPointer(base, {});
