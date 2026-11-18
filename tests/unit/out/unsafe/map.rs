@@ -192,12 +192,12 @@ unsafe fn main_0() -> i32 {
     'loop_: for pair in IterRange::new(m2.begin(), m2.end()) {
         let pair: *mut (i32, bool) = &mut (*pair.iter_deref());
         assert!((((*pair).0) > (last)));
-        assert!((((*pair).1 as i32) == (((*pair).0) % (2))));
+        assert!(((((*pair).1) as i32) == (((*pair).0) % (2))));
         last = (*pair).0;
     }
     let mut m3: UnsafeMap<i32, (i32, i32)> = UnsafeMap::new();
     let mut inserted: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = m3.emplace((1, 2));
-    assert!((inserted.1 as bool));
+    assert!(((inserted.1) as bool));
     assert!((((*inserted.0.iter_deref()).1) == (2)));
     let mut not_inserted: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = m3.emplace((1, 3));
     assert!(!(not_inserted.1));
@@ -219,13 +219,13 @@ unsafe fn main_0() -> i32 {
     assert!((((*tried.0.iter_deref()).1) == (2)));
     let mut key8: i32 = 8;
     let mut tried_new: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = m3.try_emplace(key8, || 9);
-    assert!((tried_new.1 as bool));
+    assert!(((tried_new.1) as bool));
     assert!(((*m3.subscript_move(&mut 8, |__k| cpp_move_unsafe!(__k))) == (9)));
     assert!(((m3.len()) == (4_usize)));
     let mut points: UnsafeMap<i32, (i32, Point)> = UnsafeMap::new();
     let mut point_new: (UnsafeBidirectionalIterator<(i32, Point)>, bool) =
         points.try_emplace(key1, || Point::new_2({ 3 }, { 4 }));
-    assert!((point_new.1 as bool));
+    assert!(((point_new.1) as bool));
     assert!((((*points.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k))).x) == (3)));
     assert!((((*points.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k))).y) == (4)));
     points.emplace((key8, Point::new_2({ 5 }, { 6 })));

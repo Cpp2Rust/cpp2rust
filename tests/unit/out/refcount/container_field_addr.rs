@@ -37,7 +37,7 @@ pub fn run_1(mut h: Ptr<S>) {
     });
     let mut pv: Ptr<Vec<i32>> = (field_ref!(h, v).as_pointer());
     {
-        let __a1 = ((*pv.upgrade().deref()).len() as i32);
+        let __a1 = (((*pv.upgrade().deref()).len()) as i32);
         pv.with_mut(|__v: &mut Vec<i32>| __v.push(__a1))
     };
     assert!(

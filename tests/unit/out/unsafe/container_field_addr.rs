@@ -43,7 +43,7 @@ pub unsafe fn run_1(mut h: *mut S) {
     });
     let mut pv: *mut Vec<i32> = (&mut (*h).v as *mut Vec<i32>);
     {
-        let __a1 = ((*(pv).cast_const()).len() as i32);
+        let __a1 = (((*(pv).cast_const()).len()) as i32);
         (*pv).push(__a1)
     };
     assert!(

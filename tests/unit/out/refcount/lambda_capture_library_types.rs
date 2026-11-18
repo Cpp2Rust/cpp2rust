@@ -17,7 +17,7 @@ fn main_0() -> i32 {
             let v: Value<Vec<i32>> = Rc::new(RefCell::new((*v.borrow()).clone()));
         },
         || -> i32 {
-            return ((*v.borrow()).len() as i32);
+            return (((*v.borrow()).len()) as i32);
         }
     )));
     let g: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new((*f.borrow()).copy_from()));

@@ -55,7 +55,7 @@ impl p3_deallocation_function_is_static_Deallocates {
     }
 }
 pub unsafe fn test_3() {
-    let mut one: *mut i32 = (libcc2rs::malloc_unsafe(::std::mem::size_of::<i32>()) as *mut i32);
+    let mut one: *mut i32 = ((libcc2rs::malloc_unsafe(::std::mem::size_of::<i32>())) as *mut i32);
     (unsafe {
         p3_deallocation_function_is_static_Deallocates::operator_delete(
             (one as *mut ::libc::c_void),
@@ -63,7 +63,7 @@ pub unsafe fn test_3() {
     });
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut deallocations_2)) == (1)));
     let mut many: *mut i32 =
-        (libcc2rs::malloc_unsafe((::std::mem::size_of::<i32>() as usize).wrapping_mul(2_usize))
+        ((libcc2rs::malloc_unsafe((::std::mem::size_of::<i32>() as usize).wrapping_mul(2_usize)))
             as *mut i32);
     (unsafe {
         p3_deallocation_function_is_static_Deallocates::operator_delete_arr(

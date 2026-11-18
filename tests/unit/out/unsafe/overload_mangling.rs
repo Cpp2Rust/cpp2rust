@@ -54,7 +54,7 @@ impl S {
         return ((self.base) + (p.0));
     }
     pub unsafe fn pick_9(&self, mut p: (i32, i64)) -> i32 {
-        return ((self.base) + (p.1 as i32));
+        return ((self.base) + ((p.1) as i32));
     }
     pub unsafe fn apply_10(&self, mut f: Option<unsafe fn(*mut i32)>, mut x: i32) -> i32 {
         (unsafe { (f).unwrap()((&mut x as *mut i32)) });
@@ -74,7 +74,8 @@ impl S {
         mut q: *const i32,
         mut n: u64,
     ) -> i32 {
-        return ((((self.base) + ((*p).1 as i32)) + (unsafe { (f).unwrap()((*q)) })) + (n as i32));
+        return ((((self.base) + (((*p).1) as i32)) + (unsafe { (f).unwrap()((*q)) }))
+            + (n as i32));
     }
     pub unsafe fn combine_14(
         &self,

@@ -70,7 +70,7 @@ pub fn lehmer_3(mut sigma: Ptr<u32>, mut len: u32, mut code: Ptr<u32>) {
                 },
             ));
             assert!((*it.borrow()) != items.decay().end());
-            let __rhs = ((*it.borrow()).iter_distance(&items.decay().begin()) as u32);
+            let __rhs = (((*it.borrow()).iter_distance(&items.decay().begin())) as u32);
             elem!(code, i).write(__rhs);
             match ({ <RandomAccessIterator<u32>>::from(({ (*it.borrow()).clone() })) },) {
                 (mut __tmp_2,) => {

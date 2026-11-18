@@ -183,7 +183,7 @@ unsafe fn main_0() -> i32 {
                                     ok = ((ok as i32) & (((counter) == ((initial) + (1))) as i32))
                                         != 0;
                                     ok = ((ok as i32)
-                                        & (((result.1 as i32) == (!(hit) as i32)) as i32))
+                                        & ((((result.1) as i32) == (!(hit) as i32)) as i32))
                                         != 0;
                                     let mut found: bool = result.0 == m.find(&key);
                                     ok = ((ok as i32) & (found as i32)) != 0;

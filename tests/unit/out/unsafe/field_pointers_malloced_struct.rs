@@ -24,7 +24,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut s: *mut S = (libcc2rs::calloc_unsafe(1_usize, ::std::mem::size_of::<S>()) as *mut S);
+    let mut s: *mut S = ((libcc2rs::calloc_unsafe(1_usize, ::std::mem::size_of::<S>())) as *mut S);
     assert!(!((s).is_null()));
     (*s).b = 1;
     (*s).a = (unsafe { bump_0(s) });

@@ -37,7 +37,7 @@ pub fn push_and_index_0(v: Ptr<Vec<i32>>) -> i32 {
         let __a1 = 42;
         v.with_mut(|__v: &mut Vec<i32>| __v.push(__a1))
     };
-    return (((*v.upgrade().deref()).len() as i32) - 1);
+    return ((((*v.upgrade().deref()).len()) as i32) - 1);
 }
 pub fn sum_ref_1(v: Ptr<Vec<i32>>) -> i32 {
     let mut s: i32 = 0;

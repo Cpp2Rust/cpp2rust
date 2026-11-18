@@ -32,7 +32,7 @@ unsafe fn main_0() -> i32 {
     }
     'loop_: for i in IterRange::new(m.begin(), m.end()) {
         let mut i: (i32, f64) = (*i.iter_deref()).clone();
-        sum += (i.0 as f64);
+        sum += ((i.0) as f64);
     }
     assert!(((sum) == (7475_f64)));
     'loop_: for i in IterRange::new(m.begin(), m.end()) {

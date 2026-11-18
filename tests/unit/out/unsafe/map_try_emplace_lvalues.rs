@@ -578,12 +578,12 @@ unsafe fn main_0() -> i32 {
                     && ((nested) == (1))
             );
             assert!(
-                ((((((r0.1 as i32) == (!(hit != 0) as i32))
-                    && ((r1.1 as i32) == (!(hit != 0) as i32)))
-                    && ((r2.1 as i32) == (!(hit != 0) as i32)))
-                    && ((r3.1 as i32) == (!(hit != 0) as i32)))
-                    && ((r4.1 as i32) == (!(hit != 0) as i32)))
-                    && ((r5.1 as i32) == (!(hit != 0) as i32))
+                (((((((r0.1) as i32) == (!(hit != 0) as i32))
+                    && (((r1.1) as i32) == (!(hit != 0) as i32)))
+                    && (((r2.1) as i32) == (!(hit != 0) as i32)))
+                    && (((r3.1) as i32) == (!(hit != 0) as i32)))
+                    && (((r4.1) as i32) == (!(hit != 0) as i32)))
+                    && (((r5.1) as i32) == (!(hit != 0) as i32))
             );
             'loop_: for k in IterRange::new(keys.as_ptr(), keys.as_ptr().offset((6_i64) as isize)) {
                 let mut k: i32 = (*k);
@@ -721,9 +721,9 @@ unsafe fn main_0() -> i32 {
                             }))
                     );
                     assert!(
-                        (((prefix.1 as i32) == (!(hit != 0) as i32))
-                            && ((assignment.1 as i32) == (!(hit != 0) as i32)))
-                            && ((compound.1 as i32) == (!(hit != 0) as i32))
+                        ((((prefix.1) as i32) == (!(hit != 0) as i32))
+                            && (((assignment.1) as i32) == (!(hit != 0) as i32)))
+                            && (((compound.1) as i32) == (!(hit != 0) as i32))
                     );
                     assert!(
                         (((*prefix.0.iter_deref()).1.value) == (if (hit != 0) { 42 } else { 3 }))
@@ -800,9 +800,9 @@ unsafe fn main_0() -> i32 {
                     && ((index) == (1))
             );
             assert!(
-                (((member.1 as i32) == (!(hit != 0) as i32))
-                    && ((nested.1 as i32) == (!(hit != 0) as i32)))
-                    && ((element.1 as i32) == (!(hit != 0) as i32))
+                ((((member.1) as i32) == (!(hit != 0) as i32))
+                    && (((nested.1) as i32) == (!(hit != 0) as i32)))
+                    && (((element.1) as i32) == (!(hit != 0) as i32))
             );
             assert!(
                 ((((*member.0.iter_deref()).1) == (if (hit != 0) { 42 } else { 5 }))
@@ -1018,12 +1018,12 @@ unsafe fn main_0() -> i32 {
                     && ((index) == (1))
             );
             assert!(
-                ((((((arrow.1 as i32) == (!(hit != 0) as i32))
-                    && ((nested.1 as i32) == (!(hit != 0) as i32)))
-                    && ((element.1 as i32) == (!(hit != 0) as i32)))
-                    && ((get.1 as i32) == (!(hit != 0) as i32)))
-                    && ((deref.1 as i32) == (!(hit != 0) as i32)))
-                    && ((indirect.1 as i32) == (!(hit != 0) as i32))
+                (((((((arrow.1) as i32) == (!(hit != 0) as i32))
+                    && (((nested.1) as i32) == (!(hit != 0) as i32)))
+                    && (((element.1) as i32) == (!(hit != 0) as i32)))
+                    && (((get.1) as i32) == (!(hit != 0) as i32)))
+                    && (((deref.1) as i32) == (!(hit != 0) as i32)))
+                    && (((indirect.1) as i32) == (!(hit != 0) as i32))
             );
             'loop_: for k in IterRange::new(keys.as_ptr(), keys.as_ptr().offset((6_i64) as isize)) {
                 let mut k: i32 = (*k);

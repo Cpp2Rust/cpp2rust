@@ -54,7 +54,7 @@ pub struct T {
 }
 impl T {
     pub unsafe fn size(&self) -> i32 {
-        return (self.v.len() as i32);
+        return ((self.v.len()) as i32);
     }
     pub unsafe fn move_from(_a0: *mut T) -> Self {
         let mut this = Self {
@@ -71,7 +71,7 @@ impl T {
     }
 }
 pub unsafe fn sum_0(s: *const S) -> i32 {
-    return ((((*s).v.len() as i32) + ((*s).n[(0) as usize])) + ((*s).n[(1) as usize]));
+    return (((((*s).v.len()) as i32) + ((*s).n[(0) as usize])) + ((*s).n[(1) as usize]));
 }
 pub fn main() {
     unsafe {

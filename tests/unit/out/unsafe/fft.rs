@@ -216,21 +216,21 @@ unsafe fn main_0() -> i32 {
             (*reals
                 .as_deref()
                 .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
-                .add((i as usize))) = ((*b
+                .add((i as usize))) = (((*b
                 .as_deref()
                 .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Complex)
                 .add((i as usize)))
             .re
-            .round() as i32);
+            .round()) as i32);
             (*imgs
                 .as_deref()
                 .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
-                .add((i as usize))) = ((*b
+                .add((i as usize))) = (((*b
                 .as_deref()
                 .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Complex)
                 .add((i as usize)))
             .img
-            .round() as i32);
+            .round()) as i32);
             i.prefix_inc();
         }
     }
@@ -282,8 +282,8 @@ unsafe fn main_0() -> i32 {
     assert!(((ll.abs()) == (6000000000_i64)));
     let mut small: i64 = (-7_i32 as i64);
     let mut small_ll: i64 = (-8_i32 as i64);
-    let mut narrowed: i32 = (small.abs() as i32);
-    let mut narrowed_ll: i32 = (small_ll.abs() as i32);
+    let mut narrowed: i32 = ((small.abs()) as i32);
+    let mut narrowed_ll: i32 = ((small_ll.abs()) as i32);
     assert!(((narrowed) == (7)));
     assert!(((narrowed_ll) == (8)));
     return 0;

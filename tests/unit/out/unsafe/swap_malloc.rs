@@ -14,7 +14,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut buf: *mut i32 =
-        (libcc2rs::malloc_unsafe((3_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize)))
+        ((libcc2rs::malloc_unsafe((3_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize))))
             as *mut i32);
     (*buf.offset((0) as isize)) = 1;
     (*buf.offset((1) as isize)) = 2;
@@ -29,7 +29,7 @@ unsafe fn main_0() -> i32 {
     let mut local: i32 = 4;
     cpp_swap_unsafe!(buf.offset((1) as isize), &mut local);
     assert!(((*buf.offset((1) as isize)) == (4)) && ((local) == (2)));
-    let mut other: *mut i32 = (libcc2rs::malloc_unsafe(::std::mem::size_of::<i32>()) as *mut i32);
+    let mut other: *mut i32 = ((libcc2rs::malloc_unsafe(::std::mem::size_of::<i32>())) as *mut i32);
     (*other) = 5;
     cpp_swap_unsafe!(buf, other);
     assert!(((*buf.offset((0) as isize)) == (5)) && ((*other) == (3)));

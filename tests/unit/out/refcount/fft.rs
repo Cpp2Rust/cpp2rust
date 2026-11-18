@@ -186,9 +186,9 @@ fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while (i < N) {
-            let __rhs = (b.decay().offset((i as usize)).with(|__s| __s.re).round() as i32);
+            let __rhs = ((b.decay().offset((i as usize)).with(|__s| __s.re).round()) as i32);
             reals.decay().offset((i as usize)).write(__rhs);
-            let __rhs = (b.decay().offset((i as usize)).with(|__s| __s.img).round() as i32);
+            let __rhs = ((b.decay().offset((i as usize)).with(|__s| __s.img).round()) as i32);
             imgs.decay().offset((i as usize)).write(__rhs);
             i.prefix_inc();
         }
@@ -209,8 +209,8 @@ fn main_0() -> i32 {
     assert!((ll.abs() == 6000000000_i64));
     let mut small: i64 = (-7_i32 as i64);
     let mut small_ll: i64 = (-8_i32 as i64);
-    let mut narrowed: i32 = (small.abs() as i32);
-    let mut narrowed_ll: i32 = (small_ll.abs() as i32);
+    let mut narrowed: i32 = ((small.abs()) as i32);
+    let mut narrowed_ll: i32 = ((small_ll.abs()) as i32);
     assert!((narrowed == 7));
     assert!((narrowed_ll == 8));
     return 0;

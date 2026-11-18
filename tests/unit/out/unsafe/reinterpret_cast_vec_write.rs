@@ -22,7 +22,7 @@ unsafe fn main_0() -> i32 {
         let __a1 = 134678021_u32;
         vec_.push(__a1)
     };
-    let mut bytes: *mut u8 = (vec_.as_mut_ptr() as *mut u8);
+    let mut bytes: *mut u8 = ((vec_.as_mut_ptr()) as *mut u8);
     assert!((((*bytes.offset((0) as isize)) as i32) == (1)));
     assert!((((*bytes.offset((1) as isize)) as i32) == (2)));
     assert!((((*bytes.offset((2) as isize)) as i32) == (3)));

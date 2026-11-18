@@ -65,7 +65,7 @@ pub unsafe fn test_1() {
     referent = 6;
     assert!(((*bound.0) == (6)));
     assert!(((bound.0) == ((&mut referent as *mut i32).cast_const())));
-    assert!(((bound.1 as i32) == (('c' as libc::c_char) as i32)));
+    assert!((((bound.1) as i32) == (('c' as libc::c_char) as i32)));
 }
 pub unsafe fn test_2() {
     let mut source: (i32, Option<Box<i32>>) = (

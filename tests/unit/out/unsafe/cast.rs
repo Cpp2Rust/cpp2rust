@@ -368,7 +368,7 @@ pub unsafe fn heap_7() {
         }
     };
     let mut l: *mut i64 =
-        (libcc2rs::malloc_unsafe((2_usize).wrapping_mul((::std::mem::size_of::<i64>() as usize)))
+        ((libcc2rs::malloc_unsafe((2_usize).wrapping_mul((::std::mem::size_of::<i64>() as usize))))
             as *mut i64);
     (*l.offset((1) as isize)) = 7_i64;
     let mut back: *mut i64 = (((l.offset((1) as isize)) as usize) as *mut i64);
