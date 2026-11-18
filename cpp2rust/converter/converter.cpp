@@ -2725,7 +2725,8 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
       PushParen outer(*this);
       {
         // as binds tighter than binary operators.
-        PushParen inner(*this, clang::isa<clang::BinaryOperator>(sub_expr));
+        PushParen inner(*this, clang::isa<clang::BinaryOperator>(sub_expr) ||
+                                   Mapper::Contains(ctx_, sub_expr));
         Convert(sub_expr);
       }
       ConvertCast(type);
@@ -2824,7 +2825,10 @@ bool Converter::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
     }
     {
       PushParen paren(*this);
-      Convert(sub_expr);
+      {
+        PushParen inner(*this, Mapper::Contains(ctx_, sub_expr));
+        Convert(sub_expr);
+      }
       if (auto *unary_oper = clang::dyn_cast<clang::UnaryOperator>(sub_expr);
           unary_oper && unary_oper->getOpcode() == clang::UO_AddrOf &&
           (clang::isa<clang::ArraySubscriptExpr>(unary_oper->getSubExpr()) ||
