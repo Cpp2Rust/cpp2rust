@@ -154,12 +154,11 @@ bool ConverterRefCount::NeedsMut(const clang::VarDecl *decl,
   if (!in_function_formals_) {
     return true;
   }
-  // Parameters are modified in place, except for those with a default value,
-  // which are unwrapped into a variable, and those of a function declared
+  // Parameters are modified in place, except for those of a function declared
   // without a body, which can't be mutable.
   auto *param = clang::cast<clang::ParmVarDecl>(decl);
   auto *function = clang::cast<clang::FunctionDecl>(param->getDeclContext());
-  return !HasUsableDefaultArg(param) && !function->isPureVirtual() &&
+  return !function->isPureVirtual() &&
          method_target_ != MethodTarget::TraitDecl;
 }
 
@@ -834,40 +833,13 @@ void ConverterRefCount::EmitFunctionPreamble(clang::FunctionDecl *decl) {
            "Rc::new(RefCell::new(__args.into()));");
   }
   for (auto *param : DefinitionParameters(decl)) {
-    auto name = GetNamedDeclAsString(param);
-    if (param->getType()->isReferenceType()) {
-      if (!HasUsableDefaultArg(param)) {
-        continue;
-      }
-      auto type = ToString(param->getType());
-      std::string value;
-      if (auto *temp = GetDefaultArgTemporary(param)) {
-        auto storage = EmitDefaultArgStorage(param, temp);
-        value = std::format("{}.insert(Rc::new(RefCell::new({}))).as_pointer()",
-                            storage, ToString(temp->getSubExpr()));
-      } else {
-        Buffer buf(*this);
-        ConvertVarInit(param->getType(), param->getDefaultArg());
-        value = std::move(buf).str();
-      }
-      StrCat(std::format("let {} : {} = {}.unwrap_or_else(|| {})", name, type,
-                         name, value),
-             token::kSemiColon);
-      continue;
-    }
-
     // Unboxed parameters are used in place.
-    bool unboxed = IsUnboxedVar(param);
-    if (unboxed && !HasUsableDefaultArg(param)) {
+    if (param->getType()->isReferenceType() || IsUnboxedVar(param)) {
       continue;
     }
-    auto init = HasUsableDefaultArg(param)
-                    ? std::format("{}.unwrap_or_else(|| {})", name,
-                                  ToString(param->getDefaultArg()))
-                    : name;
-    PushConversionKind push(*this, ConversionKind::Unboxed, unboxed);
-    StrCat(std::format("let {}{} : {} = {}", unboxed ? "mut " : "", name,
-                       ToString(param->getType()), BoxValue(std::move(init))),
+    auto name = GetNamedDeclAsString(param);
+    StrCat(std::format("let {} : {} = {}", name, ToString(param->getType()),
+                       BoxValue(std::string(name))),
            token::kSemiColon);
   }
 }

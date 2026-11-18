@@ -62,7 +62,7 @@ pub fn test_6() {
         (({
             p7_2_default_argument_names_later_member_HasLaterStaticStepImpl::advance(
                 &object.as_pointer(),
-                None,
+                step_5.with(|rc| *rc.borrow()),
             )
         }) == 5)
     );
@@ -70,7 +70,7 @@ pub fn test_6() {
         (({
             p7_2_default_argument_names_later_member_HasLaterStaticStepImpl::advance(
                 &object.as_pointer(),
-                Some(2),
+                2,
             )
         }) == 7)
     );
@@ -106,13 +106,12 @@ impl p7_1_function_body_names_later_member_HasLaterMembersImpl
     }
 }
 pub trait p7_2_default_argument_names_later_member_HasLaterStaticStepImpl {
-    fn advance(&self, amount: Option<i32>) -> i32;
+    fn advance(&self, amount: i32) -> i32;
 }
 impl p7_2_default_argument_names_later_member_HasLaterStaticStepImpl
     for Ptr<p7_2_default_argument_names_later_member_HasLaterStaticStep>
 {
-    fn advance(&self, amount: Option<i32>) -> i32 {
-        let mut amount: i32 = amount.unwrap_or_else(|| step_5.with(|rc| *rc.borrow()));
+    fn advance(&self, mut amount: i32) -> i32 {
         {
             let __rhs = amount;
             field!((*self), total).with_mut(|__v| *__v = *__v + __rhs)
