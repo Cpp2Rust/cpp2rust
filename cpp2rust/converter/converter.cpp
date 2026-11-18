@@ -1474,8 +1474,7 @@ bool Converter::VisitIfStmt(clang::IfStmt *stmt) {
     Convert(cond_var);
   }
   if (bool taken = false;
-      !stmt->getConditionVariable() &&
-      !stmt->getCond()->isValueDependent() &&
+      !stmt->getConditionVariable() && !stmt->getCond()->isValueDependent() &&
       stmt->getCond()->EvaluateAsBooleanCondition(taken, ctx_)) {
     ConvertBody(taken ? stmt->getThen() : stmt->getElse());
     return false;
