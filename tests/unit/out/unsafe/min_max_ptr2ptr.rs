@@ -30,6 +30,37 @@ unsafe fn main_0() -> i32 {
         if *__b < *__a { __b } else { __a }
     });
     assert!((((r1) + (r2)) == (30)));
+    let mut values: [i32; 2] = [2, 1];
+    let mut low: *mut i32 = (&mut values[(0) as usize] as *mut i32);
+    let mut high: *mut i32 = (&mut values[(1) as usize] as *mut i32);
+    assert!(
+        ((*{
+            let __a: *const _ = &mut low;
+            let __b: *const _ = &mut high;
+            if *__b < *__a { __b } else { __a }
+        }) == (low))
+    );
+    assert!(
+        ((*{
+            let __a: *const _ = &mut high;
+            let __b: *const _ = &mut low;
+            if *__b < *__a { __b } else { __a }
+        }) == (low))
+    );
+    assert!(
+        ((*{
+            let __a: *const _ = &mut low;
+            let __b: *const _ = &mut high;
+            if *__a < *__b { __b } else { __a }
+        }) == (high))
+    );
+    assert!(
+        ((*{
+            let __a: *const _ = &mut high;
+            let __b: *const _ = &mut low;
+            if *__a < *__b { __b } else { __a }
+        }) == (high))
+    );
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

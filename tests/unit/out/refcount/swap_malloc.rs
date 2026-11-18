@@ -48,6 +48,26 @@ fn main_0() -> i32 {
                 && ((*words.borrow())[(1) as usize] == 50595592_u32)
         })
     );
+    let s1: Value<i32> = Rc::new(RefCell::new(1));
+    let s2: Value<i32> = Rc::new(RefCell::new(2));
+    let sp: Value<Ptr<i32>> = Rc::new(RefCell::new((s1.as_pointer())));
+    let sq: Value<Ptr<i32>> = Rc::new(RefCell::new((s2.as_pointer())));
+    cpp_swap!(sp.as_pointer(), sq.as_pointer());
+    assert!(
+        ({
+            ({ (*sp.borrow()).clone() } == { (s2.as_pointer()) })
+                && ({ (*sq.borrow()).clone() } == { (s1.as_pointer()) })
+        })
+    );
+    assert!(({ ((*s1.borrow()) == 1) && ((*s2.borrow()) == 2) }));
+    let null_ptr: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));
+    cpp_swap!(null_ptr.as_pointer(), sp.as_pointer());
+    assert!(
+        ({
+            ({ (*null_ptr.borrow()).clone() } == { (s2.as_pointer()) })
+                && ((*sp.borrow()).is_null())
+        })
+    );
     libcc2rs::free_refcount((other).to_any());
     libcc2rs::free_refcount((buf).to_any());
     return 0;

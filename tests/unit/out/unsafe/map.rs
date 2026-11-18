@@ -229,6 +229,23 @@ unsafe fn main_0() -> i32 {
     assert!((((*points.subscript_move(&mut 8, |__k| cpp_move_unsafe!(__k))).x) == (5)));
     assert!((((*points.subscript_move(&mut 8, |__k| cpp_move_unsafe!(__k))).y) == (6)));
     assert!(((points.len()) == (2_usize)));
+    let mut mi: UnsafeBidirectionalIterator<(i32, i32)> = m3.begin();
+    let mr: *mut UnsafeBidirectionalIterator<(i32, i32)> = &mut (*{
+        (*(&mut mi as *mut UnsafeBidirectionalIterator<(i32, i32)>)).iter_inc();
+        (&mut mi as *mut UnsafeBidirectionalIterator<(i32, i32)>)
+    });
+    assert!(
+        ((mr) == (&mut mi as *mut UnsafeBidirectionalIterator<(i32, i32)>))
+            && (((*mi.iter_deref()).0) == (4))
+    );
+    let md: *mut UnsafeBidirectionalIterator<(i32, i32)> = &mut (*{
+        (*(&mut mi as *mut UnsafeBidirectionalIterator<(i32, i32)>)).iter_dec();
+        (&mut mi as *mut UnsafeBidirectionalIterator<(i32, i32)>)
+    });
+    assert!(
+        ((md) == (&mut mi as *mut UnsafeBidirectionalIterator<(i32, i32)>))
+            && (((*mi.iter_deref()).0) == (1))
+    );
     k = 0;
     let value_0: *const u32 = &raw const (*m.get(&(k as i16)).expect("out of range!")).1;
     assert!(
@@ -239,6 +256,24 @@ unsafe fn main_0() -> i32 {
         .wrapping_add(((*value_0) as usize)))
             == (21_usize))
     );
+    let mut pk1: i32 = 0;
+    let mut pk2: i32 = 0;
+    let mut ptr_counts: UnsafeMap<*mut i32, (*mut i32, i32)> = UnsafeMap::new();
+    let mut ptr_key: *mut i32 = (&mut pk1 as *mut i32);
+    (*ptr_counts.subscript(&ptr_key)) = 1;
+    ptr_key = (&mut pk2 as *mut i32);
+    (*ptr_counts.subscript(&ptr_key)) = 2;
+    (*ptr_counts.subscript(&ptr_key)) += 3;
+    assert!(((ptr_counts.len()) == (2_usize)));
+    assert!(((*ptr_counts.subscript(&ptr_key)) == (5)));
+    ptr_key = (&mut pk1 as *mut i32);
+    assert!(((*ptr_counts.subscript(&ptr_key)) == (1)));
+    (*ptr_counts.subscript_move(&mut (&mut pk2 as *mut i32), |__k| cpp_move_unsafe!(__k))) += 1;
+    assert!(
+        ((*ptr_counts.subscript_move(&mut (&mut pk2 as *mut i32), |__k| cpp_move_unsafe!(__k)))
+            == (6))
+    );
+    assert!(((pk1) == (0)) && ((pk2) == (0)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

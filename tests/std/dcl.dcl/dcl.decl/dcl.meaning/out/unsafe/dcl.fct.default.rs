@@ -33,7 +33,7 @@ pub unsafe fn test_4() {
 pub static mut next_ticket_calls_5: std::cell::LazyCell<i32> =
     std::cell::LazyCell::new(|| unsafe { 0_i32 });
 pub unsafe fn next_ticket_6() -> i32 {
-    return (((*std::cell::LazyCell::force_mut(&mut *&raw mut next_ticket_calls_5)).prefix_inc())
+    return ((*(*std::cell::LazyCell::force_mut(&mut *&raw mut next_ticket_calls_5)).prefix_inc())
         * (100));
 }
 pub unsafe fn issue_7(mut ticket: Option<i32>) -> i32 {

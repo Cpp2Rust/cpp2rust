@@ -30,6 +30,57 @@ fn main_0() -> i32 {
     }
     .read());
     assert!(((r1 + r2) == 30));
+    let values: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([2, 1])));
+    let low: Value<Ptr<i32>> = Rc::new(RefCell::new((values.decay().offset(0))));
+    let high: Value<Ptr<i32>> = Rc::new(RefCell::new((values.decay().offset(1))));
+    assert!(
+        ({
+            ({
+                (if CppLess::less(&high.as_pointer(), &low.as_pointer()) {
+                    high.as_pointer()
+                } else {
+                    low.as_pointer()
+                }
+                .read())
+            } == { (*low.borrow()).clone() })
+        })
+    );
+    assert!(
+        ({
+            ({
+                (if CppLess::less(&low.as_pointer(), &high.as_pointer()) {
+                    low.as_pointer()
+                } else {
+                    high.as_pointer()
+                }
+                .read())
+            } == { (*low.borrow()).clone() })
+        })
+    );
+    assert!(
+        ({
+            ({
+                (if CppLess::less(&low.as_pointer(), &high.as_pointer()) {
+                    high.as_pointer()
+                } else {
+                    low.as_pointer()
+                }
+                .read())
+            } == { (*high.borrow()).clone() })
+        })
+    );
+    assert!(
+        ({
+            ({
+                (if CppLess::less(&high.as_pointer(), &low.as_pointer()) {
+                    low.as_pointer()
+                } else {
+                    high.as_pointer()
+                }
+                .read())
+            } == { (*high.borrow()).clone() })
+        })
+    );
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

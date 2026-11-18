@@ -10,7 +10,9 @@ pub fn set_0(mut p: Ptr<i32>, mut v: i32) {
     p.write({ v });
 }
 pub fn inc_1(r: Ptr<i32>) {
-    r.with_mut(|__v| __v.prefix_inc());
+    r.with_mut(|__v| {
+        __v.prefix_inc();
+    });
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]

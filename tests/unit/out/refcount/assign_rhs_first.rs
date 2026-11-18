@@ -10,7 +10,9 @@ thread_local!(
     pub static g_cursor_0: Value<Ptr<Ptr<i32>>> = Rc::new(RefCell::new(Ptr::<Ptr<i32>>::null()));
 );
 pub fn advance_1() -> i32 {
-    (*g_cursor_0.with(Value::clone).borrow()).with_mut(|__v| __v.prefix_inc());
+    (*g_cursor_0.with(Value::clone).borrow()).with_mut(|__v| {
+        __v.prefix_inc();
+    });
     return 10;
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]

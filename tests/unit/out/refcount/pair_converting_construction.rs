@@ -141,7 +141,9 @@ impl Name {
         let __this: Value<Name> = Rc::new(RefCell::new(Self { len: 0 }));
         let this: Ptr<Name> = __this.as_pointer();
         'loop_: while ((elem!(s, this.with(|__s| __s.len)).read()) != 0) {
-            field!(this, len).with_mut(|__v| __v.prefix_inc());
+            field!(this, len).with_mut(|__v| {
+                __v.prefix_inc();
+            });
         }
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }

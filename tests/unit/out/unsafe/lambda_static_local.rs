@@ -16,7 +16,7 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut next: FnPtr<fn() -> i32> = FnPtr::<fn() -> i32>::new(|| -> i32 {
         unsafe {
-            return (*std::cell::LazyCell::force_mut(&mut *&raw mut n_1)).prefix_inc();
+            return (*(*std::cell::LazyCell::force_mut(&mut *&raw mut n_1)).prefix_inc());
         }
     });
     assert!(((unsafe { next.call() }) == (1)));
@@ -26,7 +26,7 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { next.call() }) == (4)));
     let mut fresh: FnPtr<fn() -> i32> = FnPtr::<fn() -> i32>::new(|| -> i32 {
         unsafe {
-            return (*std::cell::LazyCell::force_mut(&mut *&raw mut n_1)).prefix_inc();
+            return (*(*std::cell::LazyCell::force_mut(&mut *&raw mut n_1)).prefix_inc());
         }
     });
     assert!(((unsafe { fresh.call() }) == (5)));

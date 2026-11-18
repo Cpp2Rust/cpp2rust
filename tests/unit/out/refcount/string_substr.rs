@@ -14,11 +14,15 @@ pub struct Text {
     pub value: Ptr<Vec<i8>>,
 }
 pub fn receiver_0(s: Ptr<Vec<i8>>, calls: Ptr<i32>) -> Ptr<Vec<i8>> {
-    calls.with_mut(|__v| __v.prefix_inc());
+    calls.with_mut(|__v| {
+        __v.prefix_inc();
+    });
     return (s).clone();
 }
 pub fn temporary_1(calls: Ptr<i32>) -> Vec<i8> {
-    calls.with_mut(|__v| __v.prefix_inc());
+    calls.with_mut(|__v| {
+        __v.prefix_inc();
+    });
     return {
         let mut __bytes = Ptr::<i8>::from_string_literal(b"hello").to_c_bytes();
         __bytes.push(0);

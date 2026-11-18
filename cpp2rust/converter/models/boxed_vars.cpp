@@ -255,7 +255,8 @@ public:
   }
 
   bool VisitUnaryOperator(clang::UnaryOperator *expr) {
-    if (expr->isIncrementDecrementOp()) {
+    if (expr->isIncrementDecrementOp() &&
+        (expr->isPostfix() || expr->isPRValue())) {
       AddValueUse(expr->getSubExpr(), /*write=*/true);
     }
     return true;
@@ -344,7 +345,7 @@ private:
   // borrowed, unless the rule takes a pointer to them, other than to a
   // temporary copy of them, or they are bound to references. A pointer
   // parameter receives the value of an argument that is itself translated to a
-  // pointer.
+  // pointer, unless the rule binds a reference to that argument.
   void AddRuleArgs(clang::Expr *expr, clang::Expr **args, unsigned num_args) {
     auto *rule = RuleRegistry::GetExprRule(ctx_, expr);
     if (!rule) {
@@ -392,6 +393,11 @@ private:
   // without making a pointer to it.
   void AddValueUse(const clang::Expr *expr, bool write = false) {
     expr = IgnoreNoOpCasts(IgnoreTransparentStdCall(expr)->IgnoreParens());
+    if (auto *op = clang::dyn_cast<clang::UnaryOperator>(expr);
+        op && op->isPrefix() && op->isIncrementDecrementOp()) {
+      AddValueUse(op->getSubExpr(), /*write=*/true);
+      return;
+    }
     // The value of a conditional lvalue is the value of either operand; it is
     // written through a pointer to the operand.
     if (auto *cond = clang::dyn_cast<clang::ConditionalOperator>(expr)) {
@@ -423,6 +429,14 @@ private:
     if (auto *cleanups = clang::dyn_cast<clang::ExprWithCleanups>(expr)) {
       expr = cleanups->getSubExpr()->IgnoreParens();
     }
+    if (auto *op = clang::dyn_cast<clang::UnaryOperator>(expr);
+        op && op->isIncrementDecrementOp()) {
+      AddValueUse(op->getSubExpr(), /*write=*/true);
+    } else if (auto *comma = clang::dyn_cast<clang::BinaryOperator>(expr);
+               comma && comma->getOpcode() == clang::BO_Comma) {
+      AddDiscardedUse(comma->getRHS());
+    }
+
     auto *binary = clang::dyn_cast<clang::BinaryOperator>(expr);
     if (!binary) {
       return;

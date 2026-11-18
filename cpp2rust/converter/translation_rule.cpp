@@ -270,14 +270,16 @@ std::vector<bool>
 ExprRule::argsToBind(clang::ASTContext &ctx, const clang::Expr *expr,
                      llvm::ArrayRef<clang::Expr *> args) const {
   // The number of evaluations of each argument, two standing for any other
-  // than one, and the position of the first.
-  std::vector<unsigned> uses(args.size()), first(args.size());
+  // than one, the position of the first, and the number of placeholders.
+  std::vector<unsigned> uses(args.size()), first(args.size()),
+      copies(args.size());
   unsigned position = 0;
   AnyFragment(body, [&](const BodyFragment &frag) {
     if (auto *ph = std::get_if<PlaceholderFragment>(&frag)) {
       if (uses[ph->n]++ == 0) {
         first[ph->n] = position;
       }
+      ++copies[ph->n];
       if (ph->conditional) {
         ++uses[ph->n];
       }
@@ -329,6 +331,11 @@ ExprRule::argsToBind(clang::ASTContext &ctx, const clang::Expr *expr,
       // A value computed from others is not computed again, nor before the
       // side effects of the previous arguments.
       bind[i] = bind_rest = true;
+    } else if (copies[i] > 1 &&
+               clang::isa<clang::StringLiteral>(arg->IgnoreParens())) {
+      // A string literal is one object, but each of its translations is a
+      // new array.
+      bind[i] = true;
     }
   }
   return bind;
@@ -339,6 +346,12 @@ bool ExprRule::takesAddress(clang::ASTContext &ctx, const clang::Expr *expr,
   // An init pack forwards references to its arguments, not their values.
   if (i >= params.size()) {
     return usesInit();
+  }
+  if (!params[i].is_pointer()) {
+    return false;
+  }
+  if (arg->getType()->isPointerType()) {
+    return !RuleRegistry::ParamTakesPointerValue(expr, i);
   }
   return RuleRegistry::ParamIsPointer(ctx, expr, i) &&
          !arg->getType()->isPointerType() &&

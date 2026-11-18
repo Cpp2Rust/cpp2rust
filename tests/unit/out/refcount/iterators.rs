@@ -21,7 +21,9 @@ fn main_0() -> i32 {
         RandomAccessIterator::Vec(x.decay().to_last()),
     ) {
         let c: Ptr<i8> = c.iter_deref();
-        c.with_mut(|__v| __v.prefix_inc());
+        c.with_mut(|__v| {
+            __v.prefix_inc();
+        });
     }
     'loop_: for c in IterRange::new(
         RandomAccessIterator::Vec(x.decay()),

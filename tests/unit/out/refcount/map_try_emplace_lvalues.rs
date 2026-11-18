@@ -214,13 +214,17 @@ thread_local!(
         match (if global_choose_13.with(|rc| *rc.borrow()) {
             {
                 let __tmp_4 = global_a_11.with(|v| v.as_pointer());
-                __tmp_4.with_mut(|__v| __v.prefix_inc());
+                __tmp_4.with_mut(|__v| {
+                    __v.prefix_inc();
+                });
                 __tmp_4
             }
         } else {
             {
                 let __tmp_5 = global_b_12.with(|v| v.as_pointer());
-                __tmp_5.with_mut(|__v| __v.prefix_inc());
+                __tmp_5.with_mut(|__v| {
+                    __v.prefix_inc();
+                });
                 __tmp_5
             }
         },)
@@ -353,7 +357,9 @@ fn main_0() -> i32 {
     )> = Rc::new(RefCell::new(
         match (({ receiver_2(m.as_pointer()) }), {
             let __tmp_10 = ({ place_3(counter.as_pointer()) });
-            __tmp_10.with_mut(|__v| __v.prefix_inc());
+            __tmp_10.with_mut(|__v| {
+                __v.prefix_inc();
+            });
             __tmp_10
         }) {
             (__tmp_8, __tmp_9) => {
@@ -384,7 +390,9 @@ fn main_0() -> i32 {
     )> = Rc::new(RefCell::new(
         match ({
             let __tmp_12 = counter.as_pointer();
-            __tmp_12.with_mut(|__v| __v.prefix_inc());
+            __tmp_12.with_mut(|__v| {
+                __v.prefix_inc();
+            });
             __tmp_12
         },)
         {
@@ -488,7 +496,9 @@ fn main_0() -> i32 {
     (*key.borrow_mut()).prefix_inc();
     match ({
         let __tmp_20 = array.decay().offset(index.postfix_inc());
-        __tmp_20.with_mut(|__v| __v.prefix_inc());
+        __tmp_20.with_mut(|__v| {
+            __v.prefix_inc();
+        });
         __tmp_20
     },)
     {
@@ -566,13 +576,17 @@ fn main_0() -> i32 {
     match (if choose {
         {
             let __tmp_28 = a.as_pointer();
-            __tmp_28.with_mut(|__v| __v.prefix_inc());
+            __tmp_28.with_mut(|__v| {
+                __v.prefix_inc();
+            });
             __tmp_28
         }
     } else {
         {
             let __tmp_29 = b.as_pointer();
-            __tmp_29.with_mut(|__v| __v.prefix_inc());
+            __tmp_29.with_mut(|__v| {
+                __v.prefix_inc();
+            });
             __tmp_29
         }
     },)
@@ -599,13 +613,17 @@ fn main_0() -> i32 {
     match (if choose {
         {
             let __tmp_31 = a.as_pointer();
-            __tmp_31.with_mut(|__v| __v.prefix_inc());
+            __tmp_31.with_mut(|__v| {
+                __v.prefix_inc();
+            });
             __tmp_31
         }
     } else {
         {
             let __tmp_32 = b.as_pointer();
-            __tmp_32.with_mut(|__v| __v.prefix_inc());
+            __tmp_32.with_mut(|__v| {
+                __v.prefix_inc();
+            });
             __tmp_32
         }
     },)
@@ -741,7 +759,9 @@ fn main_0() -> i32 {
             Map::erase_key(changed.as_pointer(), &key.as_pointer());
             {
                 let __tmp_41 = effects.as_pointer();
-                __tmp_41.with_mut(|__v| __v.prefix_inc());
+                __tmp_41.with_mut(|__v| {
+                    __v.prefix_inc();
+                });
                 __tmp_41
             }
         },)
@@ -778,10 +798,14 @@ fn main_0() -> i32 {
         Value<bool>,
     )> = Rc::new(RefCell::new(
         match ({
-            Map::subscript(changed.as_pointer(), key.as_pointer()).with_mut(|__v| __v.prefix_inc());
+            Map::subscript(changed.as_pointer(), key.as_pointer()).with_mut(|__v| {
+                __v.prefix_inc();
+            });
             {
                 let __tmp_43 = effects.as_pointer();
-                __tmp_43.with_mut(|__v| __v.prefix_inc());
+                __tmp_43.with_mut(|__v| {
+                    __v.prefix_inc();
+                });
                 __tmp_43
             }
         },)
@@ -881,7 +905,9 @@ fn main_0() -> i32 {
             )> = Rc::new(RefCell::new(
                 match ({
                     let __tmp_48 = moved.as_pointer();
-                    __tmp_48.with_mut(|__v| __v.prefix_inc());
+                    __tmp_48.with_mut(|__v| {
+                        __v.prefix_inc();
+                    });
                     __tmp_48
                 },)
                 {
@@ -906,7 +932,9 @@ fn main_0() -> i32 {
             )> = Rc::new(RefCell::new(
                 match ({
                     let __tmp_50 = forwarded.as_pointer();
-                    __tmp_50.with_mut(|__v| __v.prefix_inc());
+                    __tmp_50.with_mut(|__v| {
+                        __v.prefix_inc();
+                    });
                     __tmp_50
                 },)
                 {
@@ -931,7 +959,9 @@ fn main_0() -> i32 {
             )> = Rc::new(RefCell::new(
                 match ({
                     let __tmp_52 = xvalue.as_pointer();
-                    __tmp_52.with_mut(|__v| __v.prefix_inc());
+                    __tmp_52.with_mut(|__v| {
+                        __v.prefix_inc();
+                    });
                     __tmp_52
                 },)
                 {
@@ -956,7 +986,9 @@ fn main_0() -> i32 {
             )> = Rc::new(RefCell::new(
                 match ({
                     let __tmp_54 = lvalue.as_pointer();
-                    __tmp_54.with_mut(|__v| __v.prefix_inc());
+                    __tmp_54.with_mut(|__v| {
+                        __v.prefix_inc();
+                    });
                     __tmp_54
                 },)
                 {
@@ -1094,13 +1126,17 @@ fn main_0() -> i32 {
                         match (if (choose != 0) {
                             {
                                 let __tmp_62 = a.as_pointer();
-                                __tmp_62.with_mut(|__v| __v.prefix_inc());
+                                __tmp_62.with_mut(|__v| {
+                                    __v.prefix_inc();
+                                });
                                 __tmp_62
                             }
                         } else {
                             {
                                 let __tmp_63 = b.as_pointer();
-                                __tmp_63.with_mut(|__v| __v.prefix_inc());
+                                __tmp_63.with_mut(|__v| {
+                                    __v.prefix_inc();
+                                });
                                 __tmp_63
                             }
                         },)

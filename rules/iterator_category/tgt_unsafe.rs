@@ -43,8 +43,9 @@ unsafe fn f5<T1: UnsafeCppIterator<T2>, T2>(a0: T1) -> *mut T2 {
     a0.iter_deref()
 }
 
-unsafe fn f6<T1: UnsafeCppIterator<T2>, T2>(a0: &mut T1) -> T1 {
-    a0.iter_inc()
+unsafe fn f6<T1: UnsafeCppIterator<T2>, T2>(a0: *mut T1) -> *mut T1 {
+    (*a0).iter_inc();
+    a0
 }
 
 unsafe fn f7<T1: UnsafeCppIterator<T2>, T2>(a0: &mut T1) -> T1 {
@@ -63,20 +64,23 @@ unsafe fn f10<T1: UnsafeCppInputIterator<T2>, T2>(a0: T1, a1: T1) -> bool {
     a0 != a1
 }
 
-unsafe fn f11<T1: UnsafeCppBidirectionalIterator<T2>, T2>(a0: &mut T1) -> T1 {
-    a0.iter_dec()
+unsafe fn f11<T1: UnsafeCppBidirectionalIterator<T2>, T2>(a0: *mut T1) -> *mut T1 {
+    (*a0).iter_dec();
+    a0
 }
 
 unsafe fn f12<T1: UnsafeCppBidirectionalIterator<T2>, T2>(a0: &mut T1) -> T1 {
     a0.iter_post_dec()
 }
 
-unsafe fn f13<T1: UnsafeCppRandomAccessIterator<T2>, T2>(a0: &mut T1, a1: isize) -> T1 {
-    a0.iter_add_assign(a1)
+unsafe fn f13<T1: UnsafeCppRandomAccessIterator<T2>, T2>(a0: *mut T1, a1: isize) -> *mut T1 {
+    (*a0).iter_add_assign(a1);
+    a0
 }
 
-unsafe fn f14<T1: UnsafeCppRandomAccessIterator<T2>, T2>(a0: &mut T1, a1: isize) -> T1 {
-    a0.iter_add_assign(-a1)
+unsafe fn f14<T1: UnsafeCppRandomAccessIterator<T2>, T2>(a0: *mut T1, a1: isize) -> *mut T1 {
+    (*a0).iter_add_assign(-a1);
+    a0
 }
 
 unsafe fn f15<T1: UnsafeCppRandomAccessIterator<T2>, T2>(a0: T1, a1: isize) -> T1 {
@@ -121,12 +125,14 @@ unsafe fn f24<T1: From<T2>, T2>(a0: T2) -> T1 {
 
 unsafe fn f25<T1: UnsafeCppIterator<T2>, T2>(a0: T1) -> T1 {
     let mut __it = a0;
-    __it.iter_inc()
+    __it.iter_inc();
+    __it
 }
 
 unsafe fn f26<T1: UnsafeCppBidirectionalIterator<T2>, T2>(a0: T1) -> T1 {
     let mut __it = a0;
-    __it.iter_dec()
+    __it.iter_dec();
+    __it
 }
 
 unsafe fn f27<T1: UnsafeCppInputIterator<T3> + PartialEq<T2>, T2: UnsafeCppInputIterator<T3>, T3>(a0: T1, a1: T2) -> bool {

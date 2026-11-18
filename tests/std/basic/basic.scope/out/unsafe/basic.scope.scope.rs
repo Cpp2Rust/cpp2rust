@@ -568,10 +568,10 @@ pub unsafe fn test_59() {
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut revision_57)) == (41)));
 }
 pub unsafe fn next_id_60() -> i32 {
-    return (*std::cell::LazyCell::force_mut(&mut *&raw mut last_61)).prefix_inc();
+    return (*(*std::cell::LazyCell::force_mut(&mut *&raw mut last_61)).prefix_inc());
 }
 pub unsafe fn next_id_62() -> i32 {
-    return (*std::cell::LazyCell::force_mut(&mut *&raw mut last_63)).prefix_inc();
+    return (*(*std::cell::LazyCell::force_mut(&mut *&raw mut last_63)).prefix_inc());
 }
 pub unsafe fn test_64() {
     assert!(((unsafe { next_id_60() }) == (1)));

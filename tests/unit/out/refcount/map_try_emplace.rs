@@ -127,7 +127,9 @@ thread_local!(
     )> = Rc::new(RefCell::new(
         match ({
             let __tmp_1 = global_counter_8.with(|v| v.as_pointer());
-            __tmp_1.with_mut(|__v| __v.prefix_inc());
+            __tmp_1.with_mut(|__v| {
+                __v.prefix_inc();
+            });
             __tmp_1
         },)
         {
@@ -230,7 +232,9 @@ fn main_0() -> i32 {
                                         } else {
                                             match ({
                                                 let __tmp_5 = counter.as_pointer();
-                                                __tmp_5.with_mut(|__v| __v.prefix_inc());
+                                                __tmp_5.with_mut(|__v| {
+                                                    __v.prefix_inc();
+                                                });
                                                 __tmp_5
                                             },)
                                             {

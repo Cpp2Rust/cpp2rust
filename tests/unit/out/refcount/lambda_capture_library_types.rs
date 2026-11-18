@@ -47,7 +47,7 @@ fn main_0() -> i32 {
             let n: Value<i32> = Rc::new(RefCell::new((*n.borrow())));
         },
         || -> i32 {
-            return (*n.borrow_mut()).prefix_inc();
+            return (*(*n.borrow_mut()).prefix_inc());
         }
     )));
     let outer: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new(lambda!(

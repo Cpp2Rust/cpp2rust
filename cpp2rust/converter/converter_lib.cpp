@@ -2623,7 +2623,9 @@ void ReplaceAll(std::string &str, std::string_view from, std::string_view to) {
 }
 
 const char *GetConstCastSuffix(clang::QualType to, clang::QualType from) {
-  if (to.isConstQualified() == from.isConstQualified()) {
+  if (to.isConstQualified() == from.isConstQualified() ||
+      to.getCanonicalType().getUnqualifiedType() !=
+          from.getCanonicalType().getUnqualifiedType()) {
     return nullptr;
   }
   return to.isConstQualified() ? ".cast_const()" : ".cast_mut()";

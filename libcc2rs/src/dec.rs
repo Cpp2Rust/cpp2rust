@@ -32,16 +32,16 @@ macro_rules! postfix_wrap_dec_impl {
 }
 
 pub trait PrefixDec {
-    fn prefix_dec(&mut self) -> Self;
+    fn prefix_dec(&mut self) -> &mut Self;
 }
 
 macro_rules! prefix_nowrap_dec_impl {
     ($($type:ty),*) => {
         $(impl PrefixDec for $type {
             #[inline]
-            fn prefix_dec(&mut self) -> Self {
+            fn prefix_dec(&mut self) -> &mut Self {
                 *self -= 1 as $type;
-                *self
+                self
             }
         })*
     };
@@ -51,9 +51,9 @@ macro_rules! prefix_wrap_dec_impl {
     ($($type:ty),*) => {
         $(impl PrefixDec for $type {
             #[inline]
-            fn prefix_dec(&mut self) -> Self {
+            fn prefix_dec(&mut self) -> &mut Self {
                 *self = self.wrapping_sub(1 as $type);
-                *self
+                self
             }
         })*
     };
@@ -98,22 +98,22 @@ pub trait UnsafePrefixDec {
     /// # Safety
     /// This function decrements a pointer and returns the new value.
     /// The caller must ensure the pointer is valid and doesn't underflow.
-    unsafe fn prefix_dec(&mut self) -> Self;
+    unsafe fn prefix_dec(&mut self) -> &mut Self;
 }
 
 impl<T> UnsafePrefixDec for *const T {
     #[inline]
-    unsafe fn prefix_dec(&mut self) -> Self {
+    unsafe fn prefix_dec(&mut self) -> &mut Self {
         unsafe { *self = self.offset(-1) }
-        *self
+        self
     }
 }
 
 impl<T> UnsafePrefixDec for *mut T {
     #[inline]
-    unsafe fn prefix_dec(&mut self) -> Self {
+    unsafe fn prefix_dec(&mut self) -> &mut Self {
         unsafe { *self = self.offset(-1) }
-        *self
+        self
     }
 }
 
@@ -131,7 +131,7 @@ mod tests {
     #[test]
     fn test_prefix_dec() {
         let mut x = 10;
-        assert_eq!(x.prefix_dec(), 9);
+        assert_eq!(*x.prefix_dec(), 9);
         assert_eq!(x, 9);
     }
 
@@ -152,7 +152,7 @@ mod tests {
         let y = &x as *const i32;
         let mut z = &x as *const i32;
         unsafe {
-            assert_eq!(z.prefix_dec(), y.offset(-1));
+            assert_eq!(*z.prefix_dec(), y.offset(-1));
             assert_eq!(z, y.offset(-1));
         }
     }

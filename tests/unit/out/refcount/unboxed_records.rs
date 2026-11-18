@@ -127,7 +127,9 @@ pub trait CounterImpl {
 }
 impl CounterImpl for Ptr<Counter> {
     fn inc(&self) {
-        field!((*self), n).with_mut(|__v| __v.prefix_inc());
+        field!((*self), n).with_mut(|__v| {
+            __v.prefix_inc();
+        });
     }
 }
 pub fn __cpp2rust_init_globals() {}

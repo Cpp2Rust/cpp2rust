@@ -2510,6 +2510,18 @@ bool Converter::VisitSourceLocExpr(clang::SourceLocExpr *expr) {
   }
 }
 
+std::string Converter::GetCharArrayLiteral(const clang::StringLiteral *expr) {
+  std::string out = "(&[";
+  for (char c : expr->getString()) {
+    auto value = CharRustTypeIsSigned()
+                     ? std::to_string(static_cast<signed char>(c))
+                     : std::to_string(static_cast<unsigned char>(c));
+    out += getTypedLiteral(value.c_str(), CharRustType()) + ", ";
+  }
+  out += getTypedLiteral("0", CharRustType()) + "])";
+  return out;
+}
+
 bool Converter::VisitStringLiteral(clang::StringLiteral *expr) {
   if (IsCodeUnitStringLiteral(expr)) {
     EmitFresh(GetCodeUnitArrayLiteral(expr));
@@ -2538,19 +2550,18 @@ bool Converter::VisitStringLiteral(clang::StringLiteral *expr) {
                           GetEscapedStringLiteral(expr, 1)));
     return false;
   }
+  std::string literal;
   if (expr->getString().contains('\0')) {
-    std::string out = "(&[";
-    for (char c : expr->getString()) {
-      auto value = CharRustTypeIsSigned()
-                       ? std::to_string(static_cast<signed char>(c))
-                       : std::to_string(static_cast<unsigned char>(c));
-      out += getTypedLiteral(value.c_str(), CharRustType()) + ", ";
-    }
-    out += getTypedLiteral("0", CharRustType()) + "])";
-    EmitFresh(out);
-    return false;
+    literal = GetCharArrayLiteral(expr);
+  } else {
+    literal = std::format("c{}", GetEscapedStringLiteral(expr, 0));
   }
-  EmitFresh(std::format("c{}", GetEscapedStringLiteral(expr, 0)));
+  // A pointer to the array.
+  if (isAddrOf()) {
+    literal = std::format("{}.as_ptr().cast::<{}>()", literal,
+                          ToString(expr->getType()));
+  }
+  EmitFresh(literal);
   return false;
 }
 
@@ -3135,6 +3146,11 @@ bool Converter::ConvertIncAndDec(clang::UnaryOperator *expr) {
                        method));
     MarkFresh();
     return true;
+  }
+  bool deref_prefix = expr->isPrefix() && !isVoid();
+  PushParen paren(*this, deref_prefix);
+  if (deref_prefix) {
+    StrCat(token::kStar);
   }
   {
     PushExprKind push(*this, ExprKind::LValue);
@@ -5404,6 +5420,14 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
     return std::move(buf).str();
   }
 
+  if (auto *literal = clang::dyn_cast<clang::StringLiteral>(
+          arg->IgnoreParens()->IgnoreImplicit());
+      literal && arg->getType()->isArrayType() &&
+      !IsCodeUnitStringLiteral(literal)) {
+    MarkFresh();
+    return GetCharArrayLiteral(literal);
+  }
+
   if (ph_ctx.needs_materialization()) {
     auto materialized = ph_ctx.materialize_ctx->GetOrMaterialize(
         static_cast<unsigned>(ph_ctx.materialize_idx),
@@ -5688,7 +5712,9 @@ std::string Converter::ConvertIRFragment(
       assert(arg_idx < all_args.size());
       auto *arg = all_args[arg_idx];
       bool is_receiver = HasReceiver(expr) && arg_idx == 0;
-      bool is_cpp_ptr = arg->getType()->isPointerType();
+      bool cpp_ptr = arg->getType()->isPointerType();
+      bool is_cpp_ptr =
+          cpp_ptr && RuleRegistry::ParamTakesPointerValue(expr, arg_idx);
 
       PlaceholderCtx ph_ctx{
           .arg_idx = arg_idx,
@@ -5701,9 +5727,8 @@ std::string Converter::ConvertIRFragment(
           .is_cpp_ptr = is_cpp_ptr,
           // Whatever its spelling, a pointer in C++ is converted as one.
           .maps_to_rust_ptr =
-              !is_cpp_ptr &&
-              RuleRegistry::MapsToPointer(
-                  ctx_, arg->IgnoreParenNoopCasts(ctx_)->getType()),
+              !cpp_ptr && RuleRegistry::MapsToPointer(
+                              ctx_, arg->IgnoreParenNoopCasts(ctx_)->getType()),
           .declared_in_rule_as_rust_ptr =
               RuleRegistry::ParamIsPointer(ctx_, expr, arg_idx),
           .is_index_base = ph->is_index_base,

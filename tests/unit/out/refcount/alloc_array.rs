@@ -22,7 +22,7 @@ pub fn All_0(arr: Ptr<Option<Value<Box<[i32]>>>>, mut N: i32, mut element: i32) 
 pub fn Consume_1(mut arr: Option<Value<Box<[i32]>>>, mut N: i32) -> i32 {
     let mut sum: i32 = 0;
     let mut i: i32 = -1_i32;
-    'loop_: while (i.prefix_inc() < N) {
+    'loop_: while ((*i.prefix_inc()) < N) {
         sum += (arr.decay().offset((i as usize)).read());
     }
     return sum;

@@ -1444,17 +1444,17 @@ impl<T> PostfixDec for Ptr<T> {
 
 impl<T> PrefixInc for Ptr<T> {
     #[inline]
-    fn prefix_inc(&mut self) -> Self {
+    fn prefix_inc(&mut self) -> &mut Self {
         self.offset = self.offset.wrapping_add(self.elem_step());
-        self.clone()
+        self
     }
 }
 
 impl<T> PrefixDec for Ptr<T> {
     #[inline]
-    fn prefix_dec(&mut self) -> Self {
+    fn prefix_dec(&mut self) -> &mut Self {
         self.offset = self.offset.wrapping_sub(self.elem_step());
-        self.clone()
+        self
     }
 }
 

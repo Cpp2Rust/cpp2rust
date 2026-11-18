@@ -32,16 +32,16 @@ macro_rules! postfix_wrap_inc_impl {
 }
 
 pub trait PrefixInc {
-    fn prefix_inc(&mut self) -> Self;
+    fn prefix_inc(&mut self) -> &mut Self;
 }
 
 macro_rules! prefix_nowrap_inc_impl {
     ($($type:ty),*) => {
         $(impl PrefixInc for $type {
             #[inline]
-            fn prefix_inc(&mut self) -> Self {
+            fn prefix_inc(&mut self) -> &mut Self {
                 *self += 1 as $type;
-                *self
+                self
             }
         })*
     };
@@ -51,9 +51,9 @@ macro_rules! prefix_wrap_inc_impl {
     ($($type:ty),*) => {
         $(impl PrefixInc for $type {
             #[inline]
-            fn prefix_inc(&mut self) -> Self {
+            fn prefix_inc(&mut self) -> &mut Self {
                 *self = self.wrapping_add(1 as $type);
-                *self
+                self
             }
         })*
     };
@@ -98,22 +98,22 @@ pub trait UnsafePrefixInc {
     /// # Safety
     /// This function increments a pointer and returns the new value.
     /// The caller must ensure the pointer is valid and doesn't overflow.
-    unsafe fn prefix_inc(&mut self) -> Self;
+    unsafe fn prefix_inc(&mut self) -> &mut Self;
 }
 
 impl<T> UnsafePrefixInc for *const T {
     #[inline]
-    unsafe fn prefix_inc(&mut self) -> Self {
+    unsafe fn prefix_inc(&mut self) -> &mut Self {
         unsafe { *self = self.offset(1) }
-        *self
+        self
     }
 }
 
 impl<T> UnsafePrefixInc for *mut T {
     #[inline]
-    unsafe fn prefix_inc(&mut self) -> Self {
+    unsafe fn prefix_inc(&mut self) -> &mut Self {
         unsafe { *self = self.offset(1) }
-        *self
+        self
     }
 }
 
@@ -131,7 +131,7 @@ mod tests {
     #[test]
     fn test_prefix_inc() {
         let mut x = 10;
-        assert_eq!(x.prefix_inc(), 11);
+        assert_eq!(*x.prefix_inc(), 11);
         assert_eq!(x, 11);
     }
 
@@ -152,7 +152,7 @@ mod tests {
         let y = &x as *const i32;
         let mut z = &x as *const i32;
         unsafe {
-            assert_eq!(z.prefix_inc(), y.offset(1));
+            assert_eq!(*z.prefix_inc(), y.offset(1));
             assert_eq!(z, y.offset(1));
         }
     }
