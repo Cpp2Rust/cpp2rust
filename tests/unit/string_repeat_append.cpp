@@ -42,6 +42,9 @@ int main() {
   std::string *pointer = &indirect;
   pointer->append(std::size_t(0), '\0');
   assert(indirect == "cr");
+  std::string chained = "a";
+  chained.append(3, 'x').append(2, 'y');
+  assert(chained == "axxxyy");
   printf("checked %zu appends\n", cases);
   return 0;
 }
