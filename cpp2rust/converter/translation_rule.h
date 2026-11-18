@@ -138,9 +138,9 @@ struct ExprRule {
   std::vector<bool> argsToBind(clang::ASTContext &ctx, const clang::Expr *expr,
                                llvm::ArrayRef<clang::Expr *> args) const;
 
-  // Whether the body takes a pointer to arg, its argument i, which is not a
-  // pointer.
-  bool takesAddress(clang::ASTContext &ctx, unsigned i,
+  // Whether the body takes a pointer to arg, argument i of expr, rather than
+  // its value.
+  bool takesAddress(clang::ASTContext &ctx, const clang::Expr *expr, unsigned i,
                     const clang::Expr *arg) const;
 
   // Whether the body takes a pointer to a temporary copy of arg, argument i

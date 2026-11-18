@@ -57,6 +57,8 @@ bool ReturnsReference(const clang::Expr *expr);
 bool ParamIsPointer(clang::ASTContext &ctx, const clang::Expr *expr,
                     unsigned index);
 
+bool ParamTakesPointerValue(const clang::Expr *expr, unsigned index);
+
 clang::Expr *BuildParamConversion(clang::ASTContext &ctx,
                                   const clang::Expr *expr, unsigned index,
                                   clang::Expr *arg);

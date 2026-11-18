@@ -256,6 +256,24 @@ unsafe fn main_0() -> i32 {
         .wrapping_add(((*value_0) as usize)))
             == (21_usize))
     );
+    let mut pk1: i32 = 0;
+    let mut pk2: i32 = 0;
+    let mut ptr_counts: UnsafeMap<*mut i32, (*mut i32, i32)> = UnsafeMap::new();
+    let mut ptr_key: *mut i32 = (&mut pk1 as *mut i32);
+    (*ptr_counts.subscript(&ptr_key)) = 1;
+    ptr_key = (&mut pk2 as *mut i32);
+    (*ptr_counts.subscript(&ptr_key)) = 2;
+    (*ptr_counts.subscript(&ptr_key)) += 3;
+    assert!(((ptr_counts.len()) == (2_usize)));
+    assert!(((*ptr_counts.subscript(&ptr_key)) == (5)));
+    ptr_key = (&mut pk1 as *mut i32);
+    assert!(((*ptr_counts.subscript(&ptr_key)) == (1)));
+    (*ptr_counts.subscript_move(&mut (&mut pk2 as *mut i32), |__k| cpp_move_unsafe!(__k))) += 1;
+    assert!(
+        ((*ptr_counts.subscript_move(&mut (&mut pk2 as *mut i32), |__k| cpp_move_unsafe!(__k)))
+            == (6))
+    );
+    assert!(((pk1) == (0)) && ((pk2) == (0)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

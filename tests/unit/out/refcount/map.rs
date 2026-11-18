@@ -788,6 +788,40 @@ fn main_0() -> i32 {
                 == 21_usize)
         })
     );
+    let pk1: Value<i32> = Rc::new(RefCell::new(0));
+    let pk2: Value<i32> = Rc::new(RefCell::new(0));
+    let ptr_counts: Value<Map<Ptr<i32>, (Value<Ptr<i32>>, Value<i32>)>> =
+        Rc::new(RefCell::new(Map::new()));
+    let ptr_key: Value<Ptr<i32>> = Rc::new(RefCell::new((pk1.as_pointer())));
+    Map::subscript(ptr_counts.as_pointer(), ptr_key.as_pointer()).write(1);
+    (*ptr_key.borrow_mut()) = (pk2.as_pointer());
+    Map::subscript(ptr_counts.as_pointer(), ptr_key.as_pointer()).write(2);
+    {
+        Map::subscript(ptr_counts.as_pointer(), ptr_key.as_pointer())
+            .with_mut(|__v| *__v = *__v + 3)
+    };
+    assert!(({ ((*ptr_counts.borrow()).len() == 2_usize) }));
+    assert!(((Map::subscript(ptr_counts.as_pointer(), ptr_key.as_pointer()).read()) == 5));
+    (*ptr_key.borrow_mut()) = (pk1.as_pointer());
+    assert!(((Map::subscript(ptr_counts.as_pointer(), ptr_key.as_pointer()).read()) == 1));
+    {
+        Map::subscript_move(
+            ptr_counts.as_pointer(),
+            Rc::new(RefCell::new((pk2.as_pointer()))).as_pointer(),
+            |__k| cpp_move!(__k),
+        )
+        .with_mut(|__v| *__v = *__v + 1)
+    };
+    assert!(
+        ((Map::subscript_move(
+            ptr_counts.as_pointer(),
+            Rc::new(RefCell::new((pk2.as_pointer()))).as_pointer(),
+            |__k| cpp_move!(__k)
+        )
+        .read())
+            == 6)
+    );
+    assert!(({ ((*pk1.borrow()) == 0) && ((*pk2.borrow()) == 0) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

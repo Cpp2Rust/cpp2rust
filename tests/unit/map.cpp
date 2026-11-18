@@ -152,5 +152,20 @@ int main() {
   k = 0;
   const auto &value_0 = m.at(k);
   assert(m.size() + x1 + x2 + x3 + x4 + x5 + value_0 == 21);
+
+  int pk1 = 0, pk2 = 0;
+  std::map<int *, int> ptr_counts;
+  int *ptr_key = &pk1;
+  ptr_counts[ptr_key] = 1;
+  ptr_key = &pk2;
+  ptr_counts[ptr_key] = 2;
+  ptr_counts[ptr_key] += 3;
+  assert(ptr_counts.size() == 2);
+  assert(ptr_counts[ptr_key] == 5);
+  ptr_key = &pk1;
+  assert(ptr_counts[ptr_key] == 1);
+  ptr_counts[&pk2] += 1;
+  assert(ptr_counts[&pk2] == 6);
+  assert(pk1 == 0 && pk2 == 0);
   return 0;
 }
