@@ -2,6 +2,7 @@
 #include <cassert>
 #include <initializer_list>
 #include <utility>
+#include <vector>
 
 // N4950 [class.copy.ctor]/11: a copy/move constructor that is not
 // user-provided is trivial.
@@ -24,11 +25,20 @@ void test() {
 // N4950 [class.copy.ctor]/14: the implicitly-defined move constructor
 // performs a memberwise move, so a trivial move leaves the source unchanged.
 namespace p14_trivial_move_keeps_source {
+int deref(std::vector<int>::iterator it) { return *it; }
+
 void test() {
   std::initializer_list<int> source = {1, 2, 3};
   std::initializer_list<int> moved = std::move(source);
   assert(moved.size() == 3);
   assert(source.size() == 3);
+  std::vector<int> values{7, 8};
+  std::vector<int>::iterator it = values.begin();
+  assert(deref(std::move(it)) == 7);
+  assert(*it == 7);
+  std::vector<int>::iterator moved_it = std::move(it);
+  assert(*moved_it == 7);
+  assert(*it == 7);
 }
 } // namespace p14_trivial_move_keeps_source
 
