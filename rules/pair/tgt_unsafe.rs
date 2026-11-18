@@ -91,3 +91,23 @@ where
 {
     &*a0.get::<T1>()
 }
+
+unsafe fn f28<T1: PartialEq, T2: PartialEq>(a0: (T1, T2), a1: (T1, T2)) -> bool {
+    a0 != a1
+}
+
+unsafe fn f29<T1: PartialOrd, T2: PartialOrd>(a0: (T1, T2), a1: (T1, T2)) -> bool {
+    a0 < a1
+}
+
+unsafe fn f30<T1: PartialOrd, T2: PartialOrd>(a0: (T1, T2), a1: (T1, T2)) -> bool {
+    a0 <= a1
+}
+
+unsafe fn f31<T1: PartialOrd, T2: PartialOrd>(a0: (T1, T2), a1: (T1, T2)) -> bool {
+    a0 > a1
+}
+
+unsafe fn f32<T1: PartialOrd, T2: PartialOrd>(a0: (T1, T2), a1: (T1, T2)) -> bool {
+    a0 >= a1
+}
