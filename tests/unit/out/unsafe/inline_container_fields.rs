@@ -58,7 +58,7 @@ impl State {
             grid: std::array::from_fn::<_, 2, _>(|__i: usize| {
                 std::array::from_fn::<_, 3, _>(|__i2: usize| (*_a0).grid[(__i)][(__i2)])
             }),
-            arr: std::array::from_fn(|__i| (*&mut (&mut (*_a0)).arr[__i])),
+            arr: (*_a0).arr.clone(),
             elems: std::mem::take(&mut (*_a0).elems),
             rows: std::mem::take(&mut (*_a0).rows),
         };

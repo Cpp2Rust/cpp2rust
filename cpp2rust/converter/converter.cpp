@@ -4071,7 +4071,11 @@ bool Converter::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
     return false;
   }
 
-  if (auto str = GetMappedAsString(expr, expr->getArgs(), expr->getNumArgs());
+  auto *ctor = expr->getConstructor();
+  bool trivial_move = ctor->isMoveConstructor() && ctor->isTrivial();
+  if (auto str = trivial_move ? std::string()
+                              : GetMappedAsString(expr, expr->getArgs(),
+                                                  expr->getNumArgs());
       !str.empty()) {
     StrCat(str);
     if (!IsPassThroughRule(expr)) {
@@ -4080,7 +4084,6 @@ bool Converter::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
     return false;
   }
 
-  auto *ctor = expr->getConstructor();
   if (IsLambdaCopyOrMoveConstructor(ctor)) {
     Convert(expr->getArg(0));
     EmitFresh(std::format(".{}()", GetCopyOrMoveName(ctor)));

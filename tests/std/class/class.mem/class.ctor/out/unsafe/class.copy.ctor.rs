@@ -37,11 +37,21 @@ pub unsafe fn test_1() {
     });
     assert!(((result.value) == (7)));
 }
-pub unsafe fn test_2() {
+pub unsafe fn read_by_value_2(mut it: UnsafeRandomAccessIterator<i32>) -> i32 {
+    return (*it.iter_deref());
+}
+pub unsafe fn test_3() {
     let mut source: Vec<i32> = Vec::from([1, 2, 3]);
     let mut moved: Vec<i32> = source.clone();
     assert!(((moved.len()) == (3_usize)));
     assert!(((source.len()) == (3_usize)));
+    let mut values: Vec<i32> = Vec::from([7, 8]);
+    let mut it: UnsafeRandomAccessIterator<i32> = values.begin();
+    assert!(((unsafe { read_by_value_2(it.clone(),) }) == (7)));
+    assert!(((*it.iter_deref()) == (7)));
+    let mut moved_it: UnsafeRandomAccessIterator<i32> = it.clone();
+    assert!(((*moved_it.iter_deref()) == (7)));
+    assert!(((*it.iter_deref()) == (7)));
 }
 pub fn main() {
     unsafe {
@@ -51,7 +61,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     (unsafe { test_1() });
-    (unsafe { test_2() });
+    (unsafe { test_3() });
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}
