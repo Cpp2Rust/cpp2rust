@@ -10,15 +10,17 @@ pub unsafe fn first_nonnull_0(mut count: i32, __args: Box<[VaArg]>) -> i32 {
     let mut ap: *const VaArg = ::std::ptr::null();
     ap = __args.as_ptr();
     let mut result: i32 = -1_i32;
-    let mut i: i32 = 0;
-    'loop_: while ((((i) < (count)) as i32) != 0) {
-        let mut p: *mut i32 = ap.arg::<*mut i32>();
-        if (((!((p).is_null())) as i32) != 0) {
-            result = (*p);
-            break;
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (count)) {
+            let mut p: *mut i32 = ap.arg::<*mut i32>();
+            if (!((p).is_null())) {
+                result = (*p);
+                break;
+            }
+            i.postfix_inc();
         }
-        i.postfix_inc();
-    }
+    };
     return result;
 }
 pub fn main() {
@@ -30,7 +32,7 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut x: i32 = 42;
     assert!(
-        ((((unsafe {
+        ((unsafe {
             first_nonnull_0(
                 2,
                 Box::new([
@@ -38,11 +40,10 @@ unsafe fn main_0() -> i32 {
                     (&mut x as *mut i32).into(),
                 ]),
             )
-        }) == (42)) as i32)
-            != 0)
+        }) == (42))
     );
     assert!(
-        ((((unsafe {
+        ((unsafe {
             first_nonnull_0(
                 3,
                 Box::new([
@@ -51,13 +52,11 @@ unsafe fn main_0() -> i32 {
                     (&mut x as *mut i32).into(),
                 ]),
             )
-        }) == (42)) as i32)
-            != 0)
+        }) == (42))
     );
     assert!(
-        ((((unsafe { first_nonnull_0(1, Box::new([(0 as *mut ::libc::c_void).into(),])) })
-            == (-1_i32)) as i32)
-            != 0)
+        ((unsafe { first_nonnull_0(1, Box::new([(0 as *mut ::libc::c_void).into(),])) })
+            == (-1_i32))
     );
     return 0;
 }

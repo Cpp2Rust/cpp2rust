@@ -33,8 +33,8 @@ unsafe fn main_0() -> i32 {
         head: (&mut n as *mut node),
         size: 1,
     };
-    assert!((((((*l.head).value) == (42)) as i32) != 0));
-    assert!(((((l.size) == (1)) as i32) != 0));
+    assert!((((*l.head).value) == (42)));
+    assert!(((l.size) == (1)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

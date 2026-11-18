@@ -20,8 +20,8 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(((((unsafe { a_value_1() }) == (7)) as i32) != 0));
-    assert!(((((unsafe { b_value_2() }) == (9)) as i32) != 0));
+    assert!(((unsafe { a_value_1() }) == (7)));
+    assert!(((unsafe { b_value_2() }) == (9)));
     return 0;
 }
 pub type anon_3 = u32;

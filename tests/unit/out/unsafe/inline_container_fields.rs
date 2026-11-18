@@ -30,7 +30,7 @@ impl Elem {
         ) {
             (mut __tmp_0, mut __tmp_1) => {
                 if 16_usize != 0 {
-                    ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, 16_usize as usize)
+                    ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, 16_usize)
                 }
                 __tmp_0
             }
@@ -69,7 +69,7 @@ impl State {
         ) {
             (mut __tmp_2, mut __tmp_3) => {
                 if 24_usize != 0 {
-                    ::std::ptr::copy_nonoverlapping(__tmp_3, __tmp_2, 24_usize as usize)
+                    ::std::ptr::copy_nonoverlapping(__tmp_3, __tmp_2, 24_usize)
                 }
                 __tmp_2
             }
@@ -97,39 +97,47 @@ impl Default for State {
 }
 pub unsafe fn sum_0(mut p: *const i32, mut n: i32) -> i32 {
     let mut s: i32 = 0;
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (n)) {
-        s += (*p.offset((i) as isize));
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (n)) {
+            s += (*p.offset((i) as isize));
+            i.prefix_inc();
+        }
     }
     return s;
 }
 pub unsafe fn fill_1(mut s: *mut State) {
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (2)) {
-        let mut j: i32 = 0;
-        'loop_: while ((j) < (3)) {
-            (*s).grid[(i) as usize][(j) as usize] = (((i) * (3)) + (j));
-            j.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (2)) {
+            {
+                let mut j: i32 = 0;
+                'loop_: while ((j) < (3)) {
+                    (*s).grid[(i) as usize][(j) as usize] = (((i) * (3)) + (j));
+                    j.prefix_inc();
+                }
+            }
+            i.prefix_inc();
         }
-        i.prefix_inc();
     }
     (&mut (*s)).arr[(1_usize)] = 7;
     {
-        let __a0 = 3_usize as usize;
+        let __a0 = 3_usize;
         (*s).elems.resize_with(__a0, || <Elem>::default())
     };
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (3)) {
-        (&mut (*s)).elems[(i as usize)].id = i;
-        (&mut (*s)).elems[(i as usize)].hist[(i) as usize] = ((10) * (i));
-        {
-            let __a0 = 4_usize as usize;
-            (&mut (*s)).elems[(i as usize)]
-                .coeffs
-                .resize(__a0, (i as i16))
-        };
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (3)) {
+            (&mut (*s)).elems[(i as usize)].id = i;
+            (&mut (*s)).elems[(i as usize)].hist[(i) as usize] = ((10) * (i));
+            {
+                let __a0 = 4_usize;
+                (&mut (*s)).elems[(i as usize)]
+                    .coeffs
+                    .resize(__a0, (i as i16))
+            };
+            i.prefix_inc();
+        }
     }
     {
         let __a1 = Vec::from([1, 2, 3]);
@@ -197,10 +205,12 @@ unsafe fn main_0() -> i32 {
     let mut h: *mut i32 = (*e).hist.as_mut_ptr();
     let mut c: *mut i16 = (&mut (&mut (*e)).coeffs[(1_usize)] as *mut i16);
     let mut id: *mut i32 = (&mut s.elems[(1_usize)].id as *mut i32);
-    let mut k: i32 = 0;
-    'loop_: while ((k) < (4)) {
-        (*h.offset((k) as isize)) += k;
-        k.prefix_inc();
+    {
+        let mut k: i32 = 0;
+        'loop_: while ((k) < (4)) {
+            (*h.offset((k) as isize)) += k;
+            k.prefix_inc();
+        }
     }
     (*c) = (((*c) as i32) + 5) as i16;
     (*id) = 11;
@@ -244,7 +254,7 @@ unsafe fn main_0() -> i32 {
         .collect::<Vec<_>>();
     let mut first: *mut Elem = (&mut elems[(0_usize)] as *mut Elem);
     {
-        let __a0 = 2_usize as usize;
+        let __a0 = 2_usize;
         elems[(1_usize)].coeffs.resize_with(__a0, || 0_i16)
     };
     elems[(1_usize)].coeffs[(1_usize)] = 4_i16;
@@ -284,6 +294,7 @@ unsafe fn main_0() -> i32 {
             && ((cc[(1_usize)].v) == (5)))
             && ((cb[(1_usize)].v) == (5))
     );
+    assert!(((3) == (3_usize)));
     cc[(2_usize)].v = 8;
     for __i in 0..3 {
         (*&mut cb[__i]).copy_assign(&cc[__i]);

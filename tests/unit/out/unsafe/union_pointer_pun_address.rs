@@ -28,11 +28,7 @@ unsafe fn main_0() -> i32 {
     let mut ptr: anon_0 = <anon_0>::default();
     ptr.to_a = (&mut a as *mut node_a);
     let mut out: *mut node_b = ptr.to_b;
-    assert!(
-        ((((out as *mut ::libc::c_void) == ((&mut a as *mut node_a) as *mut ::libc::c_void))
-            as i32)
-            != 0)
-    );
+    assert!(((out as *mut ::libc::c_void) == ((&mut a as *mut node_a) as *mut ::libc::c_void)));
     return 0;
 }
 #[repr(C)]

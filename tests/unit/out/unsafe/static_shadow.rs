@@ -24,9 +24,9 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(((((unsafe { param_shadow_1(10,) }) == (11)) as i32) != 0));
-    assert!(((((unsafe { local_shadow_2() }) == (99)) as i32) != 0));
-    assert!(((((unsafe { read_global_3() }) == (5)) as i32) != 0));
+    assert!(((unsafe { param_shadow_1(10,) }) == (11)));
+    assert!(((unsafe { local_shadow_2() }) == (99)));
+    assert!(((unsafe { read_global_3() }) == (5)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {

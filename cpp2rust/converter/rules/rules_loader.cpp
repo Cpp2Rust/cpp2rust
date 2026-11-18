@@ -180,6 +180,10 @@ private:
     if (type->isPointerType() || type->isReferenceType()) {
       return AddType(type->getPointeeType());
     }
+    if (const auto *member = type->getAs<clang::MemberPointerType>()) {
+      AddType(ctx_.getCanonicalTagType(member->getMostRecentCXXRecordDecl()));
+      return AddType(member->getPointeeType());
+    }
     if (const auto *array = ctx_.getAsArrayType(type)) {
       return AddType(array->getElementType());
     }

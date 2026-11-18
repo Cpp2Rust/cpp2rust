@@ -27,7 +27,7 @@ fn f1<T1: CppArray<T2>, T2: Default>(a0: usize) -> Option<Value<Box<[T2]>>> {
     )))
 }
 
-fn f2<T1>(a0: Value<T1>) -> Ptr<T1> {
+fn f2<T1>(a0: Option<Value<T1>>) -> Ptr<T1> {
     a0.as_pointer()
 }
 
@@ -35,7 +35,7 @@ fn f3<T1>(a0: Ptr<T1>) -> Option<Value<T1>> {
     a0.to_owned_opt()
 }
 
-fn f4<T1>(a0: Ptr<T1>) -> Option<Value<T1>> {
+fn f4<T1>(a0: Ptr<T1>) -> Option<Value<Box<[T1]>>> {
     a0.to_owned_opt()
 }
 
@@ -48,8 +48,8 @@ fn f6<T1: ByteRepr>(a0: Ptr<Option<Value<Box<[T1]>>>>, a1: Ptr<T1>) {
     a0.write(a1.to_owned_opt())
 }
 
-fn f7<T1>(a0: Value<T1>) -> Ptr<T1> {
-    a0.as_pointer()
+fn f7<T1>(a0: Option<Value<Box<[T1]>>>) -> Ptr<T1> {
+    a0.decay()
 }
 
 fn f8<T1>(init: T1) -> Option<Value<T1>> {
@@ -88,16 +88,16 @@ fn f15<T1: ByteRepr>(a0: Ptr<Option<Value<Box<[T1]>>>>, a1: &mut Option<Value<Bo
     a0.write(a1.take())
 }
 
-fn f17<T1>(a0: Value<T1>) -> Ptr<T1> {
+fn f17<T1>(a0: Option<Value<T1>>) -> Ptr<T1> {
     a0.as_pointer()
 }
 
-fn f18<T1>(a0: Value<T1>) -> Ptr<T1> {
+fn f18<T1>(a0: Option<Value<T1>>) -> Ptr<T1> {
     a0.as_pointer()
 }
 
-fn f19<T1>(a0: Value<T1>, a1: usize) -> Ptr<T1> {
-    (a0.as_pointer() as Ptr<T1>).offset(a1 as isize)
+fn f19<T1>(a0: Option<Value<Box<[T1]>>>, a1: usize) -> Ptr<T1> {
+    a0.decay().offset(a1)
 }
 
 fn f20<T1>(a0: Option<Value<T1>>) -> bool {

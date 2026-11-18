@@ -23,8 +23,8 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(((((unsafe { a_value_0() }) == (11)) as i32) != 0));
-    assert!(((((unsafe { b_value_1() }) == (2)) as i32) != 0));
+    assert!(((unsafe { a_value_0() }) == (11)));
+    assert!(((unsafe { b_value_1() }) == (2)));
     return 0;
 }
 pub type widget_enum = u32;

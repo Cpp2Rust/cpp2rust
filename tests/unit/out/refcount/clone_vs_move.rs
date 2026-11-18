@@ -80,7 +80,9 @@ fn main_0() -> i32 {
     assert!((x6 == 2));
     let mut other_pointer: Ptr<i32> = (pointer).clone();
     assert!(({ (other_pointer).clone() } == { (pointer).clone() }));
-    other_pointer.with_mut(|__v| __v.prefix_inc());
+    other_pointer.with_mut(|__v| {
+        __v.prefix_inc();
+    });
     assert!(({ (other_pointer.read()) } == { (pointer.read()) }));
     let mut f1: Foo = Foo {
         x: 1,
@@ -95,12 +97,16 @@ fn main_0() -> i32 {
     assert!(((f1.z.read()) == 2));
     let mut f2: Foo = (f1).clone();
     f2.x.prefix_inc();
-    f2.y.with_mut(|__v| __v.prefix_inc());
+    f2.y.with_mut(|__v| {
+        __v.prefix_inc();
+    });
     assert!((f2.x == 2));
     assert!(((f2.y.read()) == 3));
     assert!((f1.x == 1));
     assert!(((f1.y.read()) == 3));
-    f2.z.with_mut(|__v| __v.prefix_inc());
+    f2.z.with_mut(|__v| {
+        __v.prefix_inc();
+    });
     assert!(((f2.y.read()) == 4));
     assert!(({ (f2.z).clone() } == { (x1.as_pointer()) }));
     assert!(((f2.z.read()) == 4));
@@ -121,102 +127,134 @@ fn main_0() -> i32 {
     assert!((f1.bar.w == 10));
     let mut N: i32 = 5;
     let mut v1: Vec<i32> = Vec::new();
-    let mut i: i32 = 0;
-    'loop_: while (i < N) {
-        {
-            let a0_clone = i.clone();
-            v1.push(a0_clone)
-        };
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < N) {
+            {
+                let a0_clone = i.clone();
+                v1.push(a0_clone)
+            };
+            i.prefix_inc();
+        }
     }
     let mut v2: Vec<i32> = v1.clone();
-    let mut i: i32 = 0;
-    'loop_: while (i < N) {
-        assert!((v2[(i as usize)] == i));
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < N) {
+            assert!((v2[(i as usize)] == i));
+            i.prefix_inc();
+        }
     }
-    let mut i: i32 = 0;
-    'loop_: while (i < N) {
-        v2[(i as usize)].prefix_inc();
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < N) {
+            v2[(i as usize)].prefix_inc();
+            i.prefix_inc();
+        }
     }
-    let mut i: i32 = 0;
-    'loop_: while (i < N) {
-        assert!((v2[(i as usize)] == (i + 1)));
-        assert!((v1[(i as usize)] == i));
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < N) {
+            assert!((v2[(i as usize)] == (i + 1)));
+            assert!((v1[(i as usize)] == i));
+            i.prefix_inc();
+        }
     }
     let m1: Value<Vec<Vec<i32>>> = Rc::new(RefCell::new(Vec::new()));
-    let mut i: i32 = 0;
-    'loop_: while (i < N) {
-        {
-            let __a1 = (0..(10_usize) as usize).map(|_| 0_i32).collect::<Vec<_>>();
-            (*m1.borrow_mut()).push(__a1)
-        };
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < N) {
+            {
+                let __a1 = (0..(10_usize) as usize).map(|_| 0_i32).collect::<Vec<_>>();
+                (*m1.borrow_mut()).push(__a1)
+            };
+            i.prefix_inc();
+        }
     }
     let m2: Value<Vec<Vec<i32>>> = Rc::new(RefCell::new((*m1.borrow()).clone()));
-    let mut i: i32 = 0;
-    'loop_: while (i < N) {
-        assert!(({ ((*m1.decay().offset((i as usize)).upgrade().deref()).len() == 10_usize) }));
-        assert!(({ ((*m2.decay().offset((i as usize)).upgrade().deref()).len() == 10_usize) }));
-        let mut j: i32 = 0;
-        'loop_: while (j < 10) {
-            assert!(((index!(elem!(m1.decay(), (i as usize)), (j as usize)).read()) == 0));
-            assert!(((index!(elem!(m2.decay(), (i as usize)), (j as usize)).read()) == 0));
-            j.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < N) {
+            assert!(({ ((*m1.decay().offset((i as usize)).upgrade().deref()).len() == 10_usize) }));
+            assert!(({ ((*m2.decay().offset((i as usize)).upgrade().deref()).len() == 10_usize) }));
+            {
+                let mut j: i32 = 0;
+                'loop_: while (j < 10) {
+                    assert!(((index!(elem!(m1.decay(), (i as usize)), (j as usize)).read()) == 0));
+                    assert!(((index!(elem!(m2.decay(), (i as usize)), (j as usize)).read()) == 0));
+                    j.prefix_inc();
+                }
+            }
+            i.prefix_inc();
         }
-        i.prefix_inc();
     }
-    let mut i: i32 = 0;
-    'loop_: while (i < N) {
-        let mut j: i32 = 0;
-        'loop_: while (j < 10) {
-            index!(elem!(m2.decay(), (i as usize)), (j as usize)).with_mut(|__v| __v.postfix_inc());
-            j.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < N) {
+            {
+                let mut j: i32 = 0;
+                'loop_: while (j < 10) {
+                    index!(elem!(m2.decay(), (i as usize)), (j as usize))
+                        .with_mut(|__v| __v.postfix_inc());
+                    j.prefix_inc();
+                }
+            }
+            i.prefix_inc();
         }
-        i.prefix_inc();
     }
-    let mut i: i32 = 0;
-    'loop_: while (i < N) {
-        assert!(({ ((*m1.decay().offset((i as usize)).upgrade().deref()).len() == 10_usize) }));
-        assert!(({ ((*m2.decay().offset((i as usize)).upgrade().deref()).len() == 10_usize) }));
-        let mut j: i32 = 0;
-        'loop_: while (j < 10) {
-            assert!(((index!(elem!(m1.decay(), (i as usize)), (j as usize)).read()) == 0));
-            assert!(((index!(elem!(m2.decay(), (i as usize)), (j as usize)).read()) == 1));
-            j.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < N) {
+            assert!(({ ((*m1.decay().offset((i as usize)).upgrade().deref()).len() == 10_usize) }));
+            assert!(({ ((*m2.decay().offset((i as usize)).upgrade().deref()).len() == 10_usize) }));
+            {
+                let mut j: i32 = 0;
+                'loop_: while (j < 10) {
+                    assert!(((index!(elem!(m1.decay(), (i as usize)), (j as usize)).read()) == 0));
+                    assert!(((index!(elem!(m2.decay(), (i as usize)), (j as usize)).read()) == 1));
+                    j.prefix_inc();
+                }
+            }
+            i.prefix_inc();
         }
-        i.prefix_inc();
     }
     let map1: Value<Map<i32, (Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < N) {
-        let __rhs = (*i.borrow());
-        Map::subscript(map1.as_pointer(), i.as_pointer()).write(__rhs);
-        (*i.borrow_mut()).prefix_inc();
+    {
+        let i: Value<i32> = Rc::new(RefCell::new(0));
+        'loop_: while ((*i.borrow()) < N) {
+            let __rhs = (*i.borrow());
+            Map::subscript(map1.as_pointer(), i.as_pointer()).write(__rhs);
+            (*i.borrow_mut()).prefix_inc();
+        }
     }
     let map2: Value<Map<i32, (Value<i32>, Value<i32>)>> =
         Rc::new(RefCell::new((*map1.borrow()).clone()));
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < N) {
-        assert!(
-            ({ ((Map::subscript(map2.as_pointer(), i.as_pointer()).read()) == (*i.borrow())) })
-        );
-        Map::subscript(map2.as_pointer(), i.as_pointer()).with_mut(|__v| __v.prefix_inc());
-        (*i.borrow_mut()).prefix_inc();
+    {
+        let i: Value<i32> = Rc::new(RefCell::new(0));
+        'loop_: while ((*i.borrow()) < N) {
+            assert!(
+                ({ ((Map::subscript(map2.as_pointer(), i.as_pointer()).read()) == (*i.borrow())) })
+            );
+            Map::subscript(map2.as_pointer(), i.as_pointer()).with_mut(|__v| {
+                __v.prefix_inc();
+            });
+            (*i.borrow_mut()).prefix_inc();
+        }
     }
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < N) {
-        assert!(
-            ({ ((Map::subscript(map1.as_pointer(), i.as_pointer()).read()) == (*i.borrow())) })
-        );
-        assert!(
-            ({
-                ((Map::subscript(map2.as_pointer(), i.as_pointer()).read()) == ((*i.borrow()) + 1))
-            })
-        );
-        (*i.borrow_mut()).prefix_inc();
+    {
+        let i: Value<i32> = Rc::new(RefCell::new(0));
+        'loop_: while ((*i.borrow()) < N) {
+            assert!(
+                ({ ((Map::subscript(map1.as_pointer(), i.as_pointer()).read()) == (*i.borrow())) })
+            );
+            assert!(
+                ({
+                    ((Map::subscript(map2.as_pointer(), i.as_pointer()).read())
+                        == ((*i.borrow()) + 1))
+                })
+            );
+            (*i.borrow_mut()).prefix_inc();
+        }
     }
     let pair1: Value<(Value<i32>, Value<i32>)> = Rc::new(RefCell::new((
         Rc::new(RefCell::new(1)),
@@ -274,17 +312,21 @@ fn main_0() -> i32 {
     assert!((b2.w == 2));
     let v4: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
     v4.as_pointer().write((v2).clone());
-    let mut i: i32 = 0;
-    'loop_: while (i < N) {
-        assert!(({ ({ (*v4.borrow())[(i as usize)] } == (i + 1)) }));
-        (*v4.borrow_mut())[(i as usize)].prefix_inc();
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < N) {
+            assert!(({ ({ (*v4.borrow())[(i as usize)] } == (i + 1)) }));
+            (*v4.borrow_mut())[(i as usize)].prefix_inc();
+            i.prefix_inc();
+        }
     }
-    let mut i: i32 = 0;
-    'loop_: while (i < N) {
-        assert!(({ ({ (*v4.borrow())[(i as usize)] } == (i + 2)) }));
-        assert!((v2[(i as usize)] == (i + 1)));
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < N) {
+            assert!(({ ({ (*v4.borrow())[(i as usize)] } == (i + 2)) }));
+            assert!((v2[(i as usize)] == (i + 1)));
+            i.prefix_inc();
+        }
     }
     let ra: Value<i32> = Rc::new(RefCell::new(1));
     let rb: Value<i32> = Rc::new(RefCell::new(2));
@@ -294,7 +336,9 @@ fn main_0() -> i32 {
     };
     let mut r2: Refs = (r1).clone();
     r2.a.write(10);
-    r2.b.with_mut(|__v| __v.prefix_inc());
+    r2.b.with_mut(|__v| {
+        __v.prefix_inc();
+    });
     assert!(({ ((*ra.borrow()) == 10) }));
     assert!(({ ((*rb.borrow()) == 3) }));
     assert!(((r1.a.read()) == 10));

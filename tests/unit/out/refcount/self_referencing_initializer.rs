@@ -72,25 +72,17 @@ fn main_0() -> i32 {
     ));
     *arr.borrow_mut() = Box::new([
         list_head {
-            next: ((arr.as_pointer() as Ptr<list_head>).offset(1)),
+            next: (arr.decay().offset(1)),
         },
         list_head {
-            next: ((arr.as_pointer() as Ptr<list_head>).offset(0)),
+            next: (arr.decay().offset(0)),
         },
     ]);
     assert!(
-        ({
-            ({ { (*arr.borrow())[(0) as usize].next.clone() } } == {
-                ((arr.as_pointer() as Ptr<list_head>).offset(1))
-            })
-        })
+        ({ ({ { (*arr.borrow())[(0) as usize].next.clone() } } == { (arr.decay().offset(1)) }) })
     );
     assert!(
-        ({
-            ({ { (*arr.borrow())[(1) as usize].next.clone() } } == {
-                ((arr.as_pointer() as Ptr<list_head>).offset(0))
-            })
-        })
+        ({ ({ { (*arr.borrow())[(1) as usize].next.clone() } } == { (arr.decay().offset(0)) }) })
     );
     let d: Value<node_with_defaults> = <Value<node_with_defaults>>::default();
     *d.borrow_mut() = node_with_defaults {

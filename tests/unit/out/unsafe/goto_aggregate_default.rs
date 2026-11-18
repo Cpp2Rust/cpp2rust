@@ -25,7 +25,7 @@ pub unsafe fn agg_0(mut n: i32) -> i32 {
     goto_block!({
         '__entry: {
             total = 0;
-            if ((((n) < (0)) as i32) != 0) {
+            if ((n) < (0)) {
                 goto!('out);
             }
             total = 1;
@@ -43,8 +43,8 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(((((unsafe { agg_0(-1_i32,) }) == (0)) as i32) != 0));
-    assert!(((((unsafe { agg_0(1,) }) == (1)) as i32) != 0));
+    assert!(((unsafe { agg_0(-1_i32,) }) == (0)));
+    assert!(((unsafe { agg_0(1,) }) == (1)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

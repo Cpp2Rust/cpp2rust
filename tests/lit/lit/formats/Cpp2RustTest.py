@@ -8,7 +8,10 @@ from .base import TestFormat
 from dataclasses import dataclass
 from pathlib import Path
 from typing import NamedTuple, Optional
+import atexit
 import difflib
+import functools
+import json
 import os
 import re
 import shlex
@@ -89,12 +92,12 @@ class TestContext:
     rust_result: Optional[RunResult] = None
 
     @classmethod
-    def setup(cls, test):
+    def setup(cls, test, model):
         cc_input = Path(test.getFilePath())
         is_multi = is_multi_file_test(cc_input)
-        model = test.getSourcePath().split("/")[-1]
         fname = cc_input.name if is_multi else cc_input.stem
-        tmp_dir = get_temp_dir() / f"{fname}-{model}"
+        # Tests in different directories may share a file name.
+        tmp_dir = get_temp_dir() / f"{cc_input.parent.name}-{fname}-{model}"
 
         shutil.rmtree(tmp_dir, ignore_errors=True)
         tmp_dir.mkdir(parents=True)
@@ -189,6 +192,8 @@ class TestContext:
 
     def build_cpp(self):
         exp = self.expectations
+        if self.cpp_bin is not None:
+            return None
         if self.build_dir is not None:
             cmd = ["cmake", "--build", str(self.build_dir)]
             _, _, rc = lit.util.executeCommand(cmd)
@@ -201,7 +206,6 @@ class TestContext:
         self.cpp_bin = self.tmp_dir / "cpp"
         cmd = [
             cc,
-            "-O3",
             "-o",
             str(self.cpp_bin),
             str(self.cc_input),
@@ -217,21 +221,7 @@ class TestContext:
     def build_rust(self):
         exp = self.expectations
 
-        cc2rs_dir = BUILD_DIR / "libcc2rs-target" / "release"
-        libc_dep_deps = BUILD_DIR / "libc-dep-target" / "release" / "deps"
-        # pick the most recently compiled libc
-        libc_rlib = max(
-            libc_dep_deps.glob("liblibc-*.rlib"),
-            key=lambda p: p.stat().st_mtime,
-        )
-        nix_rlib = max(
-            libc_dep_deps.glob("libnix-*.rlib"),
-            key=lambda p: p.stat().st_mtime,
-        )
-        jiff_rlib = max(
-            libc_dep_deps.glob("libjiff-*.rlib"),
-            key=lambda p: p.stat().st_mtime,
-        )
+        libs = read_cargo_artifacts()
         cmd = [
             "rustc",
             "+" + read_rust_version(),
@@ -241,26 +231,20 @@ class TestContext:
             "-A",
             "warnings",
             "-C",
-            "opt-level=3",  # Equivalent to --release
+            "opt-level=0",
+            "-C",
+            "debug-assertions=off",  # On by default at opt-level=0
             "-C",
             "strip=symbols",
             "-C",
             "panic=abort",
             "--out-dir",
             str(self.tmp_dir),
-            "-L",
-            f"dependency={cc2rs_dir / 'deps'}",
-            "-L",
-            f"dependency={libc_dep_deps}",
-            "--extern",
-            f"libcc2rs={cc2rs_dir / 'liblibcc2rs.rlib'}",
-            "--extern",
-            f"libc={libc_rlib}",
-            "--extern",
-            f"nix={nix_rlib}",
-            "--extern",
-            f"jiff={jiff_rlib}",
         ]
+        for lib_dir in sorted({p.parent for p in libs.values()}):
+            cmd += ["-L", f"dependency={lib_dir}"]
+        for crate in ("libcc2rs", "libc", "nix", "jiff"):
+            cmd += ["--extern", f"{crate}={libs[crate]}"]
         _, err, returncode = lit.util.executeCommand(cmd, str(self.tmp_dir))
         if exp.should_not_compile:
             if returncode != 0:
@@ -275,9 +259,10 @@ class TestContext:
     def run_cpp(self):
         if self.skip_run:
             return None
-        self.cpp_result = RunResult(
-            *lit.util.executeCommand(str(self.cpp_bin), str(self.tmp_dir))
-        )
+        if self.cpp_result is None:
+            self.cpp_result = RunResult(
+                *lit.util.executeCommand(str(self.cpp_bin), str(self.tmp_dir))
+            )
 
         if (
             not self.expectations.should_panic_ub
@@ -345,50 +330,71 @@ class TestContext:
             return (lit.Test.FAIL, "did not fail as expected")
         return (lit.Test.PASS, "")
 
-    def finalize(self, result):
+    def finalize(self):
         shutil.rmtree(self.tmp_dir, ignore_errors=True)
-        return result
 
 
 class Cpp2RustTest(TestFormat):
     def __init__(self):
         os.environ["RUSTFLAGS"] = "-Awarnings"
+        # Runs once, in the main lit process. Each test removes its own dirs,
+        # so this only removes the top-level dir.
+        atexit.register(shutil.rmtree, get_temp_dir(), ignore_errors=True)
 
     def execute(self, test, litConfig):
-        ctx = TestContext.setup(test)
-        result = (
-            ctx.translate()
-            or ctx.check_expected()
-            or ctx.build_cpp()
-            or ctx.build_rust()
-            or ctx.run_cpp()
-            or ctx.run_rust()
-            or ctx.compare()
-            or ctx.success_result()
-        )
-        return ctx.finalize(result)
-
-    def getTestsForPath(self, testSuite, path_in_suite, litConfig, localConfig):
-        source_path = testSuite.getSourcePath(path_in_suite)
+        contexts = []
+        results = []
         for model in MODELS:
-            yield lit.Test.Test(
-                testSuite, path_in_suite + (model,), localConfig, source_path
+            ctx = TestContext.setup(test, model)
+            if contexts:
+                # Reuse the C++ binary and its output from the previous model.
+                ctx.cpp_bin = contexts[-1].cpp_bin
+                ctx.cpp_result = contexts[-1].cpp_result
+            contexts.append(ctx)
+            result = (
+                ctx.translate()
+                or ctx.check_expected()
+                or ctx.build_cpp()
+                or ctx.build_rust()
+                or ctx.run_cpp()
+                or ctx.run_rust()
+                or ctx.compare()
+                or ctx.success_result()
             )
+            results.append((model, result))
+        # The C++ binary lives in the first model's dir, so clean up at the end.
+        for ctx in contexts:
+            ctx.finalize()
+        return combine_results(results)
 
     def getTestsInDirectory(self, testSuite, path_in_suite, litConfig, localConfig):
         source_path = Path(testSuite.getSourcePath(path_in_suite))
         if is_multi_file_test(source_path):
-            for t in self.getTestsForPath(
-                testSuite, path_in_suite, litConfig, localConfig
-            ):
-                yield t
+            yield lit.Test.Test(testSuite, path_in_suite, localConfig)
             return
         for entry in source_path.iterdir():
+            if entry.name in localConfig.excludes:
+                continue
             if entry.is_file() and entry.suffix in (".cpp", ".c"):
-                for t in self.getTestsForPath(
-                    testSuite, path_in_suite + (entry.name,), litConfig, localConfig
-                ):
-                    yield t
+                yield lit.Test.Test(
+                    testSuite, path_in_suite + (entry.name,), localConfig
+                )
+
+
+def combine_results(results):
+    """Reports the first model that failed; otherwise XFAIL if some model failed
+    as expected, and PASS if none did."""
+    codes = [code for _, (code, _) in results]
+    code = next(
+        (c for c in codes if c.isFailure),
+        lit.Test.XFAIL if lit.Test.XFAIL in codes else lit.Test.PASS,
+    )
+    output = "".join(
+        f"{model}: {c.name}\n{out}\n"
+        for model, (c, out) in results
+        if c != lit.Test.PASS
+    )
+    return (code, output)
 
 
 def read_rust_version():
@@ -401,6 +407,21 @@ def read_rust_version():
             if m:
                 return m.group(1)
     raise Exception("could not find rust version in " + toolchain_path)
+
+
+@functools.cache
+def read_cargo_artifacts():
+    libs = {}
+    for crate in ("libc-dep", "libcc2rs"):
+        path = BUILD_DIR / f"{crate}-target" / "artifacts.json"
+        for line in path.read_text().splitlines():
+            msg = json.loads(line)
+            if msg.get("reason") != "compiler-artifact":
+                continue
+            for f in map(Path, msg["filenames"]):
+                if f.suffix in (".rlib", ".so", ".dylib"):
+                    libs[msg["target"]["name"]] = f
+    return libs
 
 
 def get_temp_dir():
@@ -466,6 +487,7 @@ def cpp2rust_command(cc_input, build_dir, model, rs_file, extra_cxxflags):
         model,
         "-o",
         str(rs_file),
+        f"-cxxflags=-I{cc_input.parent}",
     ]
     for flag in extra_cxxflags:
         cmd.append(f"-cxxflags={flag}")

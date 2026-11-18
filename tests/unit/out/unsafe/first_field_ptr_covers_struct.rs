@@ -32,29 +32,20 @@ unsafe fn main_0() -> i32 {
         z: 4,
     };
     let mut p: *mut S = (libcc2rs::malloc_unsafe(::std::mem::size_of::<S>()) as *mut S);
-    assert!((((!((p).is_null())) as i32) != 0));
+    assert!((!((p).is_null())));
     match ({ ((&mut (*p).x as *mut i32) as *mut ::libc::c_void) }, {
         ((&mut src as *mut S) as *const ::libc::c_void)
     }) {
         (mut __tmp_0, mut __tmp_1) => {
             if ::std::mem::size_of::<S>() != 0 {
-                ::std::ptr::copy_nonoverlapping(
-                    __tmp_1,
-                    __tmp_0,
-                    ::std::mem::size_of::<S>() as usize,
-                )
+                ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, ::std::mem::size_of::<S>())
             }
             __tmp_0
         }
     };
     assert!(
-        ((((((((((((((*p).x) == (1)) as i32) != 0) && (((((*p).in_.a as i32) == (2)) as i32) != 0))
-            as i32)
-            != 0)
-            && (((((*p).in_.b as i32) == (3)) as i32) != 0)) as i32)
-            != 0)
-            && (((((*p).z) == (4)) as i32) != 0)) as i32)
-            != 0)
+        ((((((*p).x) == (1)) && (((*p).in_.a as i32) == (2))) && (((*p).in_.b as i32) == (3)))
+            && (((*p).z) == (4)))
     );
     let mut n: In = In { a: 5_i16, b: 6_i16 };
     match ({ ((&mut (*p).in_ as *mut In) as *mut ::libc::c_void) }, {
@@ -62,35 +53,24 @@ unsafe fn main_0() -> i32 {
     }) {
         (mut __tmp_2, mut __tmp_3) => {
             if ::std::mem::size_of::<In>() != 0 {
-                ::std::ptr::copy_nonoverlapping(
-                    __tmp_3,
-                    __tmp_2,
-                    ::std::mem::size_of::<In>() as usize,
-                )
+                ::std::ptr::copy_nonoverlapping(__tmp_3, __tmp_2, ::std::mem::size_of::<In>())
             }
             __tmp_2
         }
     };
     assert!(
-        ((((((((((((((*p).x) == (1)) as i32) != 0) && (((((*p).in_.a as i32) == (5)) as i32) != 0))
-            as i32)
-            != 0)
-            && (((((*p).in_.b as i32) == (6)) as i32) != 0)) as i32)
-            != 0)
-            && (((((*p).z) == (4)) as i32) != 0)) as i32)
-            != 0)
+        ((((((*p).x) == (1)) && (((*p).in_.a as i32) == (5))) && (((*p).in_.b as i32) == (6)))
+            && (((*p).z) == (4)))
     );
     let mut bz: *mut u8 = ((&mut (*p).z as *mut i32) as *mut u8);
-    let mut i: i32 = 0;
-    'loop_: while ((((i) < (4)) as i32) != 0) {
-        (*bz.offset((i) as isize)) = 1_u8;
-        i.postfix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (4)) {
+            (*bz.offset((i) as isize)) = 1_u8;
+            i.postfix_inc();
+        }
     }
-    assert!(
-        ((((((((*p).z) == (16843009)) as i32) != 0) && (((((*p).in_.b as i32) == (6)) as i32) != 0))
-            as i32)
-            != 0)
-    );
+    assert!(((((*p).z) == (16843009)) && (((*p).in_.b as i32) == (6))));
     libcc2rs::free_unsafe((p as *mut ::libc::c_void));
     return 0;
 }

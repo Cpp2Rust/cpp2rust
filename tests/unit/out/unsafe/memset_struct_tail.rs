@@ -23,7 +23,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut p: *mut S = (libcc2rs::malloc_unsafe(::std::mem::size_of::<S>()) as *mut S);
-    assert!((((!((p).is_null())) as i32) != 0));
+    assert!((!((p).is_null())));
     match ({ (p as *mut ::libc::c_void) },) {
         (mut __tmp_0,) => {
             let byte_0 = __tmp_0 as *mut u8;
@@ -45,15 +45,10 @@ unsafe fn main_0() -> i32 {
             __tmp_1
         }
     };
-    assert!((((((*p).keep) == (7)) as i32) != 0));
+    assert!((((*p).keep) == (7)));
     assert!(
-        ((((((((((((((*p).a) == (0)) as i32) != 0) && (((((*p).b) == (0_i64)) as i32) != 0))
-            as i32)
-            != 0)
-            && (((((*p).c[(4) as usize] as i32) == (0)) as i32) != 0)) as i32)
-            != 0)
-            && (((((*p).last) == (0)) as i32) != 0)) as i32)
-            != 0)
+        ((((((*p).a) == (0)) && (((*p).b) == (0_i64))) && (((*p).c[(4) as usize] as i32) == (0)))
+            && (((*p).last) == (0)))
     );
     (*p).a = 1;
     (*p).b = 2_i64;
@@ -70,15 +65,9 @@ unsafe fn main_0() -> i32 {
             __tmp_2
         }
     };
-    assert!(
-        ((((((((*p).keep) == (7)) as i32) != 0) && (((((*p).a) == (1)) as i32) != 0)) as i32) != 0)
-    );
-    assert!(
-        ((((((((*p).b) == (0_i64)) as i32) != 0)
-            && (((((*p).c[(0) as usize] as i32) == (0)) as i32) != 0)) as i32)
-            != 0)
-    );
-    assert!((((((*p).last) == (3)) as i32) != 0));
+    assert!(((((*p).keep) == (7)) && (((*p).a) == (1))));
+    assert!(((((*p).b) == (0_i64)) && (((*p).c[(0) as usize] as i32) == (0))));
+    assert!((((*p).last) == (3)));
     libcc2rs::free_unsafe((p as *mut ::libc::c_void));
     return 0;
 }

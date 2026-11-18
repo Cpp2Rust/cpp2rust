@@ -27,17 +27,17 @@ fn main_0() -> i32 {
     let mut mutable_empty_arr: [i8; 1] = [0i8; 1];
     let immutable_empty_arr: Value<Box<[i8]>> =
         Rc::new(RefCell::new(vec![0i8; 1].into_boxed_slice()));
-    ({ foo_mut_0((mutable_string_arr.as_pointer() as Ptr<i8>)) });
+    ({ foo_mut_0(mutable_string_arr.decay()) });
     ({ foo_const_1(Ptr::<i8>::from_string_literal(b"world")) });
     ({ foo_const_1((immutable_string).clone()) });
-    ({ foo_const_1((immutable_string_arr.as_pointer() as Ptr<i8>)) });
+    ({ foo_const_1(immutable_string_arr.decay()) });
     ({ foo_const_1(Ptr::<i8>::from_string_literal(b"")) });
     ({ foo_const_1((immutable_empty).clone()) });
-    ({ foo_const_1((immutable_empty_arr.as_pointer() as Ptr<i8>)) });
+    ({ foo_const_1(immutable_empty_arr.decay()) });
     let inited_through_init_list: Value<Box<[i8]>> = Rc::new(RefCell::new(i8::array_from_literal(
         b"papanasi cu smantana\0",
     )));
-    ({ foo_const_1((inited_through_init_list.as_pointer() as Ptr<i8>)) });
+    ({ foo_const_1(inited_through_init_list.decay()) });
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

@@ -20,6 +20,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "converter/translation_rule.h"
 #include "logging.h"
 
 namespace clang {
@@ -57,6 +58,11 @@ bool IsUserDefinedDecl(const clang::Decl *decl);
 
 bool IsAbstractUserClass(const clang::RecordDecl *decl);
 
+bool IsLibraryOnlySpecialization(
+    const clang::ClassTemplateSpecializationDecl *decl);
+
+bool IsLibraryOnlySpecialization(const clang::FunctionDecl *decl);
+
 bool ExprHasUserDefinedDecl(const clang::Expr *expr);
 
 bool IsUnsignedArithOp(const clang::BinaryOperator *expr);
@@ -69,6 +75,9 @@ llvm::APSInt GetIntegerLiteralValue(const clang::ASTContext &ctx,
 bool IsMut(clang::QualType qual_type);
 
 bool RustSizeDivergesFromC(clang::QualType qt);
+
+std::vector<const clang::FieldDecl *>
+GetFieldPath(const clang::ValueDecl *member);
 
 bool IsMutatingCall(const clang::CallExpr *expr);
 
@@ -102,8 +111,13 @@ bool IsDefaultedMoveConstructor(const clang::CXXConstructorDecl *ctor);
 
 bool IsConvertibleMoveConstructor(const clang::CXXConstructorDecl *ctor);
 
+bool MovesRuleArg(clang::Expr *expr, unsigned arg_idx, clang::Expr *arg,
+                  TranslationRule::Access access);
+
 // Whether decl has a move constructor converted to a move_from method.
 bool HasMoveFromConstructor(const clang::RecordDecl *decl);
+
+bool MovesFromArg(clang::Expr *expr, unsigned arg_idx, clang::Expr *arg);
 
 void ForEachConvertingConstructor(
     clang::CXXRecordDecl *decl,

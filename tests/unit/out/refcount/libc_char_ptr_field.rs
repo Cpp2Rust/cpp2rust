@@ -48,7 +48,7 @@ fn main_0() -> i32 {
             Ptr::alloc(Dirent::from_entry(__e.0, &__e.1, __e.2))
         }
     });
-    let mut dname: Ptr<i8> = (array_field_ptr!(d, d_name) as Ptr<i8>);
+    let mut dname: Ptr<i8> = array_field_ptr!(d, d_name);
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

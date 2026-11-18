@@ -7,8 +7,8 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn array_ref_0(a: Ptr<u64>) -> u64 {
-    elem!((a), 0).write({ (elem!((a), 0).read()).wrapping_add(1_u64) });
-    return (elem!((a), (3_u64 as u64).wrapping_sub(1_u64)).read());
+    elem!(a, 0).write({ (elem!(a, 0).read()).wrapping_add(1_u64) });
+    return (elem!(a, (3_u64 as u64).wrapping_sub(1_u64)).read());
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
 #[cpp_from(Ptr< u64  >  , new, value)]
@@ -53,13 +53,11 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let a1: Value<Box<[usize]>> = Rc::new(RefCell::new(Box::new([1_usize, 2_usize, 3_usize])));
-    assert!(
-        (({ array_ref_0((a1.as_pointer() as Ptr<usize>).reinterpret_cast::<u64>(),) }) == 3_u64)
-    );
+    assert!((({ array_ref_0((a1.decay()).reinterpret_cast::<u64>(),) }) == 3_u64));
     assert!(({ ((*a1.borrow())[(0) as usize] == 2_usize) }));
     let a2: Value<Box<[usize]>> = Rc::new(RefCell::new(Box::new([4_usize, 5_usize])));
     let mut pc: PtrCtor_unsigned_long_ =
-        PtrCtor_unsigned_long_::new({ (a2.as_pointer() as Ptr<usize>).reinterpret_cast::<u64>() });
+        PtrCtor_unsigned_long_::new({ (a2.decay()).reinterpret_cast::<u64>() });
     assert!((pc.v == 5_u64));
     let v1: Value<usize> = Rc::new(RefCell::new(6_usize));
     let mut rc: RefCtor_unsigned_long_ =

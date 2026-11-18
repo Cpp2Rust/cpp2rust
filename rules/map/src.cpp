@@ -6,10 +6,11 @@
 #include <type_traits>
 #include <utility>
 
-template <typename T1, typename T2> using t1 = std::map<T1, T2>;
+template <typename T1, typename T2, typename T3, typename T4>
+using t1 = std::map<T1, T2, T3, T4>;
 
-template <typename T1, typename T2>
-using t4 = typename std::map<T1, T2>::size_type;
+template <typename T1, typename T2, typename T3, typename T4>
+using t4 = typename std::map<T1, T2, T3, T4>::size_type;
 
 template <typename T1, typename T2>
 using t5 = typename std::map<T1, T2>::key_type;
@@ -21,8 +22,10 @@ template <typename T1, typename T2> T2 &f1(std::map<T1, T2> &o, const T1 &key) {
   return o[key];
 }
 
-template <typename T1, typename T2> std::size_t f2(const std::map<T1, T2> &o) {
-  return o.size();
+template <typename T1, typename T2, typename T3, typename T4>
+typename std::map<T1, T2, T3, T4>::size_type
+f2(const std::map<T1, T2, T3, T4> &a0) {
+  return a0.size();
 }
 
 template <typename T1, typename T2>
@@ -31,8 +34,9 @@ typename std::map<T1, T2>::iterator f3(std::map<T1, T2> &o,
   return o.erase(it);
 }
 
-template <typename T1, typename T2> std::map<T1, T2> f5() {
-  return std::map<T1, T2>();
+template <typename T1, typename T2, typename T3, typename T4>
+std::map<T1, T2, T3, T4> f5() {
+  return std::map<T1, T2, T3, T4>();
 }
 
 template <typename T1, typename T2>
@@ -44,8 +48,9 @@ template <typename T1, typename T2> T2 &f7(std::map<T1, T2> &o, const T1 &key) {
   return o.at(key);
 }
 
-template <typename T1, typename T2> T2 &f8(std::map<T1, T2> &o, T1 &&key) {
-  return o[std::move(key)];
+template <typename T1, typename T2, typename T3, typename T4>
+T2 &f8(std::map<T1, T2, T3, T4> &a0, T1 &&a1) {
+  return a0.operator[](std::move(a1));
 }
 
 template <typename T1, typename T2>
@@ -83,9 +88,10 @@ template <typename T1, typename T2> std::map<T1, T2> f24(std::map<T1, T2> &&o) {
   return std::map<T1, T2>(std::move(o));
 }
 
-template <typename T1, typename T2>
-std::map<T1, T2> &f25(std::map<T1, T2> &dst, std::map<T1, T2> &&src) {
-  return dst = std::move(src);
+template <typename T1, typename T2, typename T3, typename T4>
+std::map<T1, T2, T3, T4> &f25(std::map<T1, T2, T3, T4> &a0,
+                              std::map<T1, T2, T3, T4> &&a1) {
+  return a0.operator=(std::move(a1));
 }
 
 template <typename T1, typename T2>

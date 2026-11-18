@@ -29,9 +29,9 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((((({ sm_0(0,) }) == 1) as i32) != 0));
-    assert!((((({ sm_0(1,) }) == 11) as i32) != 0));
-    assert!((((({ sm_0(7,) }) == -1_i32) as i32) != 0));
+    assert!((({ sm_0(0,) }) == 1));
+    assert!((({ sm_0(1,) }) == 11));
+    assert!((({ sm_0(7,) }) == -1_i32));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

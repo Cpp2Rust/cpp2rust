@@ -116,6 +116,8 @@ public:
 
   bool ConvertIncAndDec(clang::UnaryOperator *expr) override;
 
+  bool ConvertLValueConditional(clang::ConditionalOperator *expr) override;
+
   void ConvertConditionalBranch(clang::Expr *expr,
                                 clang::QualType type) override;
 
@@ -201,6 +203,19 @@ public:
   // to it is emitted as `__s`, and the pointer is stored in *record_ptr_.
   std::string *record_ptr_ = nullptr;
   const clang::Expr *record_base_ = nullptr;
+
+  // The temporary whose field, or field of a field, a pointer is being made
+  // to, e.g., the result of f() in &f().a.b, and the variable that a match
+  // binds a pointer to the temporary to. The temporaries in the block of a
+  // field macro end with the block, while those of the matched value live
+  // until the end of the enclosing statement or block. That can be before
+  // the end of the C++ full-expression, e.g., for a call argument that is
+  // bound to a variable or converted in a block of its own.
+  struct FieldTemporary {
+    clang::Expr *temporary;
+    std::string var;
+  };
+  FieldTemporary *field_temporary_ = nullptr;
 
   // The expression that ConvertFreshRValue copies.
   const clang::Expr *copied_expr_ = nullptr;
@@ -303,6 +318,13 @@ public:
 
   void ConvertAddrOf(clang::Expr *expr, clang::QualType pointer_type) override;
 
+  std::string GetFieldOffsetAsString(const clang::FieldDecl *field) override;
+
+  std::string ConvertMemberPtrObject(clang::BinaryOperator *expr) override;
+
+  std::string GetMemberOfObjectAsString(std::string object, std::string member,
+                                        clang::QualType type) override;
+
   void ConvertDeref(clang::Expr *expr) override;
 
   void ConvertArrow(clang::Expr *expr) override;
@@ -314,6 +336,9 @@ public:
   bool IsReferenceType(const clang::Expr *expr) const override;
 
   std::string ConvertTake(clang::Expr *arg) override;
+
+  std::string ConvertMoveThroughPointer(clang::QualType type,
+                                        const std::string &ptr) override;
 
   std::string ConvertBorrowMut(clang::Expr *arg) override;
 
@@ -351,7 +376,8 @@ private:
 
   std::pair<std::string, std::string>
   MaterializeTemp(const std::string &binding_name, clang::QualType param_type,
-                  clang::Expr *expr) override;
+                  clang::Expr *expr,
+                  std::string *declarations = nullptr) override;
 
   void ConvertConstructedValue(clang::QualType type,
                                clang::CXXConstructExpr *ctor) override;
@@ -391,7 +417,8 @@ private:
 
   // Emits the object that ptr points to: a pending dereference, which is
   // written through ptr, if an lvalue is converted, or a read otherwise.
-  void EmitPointee(std::string ptr, clang::QualType pointee_type, bool fresh);
+  void EmitPointee(std::string ptr, clang::QualType pointee_type,
+                   bool fresh) override;
 
   void EmitSetOrAssign(clang::Expr *lhs, std::string_view rhs);
 
@@ -417,6 +444,10 @@ private:
 
   // Wraps a pointer expression with deref prefix/suffix: e.g.
   // "(*ptr.upgrade().deref())" or "(ptr.read())"
+  std::string AssignPtrExpr(
+      std::string_view ptr, clang::QualType type,
+      llvm::function_ref<std::string(std::string_view)> value) override;
+
   std::string DerefPtrExpr(std::string_view ptr_expr,
                            clang::QualType pointee_type) override;
 
@@ -444,8 +475,9 @@ private:
   // a pointer to the whole object (Ptr<Vec<T>>), or one to its first
   // element (Ptr<T>).
   enum class ObjectShape { Whole, Element };
-  std::string ConvertObject(clang::Expr *expr,
-                            ObjectShape shape = ObjectShape::Whole);
+  std::string
+  ConvertObject(clang::Expr *expr, ObjectShape shape = ObjectShape::Whole,
+                std::optional<clang::QualType> implicit_convert_to = {});
   std::string ConvertFreshObject(clang::Expr *expr) override;
 
   std::string ConvertPointerReceiver(

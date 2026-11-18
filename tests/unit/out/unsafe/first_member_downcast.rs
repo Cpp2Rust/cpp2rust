@@ -26,18 +26,18 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut d: *mut derived =
         (libcc2rs::malloc_unsafe(::std::mem::size_of::<derived>()) as *mut derived);
-    assert!((((!((d).is_null())) as i32) != 0));
+    assert!((!((d).is_null())));
     (*d).head.kind = 3;
     (*d).value = 7_usize;
     let mut b: *mut base = (&mut (*d).head as *mut base);
     let mut back: *mut derived = (b as *mut derived);
-    assert!(((((back) == (d)) as i32) != 0));
-    assert!((((((*back).value) == (7_usize)) as i32) != 0));
-    assert!((((((*back).head.kind) == (3)) as i32) != 0));
+    assert!(((back) == (d)));
+    assert!((((*back).value) == (7_usize)));
+    assert!((((*back).head.kind) == (3)));
     (*back).value = 8_usize;
-    assert!((((((*d).value) == (8_usize)) as i32) != 0));
+    assert!((((*d).value) == (8_usize)));
     (*b).kind = 4;
-    assert!((((((*d).head.kind) == (4)) as i32) != 0));
+    assert!((((*d).head.kind) == (4)));
     libcc2rs::free_unsafe((back as *mut ::libc::c_void));
     return 0;
 }

@@ -95,13 +95,15 @@ impl Holder {
             let _o: *const Partial = &(*_a0).p;
             Partial::copy_assign(&mut self.p, _o)
         });
-        let mut __i0: usize = 0_usize;
-        'loop_: while ((__i0) != (2_usize)) {
-            (unsafe {
-                let _o: *const Partial = &(*_a0).arr[(__i0)];
-                Partial::copy_assign(&mut self.arr[(__i0)], _o)
-            });
-            __i0.prefix_inc();
+        {
+            let mut __i0: usize = 0_usize;
+            'loop_: while ((__i0) != (2_usize)) {
+                (unsafe {
+                    let _o: *const Partial = &(*_a0).arr[(__i0)];
+                    Partial::copy_assign(&mut self.arr[(__i0)], _o)
+                });
+                __i0.prefix_inc();
+            }
         }
         return &mut (*(self as *mut Holder));
     }
@@ -151,7 +153,7 @@ impl HasCopyCounted {
         ) {
             (mut __tmp_0, mut __tmp_1) => {
                 if 8_usize != 0 {
-                    ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, 8_usize as usize)
+                    ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, 8_usize)
                 }
                 __tmp_0
             }

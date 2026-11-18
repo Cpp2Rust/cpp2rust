@@ -14,13 +14,13 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let a1: Value<Box<[u32]>> = Rc::new(RefCell::new(Box::new([1_u32, 2_u32, 3_u32])));
-    ({ decay_cast_0((a1.as_pointer() as Ptr<u32>)) });
-    ({ decay_cast_0(((a1.as_pointer() as Ptr<u32>).offset(0))) });
-    ({ bit_cast_1(((a1.as_pointer() as Ptr<u32>) as Ptr<u32>).to_any()) });
-    ({ bit_cast_1((((a1.as_pointer() as Ptr<u32>).offset(0)) as Ptr<u32>).to_any()) });
-    ({ bit_cast_1(((a1.as_pointer()) as Ptr<u32>).to_any()) });
-    let mut ptr: AnyPtr = ((a1.as_pointer() as Ptr<u32>) as Ptr<u32>).to_any();
-    assert!(({ (ptr).clone() } == { ((a1.as_pointer() as Ptr::<u32>) as Ptr<u32>).to_any() }));
+    ({ decay_cast_0(a1.decay()) });
+    ({ decay_cast_0((a1.decay().offset(0))) });
+    ({ bit_cast_1((a1.decay()).to_any()) });
+    ({ bit_cast_1((a1.decay().offset(0)).to_any()) });
+    ({ bit_cast_1((a1.decay()).to_any()) });
+    let mut ptr: AnyPtr = (a1.decay()).to_any();
+    assert!(({ (ptr).clone() } == { (a1.decay()).to_any() }));
     assert!(
         ({
             ({ (elem!((ptr.reinterpret_cast::<u32>()), 0).read()) } == {

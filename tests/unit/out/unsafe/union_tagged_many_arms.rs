@@ -42,24 +42,24 @@ unsafe fn main_0() -> i32 {
     let mut a: Slot = <Slot>::default();
     a.tag = Tag_enum_T_NUM_S;
     a.payload.signed_n = (-7_i32 as i64);
-    assert!(((((a.payload.signed_n) == (-7_i32 as i64)) as i32) != 0));
+    assert!(((a.payload.signed_n) == (-7_i32 as i64)));
     let mut b: Slot = <Slot>::default();
     b.tag = Tag_enum_T_NUM_U;
     b.payload.unsigned_n = 3735928559_u64;
-    assert!(((((b.payload.unsigned_n) == (3735928559_u64)) as i32) != 0));
+    assert!(((b.payload.unsigned_n) == (3735928559_u64)));
     let mut c: Slot = <Slot>::default();
     c.tag = Tag_enum_T_TEXT;
     c.payload.text = (c"hello".as_ptr().cast_mut()).cast_const();
-    assert!((((((*c.payload.text.offset((0) as isize)) as i32) == ('h' as i32)) as i32) != 0));
+    assert!((((*c.payload.text.offset((0) as isize)) as i32) == ('h' as i32)));
     let mut d: Slot = <Slot>::default();
     d.tag = Tag_enum_T_FLOAT;
     d.payload.f = 1.5_f64;
-    assert!(((((d.payload.f) == (1.5_f64)) as i32) != 0));
+    assert!(((d.payload.f) == (1.5_f64)));
     let mut x: i32 = 0;
     let mut e: Slot = <Slot>::default();
     e.tag = Tag_enum_T_REF;
     e.payload.handle = ((&mut x as *mut i32) as *mut ::libc::c_void);
-    assert!(((((e.payload.handle) == ((&mut x as *mut i32) as *mut ::libc::c_void)) as i32) != 0));
+    assert!(((e.payload.handle) == ((&mut x as *mut i32) as *mut ::libc::c_void)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

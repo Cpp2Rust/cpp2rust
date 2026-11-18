@@ -38,8 +38,8 @@ fn main_0() -> i32 {
             }
         }
     };
-    assert!((((s >= 0) as i32) != 0));
-    assert!((((FdRegistry::close(s) == 0) as i32) != 0));
+    assert!((s >= 0));
+    assert!((FdRegistry::close(s) == 0));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

@@ -26,16 +26,21 @@ pub unsafe fn pick_0(a: *mut Vec<i32>, b: *mut Vec<i32>, mut first: bool) -> *mu
 }
 pub unsafe fn sum_1(v: *const Vec<i32>) -> i32 {
     let mut total: i32 = 0;
-    let mut it: UnsafeRandomAccessIterator<i32> = (*v).begin();
-    'loop_: while it != (*v).end() {
-        total += (*it.iter_deref());
-        it.iter_inc();
+    {
+        let mut it: UnsafeRandomAccessIterator<i32> = (*v).begin();
+        'loop_: while it != (*v).end() {
+            total += (*it.iter_deref());
+            {
+                (*(&mut it as *mut UnsafeRandomAccessIterator<i32>)).iter_inc();
+                (&mut it as *mut UnsafeRandomAccessIterator<i32>)
+            };
+        }
     }
     return ((total)
-        + (*if 0_usize as usize >= (*v).len() {
+        + (*if 0_usize >= (*v).len() {
             panic!("out of bounds access")
         } else {
-            (*v).as_ptr().add(0_usize as usize)
+            (*v).as_ptr().add(0_usize)
         }));
 }
 pub fn main() {
@@ -74,10 +79,10 @@ unsafe fn main_0() -> i32 {
     );
     let c: *const Vec<i32> = &v;
     assert!(
-        ((*if 2_usize as usize >= (*c).len() {
+        ((*if 2_usize >= (*c).len() {
             panic!("out of bounds access")
         } else {
-            (*c).as_ptr().add(2_usize as usize)
+            (*c).as_ptr().add(2_usize)
         }) == (3))
     );
     assert!(((unsafe { sum_1(&v,) }) == (7)));

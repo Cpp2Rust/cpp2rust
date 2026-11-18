@@ -77,29 +77,29 @@ unsafe fn main_0() -> i32 {
     w.mode = widget_enum_MODE_ACTIVE;
     assert!(((unsafe { is_active_0((&mut w as *mut widget),) }) != 0));
     w.mode = widget_enum_MODE_DONE;
-    assert!(((((w.mode as u32) == ((widget_enum_MODE_DONE as i32) as u32)) as i32) != 0));
+    assert!(((w.mode as u32) == ((widget_enum_MODE_DONE as i32) as u32)));
     let mut p: point_struct = <point_struct>::default();
     p.x = 3;
     p.y = 4;
-    assert!((((((p.x) + (p.y)) == (7)) as i32) != 0));
+    assert!((((p.x) + (p.y)) == (7)));
     let mut up: point = <point>::default();
     up.whole = 5;
-    assert!(((((up.whole) == (5)) as i32) != 0));
+    assert!(((up.whole) == (5)));
     let mut b: slot_union = <slot_union>::default();
     b.i = 9;
-    assert!(((((b.i) == (9)) as i32) != 0));
+    assert!(((b.i) == (9)));
     let mut e: slot = slot_SLOT_B;
-    assert!(((((e as u32) == ((slot_SLOT_B as i32) as u32)) as i32) != 0));
+    assert!(((e as u32) == ((slot_SLOT_B as i32) as u32)));
     let mut inner_tag: Inner = <Inner>::default();
     inner_tag.tag_field = 11;
-    assert!(((((inner_tag.tag_field) == (11)) as i32) != 0));
+    assert!(((inner_tag.tag_field) == (11)));
     let mut inner_typedef: Inner_struct = <Inner_struct>::default();
     inner_typedef.typedef_field = 22;
-    assert!(((((inner_typedef.typedef_field) == (22)) as i32) != 0));
+    assert!(((inner_typedef.typedef_field) == (22)));
     let mut o: Outer = <Outer>::default();
     o.field.tag_field = 33;
-    assert!(((((o.field.tag_field) == (33)) as i32) != 0));
-    assert!(((((w.id) == (7)) as i32) != 0));
+    assert!(((o.field.tag_field) == (33)));
+    assert!(((w.id) == (7)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

@@ -92,40 +92,48 @@ impl Default for State {
 }
 pub fn sum_0(mut p: Ptr<i32>, mut n: i32) -> i32 {
     let mut s: i32 = 0;
-    let mut i: i32 = 0;
-    'loop_: while (i < n) {
-        s += { (elem!(p, i).read()) };
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < n) {
+            s += { (elem!(p, i).read()) };
+            i.prefix_inc();
+        }
     }
     return s;
 }
 pub fn fill_1(mut s: Ptr<State>) {
-    let mut i: i32 = 0;
-    'loop_: while (i < 2) {
-        let mut j: i32 = 0;
-        'loop_: while (j < 3) {
-            index!(index!(field!(s, grid), i), j).write({ ((i * 3) + j) });
-            j.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < 2) {
+            {
+                let mut j: i32 = 0;
+                'loop_: while (j < 3) {
+                    index!(index!(field!(s, grid), i), j).write({ ((i * 3) + j) });
+                    j.prefix_inc();
+                }
+            }
+            i.prefix_inc();
         }
-        i.prefix_inc();
     }
     elem!(field_ref!(s, arr).decay(), 1_usize).write(7);
     {
-        let __a0 = 3_usize as usize;
+        let __a0 = 3_usize;
         field!(s, elems).with_mut(|__v: &mut Vec<Elem>| __v.resize_with(__a0, || <Elem>::default()))
     };
-    let mut i: i32 = 0;
-    'loop_: while (i < 3) {
-        let __rhs = i;
-        field!(vec_elem!(s, elems, (i as usize)), id).write(__rhs);
-        let __rhs = (10 * i);
-        index!(field!(vec_elem!(s, elems, (i as usize)), hist), i).write(__rhs);
-        {
-            let __a0 = 4_usize as usize;
-            field!(vec_elem!(s, elems, (i as usize)), coeffs)
-                .with_mut(|__v: &mut Vec<i16>| __v.resize(__a0, (i as i16)))
-        };
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < 3) {
+            let __rhs = i;
+            field!(vec_elem!(s, elems, (i as usize)), id).write(__rhs);
+            let __rhs = (10 * i);
+            index!(field!(vec_elem!(s, elems, (i as usize)), hist), i).write(__rhs);
+            {
+                let __a0 = 4_usize;
+                field!(vec_elem!(s, elems, (i as usize)), coeffs)
+                    .with_mut(|__v: &mut Vec<i16>| __v.resize(__a0, (i as i16)))
+            };
+            i.prefix_inc();
+        }
     }
     {
         let __a1 = Vec::from([1, 2, 3]);
@@ -188,31 +196,26 @@ fn main_0() -> i32 {
     assert!(
         ({
             ((*s.borrow()).grid[(1) as usize][(2) as usize] == 5)
-                && (({
-                    sum_0(
-                        (((array_field_ptr!(s.as_pointer(), grid) as Ptr<Box<[i32]>>)
-                            .offset(1)
-                            .as_pointer()) as Ptr<i32>),
-                        3,
-                    )
-                }) == 12)
+                && (({ sum_0(array_field_ptr!(s.as_pointer(), grid).offset(1).decay(), 3) }) == 12)
         })
     );
     assert!(((elem!(field_ref!(s.as_pointer(), arr).decay(), 1_usize).read()) == 7));
     let mut e: Ptr<Elem> = (field_ref!(s.as_pointer(), elems).decay().offset(2_usize));
-    let mut h: Ptr<i32> = (array_field_ptr!(e, hist) as Ptr<i32>);
+    let mut h: Ptr<i32> = array_field_ptr!(e, hist);
     let mut c: Ptr<i16> = (field_ref!(e, coeffs).decay().offset(1_usize));
     let mut id: Ptr<i32> = (field_ptr!(
         field_ref!(s.as_pointer(), elems).decay().offset(1_usize),
         id
     ));
-    let mut k: i32 = 0;
-    'loop_: while (k < 4) {
-        {
-            let __rhs = { k };
-            elem!(h, k).with_mut(|__v| *__v = *__v + __rhs)
-        };
-        k.prefix_inc();
+    {
+        let mut k: i32 = 0;
+        'loop_: while (k < 4) {
+            {
+                let __rhs = { k };
+                elem!(h, k).with_mut(|__v| *__v = *__v + __rhs)
+            };
+            k.prefix_inc();
+        }
     }
     c.write({ (((c.read()) as i32) + 5) as i16 });
     id.write(11);
@@ -220,10 +223,10 @@ fn main_0() -> i32 {
     assert!(
         (({
             sum_0(
-                (array_field_ptr!(
+                array_field_ptr!(
                     field_ref!(s.as_pointer(), elems).decay().offset(2_usize),
                     hist
-                ) as Ptr<i32>),
+                ),
                 4,
             )
         }) == 26)
@@ -237,11 +240,11 @@ fn main_0() -> i32 {
     assert!(
         (vec_elem!(s.as_pointer(), elems, 1_usize).with(|__s| __s.id) == 11)
             && ({ h.offset((3) as isize) } == {
-                ((array_field_ptr!(
+                (array_field_ptr!(
                     field_ref!(s.as_pointer(), elems).decay().offset(2_usize),
                     hist
-                ) as Ptr<i32>)
-                    .offset((3) as isize))
+                )
+                .offset((3) as isize))
             })
     );
     let mut row: Ptr<i32> = (field_ref!(s.as_pointer(), rows)
@@ -293,7 +296,7 @@ fn main_0() -> i32 {
     ));
     let mut first: Ptr<Elem> = (elems.decay().offset(0_usize));
     {
-        let __a0 = 2_usize as usize;
+        let __a0 = 2_usize;
         (*elems.borrow_mut())[1_usize]
             .coeffs
             .resize_with(__a0, || 0_i16)
@@ -366,13 +369,16 @@ fn main_0() -> i32 {
                 && ({ (*ca.borrow())[1_usize].v } == -1_i32)
         })
     );
-    let cc: Value<Box<[Counted]>> = Rc::new(RefCell::new((*cb.borrow()).clone()));
+    let cc: Value<Box<[Counted]>> = Rc::new(RefCell::new(
+        (0..3).map(|__i| cb.decay().read_at(__i)).collect(),
+    ));
     assert!(
         ({
             ((copies_2.with(|rc| *rc.borrow()) == 3) && ({ (*cc.borrow())[1_usize].v } == 5))
                 && ({ (*cb.borrow())[1_usize].v } == 5)
         })
     );
+    assert!((3 == 3_usize));
     (*cc.borrow_mut())[2_usize].v = 8;
     for __i in 0..3 {
         &cb.decay().offset(__i).copy_assign(cc.decay().offset(__i));
@@ -454,12 +460,9 @@ pub trait ElemImpl {
 impl ElemImpl for Ptr<Elem> {
     fn move_assign(&self, _a0: Ptr<Elem>) -> Ptr<Elem> {
         field!((*self), id).write({ { (*_a0.upgrade().deref()).id } });
-        match ({ ((array_field_ptr!((*self), hist)) as Ptr<i32>).to_any() },) {
+        match ({ (array_field_ptr!((*self), hist)).to_any() },) {
             (mut __tmp_0,) => {
-                __tmp_0.memcpy(
-                    &((array_field_ptr!(_a0, hist)) as Ptr<i32>).to_any(),
-                    16_usize as usize,
-                );
+                __tmp_0.memcpy(&(array_field_ptr!(_a0, hist)).to_any(), 16_usize);
                 (__tmp_0).clone()
             }
         };
@@ -475,12 +478,9 @@ pub trait StateImpl {
 impl StateImpl for Ptr<State> {
     fn move_assign(&self, _a0: Ptr<State>) -> Ptr<State> {
         field!((*self), count).write({ { (*_a0.upgrade().deref()).count } });
-        match ({ ((array_field_ptr!((*self), grid)) as Ptr<Box<[i32]>>).to_any() },) {
+        match ({ (array_field_ptr!((*self), grid)).to_any() },) {
             (mut __tmp_1,) => {
-                __tmp_1.memcpy(
-                    &((array_field_ptr!(_a0, grid)) as Ptr<Box<[i32]>>).to_any(),
-                    24_usize as usize,
-                );
+                __tmp_1.memcpy(&(array_field_ptr!(_a0, grid)).to_any(), 24_usize);
                 (__tmp_1).clone()
             }
         };

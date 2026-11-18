@@ -80,7 +80,8 @@ static const char rust_keywords[][12] = {
 namespace cpp2rust {
 
 bool IsGlobalVar(const clang::VarDecl *decl) {
-  return decl->isFileVarDecl() || decl->isStaticLocal();
+  return decl->isFileVarDecl() || decl->isStaticLocal() ||
+         decl->isLocalExternDecl();
 }
 
 bool IsGlobalVar(const clang::Expr *expr) {
@@ -249,6 +250,15 @@ std::string GetNumAsString(llvm::APFloat value) {
   }
 }
 
+static bool IsAnonymousUnionObject(const clang::Decl *decl) {
+  auto *var = clang::dyn_cast<clang::VarDecl>(decl);
+  if (!var) {
+    return false;
+  }
+  auto *record = var->getType()->getAsRecordDecl();
+  return record && record->isAnonymousStructOrUnion();
+}
+
 bool IsUserDefinedDecl(const clang::Decl *decl) {
   const auto &ctx = decl->getASTContext();
   const auto &src_mgr = ctx.getSourceManager();
@@ -287,9 +297,55 @@ bool IsUserDefinedDecl(const clang::Decl *decl) {
                    clang::TSK_ExplicitInstantiationDefinition)) {
     src_loc = spec->getSpecializedTemplate()->getLocation();
   }
-  return !decl->getBeginLoc().isInvalid() && !decl->isImplicit() &&
+  return !decl->getBeginLoc().isInvalid() &&
+         (!decl->isImplicit() || IsAnonymousUnionObject(decl)) &&
          !src_mgr.isInSystemHeader(src_loc) &&
          !src_mgr.isInSystemMacro(src_loc);
+}
+
+static clang::QualType StripPointersAndArrays(clang::QualType type) {
+  while (type->isPointerType() || type->isReferenceType() ||
+         type->isArrayType()) {
+    type = type->isArrayType()
+               ? clang::QualType(type->getArrayElementTypeNoTypeQual(), 0)
+               : type->getPointeeType();
+  }
+  return type;
+}
+
+static bool
+HasLibraryInternalArgument(clang::ASTContext &ctx,
+                           llvm::ArrayRef<clang::TemplateArgument> args) {
+  return llvm::any_of(args, [&](const clang::TemplateArgument &arg) {
+    if (arg.getKind() != clang::TemplateArgument::Type) {
+      return false;
+    }
+    auto tag = StripPointersAndArrays(arg.getAsType().getCanonicalType())
+                   ->getAsTagDecl();
+    return tag && !IsUserDefinedDecl(tag) &&
+           clang::isReservedInAllContexts(tag->isReserved(ctx.getLangOpts()));
+  });
+}
+
+static bool IsInstantiatedInSystemHeader(clang::ASTContext &ctx,
+                                         clang::SourceLocation loc) {
+  return loc.isValid() && ctx.getSourceManager().isInSystemHeader(
+                              ctx.getSourceManager().getExpansionLoc(loc));
+}
+
+bool IsLibraryOnlySpecialization(
+    const clang::ClassTemplateSpecializationDecl *decl) {
+  auto &ctx = decl->getASTContext();
+  return IsInstantiatedInSystemHeader(ctx, decl->getPointOfInstantiation()) &&
+         HasLibraryInternalArgument(ctx, decl->getTemplateArgs().asArray());
+}
+
+bool IsLibraryOnlySpecialization(const clang::FunctionDecl *decl) {
+  auto &ctx = decl->getASTContext();
+  auto args = decl->getTemplateSpecializationArgs();
+  return args &&
+         IsInstantiatedInSystemHeader(ctx, decl->getPointOfInstantiation()) &&
+         HasLibraryInternalArgument(ctx, args->asArray());
 }
 
 bool IsAbstractUserClass(const clang::RecordDecl *decl) {
@@ -374,6 +430,19 @@ bool RustSizeDivergesFromC(clang::QualType qt) {
   return false;
 }
 
+std::vector<const clang::FieldDecl *>
+GetFieldPath(const clang::ValueDecl *member) {
+  std::vector<const clang::FieldDecl *> path;
+  if (auto *indirect = clang::dyn_cast<clang::IndirectFieldDecl>(member)) {
+    for (auto *link : indirect->chain()) {
+      path.push_back(clang::cast<clang::FieldDecl>(link));
+    }
+  } else {
+    path.push_back(clang::cast<clang::FieldDecl>(member));
+  }
+  return path;
+}
+
 bool IsMutatingCall(const clang::CallExpr *expr) {
   if (auto *callee = expr->getDirectCallee()) {
     if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(callee)) {
@@ -392,7 +461,7 @@ static void ForEachTemplateInstantiation(
             llvm::dyn_cast<clang::FunctionTemplateDecl>(d)) {
       for (auto s : function_template_decl->specializations()) {
         if (auto m = clang::dyn_cast<clang::CXXMethodDecl>(s);
-            m && m->getDefinition()) {
+            m && m->getDefinition() && !IsLibraryOnlySpecialization(m)) {
           fn(m);
         }
       }
@@ -543,6 +612,15 @@ bool IsConvertibleMoveConstructor(const clang::CXXConstructorDecl *ctor) {
   return ctor->isUserProvided() || NeedsDefaultedMoveConstructor(parent);
 }
 
+bool MovesRuleArg(clang::Expr *expr, unsigned arg_idx, clang::Expr *arg,
+                  TranslationRule::Access access) {
+  auto param_type = GetParamType(expr, arg_idx);
+  bool moved = access == TranslationRule::Access::kTake ||
+               (access == TranslationRule::Access::kMove && param_type &&
+                (*param_type)->isRValueReferenceType());
+  return moved && !clang::isa<clang::MaterializeTemporaryExpr>(arg);
+}
+
 static bool
 IsImplicitConvertingConstructor(const clang::CXXConstructorDecl *ctor) {
   return !ctor->isCopyOrMoveConstructor() && !ctor->isImplicit() &&
@@ -593,6 +671,13 @@ bool HasMoveFromConstructor(const clang::RecordDecl *decl) {
            return IsConvertibleMoveConstructor(ctor) &&
                   CanUseCopyOrMoveName(ctor, "move_from");
          });
+}
+
+bool MovesFromArg(clang::Expr *expr, unsigned arg_idx, clang::Expr *arg) {
+  auto param_type = GetParamType(expr, arg_idx);
+  return param_type && (*param_type)->isRValueReferenceType() &&
+         !(*param_type)->getPointeeType().isConstQualified() &&
+         !clang::isa<clang::MaterializeTemporaryExpr>(arg);
 }
 
 // Whether move assigning a field of decl isn't a copy: the field is a record
@@ -781,7 +866,8 @@ bool IsPassThroughConstructor(const clang::CXXConstructorDecl *ctor) {
 }
 
 bool IsConvertibleCXXRecordDecl(const clang::CXXRecordDecl *decl) {
-  return decl->isThisDeclarationADefinition() && !decl->isDependentContext();
+  return decl->isThisDeclarationADefinition() && !decl->isDependentContext() &&
+         !decl->isInvalidDecl();
 }
 
 bool IsConvertibleCXXMethodDecl(const clang::CXXMethodDecl *decl) {
@@ -1015,6 +1101,10 @@ static std::string GetLexicalSpecializationID(const clang::Decl *decl) {
           clang::dyn_cast<clang::VarTemplateSpecializationDecl>(decl)) {
     id += GetMangledName(var);
   }
+  if (const auto *fn = clang::dyn_cast<clang::FunctionDecl>(decl);
+      fn && fn->getTemplateSpecializationArgs()) {
+    id += GetMangledName(fn);
+  }
   if (const auto *self =
           clang::dyn_cast<clang::ClassTemplateSpecializationDecl>(decl)) {
     id += GetMangledTypeName(self);
@@ -1186,12 +1276,13 @@ std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
       id = GetDeclId(decl, fn->getFormalLinkage() == clang::Linkage::Internal);
     }
   } else if (auto *var = clang::dyn_cast<clang::VarDecl>(decl);
-             var && (var->isFileVarDecl() || var->isStaticLocal())) {
+             var && IsGlobalVar(var)) {
     id = GetDeclId(var->getCanonicalDecl(),
                    var->getFormalLinkage() != clang::Linkage::External);
   } else if (auto *tag = clang::dyn_cast<clang::TagDecl>(decl);
-             tag && tag->getDeclContext()->isFunctionOrMethod()) {
-    id = GetUniqueNumber(GetID(tag));
+             tag && (tag->getDeclContext()->isFunctionOrMethod() ||
+                     tag->isInAnonymousNamespace())) {
+    id = GetUniqueNumber(GetID(tag->getCanonicalDecl()));
   }
   if (id) {
     name += '_';
@@ -1359,6 +1450,14 @@ const char *GetOverloadedOperator(const clang::FunctionDecl *decl) {
     return "operator_call";
   case clang::OO_Subscript:
     return "operator_index";
+  case clang::OO_New:
+    return "operator_new";
+  case clang::OO_Delete:
+    return "operator_delete";
+  case clang::OO_Array_New:
+    return "operator_new_arr";
+  case clang::OO_Array_Delete:
+    return "operator_delete_arr";
   default:
     assert(0 && "unsupported overloaded operator");
     return "";
@@ -1419,7 +1518,9 @@ void ForEachLambdaCallOperator(
     return;
   }
   for (auto spec : decl->getDependentLambdaCallOperator()->specializations()) {
-    fn(clang::cast<clang::CXXMethodDecl>(spec));
+    if (spec->hasBody()) {
+      fn(clang::cast<clang::CXXMethodDecl>(spec));
+    }
   }
 }
 
@@ -1507,7 +1608,8 @@ static const clang::FieldDecl *
 AsLambdaCaptureField(const clang::FunctionDecl *fn, const clang::Expr *expr) {
   auto call = AsLambdaOperatorCall(fn);
   auto ref = clang::dyn_cast<clang::DeclRefExpr>(expr);
-  if (!call || !ref || !ref->refersToEnclosingVariableOrCapture()) {
+  if (!call || !ref || !ref->refersToEnclosingVariableOrCapture() ||
+      ref->isNonOdrUse() != clang::NOUR_None) {
     return nullptr;
   }
   llvm::DenseMap<const clang::ValueDecl *, clang::FieldDecl *> fields;
@@ -1681,6 +1783,19 @@ void DefineImplicitMembers(clang::Sema &sema, clang::CXXRecordDecl *decl) {
   tu_scope.setEntity(sema.Context.getTranslationUnitDecl());
   auto *saved_tu_scope = std::exchange(sema.TUScope, &tu_scope);
   sema.ForceDeclarationOfImplicitMembers(decl);
+  for (auto *field : decl->fields()) {
+    if (field->hasInClassInitializer() && !field->getInClassInitializer()) {
+      RuleDecls::Trial trial(sema);
+      clang::Sema::GlobalEagerInstantiationScope instantiations(
+          sema, /*Enabled=*/true, /*AtEndOfTU=*/false);
+#if CLANG_VERSION_MAJOR >= 24
+      sema.BuildCXXCtorDefaultInitExpr(decl->getLocation(), field);
+#else
+      sema.BuildCXXDefaultInitExpr(decl->getLocation(), field);
+#endif
+      instantiations.perform();
+    }
+  }
   auto define = [&](clang::FunctionDecl *fn, auto &&definer) {
     RuleDecls::Trial trial(sema);
     clang::DiagnosticErrorTrap errors(sema.getDiagnostics());
@@ -2508,7 +2623,9 @@ void ReplaceAll(std::string &str, std::string_view from, std::string_view to) {
 }
 
 const char *GetConstCastSuffix(clang::QualType to, clang::QualType from) {
-  if (to.isConstQualified() == from.isConstQualified()) {
+  if (to.isConstQualified() == from.isConstQualified() ||
+      to.getCanonicalType().getUnqualifiedType() !=
+          from.getCanonicalType().getUnqualifiedType()) {
     return nullptr;
   }
   return to.isConstQualified() ? ".cast_const()" : ".cast_mut()";

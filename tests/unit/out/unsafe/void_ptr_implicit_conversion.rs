@@ -21,10 +21,10 @@ unsafe fn main_0() -> i32 {
     let mut value: i32 = 41;
     let mut opaque: *mut ::libc::c_void = ((&mut value as *mut i32) as *mut ::libc::c_void);
     let mut typed: *mut i32 = (opaque as *mut i32);
-    assert!(((((unsafe { bump_0(opaque,) }) == (42)) as i32) != 0));
-    assert!(((((*typed) == (42)) as i32) != 0));
+    assert!(((unsafe { bump_0(opaque,) }) == (42)));
+    assert!(((*typed) == (42)));
     (*typed) = 7;
-    assert!(((((value) == (7)) as i32) != 0));
+    assert!(((value) == (7)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

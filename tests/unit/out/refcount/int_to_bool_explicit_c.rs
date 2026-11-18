@@ -15,7 +15,7 @@ fn main_0() -> i32 {
     let mut b1: bool = (flag != 0);
     let mut b2: bool = (0_u32 != 0);
     assert!(b1);
-    assert!(((!(b2) as i32) != 0));
+    assert!(!(b2));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

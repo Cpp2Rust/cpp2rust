@@ -68,11 +68,13 @@ pub fn first_2(mut p: Ptr<i32>) -> i32 {
 pub fn consume_3(cookie: Ptr<Cookie>) -> i32 {
     let mut c: Cookie = (*cookie.upgrade().deref()).clone();
     let mut sum: i32 = 0;
-    let mut i: i32 = 0;
-    'loop_: while (i < 4) {
-        elem!(c.data, i).write({ ({ (elem!(c.in_, i).read()) } * { c.x }) });
-        sum += { (elem!(c.data, i).read()) };
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < 4) {
+            elem!(c.data, i).write({ ({ (elem!(c.in_, i).read()) } * { c.x }) });
+            sum += { (elem!(c.data, i).read()) };
+            i.prefix_inc();
+        }
     }
     c.x = sum;
     c.inner.a += { c.x };
@@ -95,8 +97,8 @@ fn main_0() -> i32 {
     let in_: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2, 3, 4])));
     let cookie: Value<Cookie> = Rc::new(RefCell::new(<Cookie>::default()));
     (*cookie.borrow_mut()).x = 2;
-    (*cookie.borrow_mut()).data = (data.as_pointer() as Ptr<i32>);
-    (*cookie.borrow_mut()).in_ = (in_.as_pointer() as Ptr<i32>);
+    (*cookie.borrow_mut()).data = data.decay();
+    (*cookie.borrow_mut()).in_ = in_.decay();
     (*cookie.borrow_mut()).inner.a = 1;
     (*cookie.borrow_mut()).inner.b = 3;
     assert!((({ consume_3(cookie.as_pointer(),) }) == 23));
@@ -125,7 +127,9 @@ pub trait CounterImpl {
 }
 impl CounterImpl for Ptr<Counter> {
     fn inc(&self) {
-        field!((*self), n).with_mut(|__v| __v.prefix_inc());
+        field!((*self), n).with_mut(|__v| {
+            __v.prefix_inc();
+        });
     }
 }
 pub fn __cpp2rust_init_globals() {}

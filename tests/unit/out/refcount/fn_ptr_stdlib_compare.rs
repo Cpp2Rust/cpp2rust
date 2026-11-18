@@ -37,7 +37,7 @@ fn main_0() -> i32 {
     .cast::<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>();
     assert!((({ (f3).call(AnyPtr::default(), 0_usize, 0_usize, Ptr::null(),) }) == 22_usize));
     let mut __do_while = true;
-    'loop_: while __do_while || (0 != 0) {
+    'loop_: while __do_while || (false) {
         __do_while = false;
         let mut stream: Ptr<CFile> = match CFile::open(
             &Ptr::<i8>::from_string_literal(b"/dev/zero").to_rust_string(),
@@ -49,31 +49,31 @@ fn main_0() -> i32 {
         assert!(!((stream).is_null()));
         let buf: Value<Box<[i8]>> =
             Rc::new(RefCell::new((0..16).map(|_| 0_i8).collect::<Box<[i8]>>()));
-        match ({ ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any() },) {
+        match ({ (buf.decay()).to_any() },) {
             (mut __tmp_0,) => {
                 __tmp_0.memset(
                     (('X' as i8) as i32) as u8,
-                    ::std::mem::size_of::<[i8; 16]>() as usize,
+                    ::std::mem::size_of::<[i8; 16]>(),
                 );
                 (__tmp_0).clone()
             }
         };
-        let mut n: usize = libcc2rs::fread_refcount(
-            ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any(),
-            1_usize,
-            10_usize,
-            (stream).clone(),
-        );
+        let mut n: usize =
+            libcc2rs::fread_refcount((buf.decay()).to_any(), 1_usize, 10_usize, (stream).clone());
         assert!((n == 10_usize));
-        let mut i: i32 = 0;
-        'loop_: while (i < 10) {
-            assert!(({ (((*buf.borrow())[(i) as usize] as i32) == 0) }));
-            i.prefix_inc();
+        {
+            let mut i: i32 = 0;
+            'loop_: while (i < 10) {
+                assert!(({ (((*buf.borrow())[(i) as usize] as i32) == 0) }));
+                i.prefix_inc();
+            }
         }
-        let mut i: i32 = 10;
-        'loop_: while (i < 16) {
-            assert!(({ (((*buf.borrow())[(i) as usize] as i32) == (('X' as i8) as i32)) }));
-            i.prefix_inc();
+        {
+            let mut i: i32 = 10;
+            'loop_: while (i < 16) {
+                assert!(({ (((*buf.borrow())[(i) as usize] as i32) == (('X' as i8) as i32)) }));
+                i.prefix_inc();
+            }
         }
         {
             let __r = stream.with(|__f| __f.close());
@@ -82,7 +82,7 @@ fn main_0() -> i32 {
         };
     }
     let mut __do_while = true;
-    'loop_: while __do_while || (0 != 0) {
+    'loop_: while __do_while || (false) {
         __do_while = false;
         let mut stream: Ptr<CFile> = match CFile::open(
             &Ptr::<i8>::from_string_literal(b"/dev/zero").to_rust_string(),
@@ -94,33 +94,31 @@ fn main_0() -> i32 {
         assert!(!((stream).is_null()));
         let buf: Value<Box<[i8]>> =
             Rc::new(RefCell::new((0..16).map(|_| 0_i8).collect::<Box<[i8]>>()));
-        match ({ ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any() },) {
+        match ({ (buf.decay()).to_any() },) {
             (mut __tmp_1,) => {
                 __tmp_1.memset(
                     (('X' as i8) as i32) as u8,
-                    ::std::mem::size_of::<[i8; 16]>() as usize,
+                    ::std::mem::size_of::<[i8; 16]>(),
                 );
                 (__tmp_1).clone()
             }
         };
-        let mut n: usize = ({
-            (fn1).call(
-                ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any(),
-                1_usize,
-                10_usize,
-                (stream).clone(),
-            )
-        });
+        let mut n: usize =
+            ({ (fn1).call((buf.decay()).to_any(), 1_usize, 10_usize, (stream).clone()) });
         assert!((n == 10_usize));
-        let mut i: i32 = 0;
-        'loop_: while (i < 10) {
-            assert!(({ (((*buf.borrow())[(i) as usize] as i32) == 0) }));
-            i.prefix_inc();
+        {
+            let mut i: i32 = 0;
+            'loop_: while (i < 10) {
+                assert!(({ (((*buf.borrow())[(i) as usize] as i32) == 0) }));
+                i.prefix_inc();
+            }
         }
-        let mut i: i32 = 10;
-        'loop_: while (i < 16) {
-            assert!(({ (((*buf.borrow())[(i) as usize] as i32) == (('X' as i8) as i32)) }));
-            i.prefix_inc();
+        {
+            let mut i: i32 = 10;
+            'loop_: while (i < 16) {
+                assert!(({ (((*buf.borrow())[(i) as usize] as i32) == (('X' as i8) as i32)) }));
+                i.prefix_inc();
+            }
         }
         {
             let __r = stream.with(|__f| __f.close());
@@ -145,7 +143,7 @@ fn main_0() -> i32 {
             .cast::<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>();
     assert!((({ (g3).call(AnyPtr::default(), 0_usize, 0_usize, Ptr::null(),) }) == 33_usize));
     let mut __do_while = true;
-    'loop_: while __do_while || (0 != 0) {
+    'loop_: while __do_while || (false) {
         __do_while = false;
         let mut stream: Ptr<CFile> = match CFile::open(
             &Ptr::<i8>::from_string_literal(b"/dev/null").to_rust_string(),
@@ -157,21 +155,17 @@ fn main_0() -> i32 {
         assert!(!((stream).is_null()));
         let buf: Value<Box<[i8]>> =
             Rc::new(RefCell::new((0..10).map(|_| 0_i8).collect::<Box<[i8]>>()));
-        match ({ ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any() },) {
+        match ({ (buf.decay()).to_any() },) {
             (mut __tmp_2,) => {
                 __tmp_2.memset(
                     (('Y' as i8) as i32) as u8,
-                    ::std::mem::size_of::<[i8; 10]>() as usize,
+                    ::std::mem::size_of::<[i8; 10]>(),
                 );
                 (__tmp_2).clone()
             }
         };
-        let mut n: usize = libcc2rs::fwrite_refcount(
-            ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any(),
-            1_usize,
-            10_usize,
-            (stream).clone(),
-        );
+        let mut n: usize =
+            libcc2rs::fwrite_refcount((buf.decay()).to_any(), 1_usize, 10_usize, (stream).clone());
         assert!((n == 10_usize));
         {
             let __r = stream.with(|__f| __f.close());
@@ -180,7 +174,7 @@ fn main_0() -> i32 {
         };
     }
     let mut __do_while = true;
-    'loop_: while __do_while || (0 != 0) {
+    'loop_: while __do_while || (false) {
         __do_while = false;
         let mut stream: Ptr<CFile> = match CFile::open(
             &Ptr::<i8>::from_string_literal(b"/dev/null").to_rust_string(),
@@ -192,23 +186,17 @@ fn main_0() -> i32 {
         assert!(!((stream).is_null()));
         let buf: Value<Box<[i8]>> =
             Rc::new(RefCell::new((0..10).map(|_| 0_i8).collect::<Box<[i8]>>()));
-        match ({ ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any() },) {
+        match ({ (buf.decay()).to_any() },) {
             (mut __tmp_3,) => {
                 __tmp_3.memset(
                     (('Y' as i8) as i32) as u8,
-                    ::std::mem::size_of::<[i8; 10]>() as usize,
+                    ::std::mem::size_of::<[i8; 10]>(),
                 );
                 (__tmp_3).clone()
             }
         };
-        let mut n: usize = ({
-            (gn1).call(
-                ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any(),
-                1_usize,
-                10_usize,
-                (stream).clone(),
-            )
-        });
+        let mut n: usize =
+            ({ (gn1).call((buf.decay()).to_any(), 1_usize, 10_usize, (stream).clone()) });
         assert!((n == 10_usize));
         {
             let __r = stream.with(|__f| __f.close());

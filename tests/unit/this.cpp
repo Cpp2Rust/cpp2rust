@@ -14,7 +14,7 @@ struct S {
     }
   }
 
-  S(int a, const S *other) : a_(a) {
+  S(int a, const S *other) : a_(a), self_(nullptr) {
     if (this == other) {
       self_ = nullptr;
     }

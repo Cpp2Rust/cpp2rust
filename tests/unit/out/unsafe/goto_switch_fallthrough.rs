@@ -39,9 +39,9 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(((((unsafe { sm_0(0,) }) == (11)) as i32) != 0));
-    assert!(((((unsafe { sm_0(1,) }) == (10)) as i32) != 0));
-    assert!(((((unsafe { sm_0(9,) }) == (1100)) as i32) != 0));
+    assert!(((unsafe { sm_0(0,) }) == (11)));
+    assert!(((unsafe { sm_0(1,) }) == (10)));
+    assert!(((unsafe { sm_0(9,) }) == (1100)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

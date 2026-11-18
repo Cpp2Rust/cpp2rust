@@ -20,13 +20,14 @@
 use std::any::{Any, TypeId};
 use std::cell::{Cell, Ref, RefCell, RefMut};
 use std::marker::PhantomData;
+use std::ops::DerefMut;
 use std::rc::{Rc, Weak};
 
 use crate::rc::{
-    AsPointer, Decay, FieldShape, Ptr, PtrKind, SliceParent, SliceRoot, StrongPtr, Value, dangling,
-    null_deref,
+    AsPointer, Decay, ElemStorage, Elems, FieldShape, Ptr, PtrKind, SliceParent, SliceRoot,
+    StrongPtr, Value, dangling, null_deref,
 };
-use crate::reinterpret::ByteRepr;
+use crate::reinterpret::{ByteRepr, OriginalAlloc};
 
 // A struct whose fields can be pointed to. Implemented by #[derive(Record)],
 // from the C offsets of the fields given by their #[offset(...)] attributes.
@@ -61,6 +62,9 @@ pub trait Root: Any {
     // The length of the array or vector at byte `offset`, which is found
     // without knowing its type.
     fn len_at(&self, offset: usize) -> usize;
+    // The allocation, which is the Value `this`, for the integers that
+    // pointers into it are cast to.
+    fn original_alloc(&self, this: Weak<dyn Any>) -> OriginalAlloc;
 }
 
 impl<R: Record> Root for RefCell<R> {
@@ -82,6 +86,10 @@ impl<R: Record> Root for RefCell<R> {
         self.borrow()
             .len_at(offset)
             .unwrap_or_else(|| invalid_field())
+    }
+
+    fn original_alloc(&self, this: Weak<dyn Any>) -> OriginalAlloc {
+        OriginalAlloc::single_in::<R>(this)
     }
 }
 
@@ -118,6 +126,10 @@ impl<R: Record> Root for RefCell<Box<[R]>> {
             .len_at(offset)
             .unwrap_or_else(|| invalid_field())
     }
+
+    fn original_alloc(&self, this: Weak<dyn Any>) -> OriginalAlloc {
+        OriginalAlloc::slice_in::<Box<[R]>>(this)
+    }
 }
 
 impl<R: Record> Root for RefCell<Vec<R>> {
@@ -144,6 +156,10 @@ impl<R: Record> Root for RefCell<Vec<R>> {
         self.borrow()[idx]
             .len_at(offset)
             .unwrap_or_else(|| invalid_field())
+    }
+
+    fn original_alloc(&self, this: Weak<dyn Any>) -> OriginalAlloc {
+        OriginalAlloc::slice_in::<Vec<R>>(this)
     }
 }
 
@@ -220,38 +236,7 @@ impl<S: Record> FieldPtr<S> for Ptr<S> {
         G: Fn(&S) -> &T + Copy + 'static,
         M: Fn(&mut S) -> &mut T + Copy + 'static,
     {
-        let offset = offset(&S::OFFSETS);
-        // The byte offset of the struct in its allocation.
-        let start = || self.offset.wrapping_mul(S::byte_size());
-        let (root, start): (Weak<dyn Root>, usize) = match &self.kind {
-            PtrKind::Null => null_deref(),
-            PtrKind::StackSingle(w) | PtrKind::HeapSingle(w) => (w.clone(), start()),
-            PtrKind::StackArray(w) | PtrKind::HeapArray(w) => (w.clone(), start()),
-            PtrKind::StackVec(w) | PtrKind::HeapVec(w) => (w.clone(), start()),
-            PtrKind::Field(root, _, FieldShape::Single) => (root.clone(), self.offset),
-            // A struct in an array or vector field, or in a nested container,
-            // has no offset in its allocation; its field is reached through
-            // it.
-            PtrKind::Field(..) | PtrKind::Nested(_) => {
-                return Ptr {
-                    offset: 0,
-                    kind: PtrKind::Nested(Rc::new(FieldOf::new(
-                        self.clone(),
-                        move |s| std::slice::from_ref(get(s)),
-                        move |s| std::slice::from_mut(get_mut(s)),
-                        offset,
-                    ))),
-                };
-            }
-            PtrKind::Reinterpreted(_) => {
-                let (alloc, byte_offset) = self.original_alloc().unwrap();
-                return Ptr::from_original_alloc(alloc, byte_offset.wrapping_add(offset));
-            }
-        };
-        Ptr {
-            offset: start.wrapping_add(offset),
-            kind: PtrKind::Field(root, 0, FieldShape::Single),
-        }
+        self.field_ptr_at(get, get_mut, offset(&S::OFFSETS))
     }
 
     #[inline]
@@ -274,7 +259,51 @@ impl<S: Record> FieldPtr<S> for Ptr<S> {
             PtrKind::Field(_, _, FieldShape::Single) => {
                 self.field_ptr(get, get_mut, offset).decay()
             }
-            _ => self.elems_of(get, get_mut, offset(&S::OFFSETS), true),
+            PtrKind::Address(_) => Ptr::from_int(self.offset.wrapping_add(offset(&S::OFFSETS))),
+            _ => self.elems_of(get, get_mut, offset(&S::OFFSETS)),
+        }
+    }
+}
+
+impl<S: Record> Ptr<S> {
+    #[inline]
+    pub(crate) fn field_ptr_at<T, G, M>(&self, get: G, get_mut: M, offset: usize) -> Ptr<T>
+    where
+        T: ByteRepr,
+        G: Fn(&S) -> &T + Copy + 'static,
+        M: Fn(&mut S) -> &mut T + Copy + 'static,
+    {
+        // The byte offset of the struct in its allocation.
+        let start = || self.offset.wrapping_mul(S::byte_size());
+        let (root, start): (Weak<dyn Root>, usize) = match &self.kind {
+            PtrKind::Null => null_deref(),
+            PtrKind::StackSingle(w) | PtrKind::HeapSingle(w) => (w.clone(), start()),
+            PtrKind::StackArray(w) | PtrKind::HeapArray(w) => (w.clone(), start()),
+            PtrKind::StackVec(w) | PtrKind::HeapVec(w) => (w.clone(), start()),
+            PtrKind::Field(root, _, FieldShape::Single) => (root.clone(), self.offset),
+            // A struct in an array or vector field, or in a nested container,
+            // has no offset in its allocation; its field is reached through
+            // it.
+            PtrKind::Field(..) | PtrKind::Nested(_) => {
+                return Ptr {
+                    offset: 0,
+                    kind: PtrKind::Nested(Rc::new(FieldOf::<S, [T], _, _>::new(
+                        self.clone(),
+                        move |s| std::slice::from_ref(get(s)),
+                        move |s| std::slice::from_mut(get_mut(s)),
+                        offset,
+                    ))),
+                };
+            }
+            PtrKind::Reinterpreted(_) => {
+                let (alloc, byte_offset) = self.original_alloc().unwrap();
+                return Ptr::from_original_alloc(alloc, byte_offset.wrapping_add(offset));
+            }
+            PtrKind::Address(_) => return Ptr::from_int(self.offset.wrapping_add(offset)),
+        };
+        Ptr {
+            offset: start.wrapping_add(offset),
+            kind: PtrKind::Field(root, 0, FieldShape::Single),
         }
     }
 }
@@ -290,8 +319,7 @@ impl<S: Record> Ptr<S> {
     // A pointer to the first element of the array or vector that `get` gives
     // in the struct that self points to, which is at byte `offset` of the
     // struct. The pointer reaches the array or vector through the Value that
-    // holds the struct, or else through self. `inline` tells if the elements
-    // are in the memory of the struct, as those of an array are.
+    // holds the struct, or else through self.
     // The projection of an array of structs takes the array as a Box, the
     // contents of its Value.
     #[allow(clippy::borrowed_box)]
@@ -301,12 +329,14 @@ impl<S: Record> Ptr<S> {
         get: impl Fn(&S) -> &C + 'static,
         get_mut: impl Fn(&mut S) -> &mut C + 'static,
         offset: usize,
-        inline: bool,
     ) -> Ptr<T>
     where
-        C: AsRef<[T]> + AsMut<[T]> + 'static,
+        C: Elems<T> + 'static,
         T: 'static,
     {
+        if let PtrKind::Address(_) = self.kind {
+            crate::escape::invalid(self.offset)
+        }
         let idx = self.offset;
         // The address of the field, for comparisons.
         let address = |root: *const ()| {
@@ -317,31 +347,23 @@ impl<S: Record> Ptr<S> {
         let parent: Rc<dyn SliceParent<T>> = match &self.kind {
             PtrKind::StackSingle(w) | PtrKind::HeapSingle(w) => Rc::new(InValue::new(
                 w,
-                move |s: &S| get(s).as_ref(),
-                move |s: &mut S| get_mut(s).as_mut(),
+                move |s: &S| get(s),
+                move |s: &mut S| get_mut(s),
                 address(w.as_ptr() as *const ()),
-                inline,
             )),
             PtrKind::StackArray(w) | PtrKind::HeapArray(w) => Rc::new(InValue::new(
                 w,
-                move |a: &Box<[S]>| get(&a[idx]).as_ref(),
-                move |a: &mut Box<[S]>| get_mut(&mut a[idx]).as_mut(),
+                move |a: &Box<[S]>| get(&a[idx]),
+                move |a: &mut Box<[S]>| get_mut(&mut a[idx]),
                 address(w.as_ptr() as *const ()),
-                inline,
             )),
             PtrKind::StackVec(w) | PtrKind::HeapVec(w) => Rc::new(InValue::new(
                 w,
-                move |v: &Vec<S>| get(&v[idx]).as_ref(),
-                move |v: &mut Vec<S>| get_mut(&mut v[idx]).as_mut(),
+                move |v: &Vec<S>| get(&v[idx]),
+                move |v: &mut Vec<S>| get_mut(&mut v[idx]),
                 address(w.as_ptr() as *const ()),
-                inline,
             )),
-            _ => Rc::new(FieldOf::new(
-                self.clone(),
-                move |s| get(s).as_ref(),
-                move |s| get_mut(s).as_mut(),
-                offset,
-            )),
+            _ => Rc::new(FieldOf::new(self.clone(), get, get_mut, offset)),
         };
         Ptr {
             offset: 0,
@@ -354,59 +376,69 @@ impl<S: Record> Ptr<S> {
 // an array field of a struct in it, or of an element of an array in it. Its
 // type is known, so the sequence is reached without looking for the field by
 // its offset as a Field pointer does.
-struct InValue<R, G, M> {
+struct InValue<R, C: ?Sized, G, M> {
     root: Weak<RefCell<R>>,
     get: G,
     get_mut: M,
     // The address of the field, for comparisons.
     address: usize,
-    // Whether the elements are in the memory of the struct.
-    inline: bool,
+    elems: PhantomData<fn(&C)>,
 }
 
-impl<R, G, M> InValue<R, G, M> {
+impl<R, C: ?Sized, G, M> InValue<R, C, G, M> {
     #[inline]
-    fn new<T>(root: &Weak<RefCell<R>>, get: G, get_mut: M, address: usize, inline: bool) -> Self
+    fn new(root: &Weak<RefCell<R>>, get: G, get_mut: M, address: usize) -> Self
     where
-        G: Fn(&R) -> &[T],
-        M: Fn(&mut R) -> &mut [T],
+        G: Fn(&R) -> &C,
+        M: Fn(&mut R) -> &mut C,
     {
         Self {
             root: root.clone(),
             get,
             get_mut,
             address,
-            inline,
+            elems: PhantomData,
         }
     }
 }
 
-impl<R, T, G, M> SliceParent<T> for InValue<R, G, M>
+impl<R, C, T, G, M> SliceParent<T> for InValue<R, C, G, M>
 where
     R: 'static,
-    G: Fn(&R) -> &[T],
-    M: Fn(&mut R) -> &mut [T],
+    RefCell<R>: Root,
+    C: Elems<T> + ?Sized + 'static,
+    G: Fn(&R) -> &C,
+    M: Fn(&mut R) -> &mut C,
 {
     fn root(&self) -> SliceRoot {
         SliceRoot::Alloc(self.root.upgrade().unwrap_or_else(|| dangling()))
     }
 
+    fn elem_storage(&self) -> ElemStorage {
+        if C::INLINE {
+            return in_value_storage(&self.root, self.address);
+        }
+        in_value_own(&self.root, &self.get)
+    }
+
     fn borrow_slice<'a>(&self, root: &'a SliceRoot) -> Ref<'a, [T]> {
-        Ref::map(root.alloc::<R>().borrow(), |r| (self.get)(r))
+        Ref::map(root.alloc::<R>().borrow(), |r| (self.get)(r).as_ref())
     }
 
     fn borrow_slice_mut<'a>(&self, root: &'a SliceRoot) -> RefMut<'a, [T]> {
-        RefMut::map(root.alloc::<R>().borrow_mut(), |r| (self.get_mut)(r))
+        RefMut::map(root.alloc::<R>().borrow_mut(), |r| {
+            (self.get_mut)(r).as_mut()
+        })
     }
 
     fn with_elem(&self, idx: usize, f: &mut dyn FnMut(&T)) {
         let root = self.root.upgrade().unwrap_or_else(|| dangling());
-        f(&(self.get)(&root.borrow())[idx])
+        f(&(self.get)(&root.borrow()).as_ref()[idx])
     }
 
     fn with_elem_mut(&self, idx: usize, f: &mut dyn FnMut(&mut T)) {
         let root = self.root.upgrade().unwrap_or_else(|| dangling());
-        f(&mut (self.get_mut)(&mut root.borrow_mut())[idx])
+        f(&mut (self.get_mut)(&mut root.borrow_mut()).as_mut()[idx])
     }
 
     fn address(&self) -> usize {
@@ -414,9 +446,64 @@ where
     }
 
     fn struct_root(&self) -> Option<usize> {
-        self.inline
-            .then_some(self.root.as_ptr() as *const () as usize)
+        C::INLINE.then_some(self.root.as_ptr() as *const () as usize)
     }
+}
+
+// Where the elements of an array field at `address` in the Value `root` are.
+#[inline(never)]
+fn in_value_storage<R: 'static>(root: &Weak<RefCell<R>>, address: usize) -> ElemStorage
+where
+    RefCell<R>: Root,
+{
+    let value = root.upgrade().unwrap_or_else(|| dangling());
+    let start = address.wrapping_sub(root.as_ptr() as usize);
+    ElemStorage::In(value.original_alloc(root.clone()), start)
+}
+
+// The buffer of the elements of the vector that `get` gives in the Value
+// `root`.
+#[inline(never)]
+fn in_value_own<R: 'static, T, C: Elems<T> + ?Sized>(
+    root: &Weak<RefCell<R>>,
+    get: &dyn Fn(&R) -> &C,
+) -> ElemStorage {
+    let value = root.upgrade().unwrap_or_else(|| dangling());
+    ElemStorage::own(get(&value.borrow()))
+}
+
+// The buffer of the elements of the container that `get` gives in the struct
+// that `base` points to.
+#[inline(never)]
+fn field_of_own<S: Record, T, C: Elems<T> + ?Sized>(
+    base: &Ptr<S>,
+    get: &dyn Fn(&S) -> &C,
+) -> ElemStorage {
+    let root = struct_root(base);
+    ElemStorage::own(get(&borrow_struct(base, &root)))
+}
+
+// Where the elements of the array field at byte `field` of the struct that
+// `base` points to are: at its offset in the struct, which has an offset in
+// the storage of the elements of its parent. None if those are in a buffer of
+// their own, as those of a vector are, and so the array is given one of its
+// own, which doesn't build the storage of such vectors for the parents of
+// every struct type.
+#[inline(never)]
+fn field_of_storage<S: Record>(base: &Ptr<S>, field: usize) -> Option<ElemStorage> {
+    let start = base.offset.wrapping_mul(S::byte_size());
+    let (alloc, start) = match &base.kind {
+        PtrKind::Field(root, array, FieldShape::Array) => {
+            let alloc = upgrade(root).original_alloc(root.clone());
+            (alloc, (*array as usize).wrapping_add(start))
+        }
+        PtrKind::Nested(parent) => match parent.elem_storage() {
+            ElemStorage::In(alloc, elems) => (alloc, elems.wrapping_add(start)),
+            ElemStorage::Own(..) => return None,
+        },
+        _ => return None,
+    };
+    Some(ElemStorage::In(alloc, start.wrapping_add(field)))
 }
 
 // A field of a struct, as returned by field_ref!, which is made a pointer to
@@ -457,7 +544,7 @@ where
             PtrKind::Field(_, _, FieldShape::Single) => self.as_pointer().decay(),
             _ => self
                 .base
-                .elems_of(self.get, self.get_mut, (self.offset)(&S::OFFSETS), false),
+                .elems_of(self.get, self.get_mut, (self.offset)(&S::OFFSETS)),
         }
     }
 }
@@ -495,57 +582,78 @@ where
 // the fields of structs that are elements of arrays and vectors in fields, or
 // of nested containers, which have no offset in the allocation of the
 // outermost struct.
-struct FieldOf<S, G, M> {
+struct FieldOf<S, C: ?Sized, G, M> {
     base: Ptr<S>,
     get: G,
     get_mut: M,
     // The byte offset of the field in the struct, which identifies the field
     // for comparisons.
     offset: usize,
+    elems: PhantomData<fn(&C)>,
 }
 
-impl<S, G, M> FieldOf<S, G, M> {
+impl<S, C: ?Sized, G, M> FieldOf<S, C, G, M> {
     #[inline]
-    fn new<T>(base: Ptr<S>, get: G, get_mut: M, offset: usize) -> Self
+    fn new(base: Ptr<S>, get: G, get_mut: M, offset: usize) -> Self
     where
-        G: Fn(&S) -> &[T],
-        M: Fn(&mut S) -> &mut [T],
+        G: Fn(&S) -> &C,
+        M: Fn(&mut S) -> &mut C,
     {
         Self {
             base,
             get,
             get_mut,
             offset,
+            elems: PhantomData,
         }
+    }
+}
+
+// The root of the struct that `base` points to, which is in an array or
+// vector field, or in a nested container.
+fn struct_root<S: Record>(base: &Ptr<S>) -> SliceRoot {
+    match &base.kind {
+        PtrKind::Field(root, ..) => SliceRoot::Field(upgrade(root)),
+        PtrKind::Nested(parent) => parent.root(),
+        _ => unreachable!(),
+    }
+}
+
+fn borrow_struct<'a, S: Record>(base: &Ptr<S>, root: &'a SliceRoot) -> Ref<'a, S> {
+    let idx = base.offset;
+    match &base.kind {
+        PtrKind::Field(_, field, shape) => {
+            Ptr::borrow_field_elem(root.field(), *field, *shape, idx)
+        }
+        PtrKind::Nested(parent) => Ref::map(parent.borrow_slice(root), |s| &s[idx]),
+        _ => unreachable!(),
     }
 }
 
 // The struct is reached through a Field pointer to an element, or a Nested
 // pointer, which are the pointers that have no offset in their allocation.
-impl<S, T, G, M> SliceParent<T> for FieldOf<S, G, M>
+impl<S, C, T, G, M> SliceParent<T> for FieldOf<S, C, G, M>
 where
     S: Record,
-    G: Fn(&S) -> &[T],
-    M: Fn(&mut S) -> &mut [T],
+    C: Elems<T> + ?Sized + 'static,
+    G: Fn(&S) -> &C,
+    M: Fn(&mut S) -> &mut C,
 {
     fn root(&self) -> SliceRoot {
-        match &self.base.kind {
-            PtrKind::Field(root, ..) => SliceRoot::Field(upgrade(root)),
-            PtrKind::Nested(parent) => parent.root(),
-            _ => unreachable!(),
+        struct_root(&self.base)
+    }
+
+    fn elem_storage(&self) -> ElemStorage {
+        if C::INLINE
+            && let Some(storage) = field_of_storage(&self.base, self.offset)
+        {
+            return storage;
         }
+        field_of_own(&self.base, &self.get)
     }
 
     fn borrow_slice<'a>(&self, root: &'a SliceRoot) -> Ref<'a, [T]> {
-        let idx = self.base.offset;
-        let s = match &self.base.kind {
-            PtrKind::Field(_, field, shape) => {
-                Ptr::borrow_field_elem(root.field(), *field, *shape, idx)
-            }
-            PtrKind::Nested(parent) => Ref::map(parent.borrow_slice(root), |s| &s[idx]),
-            _ => unreachable!(),
-        };
-        Ref::map(s, |s| (self.get)(s))
+        Ref::map(borrow_struct(&self.base, root), |s| (self.get)(s).as_ref())
     }
 
     fn borrow_slice_mut<'a>(&self, root: &'a SliceRoot) -> RefMut<'a, [T]> {
@@ -557,7 +665,7 @@ where
             PtrKind::Nested(parent) => RefMut::map(parent.borrow_slice_mut(root), |s| &mut s[idx]),
             _ => unreachable!(),
         };
-        RefMut::map(s, |s| (self.get_mut)(s))
+        RefMut::map(s, |s| (self.get_mut)(s).as_mut())
     }
 
     fn with_elem(&self, idx: usize, f: &mut dyn FnMut(&T)) {
@@ -565,10 +673,10 @@ where
             PtrKind::Field(root, field, shape) => {
                 let root = upgrade(root);
                 let s = Ptr::borrow_field_elem(&*root, *field, *shape, self.base.offset);
-                f(&(self.get)(&s)[idx])
+                f(&(self.get)(&s).as_ref()[idx])
             }
             PtrKind::Nested(parent) => {
-                parent.with_elem(self.base.offset, &mut |s| f(&(self.get)(s)[idx]))
+                parent.with_elem(self.base.offset, &mut |s| f(&(self.get)(s).as_ref()[idx]))
             }
             _ => unreachable!(),
         }
@@ -579,11 +687,11 @@ where
             PtrKind::Field(root, field, shape) => {
                 let root = upgrade(root);
                 let mut s = Ptr::borrow_field_elem_mut(&*root, *field, *shape, self.base.offset);
-                f(&mut (self.get_mut)(&mut s)[idx])
+                f(&mut (self.get_mut)(&mut s).as_mut()[idx])
             }
-            PtrKind::Nested(parent) => {
-                parent.with_elem_mut(self.base.offset, &mut |s| f(&mut (self.get_mut)(s)[idx]))
-            }
+            PtrKind::Nested(parent) => parent.with_elem_mut(self.base.offset, &mut |s| {
+                f(&mut (self.get_mut)(s).as_mut()[idx])
+            }),
             _ => unreachable!(),
         }
     }
@@ -634,6 +742,13 @@ macro_rules! size_of_field {
     };
 }
 
+#[macro_export]
+macro_rules! offset_of_field {
+    ($ty:ty, $field:ident) => {
+        <$ty as $crate::Record>::OFFSETS.$field
+    };
+}
+
 // The size of the type that `f` gives a reference to.
 pub const fn size_of_pointee<S, T>(_f: fn(&S) -> &T) -> usize {
     std::mem::size_of::<T>()
@@ -645,6 +760,19 @@ pub trait Place: Clone {
     type Target;
     fn with<R>(&self, f: impl FnOnce(&Self::Target) -> R) -> R;
     fn with_mut<R>(&self, f: impl FnOnce(&mut Self::Target) -> R) -> R;
+
+    #[inline]
+    fn read(&self) -> Self::Target
+    where
+        Self::Target: Clone,
+    {
+        self.with(Clone::clone)
+    }
+
+    #[inline]
+    fn write(&self, value: Self::Target) {
+        self.with_mut(|v| *v = value)
+    }
 }
 
 impl<T: ByteRepr> Place for Ptr<T> {
@@ -677,40 +805,15 @@ impl<B: Place, T> Clone for FieldPlace<'_, B, T> {
 
 impl<B: Place, T> Copy for FieldPlace<'_, B, T> {}
 
-impl<B: Place, T> FieldPlace<'_, B, T> {
-    #[inline]
-    pub fn with<R>(&self, f: impl FnOnce(&T) -> R) -> R {
-        self.base.with(|s| f((self.get)(s)))
-    }
-
-    #[inline]
-    pub fn with_mut<R>(&self, f: impl FnOnce(&mut T) -> R) -> R {
-        self.base.with_mut(|s| f((self.get_mut)(s)))
-    }
-
-    #[inline]
-    pub fn read(&self) -> T
-    where
-        T: Clone,
-    {
-        self.with(T::clone)
-    }
-
-    #[inline]
-    pub fn write(&self, value: T) {
-        self.with_mut(|v| *v = value)
-    }
-}
-
 impl<B: Place, T> Place for FieldPlace<'_, B, T> {
     type Target = T;
     #[inline]
     fn with<R>(&self, f: impl FnOnce(&T) -> R) -> R {
-        FieldPlace::with(self, f)
+        self.base.with(|s| f((self.get)(s)))
     }
     #[inline]
     fn with_mut<R>(&self, f: impl FnOnce(&mut T) -> R) -> R {
-        FieldPlace::with_mut(self, f)
+        self.base.with_mut(|s| f((self.get_mut)(s)))
     }
 }
 
@@ -747,29 +850,6 @@ impl<T> Copy for ElemPlace<'_, T> {}
 
 impl<T: ByteRepr> ElemPlace<'_, T> {
     #[inline]
-    pub fn with<R>(&self, f: impl FnOnce(&T) -> R) -> R {
-        self.base.with_at(self.idx, f)
-    }
-
-    #[inline]
-    pub fn with_mut<R>(&self, f: impl FnOnce(&mut T) -> R) -> R {
-        self.base.with_mut_at(self.idx, f)
-    }
-
-    #[inline]
-    pub fn read(&self) -> T
-    where
-        T: Clone,
-    {
-        self.base.read_at(self.idx)
-    }
-
-    #[inline]
-    pub fn write(&self, value: T) {
-        self.base.write_at(self.idx, value)
-    }
-
-    #[inline]
     pub fn upgrade(&self) -> StrongPtr<T> {
         self.base.offset(self.idx).upgrade()
     }
@@ -779,11 +859,24 @@ impl<T: ByteRepr> Place for ElemPlace<'_, T> {
     type Target = T;
     #[inline]
     fn with<R>(&self, f: impl FnOnce(&T) -> R) -> R {
-        ElemPlace::with(self, f)
+        self.base.with_at(self.idx, f)
     }
     #[inline]
     fn with_mut<R>(&self, f: impl FnOnce(&mut T) -> R) -> R {
-        ElemPlace::with_mut(self, f)
+        self.base.with_mut_at(self.idx, f)
+    }
+    // Elements are read and written without the extra call of with, which
+    // keeps them inlined in hot loops.
+    #[inline]
+    fn read(&self) -> T
+    where
+        T: Clone,
+    {
+        self.base.read_at(self.idx)
+    }
+    #[inline]
+    fn write(&self, value: T) {
+        self.base.write_at(self.idx, value)
     }
 }
 
@@ -799,37 +892,6 @@ macro_rules! elem {
             idx: ($idx) as isize,
         }
     };
-}
-
-// An array or vector, whose elements are indexed by IndexPlace.
-pub trait Seq {
-    type Elem;
-    fn elems(&self) -> &[Self::Elem];
-    fn elems_mut(&mut self) -> &mut [Self::Elem];
-}
-
-impl<T> Seq for Box<[T]> {
-    type Elem = T;
-    #[inline]
-    fn elems(&self) -> &[T] {
-        self
-    }
-    #[inline]
-    fn elems_mut(&mut self) -> &mut [T] {
-        self
-    }
-}
-
-impl<T> Seq for Vec<T> {
-    type Elem = T;
-    #[inline]
-    fn elems(&self) -> &[T] {
-        self
-    }
-    #[inline]
-    fn elems_mut(&mut self) -> &mut [T] {
-        self
-    }
 }
 
 // Element `idx` of the array or vector in place `base`, e.g., a row of an
@@ -849,34 +911,6 @@ impl<B> Clone for IndexPlace<'_, B> {
 
 impl<B> Copy for IndexPlace<'_, B> {}
 
-impl<B: Place> IndexPlace<'_, B>
-where
-    B::Target: Seq,
-{
-    #[inline]
-    pub fn with<R>(&self, f: impl FnOnce(&<B::Target as Seq>::Elem) -> R) -> R {
-        self.base.with(|c| f(&c.elems()[self.idx]))
-    }
-
-    #[inline]
-    pub fn with_mut<R>(&self, f: impl FnOnce(&mut <B::Target as Seq>::Elem) -> R) -> R {
-        self.base.with_mut(|c| f(&mut c.elems_mut()[self.idx]))
-    }
-
-    #[inline]
-    pub fn read(&self) -> <B::Target as Seq>::Elem
-    where
-        <B::Target as Seq>::Elem: Clone,
-    {
-        self.with(Clone::clone)
-    }
-
-    #[inline]
-    pub fn write(&self, value: <B::Target as Seq>::Elem) {
-        self.with_mut(|v| *v = value)
-    }
-}
-
 impl<T: ByteRepr> IndexPlace<'_, Ptr<Vec<T>>> {
     #[inline]
     pub fn upgrade(&self) -> StrongPtr<T> {
@@ -884,18 +918,19 @@ impl<T: ByteRepr> IndexPlace<'_, Ptr<Vec<T>>> {
     }
 }
 
-impl<B: Place> Place for IndexPlace<'_, B>
+// The array or vector is a slice of its elements.
+impl<B: Place, E> Place for IndexPlace<'_, B>
 where
-    B::Target: Seq,
+    B::Target: DerefMut<Target = [E]>,
 {
-    type Target = <B::Target as Seq>::Elem;
+    type Target = E;
     #[inline]
-    fn with<R>(&self, f: impl FnOnce(&Self::Target) -> R) -> R {
-        IndexPlace::with(self, f)
+    fn with<R>(&self, f: impl FnOnce(&E) -> R) -> R {
+        self.base.with(|c| f(&c[self.idx]))
     }
     #[inline]
-    fn with_mut<R>(&self, f: impl FnOnce(&mut Self::Target) -> R) -> R {
-        IndexPlace::with_mut(self, f)
+    fn with_mut<R>(&self, f: impl FnOnce(&mut E) -> R) -> R {
+        self.base.with_mut(|c| f(&mut c[self.idx]))
     }
 }
 
@@ -943,36 +978,6 @@ impl<S: Record, T: ByteRepr> ArrayElem<'_, S, T> {
     }
 
     #[inline]
-    pub fn with<R>(&self, f: impl FnOnce(&T) -> R) -> R {
-        if let PtrKind::Reinterpreted(_) = self.base.kind {
-            return self.ptr().with(f);
-        }
-        self.base.with(|s| f(&(self.get)(s)[self.idx as usize]))
-    }
-
-    #[inline]
-    pub fn with_mut<R>(&self, f: impl FnOnce(&mut T) -> R) -> R {
-        if let PtrKind::Reinterpreted(_) = self.base.kind {
-            return self.ptr().with_mut(f);
-        }
-        self.base
-            .with_mut(|s| f(&mut (self.get_mut)(s)[self.idx as usize]))
-    }
-
-    #[inline]
-    pub fn read(&self) -> T
-    where
-        T: Clone,
-    {
-        self.with(T::clone)
-    }
-
-    #[inline]
-    pub fn write(&self, value: T) {
-        self.with_mut(|v| *v = value)
-    }
-
-    #[inline]
     pub fn upgrade(&self) -> StrongPtr<T> {
         self.ptr().upgrade()
     }
@@ -982,11 +987,18 @@ impl<S: Record, T: ByteRepr> Place for ArrayElem<'_, S, T> {
     type Target = T;
     #[inline]
     fn with<R>(&self, f: impl FnOnce(&T) -> R) -> R {
-        ArrayElem::with(self, f)
+        if let PtrKind::Reinterpreted(_) = self.base.kind {
+            return self.ptr().with(f);
+        }
+        self.base.with(|s| f(&(self.get)(s)[self.idx as usize]))
     }
     #[inline]
     fn with_mut<R>(&self, f: impl FnOnce(&mut T) -> R) -> R {
-        ArrayElem::with_mut(self, f)
+        if let PtrKind::Reinterpreted(_) = self.base.kind {
+            return self.ptr().with_mut(f);
+        }
+        self.base
+            .with_mut(|s| f(&mut (self.get_mut)(s)[self.idx as usize]))
     }
 }
 
@@ -1027,29 +1039,6 @@ impl<S: Record, T> Copy for VecElem<'_, S, T> {}
 
 impl<S: Record, T: ByteRepr> VecElem<'_, S, T> {
     #[inline]
-    pub fn with<R>(&self, f: impl FnOnce(&T) -> R) -> R {
-        self.base.with(|s| f(&(self.get)(s)[self.idx]))
-    }
-
-    #[inline]
-    pub fn with_mut<R>(&self, f: impl FnOnce(&mut T) -> R) -> R {
-        self.base.with_mut(|s| f(&mut (self.get_mut)(s)[self.idx]))
-    }
-
-    #[inline]
-    pub fn read(&self) -> T
-    where
-        T: Clone,
-    {
-        self.with(T::clone)
-    }
-
-    #[inline]
-    pub fn write(&self, value: T) {
-        self.with_mut(|v| *v = value)
-    }
-
-    #[inline]
     pub fn upgrade(&self) -> StrongPtr<T> {
         let elems: Ptr<T> = self
             .base
@@ -1063,11 +1052,11 @@ impl<S: Record, T: ByteRepr> Place for VecElem<'_, S, T> {
     type Target = T;
     #[inline]
     fn with<R>(&self, f: impl FnOnce(&T) -> R) -> R {
-        VecElem::with(self, f)
+        self.base.with(|s| f(&(self.get)(s)[self.idx]))
     }
     #[inline]
     fn with_mut<R>(&self, f: impl FnOnce(&mut T) -> R) -> R {
-        VecElem::with_mut(self, f)
+        self.base.with_mut(|s| f(&mut (self.get_mut)(s)[self.idx]))
     }
 }
 
@@ -1273,7 +1262,7 @@ pub(crate) fn upgrade(root: &Weak<dyn Root>) -> Rc<dyn Root> {
 
 #[cfg(test)]
 mod tests {
-    use crate::{AsPointer, ByteRepr, Decay, Ptr, Record, Value};
+    use crate::{AsPointer, ByteRepr, Decay, Place, Ptr, Record, Value};
     use std::cell::RefCell;
     use std::rc::Rc;
 
@@ -1550,11 +1539,8 @@ mod tests {
         name.offset(1)
             .with_slice_mut(2, |b| b.copy_from_slice(b"xy"));
         assert_eq!(&s.borrow().name[..4], b"axy\0");
-        assert_eq!(name.slice_until(&name.offset(3)), b"axy".to_vec());
         let nums: Ptr<i32> = field_ptr!(s, nums).decay();
-        nums.sort(3);
-        assert_eq!(s.borrow().nums, vec![1, 2, 3]);
-        assert_eq!(nums.collect::<Vec<_>>().len(), 3);
+        assert_eq!(nums.len(), 3);
     }
 
     #[test]

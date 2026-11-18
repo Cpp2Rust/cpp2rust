@@ -31,10 +31,10 @@ fn main_0() -> i32 {
             }
         }
     };
-    assert!((((fd >= 0) as i32) != 0));
+    assert!((fd >= 0));
     assert!(
-        (((match FdRegistry::with_fd(fd, |__fd| {
-            Ptr::<i8>::from_string_literal(b"hello world")
+        (match FdRegistry::with_fd(fd, |__fd| {
+            (Ptr::<i8>::from_string_literal(b"hello world"))
                 .to_any()
                 .reinterpret_cast::<u8>()
                 .with_slice(11_usize, |__buf| nix::unistd::write(__fd, __buf))
@@ -44,11 +44,10 @@ fn main_0() -> i32 {
                 libcc2rs::cpp2rust_errno().write(__e as i32);
                 -1
             }
-        } == 11_isize) as i32)
-            != 0)
+        } == 11_isize)
     );
     assert!(
-        ((({
+        ({
             let __whence = match ::libc::SEEK_END {
                 0 => nix::unistd::Whence::SeekSet,
                 1 => nix::unistd::Whence::SeekCur,
@@ -64,11 +63,10 @@ fn main_0() -> i32 {
                     -1
                 }
             }
-        } == (11 as ::libc::off_t)) as i32)
-            != 0)
+        } == (11 as ::libc::off_t))
     );
     assert!(
-        ((({
+        ({
             let __whence = match ::libc::SEEK_SET {
                 0 => nix::unistd::Whence::SeekSet,
                 1 => nix::unistd::Whence::SeekCur,
@@ -84,18 +82,17 @@ fn main_0() -> i32 {
                     -1
                 }
             }
-        } == (6 as ::libc::off_t)) as i32)
-            != 0)
+        } == (6 as ::libc::off_t))
     );
     let buf: Value<Box<[i8]>> = Rc::new(RefCell::new((0..16).map(|_| 0_i8).collect::<Box<[i8]>>()));
-    match ({ ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any() },) {
+    match ({ (buf.decay()).to_any() },) {
         (mut __tmp_0,) => {
-            __tmp_0.memset((0) as u8, ::std::mem::size_of::<[i8; 16]>() as usize);
+            __tmp_0.memset((0) as u8, ::std::mem::size_of::<[i8; 16]>());
             (__tmp_0).clone()
         }
     };
     assert!(
-        (((match ({ ((buf.as_pointer() as Ptr::<i8>) as Ptr<i8>).to_any() },) {
+        (match ({ (buf.decay()).to_any() },) {
             (mut __tmp_1,) => {
                 match FdRegistry::with_fd(fd, |__fd| {
                     __tmp_1
@@ -111,12 +108,11 @@ fn main_0() -> i32 {
                     }
                 }
             }
-        } == 5_isize) as i32)
-            != 0)
+        } == 5_isize)
     );
     assert!(
-        ((({
-            let mut __it1 = (buf.as_pointer() as Ptr<i8>).to_c_string_iterator();
+        ({
+            let mut __it1 = buf.decay().to_c_string_iterator();
             let mut __it2 = Ptr::<i8>::from_string_literal(b"world").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
@@ -128,11 +124,10 @@ fn main_0() -> i32 {
                     break 0;
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
     assert!(
-        (((match FdRegistry::with_fd(fd, |__fd| nix::unistd::ftruncate(
+        (match FdRegistry::with_fd(fd, |__fd| nix::unistd::ftruncate(
             __fd,
             (5 as ::libc::off_t)
         )) {
@@ -141,11 +136,10 @@ fn main_0() -> i32 {
                 libcc2rs::cpp2rust_errno().write(__e as i32);
                 -1
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
     assert!(
-        ((({
+        ({
             let __whence = match ::libc::SEEK_END {
                 0 => nix::unistd::Whence::SeekSet,
                 1 => nix::unistd::Whence::SeekCur,
@@ -161,19 +155,17 @@ fn main_0() -> i32 {
                     -1
                 }
             }
-        } == (5 as ::libc::off_t)) as i32)
-            != 0)
+        } == (5 as ::libc::off_t))
     );
-    assert!((((FdRegistry::close(fd) == 0) as i32) != 0));
+    assert!((FdRegistry::close(fd) == 0));
     assert!(
-        (((match nix::unistd::unlink(path.to_rust_string().as_str()) {
+        (match nix::unistd::unlink(path.to_rust_string().as_str()) {
             Ok(()) => 0,
             Err(__e) => {
                 libcc2rs::cpp2rust_errno().write(__e as i32);
                 -1
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
     return 0;
 }

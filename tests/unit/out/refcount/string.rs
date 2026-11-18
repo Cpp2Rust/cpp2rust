@@ -7,7 +7,9 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn counted_string_0(calls: Ptr<i32>) -> Vec<i8> {
-    calls.with_mut(|__v| __v.prefix_inc());
+    calls.with_mut(|__v| {
+        __v.prefix_inc();
+    });
     return {
         let mut __bytes = Ptr::<i8>::from_string_literal(b"hello").to_c_bytes();
         __bytes.push(0);
@@ -15,7 +17,9 @@ pub fn counted_string_0(calls: Ptr<i32>) -> Vec<i8> {
     };
 }
 pub fn counted_ref_1(s: Ptr<Vec<i8>>, calls: Ptr<i32>) -> Ptr<Vec<i8>> {
-    calls.with_mut(|__v| __v.prefix_inc());
+    calls.with_mut(|__v| {
+        __v.prefix_inc();
+    });
     return (s).clone();
 }
 pub fn main() {
@@ -69,15 +73,17 @@ fn main_0() -> i32 {
             .collect(),
     ));
     let mut p2: Ptr<i8> = s2.decay();
-    let mut i: u32 = 0_u32;
-    'loop_: while ((i as usize) < ((*s2.borrow()).len() - 1)) {
-        assert!(
-            ({
-                (((elem!(p2, i).read()) as i32) == (('a' as i8) as i32))
-                    && (({ (*s2.borrow())[(i as usize)] } as i32) == (('a' as i8) as i32))
-            })
-        );
-        i.prefix_inc();
+    {
+        let mut i: u32 = 0_u32;
+        'loop_: while ((i as usize) < ((*s2.borrow()).len() - 1)) {
+            assert!(
+                ({
+                    (((elem!(p2, i).read()) as i32) == (('a' as i8) as i32))
+                        && (({ (*s2.borrow())[(i as usize)] } as i32) == (('a' as i8) as i32))
+                })
+            );
+            i.prefix_inc();
+        }
     }
     assert!(({ (((*s2.borrow()).len() - 1) == 10_usize) }));
     assert!(({ (((*s2.borrow()).len() - 1) == ((*s2.borrow()).len() - 1)) }));
@@ -85,15 +91,17 @@ fn main_0() -> i32 {
     (*s2.borrow_mut())[1_usize] = ('c' as i8);
     assert!(({ (({ (*s2.borrow())[0_usize] } as i32) == (('b' as i8) as i32)) }));
     assert!(({ (({ (*s2.borrow())[1_usize] } as i32) == (('c' as i8) as i32)) }));
-    let mut i: u32 = 2_u32;
-    'loop_: while ((i as usize) < ((*s2.borrow()).len() - 1)) {
-        assert!(
-            ({
-                (((elem!(p2, i).read()) as i32) == (('a' as i8) as i32))
-                    && (({ (*s2.borrow())[(i as usize)] } as i32) == (('a' as i8) as i32))
-            })
-        );
-        i.prefix_inc();
+    {
+        let mut i: u32 = 2_u32;
+        'loop_: while ((i as usize) < ((*s2.borrow()).len() - 1)) {
+            assert!(
+                ({
+                    (((elem!(p2, i).read()) as i32) == (('a' as i8) as i32))
+                        && (({ (*s2.borrow())[(i as usize)] } as i32) == (('a' as i8) as i32))
+                })
+            );
+            i.prefix_inc();
+        }
     }
     let s3: Value<Vec<i8>> = Rc::new(RefCell::new(s2.as_pointer().with(|__s: &Vec<i8>| {
         let mut __tmp1 =
@@ -104,16 +112,18 @@ fn main_0() -> i32 {
     assert!(({ (((*s3.borrow()).len() - 1) == 5_usize) }));
     assert!(({ (((*s3.borrow()).len() - 1) == ((*s3.borrow()).len() - 1)) }));
     let mut p3: Ptr<i8> = s3.decay();
-    let mut i: u32 = 0_u32;
-    'loop_: while ((i as usize) < ((*s3.borrow()).len() - 1)) {
-        assert!(
-            ({
-                ({ ((elem!(p3, i).read()) as i32) } == {
-                    ({ (*s3.borrow())[(i as usize)] } as i32)
+    {
+        let mut i: u32 = 0_u32;
+        'loop_: while ((i as usize) < ((*s3.borrow()).len() - 1)) {
+            assert!(
+                ({
+                    ({ ((elem!(p3, i).read()) as i32) } == {
+                        ({ (*s3.borrow())[(i as usize)] } as i32)
+                    })
                 })
-            })
-        );
-        i.prefix_inc();
+            );
+            i.prefix_inc();
+        }
     }
     let s4: Value<Vec<i8>> = Rc::new(RefCell::new(
         match ({
@@ -138,16 +148,18 @@ fn main_0() -> i32 {
     assert!(({ (((*s4.borrow()).len() - 1) == 3_usize) }));
     assert!(({ (((*s4.borrow()).len() - 1) == ((*s4.borrow()).len() - 1)) }));
     let mut p4: Ptr<i8> = s4.decay();
-    let mut i: u32 = 0_u32;
-    'loop_: while ((i as usize) < ((*s4.borrow()).len() - 1)) {
-        assert!(
-            ({
-                ({ ((elem!(p4, i).read()) as i32) } == {
-                    ({ (*s4.borrow())[(i as usize)] } as i32)
+    {
+        let mut i: u32 = 0_u32;
+        'loop_: while ((i as usize) < ((*s4.borrow()).len() - 1)) {
+            assert!(
+                ({
+                    ({ ((elem!(p4, i).read()) as i32) } == {
+                        ({ (*s4.borrow())[(i as usize)] } as i32)
+                    })
                 })
-            })
-        );
-        i.prefix_inc();
+            );
+            i.prefix_inc();
+        }
     }
     let s5: Value<Vec<i8>> = Rc::new(RefCell::new({
         let mut r = ({ (*s1.borrow()).clone() });
@@ -159,16 +171,18 @@ fn main_0() -> i32 {
     assert!(({ (((*s5.borrow()).len() - 1) == 12_usize) }));
     assert!(({ (((*s5.borrow()).len() - 1) == ((*s5.borrow()).len() - 1)) }));
     let mut p5: Ptr<i8> = s5.decay();
-    let mut i: u32 = 0_u32;
-    'loop_: while ((i as usize) < ((*s5.borrow()).len() - 1)) {
-        assert!(
-            ({
-                ({ ((elem!(p5, i).read()) as i32) } == {
-                    ({ (*s5.borrow())[(i as usize)] } as i32)
+    {
+        let mut i: u32 = 0_u32;
+        'loop_: while ((i as usize) < ((*s5.borrow()).len() - 1)) {
+            assert!(
+                ({
+                    ({ ((elem!(p5, i).read()) as i32) } == {
+                        ({ (*s5.borrow())[(i as usize)] } as i32)
+                    })
                 })
-            })
-        );
-        i.prefix_inc();
+            );
+            i.prefix_inc();
+        }
     }
     let arr: Value<Box<[i8]>> = Rc::new(RefCell::new(Box::new([
         ('b' as i8),
@@ -180,9 +194,9 @@ fn main_0() -> i32 {
         ('o' as i8),
     ])));
     let mut string: Vec<i8> = {
-        let mut __v = Vec::with_capacity(3_usize as usize + 1);
-        (arr.as_pointer() as Ptr<i8>)
-            .with_slice(3_usize as usize, |__s| __v.extend_from_slice(__s));
+        let mut __v = Vec::with_capacity(3_usize + 1);
+        arr.decay()
+            .with_slice(3_usize, |__s| __v.extend_from_slice(__s));
         __v.push(0);
         __v
     };
@@ -414,7 +428,7 @@ fn main_0() -> i32 {
     };
     match (({ counted_ref_1(target.as_pointer(), ref_calls.as_pointer()) }),) {
         (__tmp_4,) => {
-            if 0_usize as usize >= (*__tmp_4.upgrade().deref()).len().saturating_sub(1) {
+            if 0_usize >= (*__tmp_4.upgrade().deref()).len().saturating_sub(1) {
                 panic!("out of bounds access")
             } else {
                 __tmp_4.decay().offset(0_usize as isize)
@@ -444,7 +458,7 @@ fn main_0() -> i32 {
         },
     ])));
     let mut target_index: i32 = 0;
-    match ((targets.as_pointer() as Ptr<Vec<i8>>).offset(target_index.postfix_inc()),) {
+    match (targets.decay().offset(target_index.postfix_inc()),) {
         (__tmp_5,) => {
             __tmp_5.with_mut(|__v: &mut Vec<i8>| __v.pop());
             __tmp_5.with_mut(|__v: &mut Vec<i8>| __v.resize((1_usize) as usize, 0));
@@ -453,8 +467,8 @@ fn main_0() -> i32 {
     };
     println!(
         "element receiver: {} {} {}",
-        (targets.as_pointer() as Ptr<Vec<i8>>).offset(0).decay(),
-        (targets.as_pointer() as Ptr<Vec<i8>>).offset(1).decay(),
+        targets.decay().offset(0).decay(),
+        targets.decay().offset(1).decay(),
         target_index
     );
     (*receiver_calls.borrow_mut()) = 0;

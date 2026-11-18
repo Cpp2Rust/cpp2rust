@@ -114,8 +114,9 @@ pub fn goto(_input: TokenStream) -> TokenStream {
 // offset given by its offset attribute (see derive(Record)). The byte_size
 // attribute gives the byte size of S in C, and of the fields whose size in C
 // differs from the byte_size() of their type (e.g., arrays and pointers).
+// Over-aligned structs also give their alignment in C, as #[byte_align(64)].
 
-#[proc_macro_derive(ByteRepr, attributes(offset, byte_size))]
+#[proc_macro_derive(ByteRepr, attributes(offset, byte_size, byte_align))]
 pub fn derive_byte_repr(input: TokenStream) -> TokenStream {
     byte_repr::expand(input)
 }

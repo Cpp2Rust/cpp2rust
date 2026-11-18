@@ -1,0 +1,3 @@
+// panic: refcount, unsafe
+// The converter initializes a static local lazily, so one that is never used
+// is never constructed.

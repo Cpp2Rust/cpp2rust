@@ -20,7 +20,7 @@ unsafe fn main_0() -> i32 {
         p = (p).wrapping_add((1 as i32) as usize);
         p
     };
-    assert!(((((q) == (buf.as_mut_ptr().offset((1) as isize))) as i32) != 0));
+    assert!(((q) == (buf.as_mut_ptr().offset((1) as isize))));
     let mut out: libc::c_char = (0 as libc::c_char);
     'switch: {
         match {
@@ -30,16 +30,16 @@ unsafe fn main_0() -> i32 {
             }) as i32)
         } {
             __v if __v == ('x' as i32) => {
-                assert!((1 != 0));
+                assert!(true);
                 break 'switch;
             }
             _ => {
-                assert!((0 != 0));
+                assert!(false);
                 break 'switch;
             }
         }
     };
-    assert!(((((out as i32) == ('x' as i32)) as i32) != 0));
+    assert!(((out as i32) == ('x' as i32)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

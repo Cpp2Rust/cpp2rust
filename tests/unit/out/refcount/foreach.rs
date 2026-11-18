@@ -12,13 +12,15 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let v: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
-    let mut i: i32 = 0;
-    'loop_: while (i < 10) {
-        {
-            let a0_clone = i.clone();
-            (*v.borrow_mut()).push(a0_clone)
-        };
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < 10) {
+            {
+                let a0_clone = i.clone();
+                (*v.borrow_mut()).push(a0_clone)
+            };
+            i.prefix_inc();
+        }
     }
     let mut sum: i32 = 0;
     'loop_: for x in IterRange::new(v.decay().begin(), v.decay().end()) {

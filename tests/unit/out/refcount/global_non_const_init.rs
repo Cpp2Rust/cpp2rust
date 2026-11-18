@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn next_0() -> i32 {
-    return (*counter_1.with(Value::clone).borrow_mut()).prefix_inc();
+    return (*(*counter_1.with(Value::clone).borrow_mut()).prefix_inc());
 }
 thread_local!(
     static counter_1: Value<i32> = Rc::new(RefCell::new(0));

@@ -10,17 +10,19 @@ pub fn first_nonnull_0(count: i32, __args: Box<[VaArg]>) -> i32 {
     let __args: Value<Box<[VaArg]>> = Rc::new(RefCell::new(__args.into()));
     let count: Value<i32> = Rc::new(RefCell::new(count));
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
-    (*ap.borrow_mut()) = __args.as_pointer();
+    (*ap.borrow_mut()) = __args.decay();
     let mut result: i32 = -1_i32;
-    let mut i: i32 = 0;
-    'loop_: while (((i < (*count.borrow())) as i32) != 0) {
-        let mut p: Ptr<i32> = (*ap.borrow_mut()).arg::<Ptr<i32>>();
-        if (((!((p).is_null())) as i32) != 0) {
-            result = { (p.read()) };
-            break;
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < (*count.borrow())) {
+            let mut p: Ptr<i32> = (*ap.borrow_mut()).arg::<Ptr<i32>>();
+            if (!((p).is_null())) {
+                result = { (p.read()) };
+                break;
+            }
+            i.postfix_inc();
         }
-        i.postfix_inc();
-    }
+    };
     return result;
 }
 pub fn main() {
@@ -30,16 +32,15 @@ pub fn main() {
 fn main_0() -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(42));
     assert!(
-        (((({
+        (({
             first_nonnull_0(
                 2,
                 Box::new([(AnyPtr::default()).into(), (x.as_pointer()).into()]),
             )
-        }) == 42) as i32)
-            != 0)
+        }) == 42)
     );
     assert!(
-        (((({
+        (({
             first_nonnull_0(
                 3,
                 Box::new([
@@ -48,13 +49,9 @@ fn main_0() -> i32 {
                     (x.as_pointer()).into(),
                 ]),
             )
-        }) == 42) as i32)
-            != 0)
+        }) == 42)
     );
-    assert!(
-        (((({ first_nonnull_0(1, Box::new([(AnyPtr::default()).into(),])) }) == -1_i32) as i32)
-            != 0)
-    );
+    assert!((({ first_nonnull_0(1, Box::new([(AnyPtr::default()).into(),])) }) == -1_i32));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

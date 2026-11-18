@@ -32,7 +32,7 @@ fn main_0() -> i32 {
     };
     FdRegistry::close(fd);
     let buf: Value<Box<[i8]>> = Rc::new(RefCell::new((0..4).map(|_| 0_i8).collect::<Box<[i8]>>()));
-    let mut n: isize = match ({ ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any() },) {
+    let mut n: isize = match ({ (buf.decay()).to_any() },) {
         (mut __tmp_0,) => {
             match FdRegistry::with_fd(fd, |__fd| {
                 __tmp_0
@@ -49,10 +49,6 @@ fn main_0() -> i32 {
             }
         }
     };
-    return if (((n == (-1_i32 as isize)) as i32) != 0) {
-        0
-    } else {
-        1
-    };
+    return if (n == (-1_i32 as isize)) { 0 } else { 1 };
 }
 pub fn __cpp2rust_init_globals() {}

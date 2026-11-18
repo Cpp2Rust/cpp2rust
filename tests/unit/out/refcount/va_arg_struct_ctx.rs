@@ -19,7 +19,7 @@ pub fn set_error_0(mut ctx: Ptr<context>, fmt: Ptr<i8>, __args: Box<[VaArg]>) {
     let fmt: Value<Ptr<i8>> = Rc::new(RefCell::new(fmt));
     if (ctx.with(|__s| __s.verbose) != 0) {
         let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
-        (*ap.borrow_mut()) = __args.as_pointer();
+        (*ap.borrow_mut()) = __args.decay();
         let __rhs = (*ap.borrow_mut()).arg::<i32>();
         field!(ctx, last_error).write(__rhs);
     }
@@ -50,7 +50,7 @@ pub fn pick_1(use_long: i32, __args: Box<[VaArg]>) -> i64 {
     let __args: Value<Box<[VaArg]>> = Rc::new(RefCell::new(__args.into()));
     let use_long: Value<i32> = Rc::new(RefCell::new(use_long));
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
-    (*ap.borrow_mut()) = __args.as_pointer();
+    (*ap.borrow_mut()) = __args.decay();
     let v: Value<value> = Rc::new(RefCell::new((*ap.borrow_mut()).arg::<value>()));
     if ((*use_long.borrow()) != 0) {
         return (value::l(v.as_pointer()).read());
@@ -72,7 +72,7 @@ fn main_0() -> i32 {
             Box::new([(42).into()]),
         )
     });
-    assert!(({ ((({ (*ctx.borrow()).last_error } == 42) as i32) != 0) }));
+    assert!(({ ({ (*ctx.borrow()).last_error } == 42) }));
     (*ctx.borrow_mut()).verbose = 0;
     ({
         set_error_0(
@@ -81,22 +81,12 @@ fn main_0() -> i32 {
             Box::new([(99).into()]),
         )
     });
-    assert!(({ ((({ (*ctx.borrow()).last_error } == 42) as i32) != 0) }));
+    assert!(({ ({ (*ctx.borrow()).last_error } == 42) }));
     let v: Value<value> = <Value<value>>::default();
     value::l(v.as_pointer()).write((1_i64 << 40));
-    assert!(
-        ({
-            (((({ pick_1(1, Box::new([((*v.borrow()).clone()).into()])) }) == (1_i64 << 40))
-                as i32)
-                != 0)
-        })
-    );
+    assert!(({ (({ pick_1(1, Box::new([((*v.borrow()).clone()).into(),])) }) == (1_i64 << 40)) }));
     value::i(v.as_pointer()).write(7);
-    assert!(
-        ({
-            (((({ pick_1(0, Box::new([((*v.borrow()).clone()).into()])) }) == 7_i64) as i32) != 0)
-        })
-    );
+    assert!(({ (({ pick_1(0, Box::new([((*v.borrow()).clone()).into(),])) }) == 7_i64) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

@@ -23,19 +23,23 @@ impl Node {
 }
 pub unsafe fn Find_0(mut head: *mut Node, mut idx: i32) -> *mut Node {
     let mut curr: *mut Node = head;
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (idx)) {
-        curr = (*curr).next;
-        i.postfix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (idx)) {
+            curr = (*curr).next;
+            i.postfix_inc();
+        }
     }
     return curr;
 }
 pub unsafe fn FindBack_1(mut tail: *mut Node, mut idx: i32) -> *mut Node {
     let mut curr: *mut Node = tail;
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (idx)) {
-        curr = (*curr).prev;
-        i.postfix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (idx)) {
+            curr = (*curr).prev;
+            i.postfix_inc();
+        }
     }
     return curr;
 }

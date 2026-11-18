@@ -100,15 +100,7 @@ impl<T: ByteRepr> FnPtrArg for Ptr<T> {
         ArgRepr::Ptr(Rc::new(self))
     }
     fn from_repr(r: ArgRepr) -> Self {
-        match r {
-            ArgRepr::Ptr(e) => match e.as_any().downcast_ref::<Ptr<T>>() {
-                Some(exact) => exact.clone(),
-                None => e.as_bytes().reinterpret_cast(),
-            },
-            ArgRepr::Bytes(..) | ArgRepr::Record(_) => {
-                panic!("ub: calling through incompatible fn pointer type")
-            }
-        }
+        AnyPtr::from_repr(r).reinterpret_cast()
     }
 }
 

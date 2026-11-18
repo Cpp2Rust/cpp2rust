@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn next_0() -> i32 {
-    return (*std::cell::LazyCell::force_mut(&mut *&raw mut counter_1)).prefix_inc();
+    return (*(*std::cell::LazyCell::force_mut(&mut *&raw mut counter_1)).prefix_inc());
 }
 static mut counter_1: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 pub unsafe fn marker_2(mut tag: u8) -> u8 {

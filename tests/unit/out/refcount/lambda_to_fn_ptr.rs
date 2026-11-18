@@ -78,13 +78,15 @@ fn main_0() -> i32 {
                     let __args: Value<Box<[VaArg]>> = Rc::new(RefCell::new(__args.into()));
                     let n: Value<i32> = Rc::new(RefCell::new(n));
                     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
-                    (*ap.borrow_mut()) = __args.as_pointer();
+                    (*ap.borrow_mut()) = __args.decay();
                     let mut s: i32 = 0;
-                    let mut i: i32 = 0;
-                    'loop_: while (i < (*n.borrow())) {
-                        s += (*ap.borrow_mut()).arg::<i32>();
-                        i.postfix_inc();
-                    }
+                    {
+                        let mut i: i32 = 0;
+                        'loop_: while (i < (*n.borrow())) {
+                            s += (*ap.borrow_mut()).arg::<i32>();
+                            i.postfix_inc();
+                        }
+                    };
                     return s;
                 }
             },

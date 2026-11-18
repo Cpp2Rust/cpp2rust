@@ -53,7 +53,7 @@ unsafe fn main_0() -> i32 {
             let n: i32 = n;
         },
         || -> i32 {
-            return n.prefix_inc();
+            return (*n.prefix_inc());
         }
     );
     let mut outer: FnPtr<fn() -> i32> = lambda_unsafe!(

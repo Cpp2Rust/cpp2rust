@@ -20,7 +20,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut s: pair = <pair>::default();
-    assert!(((((s.a.as_mut_ptr().offset((4) as isize)) == (s.b.as_mut_ptr())) as i32) != 0));
+    assert!(((s.a.as_mut_ptr().offset((4) as isize)) == (s.b.as_mut_ptr())));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

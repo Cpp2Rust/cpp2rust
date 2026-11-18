@@ -17,7 +17,7 @@ pub struct Inner {
 pub struct Table {}
 impl Table {
     pub fn operator_index(mut i: i32) -> Ptr<i32> {
-        return (table_0.with(|v| v.as_pointer()) as Ptr<i32>).offset(i);
+        return table_0.with(|v| v.decay()).offset(i);
     }
 }
 thread_local!(
@@ -86,10 +86,10 @@ pub trait SImpl {
 }
 impl SImpl for Ptr<S> {
     fn operator_index_1(&self, mut i: i32) -> Ptr<i32> {
-        return (array_field_ptr!((*self), data) as Ptr<i32>).offset((i) as isize);
+        return array_field_ptr!((*self), data).offset((i) as isize);
     }
     fn operator_index_2(&self, mut i: i32) -> Ptr<i32> {
-        return (array_field_ptr!((*self), data) as Ptr<i32>).offset((i) as isize);
+        return array_field_ptr!((*self), data).offset((i) as isize);
     }
     fn operator_deref(&self) -> Ptr<Inner> {
         return field_ptr!((*self), inner);
@@ -98,7 +98,7 @@ impl SImpl for Ptr<S> {
         return (field_ptr!((*self), inner));
     }
     fn operator_addr(&self) -> Ptr<i32> {
-        return ((array_field_ptr!((*self), data) as Ptr<i32>).offset((0) as isize));
+        return (array_field_ptr!((*self), data).offset((0) as isize));
     }
 }
 pub fn __cpp2rust_init_globals() {

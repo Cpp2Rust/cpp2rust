@@ -19,7 +19,7 @@ pub fn apply_unary_3(x: i32, __args: Box<[VaArg]>) -> i32 {
     let __args: Value<Box<[VaArg]>> = Rc::new(RefCell::new(__args.into()));
     let x: Value<i32> = Rc::new(RefCell::new(x));
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
-    (*ap.borrow_mut()) = __args.as_pointer();
+    (*ap.borrow_mut()) = __args.decay();
     let mut fn_: FnPtr<fn(i32) -> i32> = (*ap.borrow_mut()).arg::<FnPtr<fn(i32) -> i32>>();
     let mut result: i32 = ({ fn_.call((*x.borrow())) });
     return result;
@@ -28,16 +28,13 @@ pub fn apply_binary_4(mut a: i32, b: i32, __args: Box<[VaArg]>) -> i32 {
     let __args: Value<Box<[VaArg]>> = Rc::new(RefCell::new(__args.into()));
     let b: Value<i32> = Rc::new(RefCell::new(b));
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
-    (*ap.borrow_mut()) = __args.as_pointer();
+    (*ap.borrow_mut()) = __args.decay();
     let mut fn_: FnPtr<fn(i32, i32) -> i32> =
         (*ap.borrow_mut()).arg::<FnPtr<fn(i32, i32) -> i32>>();
     let mut result: i32 = ({ fn_.call(a, (*b.borrow())) });
     return result;
 }
 pub fn not_supported_5(mut ctx: AnyPtr, mut fn_: FnPtr<fn(i32) -> i32>, mut extra: AnyPtr) -> i32 {
-    &(ctx);
-    &(fn_);
-    &(extra);
     return -3_i32;
 }
 pub fn main() {
@@ -46,65 +43,59 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     assert!(
-        (((({
+        (({
             apply_unary_3(
                 5,
                 Box::new([(FnPtr::<fn(i32) -> i32>::new(square_0)).into()]),
             )
-        }) == 25) as i32)
-            != 0)
+        }) == 25)
     );
     assert!(
-        (((({
+        (({
             apply_unary_3(
                 7,
                 Box::new([(FnPtr::<fn(i32) -> i32>::new(negate_1)).into()]),
             )
-        }) == -7_i32) as i32)
-            != 0)
+        }) == -7_i32)
     );
     assert!(
-        (((({
+        (({
             apply_binary_4(
                 3,
                 4,
                 Box::new([(FnPtr::<fn(i32, i32) -> i32>::new(add_2)).into()]),
             )
-        }) == 7) as i32)
-            != 0)
+        }) == 7)
     );
     let dummy: Value<i32> = Rc::new(RefCell::new(0));
     assert!(
-        (((({
-            let _ctx: AnyPtr = ((dummy.as_pointer()) as Ptr<i32>).to_any();
-            let _extra: AnyPtr = ((dummy.as_pointer()) as Ptr<i32>).to_any();
+        (({
+            let _ctx: AnyPtr = (dummy.as_pointer()).to_any();
+            let _extra: AnyPtr = (dummy.as_pointer()).to_any();
             not_supported_5(_ctx, FnPtr::<fn(i32) -> i32>::new(square_0), _extra)
-        }) == -3_i32) as i32)
-            != 0)
+        }) == -3_i32)
     );
     let mut vu: FnPtr<fn(i32, Box<[VaArg]>) -> i32> =
         FnPtr::<fn(i32, Box<[VaArg]>) -> i32>::new(apply_unary_3);
     assert!(
-        (((({
+        (({
             vu.call(
                 6,
                 Box::new([(FnPtr::<fn(i32) -> i32>::new(square_0)).into()]),
             )
-        }) == 36) as i32)
-            != 0)
+        }) == 36)
     );
     let mut vb: FnPtr<fn(i32, i32, Box<[VaArg]>) -> i32> =
         FnPtr::<fn(i32, Box<[VaArg]>) -> i32>::new(apply_unary_3)
             .cast::<fn(i32, i32, Box<[VaArg]>) -> i32>();
     vu = vb.cast::<fn(i32, Box<[VaArg]>) -> i32>();
     assert!(
-        (((({
+        (({
             vu.call(
                 2,
                 Box::new([(FnPtr::<fn(i32) -> i32>::new(negate_1)).into()]),
             )
-        }) == -2_i32) as i32)
-            != 0)
+        }) == -2_i32)
     );
     return 0;
 }

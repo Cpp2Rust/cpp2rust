@@ -134,7 +134,8 @@ std::vector<BodyFragment> ParseBodyFragmentsJSON(const llvm::json::Array &arr) {
     } else if (frag_obj->get("va_args")) {
       result.push_back(VaArgsFragment{});
     } else if (frag_obj->get("init")) {
-      result.push_back(InitFragment{});
+      result.push_back(
+          InitFragment{frag_obj->getBoolean("conditional").value_or(false)});
     }
   }
   return result;
@@ -267,18 +268,32 @@ std::vector<bool>
 ExprRule::argsToBind(clang::ASTContext &ctx, const clang::Expr *expr,
                      llvm::ArrayRef<clang::Expr *> args) const {
   // The number of evaluations of each argument, two standing for any other
-  // than one, and the position of the first.
-  std::vector<unsigned> uses(args.size()), first(args.size());
+  // than one, the position of the first, and the number of placeholders.
+  std::vector<unsigned> uses(args.size()), first(args.size()),
+      copies(args.size());
   unsigned position = 0;
   AnyFragment(body, [&](const BodyFragment &frag) {
     if (auto *ph = std::get_if<PlaceholderFragment>(&frag)) {
       if (uses[ph->n]++ == 0) {
         first[ph->n] = position;
       }
+      ++copies[ph->n];
       if (ph->conditional) {
         ++uses[ph->n];
       }
       ++position;
+    } else if (auto *init = std::get_if<InitFragment>(&frag)) {
+      // init constructs from the trailing arguments at this position, but
+      // their evaluation belongs to the call even when construction is skipped.
+      for (size_t i = params.size(); i < args.size(); ++i) {
+        if (uses[i]++ == 0) {
+          first[i] = position;
+        }
+        if (init->conditional) {
+          ++uses[i];
+        }
+        ++position;
+      }
     }
     return false;
   });
@@ -288,7 +303,9 @@ ExprRule::argsToBind(clang::ASTContext &ctx, const clang::Expr *expr,
   std::vector<bool> bind(args.size());
   bool bind_rest = false;
   unsigned next_first = position;
-  auto num_args = std::min(args.size(), params.size());
+  bool init_args = usesInit();
+  auto num_args =
+      init_args ? args.size() : std::min(args.size(), params.size());
   for (auto k = num_args; k-- > 0;) {
     auto i = right_to_left ? num_args - 1 - k : k;
     auto *arg = args[i];
@@ -299,8 +316,10 @@ ExprRule::argsToBind(clang::ASTContext &ctx, const clang::Expr *expr,
     if (arg->HasSideEffects(ctx)) {
       // A temporary that a reference parameter is bound to would be
       // materialized before the call, out of order.
-      bind_rest |= uses[i] > 1 || takesTemporaryAddress(ctx, expr, i, arg) ||
-                   (uses[i] == 1 && first[i] > next_first);
+      bind_rest |=
+          uses[i] > 1 ||
+          (i < params.size() && takesTemporaryAddress(ctx, expr, i, arg)) ||
+          (uses[i] == 1 && first[i] > next_first);
       bind[i] = bind_rest;
       if (uses[i] == 1) {
         next_first = std::min(next_first, first[i]);
@@ -310,15 +329,29 @@ ExprRule::argsToBind(clang::ASTContext &ctx, const clang::Expr *expr,
       // A value computed from others is not computed again, nor before the
       // side effects of the previous arguments.
       bind[i] = bind_rest = true;
+    } else if (copies[i] > 1 &&
+               clang::isa<clang::StringLiteral>(arg->IgnoreParens())) {
+      // A string literal is one object, but each of its translations is a
+      // new array.
+      bind[i] = true;
     }
   }
   return bind;
 }
 
-bool ExprRule::takesAddress(clang::ASTContext &ctx, unsigned i,
-                            const clang::Expr *arg) const {
-  return params[i].is_pointer() && !arg->getType()->isPointerType() &&
-         !RuleRegistry::MapsToPointer(ctx, arg->getType());
+bool ExprRule::takesAddress(clang::ASTContext &ctx, const clang::Expr *expr,
+                            unsigned i, const clang::Expr *arg) const {
+  // An init pack forwards references to its arguments, not their values.
+  if (i >= params.size()) {
+    return usesInit();
+  }
+  if (!params[i].is_pointer()) {
+    return false;
+  }
+  if (arg->getType()->isPointerType()) {
+    return !RuleRegistry::ParamTakesPointerValue(expr, i);
+  }
+  return !RuleRegistry::MapsToPointer(ctx, arg->getType());
 }
 
 bool ExprRule::takesTemporaryAddress(clang::ASTContext &ctx,
@@ -326,7 +359,7 @@ bool ExprRule::takesTemporaryAddress(clang::ASTContext &ctx,
                                      const clang::Expr *arg) const {
   auto *call = clang::dyn_cast<clang::CallExpr>(expr);
   unsigned first_arg = clang::isa<clang::CXXMemberCallExpr>(expr);
-  return call && i >= first_arg && takesAddress(ctx, i, arg) &&
+  return call && i >= first_arg && takesAddress(ctx, expr, i, arg) &&
          GetRefBindingTempType(ctx, call, i - first_arg).has_value();
 }
 

@@ -141,7 +141,7 @@ fn main_0() -> i32 {
                     (*count_0.with(Value::clone).borrow_mut()).postfix_inc();
                 }),
             }));
-        let _dtor_g = ScopedDestructor::new(&g, |__p| __p.destructor());
+        let _dtor_g = std::mem::DropGuard::new(g.clone(), |__p| __p.as_pointer().destructor());
         assert!((count_0.with(|rc| *rc.borrow()) == 0));
     }
     assert!((count_0.with(|rc| *rc.borrow()) == 1));
@@ -172,7 +172,7 @@ fn main_0() -> i32 {
                     }
                 ),
             }));
-        let _dtor_g = ScopedDestructor::new(&g, |__p| __p.destructor());
+        let _dtor_g = std::mem::DropGuard::new(g.clone(), |__p| __p.as_pointer().destructor());
         assert!(({ ((*cleaned.borrow()) == 0) }));
     }
     assert!(({ ((*cleaned.borrow()) == 1) }));

@@ -70,7 +70,7 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     {
         let mut s: S = S::new({ 3 });
-        let _dtor_s = ScopedDestructorUnsafe::new(&raw mut s, S::destructor);
+        let _dtor_s = std::mem::DropGuard::new(&raw mut s, |__p| unsafe { (*__p).destructor() });
         assert!(((s.v) == (4)));
         assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut total_0)) == (8)));
     }

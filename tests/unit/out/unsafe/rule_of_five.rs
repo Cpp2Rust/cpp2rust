@@ -31,10 +31,12 @@ impl Buffer {
             data: [0_i32; 4],
             size: size,
         };
-        let mut i: i32 = 0;
-        'loop_: while ((i) < (4)) {
-            this.data[(i) as usize] = if ((i) < (size)) { i } else { -1_i32 };
-            i.prefix_inc();
+        {
+            let mut i: i32 = 0;
+            'loop_: while ((i) < (4)) {
+                this.data[(i) as usize] = if ((i) < (size)) { i } else { -1_i32 };
+                i.prefix_inc();
+            }
         }
         (*std::cell::LazyCell::force_mut(&mut *&raw mut alive_0)).prefix_inc();
         this
@@ -47,10 +49,12 @@ impl Buffer {
             data: [0_i32; 4],
             size: (*o).size,
         };
-        let mut i: i32 = 0;
-        'loop_: while ((i) < (4)) {
-            this.data[(i) as usize] = (*o).data[(i) as usize];
-            i.prefix_inc();
+        {
+            let mut i: i32 = 0;
+            'loop_: while ((i) < (4)) {
+                this.data[(i) as usize] = (*o).data[(i) as usize];
+                i.prefix_inc();
+            }
         }
         (*std::cell::LazyCell::force_mut(&mut *&raw mut alive_0)).prefix_inc();
         (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_1)).prefix_inc();
@@ -61,11 +65,13 @@ impl Buffer {
             data: [0_i32; 4],
             size: (*o).size,
         };
-        let mut i: i32 = 0;
-        'loop_: while ((i) < (4)) {
-            this.data[(i) as usize] = (*o).data[(i) as usize];
-            (*o).data[(i) as usize] = -1_i32;
-            i.prefix_inc();
+        {
+            let mut i: i32 = 0;
+            'loop_: while ((i) < (4)) {
+                this.data[(i) as usize] = (*o).data[(i) as usize];
+                (*o).data[(i) as usize] = -1_i32;
+                i.prefix_inc();
+            }
         }
         (*o).size = 0;
         (*std::cell::LazyCell::force_mut(&mut *&raw mut alive_0)).prefix_inc();
@@ -77,10 +83,12 @@ impl Buffer {
             return &mut (*(self as *mut Buffer));
         }
         self.size = (*o).size;
-        let mut i: i32 = 0;
-        'loop_: while ((i) < (4)) {
-            self.data[(i) as usize] = (*o).data[(i) as usize];
-            i.prefix_inc();
+        {
+            let mut i: i32 = 0;
+            'loop_: while ((i) < (4)) {
+                self.data[(i) as usize] = (*o).data[(i) as usize];
+                i.prefix_inc();
+            }
         }
         (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_1)).prefix_inc();
         return &mut (*(self as *mut Buffer));
@@ -90,11 +98,13 @@ impl Buffer {
             return &mut (*(self as *mut Buffer));
         }
         self.size = (*o).size;
-        let mut i: i32 = 0;
-        'loop_: while ((i) < (4)) {
-            self.data[(i) as usize] = (*o).data[(i) as usize];
-            (*o).data[(i) as usize] = -1_i32;
-            i.prefix_inc();
+        {
+            let mut i: i32 = 0;
+            'loop_: while ((i) < (4)) {
+                self.data[(i) as usize] = (*o).data[(i) as usize];
+                (*o).data[(i) as usize] = -1_i32;
+                i.prefix_inc();
+            }
         }
         (*o).size = 0;
         (*std::cell::LazyCell::force_mut(&mut *&raw mut moves_2)).prefix_inc();
@@ -108,7 +118,7 @@ impl Clone for Buffer {
 }
 pub unsafe fn make_3(mut size: i32) -> Buffer {
     let mut b: Buffer = Buffer::new({ size });
-    let _dtor_b = ScopedDestructorUnsafe::new(&raw mut b, Buffer::destructor);
+    let _dtor_b = std::mem::DropGuard::new(&raw mut b, |__p| unsafe { (*__p).destructor() });
     return Buffer::move_from({ &mut b });
 }
 pub fn main() {
@@ -120,9 +130,9 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     {
         let mut a: Buffer = Buffer::new({ 4 });
-        let _dtor_a = ScopedDestructorUnsafe::new(&raw mut a, Buffer::destructor);
+        let _dtor_a = std::mem::DropGuard::new(&raw mut a, |__p| unsafe { (*__p).destructor() });
         let mut b: Buffer = Buffer::copy_from({ &a });
-        let _dtor_b = ScopedDestructorUnsafe::new(&raw mut b, Buffer::destructor);
+        let _dtor_b = std::mem::DropGuard::new(&raw mut b, |__p| unsafe { (*__p).destructor() });
         assert!(
             (((*std::cell::LazyCell::force_mut(&mut *&raw mut alive_0)) == (2))
                 && ((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_1)) == (1)))
@@ -131,7 +141,7 @@ unsafe fn main_0() -> i32 {
         b.data[(0) as usize] = 100;
         assert!(((a.data[(0) as usize]) == (0)));
         let mut c: Buffer = Buffer::move_from({ &mut a });
-        let _dtor_c = ScopedDestructorUnsafe::new(&raw mut c, Buffer::destructor);
+        let _dtor_c = std::mem::DropGuard::new(&raw mut c, |__p| unsafe { (*__p).destructor() });
         assert!(
             ((*std::cell::LazyCell::force_mut(&mut *&raw mut alive_0)) == (3))
                 && ((*std::cell::LazyCell::force_mut(&mut *&raw mut moves_2)) == (1))
@@ -139,7 +149,7 @@ unsafe fn main_0() -> i32 {
         assert!(((a.size) == (0)) && ((a.data[(0) as usize]) == (-1_i32)));
         assert!(((c.size) == (4)) && ((c.data[(3) as usize]) == (3)));
         let mut d: Buffer = (unsafe { make_3(2) });
-        let _dtor_d = ScopedDestructorUnsafe::new(&raw mut d, Buffer::destructor);
+        let _dtor_d = std::mem::DropGuard::new(&raw mut d, |__p| unsafe { (*__p).destructor() });
         assert!(
             ((d.size) == (2)) && ((*std::cell::LazyCell::force_mut(&mut *&raw mut moves_2)) == (2))
         );

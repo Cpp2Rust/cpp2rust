@@ -1,8 +1,7 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-#include <brotli/decode.h>
-#include <brotli/encode.h>
+#include "brotli.h"
 
 typedef BrotliDecoderResult t1;
 typedef BrotliEncoderMode t2;
@@ -48,7 +47,7 @@ void f7(BrotliDecoderState *state) {
 BrotliDecoderResult f8(BrotliDecoderState *state, size_t *available_in,
                        const uint8_t **next_in, size_t *available_out,
                        uint8_t **next_out, size_t *total_out) {
-  return BrotliDecoderDecompressStream(state, available_out, next_in,
+  return BrotliDecoderDecompressStream(state, available_in, next_in,
                                        available_out, next_out, total_out);
 }
 

@@ -14,32 +14,32 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut v1: Vec<bool> = Vec::from([true]);
-    let mut r1: *mut bool = (&mut (v1)[0_usize as usize] as *mut bool);
-    assert!((*(&mut (v1)[0_usize as usize] as *mut bool)) && (*r1));
+    let mut r1: *mut bool = (&mut (v1)[0_usize] as *mut bool);
+    assert!((*(&mut (v1)[0_usize] as *mut bool)) && (*r1));
     {
         *r1 = false;
         r1
     };
-    assert!(!(*(&mut (v1)[0_usize as usize] as *mut bool)));
+    assert!(!(*(&mut (v1)[0_usize] as *mut bool)));
     let mut it: UnsafeRandomAccessIterator<bool> = v1.begin();
     let mut r2: *mut bool = it.iter_deref();
     {
         *r2 = true;
         r2
     };
-    assert!(*(&mut (v1)[0_usize as usize] as *mut bool));
-    match ((&mut (&mut (v1)[0_usize as usize] as *mut bool) as *mut *mut bool),) {
+    assert!(*(&mut (v1)[0_usize] as *mut bool));
+    match ((&mut (&mut (v1)[0_usize] as *mut bool) as *mut *mut bool),) {
         (__tmp_0,) => {
             *(*__tmp_0) = false;
             (*__tmp_0)
         }
     };
-    assert!(!(*(&mut (v1)[0_usize as usize] as *mut bool)));
+    assert!(!(*(&mut (v1)[0_usize] as *mut bool)));
     {
         let mut v: Vec<bool> = Vec::from([false, false, false]);
         let mut i: i32 = 0;
         let mut b: bool = *match (
-            (&mut (&mut (v)[(i.postfix_inc() as usize) as usize] as *mut bool) as *mut *mut bool),
+            (&mut (&mut (v)[(i.postfix_inc() as usize)] as *mut bool) as *mut *mut bool),
         ) {
             (__tmp_1,) => {
                 *(*__tmp_1) = true;

@@ -19,7 +19,7 @@ fn main_0() -> i32 {
         ('d' as i8),
         ('\0' as i8),
     ])));
-    match (buf.as_pointer() as Ptr<i8>).with_c_bytes(|__bytes| {
+    match buf.decay().with_c_bytes(|__bytes| {
         libcc2rs::c_stdout().with_mut(|__f| __f.write(__bytes)) == __bytes.len()
     }) {
         true => 0,
@@ -33,7 +33,7 @@ fn main_0() -> i32 {
         }
     };
     {
-        let mut __bytes = (buf.as_pointer() as Ptr<i8>).to_c_u8_bytes();
+        let mut __bytes = buf.decay().to_c_u8_bytes();
         __bytes.push(b'\n');
         match libcc2rs::c_stdout().with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
             true => 0,
@@ -41,17 +41,15 @@ fn main_0() -> i32 {
         }
     };
     let mut s: Vec<i8> = {
-        let mut __bytes = (buf.as_pointer() as Ptr<i8>).to_c_bytes();
+        let mut __bytes = buf.decay().to_c_bytes();
         __bytes.push(0);
         __bytes
     };
     println!("{}", (s.len() - 1));
     println!(
         "{} {}",
-        (buf.as_pointer() as Ptr::<i8>)
-            .to_c_string_iterator()
-            .count(),
-        (buf.as_pointer() as Ptr::<i8>).with_c_str(|__lookup| {
+        buf.decay().to_c_string_iterator().count(),
+        buf.decay().with_c_str(|__lookup| {
             s.iter()
                 .take(s.len().saturating_sub(1))
                 .rposition(|&x| __lookup.contains(&x))

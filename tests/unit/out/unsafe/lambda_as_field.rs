@@ -147,10 +147,7 @@ unsafe fn main_0() -> i32 {
                     (*std::cell::LazyCell::force_mut(&mut *&raw mut count_0)).postfix_inc();
                 }),
             };
-        let _dtor_g = ScopedDestructorUnsafe::new(
-            &raw mut g,
-            Guard__lambda_at_lambda_as_field_cpp_34_13__::destructor,
-        );
+        let _dtor_g = std::mem::DropGuard::new(&raw mut g, |__p| unsafe { (*__p).destructor() });
         assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut count_0)) == (0)));
     }
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut count_0)) == (1)));
@@ -178,10 +175,7 @@ unsafe fn main_0() -> i32 {
                     }
                 ),
             };
-        let _dtor_g = ScopedDestructorUnsafe::new(
-            &raw mut g,
-            Guard__lambda_at_lambda_as_field_cpp_45_13__::destructor,
-        );
+        let _dtor_g = std::mem::DropGuard::new(&raw mut g, |__p| unsafe { (*__p).destructor() });
         assert!(((cleaned) == (0)));
     }
     assert!(((cleaned) == (1)));

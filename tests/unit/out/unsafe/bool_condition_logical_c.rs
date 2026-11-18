@@ -35,110 +35,99 @@ unsafe fn main_0() -> i32 {
     let mut np: *mut i32 = std::ptr::null_mut();
     let mut u: u32 = 4_u32;
     let mut code: Code = Code_CODE_OK;
-    if ((((n != 0) && (!(p).is_null())) as i32) != 0) {
-        assert!((1 != 0));
+    if ((n != 0) && (!(p).is_null())) {
+        assert!(true);
     }
-    if ((((n != 0) && (!(np).is_null())) as i32) != 0) {
-        assert!((0 != 0));
+    if ((n != 0) && (!(np).is_null())) {
+        assert!(false);
     }
-    if ((((zero != 0) || (!(p).is_null())) as i32) != 0) {
-        assert!((1 != 0));
+    if ((zero != 0) || (!(p).is_null())) {
+        assert!(true);
     }
-    if ((((zero != 0) || (!(np).is_null())) as i32) != 0) {
-        assert!((0 != 0));
+    if ((zero != 0) || (!(np).is_null())) {
+        assert!(false);
     }
-    if ((((((((((n != 0) && (u != 0)) as i32) != 0) && (!(p).is_null())) as i32) != 0)
-        && ((((code as u32) == ((Code_CODE_OK as i32) as u32)) as i32) != 0)) as i32)
-        != 0)
+    if ((((n != 0) && (u != 0)) && (!(p).is_null()))
+        && ((code as u32) == ((Code_CODE_OK as i32) as u32)))
     {
-        assert!((1 != 0));
+        assert!(true);
     }
     (*std::cell::LazyCell::force_mut(&mut *&raw mut side_effect_0)) = 0;
-    if ((((zero != 0) && ((unsafe { observe_1(1) }) != 0)) as i32) != 0) {
-        assert!((0 != 0));
+    if ((zero != 0) && ((unsafe { observe_1(1) }) != 0)) {
+        assert!(false);
     }
-    assert!(
-        ((((*std::cell::LazyCell::force_mut(&mut *&raw mut side_effect_0)) == (0)) as i32) != 0)
-    );
-    if ((((n != 0) || ((unsafe { observe_1(1) }) != 0)) as i32) != 0) {
-        assert!((1 != 0));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut side_effect_0)) == (0)));
+    if ((n != 0) || ((unsafe { observe_1(1) }) != 0)) {
+        assert!(true);
     }
-    assert!(
-        ((((*std::cell::LazyCell::force_mut(&mut *&raw mut side_effect_0)) == (0)) as i32) != 0)
-    );
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut side_effect_0)) == (0)));
     let mut x: i32 = 5;
     let mut y: i32 = 3;
     let mut flags: u32 = 2_u32;
-    if (((((((x) > (y)) as i32) != 0) || (((flags) & (1_u32)) != 0)) as i32) != 0) {
-        assert!((1 != 0));
+    if (((x) > (y)) || (((flags) & (1_u32)) != 0)) {
+        assert!(true);
     }
-    if (((((((x) < (y)) as i32) != 0) || (((flags) & (1_u32)) != 0)) as i32) != 0) {
-        assert!((0 != 0));
+    if (((x) < (y)) || (((flags) & (1_u32)) != 0)) {
+        assert!(false);
     }
     let mut a: u32 = 1_u32;
     let mut b: u32 = 2_u32;
     let mut c: u32 = 3_u32;
-    if (((((((a) != (c)) as i32) != 0) && ((((b) != (c)) as i32) != 0)) as i32) != 0) {
-        assert!((1 != 0));
+    if (((a) != (c)) && ((b) != (c))) {
+        assert!(true);
     }
     let mut s: i32 = -1_i32;
-    if ((((((!((p).is_null())) as i32) != 0) && ((((s) < (0)) as i32) != 0)) as i32) != 0) {
-        assert!((1 != 0));
+    if ((!((p).is_null())) && ((s) < (0))) {
+        assert!(true);
     }
     let mut k: u32 = 2_u32;
-    let mut done: bool = (0 != 0);
-    if (((((((k) > (1_u32)) as i32) != 0) || (!(done))) as i32) != 0) {
-        assert!((1 != 0));
+    let mut done: bool = false;
+    if (((k) > (1_u32)) || (!(done))) {
+        assert!(true);
     }
-    if (((((((x) > (y)) as i32) != 0) || (((flags) & (4_u32)) != 0)) as i32) != 0) {
-        assert!((1 != 0));
+    if (((x) > (y)) || (((flags) & (4_u32)) != 0)) {
+        assert!(true);
     }
     let mut ull: u64 = 7_u64;
-    if ((((((!((p).is_null())) as i32) != 0) && (ull != 0)) as i32) != 0) {
-        assert!((1 != 0));
+    if ((!((p).is_null())) && (ull != 0)) {
+        assert!(true);
     }
-    if (((((((x) > (y)) as i32) != 0) && (ull != 0)) as i32) != 0) {
-        assert!((1 != 0));
+    if (((x) > (y)) && (ull != 0)) {
+        assert!(true);
     }
     let mut mask: i64 = (((1_i64) << (4)) | ((1_i64) << (5)));
     let mut bits: i64 = ((1_i64) << (4));
-    if (((((((n) != (0)) as i32) != 0) && (((bits) & (mask)) != 0)) as i32) != 0) {
-        assert!((1 != 0));
+    if (((n) != (0)) && (((bits) & (mask)) != 0)) {
+        assert!(true);
     }
-    if (((((((n) != (0)) as i32) != 0) || (((bits) & (256_i64)) != 0)) as i32) != 0) {
-        assert!((1 != 0));
+    if (((n) != (0)) || (((bits) & (256_i64)) != 0)) {
+        assert!(true);
     }
     let mut cp: *const libc::c_char = (c"hi".as_ptr().cast_mut()).cast_const();
     let mut cnp: *const libc::c_char = std::ptr::null();
-    if (((((((x) > (y)) as i32) != 0) && (!(cp).is_null())) as i32) != 0) {
-        assert!((1 != 0));
+    if (((x) > (y)) && (!(cp).is_null())) {
+        assert!(true);
     }
-    if (((((((x) < (y)) as i32) != 0) || (!(cnp).is_null())) as i32) != 0) {
-        assert!((0 != 0));
+    if (((x) < (y)) || (!(cnp).is_null())) {
+        assert!(false);
     }
-    if (((((((x) > (y)) as i32) != 0) && ((((n != 0) && (!(cp).is_null())) as i32) != 0)) as i32)
-        != 0)
-    {
-        assert!((1 != 0));
+    if (((x) > (y)) && ((n != 0) && (!(cp).is_null()))) {
+        assert!(true);
     }
-    if (((((((x) > (y)) as i32) != 0) && ((unsafe { returns_one_2() }) != 0)) as i32) != 0) {
-        assert!((1 != 0));
+    if (((x) > (y)) && ((unsafe { returns_one_2() }) != 0)) {
+        assert!(true);
     }
-    if (((((((x) > (y)) as i32) != 0) && (!((unsafe { returns_zero_3() }) != 0))) as i32) != 0) {
-        assert!((1 != 0));
+    if (((x) > (y)) && (!((unsafe { returns_zero_3() }) != 0))) {
+        assert!(true);
     }
-    if (((((((x) < (y)) as i32) != 0) || ((unsafe { returns_one_2() }) != 0)) as i32) != 0) {
-        assert!((1 != 0));
+    if (((x) < (y)) || ((unsafe { returns_one_2() }) != 0)) {
+        assert!(true);
     }
-    if (((((((x) < (y)) as i32) != 0) || (!((unsafe { returns_one_2() }) != 0))) as i32) != 0) {
-        assert!((0 != 0));
+    if (((x) < (y)) || (!((unsafe { returns_one_2() }) != 0))) {
+        assert!(false);
     }
-    if (((((((((!((p).is_null())) as i32) != 0) && ((unsafe { returns_one_2() }) != 0)) as i32)
-        != 0)
-        && ((((n) != (0)) as i32) != 0)) as i32)
-        != 0)
-    {
-        assert!((1 != 0));
+    if (((!((p).is_null())) && ((unsafe { returns_one_2() }) != 0)) && ((n) != (0))) {
+        assert!(true);
     }
     return 0;
 }

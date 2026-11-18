@@ -8,30 +8,34 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn for_test_0(mut n: i32) -> i32 {
     let mut x: i32 = 0;
-    let mut i: i32 = 0;
-    let mut j: i32 = 0;
-    'loop_: while (i < n) {
-        x += 1;
-        if (x == 100) {
-            break;
-        }
-        let mut k: i32 = 0;
-        let mut w: i32 = 0;
-        'loop_: while (w < j) {
-            break;
+    {
+        let mut i: i32 = 0;
+        let mut j: i32 = 0;
+        'loop_: while (i < n) {
+            x += 1;
+            if (x == 100) {
+                break;
+            }
             {
-                {
-                    w += 1;
-                    k += 1
-                };
-                i += k
+                let mut k: i32 = 0;
+                let mut w: i32 = 0;
+                'loop_: while (w < j) {
+                    break;
+                    {
+                        {
+                            w += 1;
+                            k += 1
+                        };
+                        i += k
+                    };
+                }
+            }
+            x = { (x + 1) };
+            {
+                j = i;
+                i += 1
             };
         }
-        x = { (x + 1) };
-        {
-            j = i;
-            i += 1
-        };
     }
     return x;
 }

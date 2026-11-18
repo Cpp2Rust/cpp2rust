@@ -21,11 +21,11 @@ fn main_0() -> i32 {
     assert!(({ ((*__decomp_0.borrow())[(1) as usize] == 2) }));
     assert!(({ ((*__decomp_0.borrow())[(2) as usize] == 3) }));
     assert!(({ ((*arr.borrow())[(0) as usize] == 1) }));
-    let __decomp_1: Ptr<i32> = arr.as_pointer();
-    elem!((__decomp_1), 0).write(7);
+    let __decomp_1: Ptr<i32> = arr.decay();
+    elem!(__decomp_1, 0).write(7);
     {
-        let __rhs = (elem!((__decomp_1), 1).read());
-        elem!((__decomp_1), 2).with_mut(|__v| *__v = *__v + __rhs)
+        let __rhs = (elem!(__decomp_1, 1).read());
+        elem!(__decomp_1, 2).with_mut(|__v| *__v = *__v + __rhs)
     };
     assert!(({ ((*arr.borrow())[(0) as usize] == 7) }));
     assert!(({ ((*arr.borrow())[(2) as usize] == 5) }));

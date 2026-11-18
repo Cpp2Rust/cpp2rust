@@ -168,7 +168,9 @@ std::string ToString(clang::ASTContext &ctx, clang::QualType qual_type,
 
   if (auto *tag = qual_type->getAsTagDecl();
       tag && tag->getIdentifier() &&
-      tag->getDeclContext()->isFunctionOrMethod()) {
+      (tag->getDeclContext()->isFunctionOrMethod() ||
+       (tag->isInAnonymousNamespace() &&
+        !clang::isa<clang::ClassTemplateSpecializationDecl>(tag)))) {
     return GetNamedDeclAsString(tag);
   }
 

@@ -15,6 +15,10 @@ fn t3() -> libcc2rs::SockaddrUn {
     Default::default()
 }
 
+fn t5() -> u16 {
+    0
+}
+
 fn f12(a0: i32, a1: Ptr<Sockaddr>, a2: Ptr<u32>) -> i32 {
     match nix::sys::socket::getsockname::<nix::sys::socket::SockaddrStorage>(a0) {
         Ok(__ss) => {

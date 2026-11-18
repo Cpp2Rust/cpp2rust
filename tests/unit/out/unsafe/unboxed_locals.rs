@@ -28,10 +28,12 @@ pub unsafe fn total_2(v: *const Vec<i32>) -> i32 {
 }
 pub unsafe fn sum_3(mut arr: *const i32, mut n: i32) -> i32 {
     let mut s: i32 = 0;
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (n)) {
-        s += (*arr.offset((i) as isize));
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (n)) {
+            s += (*arr.offset((i) as isize));
+            i.prefix_inc();
+        }
     }
     return s;
 }
@@ -68,7 +70,6 @@ unsafe fn main_0() -> i32 {
     plain += 2;
     plain.postfix_inc();
     assert!(((plain) == (4)));
-    &(::std::mem::size_of::<i32>());
     let mut typed: i32 = ((plain) + (1));
     assert!(((typed) == (5)));
     let mut addr: i32 = 0;
@@ -136,7 +137,7 @@ unsafe fn main_0() -> i32 {
             ::std::mem::drop(Box::from_raw(__p))
         }
     };
-    let mut vec_: Vec<i32> = vec![1; 3_usize as usize];
+    let mut vec_: Vec<i32> = vec![1; 3_usize];
     let mut four: i32 = 4;
     {
         let a0_clone = four.clone();
@@ -157,12 +158,12 @@ unsafe fn main_0() -> i32 {
         })
     };
     assert!(((low) == (2)));
-    let mut by_ref: Vec<i32> = vec![3; 2_usize as usize];
+    let mut by_ref: Vec<i32> = vec![3; 2_usize];
     assert!(((unsafe { total_2(&by_ref,) }) == (6)));
-    let mut elem_ptr: Vec<i32> = vec![0; 2_usize as usize];
+    let mut elem_ptr: Vec<i32> = vec![0; 2_usize];
     (unsafe { set_0((&mut elem_ptr[(1_usize)] as *mut i32), 7) });
     assert!(((elem_ptr[(1_usize)]) == (7)));
-    let mut data: Vec<i32> = vec![0; 2_usize as usize];
+    let mut data: Vec<i32> = vec![0; 2_usize];
     (unsafe { set_0(data.as_mut_ptr(), 8) });
     assert!(((data[(0_usize)]) == (8)));
     let mut square: Square = <Square>::default();

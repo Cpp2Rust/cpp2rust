@@ -29,10 +29,12 @@ impl Buffer {
             size: size,
         }));
         let this: Ptr<Buffer> = __this.as_pointer();
-        let mut i: i32 = 0;
-        'loop_: while (i < 4) {
-            array_elem!(this, data, i).write({ if (i < size) { i } else { -1_i32 } });
-            i.prefix_inc();
+        {
+            let mut i: i32 = 0;
+            'loop_: while (i < 4) {
+                array_elem!(this, data, i).write({ if (i < size) { i } else { -1_i32 } });
+                i.prefix_inc();
+            }
         }
         (*alive_0.with(Value::clone).borrow_mut()).prefix_inc();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
@@ -43,10 +45,12 @@ impl Buffer {
             size: o.with(|__s| __s.size),
         }));
         let this: Ptr<Buffer> = __this.as_pointer();
-        let mut i: i32 = 0;
-        'loop_: while (i < 4) {
-            array_elem!(this, data, i).write({ (array_elem!(o, data, i).read()) });
-            i.prefix_inc();
+        {
+            let mut i: i32 = 0;
+            'loop_: while (i < 4) {
+                array_elem!(this, data, i).write({ (array_elem!(o, data, i).read()) });
+                i.prefix_inc();
+            }
         }
         (*alive_0.with(Value::clone).borrow_mut()).prefix_inc();
         (*copies_1.with(Value::clone).borrow_mut()).prefix_inc();
@@ -74,10 +78,12 @@ impl Default for Buffer {
 }
 pub fn sum_2(b: Ptr<Buffer>) -> i32 {
     let mut s: i32 = 0;
-    let mut i: i32 = 0;
-    'loop_: while ({ i } < { b.with(|__s| __s.size) }) {
-        s += (array_elem!(b, data, i).read());
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while ({ i } < { b.with(|__s| __s.size) }) {
+            s += (array_elem!(b, data, i).read());
+            i.prefix_inc();
+        }
     }
     return s;
 }
@@ -88,14 +94,14 @@ pub fn main() {
 fn main_0() -> i32 {
     {
         let a: Value<Buffer> = Rc::new(RefCell::new(Buffer::new({ 4 })));
-        let _dtor_a = ScopedDestructor::new(&a, |__p| __p.destructor());
+        let _dtor_a = std::mem::DropGuard::new(a.clone(), |__p| __p.as_pointer().destructor());
         let b: Value<Buffer> = Rc::new(RefCell::new(Buffer::copy_from({ a.as_pointer() })));
-        let _dtor_b = ScopedDestructor::new(&b, |__p| __p.destructor());
+        let _dtor_b = std::mem::DropGuard::new(b.clone(), |__p| __p.as_pointer().destructor());
         assert!((alive_0.with(|rc| *rc.borrow()) == 2) && (copies_1.with(|rc| *rc.borrow()) == 1));
         array_elem!(b.as_pointer(), data, 0).write(100);
         assert!(((array_elem!(a.as_pointer(), data, 0).read()) == 0));
         let c: Value<Buffer> = Rc::new(RefCell::new(Buffer::new({ 2 })));
-        let _dtor_c = ScopedDestructor::new(&c, |__p| __p.destructor());
+        let _dtor_c = std::mem::DropGuard::new(c.clone(), |__p| __p.as_pointer().destructor());
         ({ BufferImpl::copy_assign(&c.as_pointer(), a.as_pointer()) });
         assert!(
             ({
@@ -112,7 +118,7 @@ fn main_0() -> i32 {
         assert!((({ sum_2(a.as_pointer(),) }) == 6));
         assert!((({ sum_2(b.as_pointer(),) }) == 106));
         let d: Value<Buffer> = Rc::new(RefCell::new(Buffer::copy_from({ a.as_pointer() })));
-        let _dtor_d = ScopedDestructor::new(&d, |__p| __p.destructor());
+        let _dtor_d = std::mem::DropGuard::new(d.clone(), |__p| __p.as_pointer().destructor());
         assert!((alive_0.with(|rc| *rc.borrow()) == 4) && (copies_1.with(|rc| *rc.borrow()) == 3));
         assert!(
             ({
@@ -143,10 +149,12 @@ impl BufferImpl for Ptr<Buffer> {
             return (*self).clone();
         }
         field!((*self), size).write({ o.with(|__s| __s.size) });
-        let mut i: i32 = 0;
-        'loop_: while (i < 4) {
-            array_elem!((*self), data, i).write({ (array_elem!(o, data, i).read()) });
-            i.prefix_inc();
+        {
+            let mut i: i32 = 0;
+            'loop_: while (i < 4) {
+                array_elem!((*self), data, i).write({ (array_elem!(o, data, i).read()) });
+                i.prefix_inc();
+            }
         }
         (*copies_1.with(Value::clone).borrow_mut()).prefix_inc();
         return (*self).clone();

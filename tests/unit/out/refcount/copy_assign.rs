@@ -191,7 +191,7 @@ fn main_0() -> i32 {
     ({ PartialImpl::copy_assign(&field_ptr!(h.as_pointer(), p), b.as_pointer()) });
     ({
         PartialImpl::copy_assign(
-            &(array_field_ptr!(h.as_pointer(), arr) as Ptr<Partial>).offset((1) as isize),
+            &array_field_ptr!(h.as_pointer(), arr).offset((1) as isize),
             c.as_pointer(),
         )
     });
@@ -265,12 +265,9 @@ impl HasCopyCountedImpl for Ptr<HasCopyCounted> {
             let _arg0: Ptr<CopyCounted> = field_ptr!(_a0, c);
             CopyCountedImpl::copy_assign(&field_ptr!((*self), c), _arg0)
         });
-        match ({ ((array_field_ptr!((*self), arr)) as Ptr<CopyCounted>).to_any() },) {
+        match ({ (array_field_ptr!((*self), arr)).to_any() },) {
             (mut __tmp_0,) => {
-                __tmp_0.memcpy(
-                    &((array_field_ptr!(_a0, arr)) as Ptr<CopyCounted>).to_any(),
-                    8_usize as usize,
-                );
+                __tmp_0.memcpy(&(array_field_ptr!(_a0, arr)).to_any(), 8_usize);
                 (__tmp_0).clone()
             }
         };
@@ -286,17 +283,18 @@ impl HolderImpl for Ptr<Holder> {
             let _o: Ptr<Partial> = field_ptr!(_a0, p);
             PartialImpl::copy_assign(&field_ptr!((*self), p), _o)
         });
-        let mut __i0: usize = 0_usize;
-        'loop_: while (__i0 != 2_usize) {
-            ({
-                let _o: Ptr<Partial> =
-                    (array_field_ptr!(_a0, arr) as Ptr<Partial>).offset((__i0) as isize);
-                PartialImpl::copy_assign(
-                    &(array_field_ptr!((*self), arr) as Ptr<Partial>).offset((__i0) as isize),
-                    _o,
-                )
-            });
-            __i0.prefix_inc();
+        {
+            let mut __i0: usize = 0_usize;
+            'loop_: while (__i0 != 2_usize) {
+                ({
+                    let _o: Ptr<Partial> = array_field_ptr!(_a0, arr).offset((__i0) as isize);
+                    PartialImpl::copy_assign(
+                        &array_field_ptr!((*self), arr).offset((__i0) as isize),
+                        _o,
+                    )
+                });
+                __i0.prefix_inc();
+            }
         }
         return (*self).clone();
     }

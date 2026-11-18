@@ -23,10 +23,10 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(((((unsafe { a_foo_2() }) == (1)) as i32) != 0));
-    assert!(((((unsafe { b_foo_4() }) == (1_f32)) as i32) != 0));
-    assert!(((((unsafe { a_bar_3() }) == (5)) as i32) != 0));
-    assert!(((((unsafe { b_bar_5() }) == (6)) as i32) != 0));
+    assert!(((unsafe { a_foo_2() }) == (1)));
+    assert!(((unsafe { b_foo_4() }) == (1_f32)));
+    assert!(((unsafe { a_bar_3() }) == (5)));
+    assert!(((unsafe { b_bar_5() }) == (6)));
     return 0;
 }
 pub static mut same_name_different_type_6: std::cell::LazyCell<f32> =

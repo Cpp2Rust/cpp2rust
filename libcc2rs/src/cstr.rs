@@ -7,7 +7,7 @@ use std::fmt;
 use std::rc::Rc;
 
 use crate::CStringIterator;
-use crate::rc::{FieldShape, Ptr, PtrKind};
+use crate::rc::{Ptr, PtrKind};
 use crate::reinterpret::{ByteRepr, with_scratch};
 
 // The element types of C strings: `char` and `signed char` map to `i8`,
@@ -100,12 +100,8 @@ impl<T: CChar> fmt::Display for Ptr<T> {
         match &self.kind {
             PtrKind::Null => write!(f, "NULL"),
             _ => {
-                for value in self {
-                    let ch = value.read().to_byte();
-                    if ch == 0 {
-                        break;
-                    }
-                    write!(f, "{}", char::from(ch))?;
+                for ch in self.to_c_string_iterator() {
+                    write!(f, "{}", char::from(ch.to_byte()))?;
                 }
                 Ok(())
             }
@@ -192,25 +188,16 @@ impl<T: CChar> Ptr<T> {
             return;
         }
         let mut dst = self.clone();
-        let mut i: usize = 0;
-        for value in src {
-            if i >= len {
-                break;
-            }
-            dst.write(value.read());
+        let mut s = src.clone();
+        for _ in 0..len {
+            dst.write(s.read());
             dst += 1;
-            i += 1;
+            s += 1;
         }
-        assert_eq!(i, len, "ub: memcpy");
     }
 
-    #[allow(clippy::explicit_counter_loop)]
     pub fn memset(&self, value: T, num: usize) {
-        let mut dst = self.clone();
-        for _ in 0..num {
-            dst.write(value);
-            dst += 1;
-        }
+        self.with_slice_mut(num, |s| s.fill(value))
     }
 
     #[allow(clippy::explicit_counter_loop)]
@@ -243,38 +230,14 @@ impl<T: CChar> Ptr<T> {
                 None => panic!("ub: unterminated string"),
             }
         }
-        match &self.kind {
-            PtrKind::Null => panic!("ub: null pointer"),
-            PtrKind::StackSingle(weak) | PtrKind::HeapSingle(weak) => {
-                assert_eq!(self.offset, 0, "ub: invalid offset");
-                let rc = weak.upgrade().expect("ub: dangling pointer");
-                let b = rc.borrow();
-                f(until_nul(std::slice::from_ref(&*b)))
-            }
-            PtrKind::StackArray(weak) | PtrKind::HeapArray(weak) => {
-                let rc = weak.upgrade().expect("ub: dangling pointer");
-                let b = rc.borrow();
-                f(until_nul(&b[self.offset..]))
-            }
-            PtrKind::StackVec(weak) | PtrKind::HeapVec(weak) => {
-                let rc = weak.upgrade().expect("ub: dangling pointer");
-                let b = rc.borrow();
-                f(until_nul(&b[self.offset..]))
-            }
-            PtrKind::Nested(parent) => {
-                let root = parent.root();
-                f(until_nul(&parent.borrow_slice(&root)[self.offset..]))
-            }
-            PtrKind::Field(root, _, FieldShape::Single) => {
-                let root = crate::field::upgrade(root);
-                let b = Ptr::<T>::borrow_field(&*root, self.offset);
-                f(until_nul(std::slice::from_ref(&*b)))
-            }
-            PtrKind::Field(..) => {
-                self.with_slice(self.len() - self.get_offset(), |s| f(until_nul(s)))
-            }
-            PtrKind::Reinterpreted(_) => f(&self.to_c_string_iterator().collect::<Vec<T>>()),
+        // Reinterpreted memory is read until the NUL, instead of until the end
+        // of the allocation.
+        if let PtrKind::Reinterpreted(_) = self.kind {
+            return f(&self.to_c_string_iterator().collect::<Vec<T>>());
         }
+        // The string is in the rest of the allocation.
+        let len = self.len().saturating_sub(self.get_offset());
+        self.with_slice(len, |s| f(until_nul(s)))
     }
 
     // The length of the C string, like `strlen`.

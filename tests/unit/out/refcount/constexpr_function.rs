@@ -55,8 +55,8 @@ fn main_0() -> i32 {
     let mut runtime_context: bool = ({ in_constant_context_6() });
     assert!(!(runtime_context));
     let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([7, 8])));
-    assert!((({ first_1((arr.as_pointer() as Ptr::<i32>),) }) == 7));
-    assert!((({ first_1((arr.as_pointer() as Ptr::<i32>).offset((1) as isize),) }) == 8));
+    assert!((({ first_1(arr.decay(),) }) == 7));
+    assert!((({ first_1(arr.decay().offset((1) as isize),) }) == 8));
     assert!((({ scaled_2(3,) }) == 3));
     assert!((({ scaled_2(-3_i32,) }) == 6));
     assert!((({ half_3(5_f64,) }) == 2.5_f64));
@@ -66,7 +66,7 @@ fn main_0() -> i32 {
     assert!((({ use_4(Flag { v: 2 },) }) == 2));
     let mut u: i32 = ({ use_4(Flag { v: 3 }) });
     assert!((u == 3));
-    let mut ptr: Ptr<i32> = (arr.as_pointer() as Ptr<i32>);
+    let mut ptr: Ptr<i32> = arr.decay();
     assert!(!(ptr).is_null());
     let p: Value<P> = Rc::new(RefCell::new(P { v: 9 }));
     assert!((({ PImpl::get(&p.as_pointer(),) }) == 9));

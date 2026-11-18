@@ -39,7 +39,7 @@ unsafe fn main_0() -> i32 {
             __out
         }
     };
-    let mut widened: Vec<i64> = vec![0_i64; 3_usize as usize];
+    let mut widened: Vec<i64> = vec![0_i64; 3_usize];
     match ({ input.as_mut_ptr().offset((3) as isize) },) {
         (mut __tmp_1,) => {
             let mut __first = input.as_mut_ptr();
@@ -53,7 +53,7 @@ unsafe fn main_0() -> i32 {
         }
     };
     assert!(((widened[(0_usize)]) == (1_i64)) && ((widened[(2_usize)]) == (3_i64)));
-    let mut constructed: Vec<Degrees> = vec![Degrees::new({ 0 },); 3_usize as usize];
+    let mut constructed: Vec<Degrees> = vec![Degrees::new({ 0 },); 3_usize];
     match ({ input.as_mut_ptr().offset((3) as isize) },) {
         (mut __tmp_2,) => {
             let mut __first = input.as_mut_ptr();
@@ -69,7 +69,7 @@ unsafe fn main_0() -> i32 {
     };
     assert!(((constructed[(0_usize)].value) == (1)) && ((constructed[(2_usize)].value) == (3)));
     let mut wide: [i64; 2] = [7_i64, 8_i64];
-    let mut floating: Vec<f64> = vec![0_f64; 2_usize as usize];
+    let mut floating: Vec<f64> = vec![0_f64; 2_usize];
     match ({ wide.as_mut_ptr().offset((2) as isize) },) {
         (mut __tmp_3,) => {
             let mut __first = wide.as_mut_ptr();

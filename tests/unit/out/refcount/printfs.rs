@@ -42,6 +42,18 @@ pub fn log_fmt_4(mut fmt: Ptr<i8>, mut v: i32) {
         libcc2rs::c_stdout().with_mut(|__f| __f.write(__s.as_bytes())) as i32
     };
 }
+pub fn put_5(out: Ptr<CFile>, mut s: Ptr<i8>) {
+    match ({ (out).clone() },) {
+        (mut __tmp_0,) => {
+            match s
+                .with_c_bytes(|__bytes| __tmp_0.with_mut(|__f| __f.write(__bytes)) == __bytes.len())
+            {
+                true => 0,
+                false => -1,
+            }
+        }
+    };
+}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
@@ -91,6 +103,8 @@ fn main_0() -> i32 {
     });
     ({ log_fmt_4(Ptr::<i8>::from_string_literal(b"%d\n"), 6) });
     println!("{{}} {} {}", 5_u64, (-6_i32 as i64));
+    let mut fp: Ptr<CFile> = libcc2rs::c_stdout();
+    ({ put_5((fp).clone(), Ptr::<i8>::from_string_literal(b"value\n")) });
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

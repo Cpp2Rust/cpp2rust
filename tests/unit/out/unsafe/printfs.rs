@@ -42,6 +42,9 @@ pub unsafe fn log_to_3(mut out: *mut ::libc::FILE, mut fmt: *const libc::c_char,
 pub unsafe fn log_fmt_4(mut fmt: *const libc::c_char, mut v: i32) {
     (unsafe { libc::printf(fmt as *const libc::c_char, (v)) });
 }
+pub unsafe fn put_5(out: *mut ::libc::FILE, mut s: *const libc::c_char) {
+    libc::fputs(s, (out));
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -127,6 +130,8 @@ unsafe fn main_0() -> i32 {
             (-6_i32 as i64),
         )
     });
+    let mut fp: *mut ::libc::FILE = libcc2rs::stdout_unsafe();
+    (unsafe { put_5(&mut (*fp), c"value\n".as_ptr()) });
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

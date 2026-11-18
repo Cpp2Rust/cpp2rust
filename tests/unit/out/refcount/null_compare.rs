@@ -13,11 +13,11 @@ pub fn main() {
 fn main_0() -> i32 {
     let a: Value<i32> = Rc::new(RefCell::new(0));
     let mut p: Ptr<i32> = (a.as_pointer());
-    assert!((((!((p).is_null())) as i32) != 0));
-    assert!((((!((p).is_null())) as i32) != 0));
+    assert!((!((p).is_null())));
+    assert!((!((p).is_null())));
     p = Ptr::<i32>::null();
-    assert!(((((p).is_null()) as i32) != 0));
-    assert!(((((p).is_null()) as i32) != 0));
+    assert!(((p).is_null()));
+    assert!(((p).is_null()));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

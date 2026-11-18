@@ -121,9 +121,8 @@ pub struct Box_int_ {
     pub val: i32,
 }
 impl Box_int_ {
-    pub fn new(v: i32) -> Self {
-        let v: Value<i32> = Rc::new(RefCell::new(v));
-        Self { val: (*v.borrow()) }
+    pub fn new(mut v: i32) -> Self {
+        Self { val: v }
     }
     pub fn copy_from(o: Ptr<Box_int_>) -> Self {
         Self {
@@ -193,7 +192,9 @@ pub struct Tracked {
 impl Tracked {
     pub fn copy_from(o: Ptr<Tracked>) -> Self {
         let __this: Tracked = Self { copied_from: 0 };
-        field!(o, copied_from).with_mut(|__v| __v.prefix_inc());
+        field!(o, copied_from).with_mut(|__v| {
+            __v.prefix_inc();
+        });
         __this
     }
 }
@@ -211,7 +212,9 @@ impl Default for Tracked {
     }
 }
 pub fn touch_1(mut t: Ptr<Tracked>) {
-    field!(t, copied_from).with_mut(|__v| __v.prefix_inc());
+    field!(t, copied_from).with_mut(|__v| {
+        __v.prefix_inc();
+    });
 }
 pub fn by_value_2(mut c: Counted) -> i32 {
     return c.v;
@@ -306,12 +309,9 @@ impl HolderImpl for Ptr<Holder> {
             let _arg0: Ptr<Counted> = field_ptr!(_a0, c);
             CountedImpl::copy_assign(&field_ptr!((*self), c), _arg0)
         });
-        match ({ ((array_field_ptr!((*self), arr)) as Ptr<Counted>).to_any() },) {
+        match ({ (array_field_ptr!((*self), arr)).to_any() },) {
             (mut __tmp_0,) => {
-                __tmp_0.memcpy(
-                    &((array_field_ptr!(_a0, arr)) as Ptr<Counted>).to_any(),
-                    8_usize as usize,
-                );
+                __tmp_0.memcpy(&(array_field_ptr!(_a0, arr)).to_any(), 8_usize);
                 (__tmp_0).clone()
             }
         };
@@ -350,7 +350,9 @@ pub trait TrackedImpl {
 }
 impl TrackedImpl for Ptr<Tracked> {
     fn copy_assign(&self, o: Ptr<Tracked>) -> Ptr<Tracked> {
-        field!(o, copied_from).with_mut(|__v| __v.prefix_inc());
+        field!(o, copied_from).with_mut(|__v| {
+            __v.prefix_inc();
+        });
         return (*self).clone();
     }
 }

@@ -40,12 +40,32 @@ fn main_0() -> i32 {
         (((elem!(bytes, 0).read()) as i32) == 187) && (((elem!(bytes, 4).read()) as i32) == 170)
     );
     let words: Value<Box<[u32]>> = Rc::new(RefCell::new(Box::new([16909060_u32, 84281096_u32])));
-    let mut halves: Ptr<u16> = (words.as_pointer() as Ptr<u32>).reinterpret_cast::<u16>();
+    let mut halves: Ptr<u16> = words.decay().reinterpret_cast::<u16>();
     cpp_swap!(halves.offset((0) as isize), halves.offset((3) as isize));
     assert!(
         ({
             ((*words.borrow())[(0) as usize] == 16909574_u32)
                 && ((*words.borrow())[(1) as usize] == 50595592_u32)
+        })
+    );
+    let s1: Value<i32> = Rc::new(RefCell::new(1));
+    let s2: Value<i32> = Rc::new(RefCell::new(2));
+    let sp: Value<Ptr<i32>> = Rc::new(RefCell::new((s1.as_pointer())));
+    let sq: Value<Ptr<i32>> = Rc::new(RefCell::new((s2.as_pointer())));
+    cpp_swap!(sp.as_pointer(), sq.as_pointer());
+    assert!(
+        ({
+            ({ (*sp.borrow()).clone() } == { (s2.as_pointer()) })
+                && ({ (*sq.borrow()).clone() } == { (s1.as_pointer()) })
+        })
+    );
+    assert!(({ ((*s1.borrow()) == 1) && ((*s2.borrow()) == 2) }));
+    let null_ptr: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));
+    cpp_swap!(null_ptr.as_pointer(), sp.as_pointer());
+    assert!(
+        ({
+            ({ (*null_ptr.borrow()).clone() } == { (s2.as_pointer()) })
+                && ((*sp.borrow()).is_null())
         })
     );
     libcc2rs::free_refcount((other).to_any());

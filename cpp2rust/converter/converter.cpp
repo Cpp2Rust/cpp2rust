@@ -240,6 +240,14 @@ std::string Converter::ConvertPointerReceiver(
 
 std::string Converter::ConvertTemporaryPointer(
     clang::Expr *expr, std::optional<clang::QualType> implicit_convert_to) {
+  if (retain_bound_temporaries_ && full_expression_temporaries_) {
+    auto [binding, ref] =
+        MaterializeTemp(NewTempName(),
+                        ctx_.getLValueReferenceType(
+                            implicit_convert_to.value_or(expr->getType())),
+                        expr, full_expression_temporaries_);
+    return std::format("{{ {} {} }}", binding, ref);
+  }
   return std::format("&mut {}", ConvertFreshRValue(expr, implicit_convert_to));
 }
 
@@ -259,7 +267,11 @@ Converter::ConvertRValue(clang::Expr *expr,
 
 std::string Converter::ConvertFreshRValue(
     clang::Expr *expr, std::optional<clang::QualType> implicit_convert_to) {
-  auto str = ConvertRValue(expr, implicit_convert_to);
+  std::string str;
+  {
+    PushExprKind push(*this, ExprKind::FreshRValue);
+    str = ToString(expr, implicit_convert_to);
+  }
   if (expr->getType()->isVoidType() || expr->getType()->isPointerType()) {
     MarkFresh();
     return str;
@@ -269,21 +281,32 @@ std::string Converter::ConvertFreshRValue(
 
 std::pair<std::string, std::string>
 Converter::MaterializeTemp(const std::string &binding_name,
-                           clang::QualType param_type, clang::Expr *expr) {
+                           clang::QualType param_type, clang::Expr *expr,
+                           std::string *declarations) {
+  if (!declarations && retain_bound_temporaries_) {
+    declarations = full_expression_temporaries_;
+  }
   auto pointee = param_type.getNonReferenceType();
   std::string value;
   {
     ScopedPush init_type(curr_init_type_, pointee);
-    value = ConvertRValue(expr, pointee);
+    value = retain_bound_temporaries_ ? ConvertFreshRValue(expr, pointee)
+                                      : ConvertRValue(expr, pointee);
   }
   auto type_str = ToStringBase(pointee);
-  const auto *decl = in_const_initializer_ ? keyword::kStatic : keyword::kLet;
+  bool is_static = in_const_initializer_ && !declarations;
+  const auto *decl = is_static ? keyword::kStatic : keyword::kLet;
 
-  auto binding =
-      std::format("{} mut {} : {} = {};", decl, binding_name, type_str, value);
-  auto ref = in_const_initializer_
-                 ? std::format("& mut *& raw mut {}", binding_name)
-                 : std::format("& mut {}", binding_name);
+  std::string binding;
+  if (declarations) {
+    *declarations += std::format("let mut {} : {};", binding_name, type_str);
+    binding = std::format("{} = {};", binding_name, value);
+  } else {
+    binding = std::format("{} mut {} : {} = {};", decl, binding_name, type_str,
+                          value);
+  }
+  auto ref = is_static ? std::format("& mut *& raw mut {}", binding_name)
+                       : std::format("& mut {}", binding_name);
   return {binding, ref};
 }
 
@@ -353,6 +376,14 @@ bool Converter::VisitPointerType(clang::PointerType *type) {
   return Convert(pointee_type);
 }
 
+bool Converter::VisitMemberPointerType(clang::MemberPointerType *type) {
+  if (type->isMemberFunctionPointer()) {
+    llvm::report_fatal_error("pointers to member functions are not supported");
+  }
+  StrCat("isize");
+  return false;
+}
+
 bool Converter::VisitDecayedType(clang::DecayedType *type) {
   return Convert(type->getDecayedType());
 }
@@ -371,7 +402,7 @@ bool Converter::VisitTranslationUnitDecl(clang::TranslationUnitDecl *decl) {
   for (auto *child : decl->decls()) {
     if (IsUserDefinedDecl(child) &&
         (IsInMainFile(child) || !decl_ids_.contains(GetID(child)))) {
-      Convert(child);
+      ConvertNamespaceMember(child);
       if (!hoisted_records_.empty()) {
         StrCat(hoisted_records_);
         hoisted_records_.clear();
@@ -489,9 +520,14 @@ void Converter::ConvertFunctionBody(clang::FunctionDecl *decl) {
 }
 
 bool Converter::VisitFunctionTemplateDecl(clang::FunctionTemplateDecl *decl) {
+  if (!clang::isa<clang::CXXMethodDecl>(decl->getTemplatedDecl()) &&
+      !decl->isCanonicalDecl()) {
+    return false;
+  }
   for (auto *function_decl : decl->specializations()) {
     if (function_decl->getTemplateSpecializationKind() ==
-        clang::TSK_ExplicitSpecialization) {
+            clang::TSK_ExplicitSpecialization ||
+        IsLibraryOnlySpecialization(function_decl)) {
       continue;
     }
     VisitFunctionDecl(function_decl);
@@ -686,15 +722,10 @@ void Converter::EmitScopedDestructor(const clang::VarDecl *decl) {
   if (!NeedsScopedDestructor(decl)) {
     return;
   }
-  auto type = decl->getType();
-  auto destroy =
-      AsLambdaClass(type)
-          ? std::string("|__f| __f.destroy()")
-          : std::format("{}::{}", GetRecordName(type->getAsCXXRecordDecl()),
-                        kDestructorName);
+  auto destroy = AsLambdaClass(decl->getType()) ? "destroy" : kDestructorName;
   StrCat(token::kSemiColon,
-         std::format("let _dtor_{0} = ScopedDestructorUnsafe::new(&raw mut "
-                     "{0}, {1})",
+         std::format("let _dtor_{0} = std::mem::DropGuard::new(&raw mut {0}, "
+                     "|__p| unsafe {{ (*__p).{1}() }})",
                      GetNamedDeclAsString(decl), destroy));
 }
 
@@ -720,7 +751,7 @@ bool Converter::TypeDerivesDefault(clang::QualType qual_type) {
     return array_type->getSize().ule(32) &&
            TypeDerivesDefault(array_type->getElementType());
   }
-  if (qual_type->isArrayType()) {
+  if (qual_type->isArrayType() || qual_type->isMemberPointerType()) {
     return false;
   }
 
@@ -874,6 +905,9 @@ void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
     }
     if (auto *nested_tmpl = clang::dyn_cast<clang::ClassTemplateDecl>(d)) {
       for (auto *spec : nested_tmpl->specializations()) {
+        if (IsLibraryOnlySpecialization(spec)) {
+          continue;
+        }
         inner_structs_[GetID(spec)] = GetRecordName(spec);
         VisitCXXRecordDecl(spec);
       }
@@ -1157,7 +1191,7 @@ bool Converter::ConvertCXXMethodDecl(clang::CXXMethodDecl *decl) {
 
   {
     PushParen paren(*this);
-    if (!decl->isStatic()) {
+    if (decl->isImplicitObjectMemberFunction()) {
       StrCat(GetSelfMaybeWithMut(decl), token::kComma);
     }
     ConvertFunctionParameters(decl);
@@ -1304,8 +1338,17 @@ void Converter::EmitFunctionPreamble(clang::FunctionDecl *decl) {
 void Converter::ConvertDeclContext(clang::DeclContext *decl) {
   for (auto *child : decl->decls()) {
     if (IsInMainFile(child) || !decl_ids_.contains(GetID(child))) {
-      Convert(child);
+      ConvertNamespaceMember(child);
     }
+  }
+}
+
+void Converter::ConvertNamespaceMember(clang::Decl *decl) {
+  if (auto *var = clang::dyn_cast<clang::VarDecl>(decl);
+      var && var->isImplicit()) {
+    VisitVarDecl(var);
+  } else {
+    Convert(decl);
   }
 }
 
@@ -1413,6 +1456,9 @@ bool Converter::VisitDeclStmt(clang::DeclStmt *stmt) {
     if (var && IsAliasOfInit(ctx_, var)) {
       continue;
     }
+    if (var && var->isLocalExternDecl()) {
+      continue;
+    }
     if (var && var->isImplicit()) {
       VisitVarDecl(var);
     } else {
@@ -1424,6 +1470,7 @@ bool Converter::VisitDeclStmt(clang::DeclStmt *stmt) {
 }
 
 bool Converter::VisitReturnStmt(clang::ReturnStmt *stmt) {
+  ScopedValue return_value(return_value_, stmt->getRetValue());
   auto return_type = curr_function_->getReturnType();
   if (!return_type->isVoidType()) {
     HoistMaterializedTempBindings hoist_temps(*this);
@@ -1447,10 +1494,15 @@ void Converter::ConvertCondition(clang::Expr *cond) {
 }
 
 bool Converter::VisitIfStmt(clang::IfStmt *stmt) {
-  // The variables of the init statement are only visible in the if.
-  PushBrace scope(*this, stmt->getInit());
+  // The variables of the init statement and of the condition are only
+  // visible in the if.
+  auto *cond_var = stmt->getConditionVariableDeclStmt();
+  PushBrace scope(*this, stmt->getInit() || cond_var);
   if (auto *init = stmt->getInit()) {
     Convert(init);
+  }
+  if (cond_var) {
+    Convert(cond_var);
   }
   if (bool taken = false;
       !stmt->getConditionVariable() && !stmt->isConsteval() &&
@@ -1476,11 +1528,30 @@ bool Converter::VisitIfStmt(clang::IfStmt *stmt) {
 bool Converter::VisitWhileStmt(clang::WhileStmt *stmt) {
   ScopedPush push(break_target_, BreakTarget::Loop);
   StrCat("'loop_:");
+  ScopedPush no_inc(curr_for_inc_, nullptr);
+  if (auto *cond_var = stmt->getConditionVariableDeclStmt()) {
+    StrCat(keyword::kLoop);
+    PushBrace loop_brace(*this);
+    ConvertConditionVariableTest(cond_var, stmt->getCond());
+    ConvertBodyStmts(stmt->getBody());
+    return false;
+  }
   StrCat(keyword::kWhile);
   ConvertCondition(stmt->getCond());
-  ScopedPush no_inc(curr_for_inc_, nullptr);
   ConvertBody(stmt->getBody());
   return false;
+}
+
+// The condition variable is created and destroyed on each iteration.
+void Converter::ConvertConditionVariableTest(clang::DeclStmt *cond_var,
+                                             clang::Expr *cond) {
+  Convert(cond_var);
+  StrCat(keyword::kIf, token::kNot);
+  {
+    PushParen paren(*this);
+    ConvertCondition(cond);
+  }
+  StrCat("{ break; }");
 }
 
 bool Converter::VisitDoStmt(clang::DoStmt *stmt) {
@@ -1504,16 +1575,27 @@ bool Converter::VisitDoStmt(clang::DoStmt *stmt) {
 
 bool Converter::VisitForStmt(clang::ForStmt *stmt) {
   ScopedPush push(break_target_, BreakTarget::Loop);
+  // The variables of the init statement are only visible in the for.
+  PushBrace scope(*this, stmt->getInit() &&
+                             clang::isa<clang::DeclStmt>(stmt->getInit()));
   Convert(stmt->getInit());
   StrCat("'loop_:");
-  StrCat(keyword::kWhile);
-  if (stmt->getCond() == nullptr) {
-    StrCat("true");
+  auto *cond_var = stmt->getConditionVariableDeclStmt();
+  if (cond_var) {
+    StrCat(keyword::kLoop);
   } else {
-    ConvertCondition(stmt->getCond());
+    StrCat(keyword::kWhile);
+    if (stmt->getCond() == nullptr) {
+      StrCat("true");
+    } else {
+      ConvertCondition(stmt->getCond());
+    }
   }
   {
     PushBrace brace(*this);
+    if (cond_var) {
+      ConvertConditionVariableTest(cond_var, stmt->getCond());
+    }
     {
       ScopedPush inc(curr_for_inc_, stmt->getInc());
       ConvertBodyStmts(stmt->getBody());
@@ -1585,6 +1667,47 @@ bool Converter::Convert(clang::Expr *expr,
     assert(false && "computed_expr_type_ not set");
   }
   return result;
+}
+
+bool Converter::VisitExprWithCleanups(clang::ExprWithCleanups *expr) {
+  std::string declarations;
+  ScopedValue scope(full_expression_temporaries_, &declarations);
+  auto start = rs_code_->size();
+  Convert(expr->getSubExpr());
+  if (!declarations.empty()) {
+    rs_code_->insert(start, "{ " + declarations);
+    StrCat('}');
+  }
+  return false;
+}
+
+bool Converter::VisitMaterializeTemporaryExpr(
+    clang::MaterializeTemporaryExpr *expr) {
+  // A consuming conversion moves the temporary into its result instead.
+  if (!retain_bound_temporaries_ || !full_expression_temporaries_ ||
+      isFreshRValue()) {
+    return true;
+  }
+  // Keep the owner through the full expression, but evaluate it at its
+  // original operand, so unselected conditional branches stay unevaluated.
+  bool pointer = isAddrOf();
+  auto name = NewTempName();
+  auto type = ctx_.getLValueReferenceType(expr->getType());
+  auto [binding, ref] =
+      pointer ? MaterializeTemp(name, type, expr->getSubExpr(),
+                                full_expression_temporaries_)
+              : Converter::MaterializeTemp(name, type, expr->getSubExpr(),
+                                           full_expression_temporaries_);
+  if (pointer) {
+    EmitFresh(std::format("{{ {} {} }}", binding, ref));
+  } else {
+    // A borrowed owning value needs a place, not a moved-out value or another
+    // model allocation around the owner.
+    PushParen paren(*this);
+    StrCat("*{", binding, ref, "}");
+    SetValueFreshness(expr->getType());
+  }
+  return false;
 }
 
 std::string Converter::ConvertScalarCast(std::string str, clang::QualType to) {
@@ -2387,6 +2510,18 @@ bool Converter::VisitSourceLocExpr(clang::SourceLocExpr *expr) {
   }
 }
 
+std::string Converter::GetCharArrayLiteral(const clang::StringLiteral *expr) {
+  std::string out = "(&[";
+  for (char c : expr->getString()) {
+    auto value = CharRustTypeIsSigned()
+                     ? std::to_string(static_cast<signed char>(c))
+                     : std::to_string(static_cast<unsigned char>(c));
+    out += getTypedLiteral(value.c_str(), CharRustType()) + ", ";
+  }
+  out += getTypedLiteral("0", CharRustType()) + "])";
+  return out;
+}
+
 bool Converter::VisitStringLiteral(clang::StringLiteral *expr) {
   if (IsCodeUnitStringLiteral(expr)) {
     EmitFresh(GetCodeUnitArrayLiteral(expr));
@@ -2415,19 +2550,18 @@ bool Converter::VisitStringLiteral(clang::StringLiteral *expr) {
                           GetEscapedStringLiteral(expr, 1)));
     return false;
   }
+  std::string literal;
   if (expr->getString().contains('\0')) {
-    std::string out = "(&[";
-    for (char c : expr->getString()) {
-      auto value = CharRustTypeIsSigned()
-                       ? std::to_string(static_cast<signed char>(c))
-                       : std::to_string(static_cast<unsigned char>(c));
-      out += getTypedLiteral(value.c_str(), CharRustType()) + ", ";
-    }
-    out += getTypedLiteral("0", CharRustType()) + "])";
-    EmitFresh(out);
-    return false;
+    literal = GetCharArrayLiteral(expr);
+  } else {
+    literal = std::format("c{}", GetEscapedStringLiteral(expr, 0));
   }
-  EmitFresh(std::format("c{}", GetEscapedStringLiteral(expr, 0)));
+  // A pointer to the array.
+  if (isAddrOf()) {
+    literal = std::format("{}.as_ptr().cast::<{}>()", literal,
+                          ToString(expr->getType()));
+  }
+  EmitFresh(literal);
   return false;
 }
 
@@ -2478,13 +2612,21 @@ void Converter::ConvertIntegralToBooleanCast(clang::ImplicitCastExpr *expr) {
     return;
   }
 
-  if (auto binop = clang::dyn_cast<clang::BinaryOperator>(stripped)) {
-    // Comparisons and logical ops already produces bool, no wrap needed.
-    if ((binop->isComparisonOp() || binop->isLogicalOp()) &&
-        binop->getType()->isBooleanType()) {
-      Convert(sub_expr);
-      return;
-    }
+  if (auto binop = clang::dyn_cast<clang::BinaryOperator>(stripped);
+      binop && (binop->isComparisonOp() || binop->isLogicalOp())) {
+    // Comparisons and logical ops produce a bool, which C makes an int.
+    PushParen paren(*this);
+    ConvertBinaryOperator(binop);
+    return;
+  }
+  if (auto *unop = clang::dyn_cast<clang::UnaryOperator>(stripped);
+      unop && unop->getOpcode() == clang::UO_LNot) {
+    Convert(NormalizeToBool(unop, ctx_));
+    return;
+  }
+  if (auto *literal = clang::dyn_cast<clang::IntegerLiteral>(stripped)) {
+    EmitFresh(literal->getValue().isZero() ? keyword::kFalse : keyword::kTrue);
+    return;
   }
 
   PushParen paren(*this);
@@ -2591,8 +2733,25 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
   case clang::CastKind::CK_NullToPointer:
     EmitFresh(GetDefaultAsString(type));
     break;
+  case clang::CastKind::CK_NullToMemberPointer:
+    EmitFresh(GetUnboxedDefaultAsString(type));
+    break;
+  case clang::CastKind::CK_MemberPointerToBoolean:
+    StrCat(token::kNot);
+    ConvertEqualsNullPtr(sub_expr);
+    break;
+  case clang::CastKind::CK_BaseToDerivedMemberPointer:
+  case clang::CastKind::CK_DerivedToBaseMemberPointer:
+    llvm::report_fatal_error(
+        "conversions of pointers to members between classes are not "
+        "supported");
   default:
-    if (auto *literal = clang::dyn_cast<clang::IntegerLiteral>(sub_expr)) {
+    // Before clang 24, a case value is a literal in a ConstantExpr.
+    auto *value = sub_expr;
+    if (auto *constant = clang::dyn_cast<clang::ConstantExpr>(value)) {
+      value = constant->getSubExpr();
+    }
+    if (auto *literal = clang::dyn_cast<clang::IntegerLiteral>(value)) {
       auto type = expr->getType();
       EmitFresh(getIntegerLiteral(literal, true, &type));
       break;
@@ -2624,6 +2783,10 @@ bool Converter::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
   auto type = expr->getTypeAsWritten();
   auto *sub_expr = expr->getSubExpr();
   if (type->isVoidType()) {
+    if (!sub_expr->HasSideEffects(ctx_)) {
+      EmitFresh(isVoid() ? "" : "()");
+      return false;
+    }
     StrCat(token::kRef);
     PushParen paren(*this);
     PushExprKind push(*this, ExprKind::Void);
@@ -2648,6 +2811,25 @@ bool Converter::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
   if (type->isEnumeralType() && !sub_expr->getType()->isEnumeralType()) {
     ConvertIntegerToEnumeralCast(expr, sub_expr);
     return false;
+  }
+  switch (expr->getCastKind()) {
+  case clang::CastKind::CK_NullToMemberPointer:
+    EmitFresh(GetUnboxedDefaultAsString(type));
+    return false;
+  case clang::CastKind::CK_MemberPointerToBoolean:
+    StrCat(token::kNot);
+    ConvertEqualsNullPtr(sub_expr);
+    return false;
+  case clang::CastKind::CK_ReinterpretMemberPointer:
+    Convert(sub_expr);
+    return false;
+  case clang::CastKind::CK_BaseToDerivedMemberPointer:
+  case clang::CastKind::CK_DerivedToBaseMemberPointer:
+    llvm::report_fatal_error(
+        "conversions of pointers to members between classes are not "
+        "supported");
+  default:
+    break;
   }
   switch (expr->getStmtClass()) {
   case clang::Stmt::CXXFunctionalCastExprClass:
@@ -2697,6 +2879,20 @@ bool Converter::VisitCXXRewrittenBinaryOperator(
 }
 
 bool Converter::VisitBinaryOperator(clang::BinaryOperator *expr) {
+  if (expr->isPtrMemOp()) {
+    ConvertMemberPtrAccess(expr);
+    return false;
+  }
+
+  if (expr->isAssignmentOp() && isAddrOf()) {
+    ConvertAssignmentRef(expr);
+    return false;
+  }
+  if (expr->isAssignmentOp() && isLValue()) {
+    EmitPointee(std::format("({})", ConvertFreshPointer(expr)), expr->getType(),
+                /*fresh=*/true);
+    return false;
+  }
   if (expr->getOpcode() == clang::BO_Cmp) {
     EmitFresh(std::format("std::cmp::Ord::cmp(&({}), &({}))",
                           ConvertRValue(expr->getLHS()),
@@ -2715,6 +2911,38 @@ bool Converter::VisitBinaryOperator(clang::BinaryOperator *expr) {
     ConvertCast(expr->getType());
   }
   return false;
+}
+
+void Converter::ConvertAssignmentRef(clang::BinaryOperator *expr) {
+  auto *lhs = expr->getLHS();
+  auto *rhs = expr->getRHS();
+  auto value = ConvertFreshRValue(rhs);
+  std::string ptr;
+  {
+    PushExprKind push(*this, ExprKind::RValue);
+    ptr = ConvertPointerReceiver(
+        lhs, GetUnsafeTypeAsString(ctx_.getPointerType(lhs->getType())), {});
+  }
+  auto left = NewTempName();
+  auto right = NewTempName();
+  auto assignment = std::format("{}.write({})", left, right);
+  if (auto *compound = clang::dyn_cast<clang::CompoundAssignOperator>(expr)) {
+    assignment =
+        AssignPtrExpr(left, lhs->getType(), [&](std::string_view read) {
+          if (lhs->getType()->isPointerType()) {
+            return std::format(
+                "({}).offset({}({} as isize))", read,
+                expr->getOpcode() == clang::BO_SubAssign ? "-" : "", right);
+          }
+          return ConvertCompoundAssignValue(compound, read, right);
+        });
+  }
+  // Evaluate the right operand before finding the place to write. Keep both
+  // results in Rust bindings, then return the same place after the write.
+  StrCat(
+      std::format("match ({{ {0} }}, {1}) {{ ({2}, {3}) => {{ {4}; {3} }} }}",
+                  value, ptr, right, left, assignment));
+  MarkFresh();
 }
 
 void Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
@@ -2761,6 +2989,15 @@ void Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
     if (expr->isCompoundAssignmentOp() &&
         expr->getLHS()->getType()->isPointerType() &&
         expr->getRHS()->getType()->isIntegralOrEnumerationType()) {
+      if (lhs->HasSideEffects(ctx_)) {
+        auto ptr = std::format("({})", ConvertFreshPointer(expr));
+        if (isVoid()) {
+          StrCat(ptr);
+        } else {
+          EmitDeref(std::move(ptr), lhs_type);
+        }
+        return;
+      }
       PushBrace brace(*this, !isVoid());
       Convert(lhs);
       StrCat(token::kAssign);
@@ -2823,7 +3060,9 @@ void Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
 }
 
 std::string
-Converter::ConvertCompoundAssignValue(clang::CompoundAssignOperator *expr) {
+Converter::ConvertCompoundAssignValue(clang::CompoundAssignOperator *expr,
+                                      std::string_view lhs_value,
+                                      std::string_view rhs_value) {
   auto *lhs = expr->getLHS();
   auto computation_result_type = expr->getComputationResultType();
   Buffer buf(*this);
@@ -2831,16 +3070,21 @@ Converter::ConvertCompoundAssignValue(clang::CompoundAssignOperator *expr) {
     PushParen outer(*this);
     {
       PushParen inner(*this);
-      StrCat(ConvertRValue(lhs));
+      StrCat(lhs_value.empty() ? ConvertRValue(lhs) : lhs_value);
       ConvertCast(computation_result_type);
     }
     if (IsUnsignedArithOp(expr)) {
-      ConvertUnsignedArithBinaryOperator(expr, expr->getRHS());
+      ConvertUnsignedArithBinaryOperator(expr, expr->getRHS(), rhs_value);
     } else {
       std::string_view op = expr->getOpcodeStr();
       op.remove_suffix(1); // remove '=' from operator
       StrCat(op);
-      Convert(expr->getRHS(), computation_result_type);
+      if (rhs_value.empty()) {
+        Convert(expr->getRHS(), computation_result_type);
+      } else {
+        StrCat(
+            ConvertScalarCast(std::string(rhs_value), computation_result_type));
+      }
     }
   }
   if (lhs->getType()->isBooleanType()) {
@@ -2895,6 +3139,19 @@ bool Converter::ConvertIncAndDec(clang::UnaryOperator *expr) {
   if (!method) {
     return false;
   }
+  if (expr->isPrefix() && isAddrOf()) {
+    auto ptr = ConvertFreshObject(expr->getSubExpr());
+    auto name = NewTempName();
+    StrCat(std::format("{{ let {0} = {1}; (*{0}).{2}(); {0} }}", name, ptr,
+                       method));
+    MarkFresh();
+    return true;
+  }
+  bool deref_prefix = expr->isPrefix() && !isVoid();
+  PushParen paren(*this, deref_prefix);
+  if (deref_prefix) {
+    StrCat(token::kStar);
+  }
   {
     PushExprKind push(*this, ExprKind::LValue);
     Convert(expr->getSubExpr());
@@ -2921,6 +3178,10 @@ bool Converter::VisitUnaryOperator(clang::UnaryOperator *expr) {
     Convert(sub_expr);
     break;
   case clang::UO_AddrOf: {
+    if (expr->getType()->isMemberPointerType()) {
+      ConvertMemberPtr(expr);
+      break;
+    }
     PushParen paren(*this);
     ConvertAddrOf(sub_expr, expr->getType());
     break;
@@ -2994,10 +3255,32 @@ bool Converter::VisitStmtExpr(clang::StmtExpr *expr) {
 }
 
 bool Converter::ConvertLValueConditional(clang::ConditionalOperator *expr) {
-  if (!expr->isLValue() || expr->getType()->isFunctionType()) {
+  if (retain_bound_temporaries_ && expr->isXValue() && isRValue() &&
+      !isFreshRValue()) {
+    EmitDeref(ConvertPointer(expr), expr->getType());
+    return true;
+  }
+  if (!expr->isGLValue() || expr->getType()->isFunctionType()) {
     return false;
   }
   // `&(c ? a : b)` -> `c ? &a : &b`
+  if (isAddrOf() && retain_bound_temporaries_) {
+    auto type = ToString(ctx_.getPointerType(expr->getType()));
+    auto branch = [&](clang::Expr *arg) {
+      PushBrace brace(*this);
+      StrCat(ConvertPointerReceiver(arg, type, {}));
+    };
+    StrCat(keyword::kIf);
+    ConvertCondition(expr->getCond());
+    branch(expr->getTrueExpr());
+    StrCat(keyword::kElse);
+    branch(expr->getFalseExpr());
+    MarkFresh();
+    return true;
+  }
+  if (!expr->isLValue()) {
+    return false;
+  }
   if (isAddrOf()) {
     Convert(MakeConditionalAddrOf(ctx_, expr));
     return true;
@@ -3061,6 +3344,10 @@ std::string Converter::ConvertDeclRef(clang::Expr *expr,
     if (auto method = clang::dyn_cast<clang::CXXMethodDecl>(function)) {
       if (method->isStatic()) {
         return GetFunctionRefName(method);
+      }
+      if (method->isExplicitObjectMemberFunction()) {
+        return std::format("{}::{}", GetUFCSName(method),
+                           GetMethodName(method));
       }
     }
     return GetNamedDeclAsString(function->getCanonicalDecl());
@@ -3210,7 +3497,8 @@ bool Converter::ConvertCXXOperatorCallExpr(clang::CXXOperatorCallExpr *expr) {
       }
       StrCat(token::kSemiColon, IsMutatingCall(expr) ? "&mut" : "&");
       ScopedValue autoref(autoref_mut_, IsMutatingCall(expr));
-      Convert(base->IgnoreImplicit());
+      Convert(retain_bound_temporaries_ ? base->IgnoreImpCasts()
+                                        : base->IgnoreImplicit());
       StrCat("[__idx]");
       break;
     }
@@ -3389,11 +3677,14 @@ void Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
   auto *base = expr->getBase();
   bool base_is_this = clang::isa<clang::CXXThisExpr>(base->IgnoreCasts()) &&
                       !ThisIsRustPtr() && !AsLambdaOperatorCall(curr_function_);
+  bool bound_object = retain_bound_temporaries_ && isAddrOf();
   PushExprKind push(*this, isLValue() ? ExprKind::LValue : ExprKind::RValue);
   if (base_is_this) {
     StrCat(InConstructor() ? "this" : keyword::kSelfValue);
   } else if (expr->isArrow()) {
     ConvertArrow(base);
+  } else if (bound_object) {
+    StrCat(DerefPtrExpr(ConvertFreshPointer(base), base->getType()));
   } else {
     Convert(base);
   }
@@ -3785,7 +4076,8 @@ bool Converter::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
   }
   if (IsPassThroughConstructor(ctor)) {
     Convert(expr->getArg(0));
-    if ((ctor->isCopyConstructor() || IsDefaultedMoveConstructor(ctor)) &&
+    if ((ctor->isCopyConstructor() || IsDefaultedMoveConstructor(ctor) ||
+         (ctor->isMoveConstructor() && ctor->isTrivial())) &&
         !TypeIsCopyable(expr->getType())) {
       EmitFresh(".clone()");
     }
@@ -3983,6 +4275,9 @@ bool Converter::VisitImplicitValueInitExpr(clang::ImplicitValueInitExpr *expr) {
     auto elem_ty = arr_ty->getElementType();
     if (elem_ty->isIntegerType() && !elem_ty->isEnumeralType()) {
       StrCat(std::format("[0; {}]", arr_ty->getSize().getZExtValue()));
+    } else if (elem_ty->isMemberDataPointerType()) {
+      StrCat(std::format("[{}; {}]", GetDefaultAsString(elem_ty),
+                         arr_ty->getSize().getZExtValue()));
     } else {
       StrCat(
           std::format("std::array::from_fn::<_, {}, _>(|_| Default::default())",
@@ -4057,6 +4352,17 @@ bool Converter::VisitSwitchStmt(clang::SwitchStmt *stmt) {
                                      ? BreakTarget::FallthroughSwitch
                                      : BreakTarget::Switch);
 
+  // The variables of the init statement and of the condition are only
+  // visible in the switch.
+  auto *cond_var = stmt->getConditionVariableDeclStmt();
+  PushBrace scope(*this, stmt->getInit() || cond_var);
+  if (auto *init = stmt->getInit()) {
+    Convert(init);
+  }
+  if (cond_var) {
+    Convert(cond_var);
+  }
+
   if (needs_switch_macro) {
     StrCat("switch!");
   } else {
@@ -4106,6 +4412,9 @@ bool Converter::VisitPredefinedExpr(clang::PredefinedExpr *expr) {
 
 bool Converter::VisitClassTemplateDecl(clang::ClassTemplateDecl *decl) {
   for (auto decl : decl->specializations()) {
+    if (IsLibraryOnlySpecialization(decl)) {
+      continue;
+    }
     VisitCXXRecordDecl(decl);
   }
   return false;
@@ -4156,6 +4465,10 @@ std::string Converter::GetDefaultAsString(clang::QualType qual_type) {
 
   if (auto init = Mapper::MapInitializer(*this, qual_type); !init.empty()) {
     return init;
+  }
+
+  if (qual_type->isMemberDataPointerType()) {
+    return "-1_isize";
   }
 
   if (qual_type->isPointerType()) {
@@ -4312,11 +4625,12 @@ void Converter::ConvertVarInit(clang::QualType qual_type, clang::Expr *expr) {
       StrCat(EmitMaterializedTempBinding(qual_type, expr));
       return;
     }
-    if (auto *cond = clang::dyn_cast<clang::ConditionalOperator>(
-            expr->IgnoreParenImpCasts());
-        cond && cond->isLValue()) {
+    auto *inner = expr->IgnoreParenImpCasts();
+    auto *assign = clang::dyn_cast<clang::BinaryOperator>(inner);
+    if (inner->isLValue() && (clang::isa<clang::ConditionalOperator>(inner) ||
+                              (assign && assign->isAssignmentOp()))) {
       PushExprKind push(*this, ExprKind::AddrOf);
-      Convert(cond);
+      Convert(inner);
       return;
     }
     StrCat(token::kRef);
@@ -4327,7 +4641,8 @@ void Converter::ConvertVarInit(clang::QualType qual_type, clang::Expr *expr) {
   PushExprKind push(*this,
                     IsReferenceType(expr) || qual_type->isFunctionPointerType()
                         ? ExprKind::AddrOf
-                        : ExprKind::RValue);
+                    : qual_type->isReferenceType() ? ExprKind::RValue
+                                                   : ExprKind::FreshRValue);
   ScopedPush init_type(curr_init_type_, qual_type);
   Convert(expr, qual_type);
 }
@@ -4346,6 +4661,15 @@ void Converter::ConvertUnsignedArithOperand(clang::Expr *expr,
 }
 
 void Converter::ConvertEqualsNullPtr(clang::Expr *expr) {
+  if (expr->getType()->isMemberPointerType()) {
+    PushParen outer(*this);
+    {
+      PushParen inner(*this);
+      Convert(expr);
+    }
+    EmitFresh("== -1_isize");
+    return;
+  }
   StrCat('(');
   Convert(expr);
   EmitFresh(expr->getType()->isFunctionPointerType() ? ").is_none()"
@@ -4415,7 +4739,13 @@ void Converter::ConvertArraySubscript(clang::Expr *base, clang::Expr *idx,
       return;
     }
   }
-  Convert(base->IgnoreImplicit());
+  std::optional<PushExprKind> place;
+  if (retain_bound_temporaries_ && isAddrOf()) {
+    StrCat(token::kRef, type.isConstQualified() ? "" : keyword_mut_);
+    place.emplace(*this, ExprKind::LValue);
+  }
+  Convert(retain_bound_temporaries_ ? base->IgnoreImpCasts()
+                                    : base->IgnoreImplicit());
   ScopedValue no_autoref(autoref_mut_, std::nullopt);
   PushBracket bracket(*this);
   {
@@ -4834,7 +5164,8 @@ void Converter::ConvertFieldInit(const clang::FieldDecl *field,
 void Converter::EmitByteSizeAttr(const clang::RecordDecl *decl) {}
 
 void Converter::ConvertUnsignedArithBinaryOperator(clang::BinaryOperator *op,
-                                                   clang::Expr *expr) {
+                                                   clang::Expr *expr,
+                                                   std::string_view value) {
   StrCat(token::kDot);
   auto opcode = op->getOpcode();
   switch (opcode) {
@@ -4878,7 +5209,11 @@ void Converter::ConvertUnsignedArithBinaryOperator(clang::BinaryOperator *op,
       type = assign->getComputationResultType();
     }
   }
-  ConvertUnsignedArithOperand(expr, type);
+  if (value.empty()) {
+    ConvertUnsignedArithOperand(expr, type);
+  } else {
+    StrCat(ConvertScalarCast(std::string(value), type));
+  }
   if (is_pointer_plus_integer_op) {
     StrCat("as usize");
   }
@@ -4919,6 +5254,76 @@ void Converter::ConvertAddrOf(clang::Expr *expr, clang::QualType pointer_type) {
   }
 }
 
+void Converter::ConvertMemberPtr(clang::UnaryOperator *expr) {
+  if (!expr->getType()->isMemberDataPointerType()) {
+    llvm::report_fatal_error("pointers to member functions are not supported");
+  }
+  auto *ref = clang::cast<clang::DeclRefExpr>(expr->getSubExpr());
+  EmitFresh(GetMemberPtrAsString(ref->getDecl()));
+}
+
+std::string Converter::GetMemberPtrAsString(const clang::ValueDecl *member) {
+  std::vector<std::string> offsets;
+  for (auto *field : GetFieldPath(member)) {
+    if (field->getParent()->isUnion()) {
+      continue;
+    }
+    offsets.push_back(GetFieldOffsetAsString(field));
+  }
+  if (offsets.empty()) {
+    return "0_isize";
+  }
+  if (offsets.size() == 1) {
+    return std::format("({} as isize)", offsets.front());
+  }
+  std::string sum;
+  for (const auto &offset : offsets) {
+    if (!sum.empty()) {
+      sum += " + ";
+    }
+    sum += offset;
+  }
+  return std::format("(({}) as isize)", sum);
+}
+
+std::string Converter::GetFieldOffsetAsString(const clang::FieldDecl *field) {
+  return std::format("::std::mem::offset_of!({}, {})",
+                     GetRecordName(field->getParent()),
+                     GetNamedDeclAsString(field));
+}
+
+void Converter::ConvertMemberPtrAccess(clang::BinaryOperator *expr) {
+  auto object = ConvertMemberPtrObject(expr);
+  auto member = ConvertRValue(expr->getRHS());
+  auto ptr = GetMemberOfObjectAsString(std::move(object), std::move(member),
+                                       expr->getType());
+  if (isAddrOf()) {
+    EmitFresh(ptr);
+    return;
+  }
+  EmitPointee(std::move(ptr), expr->getType(), /*fresh=*/true);
+}
+
+std::string Converter::ConvertMemberPtrObject(clang::BinaryOperator *expr) {
+  auto *object = expr->getLHS();
+  if (expr->getOpcode() == clang::BO_PtrMemI) {
+    return std::format("({})", ConvertRValue(object));
+  }
+  Buffer buf(*this);
+  {
+    PushParen paren(*this);
+    ConvertAddrOf(object, ctx_.getPointerType(object->getType()));
+  }
+  return std::move(buf).str();
+}
+
+std::string Converter::GetMemberOfObjectAsString(std::string object,
+                                                 std::string member,
+                                                 clang::QualType type) {
+  return std::format("{}.wrapping_byte_offset({}).cast::<{}>()", object, member,
+                     ToString(type));
+}
+
 void Converter::EmitDeref(std::string inner, clang::QualType pointee_type) {
   auto wrap = std::exchange(autoref_mut_, std::nullopt);
   PushParen outer(*this, wrap.has_value());
@@ -4928,6 +5333,11 @@ void Converter::EmitDeref(std::string inner, clang::QualType pointee_type) {
   PushParen paren(*this);
   StrCat(GetPointerDerefPrefix(pointee_type), std::move(inner));
   SetValueFreshness(pointee_type);
+}
+
+void Converter::EmitPointee(std::string ptr, clang::QualType pointee_type,
+                            bool fresh) {
+  EmitDeref(std::move(ptr), pointee_type);
 }
 
 void Converter::ConvertDeref(clang::Expr *expr) {
@@ -4999,9 +5409,7 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
   }
 
   if (ph_ctx.declared_in_rule_as_rust_ptr && arg->getType()->isArrayType()) {
-    auto elem = ctx_.getAsArrayType(arg->getType())->getElementType();
-    return std::format("({} as {})", ConvertFreshPointer(arg),
-                       ToStringBase(ctx_.getPointerType(elem)));
+    return ConvertElementPtr(arg);
   }
 
   if (auto *init =
@@ -5010,6 +5418,14 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
     PushExprKind push(*this, ExprKind::RValue);
     ConvertInit(init->getType(), init);
     return std::move(buf).str();
+  }
+
+  if (auto *literal = clang::dyn_cast<clang::StringLiteral>(
+          arg->IgnoreParens()->IgnoreImplicit());
+      literal && arg->getType()->isArrayType() &&
+      !IsCodeUnitStringLiteral(literal)) {
+    MarkFresh();
+    return GetCharArrayLiteral(literal);
   }
 
   if (ph_ctx.needs_materialization()) {
@@ -5068,36 +5484,51 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
 
   // The rule takes the argument by value from an rvalue reference parameter,
   // e.g., push_back(T &&), and so C++ moves it.
-  auto param_type = GetParamType(expr, ph_ctx.arg_idx);
-  bool moved = ph_ctx.access == TranslationRule::Access::kTake ||
-               (ph_ctx.access == TranslationRule::Access::kMove && param_type &&
-                (*param_type)->isRValueReferenceType());
-  if (moved && !clang::isa<clang::MaterializeTemporaryExpr>(arg)) {
+  if (MovesRuleArg(expr, ph_ctx.arg_idx, arg, ph_ctx.access)) {
+    auto *ref = clang::dyn_cast<clang::DeclRefExpr>(arg->IgnoreParenImpCasts());
+    auto *var = ref ? clang::dyn_cast<clang::VarDecl>(ref->getDecl()) : nullptr;
     if (auto *record = arg->getType()->getAsCXXRecordDecl();
-        record && IsUserDefinedDecl(record)) {
+        record && (IsUserDefinedDecl(record) ||
+                   (ph_ctx.access == TranslationRule::Access::kMove &&
+                    bound_init_args_.contains(var)))) {
       for (auto *ctor : record->ctors()) {
-        if (!IsConvertibleMoveConstructor(ctor)) {
+        if (!ctor->isMoveConstructor() || ctor->isDeleted()) {
+          continue;
+        }
+        // A bound rvalue is no longer a temporary expression. Reuse its move
+        // rule as well, rather than cloning the value through the binding.
+        auto *init = MakeConstructExpr(ctx_, arg->getType(), ctor, arg);
+        if (!IsConvertibleMoveConstructor(ctor) &&
+            !Mapper::Contains(ctx_, init)) {
           continue;
         }
         Buffer buf(*this);
-        Convert(MakeConstructExpr(ctx_, arg->getType(), ctor, arg));
+        Convert(init);
         return std::move(buf).str();
       }
-      if (TypeIsCopyable(arg->getType())) {
-        return ConvertRValue(arg);
+      if (IsUserDefinedDecl(record)) {
+        if (TypeIsCopyable(arg->getType())) {
+          return ConvertRValue(arg);
+        }
+        return ConvertFreshRValue(arg);
       }
-      return ConvertFreshRValue(arg);
     }
   }
 
   if (ph_ctx.access == TranslationRule::Access::kTake) {
-    if (clang::isa<clang::MaterializeTemporaryExpr>(arg)) {
-      return ConvertRValue(arg);
+    if (clang::isa<clang::MaterializeTemporaryExpr>(arg) ||
+        arg->getType().isTriviallyCopyableType(ctx_)) {
+      return ConvertFreshRValue(arg);
     }
     return ConvertTake(arg);
   }
 
   if (ph_ctx.access == TranslationRule::Access::kMove) {
+    if (MovesFromArg(expr, ph_ctx.arg_idx, arg)) {
+      auto ptr = ConvertPointer(arg);
+      MarkFresh();
+      return ConvertMoveThroughPointer(arg->getType(), ptr);
+    }
     return ConvertFreshRValue(arg, ph_ctx.implicit_convert_to);
   }
 
@@ -5109,9 +5540,44 @@ std::string Converter::ConvertBorrowMut(clang::Expr *arg) {
 }
 
 std::string Converter::ConvertTake(clang::Expr *arg) {
+  auto moved_from =
+      IsImplicitReturnMove(arg) ? "" : GetMovedFromValue(arg->getType());
   auto lvalue = ConvertLValue(arg);
   MarkFresh();
+  if (!moved_from.empty()) {
+    return std::format("std::mem::replace(&mut {}, {})", std::move(lvalue),
+                       std::move(moved_from));
+  }
   return std::format("std::mem::take(&mut {})", std::move(lvalue));
+}
+
+bool Converter::IsImplicitReturnMove(clang::Expr *arg) const {
+  auto *returned = return_value_ ? return_value_->IgnoreImplicit() : nullptr;
+  auto *ctor = clang::dyn_cast_or_null<clang::CXXConstructExpr>(returned);
+  if (!ctor || !ctor->getConstructor()->isMoveConstructor() ||
+      ctor->getArg(0)->IgnoreParenImpCasts() != arg->IgnoreParenImpCasts()) {
+    return false;
+  }
+  auto *ref = clang::dyn_cast<clang::DeclRefExpr>(arg->IgnoreParenImpCasts());
+  auto *var = ref ? clang::dyn_cast<clang::VarDecl>(ref->getDecl()) : nullptr;
+  return var && var->hasLocalStorage() && !var->getType()->isReferenceType();
+}
+
+std::string Converter::GetMovedFromValue(clang::QualType type) {
+  if (!IsStdDecl(type->getAsCXXRecordDecl(), "basic_string")) {
+    return {};
+  }
+  // A string is translated as a vector that ends with a null terminator, so an
+  // empty vector is not a valid empty string.
+  return Mapper::MapInitializer(*this, type);
+}
+
+std::string Converter::ConvertMoveThroughPointer(clang::QualType type,
+                                                 const std::string &ptr) {
+  if (auto moved_from = GetMovedFromValue(type); !moved_from.empty()) {
+    return std::format("std::mem::replace(&mut *{}, {})", ptr, moved_from);
+  }
+  return std::format("cpp_move_unsafe!({})", ptr);
 }
 
 std::string Converter::ConvertMappedMethodCall(
@@ -5137,15 +5603,21 @@ std::string Converter::GetMappedAsString(clang::Expr *expr, clang::Expr **args,
   auto all_args = BuildUnifiedArgs(expr, args, num_args);
   auto bind = tgt_ir->argsToBind(ctx_, expr, all_args);
   std::vector<std::string> values, names;
-  // The variables are local to the function.
-  for (size_t i = 0; curr_function_ && i < all_args.size(); ++i) {
+  // Bindings in a global initializer are local to the expansion too.
+  clang::DeclContext *binding_context = curr_function_;
+  if (!binding_context && tgt_ir->usesInit()) {
+    binding_context = clang::BlockDecl::Create(
+        ctx_, ctx_.getTranslationUnitDecl(), expr->getExprLoc());
+  }
+  for (size_t i = 0; binding_context && i < all_args.size(); ++i) {
     if (!bind[i]) {
       continue;
     }
     // The rule takes the value of a transparent union.
     auto *arg = IgnoreTransparentUnion(all_args[i]);
     auto type = arg->getType();
-    bool by_value = arg->isPRValue() && !tgt_ir->takesAddress(ctx_, i, arg);
+    bool by_value =
+        arg->isPRValue() && !tgt_ir->takesAddress(ctx_, expr, i, arg);
     if (!by_value && arg->isPRValue()) {
       arg = new (ctx_) clang::MaterializeTemporaryExpr(type, arg, false);
     }
@@ -5158,20 +5630,32 @@ std::string Converter::GetMappedAsString(clang::Expr *expr, clang::Expr **args,
     auto var_type = by_value ? type : ctx_.getLValueReferenceType(type);
     auto loc = arg->getExprLoc();
     auto *var = clang::VarDecl::Create(
-        ctx_, curr_function_, loc, loc, &ctx_.Idents.get(NewTempName()),
+        ctx_, binding_context, loc, loc, &ctx_.Idents.get(NewTempName()),
         var_type, ctx_.getTrivialTypeSourceInfo(var_type, loc), clang::SC_None);
+    if (tgt_ir->usesInit() && i >= tgt_ir->params.size()) {
+      bound_init_args_.insert(var);
+    }
     // The temporaries of a value, e.g., borrows, end with its block.
     if (by_value) {
       bound_values_.insert(var);
       values.push_back(std::format("{{ {} }}", ConvertFreshRValue(arg)));
     } else {
       PushExprKind push(*this, ExprKind::Object);
+      ScopedValue retain(retain_bound_temporaries_,
+                         retain_bound_temporaries_ || tgt_ir->usesInit());
       values.push_back(ConvertPointerReceiver(
           arg, ToString(ctx_.getPointerType(type)), convert_to));
     }
     names.push_back((by_value ? "mut " : "") + GetNamedDeclAsString(var));
+    // Preserve the value category used to forward an init argument to its
+    // constructor, in particular an rvalue that must be moved, not copied.
     all_args[i] = clang::DeclRefExpr::Create(ctx_, {}, {}, var, false, loc,
                                              type, clang::VK_LValue);
+    if (i >= tgt_ir->params.size() && arg->isXValue()) {
+      all_args[i] = clang::ImplicitCastExpr::Create(
+          ctx_, type, clang::CK_NoOp, all_args[i], nullptr, clang::VK_XValue,
+          clang::FPOptionsOverride());
+    }
     if (by_value && !type->isRecordType()) {
       all_args[i] = clang::ImplicitCastExpr::Create(
           ctx_, type, clang::CK_LValueToRValue, all_args[i], nullptr,
@@ -5228,7 +5712,9 @@ std::string Converter::ConvertIRFragment(
       assert(arg_idx < all_args.size());
       auto *arg = all_args[arg_idx];
       bool is_receiver = HasReceiver(expr) && arg_idx == 0;
-      bool is_cpp_ptr = arg->getType()->isPointerType();
+      bool cpp_ptr = arg->getType()->isPointerType();
+      bool is_cpp_ptr =
+          cpp_ptr && RuleRegistry::ParamTakesPointerValue(expr, arg_idx);
 
       PlaceholderCtx ph_ctx{
           .arg_idx = arg_idx,
@@ -5241,9 +5727,8 @@ std::string Converter::ConvertIRFragment(
           .is_cpp_ptr = is_cpp_ptr,
           // Whatever its spelling, a pointer in C++ is converted as one.
           .maps_to_rust_ptr =
-              !is_cpp_ptr &&
-              RuleRegistry::MapsToPointer(
-                  ctx_, arg->IgnoreParenNoopCasts(ctx_)->getType()),
+              !cpp_ptr && RuleRegistry::MapsToPointer(
+                              ctx_, arg->IgnoreParenNoopCasts(ctx_)->getType()),
           .declared_in_rule_as_rust_ptr =
               RuleRegistry::ParamIsPointer(ctx_, expr, arg_idx),
           .is_index_base = ph->is_index_base,
@@ -5364,6 +5849,9 @@ std::string Converter::ConvertConversion(clang::QualType to,
     }
     return std::format("({} as {})", value, GetUnsafeTypeAsString(to));
   }
+  if (is_move && ctx_.hasSameUnqualifiedType(to, from)) {
+    return ConvertMoveThroughPointer(to, ptr);
+  }
   return std::format("<{} as {}<{}>>::{}({})", GetUnboxedTypeAsString(to),
                      GetConversionTraitName(), GetUnboxedTypeAsString(from),
                      is_move ? "cpp_from_move" : "cpp_from", ptr);
@@ -5397,6 +5885,12 @@ const char *Converter::GetMoveCtorTraitName() const { return "MoveCtorUnsafe"; }
 std::string Converter::DerefPtrExpr(std::string_view ptr_expr,
                                     clang::QualType pointee_type) {
   return std::format("({}{})", GetPointerDerefPrefix(pointee_type), ptr_expr);
+}
+
+std::string Converter::AssignPtrExpr(
+    std::string_view ptr, clang::QualType type,
+    llvm::function_ref<std::string(std::string_view)> value) {
+  return std::format("{}.write({})", ptr, value(DerefPtrExpr(ptr, type)));
 }
 
 std::string
@@ -5467,7 +5961,13 @@ bool Converter::isLValue() const {
 }
 
 bool Converter::isRValue() const {
-  return curr_expr_kind_.empty() || curr_expr_kind_.back() == ExprKind::RValue;
+  return curr_expr_kind_.empty() ||
+         curr_expr_kind_.back() == ExprKind::RValue || isFreshRValue();
+}
+
+bool Converter::isFreshRValue() const {
+  return !curr_expr_kind_.empty() &&
+         curr_expr_kind_.back() == ExprKind::FreshRValue;
 }
 
 bool Converter::isXValue() const {

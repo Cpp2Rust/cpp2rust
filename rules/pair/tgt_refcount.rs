@@ -31,25 +31,39 @@ fn f10<T1, T2>(a0: T1, a1: T2) -> (Value<T1>, Value<T2>) {
     (Rc::new(RefCell::new(a0)), Rc::new(RefCell::new(a1)))
 }
 
-fn f12<T1: Default, T2: Default>(a0: &mut (Value<T1>, Value<T2>)) -> (Value<T1>, Value<T2>) {
-    std::mem::take(&mut *a0)
+fn f12<T1, T2>(a0: &mut (Value<T1>, Value<T2>)) -> (Value<T1>, Value<T2>) {
+    let __first: Ptr<T1> = a0.0.as_pointer();
+    let __second: Ptr<T2> = a0.1.as_pointer();
+    (
+        Rc::new(RefCell::new(cpp_move!(__first))),
+        Rc::new(RefCell::new(cpp_move!(__second))),
+    )
 }
 
 fn f13<T1: Clone + ByteRepr, T2: Clone + ByteRepr>(
     a0: Ptr<(Value<T1>, Value<T2>)>,
     a1: (Value<T1>, Value<T2>),
 ) {
-    a0.write((
-        Rc::new(RefCell::new(a1.0.borrow().clone())),
-        Rc::new(RefCell::new(a1.1.borrow().clone())),
-    ))
+    let __first = a1.0.borrow().clone();
+    let __second = a1.1.borrow().clone();
+    a0.with(|__dst| {
+        *__dst.0.borrow_mut() = __first;
+        *__dst.1.borrow_mut() = __second;
+    })
 }
 
-fn f14<T1: Default + ByteRepr, T2: Default + ByteRepr>(
+fn f14<T1: ByteRepr, T2: ByteRepr>(
     a0: Ptr<(Value<T1>, Value<T2>)>,
     a1: &mut (Value<T1>, Value<T2>),
 ) {
-    a0.write(std::mem::take(&mut *a1))
+    let __src_first: Ptr<T1> = a1.0.as_pointer();
+    let __src_second: Ptr<T2> = a1.1.as_pointer();
+    let __first = cpp_move!(__src_first);
+    let __second = cpp_move!(__src_second);
+    a0.with(|__dst| {
+        *__dst.0.borrow_mut() = __first;
+        *__dst.1.borrow_mut() = __second;
+    })
 }
 
 fn f15<T1, T2>(a0: (Value<T1>, Value<T2>)) -> Value<T2> {
@@ -103,20 +117,24 @@ fn f25<T1: CppFrom<T3> + ByteRepr, T2: CppFrom<T4> + ByteRepr, T3, T4>(
     a0: Ptr<(Value<T1>, Value<T2>)>,
     a1: (Value<T3>, Value<T4>),
 ) {
-    a0.write((
-        Rc::new(RefCell::new(T1::cpp_from(a1.0.as_pointer()))),
-        Rc::new(RefCell::new(T2::cpp_from(a1.1.as_pointer()))),
-    ))
+    let __first = T1::cpp_from(a1.0.as_pointer());
+    let __second = T2::cpp_from(a1.1.as_pointer());
+    a0.with(|__dst| {
+        *__dst.0.borrow_mut() = __first;
+        *__dst.1.borrow_mut() = __second;
+    })
 }
 
 fn f26<T1: CppFrom<T3> + ByteRepr, T2: CppFrom<T4> + ByteRepr, T3, T4>(
     a0: Ptr<(Value<T1>, Value<T2>)>,
     a1: &mut (Value<T3>, Value<T4>),
 ) {
-    a0.write((
-        Rc::new(RefCell::new(T1::cpp_from_move(a1.0.as_pointer()))),
-        Rc::new(RefCell::new(T2::cpp_from_move(a1.1.as_pointer()))),
-    ))
+    let __first = T1::cpp_from_move(a1.0.as_pointer());
+    let __second = T2::cpp_from_move(a1.1.as_pointer());
+    a0.with(|__dst| {
+        *__dst.0.borrow_mut() = __first;
+        *__dst.1.borrow_mut() = __second;
+    })
 }
 
 fn f27<const T1: usize, T2, T3>(a0: (Value<T2>, Value<T3>)) -> Ptr<<(T2, T3) as TupleElement<T1>>::Type>

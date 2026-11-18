@@ -13,7 +13,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let buf: Value<Box<[i8]>> = Rc::new(RefCell::new((0..32).map(|_| 0_i8).collect::<Box<[i8]>>()));
     assert!(
-        (((match ({ (buf.as_pointer() as Ptr::<i8>) },) {
+        (match ({ buf.decay() },) {
             (mut __tmp_0,) => {
                 {
                     let __s = libcc2rs::format_c(
@@ -29,12 +29,11 @@ fn main_0() -> i32 {
                     __b.len() as i32
                 }
             }
-        } == 8) as i32)
-            != 0)
+        } == 8)
     );
     assert!(
-        ((({
-            let mut __it1 = (buf.as_pointer() as Ptr<i8>).to_c_string_iterator();
+        ({
+            let mut __it1 = buf.decay().to_c_string_iterator();
             let mut __it2 = Ptr::<i8>::from_string_literal(b"x=-3 y=7").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
@@ -46,11 +45,10 @@ fn main_0() -> i32 {
                     break 0;
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
     assert!(
-        (((match ({ (buf.as_pointer() as Ptr::<i8>) },) {
+        (match ({ buf.decay() },) {
             (mut __tmp_1,) => {
                 {
                     let __s = libcc2rs::format_c(
@@ -66,12 +64,11 @@ fn main_0() -> i32 {
                     __b.len() as i32
                 }
             }
-        } == 5) as i32)
-            != 0)
+        } == 5)
     );
     assert!(
-        ((({
-            let mut __it1 = (buf.as_pointer() as Ptr<i8>).to_c_string_iterator();
+        ({
+            let mut __it1 = buf.decay().to_c_string_iterator();
             let mut __it2 = Ptr::<i8>::from_string_literal(b"hel").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
@@ -83,11 +80,10 @@ fn main_0() -> i32 {
                     break 0;
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
     assert!(
-        (((match ({ (buf.as_pointer() as Ptr::<i8>) },) {
+        (match ({ buf.decay() },) {
             (mut __tmp_2,) => {
                 {
                     let __s = libcc2rs::format_c(
@@ -103,12 +99,11 @@ fn main_0() -> i32 {
                     __b.len() as i32
                 }
             }
-        } == 11) as i32)
-            != 0)
+        } == 11)
     );
     assert!(
-        ((({
-            let mut __it1 = (buf.as_pointer() as Ptr<i8>).to_c_string_iterator();
+        ({
+            let mut __it1 = buf.decay().to_c_string_iterator();
             let mut __it2 = Ptr::<i8>::from_string_literal(b"00042|ff|FF").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
@@ -120,11 +115,10 @@ fn main_0() -> i32 {
                     break 0;
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
     assert!(
-        (((match ({ (buf.as_pointer() as Ptr::<i8>) },) {
+        (match ({ buf.decay() },) {
             (mut __tmp_3,) => {
                 {
                     let __s = libcc2rs::format_c(
@@ -140,12 +134,11 @@ fn main_0() -> i32 {
                     __b.len() as i32
                 }
             }
-        } == 4) as i32)
-            != 0)
+        } == 4)
     );
     assert!(
-        ((({
-            let mut __it1 = (buf.as_pointer() as Ptr<i8>).to_c_string_iterator();
+        ({
+            let mut __it1 = buf.decay().to_c_string_iterator();
             let mut __it2 = Ptr::<i8>::from_string_literal(b"3.14").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
@@ -157,11 +150,10 @@ fn main_0() -> i32 {
                     break 0;
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
     assert!(
-        (((match ({ (buf.as_pointer() as Ptr::<i8>) },) {
+        (match ({ buf.decay() },) {
             (mut __tmp_4,) => {
                 {
                     let __s = libcc2rs::format_c(
@@ -177,12 +169,11 @@ fn main_0() -> i32 {
                     __b.len() as i32
                 }
             }
-        } == 7) as i32)
-            != 0)
+        } == 7)
     );
     assert!(
-        ((({
-            let mut __it1 = (buf.as_pointer() as Ptr<i8>).to_c_string_iterator();
+        ({
+            let mut __it1 = buf.decay().to_c_string_iterator();
             let mut __it2 = Ptr::<i8>::from_string_literal(b"ab    |").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
@@ -194,11 +185,10 @@ fn main_0() -> i32 {
                     break 0;
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
     assert!(
-        (((match ({ (buf.as_pointer() as Ptr::<i8>) },) {
+        (match ({ buf.decay() },) {
             (mut __tmp_5,) => {
                 {
                     let __s = libcc2rs::format_c(
@@ -214,12 +204,11 @@ fn main_0() -> i32 {
                     __b.len() as i32
                 }
             }
-        } == 2) as i32)
-            != 0)
+        } == 2)
     );
     assert!(
-        ((({
-            let mut __it1 = (buf.as_pointer() as Ptr<i8>).to_c_string_iterator();
+        ({
+            let mut __it1 = buf.decay().to_c_string_iterator();
             let mut __it2 = Ptr::<i8>::from_string_literal(b"A%").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
@@ -231,11 +220,10 @@ fn main_0() -> i32 {
                     break 0;
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
     assert!(
-        (((match ({ (buf.as_pointer() as Ptr::<i8>) },) {
+        (match ({ buf.decay() },) {
             (mut __tmp_6,) => {
                 {
                     let __s = libcc2rs::format_c(
@@ -251,12 +239,11 @@ fn main_0() -> i32 {
                     __b.len() as i32
                 }
             }
-        } == 5) as i32)
-            != 0)
+        } == 5)
     );
     assert!(
-        ((({
-            let mut __it1 = (buf.as_pointer() as Ptr<i8>).to_c_string_iterator();
+        ({
+            let mut __it1 = buf.decay().to_c_string_iterator();
             let mut __it2 = Ptr::<i8>::from_string_literal(b"+5  5").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
@@ -268,11 +255,10 @@ fn main_0() -> i32 {
                     break 0;
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
     assert!(
-        (((match ({ (buf.as_pointer() as Ptr::<i8>) },) {
+        (match ({ buf.decay() },) {
             (mut __tmp_7,) => {
                 {
                     let __s = libcc2rs::format_c(
@@ -292,12 +278,11 @@ fn main_0() -> i32 {
                     __b.len() as i32
                 }
             }
-        } == 6) as i32)
-            != 0)
+        } == 6)
     );
     assert!(
-        ((({
-            let mut __it1 = (buf.as_pointer() as Ptr<i8>).to_c_string_iterator();
+        ({
+            let mut __it1 = buf.decay().to_c_string_iterator();
             let mut __it2 = Ptr::<i8>::from_string_literal(b"-1 1 9").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
@@ -309,11 +294,10 @@ fn main_0() -> i32 {
                     break 0;
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
     assert!(
-        (((match ({ (buf.as_pointer() as Ptr::<i8>) },) {
+        (match ({ buf.decay() },) {
             (mut __tmp_8,) => {
                 {
                     let __s = libcc2rs::format_c(
@@ -329,12 +313,11 @@ fn main_0() -> i32 {
                     __b.len() as i32
                 }
             }
-        } == 12) as i32)
-            != 0)
+        } == 12)
     );
     assert!(
-        ((({
-            let mut __it1 = (buf.as_pointer() as Ptr<i8>).to_c_string_iterator();
+        ({
+            let mut __it1 = buf.decay().to_c_string_iterator();
             let mut __it2 = Ptr::<i8>::from_string_literal(b"1.234568e+03").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
@@ -346,11 +329,10 @@ fn main_0() -> i32 {
                     break 0;
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
     assert!(
-        (((match ({ (buf.as_pointer() as Ptr::<i8>) },) {
+        (match ({ buf.decay() },) {
             (mut __tmp_9,) => {
                 {
                     let __s = libcc2rs::format_c(
@@ -366,12 +348,11 @@ fn main_0() -> i32 {
                     __b.len() as i32
                 }
             }
-        } == 11) as i32)
-            != 0)
+        } == 11)
     );
     assert!(
-        ((({
-            let mut __it1 = (buf.as_pointer() as Ptr<i8>).to_c_string_iterator();
+        ({
+            let mut __it1 = buf.decay().to_c_string_iterator();
             let mut __it2 = Ptr::<i8>::from_string_literal(b"1.23457e+06").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
@@ -383,12 +364,11 @@ fn main_0() -> i32 {
                     break 0;
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
     (*buf.borrow_mut())[(0) as usize] = (('Z' as i32) as i8);
     assert!(
-        (((match ({ (buf.as_pointer() as Ptr::<i8>) },) {
+        (match ({ buf.decay() },) {
             (mut __tmp_10,) => {
                 {
                     let __s = libcc2rs::format_c(
@@ -404,10 +384,9 @@ fn main_0() -> i32 {
                     __b.len() as i32
                 }
             }
-        } == 3) as i32)
-            != 0)
+        } == 3)
     );
-    assert!(({ (((((*buf.borrow())[(0) as usize] as i32) == ('Z' as i32)) as i32) != 0) }));
+    assert!(({ (((*buf.borrow())[(0) as usize] as i32) == ('Z' as i32)) }));
     let fmt: Value<Box<[i8]>> = Rc::new(RefCell::new((0..8).map(|_| 0_i8).collect::<Box<[i8]>>()));
     (*fmt.borrow_mut())[(0) as usize] = (('%' as i32) as i8);
     (*fmt.borrow_mut())[(1) as usize] = (('5' as i32) as i8);
@@ -416,11 +395,11 @@ fn main_0() -> i32 {
     (*fmt.borrow_mut())[(4) as usize] = (('f' as i32) as i8);
     (*fmt.borrow_mut())[(5) as usize] = 0_i8;
     assert!(
-        (((match ({ (buf.as_pointer() as Ptr::<i8>) },) {
+        (match ({ buf.decay() },) {
             (mut __tmp_11,) => {
                 {
                     let __s = libcc2rs::format_c(
-                        &(fmt.as_pointer() as Ptr<i8>).to_rust_string(),
+                        &fmt.decay().to_rust_string(),
                         &Box::<[VaArg]>::from([(3.26_f64).into()]),
                     );
                     let __b = __s.as_bytes();
@@ -432,12 +411,11 @@ fn main_0() -> i32 {
                     __b.len() as i32
                 }
             }
-        } == 5) as i32)
-            != 0)
+        } == 5)
     );
     assert!(
-        ((({
-            let mut __it1 = (buf.as_pointer() as Ptr<i8>).to_c_string_iterator();
+        ({
+            let mut __it1 = buf.decay().to_c_string_iterator();
             let mut __it2 = Ptr::<i8>::from_string_literal(b"  3.3").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
@@ -449,8 +427,7 @@ fn main_0() -> i32 {
                     break 0;
                 }
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
     return 0;
 }

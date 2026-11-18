@@ -42,10 +42,12 @@ int main() {
   assert(st.st_size == 1024);
 
   UserDefined ud;
-  assert(ud.a[0] == 0);
+  ud.a[0] = 3;
+  assert(ud.a[0] == 3);
   assert(ud.v.size() == 0);
 
   FieldIsLibcType filt;
-  assert(filt.addr.sa_family == 0);
+  filt.addr.sa_family = 2;
+  assert(filt.addr.sa_family == 2);
   return 0;
 }

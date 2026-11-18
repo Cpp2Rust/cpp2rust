@@ -37,6 +37,8 @@ include(AddClang)
 if (NOT CMAKE_CXX_COMPILER MATCHES "clang" AND NOT DEFINED ENV{CODEQL_EXTRACTOR_CPP_ROOT})
   set(CMAKE_CXX_COMPILER "${CLANG_CMAKE_DIR}/../../../bin/clang++")
 endif()
+# Exported for the testsuite, which builds the original programs with it
+set(CPP2RUST_CXX_COMPILER "${CMAKE_CXX_COMPILER}" CACHE INTERNAL "")
 
 message(STATUS "C++ flags: ${CMAKE_CXX_FLAGS}")
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
@@ -152,6 +154,7 @@ add_custom_target("check-unit"
                           "${PROJECT_SOURCE_DIR}/tests/lit/lit.py"
                           ${LIT_FLAGS}
                           "${PROJECT_SOURCE_DIR}/tests/unit"
+                          "${PROJECT_SOURCE_DIR}/tests/std"
                           "${PROJECT_SOURCE_DIR}/tests/ub"
                           "${PROJECT_SOURCE_DIR}/tests/multi-file"
                   DEPENDS cpp2rust libcc2rs
@@ -163,11 +166,6 @@ add_custom_target("check"
                  )
 
 set(RUSTLS_HEADER "${PROJECT_SOURCE_DIR}/rules/rustls/rustls.h")
-set(BROTLI_HEADERS
-    "${PROJECT_SOURCE_DIR}/rules/brotli/brotli/decode.h"
-    "${PROJECT_SOURCE_DIR}/rules/brotli/brotli/encode.h"
-    "${PROJECT_SOURCE_DIR}/rules/brotli/brotli/port.h"
-    "${PROJECT_SOURCE_DIR}/rules/brotli/brotli/types.h")
 
 set(PREPROCESSOR_BIN "${CMAKE_BINARY_DIR}/rule-preprocessor-target/release/rule-preprocessor")
 set(PREPROCESSOR_ARTIFACTS "${CMAKE_BINARY_DIR}/rule-preprocessor-target/artifacts.json")
@@ -194,7 +192,7 @@ execute_process(
 )
 
 add_custom_command(
-  OUTPUT ${RUSTLS_HEADER} ${BROTLI_HEADERS} ${RULES_LIB}
+  OUTPUT ${RUSTLS_HEADER} ${RULES_LIB}
   COMMAND ${CARGO_ENV_RULES}
           cargo +${RUST_STABLE_VERSION} build --release
           --manifest-path "${PROJECT_SOURCE_DIR}/rules/Cargo.toml"
@@ -238,13 +236,14 @@ foreach(_rule_dir IN LISTS rule_subdirs)
   if(NOT _cpp_srcs)
     continue()
   endif()
+  file(GLOB _rule_headers ${_rule_dir}/*.h)
   get_filename_component(_rule_name ${_rule_dir} NAME)
   set(_part ${rules_index_parts_dir}/${_rule_name}.json)
   add_custom_command(
     OUTPUT ${_part}
     COMMAND ${CMAKE_COMMAND} -E make_directory ${rules_index_parts_dir}
     COMMAND $<TARGET_FILE:cpp-rule-indexer> --dir ${_rule_dir} -o ${_part}
-    DEPENDS ${_cpp_srcs} ${rule_common_headers} ${rule_indexer_sources} ${RUSTLS_HEADER} ${BROTLI_HEADERS}
+    DEPENDS ${_cpp_srcs} ${_rule_headers} ${rule_common_headers} ${rule_indexer_sources} ${RUSTLS_HEADER}
     VERBATIM
   )
   list(APPEND rules_index_parts ${_part})

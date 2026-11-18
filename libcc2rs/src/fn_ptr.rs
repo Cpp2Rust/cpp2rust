@@ -179,7 +179,9 @@ impl<T: FnSig> FnPtr<T> {
     // type. Casting the result back to a type it already had recovers that
     // exact function, calling it directly rather than through an adaptor.
     pub fn cast<U: FnSig>(&self) -> FnPtr<U> {
-        assert!(!self.is_null(), "ub: null fn pointer cast");
+        if self.is_null() {
+            return FnPtr::null();
+        }
 
         // The current function, if it already has type U.
         let current_as_u = self.current.as_ref().and_then(|current| {
@@ -507,6 +509,9 @@ impl<T: FnSig> ErasedPtr for FnPtr<T> {
     fn as_bytes(&self) -> Ptr<u8> {
         panic!("byte view not supported on fn pointer");
     }
+    fn byte_address(&self) -> usize {
+        panic!("byte view not supported on fn pointer");
+    }
     fn as_any(&self) -> &dyn Any {
         self
     }
@@ -515,6 +520,12 @@ impl<T: FnSig> ErasedPtr for FnPtr<T> {
     }
     fn is_null(&self) -> bool {
         FnPtr::is_null(self)
+    }
+    fn to_int(&self) -> usize {
+        panic!("function pointer to integer cast is not supported");
+    }
+    fn address_only(&self) -> Option<usize> {
+        None
     }
 }
 
@@ -564,9 +575,10 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "ub: null fn pointer cast")]
-    fn cast_null_panics() {
-        FnPtr::<fn(i32) -> i32>::null().cast::<fn(u32) -> u32>();
+    fn cast_null_is_null() {
+        let f = FnPtr::<fn(i32) -> i32>::null().cast::<fn(u32) -> u32>();
+        assert!(f.is_null());
+        assert!(f.cast::<fn(i32) -> i32>().is_null());
     }
 
     #[test]

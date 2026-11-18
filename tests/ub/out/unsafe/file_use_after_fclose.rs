@@ -19,7 +19,7 @@ unsafe fn main_0() -> i32 {
     );
     assert!(!(fp).is_null());
     libc::fclose(fp);
-    return if ((((libc::fputc(('x' as i32), fp)) == ('x' as i32)) as i32) != 0) {
+    return if ((libc::fputc(('x' as i32), fp)) == ('x' as i32)) {
         1
     } else {
         0

@@ -170,9 +170,9 @@ unsafe fn main_0() -> i32 {
     );
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
     let mut vec_: Vec<Tracked> = Vec::new();
-    if 4_usize as usize > vec_.capacity() as usize {
+    if 4_usize > vec_.capacity() as usize {
         let len_0 = vec_.len();
-        vec_.reserve_exact(4_usize as usize - len_0 as usize);
+        vec_.reserve_exact(4_usize - len_0 as usize);
     };
     {
         let __init = Tracked::new_1({ 2 });

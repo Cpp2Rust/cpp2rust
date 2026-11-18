@@ -16,7 +16,7 @@ fn main_0() -> i32 {
         256_i16,
         (-32768_i32 as i16),
     ])));
-    let mut uvals: Ptr<u16> = (vals.as_pointer() as Ptr<i16>).reinterpret_cast::<u16>();
+    let mut uvals: Ptr<u16> = vals.decay().reinterpret_cast::<u16>();
     assert!((((elem!(uvals, 0).read()) as i32) == 65535));
     assert!((((elem!(uvals, 1).read()) as i32) == 256));
     assert!((((elem!(uvals, 2).read()) as i32) == 32768));

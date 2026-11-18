@@ -562,6 +562,24 @@ bool ParamIsPointer(clang::ASTContext &ctx, const clang::Expr *expr,
   return rule->params.at(index).is_pointer();
 }
 
+bool ParamTakesPointerValue(const clang::Expr *expr, unsigned index) {
+  if (HasReceiver(const_cast<clang::Expr *>(expr)) && index == 0) {
+    return true;
+  }
+  auto match = findExpr(expr);
+  assert(match.rule_decl && "expression must have a translation rule");
+  auto decl = match.rule_decl->decl;
+  auto function = decl->getAsFunction();
+  auto type =
+      function ? function->getType()
+               : llvm::cast<clang::VarDecl>(decl)->getType()->getPointeeType();
+  auto proto = type->getAs<clang::FunctionProtoType>();
+  assert(proto && "expression rule is neither a function nor a function "
+                  "pointer");
+  return index >= proto->getNumParams() ||
+         !proto->getParamType(index)->isReferenceType();
+}
+
 clang::Expr *BuildParamConversion(clang::ASTContext &ctx,
                                   const clang::Expr *expr, unsigned index,
                                   clang::Expr *arg) {

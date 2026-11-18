@@ -20,9 +20,10 @@ fn f5(a0: usize, a1: usize) -> AnyPtr {
 }
 
 fn f6(a0: Ptr<i8>) -> Ptr<i8> {
-    match ::std::env::var(a0.to_rust_string()) {
-        Ok(__val) => Ptr::alloc_c_str(__val.as_bytes()),
-        Err(_) => Ptr::null(),
+    use ::std::os::unix::ffi::OsStrExt;
+    match a0.with_c_bytes(|__name| ::std::env::var_os(::std::ffi::OsStr::from_bytes(__name))) {
+        Some(__val) => Ptr::alloc_c_str(__val.as_bytes()),
+        None => Ptr::null(),
     }
 }
 

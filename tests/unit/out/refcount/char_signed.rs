@@ -28,10 +28,7 @@ fn main_0() -> i32 {
         ((*lit.borrow())[(0) as usize] as i32),
         (ulit[(0) as usize] as i32)
     );
-    println!(
-        "{}",
-        (({ is_negative_1((lit.as_pointer() as Ptr::<i8>),) }) as i32)
-    );
+    println!("{}", (({ is_negative_1(lit.decay(),) }) as i32));
     let mut u8s: Ptr<i8> = Ptr::<i8>::from_string_literal(b"\xc3\xa9");
     println!(
         "{} {}",

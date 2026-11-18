@@ -15,7 +15,10 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut v: Vec<i32> = Vec::from([1, 2, 3, 4]);
     let mut it: UnsafeRandomAccessIterator<i32> = v.begin();
-    it.iter_inc();
+    {
+        (*(&mut it as *mut UnsafeRandomAccessIterator<i32>)).iter_inc();
+        (&mut it as *mut UnsafeRandomAccessIterator<i32>)
+    };
     let mut r: UnsafeRandomAccessIterator<i32> =
         match ({ <UnsafeRandomAccessIterator<i32>>::from(it.iter_post_inc()) },) {
             (mut __tmp_0,) => {
@@ -42,15 +45,62 @@ unsafe fn main_0() -> i32 {
     assert!(
         ((*match ({ (i.postfix_inc() as usize) },) {
             (mut __tmp_2,) => {
-                if __tmp_2 as usize >= (*c).len() {
+                if __tmp_2 >= (*c).len() {
                     panic!("out of bounds access")
                 } else {
-                    (*c).as_ptr().add(__tmp_2 as usize)
+                    (*c).as_ptr().add(__tmp_2)
                 }
             }
         }) == (1))
             && ((i) == (2))
     );
+    let mut w: Vec<i32> = Vec::from([10, 20, 30, 40]);
+    let mut a: UnsafeRandomAccessIterator<i32> = w.end();
+    let ra: *mut UnsafeRandomAccessIterator<i32> = &mut (*{
+        (*(&mut a as *mut UnsafeRandomAccessIterator<i32>)).iter_add_assign(-3_isize);
+        (&mut a as *mut UnsafeRandomAccessIterator<i32>)
+    });
+    assert!(
+        ((ra) == (&mut a as *mut UnsafeRandomAccessIterator<i32>)) && ((*a.iter_deref()) == (20))
+    );
+    let rb: *mut UnsafeRandomAccessIterator<i32> = &mut (*{
+        (*(&mut a as *mut UnsafeRandomAccessIterator<i32>)).iter_inc();
+        (&mut a as *mut UnsafeRandomAccessIterator<i32>)
+    });
+    assert!(
+        ((rb) == (&mut a as *mut UnsafeRandomAccessIterator<i32>)) && ((*a.iter_deref()) == (30))
+    );
+    let rc: *mut UnsafeRandomAccessIterator<i32> = &mut (*{
+        (*(&mut a as *mut UnsafeRandomAccessIterator<i32>)).iter_dec();
+        (&mut a as *mut UnsafeRandomAccessIterator<i32>)
+    });
+    assert!(
+        ((rc) == (&mut a as *mut UnsafeRandomAccessIterator<i32>)) && ((*a.iter_deref()) == (20))
+    );
+    let rd: *mut UnsafeRandomAccessIterator<i32> = &mut (*{
+        (*(&mut a as *mut UnsafeRandomAccessIterator<i32>)).iter_add_assign(2_isize);
+        (&mut a as *mut UnsafeRandomAccessIterator<i32>)
+    });
+    assert!(
+        ((rd) == (&mut a as *mut UnsafeRandomAccessIterator<i32>)) && ((*a.iter_deref()) == (40))
+    );
+    let mut b: UnsafeRandomAccessIterator<i32> = w.begin();
+    let mut x: i32 = (*(*{
+        (*(&mut b as *mut UnsafeRandomAccessIterator<i32>)).iter_inc();
+        (&mut b as *mut UnsafeRandomAccessIterator<i32>)
+    })
+    .iter_deref());
+    assert!(((x) == (20)));
+    let mut k: UnsafeRandomAccessIterator<i32> = (*{
+        (*(&mut b as *mut UnsafeRandomAccessIterator<i32>)).iter_inc();
+        (&mut b as *mut UnsafeRandomAccessIterator<i32>)
+    })
+    .clone();
+    {
+        (*(&mut k as *mut UnsafeRandomAccessIterator<i32>)).iter_inc();
+        (&mut k as *mut UnsafeRandomAccessIterator<i32>)
+    };
+    assert!(((*k.iter_deref()) == (40)) && ((*b.iter_deref()) == (30)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

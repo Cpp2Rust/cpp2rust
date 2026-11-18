@@ -96,16 +96,20 @@ fn main_0() -> i32 {
     let mut data: [i32; 8] = [0_i32; 8];
     let mut count: usize = (::std::mem::size_of::<[i32; 8]>() as usize)
         .wrapping_div((::std::mem::size_of::<i32>() as usize));
-    let mut i: usize = 0_usize;
-    'loop_: while (i < count) {
-        data[(i) as usize] = { (((i).wrapping_mul(2_usize)) as i32) };
-        i.postfix_inc();
+    {
+        let mut i: usize = 0_usize;
+        'loop_: while (i < count) {
+            data[(i) as usize] = { (((i).wrapping_mul(2_usize)) as i32) };
+            i.postfix_inc();
+        }
     }
     let mut total: usize = 0_usize;
-    let mut i: usize = 0_usize;
-    'loop_: while (i < count) {
-        total = { (total).wrapping_add((data[(i) as usize] as usize)) };
-        i.postfix_inc();
+    {
+        let mut i: usize = 0_usize;
+        'loop_: while (i < count) {
+            total = { (total).wrapping_add((data[(i) as usize] as usize)) };
+            i.postfix_inc();
+        }
     }
     assert!((total == 56_usize));
     let mut cond: usize = (if (sz > ((*ul.borrow()) as usize)) {
@@ -198,9 +202,8 @@ fn main_0() -> i32 {
     assert!(({ ((*(*pr.borrow()).0.borrow()) == 21_u64) }));
     let sizes: Value<Box<[usize]>> =
         Rc::new(RefCell::new(Box::new([1_usize, 2_usize, 3_usize, 4_usize])));
-    let mut sizes_end: Ptr<usize> =
-        ((sizes.as_pointer() as Ptr<usize>).to_end()).reinterpret_cast::<usize>();
-    assert!((((sizes_end).clone() - (sizes.as_pointer() as Ptr::<usize>)) as i64 == 4_i64));
+    let mut sizes_end: Ptr<usize> = (sizes.decay().to_end()).reinterpret_cast::<usize>();
+    assert!((((sizes_end).clone() - sizes.decay()) as i64 == 4_i64));
     assert!((((sizes_end.offset(-((1) as isize))).read()) == 4_usize));
     let set: Value<CFdSet> = Rc::new(RefCell::new(Default::default()));
     (set.as_pointer()).with_mut(|__s| __s.zero());

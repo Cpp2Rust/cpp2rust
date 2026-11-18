@@ -68,8 +68,8 @@ fn main_0() -> i32 {
         adj: Ptr::<Ptr<GraphNode>>::null(),
     };
     let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([3, 1, 4])));
-    let mut it: Partial = Partial::new_1({ (arr.as_pointer() as Ptr<i32>) });
-    if ({ (it.p).clone() } != { (arr.as_pointer() as Ptr<i32>) }) {
+    let mut it: Partial = Partial::new_1({ arr.decay() });
+    if ({ (it.p).clone() } != { arr.decay() }) {
         return 1;
     }
     let mut def: Partial = <Partial>::default();

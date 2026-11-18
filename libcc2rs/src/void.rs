@@ -8,9 +8,15 @@ use crate::reinterpret::ByteRepr;
 
 pub trait ErasedPtr: std::any::Any {
     fn as_bytes(&self) -> Ptr<u8>;
+    // The address of the byte that the pointer points to, which is the same
+    // for pointers of any type to the same object.
+    fn byte_address(&self) -> usize;
     fn as_any(&self) -> &dyn std::any::Any;
     fn equals(&self, other: &dyn ErasedPtr) -> bool;
     fn is_null(&self) -> bool;
+    fn to_int(&self) -> usize;
+    // The address of a pointer that holds only one, which it is compared by.
+    fn address_only(&self) -> Option<usize>;
     // Copies len bytes from src as whole values, if it points to the same
     // type, whose values have different sizes, e.g., the rows of a 2D array.
     fn memcpy_values(&self, _src: &dyn ErasedPtr, _len: usize) -> bool {
@@ -33,16 +39,31 @@ where
         self.reinterpret_cast::<u8>()
     }
 
+    fn byte_address(&self) -> usize {
+        Ptr::byte_address(self)
+    }
+
     fn as_any(&self) -> &dyn std::any::Any {
         self
     }
 
     fn equals(&self, other: &dyn ErasedPtr) -> bool {
-        other.as_bytes() == self.as_bytes()
+        if self.address_only().is_some() || other.address_only().is_some() {
+            return self.address_only() == other.address_only();
+        }
+        other.byte_address() == self.byte_address()
     }
 
     fn is_null(&self) -> bool {
         Ptr::is_null(self)
+    }
+
+    fn to_int(&self) -> usize {
+        Ptr::to_int(self)
+    }
+
+    fn address_only(&self) -> Option<usize> {
+        Ptr::address_only(self)
     }
 
     fn memcpy_values(&self, src: &dyn ErasedPtr, len: usize) -> bool {
@@ -148,15 +169,28 @@ impl AnyPtr {
     }
 }
 
-impl ByteRepr for AnyPtr {}
+impl ByteRepr for AnyPtr {
+    #[inline]
+    fn byte_size() -> usize {
+        std::mem::size_of::<usize>()
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.to_int().to_bytes(buf)
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self::from_int(usize::from_bytes(buf))
+    }
+}
 
+// Casts between pointers and integers (see escape.rs).
 impl AnyPtr {
     pub fn to_int(&self) -> usize {
-        self.reinterpret_cast::<u8>().to_int()
+        self.ptr.to_int()
     }
 
-    pub fn from_int(value: usize) -> Self {
-        Ptr::<u8>::from_int(value).to_any()
+    // A pointer to bytes, which is cast to the type it is accessed as.
+    pub fn from_int(address: usize) -> Self {
+        Ptr::<u8>::from_int(address).to_any()
     }
 }
 
@@ -178,6 +212,18 @@ mod tests {
         let any2 = Ptr::<i32>::null().to_any();
         let p3 = any2.reinterpret_cast::<f32>();
         assert!(p3.is_null());
+    }
+
+    #[test]
+    fn anyptr_eq_across_types() {
+        let p: Ptr<i32> = Ptr::alloc_array(vec![1, 2, 3].into_boxed_slice());
+        let bytes = p.reinterpret_cast::<u8>();
+        assert!(p.offset(1).to_any() == bytes.offset(4).to_any());
+        assert!(p.offset(1).to_any() != bytes.offset(3).to_any());
+        assert!(bytes.offset(8).reinterpret_cast::<u16>().to_any() == p.offset(2).to_any());
+        assert!(Ptr::<i32>::null().to_any() == Ptr::<u8>::null().to_any());
+        assert!(p.to_any() != Ptr::<i32>::null().to_any());
+        p.delete();
     }
 
     #[test]

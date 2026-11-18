@@ -26,11 +26,7 @@ unsafe fn main_0() -> i32 {
     }) {
         (mut __tmp_0, mut __tmp_1) => {
             if ::std::mem::size_of::<[u8; 8]>() != 0 {
-                ::std::ptr::copy_nonoverlapping(
-                    __tmp_1,
-                    __tmp_0,
-                    ::std::mem::size_of::<[u8; 8]>() as usize,
-                )
+                ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, ::std::mem::size_of::<[u8; 8]>())
             }
             __tmp_0
         }
@@ -41,17 +37,13 @@ unsafe fn main_0() -> i32 {
     }) {
         (mut __tmp_2, mut __tmp_3) => {
             if ::std::mem::size_of::<point>() != 0 {
-                ::std::ptr::copy_nonoverlapping(
-                    __tmp_3,
-                    __tmp_2,
-                    ::std::mem::size_of::<point>() as usize,
-                )
+                ::std::ptr::copy_nonoverlapping(__tmp_3, __tmp_2, ::std::mem::size_of::<point>())
             }
             __tmp_2
         }
     };
-    assert!(((((dst.x) == (3)) as i32) != 0));
-    assert!(((((dst.y) == (7)) as i32) != 0));
+    assert!(((dst.x) == (3)));
+    assert!(((dst.y) == (7)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

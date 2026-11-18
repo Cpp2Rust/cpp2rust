@@ -51,25 +51,18 @@ fn main_0() -> i32 {
     let dummy: Value<i32> = Rc::new(RefCell::new(0));
     let m1: Value<Event> = <Value<Event>>::default();
     (*m1.borrow_mut()).kind = Kind_enum_KIND_DONE;
-    (*m1.borrow_mut()).handle = ((dummy.as_pointer()) as Ptr<i32>).to_any();
+    (*m1.borrow_mut()).handle = (dummy.as_pointer()).to_any();
     anon_0::code(field_ptr!(m1.as_pointer(), payload)).write(42);
-    assert!(
-        ({
-            (((({ (*m1.borrow()).kind } as u32) == ((Kind_enum_KIND_DONE as i32) as u32)) as i32)
-                != 0)
-        })
-    );
-    assert!(((((anon_0::code(field_ptr!(m1.as_pointer(), payload)).read()) == 42) as i32) != 0));
+    assert!(({ (({ (*m1.borrow()).kind } as u32) == ((Kind_enum_KIND_DONE as i32) as u32)) }));
+    assert!(((anon_0::code(field_ptr!(m1.as_pointer(), payload)).read()) == 42));
     let m2: Value<Event> = <Value<Event>>::default();
     (*m2.borrow_mut()).kind = Kind_enum_KIND_NONE;
-    (*m2.borrow_mut()).handle = ((dummy.as_pointer()) as Ptr<i32>).to_any();
-    anon_0::obj(field_ptr!(m2.as_pointer(), payload))
-        .write(((dummy.as_pointer()) as Ptr<i32>).to_any());
+    (*m2.borrow_mut()).handle = (dummy.as_pointer()).to_any();
+    anon_0::obj(field_ptr!(m2.as_pointer(), payload)).write((dummy.as_pointer()).to_any());
     assert!(
-        ((({ (anon_0::obj(field_ptr!(m2.as_pointer(), payload)).read()) } == {
-            ((dummy.as_pointer()) as Ptr<i32>).to_any()
-        }) as i32)
-            != 0)
+        ({ (anon_0::obj(field_ptr!(m2.as_pointer(), payload)).read()) } == {
+            (dummy.as_pointer()).to_any()
+        })
     );
     return 0;
 }

@@ -36,7 +36,7 @@ pub fn operator_deref_0(s: Ptr<S>) -> Ptr<Inner> {
     return field_ptr!(s, inner);
 }
 pub fn operator_addr_1(s: Ptr<S>) -> Ptr<i32> {
-    return ((array_field_ptr!(s, data) as Ptr<i32>).offset((0) as isize));
+    return (array_field_ptr!(s, data).offset((0) as isize));
 }
 pub fn main() {
     __cpp2rust_init_globals();

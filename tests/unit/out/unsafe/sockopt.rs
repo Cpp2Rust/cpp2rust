@@ -14,42 +14,39 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut s: i32 = libc::socket(libc::AF_INET, libc::SOCK_STREAM, 0);
-    assert!(((((s) >= (0)) as i32) != 0));
+    assert!(((s) >= (0)));
     let mut on: i32 = 1;
     assert!(
-        ((((libc::setsockopt(
+        ((libc::setsockopt(
             s,
             libc::SOL_SOCKET,
             libc::SO_KEEPALIVE,
             ((&mut on as *mut i32) as *const ::libc::c_void),
             (::std::mem::size_of::<i32>() as libc::socklen_t)
-        )) == (0)) as i32)
-            != 0)
+        )) == (0))
     );
     assert!(
-        ((((libc::setsockopt(
+        ((libc::setsockopt(
             s,
             libc::IPPROTO_TCP,
             libc::TCP_NODELAY,
             ((&mut on as *mut i32) as *const ::libc::c_void),
             (::std::mem::size_of::<i32>() as libc::socklen_t)
-        )) == (0)) as i32)
-            != 0)
+        )) == (0))
     );
     let mut err: i32 = -1_i32;
     let mut len: libc::socklen_t = (::std::mem::size_of::<i32>() as libc::socklen_t);
     assert!(
-        ((((libc::getsockopt(
+        ((libc::getsockopt(
             s,
             libc::SOL_SOCKET,
             libc::SO_ERROR,
             ((&mut err as *mut i32) as *mut ::libc::c_void),
             (&mut len as *mut libc::socklen_t)
-        )) == (0)) as i32)
-            != 0)
+        )) == (0))
     );
-    assert!(((((err) == (0)) as i32) != 0));
-    assert!(((((libc::close(s)) == (0)) as i32) != 0));
+    assert!(((err) == (0)));
+    assert!(((libc::close(s)) == (0)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

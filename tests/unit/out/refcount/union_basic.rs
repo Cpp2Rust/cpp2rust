@@ -72,19 +72,18 @@ pub fn main() {
 fn main_0() -> i32 {
     let u: Value<basic> = Rc::new(RefCell::new(<basic>::default()));
     let e: Value<empty> = Rc::new(RefCell::new(<empty>::default()));
-    &(*e.borrow_mut());
     basic::i(u.as_pointer()).write(42);
     assert!(((basic::i(u.as_pointer()).read()) == 42));
     basic::f(u.as_pointer()).write(3.14_f32);
     assert!(((basic::f(u.as_pointer()).read()) == 3.14_f32));
     let buf: Value<Box<[u8]>> = Rc::new(RefCell::new((0..4).map(|_| 0_u8).collect::<Box<[u8]>>()));
-    match ({ ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any() },) {
+    match ({ (buf.decay()).to_any() },) {
         (mut __tmp_0,) => {
-            __tmp_0.memset((0) as u8, ::std::mem::size_of::<[u8; 4]>() as usize);
+            __tmp_0.memset((0) as u8, ::std::mem::size_of::<[u8; 4]>());
             (__tmp_0).clone()
         }
     };
-    let mut ru: Ptr<basic> = (buf.as_pointer() as Ptr<u8>).reinterpret_cast::<basic>();
+    let mut ru: Ptr<basic> = buf.decay().reinterpret_cast::<basic>();
     let mut pi: Ptr<i32> = (basic::i(ru.clone())).clone();
     let mut pf: Ptr<f32> = (basic::f(ru.clone())).clone();
     basic::i(ru.clone()).write(7);

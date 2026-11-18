@@ -27,29 +27,29 @@ unsafe fn main_0() -> i32 {
     let text: [libc::c_char; 3] = std::mem::transmute(*b"hi\0");
     let mut cp: *const libc::c_char = text.as_ptr();
     let mut u: *mut u8 = (cp as *mut u8);
-    assert!((((((*u.offset((0) as isize)) as i32) == ('h' as i32)) as i32) != 0));
-    assert!((((((*u.offset((1) as isize)) as i32) == ('i' as i32)) as i32) != 0));
+    assert!((((*u.offset((0) as isize)) as i32) == ('h' as i32)));
+    assert!((((*u.offset((1) as isize)) as i32) == ('i' as i32)));
     let mut h: header = header { tag: 7, size: 32 };
     let mut hp: *mut header = (&mut h as *mut header);
     let mut v: *mut view = (hp as *mut view);
-    assert!((((((*v).tag) == (7)) as i32) != 0));
+    assert!((((*v).tag) == (7)));
     let mut data: [libc::c_char; 3] = std::mem::transmute(*b"hi\0");
     let mut vp: *mut ::libc::c_void = (data.as_mut_ptr() as *mut ::libc::c_void);
     let mut n: i32 = 2;
-    let mut sel: *mut libc::c_char = (if ((((n) < (100)) as i32) != 0) {
+    let mut sel: *mut libc::c_char = (if ((n) < (100)) {
         vp
     } else {
         (0 as *mut ::libc::c_void)
     } as *mut libc::c_char);
-    assert!((((!((sel).is_null())) as i32) != 0));
-    assert!((((((*sel.offset((0) as isize)) as i32) == ('h' as i32)) as i32) != 0));
+    assert!((!((sel).is_null())));
+    assert!((((*sel.offset((0) as isize)) as i32) == ('h' as i32)));
     n = 200;
-    sel = (if ((((n) < (100)) as i32) != 0) {
+    sel = (if ((n) < (100)) {
         vp
     } else {
         (0 as *mut ::libc::c_void)
     } as *mut libc::c_char);
-    assert!(((((sel).is_null()) as i32) != 0));
+    assert!(((sel).is_null()));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

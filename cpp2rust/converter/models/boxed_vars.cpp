@@ -4,6 +4,7 @@
 #include "converter/models/boxed_vars.h"
 
 #include <clang/AST/RecursiveASTVisitor.h>
+#include <clang/AST/StmtVisitor.h>
 #include <clang/Basic/SourceManager.h>
 
 #include <algorithm>
@@ -70,10 +71,12 @@ template <typename E> E *IgnoreNoOpCasts(E *expr) {
 }
 
 // The object copied by a trivial copy or move constructor, which copies its
-// value, like an lvalue-to-rvalue conversion in C.
+// value, like an lvalue-to-rvalue conversion in C, unless it is translated to
+// a call to the constructor.
 clang::Expr *GetTrivialCopySource(clang::CXXConstructExpr *expr) {
   auto *ctor = expr->getConstructor();
-  if (!ctor->isCopyOrMoveConstructor() || !ctor->isTrivial()) {
+  if (!ctor->isCopyOrMoveConstructor() || !ctor->isTrivial() ||
+      IsConvertibleCopyOrMoveConstructor(ctor)) {
     return nullptr;
   }
   return IgnoreNoOpCasts(expr->getArg(0));
@@ -131,6 +134,7 @@ public:
       range_iterators_.insert(
           clang::cast<clang::VarDecl>(begin->getSingleDecl()));
     }
+    AddDiscardedUse(stmt->getBody());
     return true;
   }
 
@@ -201,14 +205,58 @@ public:
   }
 
   bool VisitBinaryOperator(clang::BinaryOperator *expr) {
-    if (expr->isAssignmentOp()) {
+    if (expr->isAssignmentOp() && expr->isPRValue()) {
       AddValueUse(expr->getLHS(), /*write=*/true);
+    }
+    if (expr->getOpcode() == clang::BO_Comma) {
+      AddDiscardedUse(expr->getLHS());
     }
     return true;
   }
 
+  bool VisitCompoundStmt(clang::CompoundStmt *stmt) {
+    for (auto *child : stmt->body()) {
+      AddDiscardedUse(child);
+    }
+    return true;
+  }
+
+  bool VisitForStmt(clang::ForStmt *stmt) {
+    AddDiscardedUse(stmt->getInit());
+    AddDiscardedUse(stmt->getInc());
+    AddDiscardedUse(stmt->getBody());
+    return true;
+  }
+
+  bool VisitWhileStmt(clang::WhileStmt *stmt) {
+    AddDiscardedUse(stmt->getBody());
+    return true;
+  }
+
+  bool VisitDoStmt(clang::DoStmt *stmt) {
+    AddDiscardedUse(stmt->getBody());
+    return true;
+  }
+
+  bool VisitIfStmt(clang::IfStmt *stmt) {
+    AddDiscardedUse(stmt->getThen());
+    AddDiscardedUse(stmt->getElse());
+    return true;
+  }
+
+  bool VisitSwitchCase(clang::SwitchCase *stmt) {
+    AddDiscardedUse(stmt->getSubStmt());
+    return true;
+  }
+
+  bool VisitLabelStmt(clang::LabelStmt *stmt) {
+    AddDiscardedUse(stmt->getSubStmt());
+    return true;
+  }
+
   bool VisitUnaryOperator(clang::UnaryOperator *expr) {
-    if (expr->isIncrementDecrementOp()) {
+    if (expr->isIncrementDecrementOp() &&
+        (expr->isPostfix() || expr->isPRValue())) {
       AddValueUse(expr->getSubExpr(), /*write=*/true);
     }
     return true;
@@ -227,25 +275,93 @@ public:
         AddressTaken(capture.getCapturedVar());
       }
     }
+    if (expr->getLambdaClass()->isGenericLambda()) {
+      ForEachLambdaCallOperator(
+          expr->getLambdaClass(),
+          [&](clang::CXXMethodDecl *op) { TraverseDecl(op); });
+    }
     return true;
   }
 
 private:
+  // Follow only the object whose address a bound lvalue needs, not the
+  // operands that merely compute that address.
+  class AddressUseVisitor : public clang::ConstStmtVisitor<AddressUseVisitor> {
+  public:
+    explicit AddressUseVisitor(AddressTakenVisitor &owner) : owner_(owner) {}
+
+    void Traverse(const clang::Expr *expr) {
+      Visit(expr->IgnoreParenImpCasts());
+    }
+
+    void VisitDeclRefExpr(const clang::DeclRefExpr *expr) {
+      owner_.AddressTaken(expr->getDecl());
+    }
+
+    void VisitExpr(const clang::Expr *expr) {
+      if (auto *object = GetEnclosingObject(expr)) {
+        Traverse(object);
+      }
+    }
+
+    void VisitCallExpr(const clang::CallExpr *expr) {
+      if (IsTransparentStdCall(expr)) {
+        Traverse(expr->getArg(0));
+      } else {
+        VisitExpr(expr);
+      }
+    }
+
+    void VisitCastExpr(const clang::CastExpr *expr) {
+      if (expr->isGLValue()) {
+        Traverse(expr->getSubExpr());
+      }
+    }
+
+    void VisitUnaryOperator(const clang::UnaryOperator *expr) {
+      if (expr->isIncrementDecrementOp()) {
+        Traverse(expr->getSubExpr());
+      }
+    }
+
+    void VisitBinaryOperator(const clang::BinaryOperator *expr) {
+      if (expr->isAssignmentOp()) {
+        Traverse(expr->getLHS());
+      } else if (expr->isCommaOp()) {
+        Traverse(expr->getRHS());
+      }
+    }
+
+    void VisitConditionalOperator(const clang::ConditionalOperator *expr) {
+      Traverse(expr->getTrueExpr());
+      Traverse(expr->getFalseExpr());
+    }
+
+  private:
+    AddressTakenVisitor &owner_;
+  };
+
   // The arguments of a call translated by a rule are passed by value or
   // borrowed, unless the rule takes a pointer to them, other than to a
   // temporary copy of them, or they are bound to references. A pointer
   // parameter receives the value of an argument that is itself translated to a
-  // pointer.
+  // pointer, unless the rule binds a reference to that argument.
   void AddRuleArgs(clang::Expr *expr, clang::Expr **args, unsigned num_args) {
     auto *rule = RuleRegistry::GetExprRule(ctx_, expr);
     if (!rule) {
       return;
     }
-    // Variadic arguments are not considered.
     auto all_args = BuildUnifiedArgs(expr, args, num_args);
     auto bound = rule->argsToBind(ctx_, expr, all_args);
-    for (unsigned i = 0; i < all_args.size() && i < rule->params.size(); ++i) {
+    for (unsigned i = 0; i < all_args.size(); ++i) {
       if (bound[i]) {
+        if (all_args[i]->isGLValue()) {
+          AddressUseVisitor(*this).Traverse(all_args[i]);
+        }
+        continue;
+      }
+      // Unbound variadic arguments are not considered.
+      if (i >= rule->params.size()) {
         continue;
       }
       auto *arg = IgnoreNoOpCasts(all_args[i]);
@@ -253,7 +369,20 @@ private:
         TraverseStmt(init);
         continue;
       }
-      if (!rule->takesAddress(ctx_, i, arg) ||
+      auto *record = arg->getType()->getAsRecordDecl();
+      if (TranslationRule::AnyFragment(
+              rule->body, [&](const TranslationRule::BodyFragment &fragment) {
+                auto *ph = std::get_if<TranslationRule::PlaceholderFragment>(
+                    &fragment);
+                return ph && ph->n == i &&
+                       ((ph->access == TranslationRule::Access::kMove &&
+                         MovesFromArg(expr, i, all_args[i])) ||
+                        (record && HasMoveFromConstructor(record) &&
+                         MovesRuleArg(expr, i, all_args[i], ph->access)));
+              })) {
+        continue;
+      }
+      if (!rule->takesAddress(ctx_, expr, i, arg) ||
           rule->takesTemporaryAddress(ctx_, expr, i, arg)) {
         AddValueUse(arg);
       }
@@ -263,7 +392,12 @@ private:
   // An element of an array or vector, or a field of a struct, is accessed
   // without making a pointer to it.
   void AddValueUse(const clang::Expr *expr, bool write = false) {
-    expr = IgnoreNoOpCasts(expr->IgnoreParens());
+    expr = IgnoreNoOpCasts(IgnoreTransparentStdCall(expr)->IgnoreParens());
+    if (auto *op = clang::dyn_cast<clang::UnaryOperator>(expr);
+        op && op->isPrefix() && op->isIncrementDecrementOp()) {
+      AddValueUse(op->getSubExpr(), /*write=*/true);
+      return;
+    }
     // The value of a conditional lvalue is the value of either operand; it is
     // written through a pointer to the operand.
     if (auto *cond = clang::dyn_cast<clang::ConditionalOperator>(expr)) {
@@ -273,6 +407,9 @@ private:
       }
     } else if (auto *ref = clang::dyn_cast<clang::DeclRefExpr>(expr)) {
       value_uses_.insert(ref);
+    } else if (auto *assign = clang::dyn_cast<clang::BinaryOperator>(expr);
+               assign && assign->isAssignmentOp() && !write) {
+      AddValueUse(assign->getLHS(), /*write=*/true);
     } else if (auto *object = GetEnclosingObject(expr)) {
       // Rust doesn't let the index of an element that is written to read the
       // vector, as the vector is borrowed mutably first.
@@ -280,6 +417,34 @@ private:
       if (!write || !op || !ReferToCommonVar(object, op->getArg(1))) {
         AddValueUse(object, write);
       }
+    }
+  }
+
+  void AddDiscardedUse(clang::Stmt *stmt) {
+    auto *expr = clang::dyn_cast_or_null<clang::Expr>(stmt);
+    if (!expr) {
+      return;
+    }
+    expr = expr->IgnoreParens();
+    if (auto *cleanups = clang::dyn_cast<clang::ExprWithCleanups>(expr)) {
+      expr = cleanups->getSubExpr()->IgnoreParens();
+    }
+    if (auto *op = clang::dyn_cast<clang::UnaryOperator>(expr);
+        op && op->isIncrementDecrementOp()) {
+      AddValueUse(op->getSubExpr(), /*write=*/true);
+    } else if (auto *comma = clang::dyn_cast<clang::BinaryOperator>(expr);
+               comma && comma->getOpcode() == clang::BO_Comma) {
+      AddDiscardedUse(comma->getRHS());
+    }
+
+    auto *binary = clang::dyn_cast<clang::BinaryOperator>(expr);
+    if (!binary) {
+      return;
+    }
+    if (binary->getOpcode() == clang::BO_Comma) {
+      AddDiscardedUse(binary->getRHS());
+    } else if (binary->isAssignmentOp()) {
+      AddValueUse(binary->getLHS(), /*write=*/true);
     }
   }
 

@@ -29,13 +29,20 @@ pub fn pick_0(a: Ptr<Vec<i32>>, b: Ptr<Vec<i32>>, mut first: bool) -> Ptr<Vec<i3
 }
 pub fn sum_1(v: Ptr<Vec<i32>>) -> i32 {
     let mut total: i32 = 0;
-    let it: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(v.decay().begin()));
-    'loop_: while (*it.borrow()) != v.decay().end() {
-        total += ((*it.borrow()).iter_deref().read());
-        (*it.borrow_mut()).iter_inc();
+    {
+        let it: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(v.decay().begin()));
+        'loop_: while (*it.borrow()) != v.decay().end() {
+            total += ((*it.borrow()).iter_deref().read());
+            {
+                it.as_pointer().with_mut(|__it| {
+                    __it.iter_inc();
+                });
+                it.as_pointer()
+            };
+        }
     }
     return ({ total } + {
-        (if 0_usize as usize >= (*v.upgrade().deref()).len() {
+        (if 0_usize >= (*v.upgrade().deref()).len() {
             panic!("out of bounds access")
         } else {
             v.decay().offset(0_usize as isize)
@@ -94,7 +101,7 @@ fn main_0() -> i32 {
     );
     let c: Ptr<Vec<i32>> = v.as_pointer();
     assert!(
-        ((if 2_usize as usize >= (*c.upgrade().deref()).len() {
+        ((if 2_usize >= (*c.upgrade().deref()).len() {
             panic!("out of bounds access")
         } else {
             c.decay().offset(2_usize as isize)

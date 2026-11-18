@@ -12,7 +12,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let arr: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([10_u8, 20_u8, 30_u8, 40_u8])));
-    let mut same: Ptr<u8> = (arr.as_pointer() as Ptr<u8>).reinterpret_cast::<u8>();
+    let mut same: Ptr<u8> = arr.decay().reinterpret_cast::<u8>();
     assert!((((elem!(same, 0).read()) as i32) == 10));
     assert!((((elem!(same, 1).read()) as i32) == 20));
     assert!((((elem!(same, 2).read()) as i32) == 30));

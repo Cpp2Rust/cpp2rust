@@ -37,8 +37,8 @@ fn main_0() -> i32 {
         head: (n.as_pointer()),
         size: 1,
     };
-    assert!((((l.head.with(|__s| __s.value) == 42) as i32) != 0));
-    assert!((((l.size == 1) as i32) != 0));
+    assert!((l.head.with(|__s| __s.value) == 42));
+    assert!((l.size == 1));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

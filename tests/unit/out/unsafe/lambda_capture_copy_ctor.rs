@@ -133,9 +133,9 @@ unsafe fn main_0() -> i32 {
             },
             || {}
         );
-        let _dtor_m = ScopedDestructorUnsafe::new(&raw mut m, |__f| __f.destroy());
+        let _dtor_m = std::mem::DropGuard::new(&raw mut m, |__p| unsafe { (*__p).destroy() });
         let mut m2: FnPtr<fn()> = m.move_from();
-        let _dtor_m2 = ScopedDestructorUnsafe::new(&raw mut m2, |__f| __f.destroy());
+        let _dtor_m2 = std::mem::DropGuard::new(&raw mut m2, |__p| unsafe { (*__p).destroy() });
     }
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut drops_0)) == (2)));
     {
@@ -145,9 +145,9 @@ unsafe fn main_0() -> i32 {
             },
             || {}
         );
-        let _dtor_k = ScopedDestructorUnsafe::new(&raw mut k, |__f| __f.destroy());
+        let _dtor_k = std::mem::DropGuard::new(&raw mut k, |__p| unsafe { (*__p).destroy() });
         let mut k2: FnPtr<fn()> = k.copy_from();
-        let _dtor_k2 = ScopedDestructorUnsafe::new(&raw mut k2, |__f| __f.destroy());
+        let _dtor_k2 = std::mem::DropGuard::new(&raw mut k2, |__p| unsafe { (*__p).destroy() });
     }
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut drops_0)) == (4)));
     {
@@ -157,14 +157,16 @@ unsafe fn main_0() -> i32 {
             },
             || {}
         );
-        let _dtor_inner = ScopedDestructorUnsafe::new(&raw mut inner, |__f| __f.destroy());
+        let _dtor_inner =
+            std::mem::DropGuard::new(&raw mut inner, |__p| unsafe { (*__p).destroy() });
         let mut outer: FnPtr<fn()> = lambda_unsafe!(
             {
                 let inner: FnPtr<fn()> = inner.copy_from();
             },
             || {}
         );
-        let _dtor_outer = ScopedDestructorUnsafe::new(&raw mut outer, |__f| __f.destroy());
+        let _dtor_outer =
+            std::mem::DropGuard::new(&raw mut outer, |__p| unsafe { (*__p).destroy() });
     }
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut drops_0)) == (6)));
     return 0;

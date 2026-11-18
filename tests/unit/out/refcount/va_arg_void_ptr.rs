@@ -23,7 +23,7 @@ pub fn registry_update_0(mut r: Ptr<registry>, field: field, __args: Box<[VaArg]
     let field: Value<field> = Rc::new(RefCell::new(field));
     let mut result: i32 = 0;
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
-    (*ap.borrow_mut()) = __args.as_pointer();
+    (*ap.borrow_mut()) = __args.decay();
     'switch: {
         match { ((*field.borrow()) as u32) } {
             __v if __v == ((field_FIELD_SLOT as i32) as u32) => {
@@ -55,41 +55,33 @@ fn main_0() -> i32 {
     }));
     let payload: Value<i32> = Rc::new(RefCell::new(7));
     assert!(
-        (((({
+        (({
             registry_update_0(
                 (r.as_pointer()),
                 field_FIELD_SLOT,
                 Box::new([(payload.as_pointer()).into()]),
             )
-        }) == 0) as i32)
-            != 0)
+        }) == 0)
     );
     assert!(
-        (((({
+        (({
             registry_update_0(
                 (r.as_pointer()),
                 field_FIELD_LEVEL,
                 Box::new([(5_i64).into()]),
             )
-        }) == 0) as i32)
-            != 0)
+        }) == 0)
     );
+    assert!(({ ({ { (*r.borrow()).slot.clone() } } == { (payload.as_pointer()).to_any() }) }));
     assert!(
         ({
-            ((({ { (*r.borrow()).slot.clone() } } == { (payload.as_pointer()).to_any() }) as i32)
-                != 0)
-        })
-    );
-    assert!(
-        ({
-            (((({ (*r.borrow()).slot.clone() }
+            (({ (*r.borrow()).slot.clone() }
                 .reinterpret_cast::<i32>()
                 .read())
-                == 7) as i32)
-                != 0)
+                == 7)
         })
     );
-    assert!(({ ((({ (*r.borrow()).level } == 5_i64) as i32) != 0) }));
+    assert!(({ ({ (*r.borrow()).level } == 5_i64) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

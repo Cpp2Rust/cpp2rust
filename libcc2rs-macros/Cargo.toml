@@ -12,4 +12,6 @@ quote = "1"
 syn = { version = "2", features = ["full", "visit-mut", "extra-traits"] }
 
 [dev-dependencies]
-trybuild = "1"
+# trybuild 1.0.123 passes --diagnostic-width to rustc, which cargo also passes
+# when it knows the width of the terminal, and rustc rejects it twice.
+trybuild = ">=1, <1.0.123"

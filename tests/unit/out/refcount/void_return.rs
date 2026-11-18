@@ -41,8 +41,8 @@ fn main_0() -> i32 {
     });
     let a: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2, 3])));
     ({
-        let _first: Ptr<i32> = (a.as_pointer() as Ptr<i32>);
-        let _last: Ptr<i32> = (a.as_pointer() as Ptr<i32>).offset((2) as isize);
+        let _first: Ptr<i32> = a.decay();
+        let _last: Ptr<i32> = a.decay().offset((2) as isize);
         f1_1(_first, _last)
     });
     return 0;

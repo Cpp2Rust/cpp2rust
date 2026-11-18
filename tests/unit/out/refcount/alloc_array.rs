@@ -7,25 +7,23 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn All_0(arr: Ptr<Option<Value<Box<[i32]>>>>, mut N: i32, mut element: i32) {
-    let all: Value<Option<Value<Box<[i32]>>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
+    let mut all: Option<Value<Box<[i32]>>> = Some(Rc::new(RefCell::new(
         (0..(N as usize)).map(|_| 0_i32).collect::<Box<[_]>>(),
-    )))));
-    let mut i: i32 = 0;
-    'loop_: while (i < N) {
-        ((*all.borrow()).as_pointer() as Ptr<i32>)
-            .offset((i as usize) as isize)
-            .write(element);
-        i.prefix_inc();
+    )));
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < N) {
+            all.decay().offset((i as usize)).write(element);
+            i.prefix_inc();
+        }
     }
-    arr.write((*all.borrow_mut()).take());
+    arr.write(all.take());
 }
 pub fn Consume_1(mut arr: Option<Value<Box<[i32]>>>, mut N: i32) -> i32 {
     let mut sum: i32 = 0;
     let mut i: i32 = -1_i32;
-    'loop_: while (i.prefix_inc() < N) {
-        sum += ((arr.as_pointer() as Ptr<i32>)
-            .offset((i as usize) as isize)
-            .read());
+    'loop_: while ((*i.prefix_inc()) < N) {
+        sum += (arr.decay().offset((i as usize)).read());
     }
     return sum;
 }

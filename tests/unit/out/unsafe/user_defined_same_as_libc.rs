@@ -10,8 +10,6 @@ pub unsafe fn fopen_0(
     mut path: *const libc::c_char,
     mut mode: *const libc::c_char,
 ) -> *mut ::libc::FILE {
-    &(path);
-    &(mode);
     return std::ptr::null_mut();
 }
 pub fn main() {
@@ -27,7 +25,7 @@ unsafe fn main_0() -> i32 {
             (c"r".as_ptr().cast_mut()).cast_const(),
         )
     });
-    assert!(((((fp).is_null()) as i32) != 0));
+    assert!(((fp).is_null()));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

@@ -9,10 +9,10 @@ pub use reinterpret::ByteRepr;
 mod rc;
 pub use rc::*;
 
+mod escape;
+
 mod field;
-pub use field::{
-    ArrayElem, ElemPlace, FieldPlace, FieldPtr, IndexPlace, Place, Record, Seq, VecElem,
-};
+pub use field::{ArrayElem, ElemPlace, FieldPlace, FieldPtr, IndexPlace, Place, Record, VecElem};
 // Used by #[derive(Record)] and size_of_field!.
 #[doc(hidden)]
 pub mod __field {
@@ -21,6 +21,8 @@ pub mod __field {
         LocateRecord, LocateRecordMut, min_offset, size_of_pointee,
     };
 }
+
+mod member_ptr;
 
 mod cstr;
 pub use cstr::CChar;

@@ -36,7 +36,7 @@ thread_local!(
     pub static counter_2: Value<i32> = Rc::new(RefCell::new(0));
 );
 pub fn next_3() -> i32 {
-    return (*counter_2.with(Value::clone).borrow_mut()).prefix_inc();
+    return (*(*counter_2.with(Value::clone).borrow_mut()).prefix_inc());
 }
 pub fn lazy_4(x: Option<i32>) -> i32 {
     let mut x: i32 = x.unwrap_or_else(|| ({ next_3() }));
@@ -63,7 +63,7 @@ pub fn shifted_8(mut x: i32, y: Option<i32>) -> i32 {
     return (x + y);
 }
 pub fn first_9(r: Ptr<i32>) -> i32 {
-    return (elem!((r), 0).read());
+    return (elem!(r, 0).read());
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
@@ -124,7 +124,7 @@ fn main_0() -> i32 {
     assert!(
         (({
             let _r: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([4, 5, 6])));
-            first_9(_r.as_pointer())
+            first_9(_r.decay())
         }) == 4)
     );
     return 0;

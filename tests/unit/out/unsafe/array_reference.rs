@@ -24,10 +24,12 @@ pub unsafe fn sum_2(a: *const [i32; 3]) -> i32 {
     return ((((*a)[(0) as usize]) + ((*a)[(1) as usize])) + ((*a)[(2) as usize]));
 }
 pub unsafe fn fill_3(a: *mut [i32; 3], mut v: i32) {
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (3)) {
-        (*a)[(i) as usize] = v;
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (3)) {
+            (*a)[(i) as usize] = v;
+            i.prefix_inc();
+        }
     }
 }
 pub unsafe fn sum_twice_4(a: *const [i32; 3]) -> i32 {
@@ -156,12 +158,12 @@ unsafe fn main_0() -> i32 {
         (({
             let sa = core::slice::from_raw_parts(
                 ((&mut key[(1) as usize] as *mut i32) as *const ::libc::c_void) as *const u8,
-                ::std::mem::size_of::<[i32; 3]>() as usize,
+                ::std::mem::size_of::<[i32; 3]>(),
             );
             let sb = core::slice::from_raw_parts(
                 ((*std::cell::LazyCell::force_mut(&mut *&raw mut kTable_14))[(1) as usize].as_ptr()
                     as *const ::libc::c_void) as *const u8,
-                ::std::mem::size_of::<[i32; 3]>() as usize,
+                ::std::mem::size_of::<[i32; 3]>(),
             );
             let mut diff = 0_i32;
             for (x, y) in sa.iter().zip(sb.iter()) {
@@ -177,12 +179,12 @@ unsafe fn main_0() -> i32 {
         (({
             let sa = core::slice::from_raw_parts(
                 ((&mut key[(1) as usize] as *mut i32) as *const ::libc::c_void) as *const u8,
-                ::std::mem::size_of::<[i32; 3]>() as usize,
+                ::std::mem::size_of::<[i32; 3]>(),
             );
             let sb = core::slice::from_raw_parts(
                 ((*std::cell::LazyCell::force_mut(&mut *&raw mut kTable_14))[(0) as usize].as_ptr()
                     as *const ::libc::c_void) as *const u8,
-                ::std::mem::size_of::<[i32; 3]>() as usize,
+                ::std::mem::size_of::<[i32; 3]>(),
             );
             let mut diff = 0_i32;
             for (x, y) in sa.iter().zip(sb.iter()) {

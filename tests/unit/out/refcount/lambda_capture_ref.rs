@@ -58,12 +58,12 @@ fn main_0() -> i32 {
     let arr: Value<Box<[u16]>> = Rc::new(RefCell::new(Box::new([3_u16, 1_u16, 2_u16, 0_u16])));
     let swap: Value<FnPtr<fn(usize, usize)>> = Rc::new(RefCell::new(lambda!(
         {
-            let arr: Ptr<u16> = arr.as_pointer();
+            let arr: Ptr<u16> = arr.decay();
         },
         |mut i: usize, mut j: usize| {
-            let mut t: u16 = (elem!((arr), j).read());
-            elem!((arr), j).write({ (elem!((arr), i).read()) });
-            elem!((arr), i).write(t);
+            let mut t: u16 = (elem!(arr, j).read());
+            elem!(arr, j).write({ (elem!(arr, i).read()) });
+            elem!(arr, i).write(t);
         }
     )));
     ({ (*swap.borrow()).call(0_usize, 3_usize) });

@@ -8,14 +8,13 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn logf_impl_0(mut fmt: Ptr<i8>, ap: Ptr<VaArg>) -> i32 {
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(ap));
-    &(fmt);
     return ({ (*ap.borrow_mut()).arg::<i32>() } + { (*ap.borrow_mut()).arg::<i32>() });
 }
 pub fn logf_1(fmt: Ptr<i8>, __args: Box<[VaArg]>) -> i32 {
     let __args: Value<Box<[VaArg]>> = Rc::new(RefCell::new(__args.into()));
     let fmt: Value<Ptr<i8>> = Rc::new(RefCell::new(fmt));
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
-    (*ap.borrow_mut()) = __args.as_pointer();
+    (*ap.borrow_mut()) = __args.decay();
     let mut result: i32 = ({ logf_impl_0((*fmt.borrow()).clone(), (*ap.borrow()).clone()) });
     return result;
 }
@@ -23,7 +22,7 @@ pub fn lenf_2(fmt: Ptr<i8>, __args: Box<[VaArg]>) -> i32 {
     let __args: Value<Box<[VaArg]>> = Rc::new(RefCell::new(__args.into()));
     let fmt: Value<Ptr<i8>> = Rc::new(RefCell::new(fmt));
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
-    (*ap.borrow_mut()) = __args.as_pointer();
+    (*ap.borrow_mut()) = __args.decay();
     let mut s: Ptr<i8> = (*ap.borrow_mut()).arg::<Ptr<i8>>();
     let mut result: i32 = (s.to_c_string_iterator().count() as i32);
     return result;
@@ -35,34 +34,31 @@ pub fn main() {
 fn main_0() -> i32 {
     let mut dummy: Ptr<i8> = Ptr::<i8>::from_string_literal(b"dummy");
     assert!(
-        (((({
+        (({
             logf_1(
                 Ptr::<i8>::from_string_literal(b"hello %d %d"),
                 Box::new([(10).into(), (dummy.to_c_string_iterator().count()).into()]),
             )
-        }) == 15) as i32)
-            != 0)
+        }) == 15)
     );
     assert!(
-        (((({
+        (({
             logf_1(
                 Ptr::<i8>::from_string_literal(b"x %d %d"),
                 Box::new([(1).into(), (2).into()]),
             )
-        }) == 3) as i32)
-            != 0)
+        }) == 3)
     );
     assert!(
-        (((({
+        (({
             lenf_2(
                 Ptr::<i8>::from_string_literal(b"%s"),
                 Box::new([((dummy).clone()).into()]),
             )
-        }) == 5) as i32)
-            != 0)
+        }) == 5)
     );
     assert!(
-        (((({
+        (({
             lenf_2(
                 Ptr::<i8>::from_string_literal(b"%s"),
                 Box::new([(if (((elem!(dummy, 0).read()) as i32) != 0) {
@@ -72,8 +68,7 @@ fn main_0() -> i32 {
                 })
                 .into()]),
             )
-        }) == 5) as i32)
-            != 0)
+        }) == 5)
     );
     return 0;
 }

@@ -61,7 +61,7 @@ impl Outer {
         ) {
             (mut __tmp_0, mut __tmp_1) => {
                 if 36_usize != 0 {
-                    ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, 36_usize as usize)
+                    ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, 36_usize)
                 }
                 __tmp_0
             }
@@ -74,7 +74,7 @@ impl Outer {
         ) {
             (mut __tmp_2, mut __tmp_3) => {
                 if 16_usize != 0 {
-                    ::std::ptr::copy_nonoverlapping(__tmp_3, __tmp_2, 16_usize as usize)
+                    ::std::ptr::copy_nonoverlapping(__tmp_3, __tmp_2, 16_usize)
                 }
                 __tmp_2
             }
@@ -112,10 +112,12 @@ unsafe fn main_0() -> i32 {
     assert!(((o.items[(1) as usize].a) == (4)));
     assert!(((&mut o.items[(0) as usize].a as *mut i32) != (pi)));
     let mut name: *mut libc::c_char = o.inner.name.as_mut_ptr();
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (3)) {
-        (*name.offset((i) as isize)) = (((('a' as libc::c_char) as i32) + (i)) as libc::c_char);
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (3)) {
+            (*name.offset((i) as isize)) = (((('a' as libc::c_char) as i32) + (i)) as libc::c_char);
+            i.prefix_inc();
+        }
     }
     assert!(((libc::strlen((o.inner.name.as_mut_ptr()).cast_const())) == (3_usize)));
     assert!(
@@ -145,11 +147,7 @@ unsafe fn main_0() -> i32 {
     ) {
         (mut __tmp_4, mut __tmp_5) => {
             if ::std::mem::size_of::<i32>() != 0 {
-                ::std::ptr::copy_nonoverlapping(
-                    __tmp_5,
-                    __tmp_4,
-                    ::std::mem::size_of::<i32>() as usize,
-                )
+                ::std::ptr::copy_nonoverlapping(__tmp_5, __tmp_4, ::std::mem::size_of::<i32>())
             }
             __tmp_4
         }
@@ -159,11 +157,7 @@ unsafe fn main_0() -> i32 {
     }) {
         (mut __tmp_6, mut __tmp_7) => {
             if ::std::mem::size_of::<i32>() != 0 {
-                ::std::ptr::copy_nonoverlapping(
-                    __tmp_7,
-                    __tmp_6,
-                    ::std::mem::size_of::<i32>() as usize,
-                )
+                ::std::ptr::copy_nonoverlapping(__tmp_7, __tmp_6, ::std::mem::size_of::<i32>())
             }
             __tmp_6
         }

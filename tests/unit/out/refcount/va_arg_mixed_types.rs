@@ -18,24 +18,26 @@ pub fn sum_mixed_0(count: i32, __args: Box<[VaArg]>) -> i32 {
     let __args: Value<Box<[VaArg]>> = Rc::new(RefCell::new(__args.into()));
     let count: Value<i32> = Rc::new(RefCell::new(count));
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
-    (*ap.borrow_mut()) = __args.as_pointer();
+    (*ap.borrow_mut()) = __args.decay();
     let mut total: i32 = 0;
-    let mut i: i32 = 0;
-    'loop_: while (((i < (*count.borrow())) as i32) != 0) {
-        let mut tag: i32 = (*ap.borrow_mut()).arg::<i32>();
-        if (((tag == 0) as i32) != 0) {
-            total += (*ap.borrow_mut()).arg::<i32>();
-        } else if (((tag == 1) as i32) != 0) {
-            total += ((*ap.borrow_mut()).arg::<f64>() as i32);
-        } else if (((tag == 3) as i32) != 0) {
-            let mut p: pair = (*ap.borrow_mut()).arg::<pair>();
-            total += (p.a * p.b);
-        } else {
-            let mut val: i64 = (*ap.borrow_mut()).arg::<i64>();
-            total += (val as i32);
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < (*count.borrow())) {
+            let mut tag: i32 = (*ap.borrow_mut()).arg::<i32>();
+            if (tag == 0) {
+                total += (*ap.borrow_mut()).arg::<i32>();
+            } else if (tag == 1) {
+                total += ((*ap.borrow_mut()).arg::<f64>() as i32);
+            } else if (tag == 3) {
+                let mut p: pair = (*ap.borrow_mut()).arg::<pair>();
+                total += (p.a * p.b);
+            } else {
+                let mut val: i64 = (*ap.borrow_mut()).arg::<i64>();
+                total += (val as i32);
+            }
+            i.postfix_inc();
         }
-        i.postfix_inc();
-    }
+    };
     return total;
 }
 pub fn main() {
@@ -44,7 +46,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     assert!(
-        (((({
+        (({
             sum_mixed_0(
                 3,
                 Box::new([
@@ -56,28 +58,25 @@ fn main_0() -> i32 {
                     (30_i64).into(),
                 ]),
             )
-        }) == 60) as i32)
-            != 0)
+        }) == 60)
     );
-    assert!((((({ sum_mixed_0(1, Box::new([(0).into(), (42).into(),])) }) == 42) as i32) != 0));
+    assert!((({ sum_mixed_0(1, Box::new([(0).into(), (42).into(),])) }) == 42));
     assert!(
-        (((({
+        (({
             sum_mixed_0(
                 2,
                 Box::new([(1).into(), (3.7_f64).into(), (2).into(), (100_i64).into()]),
             )
-        }) == 103) as i32)
-            != 0)
+        }) == 103)
     );
     let mut p: pair = pair { a: 7, b: 8 };
     assert!(
-        (((({
+        (({
             sum_mixed_0(
                 2,
                 Box::new([(3).into(), ((p).clone()).into(), (0).into(), (5).into()]),
             )
-        }) == 61) as i32)
-            != 0)
+        }) == 61)
     );
     return 0;
 }

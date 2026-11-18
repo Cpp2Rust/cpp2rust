@@ -97,6 +97,8 @@ public:
   std::string GetTemplateArgumentAsString(const clang::TemplateArgument &arg);
 
   bool VisitRecoveryExpr(clang::RecoveryExpr *expr);
+  bool VisitExprWithCleanups(clang::ExprWithCleanups *expr);
+  bool VisitMaterializeTemporaryExpr(clang::MaterializeTemporaryExpr *expr);
 
   virtual void EmitFilePreamble();
 
@@ -118,6 +120,8 @@ public:
   virtual bool VisitReferenceType(clang::ReferenceType *type);
 
   virtual bool VisitPointerType(clang::PointerType *type);
+
+  bool VisitMemberPointerType(clang::MemberPointerType *type);
 
   virtual std::string
   ConvertFunctionPointerType(const clang::FunctionProtoType *proto);
@@ -243,6 +247,8 @@ public:
 
   void ConvertDeclContext(clang::DeclContext *decl);
 
+  void ConvertNamespaceMember(clang::Decl *decl);
+
   virtual bool VisitTypedefDecl(clang::TypedefDecl *decl);
   virtual bool VisitTypeAliasDecl(clang::TypeAliasDecl *decl);
   virtual bool VisitTypeAliasTemplateDecl(clang::TypeAliasTemplateDecl *decl);
@@ -263,6 +269,9 @@ public:
   virtual bool VisitIfStmt(clang::IfStmt *stmt);
 
   virtual bool VisitWhileStmt(clang::WhileStmt *stmt);
+
+  void ConvertConditionVariableTest(clang::DeclStmt *cond_var,
+                                    clang::Expr *cond);
 
   virtual bool VisitDoStmt(clang::DoStmt *stmt);
 
@@ -462,7 +471,8 @@ public:
     if (ty->isFunctionPointerType() || ty->isFunctionType()) {
       return FunctionPointerImplementsCopy();
     }
-    if (ty->isBuiltinType() || ty->isEnumeralType()) {
+    if (ty->isBuiltinType() || ty->isEnumeralType() ||
+        ty->isMemberDataPointerType()) {
       return true;
     }
     if (ty->getAsRecordDecl()) {
@@ -484,6 +494,9 @@ public:
   virtual bool VisitCharacterLiteral(clang::CharacterLiteral *expr);
 
   std::string GetCodeUnitArrayLiteral(const clang::StringLiteral *expr);
+
+  std::string GetCharArrayLiteral(const clang::StringLiteral *expr);
+
   bool IsArrayInitContext() const;
 
   std::string GetEscapedUTF8CharLiteral(clang::Expr *expr) const;
@@ -518,11 +531,14 @@ public:
   virtual bool VisitBinaryOperator(clang::BinaryOperator *expr);
   bool VisitCXXRewrittenBinaryOperator(clang::CXXRewrittenBinaryOperator *expr);
 
+  void ConvertAssignmentRef(clang::BinaryOperator *expr);
   virtual void ConvertBinaryOperator(clang::BinaryOperator *expr);
 
-  // The value that the compound assignment expr assigns to its left operand,
-  // whose type differs from the computation type.
-  std::string ConvertCompoundAssignValue(clang::CompoundAssignOperator *expr);
+  // The value that the compound assignment expr assigns to its left operand.
+  // Optional operand strings refer to values that have already been evaluated.
+  std::string ConvertCompoundAssignValue(clang::CompoundAssignOperator *expr,
+                                         std::string_view lhs_value = {},
+                                         std::string_view rhs_value = {});
 
   virtual bool ConvertIncAndDec(clang::UnaryOperator *expr);
 
@@ -530,7 +546,7 @@ public:
 
   virtual bool VisitStmtExpr(clang::StmtExpr *expr);
 
-  bool ConvertLValueConditional(clang::ConditionalOperator *expr);
+  virtual bool ConvertLValueConditional(clang::ConditionalOperator *expr);
 
   virtual bool VisitConditionalOperator(clang::ConditionalOperator *expr);
 
@@ -853,13 +869,31 @@ protected:
 
   virtual void
   ConvertUnsignedArithBinaryOperator(clang::BinaryOperator *binary_operator,
-                                     clang::Expr *expr);
+                                     clang::Expr *expr,
+                                     std::string_view value = {});
 
   virtual void ConvertAddrOf(clang::Expr *expr, clang::QualType pointer_type);
+
+  void ConvertMemberPtr(clang::UnaryOperator *expr);
+
+  std::string GetMemberPtrAsString(const clang::ValueDecl *member);
+
+  virtual std::string GetFieldOffsetAsString(const clang::FieldDecl *field);
+
+  void ConvertMemberPtrAccess(clang::BinaryOperator *expr);
+
+  virtual std::string ConvertMemberPtrObject(clang::BinaryOperator *expr);
+
+  virtual std::string GetMemberOfObjectAsString(std::string object,
+                                                std::string member,
+                                                clang::QualType type);
 
   virtual void ConvertDeref(clang::Expr *expr);
 
   void EmitDeref(std::string inner, clang::QualType pointee_type);
+
+  virtual void EmitPointee(std::string ptr, clang::QualType pointee_type,
+                           bool fresh);
 
   virtual void ConvertArrow(clang::Expr *expr);
 
@@ -878,6 +912,13 @@ protected:
   // Moves the value out of `arg`, leaving a default value behind.
   virtual std::string ConvertTake(clang::Expr *arg);
 
+  bool IsImplicitReturnMove(clang::Expr *arg) const;
+
+  std::string GetMovedFromValue(clang::QualType type);
+
+  virtual std::string ConvertMoveThroughPointer(clang::QualType type,
+                                                const std::string &ptr);
+
   // The place of `arg`, which is borrowed mutably by a rule.
   virtual std::string ConvertBorrowMut(clang::Expr *arg);
 
@@ -893,6 +934,15 @@ protected:
   // The variables that arguments of rules are bound to by value, whose
   // address is not taken.
   std::unordered_set<const clang::VarDecl *> bound_values_;
+
+  // Bound initializer arguments may need a mapped move constructor when
+  // forwarding the original rvalue from its pointer binding.
+  std::unordered_set<const clang::VarDecl *> bound_init_args_;
+
+  // Updates the pointee using its previous value, borrowing it once.
+  virtual std::string
+  AssignPtrExpr(std::string_view ptr, clang::QualType type,
+                llvm::function_ref<std::string(std::string_view)> value);
 
   std::string ConvertVariadicTail(clang::Expr *expr,
                                   llvm::ArrayRef<clang::Expr *> all_args);
@@ -945,6 +995,7 @@ protected:
   clang::ASTContext &ctx_;
   std::unique_ptr<clang::MangleContext> mangle_context_;
   clang::FunctionDecl *curr_function_ = nullptr;
+  clang::Expr *return_value_ = nullptr;
   bool InConstructor() const {
     return clang::isa_and_present<clang::CXXConstructorDecl>(curr_function_);
   }
@@ -1006,6 +1057,9 @@ protected:
     return std::format("__tmp_{}", materialized_temp_id_++);
   }
   std::string *materialized_temp_bindings_ = nullptr;
+  // Owning temporaries needed by references bound before a rule expansion.
+  std::string *full_expression_temporaries_ = nullptr;
+  bool retain_bound_temporaries_ = false;
   class HoistMaterializedTempBindings {
     Converter &c;
     std::string *prev;
@@ -1083,6 +1137,7 @@ protected:
     Callee,
     LValue,
     RValue,
+    FreshRValue,
     XValue,
     AddrOf,
     Object,
@@ -1097,6 +1152,8 @@ protected:
       return "LValue";
     case ExprKind::RValue:
       return "RValue";
+    case ExprKind::FreshRValue:
+      return "FreshRValue";
     case ExprKind::XValue:
       return "XValue";
     case ExprKind::AddrOf:
@@ -1112,6 +1169,7 @@ protected:
 
   bool isLValue() const;
   bool isRValue() const;
+  bool isFreshRValue() const;
   bool isXValue() const;
   bool isAddrOf() const;
   bool isObject() const;
@@ -1204,10 +1262,11 @@ protected:
                  int line = __builtin_LINE());
 
   /// Materialize a temporary for a prvalue bound to a reference parameter.
-  /// Returns (binding_code, ref_expression).
+  /// Returns (binding_code, ref_expression). With declarations, emit the local
+  /// declaration there and return its initialization at the evaluation site.
   virtual std::pair<std::string, std::string>
   MaterializeTemp(const std::string &binding_name, clang::QualType param_type,
-                  clang::Expr *expr);
+                  clang::Expr *expr, std::string *declarations = nullptr);
 
   /// Emits binding_code to materialized_temp_bindings_.
   /// Returns ref_expression.

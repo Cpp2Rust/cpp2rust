@@ -36,18 +36,18 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(((((anon_0_FIRST_A as i32) != (anon_0_FIRST_B as i32)) as i32) != 0));
-    assert!(((((anon_1_SECOND_A as i32) != (anon_1_SECOND_B as i32)) as i32) != 0));
-    assert!(((((anon_3_THIRD_A as i32) != (anon_3_THIRD_B as i32)) as i32) != 0));
+    assert!(((anon_0_FIRST_A as i32) != (anon_0_FIRST_B as i32)));
+    assert!(((anon_1_SECOND_A as i32) != (anon_1_SECOND_B as i32)));
+    assert!(((anon_3_THIRD_A as i32) != (anon_3_THIRD_B as i32)));
     let mut td: TdEnum_enum = TdEnum_enum_TD_A;
-    assert!(((((td as u32) == ((TdEnum_enum_TD_A as i32) as u32)) as i32) != 0));
+    assert!(((td as u32) == ((TdEnum_enum_TD_A as i32) as u32)));
     td = TdEnum_enum_TD_B;
-    assert!(((((td as u32) == ((TdEnum_enum_TD_B as i32) as u32)) as i32) != 0));
+    assert!(((td as u32) == ((TdEnum_enum_TD_B as i32) as u32)));
     let mut w: WithAnonField = <WithAnonField>::default();
     w.field = anon_2_FIELD_A;
-    assert!(((((w.field as u32) == ((anon_2_FIELD_A as i32) as u32)) as i32) != 0));
+    assert!(((w.field as u32) == ((anon_2_FIELD_A as i32) as u32)));
     w.field = anon_2_FIELD_B;
-    assert!(((((w.field as u32) == ((anon_2_FIELD_B as i32) as u32)) as i32) != 0));
+    assert!(((w.field as u32) == ((anon_2_FIELD_B as i32) as u32)));
     return 0;
 }
 pub type anon_3 = u32;

@@ -22,19 +22,19 @@ pub fn get_4(mut s: Ptr<u32>) -> Ptr<u32> {
     return (s).clone();
 }
 pub fn second_5(s: Ptr<i8>) -> i8 {
-    return (elem!((s), 1).read());
+    return (elem!(s, 1).read());
 }
 pub fn second_6(s: Ptr<i32>) -> i32 {
-    return (elem!((s), 1).read());
+    return (elem!(s, 1).read());
 }
 pub fn second_7(s: Ptr<u8>) -> u8 {
-    return (elem!((s), 1).read());
+    return (elem!(s, 1).read());
 }
 pub fn second_8(s: Ptr<u16>) -> u16 {
-    return (elem!((s), 1).read());
+    return (elem!(s, 1).read());
 }
 pub fn second_9(s: Ptr<u32>) -> u32 {
-    return (elem!((s), 1).read());
+    return (elem!(s, 1).read());
 }
 pub fn main() {
     __cpp2rust_init_globals();

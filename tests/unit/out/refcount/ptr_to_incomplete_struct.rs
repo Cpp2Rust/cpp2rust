@@ -14,7 +14,7 @@ fn main_0() -> i32 {
     let mut fp: Ptr<CFile> = libcc2rs::c_stdout();
     let mut p: AnyPtr = (fp).to_any();
     let mut fp2: Ptr<CFile> = p.reinterpret_cast::<CFile>();
-    assert!(((({ (fp).clone() } == { (fp2).clone() }) as i32) != 0));
+    assert!(({ (fp).clone() } == { (fp2).clone() }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

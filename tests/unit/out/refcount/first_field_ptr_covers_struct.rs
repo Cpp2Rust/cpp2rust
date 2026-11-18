@@ -36,49 +36,39 @@ fn main_0() -> i32 {
         z: 4,
     }));
     let mut p: Ptr<S> = libcc2rs::malloc_refcount(12usize).reinterpret_cast::<S>();
-    assert!((((!((p).is_null())) as i32) != 0));
-    match ({ ((field_ptr!(p, x)) as Ptr<i32>).to_any() },) {
+    assert!((!((p).is_null())));
+    match ({ (field_ptr!(p, x)).to_any() },) {
         (mut __tmp_0,) => {
-            __tmp_0.memcpy(&((src.as_pointer()) as Ptr<S>).to_any(), 12usize as usize);
+            __tmp_0.memcpy(&(src.as_pointer()).to_any(), 12usize);
             (__tmp_0).clone()
         }
     };
     assert!(
-        ((((((((((((p.with(|__s| __s.x) == 1) as i32) != 0)
-            && ((((p.with(|__s| __s.in_.a) as i32) == 2) as i32) != 0)) as i32)
-            != 0)
-            && ((((p.with(|__s| __s.in_.b) as i32) == 3) as i32) != 0)) as i32)
-            != 0)
-            && (((p.with(|__s| __s.z) == 4) as i32) != 0)) as i32)
-            != 0)
+        ((((p.with(|__s| __s.x) == 1) && ((p.with(|__s| __s.in_.a) as i32) == 2))
+            && ((p.with(|__s| __s.in_.b) as i32) == 3))
+            && (p.with(|__s| __s.z) == 4))
     );
     let n: Value<In> = Rc::new(RefCell::new(In { a: 5_i16, b: 6_i16 }));
-    match ({ ((field_ptr!(p, in_)) as Ptr<In>).to_any() },) {
+    match ({ (field_ptr!(p, in_)).to_any() },) {
         (mut __tmp_1,) => {
-            __tmp_1.memcpy(&((n.as_pointer()) as Ptr<In>).to_any(), 4usize as usize);
+            __tmp_1.memcpy(&(n.as_pointer()).to_any(), 4usize);
             (__tmp_1).clone()
         }
     };
     assert!(
-        ((((((((((((p.with(|__s| __s.x) == 1) as i32) != 0)
-            && ((((p.with(|__s| __s.in_.a) as i32) == 5) as i32) != 0)) as i32)
-            != 0)
-            && ((((p.with(|__s| __s.in_.b) as i32) == 6) as i32) != 0)) as i32)
-            != 0)
-            && (((p.with(|__s| __s.z) == 4) as i32) != 0)) as i32)
-            != 0)
+        ((((p.with(|__s| __s.x) == 1) && ((p.with(|__s| __s.in_.a) as i32) == 5))
+            && ((p.with(|__s| __s.in_.b) as i32) == 6))
+            && (p.with(|__s| __s.z) == 4))
     );
     let mut bz: Ptr<u8> = (field_ptr!(p, z)).reinterpret_cast::<u8>();
-    let mut i: i32 = 0;
-    'loop_: while (((i < 4) as i32) != 0) {
-        elem!(bz, i).write(1_u8);
-        i.postfix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < 4) {
+            elem!(bz, i).write(1_u8);
+            i.postfix_inc();
+        }
     }
-    assert!(
-        ((((((p.with(|__s| __s.z) == 16843009) as i32) != 0)
-            && ((((p.with(|__s| __s.in_.b) as i32) == 6) as i32) != 0)) as i32)
-            != 0)
-    );
+    assert!(((p.with(|__s| __s.z) == 16843009) && ((p.with(|__s| __s.in_.b) as i32) == 6)));
     libcc2rs::free_refcount((p).to_any());
     return 0;
 }

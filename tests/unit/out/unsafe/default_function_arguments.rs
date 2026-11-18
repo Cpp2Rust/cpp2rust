@@ -34,7 +34,7 @@ impl Default for Bar {
 }
 pub static mut counter_2: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 pub unsafe fn next_3() -> i32 {
-    return (*std::cell::LazyCell::force_mut(&mut *&raw mut counter_2)).prefix_inc();
+    return (*(*std::cell::LazyCell::force_mut(&mut *&raw mut counter_2)).prefix_inc());
 }
 pub unsafe fn lazy_4(mut x: Option<i32>) -> i32 {
     let mut x: i32 = x.unwrap_or_else(|| unsafe { (unsafe { next_3() }) });

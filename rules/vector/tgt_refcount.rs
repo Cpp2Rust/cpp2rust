@@ -40,7 +40,11 @@ fn f65<T1>(a0: Ptr<T1>) -> Ptr<T1> {
 }
 
 fn f66<T1>(a0: Ptr<T1>, a1: usize) -> Ptr<T1> {
-    a0.offset(a1 as isize)
+    if a1 >= a0.len() {
+        panic!("out of bounds access")
+    } else {
+        a0.offset(a1 as isize)
+    }
 }
 
 fn f68<T1>(a0: Ptr<T1>) -> Ptr<T1> {
@@ -93,8 +97,12 @@ fn f96<T1>(a0: Ptr<T1>) -> RandomAccessIterator<T1> {
     a0.end()
 }
 
+fn f97<T1: ByteRepr>(a0: Ptr<Vec<T1>>, a1: Ptr<Vec<T1>>) {
+    a0.swap_with(&a1, |__v| __v.with_mut(std::mem::take))
+}
+
 fn f98<T1: ByteRepr + 'static>(a0: Ptr<Vec<T1>>, a1: usize) -> Ptr<T1> {
-    if a1 as usize >= (*a0.upgrade().deref()).len() {
+    if a1 >= (*a0.upgrade().deref()).len() {
         panic!("out of bounds access")
     } else {
         a0.decay().offset(a1 as isize)

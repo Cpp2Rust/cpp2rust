@@ -24,6 +24,10 @@ fn main_0() -> i32 {
         (libcc2rs::cerr())
     };
     write!(os2, "hello\n",);
+    let is: Ptr<std::fs::File> = libcc2rs::cin();
+    assert!((is.with_mut(libcc2rs::istream_get) == -1_i32));
+    let mut is_ptr: Ptr<std::fs::File> = (libcc2rs::cin());
+    assert!((is_ptr.with_mut(libcc2rs::istream_get) == -1_i32));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

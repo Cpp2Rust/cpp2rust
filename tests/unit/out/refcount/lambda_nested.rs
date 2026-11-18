@@ -60,7 +60,7 @@ impl SImpl for Ptr<S> {
                         let y: Value<i32> = Rc::new(RefCell::new((*y.borrow())));
                     },
                     |mut z: i32| -> i32 {
-                        return (((*this_.borrow()).clone().with(|__s| __s.v) + (*y.borrow())) + z);
+                        return (((*this_.borrow()).with(|__s| __s.v) + (*y.borrow())) + z);
                     }
                 )));
                 return ({ (*inner.borrow()).call(1) });

@@ -3,7 +3,7 @@
 
 unsafe fn f1(a0: *mut u8, a1: *const u8, a2: usize) -> *mut u8 {
     if a2 != 0 {
-        ::std::ptr::copy_nonoverlapping(a1, a0, a2 as usize)
+        ::std::ptr::copy_nonoverlapping(a1, a0, a2)
     }
     a0
 }
@@ -17,8 +17,8 @@ unsafe fn f2(a0: *mut u8, a1: i32, a2: usize) -> *mut u8 {
 }
 
 unsafe fn f3(a0: *const u8, a1: *const u8, a2: usize) -> i32 {
-    let sa = core::slice::from_raw_parts(a0 as *const u8, a2 as usize);
-    let sb = core::slice::from_raw_parts(a1 as *const u8, a2 as usize);
+    let sa = core::slice::from_raw_parts(a0 as *const u8, a2);
+    let sb = core::slice::from_raw_parts(a1 as *const u8, a2);
     let mut diff = 0_i32;
     for (x, y) in sa.iter().zip(sb.iter()) {
         if x != y {
@@ -31,7 +31,7 @@ unsafe fn f3(a0: *const u8, a1: *const u8, a2: usize) -> i32 {
 
 unsafe fn f4(a0: *mut u8, a1: *const u8, a2: usize) -> *mut u8 {
     if a2 != 0 {
-        ::std::ptr::copy_nonoverlapping(a1, a0, a2 as usize)
+        ::std::ptr::copy_nonoverlapping(a1, a0, a2)
     }
     a0
 }
@@ -53,11 +53,11 @@ unsafe fn f8(a0: *const libc::c_char, a1: *const libc::c_char) -> i32 {
 }
 
 unsafe fn f9(a0: *const libc::c_char, a1: *const libc::c_char, a2: usize) -> i32 {
-    libc::strncmp(a0, a1, a2 as usize)
+    libc::strncmp(a0, a1, a2)
 }
 
 unsafe fn f10(a0: *const u8, a1: i32, a2: usize) -> *mut ::libc::c_void {
-    libc::memchr(a0 as *const ::libc::c_void, a1, a2 as usize)
+    libc::memchr(a0 as *const ::libc::c_void, a1, a2)
 }
 
 unsafe fn f11(a0: *const libc::c_char, a1: i32) -> *mut libc::c_char {
@@ -65,7 +65,7 @@ unsafe fn f11(a0: *const libc::c_char, a1: i32) -> *mut libc::c_char {
 }
 
 unsafe fn f12(a0: *const u8, a1: i32, a2: usize) -> *const ::libc::c_void {
-    libc::memchr(a0 as *const ::libc::c_void, a1, a2 as usize) as *const ::libc::c_void
+    libc::memchr(a0 as *const ::libc::c_void, a1, a2) as *const ::libc::c_void
 }
 
 unsafe fn f13(a0: *const libc::c_char, a1: i32) -> *const libc::c_char {
@@ -114,17 +114,17 @@ unsafe fn f23(a0: *mut libc::c_char, a1: *const libc::c_char) -> *mut libc::c_ch
 
 #[cfg(target_os = "linux")]
 unsafe fn f24(a0: *const u8, a1: i32, a2: usize) -> *mut ::libc::c_void {
-    libc::memrchr(a0 as *const ::libc::c_void, a1, a2 as usize)
+    libc::memrchr(a0 as *const ::libc::c_void, a1, a2)
 }
 
 #[cfg(target_os = "linux")]
 unsafe fn f25(a0: *const u8, a1: i32, a2: usize) -> *const ::libc::c_void {
-    libc::memrchr(a0 as *const ::libc::c_void, a1, a2 as usize) as *const ::libc::c_void
+    libc::memrchr(a0 as *const ::libc::c_void, a1, a2) as *const ::libc::c_void
 }
 
 #[cfg(target_os = "linux")]
 unsafe fn f26(a0: *mut u8, a1: i32, a2: usize) -> *mut ::libc::c_void {
-    libc::memrchr(a0 as *const ::libc::c_void, a1, a2 as usize)
+    libc::memrchr(a0 as *const ::libc::c_void, a1, a2)
 }
 
 unsafe fn f27(a0: *const libc::c_char, a1: *const libc::c_char) -> i32 {
@@ -140,11 +140,11 @@ unsafe fn f27(a0: *const libc::c_char, a1: *const libc::c_char) -> i32 {
 // So it's not 100% correct to always return a1. But the Rust libc version only returns int.
 #[cfg(target_os = "linux")]
 unsafe fn f28(a0: i32, a1: *mut libc::c_char, a2: usize) -> *mut libc::c_char {
-    libc::strerror_r(a0, a1, a2 as usize);
+    libc::strerror_r(a0, a1, a2);
     a1
 }
 
 #[cfg(target_os = "macos")]
 unsafe fn f28(a0: i32, a1: *mut libc::c_char, a2: usize) -> i32 {
-    libc::strerror_r(a0, a1, a2 as usize)
+    libc::strerror_r(a0, a1, a2)
 }

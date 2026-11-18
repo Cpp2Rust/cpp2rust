@@ -14,7 +14,7 @@ impl SemanticAnalysis {
         let mut resolver = MethodResolver { ir };
 
         if rustc_driver::catch_fatal_errors(|| {
-            rustc_driver::run_compiler(&args, &mut resolver);
+            rustc_driver::compiler_entrypoint(&args, &mut resolver);
         })
         .is_err()
         {
@@ -77,7 +77,6 @@ fn build_rustc_args(crate_root: &Path) -> Vec<String> {
         "libcc2rs",
         "libcc2rs_macros",
         "libc",
-        "brotli_sys",
         "rustls_ffi",
         "nix",
         "jiff",

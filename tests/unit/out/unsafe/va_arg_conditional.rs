@@ -27,24 +27,22 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     assert!(
-        ((((unsafe {
+        ((unsafe {
             conditional_log_0(
                 1,
                 (c"%d".as_ptr().cast_mut()).cast_const(),
                 Box::new([(42).into()]),
             )
-        }) == (42)) as i32)
-            != 0)
+        }) == (42))
     );
     assert!(
-        ((((unsafe {
+        ((unsafe {
             conditional_log_0(
                 0,
                 (c"%d".as_ptr().cast_mut()).cast_const(),
                 Box::new([(99).into()]),
             )
-        }) == (-1_i32)) as i32)
-            != 0)
+        }) == (-1_i32))
     );
     return 0;
 }

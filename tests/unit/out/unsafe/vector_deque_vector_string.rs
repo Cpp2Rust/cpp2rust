@@ -97,17 +97,17 @@ unsafe fn main_0() -> i32 {
     {
         (__tmp_1,) => {
             (&mut (*((copy[(0_usize)]).first_mut().unwrap())))[(0_usize)] =
-                std::mem::take(&mut (*__tmp_1))
+                std::mem::replace(&mut (*__tmp_1), vec![0])
         }
     };
     (*match (
         (&mut (&mut (*((v[(0_usize)]).first_mut().unwrap())))[(1_usize)] as *mut Vec<libc::c_char>),
     ) {
         (__tmp_2,) => {
-            if 0_usize as usize >= (*__tmp_2).len() - 1 {
+            if 0_usize >= (*__tmp_2).len() - 1 {
                 panic!("out of bounds access")
             } else {
-                (&mut (&mut (*__tmp_2))[0_usize as usize] as *mut libc::c_char)
+                (&mut (&mut (*__tmp_2))[0_usize] as *mut libc::c_char)
             }
         }
     }) = ('B' as libc::c_char);
@@ -153,6 +153,15 @@ unsafe fn main_0() -> i32 {
     );
     assert!((((*((copy[(1_usize)]).first_mut().unwrap())).len()) == (3_usize)));
     assert!(((row.len()) == (3_usize)));
+    let mut d: Vec<i32> = Vec::new();
+    let mut first: i32 = 1;
+    let mut last: i32 = 2;
+    d.push(first);
+    d.push(last);
+    let r: *mut i32 = ((d).first_mut().unwrap());
+    (*r) = 5;
+    let c: *const i32 = (d.last_mut().unwrap());
+    assert!(((*((d).first_mut().unwrap())) == (5)) && ((*c) == (2)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

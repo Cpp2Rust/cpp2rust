@@ -12,6 +12,29 @@ pub struct S {
     pub x: i32,
 }
 pub unsafe fn copy_0(mut copy_vector: Vec<i32>) {}
+#[repr(C)]
+#[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
+pub struct Foo {
+    pub a: Vec<i32>,
+    pub b: Vec<i32>,
+}
+impl Foo {
+    pub unsafe fn move_from(_a0: *mut Foo) -> Self {
+        let mut this = Self {
+            a: std::mem::take(&mut (*_a0).a),
+            b: std::mem::take(&mut (*_a0).b),
+        };
+        this
+    }
+    pub unsafe fn move_assign(&mut self, _a0: *mut Foo) -> *mut Foo {
+        self.a = std::mem::take(&mut (*_a0).a);
+        self.b = std::mem::take(&mut (*_a0).b);
+        return &mut (*(self as *mut Foo));
+    }
+}
+pub unsafe fn exchange_1(x: *mut Vec<i32>, y: *mut Vec<i32>) {
+    std::mem::swap(&mut (*x), &mut (*y));
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -31,7 +54,7 @@ unsafe fn main_0() -> i32 {
     assert!(v1.is_empty());
     let mut s1: usize = v1.len();
     {
-        let __a0 = 100_usize as usize;
+        let __a0 = 100_usize;
         v1.resize_with(__a0, || 0_i32)
     };
     assert!(((v1.len()) == (100_usize)));
@@ -155,17 +178,20 @@ unsafe fn main_0() -> i32 {
             (__tmp_7).clone()
         }
     };
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (4)) {
-        match ({ <UnsafeRandomAccessIterator<i32>>::from(v2.begin().iter_add(1_isize)) },) {
-            (mut __tmp_8,) => {
-                let pos = __tmp_8.iter_distance(&UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr()))
-                    as usize;
-                v2.remove(pos);
-                (__tmp_8).clone()
-            }
-        };
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (4)) {
+            match ({ <UnsafeRandomAccessIterator<i32>>::from(v2.begin().iter_add(1_isize)) },) {
+                (mut __tmp_8,) => {
+                    let pos = __tmp_8
+                        .iter_distance(&UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr()))
+                        as usize;
+                    v2.remove(pos);
+                    (__tmp_8).clone()
+                }
+            };
+            i.prefix_inc();
+        }
     }
     v2.pop();
     v2.pop();
@@ -174,46 +200,56 @@ unsafe fn main_0() -> i32 {
     assert!(((v2[(1_usize)]) == (2)));
     assert!(((v2[(2_usize)]) == (3)));
     let mut s2: usize = v2.len();
-    let mut v3: Vec<i32> = vec![1; 100_usize as usize];
+    let mut v3: Vec<i32> = vec![1; 100_usize];
     assert!(((v3.len()) == (100_usize)));
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (100)) {
-        assert!(((v3[(i as usize)]) == (1)));
-        i.prefix_inc();
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (100)) {
+            assert!(((v3[(i as usize)]) == (1)));
+            i.prefix_inc();
+        }
     }
     let mut v4: Vec<*mut i32> = (0..(100_usize) as usize)
         .map(|_| std::ptr::null_mut())
         .collect::<Vec<_>>();
     assert!(((v4.len()) == (100_usize)));
-    let mut i: u32 = 0_u32;
-    'loop_: while ((i as usize) < (v4.len())) {
-        assert!((v4[(i as usize)]).is_null());
-        i.prefix_inc();
+    {
+        let mut i: u32 = 0_u32;
+        'loop_: while ((i as usize) < (v4.len())) {
+            assert!((v4[(i as usize)]).is_null());
+            i.prefix_inc();
+        }
     }
     let mut v5: Vec<*const i32> = (0..(100_usize) as usize)
         .map(|_| std::ptr::null())
         .collect::<Vec<_>>();
     assert!(((v5.len()) == (100_usize)));
-    let mut i: u32 = 0_u32;
-    'loop_: while ((i as usize) < (v5.len())) {
-        assert!((v5[(i as usize)]).is_null());
-        i.prefix_inc();
+    {
+        let mut i: u32 = 0_u32;
+        'loop_: while ((i as usize) < (v5.len())) {
+            assert!((v5[(i as usize)]).is_null());
+            i.prefix_inc();
+        }
     }
-    let mut v6: Vec<f64> = vec![2_f64; s2 as usize];
+    let mut v6: Vec<f64> = vec![2_f64; s2];
     assert!(((v6.len()) == (s2)));
-    let mut i: u32 = 0_u32;
-    'loop_: while ((i as usize) < (s2)) {
-        assert!(((v6[(i as usize)]) == (2_f64)));
-        i.prefix_inc();
+    {
+        let mut i: u32 = 0_u32;
+        'loop_: while ((i as usize) < (s2)) {
+            assert!(((v6[(i as usize)]) == (2_f64)));
+            i.prefix_inc();
+        }
     }
     let mut v7: Vec<(*const i32, i32)> = (0..(200_usize) as usize)
         .map(|_| <(*const i32, i32)>::default())
         .collect::<Vec<_>>();
     assert!(((v7.len()) == (200_usize)));
-    let mut i: u32 = 0_u32;
-    'loop_: while ((i) < (200_u32)) {
-        assert!(((v7[(i as usize)].0).is_null()) && ((v7[(i as usize)].1) == (0)));
-        i.prefix_inc();
+    {
+        let mut i: u32 = 0_u32;
+        'loop_: while ((i) < (200_u32)) {
+            assert!(((v7[(i as usize)].0).is_null()) && ((v7[(i as usize)].1) == (0)));
+            i.prefix_inc();
+        }
     }
     let mut p1: *const f64 = (v6.as_mut_ptr()).cast_const();
     assert!(((*p1) == (2_f64)));
@@ -231,27 +267,27 @@ unsafe fn main_0() -> i32 {
     assert!(((v3[(1_usize)]) == (98)));
     assert!(((v3.capacity()) == (100_usize)));
     assert!(((v3.len()) == (100_usize)));
-    if 200_usize as usize > v3.capacity() as usize {
+    if 200_usize > v3.capacity() as usize {
         let len_0 = v3.len();
-        v3.reserve_exact(200_usize as usize - len_0 as usize);
+        v3.reserve_exact(200_usize - len_0 as usize);
     };
     assert!(((v3.capacity()) == (200_usize)));
     assert!(((v3.len()) == (100_usize)));
-    if 50_usize as usize > v3.capacity() as usize {
+    if 50_usize > v3.capacity() as usize {
         let len_0 = v3.len();
-        v3.reserve_exact(50_usize as usize - len_0 as usize);
+        v3.reserve_exact(50_usize - len_0 as usize);
     };
     assert!(((v3.capacity()) == (200_usize)));
     assert!(((v3.len()) == (100_usize)));
-    if 200_usize as usize > v3.capacity() as usize {
+    if 200_usize > v3.capacity() as usize {
         let len_0 = v3.len();
-        v3.reserve_exact(200_usize as usize - len_0 as usize);
+        v3.reserve_exact(200_usize - len_0 as usize);
     };
     assert!(((v3.capacity()) == (200_usize)));
     assert!(((v3.len()) == (100_usize)));
-    if 201_usize as usize > v3.capacity() as usize {
+    if 201_usize > v3.capacity() as usize {
         let len_0 = v3.len();
-        v3.reserve_exact(201_usize as usize - len_0 as usize);
+        v3.reserve_exact(201_usize - len_0 as usize);
     };
     assert!(((v3.capacity()) == (201_usize)));
     assert!(((v3.len()) == (100_usize)));
@@ -268,18 +304,17 @@ unsafe fn main_0() -> i32 {
     x0 = 6_f64;
     assert!(((*((v6).last_mut().unwrap())) == (5_f64)));
     let mut idx: i32 = 0;
-    assert!(((*(&mut (v6)[(idx as usize) as usize] as *mut f64)) == (2_f64)));
-    assert!(((*(&mut (v6)[(s2).wrapping_sub(1_usize) as usize] as *mut f64)) == (5_f64)));
-    let ref1: *mut f64 = (&mut (v6)[(s2).wrapping_sub(1_usize) as usize] as *mut f64);
+    assert!(((*(&mut (v6)[(idx as usize)] as *mut f64)) == (2_f64)));
+    assert!(((*(&mut (v6)[(s2).wrapping_sub(1_usize)] as *mut f64)) == (5_f64)));
+    let ref1: *mut f64 = (&mut (v6)[(s2).wrapping_sub(1_usize)] as *mut f64);
     (*ref1) += 1.5_f64;
-    assert!(((*(&mut (v6)[(s2).wrapping_sub(1_usize) as usize] as *mut f64)) == (6.5_f64)));
-    let mut x1: f64 = (*(&mut (v6)[(s2).wrapping_sub(1_usize) as usize] as *mut f64));
+    assert!(((*(&mut (v6)[(s2).wrapping_sub(1_usize)] as *mut f64)) == (6.5_f64)));
+    let mut x1: f64 = (*(&mut (v6)[(s2).wrapping_sub(1_usize)] as *mut f64));
     assert!(((x1) == (6.5_f64)));
     x1 -= 1.5_f64;
-    assert!(((*(&mut (v6)[(s2).wrapping_sub(1_usize) as usize] as *mut f64)) == (6.5_f64)));
+    assert!(((*(&mut (v6)[(s2).wrapping_sub(1_usize)] as *mut f64)) == (6.5_f64)));
     assert!(
-        ((((s1).wrapping_add(s2))
-            .wrapping_add(((*(&mut (v2)[0_usize as usize] as *mut i32)) as usize)))
+        ((((s1).wrapping_add(s2)).wrapping_add(((*(&mut (v2)[0_usize] as *mut i32)) as usize)))
             == (103_usize))
     );
     let mut a: S = S { x: 1 };
@@ -298,6 +333,51 @@ unsafe fn main_0() -> i32 {
     };
     (*(*(*v9[(0_usize)]))).x = 2;
     assert!(((a.x) == (2)));
+    let mut v10: Vec<i32> = Vec::from([1, 2, 3]);
+    let mut v11: Vec<i32> = Vec::from([4]);
+    std::mem::swap(&mut v10, &mut v11);
+    assert!(
+        ((((v10.len()) == (1_usize)) && ((v10[(0_usize)]) == (4))) && ((v11.len()) == (3_usize)))
+            && ((v11[(2_usize)]) == (3))
+    );
+    let mut foo: Foo = <Foo>::default();
+    {
+        let __a1 = 5;
+        foo.a.push(__a1)
+    };
+    {
+        let __a1 = 6;
+        foo.b.push(__a1)
+    };
+    {
+        let __a1 = 7;
+        foo.b.push(__a1)
+    };
+    std::mem::swap(&mut foo.a, &mut foo.b);
+    assert!(
+        (((foo.a.len()) == (2_usize)) && ((foo.a[(1_usize)]) == (7)))
+            && ((foo.b[(0_usize)]) == (5))
+    );
+    (unsafe { exchange_1(&mut foo.a, &mut v10) });
+    assert!(
+        (((foo.a.len()) == (1_usize)) && ((foo.a[(0_usize)]) == (4))) && ((v10[(1_usize)]) == (7))
+    );
+    let mut v12: Vec<i32> = Vec::new();
+    let mut moved: i32 = 5;
+    {
+        let __a1 = moved;
+        v12.push(__a1)
+    };
+    assert!(((v12[(0_usize)]) == (5)) && ((moved) == (5)));
+    let mut v13: Vec<*mut i32> = Vec::new();
+    let mut moved_ptr: *mut i32 = (&mut moved as *mut i32);
+    {
+        let __a1 = moved_ptr;
+        v13.push(__a1)
+    };
+    assert!(
+        ((v13[(0_usize)]) == (&mut moved as *mut i32)) && ((moved_ptr) == (&mut moved as *mut i32))
+    );
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

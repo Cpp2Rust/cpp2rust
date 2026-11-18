@@ -34,34 +34,28 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut p: *mut S = (libcc2rs::calloc_unsafe(1_usize, ::std::mem::size_of::<S>()) as *mut S);
-    assert!((((!((p).is_null())) as i32) != 0));
+    assert!((!((p).is_null())));
     let mut q: *mut S = p;
     (*p).in_.x = 1;
     (*p).in_.y = 2;
     (*p).total = (((*q).in_.x) + ((*q).in_.y));
-    assert!((((((*q).total) == (3)) as i32) != 0));
+    assert!((((*q).total) == (3)));
     let mut ip: *mut In = (&mut (*p).in_ as *mut In);
     (*ip).x = (((*p).total) + (1));
-    assert!(
-        ((((((((*q).in_.x) == (4)) as i32) != 0) && (((((*q).in_.y) == (2)) as i32) != 0)) as i32)
-            != 0)
-    );
+    assert!(((((*q).in_.x) == (4)) && (((*q).in_.y) == (2))));
     (*p).arr[((*p).n) as usize] = (*p).total;
     (*p).n += 1;
     (*p).arr[((*p).n) as usize] = (*q).in_.x;
     assert!(
-        (((((((((((*q).arr[(0) as usize]) == (3)) as i32) != 0)
-            && (((((*q).arr[(1) as usize]) == (4)) as i32) != 0)) as i32)
-            != 0)
-            && (((((*q).n) == (1)) as i32) != 0)) as i32)
-            != 0)
+        (((((*q).arr[(0) as usize]) == (3)) && (((*q).arr[(1) as usize]) == (4)))
+            && (((*q).n) == (1)))
     );
     libcc2rs::free_unsafe((p as *mut ::libc::c_void));
     let mut s: Node = <Node>::default();
     s.x = 1;
     s.self_ = (&mut s as *mut Node);
     (*s.self_).x = ((s.x) + (1));
-    assert!(((((s.x) == (2)) as i32) != 0));
+    assert!(((s.x) == (2)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

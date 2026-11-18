@@ -7,6 +7,10 @@ fn t1() -> Ptr<CFile> {
     Ptr::null()
 }
 
+fn t2() -> CFile {
+    unimplemented!()
+}
+
 fn f1(a0: Ptr<i8>, a1: Ptr<i8>) -> Ptr<CFile> {
     match CFile::open(&a0.to_rust_string(), &a1.to_rust_string()) {
         Some(__f) => Ptr::alloc(__f),
@@ -99,6 +103,8 @@ fn f17(a0: Ptr<i8>, a1: i32, a2: Ptr<CFile>) -> Ptr<i8> {
         let mut __dst = a0.clone();
         let mut __count: usize = 0;
         let __failed = a2.with_mut(|__f| {
+            let __prev_err = __f.err;
+            __f.err = false;
             while __count < __max {
                 let __c = __f.getc();
                 if __c < 0 {
@@ -111,9 +117,11 @@ fn f17(a0: Ptr<i8>, a1: i32, a2: Ptr<CFile>) -> Ptr<i8> {
                     break;
                 }
             }
-            __f.err
+            let __read_err = __f.err;
+            __f.err |= __prev_err;
+            __read_err
         });
-        if __failed || __count == 0 {
+        if __failed || (__max > 0 && __count == 0) {
             Ptr::null()
         } else {
             __dst.write(0);

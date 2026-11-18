@@ -7,3 +7,7 @@ edition = "2024"
 libc = "0.2"
 nix = { version = "0.30", features = ["socket", "net", "fs", "poll", "time", "user", "dir", "term", "event", "hostname"] }
 jiff = "0.2"
+
+# This crate only exists to prebuild these dependencies for the generated code.
+[lints.cargo]
+unused_dependencies = "allow"

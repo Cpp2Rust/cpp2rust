@@ -31,10 +31,10 @@ fn main_0() -> i32 {
             }
         }
     };
-    assert!((((fd >= 0) as i32) != 0));
+    assert!((fd >= 0));
     let tio: Value<libcc2rs::Termios> = Rc::new(RefCell::new(Default::default()));
     assert!(
-        (((match ({ (tio.as_pointer()) },) {
+        (match ({ (tio.as_pointer()) },) {
             (mut __tmp_0,) => {
                 match FdRegistry::with_fd(fd, |__fd| nix::sys::termios::tcgetattr(__fd)) {
                     Ok(__t) => {
@@ -47,11 +47,10 @@ fn main_0() -> i32 {
                     }
                 }
             }
-        } == -1_i32) as i32)
-            != 0)
+        } == -1_i32)
     );
     assert!(
-        ((({
+        ({
             let __action = match 0 {
                 0 => nix::sys::termios::SetArg::TCSANOW,
                 1 => nix::sys::termios::SetArg::TCSADRAIN,
@@ -69,19 +68,17 @@ fn main_0() -> i32 {
                     -1
                 }
             }
-        } == -1_i32) as i32)
-            != 0)
+        } == -1_i32)
     );
-    assert!((((FdRegistry::close(fd) == 0) as i32) != 0));
+    assert!((FdRegistry::close(fd) == 0));
     assert!(
-        (((match nix::unistd::unlink(path.to_rust_string().as_str()) {
+        (match nix::unistd::unlink(path.to_rust_string().as_str()) {
             Ok(()) => 0,
             Err(__e) => {
                 libcc2rs::cpp2rust_errno().write(__e as i32);
                 -1
             }
-        } == 0) as i32)
-            != 0)
+        } == 0)
     );
     return 0;
 }

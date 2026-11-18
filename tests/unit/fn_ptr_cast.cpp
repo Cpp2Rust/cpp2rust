@@ -47,10 +47,19 @@ void test_call_through_cast() {
   assert(result == 142);
 }
 
+// A null pointer stays null when cast to another function pointer type.
+void test_null_cast() {
+  int_fn fn = nullptr;
+  generic_fn gfn = (generic_fn)fn;
+  assert(gfn == nullptr);
+  assert((int_fn)gfn == nullptr);
+}
+
 int main() {
   test_roundtrip();
   test_double_cast();
   test_void_ptr_to_fn();
   test_call_through_cast();
+  test_null_cast();
   return 0;
 }

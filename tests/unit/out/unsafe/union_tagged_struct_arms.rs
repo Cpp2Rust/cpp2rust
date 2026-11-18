@@ -66,11 +66,10 @@ unsafe fn main_0() -> i32 {
     p_list.v.list.items = (*std::cell::LazyCell::force_mut(&mut *&raw mut items_4)).as_mut_ptr();
     p_list.v.list.count = 3_i64;
     p_list.v.list.cursor = 1_i64;
-    assert!(((((p_list.v.list.count) == (3_i64)) as i32) != 0));
+    assert!(((p_list.v.list.count) == (3_i64)));
     assert!(
-        (((((*(*p_list.v.list.items.offset((1) as isize)).offset((0) as isize)) as i32)
-            == ('b' as i32)) as i32)
-            != 0)
+        (((*(*p_list.v.list.items.offset((1) as isize)).offset((0) as isize)) as i32)
+            == ('b' as i32))
     );
     let mut p_letters: Branch = <Branch>::default();
     p_letters.choice = Choice_enum_C_LETTERS;
@@ -79,7 +78,7 @@ unsafe fn main_0() -> i32 {
     p_letters.v.letters.hi = ('z' as i32);
     p_letters.v.letters.curr = ('m' as i32);
     p_letters.v.letters.step = 1_u8;
-    assert!((((((p_letters.v.letters.hi) - (p_letters.v.letters.lo)) == (25)) as i32) != 0));
+    assert!((((p_letters.v.letters.hi) - (p_letters.v.letters.lo)) == (25)));
     let mut p_integers: Branch = <Branch>::default();
     p_integers.choice = Choice_enum_C_INTEGERS;
     p_integers.index = 2;
@@ -88,8 +87,8 @@ unsafe fn main_0() -> i32 {
     p_integers.v.integers.curr = 1_i64;
     p_integers.v.integers.step = 1_i64;
     p_integers.v.integers.width = 3;
-    assert!(((((p_integers.v.integers.hi) == (100_i64)) as i32) != 0));
-    assert!(((((p_integers.v.integers.width) == (3)) as i32) != 0));
+    assert!(((p_integers.v.integers.hi) == (100_i64)));
+    assert!(((p_integers.v.integers.width) == (3)));
     return 0;
 }
 static mut items_4: std::cell::LazyCell<[*mut libc::c_char; 3]> =
