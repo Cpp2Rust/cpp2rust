@@ -60,7 +60,7 @@ unsafe fn main_0() -> i32 {
     assert!(((*f) == (3)));
     let mut a: (i32, i32) = (1, 2);
     let mut pa: *mut i32 = (&mut a.0 as *mut i32);
-    let mut b: (i32, i32) = (cpp_move_unsafe!(&mut a.0), cpp_move_unsafe!(&mut a.1));
+    let mut b: (i32, i32) = a.clone();
     (*pa) = 9;
     assert!(((b.0) == (1)));
     assert!(((a.0) == (9)));

@@ -47,9 +47,9 @@ pub unsafe fn test_3() {
     assert!(((source.len()) == (3_usize)));
     let mut values: Vec<i32> = Vec::from([7, 8]);
     let mut it: UnsafeRandomAccessIterator<i32> = values.begin();
-    assert!(((unsafe { deref_2((it).clone(),) }) == (7)));
+    assert!(((unsafe { deref_2(it.clone(),) }) == (7)));
     assert!(((*it.iter_deref()) == (7)));
-    let mut moved_it: UnsafeRandomAccessIterator<i32> = (it).clone();
+    let mut moved_it: UnsafeRandomAccessIterator<i32> = it.clone();
     assert!(((*moved_it.iter_deref()) == (7)));
     assert!(((*it.iter_deref()) == (7)));
 }

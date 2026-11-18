@@ -4064,33 +4064,17 @@ void Converter::ConvertCXXConstructExprArgs(clang::CXXConstructExpr *expr) {
   }
 }
 
-clang::CXXConstructExpr *
-Converter::AsCopyConstruction(clang::CXXConstructExpr *expr) {
-  auto *ctor = expr->getConstructor();
-  if (!ctor->isMoveConstructor() || !ctor->isTrivial() ||
-      IsLambdaCopyOrMoveConstructor(ctor)) {
-    return nullptr;
-  }
-  auto *copy = GetSema().LookupCopyingConstructor(ctor->getParent(),
-                                                  clang::Qualifiers::Const);
-  if (!copy || copy->isDeleted() || !copy->isTrivial()) {
-    return nullptr;
-  }
-  return MakeConstructExpr(ctx_, expr->getType(), copy, expr->getArg(0));
-}
-
 bool Converter::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
   if (expr->isElidable()) {
     Convert(expr->getArg(0));
     return false;
   }
 
-  if (auto *copy = AsCopyConstruction(expr)) {
-    Convert(copy);
-    return false;
-  }
-
-  if (auto str = GetMappedAsString(expr, expr->getArgs(), expr->getNumArgs());
+  auto *ctor = expr->getConstructor();
+  bool trivial_move = ctor->isMoveConstructor() && ctor->isTrivial();
+  if (auto str = trivial_move ? std::string()
+                              : GetMappedAsString(expr, expr->getArgs(),
+                                                  expr->getNumArgs());
       !str.empty()) {
     StrCat(str);
     if (!IsPassThroughRule(expr)) {
@@ -4099,7 +4083,6 @@ bool Converter::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
     return false;
   }
 
-  auto *ctor = expr->getConstructor();
   if (IsLambdaCopyOrMoveConstructor(ctor)) {
     Convert(expr->getArg(0));
     EmitFresh(std::format(".{}()", GetCopyOrMoveName(ctor)));

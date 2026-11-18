@@ -2139,11 +2139,6 @@ bool ConverterRefCount::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
     return false;
   }
 
-  if (auto *copy = AsCopyConstruction(expr)) {
-    Convert(copy);
-    return false;
-  }
-
   // An array is boxed unless it initializes an unboxed variable.
   bool boxed_array = expr->getType()->isArrayType() &&
                      getConversionKind() != ConversionKind::Unboxed;

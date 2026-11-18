@@ -44,7 +44,7 @@ pub fn deref_2(it: RandomAccessIterator<i32>) -> i32 {
 }
 pub fn test_3() {
     let source: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::from([1, 2, 3])));
-    let moved: Value<Vec<i32>> = Rc::new(RefCell::new((*source.borrow()).clone()));
+    let moved: Value<Vec<i32>> = Rc::new(RefCell::new((*source.borrow_mut()).clone()));
     assert!(({ ((*moved.borrow()).len() == 3_usize) }));
     assert!(({ ((*source.borrow()).len() == 3_usize) }));
     let values: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::from([7, 8])));
