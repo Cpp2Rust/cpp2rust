@@ -133,6 +133,12 @@ impl PartialEq for AnyPtr {
     }
 }
 
+impl std::fmt::Debug for AnyPtr {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Debug::fmt(&self.ptr.as_bytes(), f)
+    }
+}
+
 impl AnyPtr {
     // char buffers are Ptr<i8>; access them directly rather than through a
     // reinterpreted byte view.
