@@ -47,19 +47,19 @@ pub unsafe fn scale_2(mut x: i32) -> i32 {
     return ((x) - (2));
 }
 pub unsafe fn get_float_3() -> f32 {
-    return f32::from_bits(0x7fc00000);
+    return f32::NAN;
 }
 pub unsafe fn get_float_4() -> f32 {
     return f32::NEG_INFINITY;
 }
 pub unsafe fn get_double_5() -> f64 {
-    return f64::from_bits(0x7ff8000000000005);
+    return f64::NAN;
 }
 pub unsafe fn get_double_6() -> f64 {
     return f64::NEG_INFINITY;
 }
 pub unsafe fn get_long_double_7() -> f64 {
-    return f64::from_bits(0x7ff8000000000000);
+    return f64::NAN;
 }
 pub unsafe fn get_long_double_8() -> f64 {
     return f64::NEG_INFINITY;
