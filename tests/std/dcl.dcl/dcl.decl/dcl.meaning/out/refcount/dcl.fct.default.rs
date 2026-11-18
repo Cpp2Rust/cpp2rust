@@ -105,7 +105,7 @@ pub fn count_default_13() -> i32 {
 pub fn combine_14(mut first: i32, mut second: i32) -> i32 {
     return ((first * 100) + second);
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom)]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct p9_evaluated_each_time_called_Widget {
@@ -127,7 +127,7 @@ thread_local!(
 );
 pub type anon_16 = u32;
 pub const anon_16_kBonus: anon_16 = 5;
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(4)]
 pub struct p9_evaluated_each_time_called_Account {
     #[offset(0)]
@@ -197,7 +197,7 @@ pub fn test_17() {
 pub fn add_18(mut a: i32, mut b: i32) -> i32 {
     return (a + b);
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct p9_not_part_of_the_type_Scale {}
 impl p9_not_part_of_the_type_Scale {
