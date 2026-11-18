@@ -58,10 +58,7 @@ unsafe fn main_0() -> i32 {
     assert!(((c.view.b.lo as i32) == (0)));
     assert!(((c.view.raw_[(0) as usize] as i32) == (0)));
     assert!(((c.view.raw_[(255) as usize] as i32) == (0)));
-    let mut src: [u8; 16] = [
-        0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8,
-        0_u8,
-    ];
+    let mut src: [u8; 16] = [0_u8; 16];
     src[(0) as usize] = 2_u8;
     src[(2) as usize] = 80_u8;
     src[(3) as usize] = 0_u8;

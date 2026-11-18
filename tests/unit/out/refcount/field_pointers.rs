@@ -205,9 +205,7 @@ fn main_0() -> i32 {
         }
     };
     assert!(({ ((*y.borrow()) == 4) }));
-    let bytes: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
-        0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8,
-    ])));
+    let bytes: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([0_u8; 8])));
     let mut view: Ptr<Header> = bytes.decay().reinterpret_cast::<Header>();
     field!(view, tag).write(16909060);
     assert!(

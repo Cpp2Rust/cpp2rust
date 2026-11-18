@@ -48,10 +48,7 @@ pub fn test_fputc_fputs_0() {
         None => Ptr::null(),
     };
     assert!((!((fp).is_null())));
-    let buf: Value<Box<[i8]>> = Rc::new(RefCell::new(Box::new([
-        0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8,
-        0_i8,
-    ])));
+    let buf: Value<Box<[i8]>> = Rc::new(RefCell::new(Box::new([0_i8; 16])));
     assert!(
         (libcc2rs::fread_refcount((buf.decay()).to_any(), 1_usize, 16_usize, (fp).clone())
             == 5_usize)
@@ -526,9 +523,7 @@ pub fn test_freopen_4() {
         }
     };
     assert!((!((fp2).is_null())));
-    let buf: Value<Box<[i8]>> = Rc::new(RefCell::new(Box::new([
-        0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8,
-    ])));
+    let buf: Value<Box<[i8]>> = Rc::new(RefCell::new(Box::new([0_i8; 8])));
     assert!(
         (libcc2rs::fread_refcount((buf.decay()).to_any(), 1_usize, 8_usize, (fp2).clone())
             == 5_usize)
@@ -595,9 +590,7 @@ pub fn test_fseeko_5() {
             _ => 0,
         } == 0)
     );
-    let buf: Value<Box<[i8]>> = Rc::new(RefCell::new(Box::new([
-        0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8,
-    ])));
+    let buf: Value<Box<[i8]>> = Rc::new(RefCell::new(Box::new([0_i8; 8])));
     assert!(
         (libcc2rs::fread_refcount((buf.decay()).to_any(), 1_usize, 5_usize, (fp).clone())
             == 5_usize)

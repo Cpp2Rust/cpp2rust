@@ -36,6 +36,16 @@ impl Default for Holder {
 pub unsafe fn sum_1(p: *const Pair) -> i32 {
     return (((*p).a) + ((*p).b));
 }
+#[repr(C)]
+#[derive(Copy, Clone, VaArg, FnPtrArg)]
+pub struct Seven {
+    pub v: i32,
+}
+impl Default for Seven {
+    fn default() -> Self {
+        unsafe { Seven { v: 7 } }
+    }
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -55,6 +65,14 @@ unsafe fn main_0() -> i32 {
     (unsafe { Holder::operator_assign_1(&mut h, &mut p) });
     assert!(((h.p.a) == (1)) && ((h.p.b) == (2)));
     assert!(((unsafe { sum_1(&p,) }) == (3)));
+    let mut sevens: [Seven; 4] = [<Seven>::default(); 4];
+    {
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (4)) {
+            assert!(((sevens[(i) as usize].v) == (7)));
+            i.postfix_inc();
+        }
+    }
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

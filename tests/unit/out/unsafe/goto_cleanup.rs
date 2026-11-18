@@ -105,7 +105,7 @@ pub unsafe fn via_arrays_4(mut fail: i32) -> i32 {
     goto_block!({
         '__entry: {
             ret = 0;
-            remain = [0_u8, 0_u8, 0_u8, 0_u8];
+            remain = [0_u8; 4];
             name = std::mem::transmute(*b"wxyz\0");
             if (fail != 0) {
                 ret = -1_i32;

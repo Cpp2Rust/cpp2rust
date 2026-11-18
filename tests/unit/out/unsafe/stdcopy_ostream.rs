@@ -44,40 +44,7 @@ unsafe fn main_0() -> i32 {
         write!(ofs, "{:}", 42,);
     }
     let mut f: *mut ::libc::FILE = libc::fopen(file.as_ptr(), c"rb".as_ptr());
-    let mut buf: [libc::c_char; 32] = [
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-    ];
+    let mut buf: [libc::c_char; 32] = [(0 as libc::c_char); 32];
     let mut n: usize = libcc2rs::fread_unsafe(
         (buf.as_mut_ptr() as *mut ::libc::c_void),
         1_usize,

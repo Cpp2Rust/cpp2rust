@@ -32,16 +32,7 @@ pub unsafe fn test_lseek_1() {
     let mut fd: i32 = libc::fileno(fp);
     assert!(((libc::lseek(fd, (0 as ::libc::off_t), ::libc::SEEK_END)) == (11 as ::libc::off_t)));
     assert!(((libc::lseek(fd, (6 as ::libc::off_t), ::libc::SEEK_SET)) == (6 as ::libc::off_t)));
-    let mut buf: [libc::c_char; 8] = [
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-    ];
+    let mut buf: [libc::c_char; 8] = [(0 as libc::c_char); 8];
     assert!(((libc::read(fd, (buf.as_mut_ptr() as *mut ::libc::c_void), 5_usize)) == (5_isize)));
     assert!(
         (({
@@ -76,24 +67,7 @@ pub unsafe fn test_read_2() {
     fp = libc::fopen(path, (c"rb".as_ptr().cast_mut()).cast_const());
     assert!((!((fp).is_null())));
     let mut fd: i32 = libc::fileno(fp);
-    let mut buf: [libc::c_char; 16] = [
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-    ];
+    let mut buf: [libc::c_char; 16] = [(0 as libc::c_char); 16];
     assert!(((libc::read(fd, (buf.as_mut_ptr() as *mut ::libc::c_void), 16_usize)) == (11_isize)));
     assert!(
         (({
@@ -134,16 +108,7 @@ pub unsafe fn test_pipe_4() {
     assert!(
         ((libc::write(fds[(1) as usize], (msg as *const ::libc::c_void), 5_usize)) == (5_isize))
     );
-    let mut buf: [libc::c_char; 8] = [
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-    ];
+    let mut buf: [libc::c_char; 8] = [(0 as libc::c_char); 8];
     assert!(
         ((libc::read(
             fds[(0) as usize],

@@ -25,7 +25,7 @@ unsafe fn main_0() -> i32 {
     assert!((((*ptr).flags as i32) == (3)));
     (*(ptr)).flags = (((*(ptr)).flags as i32) & ((!((1) << (0)) as u8) as i32)) as u8;
     assert!((((*ptr).flags as i32) == (2)));
-    let mut bits: [u8; 4] = [0_u8, 0_u8, 0_u8, 0_u8];
+    let mut bits: [u8; 4] = [0_u8; 4];
     (bits)[((5) / (8)) as usize] =
         (((bits)[((5) / (8)) as usize] as i32) | ((((1) << ((5) & (7))) as u8) as i32)) as u8;
     (bits)[((13) / (8)) as usize] =

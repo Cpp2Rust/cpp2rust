@@ -25,7 +25,7 @@ fn main_0() -> i32 {
     field!((ptr), flags)
         .write({ (((ptr).with(|__s| __s.flags) as i32) & ((!(1 << 0) as u8) as i32)) as u8 });
     assert!(((ptr.with(|__s| __s.flags) as i32) == 2));
-    let mut bits: [u8; 4] = [0_u8, 0_u8, 0_u8, 0_u8];
+    let mut bits: [u8; 4] = [0_u8; 4];
     (bits)[((5) / 8) as usize] =
         { (((bits)[((5) / 8) as usize] as i32) | (((1 << ((5) & 7)) as u8) as i32)) as u8 };
     (bits)[((13) / 8) as usize] =

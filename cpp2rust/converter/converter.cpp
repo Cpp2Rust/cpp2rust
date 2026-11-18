@@ -3855,9 +3855,57 @@ void Converter::ConvertUnionInitList(clang::InitListExpr *expr,
   ConvertFieldInit(field, expr->getInit(0));
 }
 
+namespace {
+// Whether expr is a side-effect-free constant equal to the value-initialized
+// (zero) value of its type, i.e., the value of an ImplicitValueInitExpr.
+bool IsZeroValue(const clang::Expr *expr, const clang::ASTContext &ctx) {
+  clang::Expr::EvalResult result;
+  if (expr->isValueDependent() || !expr->EvaluateAsRValue(result, ctx) ||
+      result.HasSideEffects) {
+    return false;
+  }
+  const auto &val = result.Val;
+  if (val.isInt()) {
+    return val.getInt().isZero();
+  }
+  if (val.isFloat()) {
+    return val.getFloat().isPosZero();
+  }
+  return false;
+}
+} // namespace
+
+bool Converter::IsBroadcastArrayInitList(clang::InitListExpr *expr) {
+  auto *arr_ty = ctx_.getAsConstantArrayType(expr->getType());
+  if (!arr_ty || arr_ty->getSize().ule(1) || !expr->hasArrayFiller() ||
+      !TypeIsCopyable(arr_ty->getElementType())) {
+    return false;
+  }
+  auto *filler = expr->getArrayFiller();
+  if (filler->HasSideEffects(ctx_)) {
+    return false;
+  }
+  // Explicit initializers must have the same value as the filler. This can
+  // only be checked for a value-initialized filler, e.g., int a[10] = {0};
+  if (expr->getNumInits() == 0) {
+    return true;
+  }
+  return clang::isa<clang::ImplicitValueInitExpr>(filler) &&
+         llvm::all_of(expr->inits(), [&](const clang::Expr *init) {
+           return IsZeroValue(init, ctx_);
+         });
+}
+
 void Converter::ConvertArrayInitList(clang::InitListExpr *expr) {
   PushBracket bracket(*this);
   auto element_type = ctx_.getAsArrayType(expr->getType())->getElementType();
+  if (IsBroadcastArrayInitList(expr)) {
+    // All elements have the same Copy value: emit [filler; N].
+    ConvertVarInit(element_type, expr->getArrayFiller());
+    auto size = ctx_.getAsConstantArrayType(expr->getType())->getSize();
+    StrCat(std::format("; {}", GetNumAsString(size).c_str()));
+    return;
+  }
   for (auto *init : expr->inits()) {
     ConvertVarInit(element_type, init);
     StrCat(token::kComma);
