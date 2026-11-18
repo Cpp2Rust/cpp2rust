@@ -2720,6 +2720,7 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
   }
   case clang::CastKind::CK_ConstructorConversion:
   case clang::CastKind::CK_DerivedToBase:
+  case clang::CastKind::CK_UncheckedDerivedToBase:
     Convert(sub_expr);
     break;
   case clang::CastKind::CK_IntegralToBoolean:

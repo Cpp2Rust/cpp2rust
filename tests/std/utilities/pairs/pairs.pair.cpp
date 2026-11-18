@@ -37,6 +37,13 @@ void test() {
   std::pair<std::vector<int>, int> copied(std::move(values), 3);
   assert(values.size() == 2);
   assert(copied.first.size() == 2 && copied.first[1] == 7);
+
+  int referent = 5;
+  std::pair<const int &, char> bound(referent, 'c');
+  referent = 6;
+  assert(bound.first == 6);
+  assert(&bound.first == &referent);
+  assert(bound.second == 'c');
 }
 } // namespace p12_forwarding_constructor
 
