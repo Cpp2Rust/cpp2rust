@@ -20,7 +20,10 @@ impl NonTrivial {
         this
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut NonTrivial) -> *mut NonTrivial {
-        self.data = std::mem::take(&mut (*_a0).data);
+        {
+            *(&mut self.data as *mut Vec<i32>) = std::mem::take(&mut (*_a0).data);
+            (&mut self.data as *mut Vec<i32>)
+        };
         return &mut (*(self as *mut NonTrivial));
     }
 }
@@ -50,7 +53,10 @@ impl NonCopyable {
         this
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut NonCopyable) -> *mut NonCopyable {
-        self.value = (*_a0).value.take();
+        {
+            *(&mut self.value as *mut Option<Box<i32>>) = (*_a0).value.take();
+            (&mut self.value as *mut Option<Box<i32>>)
+        };
         return &mut (*(self as *mut NonCopyable));
     }
 }

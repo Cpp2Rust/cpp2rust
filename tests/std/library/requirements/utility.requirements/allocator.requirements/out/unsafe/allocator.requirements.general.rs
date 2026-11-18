@@ -23,7 +23,10 @@ pub unsafe fn test_0() {
     let mut m: UnsafeMap<i32, (i32, i32)> = UnsafeMap::new();
     let mut n: UnsafeMap<i32, (i32, i32)> = UnsafeMap::new();
     (*m.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k))) = 2;
-    n = std::mem::take(&mut m);
+    {
+        *(&mut n as *mut UnsafeMap<i32, (i32, i32)>) = std::mem::take(&mut m);
+        (&mut n as *mut UnsafeMap<i32, (i32, i32)>)
+    };
     assert!(((*n.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k))) == (2)));
     assert!(((n.len()) == (1_usize)));
 }

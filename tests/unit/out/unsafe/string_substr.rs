@@ -65,17 +65,21 @@ unsafe fn main_0() -> i32 {
         )
     });
     calls = 0;
-    out = match ((&mut (unsafe { temporary_1(&mut calls) }) as *const Vec<libc::c_char>),) {
-        (__tmp_2,) => {
-            let __range = 1_usize
-                ..::std::cmp::min(
-                    1_usize + 2_usize,
-                    (*(__tmp_2 as *const Vec<libc::c_char>)).len() - 1,
-                );
-            let mut __tmp1 = (&*(__tmp_2 as *const Vec<libc::c_char>))[__range].to_vec();
-            __tmp1.push(0);
-            __tmp1
-        }
+    {
+        *(&mut out as *mut Vec<libc::c_char>) =
+            match ((&mut (unsafe { temporary_1(&mut calls) }) as *const Vec<libc::c_char>),) {
+                (__tmp_2,) => {
+                    let __range = 1_usize
+                        ..::std::cmp::min(
+                            1_usize + 2_usize,
+                            (*(__tmp_2 as *const Vec<libc::c_char>)).len() - 1,
+                        );
+                    let mut __tmp1 = (&*(__tmp_2 as *const Vec<libc::c_char>))[__range].to_vec();
+                    __tmp1.push(0);
+                    __tmp1
+                }
+            };
+        (&mut out as *mut Vec<libc::c_char>)
     };
     (unsafe {
         libc::printf(
@@ -84,23 +88,26 @@ unsafe fn main_0() -> i32 {
             (calls),
         )
     });
-    out = match ({
-        ({
-            s[(0_usize)] = ('j' as libc::c_char);
-            0
-        } as usize)
-    },)
     {
-        (mut __tmp_3,) => {
-            let __range = __tmp_3
-                ..::std::cmp::min(
-                    __tmp_3 + 2_usize,
-                    (*(&mut s as *const Vec<libc::c_char>)).len() - 1,
-                );
-            let mut __tmp1 = (&*(&mut s as *const Vec<libc::c_char>))[__range].to_vec();
-            __tmp1.push(0);
-            __tmp1
-        }
+        *(&mut out as *mut Vec<libc::c_char>) = match ({
+            ({
+                s[(0_usize)] = ('j' as libc::c_char);
+                0
+            } as usize)
+        },)
+        {
+            (mut __tmp_3,) => {
+                let __range = __tmp_3
+                    ..::std::cmp::min(
+                        __tmp_3 + 2_usize,
+                        (*(&mut s as *const Vec<libc::c_char>)).len() - 1,
+                    );
+                let mut __tmp1 = (&*(&mut s as *const Vec<libc::c_char>))[__range].to_vec();
+                __tmp1.push(0);
+                __tmp1
+            }
+        };
+        (&mut out as *mut Vec<libc::c_char>)
     };
     (unsafe {
         libc::printf(
@@ -109,19 +116,22 @@ unsafe fn main_0() -> i32 {
             (s.as_ptr()),
         )
     });
-    out = {
-        let __range = 0_usize
-            ..::std::cmp::min(
-                0_usize
-                    + ({
-                        s[(1_usize)] = ('a' as libc::c_char);
-                        2
-                    } as usize),
-                (*(&mut s as *const Vec<libc::c_char>)).len() - 1,
-            );
-        let mut __tmp1 = (&*(&mut s as *const Vec<libc::c_char>))[__range].to_vec();
-        __tmp1.push(0);
-        __tmp1
+    {
+        *(&mut out as *mut Vec<libc::c_char>) = {
+            let __range = 0_usize
+                ..::std::cmp::min(
+                    0_usize
+                        + ({
+                            s[(1_usize)] = ('a' as libc::c_char);
+                            2
+                        } as usize),
+                    (*(&mut s as *const Vec<libc::c_char>)).len() - 1,
+                );
+            let mut __tmp1 = (&*(&mut s as *const Vec<libc::c_char>))[__range].to_vec();
+            __tmp1.push(0);
+            __tmp1
+        };
+        (&mut out as *mut Vec<libc::c_char>)
     };
     (unsafe {
         libc::printf(
@@ -140,15 +150,18 @@ unsafe fn main_0() -> i32 {
         )
     });
     let mut p: *const Vec<libc::c_char> = (&mut s as *mut Vec<libc::c_char>).cast_const();
-    out = {
-        let __range = 1_usize
-            ..::std::cmp::min(
-                1_usize + 2_usize,
-                (*(p as *const Vec<libc::c_char>)).len() - 1,
-            );
-        let mut __tmp1 = (&*(p as *const Vec<libc::c_char>))[__range].to_vec();
-        __tmp1.push(0);
-        __tmp1
+    {
+        *(&mut out as *mut Vec<libc::c_char>) = {
+            let __range = 1_usize
+                ..::std::cmp::min(
+                    1_usize + 2_usize,
+                    (*(p as *const Vec<libc::c_char>)).len() - 1,
+                );
+            let mut __tmp1 = (&*(p as *const Vec<libc::c_char>))[__range].to_vec();
+            __tmp1.push(0);
+            __tmp1
+        };
+        (&mut out as *mut Vec<libc::c_char>)
     };
     (unsafe {
         libc::printf(
@@ -156,37 +169,41 @@ unsafe fn main_0() -> i32 {
             (out.as_ptr()),
         )
     });
-    out = match ((&mut match ((&mut std::slice::from_raw_parts(
-        c"hello".as_ptr(),
-        (0..)
-            .take_while(|&i| *c"hello".as_ptr().add(i) != 0)
-            .count()
-            + 1,
-    )
-    .to_vec() as *const Vec<libc::c_char>),)
     {
-        (__tmp_5,) => {
-            let __range = 1_usize
-                ..::std::cmp::min(
-                    1_usize + 3_usize,
-                    (*(__tmp_5 as *const Vec<libc::c_char>)).len() - 1,
-                );
-            let mut __tmp1 = (&*(__tmp_5 as *const Vec<libc::c_char>))[__range].to_vec();
-            __tmp1.push(0);
-            __tmp1
-        }
-    } as *const Vec<libc::c_char>),)
-    {
-        (__tmp_4,) => {
-            let __range = 1_usize
-                ..::std::cmp::min(
-                    1_usize + 1_usize,
-                    (*(__tmp_4 as *const Vec<libc::c_char>)).len() - 1,
-                );
-            let mut __tmp1 = (&*(__tmp_4 as *const Vec<libc::c_char>))[__range].to_vec();
-            __tmp1.push(0);
-            __tmp1
-        }
+        *(&mut out as *mut Vec<libc::c_char>) = match ((&mut match (
+            (&mut std::slice::from_raw_parts(
+                c"hello".as_ptr(),
+                (0..)
+                    .take_while(|&i| *c"hello".as_ptr().add(i) != 0)
+                    .count()
+                    + 1,
+            )
+            .to_vec() as *const Vec<libc::c_char>),
+        ) {
+            (__tmp_5,) => {
+                let __range = 1_usize
+                    ..::std::cmp::min(
+                        1_usize + 3_usize,
+                        (*(__tmp_5 as *const Vec<libc::c_char>)).len() - 1,
+                    );
+                let mut __tmp1 = (&*(__tmp_5 as *const Vec<libc::c_char>))[__range].to_vec();
+                __tmp1.push(0);
+                __tmp1
+            }
+        } as *const Vec<libc::c_char>),)
+        {
+            (__tmp_4,) => {
+                let __range = 1_usize
+                    ..::std::cmp::min(
+                        1_usize + 1_usize,
+                        (*(__tmp_4 as *const Vec<libc::c_char>)).len() - 1,
+                    );
+                let mut __tmp1 = (&*(__tmp_4 as *const Vec<libc::c_char>))[__range].to_vec();
+                __tmp1.push(0);
+                __tmp1
+            }
+        };
+        (&mut out as *mut Vec<libc::c_char>)
     };
     (unsafe {
         libc::printf(
@@ -194,17 +211,20 @@ unsafe fn main_0() -> i32 {
             (out.as_ptr()),
         )
     });
-    out = match ({ (s.len() - 1) },) {
-        (mut __tmp_6,) => {
-            let __range = __tmp_6
-                ..::std::cmp::min(
-                    __tmp_6 + 0_usize,
-                    (*(&mut s as *const Vec<libc::c_char>)).len() - 1,
-                );
-            let mut __tmp1 = (&*(&mut s as *const Vec<libc::c_char>))[__range].to_vec();
-            __tmp1.push(0);
-            __tmp1
-        }
+    {
+        *(&mut out as *mut Vec<libc::c_char>) = match ({ (s.len() - 1) },) {
+            (mut __tmp_6,) => {
+                let __range = __tmp_6
+                    ..::std::cmp::min(
+                        __tmp_6 + 0_usize,
+                        (*(&mut s as *const Vec<libc::c_char>)).len() - 1,
+                    );
+                let mut __tmp1 = (&*(&mut s as *const Vec<libc::c_char>))[__range].to_vec();
+                __tmp1.push(0);
+                __tmp1
+            }
+        };
+        (&mut out as *mut Vec<libc::c_char>)
     };
     (unsafe {
         libc::printf(
@@ -221,15 +241,18 @@ unsafe fn main_0() -> i32 {
     )
     .to_vec();
     let mut text: Text = Text { value: &mut field };
-    out = {
-        let __range = 1_usize
-            ..::std::cmp::min(
-                1_usize + 2_usize,
-                (*(text.value as *const Vec<libc::c_char>)).len() - 1,
-            );
-        let mut __tmp1 = (&*(text.value as *const Vec<libc::c_char>))[__range].to_vec();
-        __tmp1.push(0);
-        __tmp1
+    {
+        *(&mut out as *mut Vec<libc::c_char>) = {
+            let __range = 1_usize
+                ..::std::cmp::min(
+                    1_usize + 2_usize,
+                    (*(text.value as *const Vec<libc::c_char>)).len() - 1,
+                );
+            let mut __tmp1 = (&*(text.value as *const Vec<libc::c_char>))[__range].to_vec();
+            __tmp1.push(0);
+            __tmp1
+        };
+        (&mut out as *mut Vec<libc::c_char>)
     };
     (unsafe {
         libc::printf(
@@ -257,17 +280,21 @@ unsafe fn main_0() -> i32 {
         .to_vec(),
     ]);
     let mut index: usize = 0_usize;
-    out = match ((&mut strings[(index.postfix_inc())] as *const Vec<libc::c_char>),) {
-        (__tmp_7,) => {
-            let __range = 1_usize
-                ..::std::cmp::min(
-                    1_usize + 2_usize,
-                    (*(__tmp_7 as *const Vec<libc::c_char>)).len() - 1,
-                );
-            let mut __tmp1 = (&*(__tmp_7 as *const Vec<libc::c_char>))[__range].to_vec();
-            __tmp1.push(0);
-            __tmp1
-        }
+    {
+        *(&mut out as *mut Vec<libc::c_char>) =
+            match ((&mut strings[(index.postfix_inc())] as *const Vec<libc::c_char>),) {
+                (__tmp_7,) => {
+                    let __range = 1_usize
+                        ..::std::cmp::min(
+                            1_usize + 2_usize,
+                            (*(__tmp_7 as *const Vec<libc::c_char>)).len() - 1,
+                        );
+                    let mut __tmp1 = (&*(__tmp_7 as *const Vec<libc::c_char>))[__range].to_vec();
+                    __tmp1.push(0);
+                    __tmp1
+                }
+            };
+        (&mut out as *mut Vec<libc::c_char>)
     };
     (unsafe {
         libc::printf(

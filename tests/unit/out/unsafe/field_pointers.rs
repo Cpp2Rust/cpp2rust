@@ -66,7 +66,10 @@ impl Outer {
                 __tmp_0
             }
         };
-        self.v = std::mem::take(&mut (*_a0).v);
+        {
+            *(&mut self.v as *mut Vec<i32>) = std::mem::take(&mut (*_a0).v);
+            (&mut self.v as *mut Vec<i32>)
+        };
         self.cursor = (*_a0).cursor;
         match (
             { ((&mut self.buf as *mut [i32; 4]) as *mut ::libc::c_void) },

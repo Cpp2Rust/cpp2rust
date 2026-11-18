@@ -177,6 +177,11 @@ int main() {
   receiver_calls = 0;
   char before_end = *(counted_string(receiver_calls).end() - 2);
   printf("temporary end: %c %d\n", before_end, receiver_calls);
+  std::string chained;
+  (chained = target).append("bc", 2).replace(0, 1, "X", 1);
+  assert(chained == "Xbc" && target == "A");
+  (chained = std::move(once)).append("!", 1);
+  assert(chained == "el!");
 
   // FIXME
   auto t0 = s1.length();

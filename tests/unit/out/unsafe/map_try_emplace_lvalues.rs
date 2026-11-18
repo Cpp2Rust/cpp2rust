@@ -98,7 +98,10 @@ impl Owner {
         this
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Owner) -> *mut Owner {
-        self.ptr = (*_a0).ptr.take();
+        {
+            *(&mut self.ptr as *mut Option<Box<Temporary>>) = (*_a0).ptr.take();
+            (&mut self.ptr as *mut Option<Box<Temporary>>)
+        };
         return &mut (*(self as *mut Owner));
     }
 }

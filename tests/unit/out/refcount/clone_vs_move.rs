@@ -311,7 +311,10 @@ fn main_0() -> i32 {
     assert!((b1.w == 1));
     assert!((b2.w == 2));
     let v4: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
-    v4.as_pointer().write((v2).clone());
+    {
+        v4.as_pointer().write((v2).clone());
+        v4.as_pointer()
+    };
     {
         let mut i: i32 = 0;
         'loop_: while (i < N) {

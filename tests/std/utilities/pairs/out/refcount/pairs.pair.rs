@@ -111,7 +111,8 @@ pub fn test_3() {
         target.as_pointer().with(|__dst| {
             *__dst.0.borrow_mut() = __first;
             *__dst.1.borrow_mut() = __second;
-        })
+        });
+        target.as_pointer()
     };
     assert!(({ ((*(*target.borrow()).0.borrow()) == 4_i64) }));
     assert!(({ ({ (*(*target.borrow()).1.borrow()).as_pointer() } == { (original).clone() }) }));

@@ -255,7 +255,10 @@ unsafe fn main_0() -> i32 {
     assert!(((b1.w) == (1)));
     assert!(((b2.w) == (2)));
     let mut v4: Vec<i32> = Vec::new();
-    v4 = v2.clone();
+    {
+        *(&mut v4 as *mut Vec<i32>) = v2.clone();
+        (&mut v4 as *mut Vec<i32>)
+    };
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (N)) {

@@ -397,9 +397,12 @@ pub trait BagImpl {
 }
 impl BagImpl for Ptr<Bag> {
     fn move_assign(&self, _a0: Ptr<Bag>) -> Ptr<Bag> {
-        field_ref!((*self), items)
-            .as_pointer()
-            .write(field!(_a0, items).with_mut(std::mem::take));
+        {
+            field_ref!((*self), items)
+                .as_pointer()
+                .write(field!(_a0, items).with_mut(std::mem::take));
+            field_ref!((*self), items).as_pointer()
+        };
         return (*self).clone();
     }
 }

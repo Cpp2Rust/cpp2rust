@@ -87,7 +87,10 @@ unsafe fn main_0() -> i32 {
         (0..).take_while(|&i| *c"x".as_ptr().add(i) != 0).count() + 1,
     )
     .to_vec();
-    assigned = std::mem::replace(&mut long_word, vec![0]);
+    {
+        *(&mut assigned as *mut Vec<libc::c_char>) = std::mem::replace(&mut long_word, vec![0]);
+        (&mut assigned as *mut Vec<libc::c_char>)
+    };
     (unsafe { print_moved_from_0(c"assign long".as_ptr(), &long_word, &assigned) });
     let mut short_word: Vec<libc::c_char> = std::slice::from_raw_parts(
         c"ab".as_ptr(),
@@ -95,13 +98,25 @@ unsafe fn main_0() -> i32 {
     )
     .to_vec();
     let mut assigned_short: Vec<libc::c_char> = vec![0];
-    assigned_short = std::mem::replace(&mut short_word, vec![0]);
+    {
+        *(&mut assigned_short as *mut Vec<libc::c_char>) =
+            std::mem::replace(&mut short_word, vec![0]);
+        (&mut assigned_short as *mut Vec<libc::c_char>)
+    };
     (unsafe { print_moved_from_0(c"assign short".as_ptr(), &short_word, &assigned_short) });
-    word.splice(word.len().saturating_sub(1)..word.len(), {
-        let mut v = ::std::slice::from_raw_parts(c"again".as_ptr(), 5_usize).to_vec();
-        v.push(0);
-        v
-    });
+    {
+        (*(&mut word as *mut Vec<libc::c_char>)).splice(
+            (*(&mut word as *mut Vec<libc::c_char>))
+                .len()
+                .saturating_sub(1)..(*(&mut word as *mut Vec<libc::c_char>)).len(),
+            {
+                let mut v = ::std::slice::from_raw_parts(c"again".as_ptr(), 5_usize).to_vec();
+                v.push(0);
+                v
+            },
+        );
+        (&mut word as *mut Vec<libc::c_char>)
+    };
     (unsafe {
         libc::printf(
             c"reuse: %zu %s\n".as_ptr() as *const libc::c_char,
@@ -139,11 +154,20 @@ unsafe fn main_0() -> i32 {
     .to_vec();
     let mut reference: Vec<libc::c_char> = (unsafe { return_reference_3(&mut source) });
     (unsafe { print_moved_from_0(c"return reference".as_ptr(), &source, &reference) });
-    source.splice(source.len().saturating_sub(1)..source.len(), {
-        let mut v = ::std::slice::from_raw_parts(c"rvalue reference".as_ptr(), 16_usize).to_vec();
-        v.push(0);
-        v
-    });
+    {
+        (*(&mut source as *mut Vec<libc::c_char>)).splice(
+            (*(&mut source as *mut Vec<libc::c_char>))
+                .len()
+                .saturating_sub(1)..(*(&mut source as *mut Vec<libc::c_char>)).len(),
+            {
+                let mut v =
+                    ::std::slice::from_raw_parts(c"rvalue reference".as_ptr(), 16_usize).to_vec();
+                v.push(0);
+                v
+            },
+        );
+        (&mut source as *mut Vec<libc::c_char>)
+    };
     let mut rvalue_reference: Vec<libc::c_char> =
         (unsafe { return_rvalue_reference_4(&mut source) });
     (unsafe {

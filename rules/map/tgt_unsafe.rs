@@ -75,12 +75,14 @@ unsafe fn f24<T1, T2>(a0: &mut UnsafeMap<T1, (T1, T2)>) -> UnsafeMap<T1, (T1, T2
     std::mem::take(&mut *a0)
 }
 
-unsafe fn f25<T1, T2>(a0: &mut UnsafeMap<T1, (T1, T2)>, a1: &mut UnsafeMap<T1, (T1, T2)>) {
-    *a0 = std::mem::take(&mut *a1)
+unsafe fn f25<T1, T2>(a0: *mut UnsafeMap<T1, (T1, T2)>, a1: &mut UnsafeMap<T1, (T1, T2)>) -> *mut UnsafeMap<T1, (T1, T2)> {
+    *a0 = std::mem::take(&mut *a1);
+    a0
 }
 
-unsafe fn f26<T1: Ord + Clone, T2: Clone>(a0: &mut UnsafeMap<T1, (T1, T2)>, a1: UnsafeMap<T1, (T1, T2)>) {
-    *a0 = a1.clone()
+unsafe fn f26<T1: Ord + Clone, T2: Clone>(a0: *mut UnsafeMap<T1, (T1, T2)>, a1: UnsafeMap<T1, (T1, T2)>) -> *mut UnsafeMap<T1, (T1, T2)> {
+    *a0 = a1.clone();
+    a0
 }
 
 unsafe fn f27<T1: Ord, T2>(

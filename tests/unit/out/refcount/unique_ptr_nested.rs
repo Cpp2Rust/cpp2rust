@@ -61,8 +61,11 @@ pub trait OuterImpl {
 }
 impl OuterImpl for Ptr<Outer> {
     fn move_assign(&self, _a0: Ptr<Outer>) -> Ptr<Outer> {
-        field_ptr!((*self), inner)
-            .write(field!(_a0, inner).with_mut(|__v: &mut Option<Value<Inner>>| __v.take()));
+        {
+            field_ptr!((*self), inner)
+                .write(field!(_a0, inner).with_mut(|__v: &mut Option<Value<Inner>>| __v.take()));
+            field_ptr!((*self), inner)
+        };
         return (*self).clone();
     }
 }
