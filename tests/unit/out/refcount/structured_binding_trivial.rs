@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct Pair {
     #[offset(0)]
@@ -29,7 +29,7 @@ fn main_0() -> i32 {
         first: 10,
         second: 20,
     };
-    let __decomp_1: Value<Pair> = Rc::new(RefCell::new((p).clone()));
+    let __decomp_1: Value<Pair> = Rc::new(RefCell::new(p));
     (*__decomp_1.borrow_mut()).first = 11;
     (*__decomp_1.borrow_mut()).second += 1;
     assert!(({ ({ (*__decomp_1.borrow()).first } == 11) }));

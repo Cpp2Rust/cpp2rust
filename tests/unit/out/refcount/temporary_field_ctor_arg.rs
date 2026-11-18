@@ -25,7 +25,7 @@ pub fn make_0() -> Outer {
         values: Vec::from([1, 2, 3, 4]),
     };
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
 #[cpp_from(Vec<i32  >  , new, ptr)]
 #[byte_size(4)]
 pub struct H {

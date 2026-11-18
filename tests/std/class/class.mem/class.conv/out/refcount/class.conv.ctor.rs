@@ -13,7 +13,7 @@ impl p1_template_constructor_from_own_type_Probe {
         }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
 #[cpp_from(i32, new_2, value)]
 #[byte_size(4)]
 pub struct p1_template_constructor_from_own_type_Probe {

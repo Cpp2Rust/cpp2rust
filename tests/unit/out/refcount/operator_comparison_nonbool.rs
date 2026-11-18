@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct X {
     #[offset(0)]
@@ -40,19 +40,19 @@ pub fn operator_le_4(mut a: X, mut b: X) -> i32 {
 pub fn operator_ge_5(mut a: X, mut b: X) -> i32 {
     return if (a.v >= b.v) { 7 } else { 0 };
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Result {
     #[offset(0)]
     pub r: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Custom {
     #[offset(0)]
     pub v: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Mixed {
     #[offset(0)]
@@ -68,7 +68,7 @@ impl CppEq for Mixed {
         ((MixedImpl::operator_eq(__lhs, __rhs.clone())) != 0)
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
 #[cpp_into(bool, to_bool)]
 #[byte_size(1)]
 pub struct MyBool {
@@ -80,7 +80,7 @@ impl MyBool {
         Self { value: v }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Boolish {
     #[offset(0)]
@@ -123,7 +123,7 @@ impl RefBool {
 thread_local!(
     pub static ref_true_8: Value<RefBool> = Rc::new(RefCell::new(RefBool::new({ true })));
 );
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct RefInt {
     #[offset(0)]
@@ -147,44 +147,44 @@ fn main_0() -> i32 {
     let mut c: X = X { v: 1 };
     assert!(
         (({
-            let _a: X = (a).clone();
-            operator_eq_1(_a, (c).clone())
+            let _a: X = a;
+            operator_eq_1(_a, c)
         }) == 2)
     );
     assert!(
         (({
-            let _a: X = (a).clone();
-            operator_eq_1(_a, (b).clone())
+            let _a: X = a;
+            operator_eq_1(_a, b)
         }) == 0)
     );
     assert!(
         (({
-            let _a: X = (a).clone();
-            operator_ne_2(_a, (b).clone())
+            let _a: X = a;
+            operator_ne_2(_a, b)
         }) == 3)
     );
     assert!(
         (({
-            let _a: X = (a).clone();
-            operator_lt_0(_a, (b).clone())
+            let _a: X = a;
+            operator_lt_0(_a, b)
         }) == 4)
     );
     assert!(
         (({
-            let _a: X = (b).clone();
-            operator_gt_3(_a, (a).clone())
+            let _a: X = b;
+            operator_gt_3(_a, a)
         }) == 5)
     );
     assert!(
         (({
-            let _a: X = (a).clone();
-            operator_le_4(_a, (c).clone())
+            let _a: X = a;
+            operator_le_4(_a, c)
         }) == 6)
     );
     assert!(
         (({
-            let _a: X = (a).clone();
-            operator_ge_5(_a, (c).clone())
+            let _a: X = a;
+            operator_ge_5(_a, c)
         }) == 7)
     );
     let xs: Value<Box<[X]>> = Rc::new(RefCell::new(Box::new([X { v: 3 }, X { v: 1 }, X { v: 2 }])));
@@ -242,7 +242,7 @@ fn main_0() -> i32 {
             MyBoolImpl::to_bool(
                 &Rc::new(RefCell::new(
                     ({
-                        let _a: Boolish = (b1).clone();
+                        let _a: Boolish = b1;
                         operator_eq_7(_a, Boolish { v: 1 })
                     }),
                 ))
@@ -255,8 +255,8 @@ fn main_0() -> i32 {
             MyBoolImpl::to_bool(
                 &Rc::new(RefCell::new(
                     ({
-                        let _a: Boolish = (b2).clone();
-                        operator_lt_6(_a, (b1).clone())
+                        let _a: Boolish = b2;
+                        operator_lt_6(_a, b1)
                     }),
                 ))
                 .as_pointer(),
@@ -264,8 +264,8 @@ fn main_0() -> i32 {
         })
     );
     let mut lt: MyBool = ({
-        let _a: Boolish = (b1).clone();
-        operator_lt_6(_a, (b2).clone())
+        let _a: Boolish = b1;
+        operator_lt_6(_a, b2)
     });
     assert!(lt.value);
     let bs: Value<Box<[Boolish]>> = Rc::new(RefCell::new(Box::new([

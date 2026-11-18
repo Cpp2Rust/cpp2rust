@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(152)]
 pub struct S {
     #[offset(0)]
@@ -86,13 +86,13 @@ pub struct S {
     #[offset(148)]
     pub vec_: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct type_ {
     #[offset(0)]
     pub v: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct loop_ {
     #[offset(0)]
@@ -226,7 +226,7 @@ fn main_0() -> i32 {
     let mut safe_: i32 = 0;
     let mut vec_: i32 = 0;
     let mut l: loop_ = loop_ { t: type_ { v: 3 } };
-    let mut t: type_ = l.t.clone();
+    let mut t: type_ = l.t;
     return ({
         foo_0(
             0,

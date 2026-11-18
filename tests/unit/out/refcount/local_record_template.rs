@@ -29,13 +29,13 @@ pub fn wrap_10(mut v: i64) -> i32 {
     let mut l: Local_7 = Local_7 { x: v };
     return ({ get_6(l) });
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Local_5 {
     #[offset(0)]
     pub x: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct Local_7 {
     #[offset(0)]
@@ -43,9 +43,9 @@ pub struct Local_7 {
 }
 pub fn other_11() -> i32 {
     let mut l: Local_1 = Local_1 { x: 3_i64, y: 4_i64 };
-    return (({ get_0((l).clone()) }) + (l.y as i32));
+    return (({ get_0(l) }) + (l.y as i32));
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(16)]
 pub struct Local_1 {
     #[offset(0)]
@@ -59,14 +59,14 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let mut l: Local_3 = Local_3 { x: 7 };
-    assert!((({ get_2((l).clone(),) }) == 7));
-    assert!((({ twice_8((l).clone(),) }) == 14));
+    assert!((({ get_2(l,) }) == 7));
+    assert!((({ twice_8(l,) }) == 14));
     assert!((({ other_11() }) == 7));
     assert!((({ wrap_9(5,) }) == 5));
     assert!((({ wrap_10(6_i64,) }) == 6));
     return 0;
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Local_3 {
     #[offset(0)]

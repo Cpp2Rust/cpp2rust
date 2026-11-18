@@ -12,7 +12,7 @@ pub fn first_0() -> i32 {
     p.y = 2;
     return (p.x + p.y);
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct anon_1 {
     #[offset(0)]
@@ -26,7 +26,7 @@ pub fn second_2() -> i32 {
     q.b = 20_i64;
     return ((q.a + q.b) as i32);
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(16)]
 pub struct anon_3 {
     #[offset(0)]

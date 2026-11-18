@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct p2_6_pointer_to_member_argument_HasTwoInts {
     #[offset(0)]
@@ -17,21 +17,21 @@ pub struct p2_6_pointer_to_member_argument_HasTwoInts {
 thread_local!(
     pub static count_0: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct p2_6_pointer_to_member_argument_CountsPerMember_refp2_6_pointer_to_member_argument_HasTwoInts_first_
 {}
 thread_local!(
     pub static count_1: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct p2_6_pointer_to_member_argument_CountsPerMember_refp2_6_pointer_to_member_argument_HasTwoInts_second_
 {}
 thread_local!(
     pub static count_2: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct p2_6_pointer_to_member_argument_CountsPerMember_nullptr_ {}
 pub fn test_3() {

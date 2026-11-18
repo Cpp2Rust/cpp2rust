@@ -122,7 +122,7 @@ fn main_0() -> i32 {
     assert!((ctorCount_0.with(|rc| *rc.borrow()) == 4));
     return 0;
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct S_14 {}
 pub fn count_18() -> i32 {
@@ -143,7 +143,7 @@ pub fn b_count_long_17() -> i32 {
 pub fn b_count_local_15() -> i32 {
     return ({ count_18() });
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct S_21 {}
 pub trait AssertsDtorCountAtExitImpl {

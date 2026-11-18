@@ -9,7 +9,7 @@ use std::rc::{Rc, Weak};
 thread_local!(
     pub static default_constructions_0: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct Key {
     #[offset(0)]
@@ -33,7 +33,7 @@ pub fn operator_lt_1(a: Ptr<Key>, b: Ptr<Key>) -> bool {
 pub fn operator_eq_2(a: Ptr<Key>, b: Ptr<Key>) -> bool {
     return ({ a.with(|__s| __s.identity) } == { b.with(|__s| __s.identity) });
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(4)]
 pub struct Mapped {
     #[offset(0)]

@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct S {
     #[offset(0)]
@@ -39,7 +39,7 @@ impl SImpl for Ptr<S> {
     fn modify_copy(&self) -> i32 {
         let f: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new(lambda!(
             {
-                let this_: Value<S> = Rc::new(RefCell::new((*(*self).upgrade().deref()).clone()));
+                let this_: Value<S> = Rc::new(RefCell::new((*(*self).upgrade().deref())));
             },
             || -> i32 {
                 {
@@ -54,7 +54,7 @@ impl SImpl for Ptr<S> {
     fn snapshot(&self) -> i32 {
         let f: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new(lambda!(
             {
-                let this_: Value<S> = Rc::new(RefCell::new((*(*self).upgrade().deref()).clone()));
+                let this_: Value<S> = Rc::new(RefCell::new((*(*self).upgrade().deref())));
             },
             || -> i32 {
                 return ({ SImpl::twice(&this_.as_pointer()) });
@@ -67,7 +67,7 @@ impl SImpl for Ptr<S> {
         let k: Value<i32> = Rc::new(RefCell::new(k));
         let f: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new(lambda!(
             {
-                let this_: Value<S> = Rc::new(RefCell::new((*(*self).upgrade().deref()).clone()));
+                let this_: Value<S> = Rc::new(RefCell::new((*(*self).upgrade().deref())));
                 let k: Value<i32> = Rc::new(RefCell::new((*k.borrow())));
             },
             || -> i32 {

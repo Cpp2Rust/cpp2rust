@@ -10,7 +10,7 @@ pub type E = u32;
 pub const E_A: E = 0;
 pub const E_B: E = 1;
 pub const E_C: E = 2;
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct Pair {
     #[offset(0)]
@@ -18,7 +18,7 @@ pub struct Pair {
     #[offset(4)]
     pub y: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(64)]
 #[byte_align(64)]
 pub struct Wide {

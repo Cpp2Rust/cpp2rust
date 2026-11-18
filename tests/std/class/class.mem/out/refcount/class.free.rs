@@ -9,7 +9,7 @@ use std::rc::{Rc, Weak};
 thread_local!(
     pub static allocations_0: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct p1_allocation_function_is_static_Allocates {}
 impl p1_allocation_function_is_static_Allocates {
@@ -46,7 +46,7 @@ pub fn test_1() {
 thread_local!(
     pub static deallocations_2: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct p3_deallocation_function_is_static_Deallocates {}
 impl p3_deallocation_function_is_static_Deallocates {

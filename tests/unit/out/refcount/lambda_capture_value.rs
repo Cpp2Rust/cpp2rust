@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct S {
     #[offset(0)]
@@ -49,7 +49,7 @@ fn main_0() -> i32 {
     let s: Value<S> = Rc::new(RefCell::new(S { x: 1, y: 2 }));
     let sum: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new(lambda!(
         {
-            let s: Value<S> = Rc::new(RefCell::new((*s.borrow()).clone()));
+            let s: Value<S> = Rc::new(RefCell::new((*s.borrow())));
         },
         || -> i32 {
             return ({ (*s.borrow()).x } + { (*s.borrow()).y });

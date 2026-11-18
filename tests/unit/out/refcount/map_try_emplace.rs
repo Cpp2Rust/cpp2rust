@@ -67,7 +67,7 @@ pub fn argument_4(item: Ptr<Item>) -> Ptr<Item> {
     (*calls_0.with(Value::clone).borrow_mut()).prefix_inc();
     return (item).clone();
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(4)]
 pub struct RefItem {
     #[offset(0)]

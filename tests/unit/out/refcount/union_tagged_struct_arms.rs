@@ -21,7 +21,7 @@ pub struct anon_1 {
     #[offset(16)]
     pub cursor: i64,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(16)]
 pub struct anon_2 {
     #[offset(0)]
@@ -33,7 +33,7 @@ pub struct anon_2 {
     #[offset(12)]
     pub step: u8,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(40)]
 pub struct anon_3 {
     #[offset(0)]

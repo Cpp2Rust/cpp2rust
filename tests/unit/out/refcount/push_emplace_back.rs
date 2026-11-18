@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Chunk {
     #[offset(0)]
@@ -74,7 +74,7 @@ pub fn shrink_through_ptr_2(mut comps: Ptr<Vec<Chunk>>) {
 }
 pub fn nested_push_move_3(mut bw: Ptr<Writer>) {
     {
-        let __a1 = ({ ((*bw.upgrade().deref()).chunk).clone() });
+        let __a1 = bw.with(|__s| __s.chunk);
         bw.with(|__s| __s.output.clone())
             .with_mut(|__v: &mut Vec<Chunk>| __v.push(__a1))
     };
@@ -104,18 +104,18 @@ pub fn emplace_local_from_field_4(mut jpg: Ptr<JPEGData>, mut cond: bool) {
 }
 pub fn nested_emplace_move_5(mut bw: Ptr<Writer>) {
     {
-        let __init = ((*bw.upgrade().deref()).chunk).clone();
+        let __init = bw.with(|__s| __s.chunk);
         bw.with(|__s| __s.output.clone())
             .with_mut(|__v: &mut Vec<Chunk>| __v.push(__init))
     };
 }
 pub fn self_ref_push_6(mut comps: Ptr<Vec<Chunk>>) {
     {
-        let a0_clone = (*comps.decay().upgrade().deref()).clone();
+        let a0_clone = ({ (*comps.decay().upgrade().deref()) }).clone();
         comps.with_mut(|__v: &mut Vec<Chunk>| __v.push(a0_clone))
     };
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom)]
 #[cpp_from(i32, new_1, value)]
 #[byte_size(8)]
 pub struct Pair {
@@ -225,7 +225,7 @@ fn main_0() -> i32 {
     (*w.borrow_mut()).output = (chunks.as_pointer());
     ({ nested_push_move_3((w.as_pointer())) });
     assert!(({ ((*chunks.borrow()).len() == 1_usize) }));
-    assert!(({ ({ (*chunks.borrow())[0_usize].data } == 42) }));
+    assert!(({ ({ { (*chunks.borrow())[0_usize] }.data } == 42) }));
     ({ emplace_local_from_field_4((jpg.as_pointer()), false) });
     assert!(({ ((*jpg.borrow()).app_data.len() == 1_usize) }));
     assert!(
@@ -250,29 +250,29 @@ fn main_0() -> i32 {
     (*w.borrow_mut()).output = (chunks.as_pointer());
     ({ nested_emplace_move_5((w.as_pointer())) });
     assert!(({ ((*chunks.borrow()).len() == 2_usize) }));
-    assert!(({ ({ (*chunks.borrow())[1_usize].data } == 99) }));
+    assert!(({ ({ { (*chunks.borrow())[1_usize] }.data } == 99) }));
     ({ self_ref_push_6((chunks.as_pointer())) });
     assert!(({ ((*chunks.borrow()).len() == 3_usize) }));
-    assert!(({ ({ (*chunks.borrow())[2_usize].data } == 42) }));
+    assert!(({ ({ { (*chunks.borrow())[2_usize] }.data } == 42) }));
     let pairs: Value<Vec<Pair>> = Rc::new(RefCell::new(Vec::new()));
     ({ emplace_ctor_args_7((pairs.as_pointer())) });
     assert!(({ ((*pairs.borrow()).len() == 3_usize) }));
     assert!(
         ({
-            ({ (*pairs.borrow())[0_usize].first } == -1_i32)
-                && ({ (*pairs.borrow())[0_usize].second } == -1_i32)
+            ({ { (*pairs.borrow())[0_usize] }.first } == -1_i32)
+                && ({ { (*pairs.borrow())[0_usize] }.second } == -1_i32)
         })
     );
     assert!(
         ({
-            ({ (*pairs.borrow())[1_usize].first } == 3)
-                && ({ (*pairs.borrow())[1_usize].second } == 0)
+            ({ { (*pairs.borrow())[1_usize] }.first } == 3)
+                && ({ { (*pairs.borrow())[1_usize] }.second } == 0)
         })
     );
     assert!(
         ({
-            ({ (*pairs.borrow())[2_usize].first } == 4)
-                && ({ (*pairs.borrow())[2_usize].second } == 10)
+            ({ { (*pairs.borrow())[2_usize] }.first } == 4)
+                && ({ { (*pairs.borrow())[2_usize] }.second } == 10)
         })
     );
     let queue: Value<Vec<Pair>> = Rc::new(RefCell::new(Vec::new()));

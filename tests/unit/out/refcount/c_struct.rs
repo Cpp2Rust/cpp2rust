@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct Point {
     #[offset(0)]
@@ -14,7 +14,7 @@ pub struct Point {
     #[offset(4)]
     pub y: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(16)]
 pub struct Line {
     #[offset(0)]
@@ -37,7 +37,7 @@ pub type Color = u32;
 pub const Color_RED: Color = 0;
 pub const Color_GREEN: Color = 1;
 pub const Color_BLUE: Color = 2;
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct Inner {
     #[offset(0)]
@@ -45,7 +45,7 @@ pub struct Inner {
     #[offset(4)]
     pub b: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(16)]
 pub struct Container {
     #[offset(0)]
@@ -64,7 +64,7 @@ fn main_0() -> i32 {
     let mut p: Point = Point { x: 10, y: 20 };
     assert!((p.x == 10));
     assert!((p.y == 20));
-    let mut q: Point = (p).clone();
+    let mut q: Point = p;
     q.x = 99;
     assert!((p.x == 10));
     assert!((q.x == 99));
