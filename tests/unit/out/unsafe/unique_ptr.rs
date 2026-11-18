@@ -26,7 +26,10 @@ impl SafePointer {
         this
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut SafePointer) -> *mut SafePointer {
-        self.ptr = (*_a0).ptr.take();
+        {
+            *(&mut self.ptr as *mut Option<Box<i32>>) = (*_a0).ptr.take();
+            (&mut self.ptr as *mut Option<Box<i32>>)
+        };
         return &mut (*(self as *mut SafePointer));
     }
 }
@@ -47,16 +50,26 @@ pub unsafe fn DoStuffWithSafePointer_0(safe_ptr: *mut Option<Box<SafePointer>>) 
     let mut x2: Option<Box<i32>> = Some(Box::new(0));
     (*x2.as_deref()
         .map_or(::std::ptr::null_mut(), |v| v as *const i32 as *mut i32)) = 1;
-    x1 = x2.take();
+    {
+        *(&mut x1 as *mut Option<Box<i32>>) = x2.take();
+        (&mut x1 as *mut Option<Box<i32>>)
+    };
     let mut raw_ptr1: *mut i32 = (&mut (*x1
         .as_deref()
         .map_or(::std::ptr::null_mut(), |v| v as *const i32 as *mut i32))
         as *mut i32);
     (*raw_ptr1).prefix_inc();
-    (*(*safe_ptr).as_deref().map_or(::std::ptr::null_mut(), |v| {
-        v as *const SafePointer as *mut SafePointer
-    }))
-    .ptr = x1.take();
+    match (
+        (&mut (*(*safe_ptr).as_deref().map_or(::std::ptr::null_mut(), |v| {
+            v as *const SafePointer as *mut SafePointer
+        }))
+        .ptr as *mut Option<Box<i32>>),
+    ) {
+        (__tmp_0,) => {
+            *(__tmp_0 as *mut Option<Box<i32>>) = x1.take();
+            (__tmp_0 as *mut Option<Box<i32>>)
+        }
+    };
     (unsafe {
         SafePointer::inc(
             &mut (*(*safe_ptr).as_deref().map_or(::std::ptr::null_mut(), |v| {
@@ -80,7 +93,10 @@ pub unsafe fn DoStuffWithSafePointer_0(safe_ptr: *mut Option<Box<SafePointer>>) 
         + (*x4
             .as_deref()
             .map_or(::std::ptr::null_mut(), |v| v as *const i32 as *mut i32)));
-    x4 = x3.take();
+    {
+        *(&mut x4 as *mut Option<Box<i32>>) = x3.take();
+        (&mut x4 as *mut Option<Box<i32>>)
+    };
     let mut raw_ptr2: *mut i32 = (&mut (*x4
         .as_deref()
         .map_or(::std::ptr::null_mut(), |v| v as *const i32 as *mut i32))

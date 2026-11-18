@@ -76,12 +76,17 @@ unsafe fn f13<T1>(a0: &mut Option<Box<[T1]>>) -> Option<Box<[T1]>> {
     a0.take()
 }
 
-unsafe fn f14<T1>(a0: &mut Option<Box<T1>>, a1: &mut Option<Box<T1>>) {
-    *a0 = a1.take()
+unsafe fn f14<T1>(a0: *mut Option<Box<T1>>, a1: &mut Option<Box<T1>>) -> *mut Option<Box<T1>> {
+    *a0 = a1.take();
+    a0
 }
 
-unsafe fn f15<T1>(a0: &mut Option<Box<[T1]>>, a1: &mut Option<Box<[T1]>>) {
-    *a0 = a1.take()
+unsafe fn f15<T1>(
+    a0: *mut Option<Box<[T1]>>,
+    a1: &mut Option<Box<[T1]>>,
+) -> *mut Option<Box<[T1]>> {
+    *a0 = a1.take();
+    a0
 }
 
 unsafe fn f17<T1>(a0: &mut Option<Box<T1>>) -> *mut T1 {

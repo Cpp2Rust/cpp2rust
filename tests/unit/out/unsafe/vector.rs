@@ -27,8 +27,14 @@ impl Foo {
         this
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Foo) -> *mut Foo {
-        self.a = std::mem::take(&mut (*_a0).a);
-        self.b = std::mem::take(&mut (*_a0).b);
+        {
+            *(&mut self.a as *mut Vec<i32>) = std::mem::take(&mut (*_a0).a);
+            (&mut self.a as *mut Vec<i32>)
+        };
+        {
+            *(&mut self.b as *mut Vec<i32>) = std::mem::take(&mut (*_a0).b);
+            (&mut self.b as *mut Vec<i32>)
+        };
         return &mut (*(self as *mut Foo));
     }
 }

@@ -213,16 +213,18 @@ unsafe fn f102<T1: Default + Clone>(a0: &mut Vec<T1>, a1: usize, a2: T1) {
     a0.resize(__a0, a2)
 }
 
-unsafe fn f103<T1: Clone>(a0: &mut Vec<T1>, a1: &mut Vec<T1>) {
-    *a0 = std::mem::take(&mut *a1)
+unsafe fn f103<T1: Clone>(a0: *mut Vec<T1>, a1: &mut Vec<T1>) -> *mut Vec<T1> {
+    *a0 = std::mem::take(&mut *a1);
+    a0
 }
 
 unsafe fn f104<T1>(a0: Vec<T1>) -> UnsafeRandomAccessIterator<T1> {
     a0.end()
 }
 
-unsafe fn f105<T1: Clone>(a0: &mut Vec<T1>, a1: Vec<T1>) {
-    *a0 = a1.clone()
+unsafe fn f105<T1: Clone>(a0: *mut Vec<T1>, a1: Vec<T1>) -> *mut Vec<T1> {
+    *a0 = a1.clone();
+    a0
 }
 
 unsafe fn f106<T1>(a0: &mut Vec<T1>) {

@@ -160,12 +160,35 @@ void checkGenerics(const std::string &dir, const std::string &name,
   }
 }
 
+void checkReturn(const std::string &dir, const std::string &name, Model target,
+                 const clang::NamedDecl *decl,
+                 const TranslationRule::ExprRule &rule) {
+  auto function = decl->getAsFunction();
+  auto type =
+      function ? function->getType()
+               : llvm::cast<clang::VarDecl>(decl)->getType()->getPointeeType();
+  auto function_type = type->getAs<clang::FunctionType>();
+  assert(function_type &&
+         "expression rule is neither a function nor a function pointer");
+  if (function_type->getReturnType()->isReferenceType() &&
+      !rule.return_type.is_pointer() && !rule.return_type.is_reference &&
+      !rule.returns_place) {
+    llvm::errs() << "rules/" << dir << ' ' << name
+                 << ": C++ returns a reference but the "
+                 << (target == Model::kRefCount ? "refcount" : "unsafe")
+                 << " target returns by value\n";
+    llvm::report_fatal_error("Expr rule returns a reference by value");
+  }
+}
+
 void addRule(clang::ASTContext &ctx, const std::string &dir,
              const std::string &name, const clang::NamedDecl *decl) {
   auto rule = findRule(Model::kUnsafe, dir, name);
+  auto target = Model::kUnsafe;
   if (model_ == Model::kRefCount) {
     if (auto refcount_rule = findRule(model_, dir, name)) {
       rule = refcount_rule;
+      target = model_;
     }
   }
   assert(rule && "rule has no target");
@@ -185,6 +208,7 @@ void addRule(clang::ASTContext &ctx, const std::string &dir,
     assert(llvm::isa<clang::VarDecl>(decl) &&
            "expression rule is neither a function nor a variable");
   }
+  checkReturn(dir, name, target, decl, expr_rule);
   auto keys = RuleKeys::GetExprKeys(*sema_, decl);
   assert(!keys.empty() && "expression rule has no key");
   for (const auto &key : keys) {

@@ -148,9 +148,12 @@ impl SImpl for Ptr<S> {
                 (__tmp_0).clone()
             }
         };
-        field_ref!((*self), v)
-            .as_pointer()
-            .write(field!(_a0, v).with_mut(std::mem::take));
+        {
+            field_ref!((*self), v)
+                .as_pointer()
+                .write(field!(_a0, v).with_mut(std::mem::take));
+            field_ref!((*self), v).as_pointer()
+        };
         return (*self).clone();
     }
 }

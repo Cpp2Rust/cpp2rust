@@ -32,8 +32,14 @@ impl Holder {
         this
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Holder) -> *mut Holder {
-        self.values = std::mem::take(&mut (*_a0).values);
-        self.points = std::mem::take(&mut (*_a0).points);
+        {
+            *(&mut self.values as *mut Vec<i32>) = std::mem::take(&mut (*_a0).values);
+            (&mut self.values as *mut Vec<i32>)
+        };
+        {
+            *(&mut self.points as *mut Vec<Point>) = std::mem::take(&mut (*_a0).points);
+            (&mut self.points as *mut Vec<Point>)
+        };
         return &mut (*(self as *mut Holder));
     }
 }

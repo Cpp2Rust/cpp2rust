@@ -537,6 +537,7 @@ impl<'a> FnIrBuilder<'a> {
                 ty: ty_str,
                 is_refcount_pointer,
                 is_unsafe_pointer,
+                is_reference: matches!(&ty, ast::Type::RefType(_)),
                 derives: Vec::new(),
                 cpp_type: None,
                 elems: None,
@@ -672,6 +673,40 @@ impl<'a> FnIrBuilder<'a> {
             .any(|a| a.kind() == SyntaxKind::EXTERN_BLOCK)
     }
 
+    fn returns_place(&self, params: &[ParamInfo]) -> bool {
+        fn is_place(expr: ast::Expr, params: &[ParamInfo], projected: bool) -> bool {
+            match expr {
+                ast::Expr::FieldExpr(e) => {
+                    e.expr().is_some_and(|base| is_place(base, params, true))
+                }
+                ast::Expr::IndexExpr(e) => {
+                    e.base().is_some_and(|base| is_place(base, params, true))
+                }
+                ast::Expr::ParenExpr(e) => e
+                    .expr()
+                    .is_some_and(|inner| is_place(inner, params, projected)),
+                ast::Expr::PrefixExpr(e) => {
+                    e.op_kind() == Some(ast::UnaryOp::Deref)
+                        && e.expr()
+                            .is_some_and(|inner| is_place(inner, params, projected))
+                }
+                ast::Expr::PathExpr(e) => {
+                    projected
+                        && e.path()
+                            .and_then(|path| path.as_single_name_ref())
+                            .is_some_and(|name| params.iter().any(|p| p.name == name.text()))
+                }
+                _ => false,
+            }
+        }
+        self.fn_item
+            .body()
+            .and_then(|body| body.stmt_list())
+            .filter(|stmt_list| stmt_list.statements().next().is_none())
+            .and_then(|stmt_list| stmt_list.tail_expr())
+            .is_some_and(|tail| is_place(tail, params, false))
+    }
+
     fn returns_mut_ref(&self) -> bool {
         self.fn_item
             .ret_type()
@@ -765,6 +800,7 @@ impl<'a> FnIrBuilder<'a> {
                         ty: p.ty.clone(),
                         is_refcount_pointer: p.is_refcount_pointer,
                         is_unsafe_pointer: p.is_unsafe_pointer,
+                        is_reference: false,
                         derives: Vec::new(),
                         cpp_type: p.cpp_type.clone(),
                         elems: None,
@@ -804,6 +840,7 @@ impl<'a> FnIrBuilder<'a> {
             multi_statement,
             body,
             is_extern: self.is_extern().then_some(true),
+            returns_place: self.returns_place(&params),
         };
         ir.validate(&format!("{}:{}", path.display(), fn_name));
         ir
@@ -877,6 +914,7 @@ impl<'a> TypeIrBuilder<'a> {
                 ty: ty.syntax().text().to_string(),
                 is_refcount_pointer,
                 is_unsafe_pointer,
+                is_reference: false,
                 derives: Vec::new(),
                 cpp_type: None,
                 elems: elems(&ty),
