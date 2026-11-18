@@ -15,6 +15,9 @@ pub struct Item {
 pub unsafe fn Compare_0(a: *const Item, b: *const Item) -> bool {
     return (((*a).key) < ((*b).key));
 }
+pub unsafe fn CompareDesc_1(a: *const Item, b: *const Item) -> bool {
+    return (((*a).key) > ((*b).key));
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -63,6 +66,42 @@ unsafe fn main_0() -> i32 {
     assert!(((v[(0_usize)].key) == (1)));
     assert!(((v[(1_usize)].key) == (2)));
     assert!(((v[(2_usize)].key) == (3)));
+    match ({ v.begin() },) {
+        (mut __tmp_1,) => {
+            let __n = v.end().iter_distance(&__tmp_1);
+            let mut __order: Vec<isize> = (0..__n).collect();
+            __order.sort_by(|&__x, &__y| {
+                let __a = __tmp_1.iter_at(__x) as *const _;
+                let __b = __tmp_1.iter_at(__y) as *const _;
+                if (CompareDesc_1 as unsafe fn(*const Item, *const Item) -> bool).call(__a, __b) {
+                    std::cmp::Ordering::Less
+                } else if (CompareDesc_1 as unsafe fn(*const Item, *const Item) -> bool)
+                    .call(__b, __a)
+                {
+                    std::cmp::Ordering::Greater
+                } else {
+                    std::cmp::Ordering::Equal
+                }
+            });
+            let __values: Vec<_> = __order
+                .iter()
+                .map(|&__i| std::ptr::read(__tmp_1.iter_at(__i)))
+                .collect();
+            for (__i, __v) in (0..__n).zip(__values) {
+                std::ptr::write(__tmp_1.iter_at(__i), __v);
+            }
+        }
+    };
+    assert!(((v[(0_usize)].key) == (3)));
+    assert!(((v[(1_usize)].key) == (2)));
+    assert!(((v[(2_usize)].key) == (1)));
+    assert!(
+        (unsafe {
+            let _a: *const Item = &v[(2_usize)];
+            let _b: *const Item = &v[(0_usize)];
+            (Compare_0)(_a, _b)
+        })
+    );
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}
