@@ -1964,6 +1964,11 @@ bool Converter::ConvertSpecialCall(clang::CallExpr *expr) {
     return true;
   }
 
+  if (IsTransparentStdCall(ctx_, expr)) {
+    Convert(expr->getArg(0));
+    return true;
+  }
+
   // The remaining calls are converted as rules say, if there is one.
   if (Mapper::Contains(ctx_, expr)) {
     return false;
@@ -1972,11 +1977,6 @@ bool Converter::ConvertSpecialCall(clang::CallExpr *expr) {
   if (IsImplicitAssignmentCall(expr)) {
     auto *call = clang::cast<clang::CXXMemberCallExpr>(expr);
     ConvertAssignment(call->getImplicitObjectArgument(), call->getArg(0), "=");
-    return true;
-  }
-
-  if (IsTransparentStdCall(expr)) {
-    Convert(expr->getArg(0));
     return true;
   }
 
@@ -3150,7 +3150,8 @@ void Converter::ConvertGenericBinaryOperator(clang::BinaryOperator *expr) {
 }
 
 bool Converter::IsReferenceType(const clang::Expr *expr) const {
-  const auto *e = IgnoreTransparentStdCall(expr->IgnoreCasts())->IgnoreCasts();
+  const auto *e =
+      IgnoreTransparentStdCall(ctx_, expr->IgnoreCasts())->IgnoreCasts();
   if (const auto *call = clang::dyn_cast<clang::CallExpr>(e)) {
     return !clang::isa<clang::CXXOperatorCallExpr>(call) &&
            GetReturnTypeOfFunction(call)->isReferenceType();
