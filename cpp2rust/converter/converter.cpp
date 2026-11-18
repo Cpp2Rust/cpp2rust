@@ -5760,6 +5760,8 @@ std::string Converter::ConvertIRFragment(
       if (borrows_ && isFresh() && !CreatesTemporary(arg)) {
         value = std::format("({{ {} }})", value);
         borrows_ = false;
+      } else if (IsStructLiteral(arg)) {
+        value = std::format("({})", value);
       }
       borrows_ |= outer_borrows;
       result += value;
@@ -5937,22 +5939,25 @@ Converter::ConvertInitFragment(clang::Expr *expr,
 
   Buffer buf(*this);
   PushExprKind push(*this, ExprKind::RValue);
-  ConvertConstructFromArgs(type, all_args.drop_front(tgt_ir->params.size()),
-                           expr->getExprLoc());
-  return std::move(buf).str();
+  auto *init = ConvertConstructFromArgs(
+      type, all_args.drop_front(tgt_ir->params.size()), expr->getExprLoc());
+  auto value = std::move(buf).str();
+  return IsStructLiteral(init) ? std::format("({})", value) : value;
 }
 
-void Converter::ConvertConstructFromArgs(clang::QualType type,
-                                         llvm::ArrayRef<clang::Expr *> args,
-                                         clang::SourceLocation loc) {
+clang::Expr *
+Converter::ConvertConstructFromArgs(clang::QualType type,
+                                    llvm::ArrayRef<clang::Expr *> args,
+                                    clang::SourceLocation loc) {
   auto *init = BuildInitExpr(GetSema(), type, args, loc);
   assert(init && "type cannot be initialized from the arguments");
   if (args.empty() &&
       !clang::isa<clang::CXXConstructExpr>(init->IgnoreImplicit())) {
     StrCat(GetDefaultAsString(type));
-    return;
+    return init;
   }
   ConvertInit(type, init);
+  return init;
 }
 
 void Converter::ConvertInit(clang::QualType type, clang::Expr *init) {

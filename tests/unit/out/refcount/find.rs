@@ -6,6 +6,17 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
+pub struct P {
+    #[offset(0)]
+    pub x: i32,
+}
+impl CppEq for P {
+    fn equal(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
+        PImpl::operator_eq(__lhs, __rhs.clone())
+    }
+}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
@@ -139,6 +150,35 @@ fn main_0() -> i32 {
             }
         }) == w.decay().begin().iter_add(4_isize)
     );
+    let p: Value<Vec<P>> = Rc::new(RefCell::new(Vec::from([
+        P { x: 0 },
+        P { x: 1 },
+        P { x: 2 },
+    ])));
+    assert!(
+        ({
+            let __tmp_16: Value<P> = Rc::new(RefCell::new(P { x: 1 }));
+            match ({ p.decay().begin() }, { p.decay().end() }) {
+                (mut __tmp_14, mut __tmp_15) => {
+                    let mut __it = (__tmp_14).clone();
+                    while __it != __tmp_15
+                        && !CppEq::equal(&__it.iter_deref(), &(__tmp_16.as_pointer()))
+                    {
+                        __it.iter_inc();
+                    }
+                    __it
+                }
+            }
+        }) == p.decay().begin().iter_add(1_isize)
+    );
     return 0;
+}
+pub trait PImpl {
+    fn operator_eq(&self, o: Ptr<P>) -> bool;
+}
+impl PImpl for Ptr<P> {
+    fn operator_eq(&self, o: Ptr<P>) -> bool {
+        return ({ (*self).with(|__s| __s.x) } == { o.with(|__s| __s.x) });
+    }
 }
 pub fn __cpp2rust_init_globals() {}

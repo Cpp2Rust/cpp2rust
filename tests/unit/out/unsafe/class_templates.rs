@@ -229,7 +229,7 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut ev: Vec<Elem> = Vec::new();
     {
-        let __a1 = Elem { i: 2 };
+        let __a1 = (Elem { i: 2 });
         ev.push(__a1)
     };
     assert!(((ev[(0_usize)].i) == (2)));

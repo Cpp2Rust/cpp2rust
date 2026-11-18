@@ -944,9 +944,9 @@ protected:
   std::string ConvertInitFragment(clang::Expr *expr,
                                   llvm::ArrayRef<clang::Expr *> all_args);
 
-  void ConvertConstructFromArgs(clang::QualType type,
-                                llvm::ArrayRef<clang::Expr *> args,
-                                clang::SourceLocation loc);
+  clang::Expr *ConvertConstructFromArgs(clang::QualType type,
+                                        llvm::ArrayRef<clang::Expr *> args,
+                                        clang::SourceLocation loc);
 
   void ConvertInit(clang::QualType type, clang::Expr *init);
 

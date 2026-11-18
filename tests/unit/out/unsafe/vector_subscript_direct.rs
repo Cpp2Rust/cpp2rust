@@ -108,7 +108,7 @@ unsafe fn main_0() -> i32 {
     };
     h.values[(1_usize)] = 6;
     {
-        let __a1 = Point { x: 1, y: 2 };
+        let __a1 = (Point { x: 1, y: 2 });
         h.points.push(__a1)
     };
     h.points[(0_usize)].y = 5;
