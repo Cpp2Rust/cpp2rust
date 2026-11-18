@@ -231,7 +231,7 @@ bool IsCodeUnitStringLiteral(const clang::StringLiteral *expr) {
 }
 
 std::string GetNumAsString(llvm::APFloat value) {
-  auto non_finite = [&](std::string_view ty) -> std::optional<std::string> {
+  auto format = [&](std::string_view ty, std::string finite) {
     if (value.isNaN()) {
       return std::format("{}::from_bits({:#x})", ty,
                          value.bitcastToAPInt().getZExtValue());
@@ -240,12 +240,11 @@ std::string GetNumAsString(llvm::APFloat value) {
       return std::format("{}::{}INFINITY", ty,
                          value.isNegative() ? "NEG_" : "");
     }
-    return std::nullopt;
+    return finite;
   };
   switch (llvm::APFloat::SemanticsToEnum(value.getSemantics())) {
   case llvm::APFloat::S_IEEEsingle:
-    return non_finite("f32").value_or(
-        std::format("{}_f32", value.convertToFloat()));
+    return format("f32", std::format("{}_f32", value.convertToFloat()));
   case llvm::APFloat::S_x87DoubleExtended: {
     bool loses_info = false;
     value.convert(llvm::APFloat::IEEEdouble(),
@@ -253,8 +252,7 @@ std::string GetNumAsString(llvm::APFloat value) {
   }
     [[fallthrough]];
   case llvm::APFloat::S_IEEEdouble:
-    return non_finite("f64").value_or(
-        std::format("{}_f64", value.convertToDouble()));
+    return format("f64", std::format("{}_f64", value.convertToDouble()));
   default:
     assert(false && "unsupported floating-point semantics");
     return {};
