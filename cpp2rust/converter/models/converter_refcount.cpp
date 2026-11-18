@@ -1868,6 +1868,9 @@ bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
   std::string str;
   if (known) {
     str = GetMappedAsString(expr);
+    if (member->getType()->isReferenceType()) {
+      str = std::format("{}.borrow().clone()", str);
+    }
   } else if (clang::isa<clang::FieldDecl>(member)) {
     // The pointer that the reference field holds, which is used in place in
     // an unboxed struct.

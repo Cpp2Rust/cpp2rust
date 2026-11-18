@@ -8,11 +8,15 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn append_to_reference_0(s: Ptr<Vec<i8>>) {
     {
-        s.with_mut(|__v: &mut Vec<i8>| __v.pop());
-        let __len = (*s.upgrade().deref()).len() + (1_usize) as usize;
-        s.with_mut(|__v: &mut Vec<i8>| __v.resize(__len, ('r' as i8)));
-        s.with_mut(|__v: &mut Vec<i8>| __v.push(0));
-        (*s.upgrade().deref()).clone()
+        let __count = 1_usize as usize;
+        let __ch = ('r' as i8);
+        s.with_mut(|__v: &mut Vec<i8>| {
+            __v.pop();
+            let __len = __v.len() + __count;
+            __v.resize(__len, __ch);
+            __v.push(0);
+        });
+        (s).clone()
     };
 }
 pub fn main() {
@@ -92,11 +96,15 @@ fn main_0() -> i32 {
                             (*s.borrow_mut()).shrink_to_fit();
                         }
                         {
-                            (*s.borrow_mut()).pop();
-                            let __len = (*s.borrow()).len() + (count) as usize;
-                            (*s.borrow_mut()).resize(__len, character);
-                            (*s.borrow_mut()).push(0);
-                            (*s.borrow()).clone()
+                            let __count = count as usize;
+                            let __ch = character;
+                            s.as_pointer().with_mut(|__v: &mut Vec<i8>| {
+                                __v.pop();
+                                let __len = __v.len() + __count;
+                                __v.resize(__len, __ch);
+                                __v.push(0);
+                            });
+                            s.as_pointer()
                         };
                         assert!(({ (((*s.borrow()).len() - 1) == (length).wrapping_add(count)) }));
                         let mut data: Ptr<i8> = s.decay();
@@ -128,21 +136,28 @@ fn main_0() -> i32 {
             }
         }
     }
-    let mut unboxed: Vec<i8> = {
+    let unboxed: Value<Vec<i8>> = Rc::new(RefCell::new({
         let mut __bytes = Ptr::<i8>::from_string_literal(b"a").to_c_bytes();
         __bytes.push(0);
         __bytes
-    };
+    }));
     {
-        unboxed.pop();
-        let __len = unboxed.len() + (2_usize) as usize;
-        unboxed.resize(__len, ('b' as i8));
-        unboxed.push(0);
-        unboxed.clone()
+        let __count = 2_usize as usize;
+        let __ch = ('b' as i8);
+        unboxed.as_pointer().with_mut(|__v: &mut Vec<i8>| {
+            __v.pop();
+            let __len = __v.len() + __count;
+            __v.resize(__len, __ch);
+            __v.push(0);
+        });
+        unboxed.as_pointer()
     };
     assert!(
-        Ptr::<i8>::from_string_literal(b"abb")
-            .with_c_str(|__s| unboxed[..unboxed.len().saturating_sub(1)] == *__s)
+        ({
+            Ptr::<i8>::from_string_literal(b"abb").with_c_str(|__s| {
+                (*unboxed.borrow())[..(*unboxed.borrow()).len().saturating_sub(1)] == *__s
+            })
+        })
     );
     let indirect: Value<Vec<i8>> = Rc::new(RefCell::new({
         let mut __bytes = Ptr::<i8>::from_string_literal(b"c").to_c_bytes();
@@ -159,16 +174,56 @@ fn main_0() -> i32 {
     );
     let mut pointer: Ptr<Vec<i8>> = (indirect.as_pointer());
     {
-        pointer.with_mut(|__v: &mut Vec<i8>| __v.pop());
-        let __len = (*pointer.upgrade().deref()).len() + (0_usize) as usize;
-        pointer.with_mut(|__v: &mut Vec<i8>| __v.resize(__len, ('\0' as i8)));
-        pointer.with_mut(|__v: &mut Vec<i8>| __v.push(0));
-        (*pointer.upgrade().deref()).clone()
+        let __count = 0_usize as usize;
+        let __ch = ('\0' as i8);
+        pointer.with_mut(|__v: &mut Vec<i8>| {
+            __v.pop();
+            let __len = __v.len() + __count;
+            __v.resize(__len, __ch);
+            __v.push(0);
+        });
+        (pointer).clone()
     };
     assert!(
         ({
             Ptr::<i8>::from_string_literal(b"cr").with_c_str(|__s| {
                 (*indirect.borrow())[..(*indirect.borrow()).len().saturating_sub(1)] == *__s
+            })
+        })
+    );
+    let chained: Value<Vec<i8>> = Rc::new(RefCell::new({
+        let mut __bytes = Ptr::<i8>::from_string_literal(b"a").to_c_bytes();
+        __bytes.push(0);
+        __bytes
+    }));
+    match ({
+        let __count = 3_usize as usize;
+        let __ch = ('x' as i8);
+        chained.as_pointer().with_mut(|__v: &mut Vec<i8>| {
+            __v.pop();
+            let __len = __v.len() + __count;
+            __v.resize(__len, __ch);
+            __v.push(0);
+        });
+        chained.as_pointer()
+    },)
+    {
+        (__tmp_0,) => {
+            let __count = 2_usize as usize;
+            let __ch = ('y' as i8);
+            __tmp_0.with_mut(|__v: &mut Vec<i8>| {
+                __v.pop();
+                let __len = __v.len() + __count;
+                __v.resize(__len, __ch);
+                __v.push(0);
+            });
+            (__tmp_0).clone()
+        }
+    };
+    assert!(
+        ({
+            Ptr::<i8>::from_string_literal(b"axxxyy").with_c_str(|__s| {
+                (*chained.borrow())[..(*chained.borrow()).len().saturating_sub(1)] == *__s
             })
         })
     );
