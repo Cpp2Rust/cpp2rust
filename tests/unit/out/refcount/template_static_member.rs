@@ -44,7 +44,7 @@ thread_local!(
 pub struct Range_long_ {}
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     s_0.with(|rc| *rc.borrow_mut() = 22);

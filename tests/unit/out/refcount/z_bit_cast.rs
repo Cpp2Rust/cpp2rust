@@ -10,7 +10,7 @@ pub fn decay_cast_0(mut a1: Ptr<u32>) {}
 pub fn bit_cast_1(mut p: AnyPtr) {}
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let a1: Value<Box<[u32]>> = Rc::new(RefCell::new(Box::new([1_u32, 2_u32, 3_u32])));

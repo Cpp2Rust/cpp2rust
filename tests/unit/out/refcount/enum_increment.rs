@@ -13,7 +13,7 @@ pub const color_BLUE: color = 2;
 pub const color_COLOR_LAST: color = 3;
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let mut count: i32 = 0;

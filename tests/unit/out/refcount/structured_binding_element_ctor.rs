@@ -71,7 +71,7 @@ pub fn make_two_2() -> Two {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let t: Value<Two> = Rc::new(RefCell::new(Two {

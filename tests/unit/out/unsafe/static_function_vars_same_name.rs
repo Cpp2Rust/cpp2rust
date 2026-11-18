@@ -17,7 +17,7 @@ static mut i_3: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
-        std::process::exit(main_0() as i32);
+        libcc2rs::cpp2rust_exit(main_0() as i32);
     }
 }
 unsafe fn main_0() -> i32 {

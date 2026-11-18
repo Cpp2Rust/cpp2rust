@@ -66,7 +66,7 @@ impl Holder_int_ {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     assert!((({ foo_0(1, 10,) }) == 11));

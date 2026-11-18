@@ -17,7 +17,7 @@ pub fn both_null_2(mut s1: Ptr<i8>, mut s2: Ptr<i8>) -> i32 {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let mut a: i32 = 0;

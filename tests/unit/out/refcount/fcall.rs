@@ -35,7 +35,7 @@ pub fn f1_2(mut x: f64, mut y: f64) -> f64 {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     assert!((({ f1_2(1_f64, 2_f64,) }) == (-6_i32 as f64)));

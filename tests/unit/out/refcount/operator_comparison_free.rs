@@ -76,7 +76,7 @@ pub fn operator_gt_11(mut a: V, mut b: V) -> bool {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let mut x: V = V { v: 1 };

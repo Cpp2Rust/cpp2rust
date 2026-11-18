@@ -46,7 +46,7 @@ pub fn widen_5(mut v: u64) -> u64 {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let v: Value<i32> = Rc::new(RefCell::new(7));

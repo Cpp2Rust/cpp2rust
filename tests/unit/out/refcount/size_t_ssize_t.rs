@@ -17,7 +17,7 @@ pub fn sub_signed_2(mut a: isize, mut b: isize) -> isize {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let mut n: usize = (::std::mem::size_of::<i32>() as usize).wrapping_add(4_usize);

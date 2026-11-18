@@ -259,7 +259,7 @@ pub fn MSTKruskal_2(graph: Ptr<Graph>) -> f64 {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let mut V: i32 = 4;

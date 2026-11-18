@@ -14,7 +14,7 @@ pub fn my_alternative_fwrite_1(mut p: Ptr<i8>, mut n: usize, mut m: usize, mut f
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let mut fn1: FnPtr<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize> =

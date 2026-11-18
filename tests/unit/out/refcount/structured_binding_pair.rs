@@ -11,7 +11,7 @@ pub fn make_std_pair_0(mut x: i32) -> (Value<i32>, Value<bool>) {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let __decomp_1: Value<(Value<i32>, Value<bool>)> =

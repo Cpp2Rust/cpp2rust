@@ -63,7 +63,7 @@ pub fn scale_move_only_3(x: MoveOnly) -> MoveOnly {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let mut p1: FnPtr<fn(i32) -> i32> = (FnPtr::<fn(i32) -> i32>::new(S::pick_1));

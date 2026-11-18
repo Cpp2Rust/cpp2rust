@@ -17,7 +17,7 @@ pub fn borrow_in_condition_and_in_body_0(mut x: i32) -> i32 {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     assert!((({ borrow_in_condition_and_in_body_0(0,) }) == 1));

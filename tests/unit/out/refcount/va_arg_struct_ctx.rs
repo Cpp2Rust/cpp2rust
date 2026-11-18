@@ -59,7 +59,7 @@ pub fn pick_1(use_long: i32, __args: Box<[VaArg]>) -> i64 {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let ctx: Value<context> = <Value<context>>::default();

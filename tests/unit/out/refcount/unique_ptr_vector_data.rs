@@ -11,7 +11,7 @@ pub fn first_0(u: Ptr<Option<Value<Vec<u8>>>>) -> Ptr<u8> {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let v: Value<Option<Value<Vec<u8>>>> = Rc::new(RefCell::new(

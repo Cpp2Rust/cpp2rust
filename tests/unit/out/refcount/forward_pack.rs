@@ -143,7 +143,7 @@ pub fn forward_pack_into_ctor_8(args_0: Ptr<Tracked>, args_1: Ptr<Tracked>) -> P
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     assert!((({ forward_pack_4() }) == 0));

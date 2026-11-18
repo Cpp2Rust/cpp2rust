@@ -19,7 +19,7 @@ impl Default for S_int_ {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let p: Value<S_int_> = Rc::new(RefCell::new(<S_int_>::default()));

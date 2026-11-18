@@ -80,7 +80,7 @@ pub fn forward_abbreviated_pack_6(args_0: Ptr<Tracked>, args_1: Ptr<Tracked>) ->
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let a: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 3 })));
