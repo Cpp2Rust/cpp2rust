@@ -303,13 +303,7 @@ unsafe fn main_0() -> i32 {
     assert!(((v11.len()) == (3_usize)));
     assert!((((v11[(0_usize)]) == (1)) && ((v11[(1_usize)]) == (2))) && ((v11[(2_usize)]) == (3)));
     let src1: [u32; 3] = [1_u32, 2_u32, 3_u32];
-    let mut v12: Vec<u32> = match ({
-        {
-            let __array = &src1;
-            __array.as_ptr().add(__array.len())
-        }
-    },)
-    {
+    let mut v12: Vec<u32> = match ({ src1.as_ptr().add(src1.len()) },) {
         (mut __tmp_5,) => {
             let mut __v = Vec::new();
             let mut __it = src1.as_ptr();

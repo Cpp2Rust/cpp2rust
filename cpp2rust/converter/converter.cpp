@@ -2550,11 +2550,18 @@ bool Converter::VisitStringLiteral(clang::StringLiteral *expr) {
                           GetEscapedStringLiteral(expr, 1)));
     return false;
   }
+  std::string literal;
   if (expr->getString().contains('\0')) {
-    EmitFresh(GetCharArrayLiteral(expr));
-    return false;
+    literal = GetCharArrayLiteral(expr);
+  } else {
+    literal = std::format("c{}", GetEscapedStringLiteral(expr, 0));
   }
-  EmitFresh(std::format("c{}", GetEscapedStringLiteral(expr, 0)));
+  // A pointer to the array.
+  if (isAddrOf()) {
+    literal = std::format("{}.as_ptr().cast::<{}>()", literal,
+                          ToString(expr->getType()));
+  }
+  EmitFresh(literal);
   return false;
 }
 

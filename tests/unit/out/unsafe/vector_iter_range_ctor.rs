@@ -83,13 +83,7 @@ unsafe fn main_0() -> i32 {
     assert!(((v3.len()) == (3_usize)));
     assert!((((v3[(0_usize)]) == (1)) && ((v3[(1_usize)]) == (2))) && ((v3[(2_usize)]) == (3)));
     let src1: [u32; 3] = [1_u32, 2_u32, 3_u32];
-    let mut v4: Vec<u32> = match ({
-        {
-            let __array = &src1;
-            __array.as_ptr().add(__array.len())
-        }
-    },)
-    {
+    let mut v4: Vec<u32> = match ({ src1.as_ptr().add(src1.len()) },) {
         (mut __tmp_3,) => {
             let mut __v = Vec::new();
             let mut __it = src1.as_ptr();
@@ -105,25 +99,20 @@ unsafe fn main_0() -> i32 {
         (((v4[(0_usize)]) == (1_u32)) && ((v4[(1_usize)]) == (2_u32)))
             && ((v4[(2_usize)]) == (3_u32))
     );
-    let mut lit_end: *const libc::c_char = {
-        let __array = &(&[
-            (97 as libc::c_char),
-            (98 as libc::c_char),
-            (99 as libc::c_char),
-            (0 as libc::c_char),
-        ]);
-        __array.as_ptr().add(__array.len())
-    };
+    let mut lit_end: *const libc::c_char =
+        match ((c"abc".as_ptr().cast::<[libc::c_char; 4]>() as *const [libc::c_char; 4]),) {
+            (__tmp_4,) => (*__tmp_4).as_ptr().add((*__tmp_4).len()),
+        };
     assert!((((*(lit_end.offset(-((1) as isize)))) as i32) == (('\0' as libc::c_char) as i32)));
     assert!((((*(lit_end.offset(-((4) as isize)))) as i32) == (('a' as libc::c_char) as i32)));
     let mut buf: [u8; 5] = [10_u8, 20_u8, 30_u8, 40_u8, 50_u8];
     let mut start: *const u8 = (buf.as_mut_ptr()).cast_const();
     let mut len: usize = 5_usize;
     let mut v5: Vec<u8> = match ({ start.offset((len) as isize) },) {
-        (mut __tmp_4,) => {
+        (mut __tmp_5,) => {
             let mut __v = Vec::new();
             let mut __it = start;
-            while __it != __tmp_4 {
+            while __it != __tmp_5 {
                 __v.push((*__it.iter_deref()));
                 __it.iter_inc();
             }
@@ -137,10 +126,10 @@ unsafe fn main_0() -> i32 {
     (*m.subscript_move(&mut 2, |__k| cpp_move_unsafe!(__k))) = 20;
     (*m.subscript_move(&mut 3, |__k| cpp_move_unsafe!(__k))) = 30;
     let mut v6: Vec<(i32, i32)> = match ({ m.begin() }, { m.end() }) {
-        (mut __tmp_5, mut __tmp_6) => {
+        (mut __tmp_6, mut __tmp_7) => {
             let mut __v = Vec::new();
-            let mut __it = (__tmp_5).clone();
-            while __it != __tmp_6 {
+            let mut __it = (__tmp_6).clone();
+            while __it != __tmp_7 {
                 __v.push(<(i32, i32) as CppFromUnsafe<(i32, i32)>>::cpp_from(
                     __it.iter_deref(),
                 ));
@@ -157,12 +146,12 @@ unsafe fn main_0() -> i32 {
         { m.begin() },
         { m.end() },
     ) {
-        (mut __tmp_7, mut __tmp_8, mut __tmp_9) => {
+        (mut __tmp_8, mut __tmp_9, mut __tmp_10) => {
             let __off =
-                __tmp_7.iter_distance(&UnsafeRandomAccessIterator::Vec(v6.as_mut_ptr())) as usize;
+                __tmp_8.iter_distance(&UnsafeRandomAccessIterator::Vec(v6.as_mut_ptr())) as usize;
             let mut __tmp = Vec::new();
-            let mut __it = (__tmp_8).clone();
-            while __it != __tmp_9 {
+            let mut __it = (__tmp_9).clone();
+            while __it != __tmp_10 {
                 __tmp.push((*__it.iter_deref()).clone());
                 __it.iter_inc();
             }
@@ -176,10 +165,10 @@ unsafe fn main_0() -> i32 {
     );
     let mut ints: [i32; 3] = [4, 5, 6];
     let mut v7: Vec<Degrees> = match ({ ints.as_mut_ptr().offset((3) as isize) },) {
-        (mut __tmp_10,) => {
+        (mut __tmp_11,) => {
             let mut __v = Vec::new();
             let mut __it = ints.as_mut_ptr();
-            while __it != __tmp_10 {
+            while __it != __tmp_11 {
                 __v.push(<Degrees as CppFromUnsafe<i32>>::cpp_from(__it.iter_deref()));
                 __it.iter_inc();
             }
@@ -189,10 +178,10 @@ unsafe fn main_0() -> i32 {
     assert!(((v7[(1_usize)].value) == (5)));
     let mut readings: [Reading; 2] = [Reading { raw_: 4 }, Reading { raw_: 5 }];
     let mut v8: Vec<i64> = match ({ readings.as_mut_ptr().offset((2) as isize) },) {
-        (mut __tmp_11,) => {
+        (mut __tmp_12,) => {
             let mut __v = Vec::new();
             let mut __it = readings.as_mut_ptr();
-            while __it != __tmp_11 {
+            while __it != __tmp_12 {
                 __v.push(<i64 as CppFromUnsafe<Reading>>::cpp_from(__it.iter_deref()));
                 __it.iter_inc();
             }

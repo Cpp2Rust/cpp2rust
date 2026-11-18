@@ -193,11 +193,8 @@ unsafe fn main_0() -> i32 {
     let mut pr: (u64, i32) = ((sz as u64), 1);
     assert!(((pr.0) == (21_u64)));
     let sizes: [usize; 4] = [1_usize, 2_usize, 3_usize, 4_usize];
-    let mut sizes_end: *const usize = ({
-        let __array = &sizes;
-        __array.as_ptr().add(__array.len())
-    } as *const u64)
-        .cast::<usize>();
+    let mut sizes_end: *const usize =
+        (sizes.as_ptr().add(sizes.len()) as *const u64).cast::<usize>();
     assert!(
         ((((sizes_end as usize - sizes.as_ptr() as usize) / ::std::mem::size_of::<usize>())
             as i64)
