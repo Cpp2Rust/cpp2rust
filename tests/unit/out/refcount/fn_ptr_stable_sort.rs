@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct Item {
     #[offset(0)]
@@ -53,9 +53,9 @@ fn main_0() -> i32 {
             reorder(__order, |__i| __tmp_0.iter_at(__i));
         }
     };
-    assert!(({ ({ (*v.borrow())[0_usize].key } == 1) }));
-    assert!(({ ({ (*v.borrow())[1_usize].key } == 2) }));
-    assert!(({ ({ (*v.borrow())[2_usize].key } == 3) }));
+    assert!(({ ({ { (*v.borrow())[0_usize] }.key } == 1) }));
+    assert!(({ ({ { (*v.borrow())[1_usize] }.key } == 2) }));
+    assert!(({ ({ { (*v.borrow())[2_usize] }.key } == 3) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

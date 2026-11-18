@@ -9,19 +9,19 @@ use std::rc::{Rc, Weak};
 thread_local!(
     pub static s_0: Value<i32> = Rc::new(RefCell::new(55));
 );
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct Static_int_ {}
 thread_local!(
     pub static s_1: Value<i8> = Rc::new(RefCell::new(55_i8));
 );
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct Static_char_ {}
 thread_local!(
     pub static s_2: Value<i64> = Rc::new(RefCell::new(55_i64));
 );
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct Static_long_ {}
 thread_local!(
@@ -30,7 +30,7 @@ thread_local!(
 thread_local!(
     pub static hi_4: Value<i32> = Rc::new(RefCell::new(1));
 );
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct Range_int_ {}
 thread_local!(
@@ -39,7 +39,7 @@ thread_local!(
 thread_local!(
     pub static hi_6: Value<i64> = Rc::new(RefCell::new(2_i64));
 );
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct Range_long_ {}
 pub fn main() {

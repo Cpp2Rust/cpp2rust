@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct S {
     #[offset(0)]
@@ -52,8 +52,7 @@ fn main_0() -> i32 {
     let mut c: S = S { v: 0_u32 };
     c = (*({ SImpl::operator_assign_1(&a.as_pointer(), 1_u32) })
         .upgrade()
-        .deref())
-    .clone();
+        .deref());
     assert!(({ ({ (*a.borrow()).v } == 1_u32) }));
     assert!((c.v == 1_u32));
     return 0;

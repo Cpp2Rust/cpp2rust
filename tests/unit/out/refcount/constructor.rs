@@ -25,7 +25,7 @@ impl S {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom)]
 #[cpp_from(i32, new_1, value)]
 #[byte_size(8)]
 pub struct Point {

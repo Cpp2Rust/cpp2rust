@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct S {
     #[offset(0)]
@@ -107,7 +107,7 @@ impl SImpl for Ptr<S> {
         return (*self).clone();
     }
     fn operator_post_inc_9(&self, mut _a0: i32) -> S {
-        let mut old: S = (*(*self).upgrade().deref()).clone();
+        let mut old: S = (*(*self).upgrade().deref());
         field!((*self), v).with_mut(|__v| {
             __v.prefix_inc();
         });
@@ -120,7 +120,7 @@ impl SImpl for Ptr<S> {
         return (*self).clone();
     }
     fn operator_post_dec_11(&self, mut _a0: i32) -> S {
-        let mut old: S = (*(*self).upgrade().deref()).clone();
+        let mut old: S = (*(*self).upgrade().deref());
         field!((*self), v).with_mut(|__v| {
             __v.prefix_dec();
         });

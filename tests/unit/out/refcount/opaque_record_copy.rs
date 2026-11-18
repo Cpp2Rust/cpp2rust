@@ -6,10 +6,10 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct Probe {}
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct Wrapper_Probe_ {
     #[offset(0)]
@@ -25,7 +25,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let mut a: Wrapper_Probe_ = <Wrapper_Probe_>::default();
     a.tag = 3;
-    let mut b: Wrapper_Probe_ = (a).clone();
+    let mut b: Wrapper_Probe_ = a;
     assert!((b.tag == 3));
     return 0;
 }

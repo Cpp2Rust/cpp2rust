@@ -12,7 +12,7 @@ pub const anon_0_FIRST_B: anon_0 = 1;
 pub type anon_1 = u32;
 pub const anon_1_SECOND_A: anon_1 = 0;
 pub const anon_1_SECOND_B: anon_1 = 1;
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct S {
     #[offset(0)]
@@ -24,7 +24,7 @@ pub const TdEnum_enum_TD_B: TdEnum_enum = 1;
 pub type anon_2 = u32;
 pub const anon_2_FIELD_A: anon_2 = 0;
 pub const anon_2_FIELD_B: anon_2 = 1;
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct WithAnonField {
     #[offset(0)]

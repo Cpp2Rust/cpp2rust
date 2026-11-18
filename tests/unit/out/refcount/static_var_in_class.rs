@@ -9,7 +9,7 @@ use std::rc::{Rc, Weak};
 thread_local!(
     static inner_const_0: Value<i32> = Rc::new(RefCell::new(1));
 );
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct C {}
 thread_local!(
@@ -17,7 +17,7 @@ thread_local!(
 );
 pub type anon_3 = u32;
 pub const anon_3_kValue: anon_3 = 3;
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct S {}
 impl S {

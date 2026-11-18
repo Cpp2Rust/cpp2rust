@@ -14,7 +14,7 @@ pub fn inc_1(r: Ptr<i32>) {
         __v.prefix_inc();
     });
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct Pair {
     #[offset(0)]
@@ -41,7 +41,8 @@ pub fn sum_3(mut arr: Ptr<i32>, mut n: i32) -> i32 {
     }
     return s;
 }
-pub fn countdown_4(mut n: i32, mut step: i32) -> i32 {
+pub fn countdown_4(mut n: i32, step: Option<i32>) -> i32 {
+    let mut step: i32 = step.unwrap_or_else(|| 1);
     let mut steps: i32 = 0;
     'loop_: while (n > 0) {
         n -= step;
@@ -52,7 +53,7 @@ pub fn countdown_4(mut n: i32, mut step: i32) -> i32 {
 pub trait Shape {
     fn scale(&mut self, factor: i32) -> i32;
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(16)]
 pub struct Square {
     #[offset(8)]
@@ -118,8 +119,8 @@ fn main_0() -> i32 {
     let mut zeros: [f64; 16] = [0_f64; 16];
     zeros[(15) as usize] = 1.5_f64;
     assert!((zeros[(0) as usize] == 0_f64) && (zeros[(15) as usize] == 1.5_f64));
-    assert!((({ countdown_4(10, 1,) }) == 10));
-    assert!((({ countdown_4(10, 3,) }) == 4));
+    assert!((({ countdown_4(10, None,) }) == 10));
+    assert!((({ countdown_4(10, Some(3),) }) == 4));
     let mut init: i32 = 3;
     let mut pair: Pair = Pair {
         first: init,

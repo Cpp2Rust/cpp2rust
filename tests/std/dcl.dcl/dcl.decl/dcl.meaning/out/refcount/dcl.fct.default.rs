@@ -54,7 +54,7 @@ thread_local!(
 thread_local!(
     pub static step_10: Value<i32> = Rc::new(RefCell::new(4));
 );
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(4)]
 pub struct p9_static_member_hides_namespace_variable_HasStaticStep {
     #[offset(0)]

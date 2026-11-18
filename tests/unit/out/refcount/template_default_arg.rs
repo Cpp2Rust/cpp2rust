@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom)]
 #[cpp_from(i32, new_1, value)]
 #[byte_size(4)]
 pub struct A {
@@ -26,7 +26,7 @@ impl Default for A {
         { A::new_2() }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(4)]
 pub struct B {
     #[offset(0)]
@@ -42,7 +42,7 @@ impl Default for B {
         { B::new() }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct NoDefault {
@@ -54,19 +54,22 @@ impl NoDefault {
         Self { v: v }
     }
 }
-pub fn used_0(mut x: A) -> i32 {
+pub fn used_0(x: Option<A>) -> i32 {
+    let mut x: A = x.unwrap_or_else(|| A::new_2());
     return x.v;
 }
-pub fn used_1(mut x: B) -> i32 {
+pub fn used_1(x: Option<B>) -> i32 {
+    let mut x: B = x.unwrap_or_else(|| B::new());
     return x.v;
 }
-pub fn scaled_2(mut x: A, mut n: i32) -> i32 {
+pub fn scaled_2(mut x: A, n: Option<i32>) -> i32 {
+    let mut n: i32 = n.unwrap_or_else(|| (4usize as i32));
     return (x.v * n);
 }
 pub fn always_given_3(mut x: NoDefault) -> i32 {
     return x.v;
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct S_NoDefault_ {
@@ -83,11 +86,11 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((({ used_0(A::new_2(),) }) == 1));
-    assert!((({ used_0(A::new_1({ 5 },),) }) == 5));
-    assert!((({ used_1(B::new(),) }) == 2));
-    assert!((({ scaled_2(A::new_1({ 3 },), (4usize as i32),) }) == (3 * (4usize as i32))));
-    assert!((({ scaled_2(A::new_1({ 3 },), 2,) }) == 6));
+    assert!((({ used_0(None,) }) == 1));
+    assert!((({ used_0(Some(A::new_1({ 5 },)),) }) == 5));
+    assert!((({ used_1(None,) }) == 2));
+    assert!((({ scaled_2(A::new_1({ 3 },), None,) }) == (3 * (4usize as i32))));
+    assert!((({ scaled_2(A::new_1({ 3 },), Some(2),) }) == 6));
     assert!((({ always_given_3(NoDefault::new({ 3 },),) }) == 3));
     let s: Value<S_NoDefault_> = Rc::new(RefCell::new(S_NoDefault_::new({ 1 })));
     assert!((({ S_NoDefault_Impl::get(&s.as_pointer(), NoDefault::new({ 4 },),) }) == 5));

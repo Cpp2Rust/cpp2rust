@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct Celsius {
@@ -18,14 +18,14 @@ impl Celsius {
         Self { degrees: d }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
 #[cpp_into(i32, to_i32)]
 #[byte_size(4)]
 pub struct Meters {
     #[offset(0)]
     pub value: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
 #[cpp_from(Celsius, new, ptr)]
 #[byte_size(4)]
 pub struct Label {
@@ -39,7 +39,7 @@ impl Label {
         }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
 #[cpp_from(Celsius, new_1, ptr)]
 #[cpp_from_move(Celsius, new_2, ptr)]
 #[byte_size(8)]
@@ -63,7 +63,7 @@ impl Owner {
         }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
 #[cpp_from(Celsius, new, value)]
 #[byte_size(4)]
 pub struct Holder {
@@ -75,30 +75,31 @@ impl Holder {
         Self { value: c.degrees }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom)]
-#[cpp_from(i32, new, value)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom)]
+#[cpp_from(i32, new, some_value)]
 #[byte_size(4)]
 pub struct Fallback {
     #[offset(0)]
     pub value: i32,
 }
 impl Fallback {
-    pub fn new(mut v: i32) -> Self {
+    pub fn new(v: Option<i32>) -> Self {
+        let mut v: i32 = v.unwrap_or_else(|| -1_i32);
         Self { value: v }
     }
 }
 impl Default for Fallback {
     fn default() -> Self {
-        { Fallback::new({ -1_i32 }) }
+        { Fallback::new(None) }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Counter {
     #[offset(0)]
     pub hits: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
 #[cpp_from(Counter, new, mut_ptr)]
 #[byte_size(4)]
 pub struct Observer {
@@ -121,14 +122,14 @@ impl Tag {
         }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
 #[cpp_from(Celsius, new, ptr)]
 #[byte_size(4)]
 pub struct Tag {
     #[offset(0)]
     pub code: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
 #[cpp_from(Ptr< i8  >  , new, value)]
 #[byte_size(4)]
 pub struct Name {
@@ -284,7 +285,7 @@ fn main_0() -> i32 {
     ));
     assert!(({ ({ (*(*from_moved_by_value_pair.borrow()).0.borrow()).value } == 14) }));
     assert!(({ ({ (*(*from_moved_by_value_pair.borrow()).1.borrow()).value } == 15) }));
-    let mut defaulted: Fallback = Fallback::new({ -1_i32 });
+    let mut defaulted: Fallback = Fallback::new(None);
     assert!((defaulted.value == -1_i32));
     let from_defaulted_ctor: Value<(Value<Fallback>, Value<i64>)> = Rc::new(RefCell::new((
         Rc::new(RefCell::new(<Fallback as CppFrom<i32>>::cpp_from(

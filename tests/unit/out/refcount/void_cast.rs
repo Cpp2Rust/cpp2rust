@@ -30,7 +30,7 @@ pub fn bump_and_return_4() -> i32 {
     (*side_effect_counter_3.with(Value::clone).borrow_mut()).prefix_inc();
     return side_effect_counter_3.with(|rc| *rc.borrow());
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Holder {
     #[offset(0)]

@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct S {
     #[offset(0)]
@@ -46,7 +46,7 @@ pub fn operator_lt_6(a: Ptr<S>, mut b: i32) -> bool {
 pub fn operator_lt_7(mut a: i32, b: Ptr<S>) -> bool {
     return ({ a } < { b.with(|__s| __s.v) });
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct V {
     #[offset(0)]
@@ -84,32 +84,32 @@ fn main_0() -> i32 {
     let mut z: V = V { v: 1 };
     assert!(
         ({
-            let _a: V = (x).clone();
-            operator_eq_9(_a, (z).clone())
+            let _a: V = x;
+            operator_eq_9(_a, z)
         })
     );
     assert!(
         ({
-            let _a: V = (x).clone();
-            operator_ne_10(_a, (y).clone())
+            let _a: V = x;
+            operator_ne_10(_a, y)
         })
     );
     assert!(
         ({
-            let _a: V = (x).clone();
-            operator_lt_8(_a, (y).clone())
+            let _a: V = x;
+            operator_lt_8(_a, y)
         })
     );
     assert!(
         ({
-            let _a: V = (y).clone();
-            operator_gt_11(_a, (x).clone())
+            let _a: V = y;
+            operator_gt_11(_a, x)
         })
     );
     assert!(
         !({
-            let _a: V = (y).clone();
-            operator_lt_8(_a, (x).clone())
+            let _a: V = y;
+            operator_lt_8(_a, x)
         })
     );
     let a: Value<S> = Rc::new(RefCell::new(S { v: 1 }));

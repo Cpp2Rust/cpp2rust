@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct pair {
     #[offset(0)]
@@ -74,7 +74,7 @@ fn main_0() -> i32 {
         (({
             sum_mixed_0(
                 2,
-                Box::new([(3).into(), ((p).clone()).into(), (0).into(), (5).into()]),
+                Box::new([(3).into(), (p).into(), (0).into(), (5).into()]),
             )
         }) == 61)
     );

@@ -6,10 +6,20 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn pick_0(mut x: i32) -> i32 {
+pub fn pick_0(x: Option<i32>) -> i32 {
+    let mut x: i32 = x.unwrap_or_else(|| {
+        ({
+            FnPtr::<fn() -> i32>::new(|| -> i32 {
+                {
+                    return 237;
+                }
+            })
+            .call()
+        })
+    });
     return x;
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(8)]
 pub struct S {
     #[offset(0)]
@@ -59,21 +69,8 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!(
-        (({
-            pick_0(
-                ({
-                    FnPtr::<fn() -> i32>::new(|| -> i32 {
-                        {
-                            return 237;
-                        }
-                    })
-                    .call()
-                }),
-            )
-        }) == 237)
-    );
-    assert!((({ pick_0(1,) }) == 1));
+    assert!((({ pick_0(None,) }) == 237));
+    assert!((({ pick_0(Some(1),) }) == 1));
     let mut s: S = <S>::default();
     assert!((s.k == 4));
     assert!((g_1.with(|rc| *rc.borrow()) == 10));
