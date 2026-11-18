@@ -8,8 +8,7 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn test_memcpy_0() {
     let src: Value<Box<[i8]>> = Rc::new(RefCell::new(i8::array_from_literal(b"hello\0")));
-    let dst: Value<Box<[i8]>> =
-        Rc::new(RefCell::new(Box::new([0_i8, 0_i8, 0_i8, 0_i8, 0_i8, 0_i8])));
+    let dst: Value<Box<[i8]>> = Rc::new(RefCell::new(Box::new([0_i8; 6])));
     let mut r: AnyPtr = match ({ (dst.decay()).to_any() },) {
         (mut __tmp_0,) => {
             __tmp_0.memcpy(&(src.decay()).to_any(), 6_usize);

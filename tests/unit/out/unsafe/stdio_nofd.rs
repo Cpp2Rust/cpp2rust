@@ -16,24 +16,7 @@ pub unsafe fn test_fputc_fputs_0() {
     assert!(((libc::fclose(fp)) == (0)));
     fp = libc::fopen(path, (c"rb".as_ptr().cast_mut()).cast_const());
     assert!((!((fp).is_null())));
-    let mut buf: [libc::c_char; 16] = [
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-    ];
+    let mut buf: [libc::c_char; 16] = [(0 as libc::c_char); 16];
     assert!(
         ((libcc2rs::fread_unsafe(
             (buf.as_mut_ptr() as *mut ::libc::c_void),
@@ -226,16 +209,7 @@ pub unsafe fn test_freopen_4() {
     let mut fp2: *mut ::libc::FILE =
         libc::freopen(path, (c"rb".as_ptr().cast_mut()).cast_const(), fp);
     assert!((!((fp2).is_null())));
-    let mut buf: [libc::c_char; 8] = [
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-    ];
+    let mut buf: [libc::c_char; 8] = [(0 as libc::c_char); 8];
     assert!(
         ((libcc2rs::fread_unsafe(
             (buf.as_mut_ptr() as *mut ::libc::c_void),
@@ -277,16 +251,7 @@ pub unsafe fn test_fseeko_5() {
     fp = libc::fopen(path, (c"rb".as_ptr().cast_mut()).cast_const());
     assert!((!((fp).is_null())));
     assert!(((libc::fseeko(fp, (6 as ::libc::off_t) as ::libc::off_t, ::libc::SEEK_SET)) == (0)));
-    let mut buf: [libc::c_char; 8] = [
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-    ];
+    let mut buf: [libc::c_char; 8] = [(0 as libc::c_char); 8];
     assert!(
         ((libcc2rs::fread_unsafe(
             (buf.as_mut_ptr() as *mut ::libc::c_void),

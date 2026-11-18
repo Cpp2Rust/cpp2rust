@@ -98,10 +98,7 @@ fn main_0() -> i32 {
     assert!(((anon_0::b(field_ptr!(c.as_pointer(), view)).with(|__s| __s.lo) as i32) == 0));
     assert!((((elem!(anon_0::raw_(field_ptr!(c.as_pointer(), view)), 0).read()) as i32) == 0));
     assert!((((elem!(anon_0::raw_(field_ptr!(c.as_pointer(), view)), 255).read()) as i32) == 0));
-    let src: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
-        0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8,
-        0_u8,
-    ])));
+    let src: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([0_u8; 16])));
     (*src.borrow_mut())[(0) as usize] = 2_u8;
     (*src.borrow_mut())[(2) as usize] = 80_u8;
     (*src.borrow_mut())[(3) as usize] = 0_u8;

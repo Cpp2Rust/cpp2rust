@@ -36,6 +36,17 @@ impl Default for Holder {
 pub fn sum_1(p: Ptr<Pair>) -> i32 {
     return ({ p.with(|__s| __s.a) } + { p.with(|__s| __s.b) });
 }
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(4)]
+pub struct Seven {
+    #[offset(0)]
+    pub v: i32,
+}
+impl Default for Seven {
+    fn default() -> Self {
+        { Seven { v: 7 } }
+    }
+}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
@@ -53,6 +64,19 @@ fn main_0() -> i32 {
     ({ HolderImpl::operator_assign_1(&h.as_pointer(), p.as_pointer()) });
     assert!(({ ({ (*h.borrow()).p.a } == 1) && ({ (*h.borrow()).p.b } == 2) }));
     assert!((({ sum_1(p.as_pointer(),) }) == 3));
+    let mut sevens: [Seven; 4] = [
+        <Seven>::default(),
+        <Seven>::default(),
+        <Seven>::default(),
+        <Seven>::default(),
+    ];
+    {
+        let mut i: i32 = 0;
+        'loop_: while (i < 4) {
+            assert!((sevens[(i) as usize].v == 7));
+            i.postfix_inc();
+        }
+    }
     return 0;
 }
 pub trait HolderImpl {

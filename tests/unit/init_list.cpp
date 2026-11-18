@@ -20,6 +20,10 @@ struct Holder {
 
 int sum(const Pair &p) { return p.a + p.b; }
 
+struct Seven {
+  int v = 7;
+};
+
 int main() {
   int i1{3};
   int i2{};
@@ -34,6 +38,11 @@ int main() {
   h = {std::move(p)};
   assert(h.p.a == 1 && h.p.b == 2);
   assert(sum({p}) == 3);
+
+  Seven sevens[4] = {};
+  for (int i = 0; i < 4; i++) {
+    assert(sevens[i].v == 7);
+  }
 
   return 0;
 }

@@ -197,10 +197,7 @@ unsafe fn main_0() -> i32 {
             (c"10.0.0.1".as_ptr().cast_mut()).cast_const()
         )) == (0))
     );
-    let mut sixteen: [u8; 16] = [
-        0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8,
-        0_u8,
-    ];
+    let mut sixteen: [u8; 16] = [0_u8; 16];
     sixteen[(15) as usize] = 1_u8;
     assert!(
         ((libc::strcmp(
