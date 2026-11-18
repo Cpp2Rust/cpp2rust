@@ -79,20 +79,19 @@ impl Holder {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe)]
-#[cpp_from(i32, new, some_value)]
+#[cpp_from(i32, new, value)]
 pub struct Fallback {
     pub value: i32,
 }
 impl Fallback {
-    pub unsafe fn new(mut v: Option<i32>) -> Self {
-        let mut v: i32 = v.unwrap_or_else(|| unsafe { -1_i32 });
+    pub unsafe fn new(mut v: i32) -> Self {
         let mut this = Self { value: v };
         this
     }
 }
 impl Default for Fallback {
     fn default() -> Self {
-        unsafe { Fallback::new(None) }
+        unsafe { Fallback::new({ -1_i32 }) }
     }
 }
 #[repr(C)]
@@ -214,7 +213,7 @@ unsafe fn main_0() -> i32 {
         };
     assert!(((from_moved_by_value_pair.0.value) == (14)));
     assert!(((from_moved_by_value_pair.1.value) == (15)));
-    let mut defaulted: Fallback = Fallback::new(None);
+    let mut defaulted: Fallback = Fallback::new({ -1_i32 });
     assert!(((defaulted.value) == (-1_i32)));
     let mut from_defaulted_ctor: (Fallback, i64) = (
         <Fallback as CppFromUnsafe<i32>>::cpp_from(&ints.0),

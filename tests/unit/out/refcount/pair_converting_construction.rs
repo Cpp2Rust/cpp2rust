@@ -76,21 +76,20 @@ impl Holder {
     }
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom)]
-#[cpp_from(i32, new, some_value)]
+#[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct Fallback {
     #[offset(0)]
     pub value: i32,
 }
 impl Fallback {
-    pub fn new(v: Option<i32>) -> Self {
-        let mut v: i32 = v.unwrap_or_else(|| -1_i32);
+    pub fn new(mut v: i32) -> Self {
         Self { value: v }
     }
 }
 impl Default for Fallback {
     fn default() -> Self {
-        { Fallback::new(None) }
+        { Fallback::new({ -1_i32 }) }
     }
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
@@ -285,7 +284,7 @@ fn main_0() -> i32 {
     ));
     assert!(({ ({ (*(*from_moved_by_value_pair.borrow()).0.borrow()).value } == 14) }));
     assert!(({ ({ (*(*from_moved_by_value_pair.borrow()).1.borrow()).value } == 15) }));
-    let mut defaulted: Fallback = Fallback::new(None);
+    let mut defaulted: Fallback = Fallback::new({ -1_i32 });
     assert!((defaulted.value == -1_i32));
     let from_defaulted_ctor: Value<(Value<Fallback>, Value<i64>)> = Rc::new(RefCell::new((
         Rc::new(RefCell::new(<Fallback as CppFrom<i32>>::cpp_from(

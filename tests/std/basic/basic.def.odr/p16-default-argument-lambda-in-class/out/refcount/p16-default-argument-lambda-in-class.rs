@@ -90,7 +90,15 @@ pub fn main() {
 fn main_0() -> i32 {
     assert!((ctorCount_0.with(|rc| *rc.borrow()) == 0));
     let x: Value<X> = Rc::new(RefCell::new(<X>::default()));
-    ({ XImpl::h(&x.as_pointer(), true, None) });
+    ({
+        XImpl::h(
+            &x.as_pointer(),
+            true,
+            FnPtr::<fn()>::new(|| {
+                ({ LifetimeTrackedImpl::use_(&local_4.with(|v| v.as_pointer())) });
+            }),
+        )
+    });
     assert!((ctorCount_0.with(|rc| *rc.borrow()) == 1));
     assert!((useCount_3.with(|rc| *rc.borrow()) == 1));
     ({ b_call_6() });
@@ -100,7 +108,15 @@ fn main_0() -> i32 {
 }
 pub fn b_call_6() {
     let x: Value<X> = Rc::new(RefCell::new(<X>::default()));
-    ({ XImpl::h(&x.as_pointer(), true, None) });
+    ({
+        XImpl::h(
+            &x.as_pointer(),
+            true,
+            FnPtr::<fn()>::new(|| {
+                ({ LifetimeTrackedImpl::use_(&local_4.with(|v| v.as_pointer())) });
+            }),
+        )
+    });
 }
 pub trait AssertsDtorCountAtExitImpl {
     fn destructor(&self);
@@ -131,17 +147,20 @@ impl LifetimeTrackedImpl for Ptr<LifetimeTracked> {
     }
 }
 pub trait XImpl {
-    fn h(&self, cond: bool, p: Option<FnPtr<fn()>>);
+    fn h(&self, cond: bool, p: FnPtr<fn()>);
 }
 impl XImpl for Ptr<X> {
-    fn h(&self, mut cond: bool, p: Option<FnPtr<fn()>>) {
-        let mut p: FnPtr<fn()> = p.unwrap_or_else(|| {
-            FnPtr::<fn()>::new(|| {
-                ({ LifetimeTrackedImpl::use_(&local_4.with(|v| v.as_pointer())) });
-            })
-        });
+    fn h(&self, mut cond: bool, mut p: FnPtr<fn()>) {
         if cond {
-            ({ XImpl::h(self, false, None) });
+            ({
+                XImpl::h(
+                    self,
+                    false,
+                    FnPtr::<fn()>::new(|| {
+                        ({ LifetimeTrackedImpl::use_(&local_4.with(|v| v.as_pointer())) });
+                    }),
+                )
+            });
         } else {
             ({ p.call() });
         }
