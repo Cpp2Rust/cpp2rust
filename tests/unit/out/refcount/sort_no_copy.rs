@@ -64,6 +64,37 @@ pub fn operator_lt_1(a: Ptr<Tracked>, b: Ptr<Tracked>) -> bool {
 pub fn greater_2(a: Ptr<Tracked>, b: Ptr<Tracked>) -> bool {
     return ({ a.with(|__s| __s.v) } > { b.with(|__s| __s.v) });
 }
+#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, CppFrom, MoveAssign, Default)]
+#[cpp_from(i32, new, value)]
+#[byte_size(4)]
+pub struct MoveOnly {
+    #[offset(0)]
+    pub v: i32,
+}
+impl MoveOnly {
+    pub fn new(mut v: i32) -> Self {
+        Self { v: v }
+    }
+    pub fn move_from(_a0: Ptr<MoveOnly>) -> Self {
+        Self {
+            v: { (*_a0.upgrade().deref()).v },
+        }
+    }
+}
+impl CppLess for MoveOnly {
+    fn less(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
+        operator_lt_3(__lhs.clone(), __rhs.clone())
+    }
+}
+impl CppEq for MoveOnly {
+    fn equal(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
+        !(operator_lt_3(__lhs.clone(), __rhs.clone()))
+            && !(operator_lt_3(__rhs.clone(), __lhs.clone()))
+    }
+}
+pub fn operator_lt_3(a: Ptr<MoveOnly>, b: Ptr<MoveOnly>) -> bool {
+    return ({ a.with(|__s| __s.v) } < { b.with(|__s| __s.v) });
+}
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(24)]
 pub struct Bag {
@@ -80,18 +111,18 @@ impl Bag {
 }
 impl CppLess for Bag {
     fn less(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
-        operator_lt_3(__lhs.clone(), __rhs.clone())
+        operator_lt_4(__lhs.clone(), __rhs.clone())
     }
 }
 impl CppEq for Bag {
     fn equal(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
-        operator_eq_4(__lhs.clone(), __rhs.clone())
+        operator_eq_5(__lhs.clone(), __rhs.clone())
     }
 }
-pub fn operator_lt_3(a: Ptr<Bag>, b: Ptr<Bag>) -> bool {
+pub fn operator_lt_4(a: Ptr<Bag>, b: Ptr<Bag>) -> bool {
     return ({ (*a.upgrade().deref()).items.len() } < { (*b.upgrade().deref()).items.len() });
 }
-pub fn operator_eq_4(a: Ptr<Bag>, b: Ptr<Bag>) -> bool {
+pub fn operator_eq_5(a: Ptr<Bag>, b: Ptr<Bag>) -> bool {
     return ({ (*a.upgrade().deref()).items.len() } == { (*b.upgrade().deref()).items.len() });
 }
 pub fn main() {
@@ -390,6 +421,73 @@ fn main_0() -> i32 {
                 .with(|__m: &Map<Bag, (Value<Bag>, Value<i32>)>| __m.end())
     );
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
+    let moves: Value<Vec<MoveOnly>> = Rc::new(RefCell::new(Vec::new()));
+    {
+        let __init = MoveOnly::new({ 3 });
+        (*moves.borrow_mut()).push(__init)
+    };
+    {
+        let __init = MoveOnly::new({ 1 });
+        (*moves.borrow_mut()).push(__init)
+    };
+    {
+        let __init = MoveOnly::new({ 2 });
+        (*moves.borrow_mut()).push(__init)
+    };
+    match ({ moves.decay().begin() },) {
+        (mut __tmp_11,) => {
+            let __n = moves.decay().end().iter_distance(&__tmp_11);
+            let mut __order: Vec<isize> = (0..__n).collect();
+            __order.sort_by(|&__x, &__y| cpp_cmp(&__tmp_11.iter_at(__x), &__tmp_11.iter_at(__y)));
+            reorder(__order, |__i| __tmp_11.iter_at(__i));
+        }
+    };
+    assert!(
+        ({
+            (({ (*moves.borrow())[0_usize].v } == 1) && ({ (*moves.borrow())[1_usize].v } == 2))
+                && ({ (*moves.borrow())[2_usize].v } == 3)
+        })
+    );
+    match ({ moves.decay().begin() },) {
+        (mut __tmp_12,) => {
+            let __n = moves.decay().end().iter_distance(&__tmp_12);
+            let mut __order: Vec<isize> = (0..__n).collect();
+            __order.sort_by(|&__x, &__y| {
+                let __a = __tmp_12.iter_at(__x);
+                let __b = __tmp_12.iter_at(__y);
+                if FnPtr::<fn(Ptr<MoveOnly>, Ptr<MoveOnly>) -> bool>::new(
+                    |a: Ptr<MoveOnly>, b: Ptr<MoveOnly>| -> bool {
+                        {
+                            return ({ a.with(|__s| __s.v) } > { b.with(|__s| __s.v) });
+                        }
+                    },
+                )
+                .call(__a.clone(), __b.clone())
+                {
+                    std::cmp::Ordering::Less
+                } else if FnPtr::<fn(Ptr<MoveOnly>, Ptr<MoveOnly>) -> bool>::new(
+                    |a: Ptr<MoveOnly>, b: Ptr<MoveOnly>| -> bool {
+                        {
+                            return ({ a.with(|__s| __s.v) } > { b.with(|__s| __s.v) });
+                        }
+                    },
+                )
+                .call(__b, __a)
+                {
+                    std::cmp::Ordering::Greater
+                } else {
+                    std::cmp::Ordering::Equal
+                }
+            });
+            reorder(__order, |__i| __tmp_12.iter_at(__i));
+        }
+    };
+    assert!(
+        ({
+            (({ (*moves.borrow())[0_usize].v } == 3) && ({ (*moves.borrow())[1_usize].v } == 2))
+                && ({ (*moves.borrow())[2_usize].v } == 1)
+        })
+    );
     return copies_0.with(|rc| *rc.borrow());
 }
 pub trait BagImpl {
@@ -403,6 +501,15 @@ impl BagImpl for Ptr<Bag> {
                 .write(field!(_a0, items).with_mut(std::mem::take));
             field_ref!((*self), items).as_pointer()
         };
+        return (*self).clone();
+    }
+}
+pub trait MoveOnlyImpl {
+    fn move_assign(&self, _a0: Ptr<MoveOnly>) -> Ptr<MoveOnly>;
+}
+impl MoveOnlyImpl for Ptr<MoveOnly> {
+    fn move_assign(&self, _a0: Ptr<MoveOnly>) -> Ptr<MoveOnly> {
+        field!((*self), v).write({ { (*_a0.upgrade().deref()).v } });
         return (*self).clone();
     }
 }

@@ -85,6 +85,56 @@ pub unsafe fn greater_2(a: *const Tracked, b: *const Tracked) -> bool {
     return (((*a).v) > ((*b).v));
 }
 #[repr(C)]
+#[derive(FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, MoveAssignUnsafe, Default)]
+#[cpp_from(i32, new, value)]
+pub struct MoveOnly {
+    pub v: i32,
+}
+impl MoveOnly {
+    pub unsafe fn new(mut v: i32) -> Self {
+        let mut this = Self { v: v };
+        this
+    }
+    pub unsafe fn move_from(_a0: *mut MoveOnly) -> Self {
+        let mut this = Self { v: (*_a0).v };
+        this
+    }
+    pub unsafe fn move_assign(&mut self, _a0: *mut MoveOnly) -> *mut MoveOnly {
+        self.v = (*_a0).v;
+        return &mut (*(self as *mut MoveOnly));
+    }
+}
+impl std::cmp::Ord for MoveOnly {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        unsafe {
+            if operator_lt_3(self as *const MoveOnly, other as *const MoveOnly) {
+                std::cmp::Ordering::Less
+            } else if operator_lt_3(other as *const MoveOnly, self as *const MoveOnly) {
+                std::cmp::Ordering::Greater
+            } else {
+                std::cmp::Ordering::Equal
+            }
+        }
+    }
+}
+impl std::cmp::PartialOrd for MoveOnly {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+impl std::cmp::PartialEq for MoveOnly {
+    fn eq(&self, other: &Self) -> bool {
+        unsafe {
+            !(operator_lt_3(self as *const MoveOnly, other as *const MoveOnly))
+                && !(operator_lt_3(other as *const MoveOnly, self as *const MoveOnly))
+        }
+    }
+}
+impl std::cmp::Eq for MoveOnly {}
+pub unsafe fn operator_lt_3(a: *const MoveOnly, b: *const MoveOnly) -> bool {
+    return (((*a).v) < ((*b).v));
+}
+#[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
 pub struct Bag {
     pub items: Vec<Tracked>,
@@ -107,9 +157,9 @@ impl Bag {
 impl std::cmp::Ord for Bag {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         unsafe {
-            if operator_lt_3(self as *const Bag, other as *const Bag) {
+            if operator_lt_4(self as *const Bag, other as *const Bag) {
                 std::cmp::Ordering::Less
-            } else if operator_lt_3(other as *const Bag, self as *const Bag) {
+            } else if operator_lt_4(other as *const Bag, self as *const Bag) {
                 std::cmp::Ordering::Greater
             } else {
                 std::cmp::Ordering::Equal
@@ -124,14 +174,14 @@ impl std::cmp::PartialOrd for Bag {
 }
 impl std::cmp::PartialEq for Bag {
     fn eq(&self, other: &Self) -> bool {
-        unsafe { operator_eq_4(self as *const Bag, other as *const Bag) }
+        unsafe { operator_eq_5(self as *const Bag, other as *const Bag) }
     }
 }
 impl std::cmp::Eq for Bag {}
-pub unsafe fn operator_lt_3(a: *const Bag, b: *const Bag) -> bool {
+pub unsafe fn operator_lt_4(a: *const Bag, b: *const Bag) -> bool {
     return (((*a).items.len()) < ((*b).items.len()));
 }
-pub unsafe fn operator_eq_4(a: *const Bag, b: *const Bag) -> bool {
+pub unsafe fn operator_eq_5(a: *const Bag, b: *const Bag) -> bool {
     return (((*a).items.len()) == ((*b).items.len()));
 }
 pub fn main() {
@@ -437,6 +487,81 @@ unsafe fn main_0() -> i32 {
     assert!((((*bag_map.find(&bags[(2) as usize]).iter_deref()).1) == (2)));
     assert!(bag_map.find(&bags[(1) as usize]) == bag_map.end());
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
+    let mut moves: Vec<MoveOnly> = Vec::new();
+    {
+        let __init = MoveOnly::new({ 3 });
+        moves.push(__init)
+    };
+    {
+        let __init = MoveOnly::new({ 1 });
+        moves.push(__init)
+    };
+    {
+        let __init = MoveOnly::new({ 2 });
+        moves.push(__init)
+    };
+    match ({ moves.begin() },) {
+        (mut __tmp_11,) => {
+            let __n = moves.end().iter_distance(&__tmp_11);
+            let mut __order: Vec<isize> = (0..__n).collect();
+            __order.sort_by(|&__x, &__y| (*__tmp_11.iter_at(__x)).cmp(&*__tmp_11.iter_at(__y)));
+            let __values: Vec<_> = __order
+                .iter()
+                .map(|&__i| std::ptr::read(__tmp_11.iter_at(__i)))
+                .collect();
+            for (__i, __v) in (0..__n).zip(__values) {
+                std::ptr::write(__tmp_11.iter_at(__i), __v);
+            }
+        }
+    };
+    assert!(
+        (((moves[(0_usize)].v) == (1)) && ((moves[(1_usize)].v) == (2)))
+            && ((moves[(2_usize)].v) == (3))
+    );
+    match ({ moves.begin() },) {
+        (mut __tmp_12,) => {
+            let __n = moves.end().iter_distance(&__tmp_12);
+            let mut __order: Vec<isize> = (0..__n).collect();
+            __order.sort_by(|&__x, &__y| {
+                let __a = __tmp_12.iter_at(__x) as *const _;
+                let __b = __tmp_12.iter_at(__y) as *const _;
+                if FnPtr::<fn(*const MoveOnly, *const MoveOnly) -> bool>::new(
+                    |a: *const MoveOnly, b: *const MoveOnly| -> bool {
+                        unsafe {
+                            return (((*a).v) > ((*b).v));
+                        }
+                    },
+                )
+                .call(__a, __b)
+                {
+                    std::cmp::Ordering::Less
+                } else if FnPtr::<fn(*const MoveOnly, *const MoveOnly) -> bool>::new(
+                    |a: *const MoveOnly, b: *const MoveOnly| -> bool {
+                        unsafe {
+                            return (((*a).v) > ((*b).v));
+                        }
+                    },
+                )
+                .call(__b, __a)
+                {
+                    std::cmp::Ordering::Greater
+                } else {
+                    std::cmp::Ordering::Equal
+                }
+            });
+            let __values: Vec<_> = __order
+                .iter()
+                .map(|&__i| std::ptr::read(__tmp_12.iter_at(__i)))
+                .collect();
+            for (__i, __v) in (0..__n).zip(__values) {
+                std::ptr::write(__tmp_12.iter_at(__i), __v);
+            }
+        }
+    };
+    assert!(
+        (((moves[(0_usize)].v) == (3)) && ((moves[(1_usize)].v) == (2)))
+            && ((moves[(2_usize)].v) == (1))
+    );
     return (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0));
 }
 pub unsafe fn __cpp2rust_init_globals() {
