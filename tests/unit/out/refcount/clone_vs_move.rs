@@ -80,7 +80,9 @@ fn main_0() -> i32 {
     assert!((x6 == 2));
     let mut other_pointer: Ptr<i32> = (pointer).clone();
     assert!(({ (other_pointer).clone() } == { (pointer).clone() }));
-    other_pointer.with_mut(|__v| __v.prefix_inc());
+    other_pointer.with_mut(|__v| {
+        __v.prefix_inc();
+    });
     assert!(({ (other_pointer.read()) } == { (pointer.read()) }));
     let mut f1: Foo = Foo {
         x: 1,
@@ -95,12 +97,16 @@ fn main_0() -> i32 {
     assert!(((f1.z.read()) == 2));
     let mut f2: Foo = (f1).clone();
     f2.x.prefix_inc();
-    f2.y.with_mut(|__v| __v.prefix_inc());
+    f2.y.with_mut(|__v| {
+        __v.prefix_inc();
+    });
     assert!((f2.x == 2));
     assert!(((f2.y.read()) == 3));
     assert!((f1.x == 1));
     assert!(((f1.y.read()) == 3));
-    f2.z.with_mut(|__v| __v.prefix_inc());
+    f2.z.with_mut(|__v| {
+        __v.prefix_inc();
+    });
     assert!(((f2.y.read()) == 4));
     assert!(({ (f2.z).clone() } == { (x1.as_pointer()) }));
     assert!(((f2.z.read()) == 4));
@@ -229,7 +235,9 @@ fn main_0() -> i32 {
             assert!(
                 ({ ((Map::subscript(map2.as_pointer(), i.as_pointer()).read()) == (*i.borrow())) })
             );
-            Map::subscript(map2.as_pointer(), i.as_pointer()).with_mut(|__v| __v.prefix_inc());
+            Map::subscript(map2.as_pointer(), i.as_pointer()).with_mut(|__v| {
+                __v.prefix_inc();
+            });
             (*i.borrow_mut()).prefix_inc();
         }
     }
@@ -328,7 +336,9 @@ fn main_0() -> i32 {
     };
     let mut r2: Refs = (r1).clone();
     r2.a.write(10);
-    r2.b.with_mut(|__v| __v.prefix_inc());
+    r2.b.with_mut(|__v| {
+        __v.prefix_inc();
+    });
     assert!(({ ((*ra.borrow()) == 10) }));
     assert!(({ ((*rb.borrow()) == 3) }));
     assert!(((r1.a.read()) == 10));

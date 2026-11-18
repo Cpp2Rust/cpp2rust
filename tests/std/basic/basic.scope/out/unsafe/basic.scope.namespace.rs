@@ -53,7 +53,7 @@ pub unsafe fn test_12() {
 pub static mut count_13: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 4 });
 pub static mut count_14: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 100 });
 pub unsafe fn next_15() -> i32 {
-    return (*std::cell::LazyCell::force_mut(&mut *&raw mut count_13)).prefix_inc();
+    return (*(*std::cell::LazyCell::force_mut(&mut *&raw mut count_13)).prefix_inc());
 }
 pub unsafe fn test_16() {
     assert!(((unsafe { next_15() }) == (5)));

@@ -6,14 +6,14 @@ statement, so the `inc` and `dec` modules define one trait per operator form:
 
 ```rust
 pub trait PostfixInc { fn postfix_inc(&mut self) -> Self; }
-pub trait PrefixInc  { fn prefix_inc(&mut self) -> Self; }
+pub trait PrefixInc  { fn prefix_inc(&mut self) -> &mut Self; }
 pub trait PostfixDec { fn postfix_dec(&mut self) -> Self; }
-pub trait PrefixDec  { fn prefix_dec(&mut self) -> Self; }
+pub trait PrefixDec  { fn prefix_dec(&mut self) -> &mut Self; }
 ```
 
 Each method updates the value in place and returns what the C expression
 evaluates to: the postfix forms return a copy of the old value, the prefix forms
-the new one.
+a mutable reference to the updated operand, which is an lvalue in C++.
 
 ```c
 int x = 0;

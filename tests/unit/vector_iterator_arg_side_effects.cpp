@@ -14,5 +14,21 @@ int main() {
   const std::vector<int> &c = v;
   int i = 1;
   assert(c.at(i++) == 1 && i == 2);
+  std::vector<int> w = {10, 20, 30, 40};
+  auto a = w.end();
+  auto &ra = (a -= 3);
+  assert(&ra == &a && *a == 20);
+  auto &rb = ++a;
+  assert(&rb == &a && *a == 30);
+  auto &rc = --a;
+  assert(&rc == &a && *a == 20);
+  auto &rd = (a += 2);
+  assert(&rd == &a && *a == 40);
+  auto b = w.begin();
+  int x = *++b;
+  assert(x == 20);
+  auto k = ++b;
+  ++k;
+  assert(*k == 40 && *b == 30);
   return 0;
 }

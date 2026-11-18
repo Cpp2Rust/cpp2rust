@@ -13,7 +13,7 @@ pub unsafe fn test_0() {
             let total: i32 = ((total) + (1));
         },
         || -> i32 {
-            return total.prefix_inc();
+            return (*total.prefix_inc());
         }
     );
     assert!(((total) == (4)));

@@ -13,7 +13,7 @@ pub fn test_0() {
             let total: Value<i32> = Rc::new(RefCell::new((total + 1)));
         },
         || -> i32 {
-            return (*total.borrow_mut()).prefix_inc();
+            return (*(*total.borrow_mut()).prefix_inc());
         }
     )));
     assert!((total == 4));

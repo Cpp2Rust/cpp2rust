@@ -56,7 +56,9 @@ impl Default for Outer {
     }
 }
 pub fn make_0(calls: Ptr<i32>) -> Outer {
-    calls.with_mut(|__v| __v.prefix_inc());
+    calls.with_mut(|__v| {
+        __v.prefix_inc();
+    });
     return Outer {
         values: Vec::from([1, 2, 3]),
         inner: Inner {

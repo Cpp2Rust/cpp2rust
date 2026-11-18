@@ -118,7 +118,9 @@ impl LifetimeTrackedImpl for Ptr<LifetimeTracked> {
         (*dtorCount_2.with(Value::clone).borrow_mut()).prefix_inc();
     }
     fn use_(&self) {
-        field!((*self), uses).with_mut(|__v| __v.prefix_inc());
+        field!((*self), uses).with_mut(|__v| {
+            __v.prefix_inc();
+        });
         (*useCount_3.with(Value::clone).borrow_mut()).prefix_inc();
     }
     fn copy_assign(&self, _a0: Ptr<LifetimeTracked>) -> Ptr<LifetimeTracked> {

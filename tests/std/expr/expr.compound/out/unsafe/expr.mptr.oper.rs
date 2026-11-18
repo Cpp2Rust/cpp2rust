@@ -46,12 +46,12 @@ pub static mut object_4: std::cell::LazyCell<p4_object_expression_sequenced_firs
     });
 pub unsafe fn select_object_5() -> *mut p4_object_expression_sequenced_first_HasValue {
     (*std::cell::LazyCell::force_mut(&mut *&raw mut object_stamp_2)) =
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut sequence_1)).prefix_inc();
+        (*(*std::cell::LazyCell::force_mut(&mut *&raw mut sequence_1)).prefix_inc());
     return &mut (*std::cell::LazyCell::force_mut(&mut *&raw mut object_4));
 }
 pub unsafe fn select_member_6() -> isize {
     (*std::cell::LazyCell::force_mut(&mut *&raw mut member_stamp_3)) =
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut sequence_1)).prefix_inc();
+        (*(*std::cell::LazyCell::force_mut(&mut *&raw mut sequence_1)).prefix_inc());
     return (::std::mem::offset_of!(p4_object_expression_sequenced_first_HasValue, value) as isize);
 }
 pub unsafe fn test_7() {

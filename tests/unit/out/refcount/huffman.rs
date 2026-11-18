@@ -154,7 +154,9 @@ pub fn CollectCode_3(
             i.prefix_inc();
         }
     }
-    next.with_mut(|__v| __v.prefix_inc());
+    next.with_mut(|__v| {
+        __v.prefix_inc();
+    });
 }
 pub fn CollectCodes_4(
     mut root: Ptr<MinHeapNode>,
@@ -364,7 +366,9 @@ impl MinHeapImpl for Ptr<MinHeap> {
             .decay()
             .offset(0_usize)
             .read());
-        field!((*self), size).with_mut(|__v| __v.prefix_dec());
+        field!((*self), size).with_mut(|__v| {
+            __v.prefix_dec();
+        });
         let __rhs = ((*self)
             .with(|__s| __s.arr.clone())
             .decay()
@@ -379,7 +383,9 @@ impl MinHeapImpl for Ptr<MinHeap> {
         return out;
     }
     fn Insert(&self, mut node: Ptr<MinHeapNode>) {
-        field!((*self), size).with_mut(|__v| __v.prefix_inc());
+        field!((*self), size).with_mut(|__v| {
+            __v.prefix_inc();
+        });
         let mut i: i32 = ((*self).with(|__s| __s.size) - 1);
         'loop_: while (i != 0)
             && ({ node.with(|__s| __s.freq) } < {

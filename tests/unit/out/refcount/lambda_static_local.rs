@@ -17,7 +17,7 @@ fn main_0() -> i32 {
     let next: Value<FnPtr<fn() -> i32>> =
         Rc::new(RefCell::new(FnPtr::<fn() -> i32>::new(|| -> i32 {
             {
-                return (*n_1.with(Value::clone).borrow_mut()).prefix_inc();
+                return (*(*n_1.with(Value::clone).borrow_mut()).prefix_inc());
             }
         })));
     assert!(({ (({ (*next.borrow()).call() }) == 1) }));
@@ -28,7 +28,7 @@ fn main_0() -> i32 {
     let fresh: Value<FnPtr<fn() -> i32>> =
         Rc::new(RefCell::new(FnPtr::<fn() -> i32>::new(|| -> i32 {
             {
-                return (*n_1.with(Value::clone).borrow_mut()).prefix_inc();
+                return (*(*n_1.with(Value::clone).borrow_mut()).prefix_inc());
             }
         })));
     assert!(({ (({ (*fresh.borrow()).call() }) == 5) }));

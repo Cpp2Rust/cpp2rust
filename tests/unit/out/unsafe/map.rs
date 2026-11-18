@@ -229,6 +229,23 @@ unsafe fn main_0() -> i32 {
     assert!((((*points.subscript_move(&mut 8, |__k| cpp_move_unsafe!(__k))).x) == (5)));
     assert!((((*points.subscript_move(&mut 8, |__k| cpp_move_unsafe!(__k))).y) == (6)));
     assert!(((points.len()) == (2_usize)));
+    let mut mi: UnsafeBidirectionalIterator<(i32, i32)> = m3.begin();
+    let mr: *mut UnsafeBidirectionalIterator<(i32, i32)> = &mut (*{
+        (*(&mut mi as *mut UnsafeBidirectionalIterator<(i32, i32)>)).iter_inc();
+        (&mut mi as *mut UnsafeBidirectionalIterator<(i32, i32)>)
+    });
+    assert!(
+        ((mr) == (&mut mi as *mut UnsafeBidirectionalIterator<(i32, i32)>))
+            && (((*mi.iter_deref()).0) == (4))
+    );
+    let md: *mut UnsafeBidirectionalIterator<(i32, i32)> = &mut (*{
+        (*(&mut mi as *mut UnsafeBidirectionalIterator<(i32, i32)>)).iter_dec();
+        (&mut mi as *mut UnsafeBidirectionalIterator<(i32, i32)>)
+    });
+    assert!(
+        ((md) == (&mut mi as *mut UnsafeBidirectionalIterator<(i32, i32)>))
+            && (((*mi.iter_deref()).0) == (1))
+    );
     k = 0;
     let value_0: *const u32 = &raw const (*m.get(&(k as i16)).expect("out of range!")).1;
     assert!(

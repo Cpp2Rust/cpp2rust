@@ -18,8 +18,12 @@ impl StructWithCtor {
     pub fn new(mut x1: i32, mut x2: i32) -> Self {
         let __this: Value<StructWithCtor> = Rc::new(RefCell::new(Self { x1_: x1, x2_: x2 }));
         let this: Ptr<StructWithCtor> = __this.as_pointer();
-        field!(this, x1_).with_mut(|__v| __v.prefix_inc());
-        field!(this, x2_).with_mut(|__v| __v.prefix_dec());
+        field!(this, x1_).with_mut(|__v| {
+            __v.prefix_inc();
+        });
+        field!(this, x2_).with_mut(|__v| {
+            __v.prefix_dec();
+        });
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }

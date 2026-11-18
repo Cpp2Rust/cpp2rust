@@ -71,13 +71,13 @@ impl AssertsDtorCountAtExit {
     }
 }
 pub unsafe fn count_4() -> i32 {
-    return (*std::cell::LazyCell::force_mut(&mut *&raw mut n_6)).prefix_inc();
+    return (*(*std::cell::LazyCell::force_mut(&mut *&raw mut n_6)).prefix_inc());
 }
 pub unsafe fn count_7() -> i32 {
-    return (*std::cell::LazyCell::force_mut(&mut *&raw mut n_9)).prefix_inc();
+    return (*(*std::cell::LazyCell::force_mut(&mut *&raw mut n_9)).prefix_inc());
 }
 pub unsafe fn count_10() -> i32 {
-    return (*std::cell::LazyCell::force_mut(&mut *&raw mut n_12)).prefix_inc();
+    return (*(*std::cell::LazyCell::force_mut(&mut *&raw mut n_12)).prefix_inc());
 }
 static mut t_5: std::cell::LazyCell<LifetimeTracked> =
     std::cell::LazyCell::new(|| unsafe { LifetimeTracked::new() });
@@ -114,7 +114,7 @@ unsafe fn main_0() -> i32 {
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S_14 {}
 pub unsafe fn count_18() -> i32 {
-    return (*std::cell::LazyCell::force_mut(&mut *&raw mut n_20)).prefix_inc();
+    return (*(*std::cell::LazyCell::force_mut(&mut *&raw mut n_20)).prefix_inc());
 }
 static mut t_19: std::cell::LazyCell<LifetimeTracked> =
     std::cell::LazyCell::new(|| unsafe { LifetimeTracked::new() });

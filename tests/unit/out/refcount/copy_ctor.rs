@@ -192,7 +192,9 @@ pub struct Tracked {
 impl Tracked {
     pub fn copy_from(o: Ptr<Tracked>) -> Self {
         let __this: Tracked = Self { copied_from: 0 };
-        field!(o, copied_from).with_mut(|__v| __v.prefix_inc());
+        field!(o, copied_from).with_mut(|__v| {
+            __v.prefix_inc();
+        });
         __this
     }
 }
@@ -210,7 +212,9 @@ impl Default for Tracked {
     }
 }
 pub fn touch_1(mut t: Ptr<Tracked>) {
-    field!(t, copied_from).with_mut(|__v| __v.prefix_inc());
+    field!(t, copied_from).with_mut(|__v| {
+        __v.prefix_inc();
+    });
 }
 pub fn by_value_2(mut c: Counted) -> i32 {
     return c.v;
@@ -346,7 +350,9 @@ pub trait TrackedImpl {
 }
 impl TrackedImpl for Ptr<Tracked> {
     fn copy_assign(&self, o: Ptr<Tracked>) -> Ptr<Tracked> {
-        field!(o, copied_from).with_mut(|__v| __v.prefix_inc());
+        field!(o, copied_from).with_mut(|__v| {
+            __v.prefix_inc();
+        });
         return (*self).clone();
     }
 }

@@ -107,7 +107,7 @@ unsafe fn main_0() -> i32 {
             .v,
         )
     }));
-    let mut bar_inc: i32 = (*(unsafe { bar_2(&mut x1) })).prefix_inc();
+    let mut bar_inc: i32 = (*(*(unsafe { bar_2(&mut x1) })).prefix_inc());
     bar_inc = (*(unsafe { bar_2(&mut x1) })).postfix_inc();
     bar_inc = (((*(unsafe { bar_2(&mut x1) })) + (unsafe { foo_0(x4) })) + (1));
     (*(unsafe {
@@ -127,7 +127,7 @@ unsafe fn main_0() -> i32 {
         )
     }))
     .postfix_inc();
-    let mut bar_inc2: i32 = (*(unsafe {
+    let mut bar_inc2: i32 = (*(*(unsafe {
         bar_2(
             &mut (*(unsafe {
                 X2::get(&mut (*(unsafe { X3::get(&mut (*(unsafe { X4::get(&mut d) }))) })))
@@ -135,7 +135,7 @@ unsafe fn main_0() -> i32 {
             .v,
         )
     }))
-    .prefix_inc();
+    .prefix_inc());
     bar_inc2 = (*(unsafe {
         bar_2(
             &mut (*(unsafe {

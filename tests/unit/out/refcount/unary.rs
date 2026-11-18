@@ -18,10 +18,10 @@ fn main_0() -> i32 {
     }
     let mut out: i32 = 0;
     'loop_: while (x != 0) {
-        out += a[(x.prefix_dec()) as usize];
+        out += a[(*x.prefix_dec()) as usize];
     }
     out.postfix_inc();
-    let mut x2: i32 = out.prefix_dec();
+    let mut x2: i32 = (*out.prefix_dec());
     out.prefix_inc();
     let mut x3: i32 = out.postfix_dec();
     assert!((((out.postfix_inc() + x2) + x3) == 19));
@@ -33,9 +33,9 @@ fn main_0() -> i32 {
     assert!((a[(0) as usize] == a[(0) as usize]));
     let mut wide: i128 = 5_i128;
     let mut w1: i128 = wide.postfix_inc();
-    let mut w2: i128 = wide.prefix_inc();
+    let mut w2: i128 = (*wide.prefix_inc());
     let mut w3: i128 = wide.postfix_dec();
-    let mut w4: i128 = wide.prefix_dec();
+    let mut w4: i128 = (*wide.prefix_dec());
     assert!((((w1 == 5_i128) && (w2 == 7_i128)) && (w3 == 7_i128)) && (w4 == 5_i128));
     let mut uwide: u128 = 0_u128;
     uwide.prefix_dec();

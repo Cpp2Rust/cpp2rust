@@ -7,7 +7,9 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn counted_string_0(calls: Ptr<i32>) -> Vec<i8> {
-    calls.with_mut(|__v| __v.prefix_inc());
+    calls.with_mut(|__v| {
+        __v.prefix_inc();
+    });
     return {
         let mut __bytes = Ptr::<i8>::from_string_literal(b"hello").to_c_bytes();
         __bytes.push(0);
@@ -15,7 +17,9 @@ pub fn counted_string_0(calls: Ptr<i32>) -> Vec<i8> {
     };
 }
 pub fn counted_ref_1(s: Ptr<Vec<i8>>, calls: Ptr<i32>) -> Ptr<Vec<i8>> {
-    calls.with_mut(|__v| __v.prefix_inc());
+    calls.with_mut(|__v| {
+        __v.prefix_inc();
+    });
     return (s).clone();
 }
 pub fn main() {

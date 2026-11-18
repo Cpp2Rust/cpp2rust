@@ -81,7 +81,10 @@ pub unsafe fn sum_4(v: *mut Vec<i32>) -> i32 {
         let mut it: UnsafeRandomAccessIterator<i32> = (*v).begin();
         'loop_: while it != (*v).end() {
             s += (*it.iter_deref());
-            it.iter_inc();
+            {
+                (*(&mut it as *mut UnsafeRandomAccessIterator<i32>)).iter_inc();
+                (&mut it as *mut UnsafeRandomAccessIterator<i32>)
+            };
         }
     }
     return s;

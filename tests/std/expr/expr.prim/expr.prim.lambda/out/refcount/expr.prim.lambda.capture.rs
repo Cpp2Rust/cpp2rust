@@ -15,7 +15,9 @@ pub fn test_0() {
                     let n: Ptr<i32> = n.as_pointer();
                 },
                 || {
-                    n.with_mut(|__v| __v.prefix_inc());
+                    n.with_mut(|__v| {
+                        __v.prefix_inc();
+                    });
                 }
             )));
             ({ (*increment.borrow()).call() });

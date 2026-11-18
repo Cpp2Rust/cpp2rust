@@ -144,6 +144,11 @@ int main() {
   assert(points[8].x == 5);
   assert(points[8].y == 6);
   assert(points.size() == 2);
+  auto mi = m3.begin();
+  auto &mr = ++mi;
+  assert(&mr == &mi && mi->first == 4);
+  auto &md = --mi;
+  assert(&md == &mi && mi->first == 1);
   k = 0;
   const auto &value_0 = m.at(k);
   assert(m.size() + x1 + x2 + x3 + x4 + x5 + value_0 == 21);
