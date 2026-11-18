@@ -71,10 +71,42 @@ void test() {
 }
 } // namespace p40_converting_move_assignment
 
+// N4950 [over.match.oper]/3.4: The rewritten candidate set is determined as
+// follows:
+// (3.4.1) For the relational (7.6.9) operators, the rewritten candidates
+// include all non-rewritten candidates for the expression x <=> y.
+// (3.4.3) For the != operator (7.6.10), the rewritten candidates include all
+// non-rewritten candidates for the expression x == y that are rewrite targets
+// with first operand x (see below).
+// N4950 [over.match.oper]/8: The argument list contains all of the operands of
+// the operator. The best function from the set of candidate functions is
+// selected according to 12.2.3 and 12.2.4.
+namespace over_match_oper_p3_4_rewritten_candidates {
+void test() {
+  std::pair<int, int> a(1, 2);
+  std::pair<int, int> b(1, 3);
+  std::pair<int, int> c(2, 0);
+  assert(a != b);
+  assert(!(a != a));
+  assert(a < b);
+  assert(!(b < a));
+  assert(b < c);
+  assert(a <= a);
+  assert(!(c <= b));
+  assert(c > b);
+  assert(!(a > a));
+  assert(c >= a);
+  assert(!(a >= b));
+  bool ordered = a < b && b < c;
+  assert(ordered);
+}
+} // namespace over_match_oper_p3_4_rewritten_candidates
+
 int main() {
   p2_move_constructor::test();
   p12_forwarding_constructor::test();
   p16_converting_move_constructor::test();
   p40_converting_move_assignment::test();
+  over_match_oper_p3_4_rewritten_candidates::test();
   return 0;
 }

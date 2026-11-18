@@ -2874,6 +2874,13 @@ bool Converter::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
 
 bool Converter::VisitCXXRewrittenBinaryOperator(
     clang::CXXRewrittenBinaryOperator *expr) {
+  if (Mapper::Contains(ctx_, expr)) {
+    auto decomposed = expr->getDecomposedForm();
+    clang::Expr *args[] = {const_cast<clang::Expr *>(decomposed.LHS),
+                           const_cast<clang::Expr *>(decomposed.RHS)};
+    StrCat(GetMappedAsString(expr, args, 2, nullptr));
+    return false;
+  }
   Convert(expr->getSemanticForm());
   return false;
 }
