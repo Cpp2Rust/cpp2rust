@@ -125,12 +125,12 @@ pub struct Elem {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let mut ev: Vec<Elem> = Vec::new();
     {
-        let __a1 = Elem { i: 2 };
+        let __a1 = (Elem { i: 2 });
         ev.push(__a1)
     };
     assert!((ev[0_usize].i == 2));
@@ -253,7 +253,10 @@ impl MyContainer_char_Impl for Ptr<MyContainer_char_> {
         return (*(*self).upgrade().deref()).vec_.len();
     }
     fn back_4(&self) -> Ptr<i8> {
-        return field_ref!((*self), vec_).decay().to_last();
+        return {
+            let __n = (*(*self).upgrade().deref()).vec_.len() - 1;
+            field_ref!((*self), vec_).decay().offset((__n) as isize)
+        };
     }
     fn pop_back(&self) {
         field!((*self), vec_).with_mut(|__v: &mut Vec<i8>| __v.pop());
@@ -266,12 +269,9 @@ impl MyContainer_char_Impl for Ptr<MyContainer_char_> {
         };
     }
     fn move_assign(&self, _a0: Ptr<MyContainer_char_>) -> Ptr<MyContainer_char_> {
-        {
-            field_ref!((*self), vec_)
-                .as_pointer()
-                .write(field!(_a0, vec_).with_mut(std::mem::take));
-            field_ref!((*self), vec_).as_pointer()
-        };
+        field!((*self), vec_).with_mut(|__b0| {
+            (*__b0) = field!(_a0, vec_).with_mut(std::mem::take);
+        });
         return (*self).clone();
     }
 }
@@ -294,7 +294,10 @@ impl MyContainer_float_Impl for Ptr<MyContainer_float_> {
         return (*(*self).upgrade().deref()).vec_.len();
     }
     fn back_4(&self) -> Ptr<f32> {
-        return field_ref!((*self), vec_).decay().to_last();
+        return {
+            let __n = (*(*self).upgrade().deref()).vec_.len() - 1;
+            field_ref!((*self), vec_).decay().offset((__n) as isize)
+        };
     }
     fn pop_back(&self) {
         field!((*self), vec_).with_mut(|__v: &mut Vec<f32>| __v.pop());
@@ -307,12 +310,9 @@ impl MyContainer_float_Impl for Ptr<MyContainer_float_> {
         };
     }
     fn move_assign(&self, _a0: Ptr<MyContainer_float_>) -> Ptr<MyContainer_float_> {
-        {
-            field_ref!((*self), vec_)
-                .as_pointer()
-                .write(field!(_a0, vec_).with_mut(std::mem::take));
-            field_ref!((*self), vec_).as_pointer()
-        };
+        field!((*self), vec_).with_mut(|__b0| {
+            (*__b0) = field!(_a0, vec_).with_mut(std::mem::take);
+        });
         return (*self).clone();
     }
 }
@@ -335,7 +335,10 @@ impl MyContainer_int_Impl for Ptr<MyContainer_int_> {
         return (*(*self).upgrade().deref()).vec_.len();
     }
     fn back_4(&self) -> Ptr<i32> {
-        return field_ref!((*self), vec_).decay().to_last();
+        return {
+            let __n = (*(*self).upgrade().deref()).vec_.len() - 1;
+            field_ref!((*self), vec_).decay().offset((__n) as isize)
+        };
     }
     fn pop_back(&self) {
         field!((*self), vec_).with_mut(|__v: &mut Vec<i32>| __v.pop());
@@ -348,12 +351,9 @@ impl MyContainer_int_Impl for Ptr<MyContainer_int_> {
         };
     }
     fn move_assign(&self, _a0: Ptr<MyContainer_int_>) -> Ptr<MyContainer_int_> {
-        {
-            field_ref!((*self), vec_)
-                .as_pointer()
-                .write(field!(_a0, vec_).with_mut(std::mem::take));
-            field_ref!((*self), vec_).as_pointer()
-        };
+        field!((*self), vec_).with_mut(|__b0| {
+            (*__b0) = field!(_a0, vec_).with_mut(std::mem::take);
+        });
         return (*self).clone();
     }
 }

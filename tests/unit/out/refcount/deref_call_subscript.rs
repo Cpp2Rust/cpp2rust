@@ -16,7 +16,7 @@ pub fn get_1() -> Ptr<Vec<u8>> {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     index!(({ get_1() }), 1_usize).write(4_u8);

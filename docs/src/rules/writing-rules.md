@@ -106,6 +106,65 @@ No destructor rules exist so far: the STL and libc APIs covered by the current
 rules have not needed any, since their types map to Rust types whose `Drop`
 implementations already do the right thing.
 
+## Returning references
+
+A rule whose C++ side returns a reference returns a Rust reference to the
+_place_ the C++ reference refers to: the parameter itself, written as the
+parameter alone, or an element of it, written `&mut a0[...]` (`&a0[...]` for a
+const reference). Statements that compute the place may come first. The rule is
+written against `&mut T` whatever the call-site argument is, an unboxed local, a
+value in a `Value`, or one reached through a `Ptr` or a raw pointer:
+
+```cpp
+// rules/string/src.cpp
+std::string &f4(std::string &s, const char *p, std::size_t n) {
+  return s.append(p, n);
+}
+
+// rules/vector/src.cpp
+template <typename T1, typename T2 = std::allocator<T1>>
+T1 &f69(std::vector<T1, T2> &o) {
+  return o.back();
+}
+```
+
+```rust
+// rules/string/tgt_refcount.rs
+fn f4(a0: &mut Vec<i8>, a1: Ptr<i8>, a2: usize) -> &mut Vec<i8> {
+    a0.pop();
+    a1.with_slice(a2, |__s| a0.extend_from_slice(__s));
+    a0.push(0);
+    a0
+}
+
+// rules/vector/tgt_refcount.rs
+fn f69<T1>(a0: &mut Vec<T1>) -> &mut T1 {
+    let __n = a0.len() - 1;
+    &mut a0[__n]
+}
+```
+
+The converter decides what the reference becomes at each call site:
+
+- If the result is discarded, as in `s.append(p, n);`, only the statements are
+  emitted.
+- If the result is the argument of another rule, as in
+  `s.append(p, n).append(q, m)`, the statements are emitted first and the
+  argument is passed to the other rule in place of the result.
+- If the result is used as an object, the place itself is used when the argument
+  is an unboxed place, e.g., `v.back() = 1` is `v[__n] = 1` after the
+  statements.
+- Otherwise, the result is a pointer to the argument, or to its element: a `Ptr`
+  in the refcount model and a raw pointer in the unsafe model.
+
+A rule that needs a lifetime, because it takes more than one reference, declares
+it as usual
+(`fn f30<'a>(a0: &'a mut Vec<i8>, a1: &mut Vec<i8>) -> &'a mut Vec<i8>`); the
+preprocessor drops lifetimes from the types it records. In the refcount model a
+Rust reference to anything else, which the converter can't make a pointer of, is
+rejected; such rules return a `Ptr` instead, e.g., the `std::map::operator[]`
+rule.
+
 ## Operators
 
 Write operators with explicit `operator` call syntax, in member form

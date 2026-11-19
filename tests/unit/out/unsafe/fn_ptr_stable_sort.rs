@@ -18,21 +18,21 @@ pub unsafe fn Compare_0(a: *const Item, b: *const Item) -> bool {
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
-        std::process::exit(main_0() as i32);
+        libcc2rs::cpp2rust_exit(main_0() as i32);
     }
 }
 unsafe fn main_0() -> i32 {
     let mut v: Vec<Item> = Vec::new();
     {
-        let __a1 = Item { key: 3, value: 30 };
+        let __a1 = (Item { key: 3, value: 30 });
         v.push(__a1)
     };
     {
-        let __a1 = Item { key: 1, value: 10 };
+        let __a1 = (Item { key: 1, value: 10 });
         v.push(__a1)
     };
     {
-        let __a1 = Item { key: 2, value: 20 };
+        let __a1 = (Item { key: 2, value: 20 });
         v.push(__a1)
     };
     match ({ v.begin() },) {

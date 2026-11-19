@@ -1,5 +1,6 @@
 #include <cassert>
 #include <new>
+#include <type_traits>
 #include <utility>
 
 enum Overload {

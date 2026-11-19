@@ -34,7 +34,7 @@ pub const Color_kGreen: Color = 1;
 pub const Color_kBlue: Color = 2;
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     assert!((({ switch_char_0(('a' as i8),) }) == 1));

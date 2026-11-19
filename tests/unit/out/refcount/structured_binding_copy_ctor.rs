@@ -44,7 +44,7 @@ pub fn make_counted_1() -> Counted {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let s: Value<Counted> = Rc::new(RefCell::new(Counted::new({ 1 }, { 2 })));

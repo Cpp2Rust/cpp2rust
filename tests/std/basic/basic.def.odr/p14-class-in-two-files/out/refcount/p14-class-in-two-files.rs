@@ -74,11 +74,22 @@ pub struct AssertsDtorCountAtExit {
     pub expected: i32,
 }
 thread_local!(
-    pub static check_4: Value<AssertsDtorCountAtExit> =
-        Rc::new(RefCell::new(AssertsDtorCountAtExit { expected: 2 }));
+    pub static check_4: Value<AssertsDtorCountAtExit> = {
+        let __static = Rc::new(RefCell::new(AssertsDtorCountAtExit { expected: 2 }));
+        libcc2rs::register_static_destructor(|| {
+            check_4.with(Value::clone).as_pointer().destructor()
+        });
+        __static
+    };
 );
 thread_local!(
-    pub static shared_5: Value<LifetimeTracked> = Rc::new(RefCell::new(LifetimeTracked::new()));
+    pub static shared_5: Value<LifetimeTracked> = {
+        let __static = Rc::new(RefCell::new(LifetimeTracked::new()));
+        libcc2rs::register_static_destructor(|| {
+            shared_5.with(Value::clone).as_pointer().destructor()
+        });
+        __static
+    };
 );
 #[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
@@ -89,11 +100,17 @@ impl HasInlineMembers {
     }
 }
 thread_local!(
-    static local_6: Value<LifetimeTracked> = Rc::new(RefCell::new(LifetimeTracked::new()));
+    static local_6: Value<LifetimeTracked> = {
+        let __static = Rc::new(RefCell::new(LifetimeTracked::new()));
+        libcc2rs::register_static_destructor(|| {
+            local_6.with(Value::clone).as_pointer().destructor()
+        });
+        __static
+    };
 );
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     ({ LifetimeTrackedImpl::use_(&shared_5.with(|v| v.as_pointer())) });

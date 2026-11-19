@@ -9,7 +9,7 @@ use std::rc::Rc;
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
-        std::process::exit(main_0() as i32);
+        libcc2rs::cpp2rust_exit(main_0() as i32);
     }
 }
 unsafe fn main_0() -> i32 {
@@ -18,8 +18,8 @@ unsafe fn main_0() -> i32 {
         let __a1 = 10;
         v.push(__a1)
     };
-    (*((v).first_mut().unwrap())) += 5;
-    assert!(((*((v).first_mut().unwrap())) == (15)));
+    v[0] += 5;
+    assert!(((v[0]) == (15)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

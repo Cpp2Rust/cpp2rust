@@ -139,7 +139,7 @@ pub fn test_st_mtime_access_2() {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     ({ test_stat_0() });

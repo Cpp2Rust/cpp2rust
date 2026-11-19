@@ -24,7 +24,7 @@ pub fn stacked_with_inner_fallthrough_0(mut x: i32, mut flag: i32) -> i32 {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     assert!((({ stacked_with_inner_fallthrough_0(1, 0,) }) == 50));

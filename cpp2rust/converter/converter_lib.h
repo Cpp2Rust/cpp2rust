@@ -56,6 +56,8 @@ bool IsCodeUnitStringLiteral(const clang::StringLiteral *expr);
 
 bool IsUserDefinedDecl(const clang::Decl *decl);
 
+bool IsStructLiteral(const clang::Expr *expr);
+
 bool IsAbstractUserClass(const clang::RecordDecl *decl);
 
 bool IsLibraryOnlySpecialization(
@@ -403,11 +405,12 @@ bool IsConstantEvaluatedQuery(const clang::CallExpr *expr);
 bool HasConstantEvaluatedInit(const clang::ASTContext &ctx,
                               const clang::VarDecl *decl);
 
-bool IsTransparentStdCall(const clang::CallExpr *expr);
+bool IsTransparentStdCall(clang::ASTContext &ctx, const clang::CallExpr *expr);
 
-const clang::Expr *IgnoreTransparentStdCall(const clang::Expr *expr);
+const clang::Expr *IgnoreTransparentStdCall(clang::ASTContext &ctx,
+                                            const clang::Expr *expr);
 
-bool IsTemporaryObject(const clang::Expr *expr);
+bool IsTemporaryObject(clang::ASTContext &ctx, const clang::Expr *expr);
 
 bool ContainsVAArgExpr(const clang::Stmt *stmt);
 

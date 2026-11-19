@@ -8,7 +8,7 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2, 3])));
@@ -30,12 +30,12 @@ fn main_0() -> i32 {
     assert!(({ ((*arr.borrow())[(0) as usize] == 7) }));
     assert!(({ ((*arr.borrow())[(2) as usize] == 5) }));
     let std_arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::<[i32]>::from([4, 5, 6])));
-    let mut last: i32 = (std_arr.decay().offset(2 as isize).read());
-    std_arr.decay().offset(0 as isize).write(8);
+    let mut last: i32 = (std_arr.decay().offset((2) as isize).read());
+    std_arr.decay().write(8);
     let __decomp_2: Ptr<Box<[i32]>> = std_arr.as_pointer();
-    let p: Ptr<i32> = __decomp_2.decay().offset(0 as isize);
-    let q: Ptr<i32> = __decomp_2.decay().offset(1 as isize);
-    let r: Ptr<i32> = __decomp_2.decay().offset(2 as isize);
+    let p: Ptr<i32> = __decomp_2.decay();
+    let q: Ptr<i32> = __decomp_2.decay().offset((1) as isize);
+    let r: Ptr<i32> = __decomp_2.decay().offset((2) as isize);
     {
         q.with_mut(|__v| *__v = *__v + 10)
     };

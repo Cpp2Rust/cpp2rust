@@ -93,7 +93,7 @@ struct Bound {
 };
 
 // Whether pred holds for a fragment of body, or for one nested in them.
-bool AnyFragment(const std::vector<BodyFragment> &body,
+bool AnyFragment(llvm::ArrayRef<BodyFragment> body,
                  llvm::function_ref<bool(const BodyFragment &)> pred);
 
 enum class ElemsKind { kVec, kArray };
@@ -130,7 +130,13 @@ struct ExprRule {
 
   void dump() const;
   bool usesInit() const;
+  // The operand of the reference that the body ends with, if it returns one.
   const std::vector<BodyFragment> *refExprOperand() const;
+  // The statements of the body that compute the reference it returns.
+  llvm::ArrayRef<BodyFragment> refExprEffect() const;
+  // The placeholder of the argument that the reference is to, or to an element
+  // of: a0 or a0[...].
+  const PlaceholderFragment *refExprBase() const;
 
   // The arguments to bind to variables before the body, so that they are
   // evaluated once and in order: those with side effects that the body may

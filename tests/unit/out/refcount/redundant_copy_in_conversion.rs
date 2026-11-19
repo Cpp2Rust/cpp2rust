@@ -14,22 +14,22 @@ pub fn sink_0(it: BidirectionalIterator<(Value<i32>, Value<i32>)>) -> i32 {
     return if (*cit.borrow())
         == <BidirectionalIterator<(Value<i32>, Value<i32>)>>::from(({ (*it.borrow()).clone() }))
     {
-        (*(*(*it.borrow()).iter_deref().upgrade().deref()).1.borrow())
+        (*(*({ (*it.borrow()).iter_deref() }).upgrade().deref())
+            .1
+            .borrow())
     } else {
         0
     };
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let m: Value<Map<i32, (Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
-    Map::subscript_move(
-        m.as_pointer(),
-        Rc::new(RefCell::new(0)).as_pointer(),
-        |__k| cpp_move!(__k),
-    )
+    match (Rc::new(RefCell::new(0)).as_pointer(),) {
+        (__tmp_0,) => ({ (*m.borrow_mut()).subscript_move(__tmp_0, |__k| cpp_move!(__k)) }),
+    }
     .write(1);
     let end: Value<BidirectionalIterator<(Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(
         m.as_pointer()
@@ -37,9 +37,9 @@ fn main_0() -> i32 {
     ));
     let it0: Value<BidirectionalIterator<(Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(
         ({
-            let __tmp_0: Value<i32> = Rc::new(RefCell::new(0));
+            let __tmp_1: Value<i32> = Rc::new(RefCell::new(0));
             m.as_pointer()
-                .with(|__m: &Map<i32, (Value<i32>, Value<i32>)>| __m.find(&__tmp_0.as_pointer()))
+                .with(|__m: &Map<i32, (Value<i32>, Value<i32>)>| __m.find(&__tmp_1.as_pointer()))
         }),
     ));
     let const_it: Value<BidirectionalIterator<(Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(
@@ -65,7 +65,7 @@ fn main_0() -> i32 {
     let const_middle: Value<RandomAccessIterator<u32>> = Rc::new(RefCell::new(
         <RandomAccessIterator<u32>>::from(({ (*middle.borrow()).clone() })),
     ));
-    assert!(({ (((*const_middle.borrow()).iter_deref().read()) == 8_u32) }));
+    assert!(((({ (*const_middle.borrow()).iter_deref() }).read()) == 8_u32));
     assert!(({ (*const_middle.borrow()) == (*middle.borrow()) }));
     return 0;
 }

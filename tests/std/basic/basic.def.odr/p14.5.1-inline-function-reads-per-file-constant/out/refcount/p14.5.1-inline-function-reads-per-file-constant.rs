@@ -14,7 +14,7 @@ pub fn scaled_1(mut v: i32) -> i32 {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     assert!(((factor_0.with(|v| v.as_pointer())) != ({ b_factor_address_2() })));

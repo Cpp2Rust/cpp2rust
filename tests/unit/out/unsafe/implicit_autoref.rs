@@ -20,8 +20,7 @@ impl Holder {
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Holder) -> *mut Holder {
         {
-            *(&mut self.v as *mut Vec<i32>) = std::mem::take(&mut (*_a0).v);
-            (&mut self.v as *mut Vec<i32>)
+            self.v = std::mem::take(&mut (*_a0).v);
         };
         return &mut (*(self as *mut Holder));
     }
@@ -32,7 +31,7 @@ pub unsafe fn write_through_0(mut p: *mut i32) {
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
-        std::process::exit(main_0() as i32);
+        libcc2rs::cpp2rust_exit(main_0() as i32);
     }
 }
 unsafe fn main_0() -> i32 {
@@ -64,7 +63,7 @@ unsafe fn main_0() -> i32 {
     assert!((((&mut (*p))[(1_usize)]) == (30)));
     assert!(((b) == (40)));
     assert!((((&mut (*hp)).v[(1_usize)]) == (60)));
-    (unsafe { write_through_0((&mut (&mut (*p))[0_usize] as *mut i32)) });
+    (unsafe { write_through_0((&raw mut (&mut (*p))[0_usize])) });
     assert!((((&mut (*p))[(0_usize)]) == (42)));
     return 0;
 }

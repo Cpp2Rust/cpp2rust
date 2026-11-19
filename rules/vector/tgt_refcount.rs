@@ -39,20 +39,20 @@ fn f65<T1>(a0: Ptr<T1>) -> Ptr<T1> {
     a0
 }
 
-fn f66<T1>(a0: Ptr<T1>, a1: usize) -> Ptr<T1> {
+fn f66<T1>(a0: &mut Vec<T1>, a1: usize) -> &mut T1 {
     if a1 >= a0.len() {
         panic!("out of bounds access")
-    } else {
-        a0.offset(a1 as isize)
     }
+    &mut a0[a1]
 }
 
-fn f68<T1>(a0: Ptr<T1>) -> Ptr<T1> {
-    a0
+fn f68<T1>(a0: &mut Vec<T1>) -> &mut T1 {
+    &mut a0[0]
 }
 
-fn f69<T1>(a0: Ptr<T1>) -> Ptr<T1> {
-    a0.to_last()
+fn f69<T1>(a0: &mut Vec<T1>) -> &mut T1 {
+    let __n = a0.len() - 1;
+    &mut a0[__n]
 }
 
 fn f72<T1>(a0: Ptr<T1>) -> RandomAccessIterator<T1> {
@@ -101,16 +101,16 @@ fn f97<T1: ByteRepr>(a0: Ptr<Vec<T1>>, a1: Ptr<Vec<T1>>) {
     a0.swap_with(&a1, |__v| __v.with_mut(std::mem::take))
 }
 
-fn f98<T1: ByteRepr + 'static>(a0: Ptr<Vec<T1>>, a1: usize) -> Ptr<T1> {
-    if a1 >= (*a0.upgrade().deref()).len() {
+fn f98<T1>(a0: &Vec<T1>, a1: usize) -> &T1 {
+    if a1 >= a0.len() {
         panic!("out of bounds access")
-    } else {
-        a0.decay().offset(a1 as isize)
     }
+    &a0[a1]
 }
 
-fn f99<T1>(a0: Ptr<T1>) -> Ptr<T1> {
-    a0.to_last()
+fn f99<T1>(a0: &Vec<T1>) -> &T1 {
+    let __n = a0.len() - 1;
+    &a0[__n]
 }
 
 fn f101<T1: Clone + ByteRepr, T2, T3: CppInputIterator<T1>>(
@@ -132,8 +132,8 @@ fn f101<T1: Clone + ByteRepr, T2, T3: CppInputIterator<T1>>(
     a1
 }
 
-fn f103<T1: ByteRepr + Clone>(a0: Ptr<Vec<T1>>, a1: &mut Vec<T1>) -> Ptr<Vec<T1>> {
-    a0.write(std::mem::take(&mut *a1));
+fn f103<'a, T1>(a0: &'a mut Vec<T1>, a1: &mut Vec<T1>) -> &'a mut Vec<T1> {
+    *a0 = std::mem::take(&mut *a1);
     a0
 }
 
@@ -141,8 +141,8 @@ fn f104<T1>(a0: Ptr<T1>) -> RandomAccessIterator<T1> {
     a0.end()
 }
 
-fn f105<T1: Clone + ByteRepr>(a0: Ptr<Vec<T1>>, a1: Vec<T1>) -> Ptr<Vec<T1>> {
-    a0.write(a1);
+fn f105<T1>(a0: &mut Vec<T1>, a1: Vec<T1>) -> &mut Vec<T1> {
+    *a0 = a1;
     a0
 }
 

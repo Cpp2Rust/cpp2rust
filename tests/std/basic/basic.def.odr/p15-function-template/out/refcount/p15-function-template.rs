@@ -83,30 +83,47 @@ pub fn count_10() -> i32 {
     return (*(*n_12.with(Value::clone).borrow_mut()).prefix_inc());
 }
 thread_local!(
-    static t_5: Value<LifetimeTracked> = Rc::new(RefCell::new(LifetimeTracked::new()));
+    static t_5: Value<LifetimeTracked> = {
+        let __static = Rc::new(RefCell::new(LifetimeTracked::new()));
+        libcc2rs::register_static_destructor(|| t_5.with(Value::clone).as_pointer().destructor());
+        __static
+    };
 );
 thread_local!(
     static n_6: Value<i32> = Rc::new(RefCell::new(0));
 );
 thread_local!(
-    static t_8: Value<LifetimeTracked> = Rc::new(RefCell::new(LifetimeTracked::new()));
+    static t_8: Value<LifetimeTracked> = {
+        let __static = Rc::new(RefCell::new(LifetimeTracked::new()));
+        libcc2rs::register_static_destructor(|| t_8.with(Value::clone).as_pointer().destructor());
+        __static
+    };
 );
 thread_local!(
     static n_9: Value<i32> = Rc::new(RefCell::new(0));
 );
 thread_local!(
-    static t_11: Value<LifetimeTracked> = Rc::new(RefCell::new(LifetimeTracked::new()));
+    static t_11: Value<LifetimeTracked> = {
+        let __static = Rc::new(RefCell::new(LifetimeTracked::new()));
+        libcc2rs::register_static_destructor(|| t_11.with(Value::clone).as_pointer().destructor());
+        __static
+    };
 );
 thread_local!(
     static n_12: Value<i32> = Rc::new(RefCell::new(0));
 );
 thread_local!(
-    pub static check_13: Value<AssertsDtorCountAtExit> =
-        Rc::new(RefCell::new(AssertsDtorCountAtExit { expected: 4 }));
+    pub static check_13: Value<AssertsDtorCountAtExit> = {
+        let __static = Rc::new(RefCell::new(AssertsDtorCountAtExit { expected: 4 }));
+        libcc2rs::register_static_destructor(|| {
+            check_13.with(Value::clone).as_pointer().destructor()
+        });
+        __static
+    };
 );
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     assert!((ctorCount_0.with(|rc| *rc.borrow()) == 0));
@@ -129,7 +146,11 @@ pub fn count_18() -> i32 {
     return (*(*n_20.with(Value::clone).borrow_mut()).prefix_inc());
 }
 thread_local!(
-    static t_19: Value<LifetimeTracked> = Rc::new(RefCell::new(LifetimeTracked::new()));
+    static t_19: Value<LifetimeTracked> = {
+        let __static = Rc::new(RefCell::new(LifetimeTracked::new()));
+        libcc2rs::register_static_destructor(|| t_19.with(Value::clone).as_pointer().destructor());
+        __static
+    };
 );
 thread_local!(
     static n_20: Value<i32> = Rc::new(RefCell::new(0));

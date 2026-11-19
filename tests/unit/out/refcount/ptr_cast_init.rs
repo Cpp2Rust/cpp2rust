@@ -22,7 +22,7 @@ pub struct view {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let text: Value<Box<[i8]>> = Rc::new(RefCell::new(i8::array_from_literal(b"hi\0")));

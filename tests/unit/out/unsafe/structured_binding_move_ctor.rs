@@ -65,12 +65,10 @@ impl Holder {
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Holder) -> *mut Holder {
         {
-            *(&mut self.xs as *mut Vec<i32>) = std::mem::take(&mut (*_a0).xs);
-            (&mut self.xs as *mut Vec<i32>)
+            self.xs = std::mem::take(&mut (*_a0).xs);
         };
         {
-            *(&mut self.ys as *mut Vec<i32>) = std::mem::take(&mut (*_a0).ys);
-            (&mut self.ys as *mut Vec<i32>)
+            self.ys = std::mem::take(&mut (*_a0).ys);
         };
         return &mut (*(self as *mut Holder));
     }
@@ -78,7 +76,7 @@ impl Holder {
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
-        std::process::exit(main_0() as i32);
+        libcc2rs::cpp2rust_exit(main_0() as i32);
     }
 }
 unsafe fn main_0() -> i32 {

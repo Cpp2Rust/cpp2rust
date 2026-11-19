@@ -107,8 +107,7 @@ impl VecHolder {
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut VecHolder) -> *mut VecHolder {
         {
-            *(&mut self.items as *mut Vec<NoCopy>) = std::mem::take(&mut (*_a0).items);
-            (&mut self.items as *mut Vec<NoCopy>)
+            self.items = std::mem::take(&mut (*_a0).items);
         };
         return &mut (*(self as *mut VecHolder));
     }
@@ -122,7 +121,7 @@ pub unsafe fn bump_ref_1(r: *mut Immovable) {
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
-        std::process::exit(main_0() as i32);
+        libcc2rs::cpp2rust_exit(main_0() as i32);
     }
 }
 unsafe fn main_0() -> i32 {

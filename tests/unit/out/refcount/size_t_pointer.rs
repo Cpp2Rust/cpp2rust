@@ -19,7 +19,7 @@ pub fn parse_1(mut v: i32, mut idx: Ptr<usize>) -> i32 {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let v2: Value<usize> = Rc::new(RefCell::new(0_usize));

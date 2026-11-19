@@ -16,7 +16,7 @@ pub struct S {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let s1: Value<S> = Rc::new(RefCell::new(S { a: 1, b: 2 }));

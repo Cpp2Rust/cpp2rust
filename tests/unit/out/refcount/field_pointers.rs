@@ -93,7 +93,7 @@ pub fn bump_1(mut o: Ptr<Outer>) -> i32 {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let o: Value<Outer> = Rc::new(RefCell::new(<Outer>::default()));
@@ -263,12 +263,9 @@ impl OuterImpl for Ptr<Outer> {
                 (__tmp_0).clone()
             }
         };
-        {
-            field_ref!((*self), v)
-                .as_pointer()
-                .write(field!(_a0, v).with_mut(std::mem::take));
-            field_ref!((*self), v).as_pointer()
-        };
+        field!((*self), v).with_mut(|__b0| {
+            (*__b0) = field!(_a0, v).with_mut(std::mem::take);
+        });
         field!((*self), cursor).write({ { (*_a0.upgrade().deref()).cursor.clone() } });
         match ({ (array_field_ptr!((*self), buf)).to_any() },) {
             (mut __tmp_1,) => {

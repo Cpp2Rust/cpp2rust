@@ -186,7 +186,7 @@ pub fn emplace_scalar_9(mut values: Ptr<Vec<i64>>, x: i32) {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let vecs: Value<Vec<Vec<u8>>> = Rc::new(RefCell::new(Vec::new()));
@@ -281,8 +281,20 @@ fn main_0() -> i32 {
         (queue.decay().with(|__s| __s.first) == 6) && (queue.decay().with(|__s| __s.second) == 14)
     );
     assert!(
-        (queue.decay().to_last().with(|__s| __s.first) == -1_i32)
-            && (queue.decay().to_last().with(|__s| __s.second) == -1_i32)
+        ({
+            ({
+                let __n = (*queue.borrow()).len() - 1;
+                queue.decay().offset((__n) as isize)
+            }
+            .with(|__s| __s.first)
+                == -1_i32)
+                && ({
+                    let __n = (*queue.borrow()).len() - 1;
+                    queue.decay().offset((__n) as isize)
+                }
+                .with(|__s| __s.second)
+                    == -1_i32)
+        })
     );
     let values: Value<Vec<i64>> = Rc::new(RefCell::new(Vec::new()));
     ({ emplace_scalar_9((values.as_pointer()), 7) });
@@ -296,18 +308,12 @@ pub trait JPEGDataImpl {
 }
 impl JPEGDataImpl for Ptr<JPEGData> {
     fn move_assign(&self, _a0: Ptr<JPEGData>) -> Ptr<JPEGData> {
-        {
-            field_ref!((*self), com_data)
-                .as_pointer()
-                .write(field!(_a0, com_data).with_mut(std::mem::take));
-            field_ref!((*self), com_data).as_pointer()
-        };
-        {
-            field_ref!((*self), app_data)
-                .as_pointer()
-                .write(field!(_a0, app_data).with_mut(std::mem::take));
-            field_ref!((*self), app_data).as_pointer()
-        };
+        field!((*self), com_data).with_mut(|__b0| {
+            (*__b0) = field!(_a0, com_data).with_mut(std::mem::take);
+        });
+        field!((*self), app_data).with_mut(|__b0| {
+            (*__b0) = field!(_a0, app_data).with_mut(std::mem::take);
+        });
         return (*self).clone();
     }
 }

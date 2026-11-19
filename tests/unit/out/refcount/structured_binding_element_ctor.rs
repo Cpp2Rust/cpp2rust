@@ -71,7 +71,7 @@ pub fn make_two_2() -> Two {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let t: Value<Two> = Rc::new(RefCell::new(Two {
@@ -110,8 +110,8 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new((*p.borrow()).0.borrow().clone())),
         Rc::new(RefCell::new((*p.borrow()).1.borrow().clone())),
     )));
-    let x: Ptr<Elem> = (*__decomp_7.borrow()).get_value::<0>().as_pointer();
-    let y: Ptr<Elem> = (*__decomp_7.borrow()).get_value::<1>().as_pointer();
+    let x: Ptr<Elem> = ({ (*__decomp_7.borrow()).get_value::<0>().as_pointer() });
+    let y: Ptr<Elem> = ({ (*__decomp_7.borrow()).get_value::<1>().as_pointer() });
     assert!((copies_0.with(|rc| *rc.borrow()) == (before_copies + 2)));
     assert!(({ ({ (*x.upgrade().deref()).v } == ({ (*(*p.borrow()).0.borrow()).v } + 100)) }));
     assert!(({ ({ (*y.upgrade().deref()).v } == ({ (*(*p.borrow()).1.borrow()).v } + 100)) }));

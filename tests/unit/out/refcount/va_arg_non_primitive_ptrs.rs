@@ -57,7 +57,7 @@ pub fn dispatch_0(option: i32, __args: Box<[VaArg]>) -> i32 {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let s: Value<Ptr<i8>> = Rc::new(RefCell::new(Ptr::<i8>::null()));

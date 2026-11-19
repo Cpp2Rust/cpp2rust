@@ -60,7 +60,7 @@ pub fn del_2(mut node: Ptr<node_t>) {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let mut root: Ptr<node_t> = Ptr::alloc(node_t {

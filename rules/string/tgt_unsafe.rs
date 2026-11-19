@@ -46,8 +46,8 @@ unsafe fn f3(a0: Vec<libc::c_char>, a1: *const libc::c_char) -> Vec<libc::c_char
     __tmp2.push(0);
     __tmp2
 }
-unsafe fn f4(a0: *mut Vec<libc::c_char>, a1: *mut libc::c_char, a2: usize) -> *mut Vec<libc::c_char> {
-    (*a0).splice((*a0).len().saturating_sub(1)..(*a0).len(), {
+unsafe fn f4(a0: &mut Vec<libc::c_char>, a1: *mut libc::c_char, a2: usize) -> &mut Vec<libc::c_char> {
+    a0.splice(a0.len().saturating_sub(1)..a0.len(), {
         let mut v = ::std::slice::from_raw_parts(a1, a2).to_vec();
         v.push(0);
         v
@@ -103,13 +103,13 @@ unsafe fn f13(a0: &mut Vec<libc::c_char>, a1: usize) {
     a0.push(0)
 }
 unsafe fn f14(
-    a0: *mut Vec<libc::c_char>,
+    a0: &mut Vec<libc::c_char>,
     a1: usize,
     a2: usize,
     a3: *const libc::c_char,
     a4: usize,
-) -> *mut Vec<libc::c_char> {
-    (*a0).splice(
+) -> &mut Vec<libc::c_char> {
+    a0.splice(
         a1..a1 + a2,
         ::std::slice::from_raw_parts(a3, a4).to_vec(),
     );
@@ -147,9 +147,9 @@ unsafe fn f18(a0: Vec<libc::c_char>, a1: *const libc::c_char) -> bool {
 unsafe fn f19(a0: Vec<libc::c_char>) -> usize {
     (a0.len() - 1)
 }
-unsafe fn f21(a0: *mut Vec<libc::c_char>, a1: usize, a2: libc::c_char) -> *mut Vec<libc::c_char> {
-    (*a0).splice(
-        (*a0).len() - 1..(*a0).len() - 1,
+unsafe fn f21(a0: &mut Vec<libc::c_char>, a1: usize, a2: libc::c_char) -> &mut Vec<libc::c_char> {
+    a0.splice(
+        a0.len() - 1..a0.len() - 1,
         ::std::vec::from_elem(a2, a1 as usize),
     );
     a0
@@ -172,12 +172,11 @@ unsafe fn f25(a0: &mut Vec<libc::c_char>) {
     a0.shrink_to_fit()
 }
 
-unsafe fn f26(a0: &mut Vec<libc::c_char>, a1: usize) -> *mut libc::c_char {
+unsafe fn f26(a0: &mut Vec<libc::c_char>, a1: usize) -> &mut libc::c_char {
     if a1 >= a0.len() - 1 {
         panic!("out of bounds access")
-    } else {
-        (&mut a0[a1] as *mut libc::c_char)
     }
+    &mut a0[a1]
 }
 
 unsafe fn f27(a0: Vec<libc::c_char>) -> Vec<libc::c_char> {
@@ -188,12 +187,12 @@ unsafe fn f28(a0: &mut Vec<libc::c_char>) -> Vec<libc::c_char> {
     std::mem::take(&mut *a0)
 }
 
-unsafe fn f29(a0: *mut Vec<libc::c_char>, a1: Vec<libc::c_char>) -> *mut Vec<libc::c_char> {
+unsafe fn f29(a0: &mut Vec<libc::c_char>, a1: Vec<libc::c_char>) -> &mut Vec<libc::c_char> {
     *a0 = a1.clone();
     a0
 }
 
-unsafe fn f30(a0: *mut Vec<libc::c_char>, a1: &mut Vec<libc::c_char>) -> *mut Vec<libc::c_char> {
+unsafe fn f30<'a>(a0: &'a mut Vec<libc::c_char>, a1: &mut Vec<libc::c_char>) -> &'a mut Vec<libc::c_char> {
     *a0 = std::mem::take(&mut *a1);
     a0
 }

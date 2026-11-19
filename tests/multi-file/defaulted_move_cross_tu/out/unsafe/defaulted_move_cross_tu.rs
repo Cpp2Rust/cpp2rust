@@ -30,8 +30,7 @@ impl S {
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut S) -> *mut S {
         {
-            *(&mut self.v as *mut Vec<i32>) = std::mem::take(&mut (*_a0).v);
-            (&mut self.v as *mut Vec<i32>)
+            self.v = std::mem::take(&mut (*_a0).v);
         };
         match (
             { ((&mut self.n as *mut [i32; 2]) as *mut ::libc::c_void) },
@@ -64,8 +63,7 @@ impl T {
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut T) -> *mut T {
         {
-            *(&mut self.v as *mut Vec<i32>) = std::mem::take(&mut (*_a0).v);
-            (&mut self.v as *mut Vec<i32>)
+            self.v = std::mem::take(&mut (*_a0).v);
         };
         return &mut (*(self as *mut T));
     }
@@ -76,7 +74,7 @@ pub unsafe fn sum_0(s: *const S) -> i32 {
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
-        std::process::exit(main_0() as i32);
+        libcc2rs::cpp2rust_exit(main_0() as i32);
     }
 }
 unsafe fn main_0() -> i32 {

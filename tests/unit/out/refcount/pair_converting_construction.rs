@@ -149,7 +149,7 @@ impl Name {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let widened: Value<(Value<i64>, Value<u32>)> = Rc::new(RefCell::new((
@@ -207,8 +207,8 @@ fn main_0() -> i32 {
     assert!(({ ({ (*(*from_copied_pair.borrow()).0.borrow()).degrees } == 5) }));
     assert!(({ ((*(*from_copied_pair.borrow()).1.borrow()) == 6_i64) }));
     let meters: Value<(Value<Meters>, Value<Meters>)> = Rc::new(RefCell::new((
-        Rc::new(RefCell::new(Meters { value: 8 })),
-        Rc::new(RefCell::new(Meters { value: 9 })),
+        Rc::new(RefCell::new((Meters { value: 8 }))),
+        Rc::new(RefCell::new((Meters { value: 9 }))),
     )));
     let from_operator_pair: Value<(Value<i32>, Value<i32>)> = Rc::new(RefCell::new((
         Rc::new(RefCell::new(<i32 as CppFrom<Meters>>::cpp_from(

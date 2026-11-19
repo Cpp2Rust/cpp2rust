@@ -179,6 +179,17 @@ void checkReturn(const std::string &dir, const std::string &name, Model target,
                  << " target returns by value\n";
     llvm::report_fatal_error("Expr rule returns a reference by value");
   }
+  // A pointer to the place that a reference refers to is made from one to an
+  // argument, which a Rust reference to something else doesn't give.
+  if (model_ == Model::kRefCount &&
+      function_type->getReturnType()->isReferenceType() &&
+      rule.return_type.is_reference && !rule.refExprBase()) {
+    llvm::errs() << "rules/" << dir << ' ' << name << ": the "
+                 << (target == Model::kRefCount ? "refcount" : "unsafe")
+                 << " target returns a reference to neither an argument nor "
+                    "an element of one; return a Ptr instead\n";
+    llvm::report_fatal_error("Expr rule returns an opaque reference");
+  }
 }
 
 void addRule(clang::ASTContext &ctx, const std::string &dir,
@@ -567,6 +578,36 @@ bool MapsToRefcountPointer(clang::ASTContext &ctx, clang::QualType qual_type) {
 bool ReturnsPointer(clang::ASTContext &ctx, const clang::Expr *expr) {
   auto rule = Search(ctx, expr).first;
   return rule && rule->return_type.is_pointer();
+}
+
+clang::Expr *GetReferencedArg(clang::ASTContext &ctx, const clang::Expr *expr,
+                              bool *element) {
+  auto *call = clang::dyn_cast<clang::CallExpr>(expr->IgnoreParens());
+  if (!call || !call->isGLValue()) {
+    return nullptr;
+  }
+  auto *rule = GetExprRule(ctx, call);
+  auto *base = rule ? rule->refExprBase() : nullptr;
+  if (!base) {
+    return nullptr;
+  }
+  if (element) {
+    *element = rule->refExprOperand()->size() > 1;
+  }
+  auto *callee = const_cast<clang::CallExpr *>(call);
+  return BuildUnifiedArgs(callee, callee->getArgs(),
+                          callee->getNumArgs())[base->n];
+}
+
+clang::Expr *GetReturnedArg(clang::ASTContext &ctx, const clang::Expr *expr) {
+  bool element;
+  auto *arg = GetReferencedArg(ctx, expr, &element);
+  if (!arg || element || GetExprRule(ctx, expr)->refExprEffect().empty()) {
+    return nullptr;
+  }
+  // The argument of a chain of such calls is that of the innermost one.
+  auto *inner = GetReturnedArg(ctx, arg);
+  return inner ? inner : arg;
 }
 
 bool ReturnsReference(const clang::Expr *expr) {

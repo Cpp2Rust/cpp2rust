@@ -359,6 +359,24 @@ bool IsLibraryOnlySpecialization(const clang::FunctionDecl *decl) {
          HasLibraryInternalArgument(ctx, args->asArray());
 }
 
+bool IsStructLiteral(const clang::Expr *expr) {
+  expr = expr->IgnoreImplicit();
+  if (auto *cast = clang::dyn_cast<clang::CXXFunctionalCastExpr>(expr)) {
+    expr = cast->getSubExpr()->IgnoreImplicit();
+  }
+  auto *list = clang::dyn_cast<clang::InitListExpr>(expr);
+  if (!list) {
+    return false;
+  }
+  auto *syntactic = list->isSyntacticForm() ? list : list->getSyntacticForm();
+  if (auto *form = list->getSemanticForm()) {
+    list = form;
+  }
+  auto *record = list->getType()->getAsRecordDecl();
+  return record && IsUserDefinedDecl(record) && !list->isTransparent() &&
+         syntactic->getNumInits() != 0;
+}
+
 bool IsAbstractUserClass(const clang::RecordDecl *decl) {
   auto cxx = llvm::dyn_cast<clang::CXXRecordDecl>(decl);
   auto definition = cxx ? cxx->getDefinition() : nullptr;
@@ -2459,34 +2477,36 @@ std::optional<clang::QualType> GetOperandImplicitConversionTarget(
   return std::nullopt;
 }
 
-bool IsTransparentStdCall(const clang::CallExpr *expr) {
-  const auto *callee = expr->getDirectCallee();
-  if (!callee) {
+bool IsTransparentStdCall(clang::ASTContext &ctx, const clang::CallExpr *expr) {
+  auto *rule = RuleRegistry::GetExprRule(ctx, expr);
+  if (!rule || rule->body.size() != 1 ||
+      !RuleRegistry::ReturnsReference(expr) ||
+      clang::isa<clang::CXXMemberCallExpr>(expr) || expr->getNumArgs() == 0) {
     return false;
   }
-  switch (callee->getBuiltinID()) {
-  case clang::Builtin::BImove:
-  case clang::Builtin::BImove_if_noexcept:
-  case clang::Builtin::BIforward:
-  case clang::Builtin::BIforward_like:
-  case clang::Builtin::BIas_const:
-    return true;
-  default:
-    return false;
-  }
+  // The rule returns its argument, or a reference to it.
+  auto *operand = rule->refExprOperand();
+  auto &body = operand ? *operand : rule->body;
+  auto *ph = body.size() == 1
+                 ? std::get_if<TranslationRule::PlaceholderFragment>(&body[0])
+                 : nullptr;
+  return ph && ph->n == 0 &&
+         ctx.hasSameUnqualifiedType(expr->getArg(0)->getType(),
+                                    expr->getType());
 }
 
-const clang::Expr *IgnoreTransparentStdCall(const clang::Expr *expr) {
+const clang::Expr *IgnoreTransparentStdCall(clang::ASTContext &ctx,
+                                            const clang::Expr *expr) {
   if (const auto *call =
           clang::dyn_cast<clang::CallExpr>(expr->IgnoreParenImpCasts());
-      call && IsTransparentStdCall(call)) {
+      call && IsTransparentStdCall(ctx, call)) {
     return call->getArg(0);
   }
   return expr;
 }
 
-bool IsTemporaryObject(const clang::Expr *expr) {
-  const auto *operand = IgnoreTransparentStdCall(expr);
+bool IsTemporaryObject(clang::ASTContext &ctx, const clang::Expr *expr) {
+  const auto *operand = IgnoreTransparentStdCall(ctx, expr);
   if (operand != expr) {
     return !operand->isGLValue();
   }

@@ -27,7 +27,7 @@ pub struct Reading {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let src: Value<Box<[u32]>> = Rc::new(RefCell::new(Box::new([1_u32, 2_u32, 3_u32])));
@@ -105,23 +105,17 @@ fn main_0() -> i32 {
     assert!((v5.len() == 5_usize));
     assert!(((v5[0_usize] as i32) == 10) && ((v5[4_usize] as i32) == 50));
     let m: Value<Map<i32, (Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
-    Map::subscript_move(
-        m.as_pointer(),
-        Rc::new(RefCell::new(1)).as_pointer(),
-        |__k| cpp_move!(__k),
-    )
+    match (Rc::new(RefCell::new(1)).as_pointer(),) {
+        (__tmp_5,) => ({ (*m.borrow_mut()).subscript_move(__tmp_5, |__k| cpp_move!(__k)) }),
+    }
     .write(10);
-    Map::subscript_move(
-        m.as_pointer(),
-        Rc::new(RefCell::new(2)).as_pointer(),
-        |__k| cpp_move!(__k),
-    )
+    match (Rc::new(RefCell::new(2)).as_pointer(),) {
+        (__tmp_6,) => ({ (*m.borrow_mut()).subscript_move(__tmp_6, |__k| cpp_move!(__k)) }),
+    }
     .write(20);
-    Map::subscript_move(
-        m.as_pointer(),
-        Rc::new(RefCell::new(3)).as_pointer(),
-        |__k| cpp_move!(__k),
-    )
+    match (Rc::new(RefCell::new(3)).as_pointer(),) {
+        (__tmp_7,) => ({ (*m.borrow_mut()).subscript_move(__tmp_7, |__k| cpp_move!(__k)) }),
+    }
     .write(30);
     let v6: Value<Vec<(Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(
         match (
@@ -134,10 +128,10 @@ fn main_0() -> i32 {
                     .with(|__m: &Map<i32, (Value<i32>, Value<i32>)>| __m.end())
             },
         ) {
-            (mut __tmp_5, mut __tmp_6) => {
+            (mut __tmp_8, mut __tmp_9) => {
                 let mut __v = Vec::new();
-                let mut __it = (__tmp_5).clone();
-                while __it != __tmp_6 {
+                let mut __it = (__tmp_8).clone();
+                while __it != __tmp_9 {
                     __v.push(<(Value<i32>, Value<i32>) as CppFrom<(
                         Value<i32>,
                         Value<i32>,
@@ -176,11 +170,11 @@ fn main_0() -> i32 {
                 .with(|__m: &Map<i32, (Value<i32>, Value<i32>)>| __m.end())
         },
     ) {
-        (mut __tmp_7, mut __tmp_8, mut __tmp_9) => {
-            let start_idx = __tmp_7.index();
+        (mut __tmp_10, mut __tmp_11, mut __tmp_12) => {
+            let start_idx = __tmp_10.index();
             let mut temp_vec: Vec<(Value<i32>, Value<i32>)> = Vec::new();
-            let mut __it = (__tmp_8).clone();
-            while __it != __tmp_9 {
+            let mut __it = (__tmp_11).clone();
+            while __it != __tmp_12 {
                 temp_vec.push(__it.iter_deref().read());
                 __it.iter_inc();
             }
@@ -188,7 +182,7 @@ fn main_0() -> i32 {
                 .with_mut(|v: &mut Vec<(Value<i32>, Value<i32>)>| {
                     v.splice(start_idx..start_idx, temp_vec);
                 });
-            (__tmp_7).clone()
+            (__tmp_10).clone()
         }
     };
     assert!(({ ((*v6.borrow()).len() == 6_usize) }));
@@ -201,10 +195,10 @@ fn main_0() -> i32 {
     );
     let ints: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([4, 5, 6])));
     let mut v7: Vec<Degrees> = match ({ ints.decay().offset((3) as isize) },) {
-        (mut __tmp_10,) => {
+        (mut __tmp_13,) => {
             let mut __v = Vec::new();
             let mut __it = ints.decay();
-            while __it != __tmp_10 {
+            while __it != __tmp_13 {
                 __v.push(<Degrees as CppFrom<i32>>::cpp_from(__it.iter_deref()));
                 __it.iter_inc();
             }
@@ -217,10 +211,10 @@ fn main_0() -> i32 {
         Reading { raw_: 5 },
     ])));
     let mut v8: Vec<i64> = match ({ readings.decay().offset((2) as isize) },) {
-        (mut __tmp_11,) => {
+        (mut __tmp_14,) => {
             let mut __v = Vec::new();
             let mut __it = readings.decay();
-            while __it != __tmp_11 {
+            while __it != __tmp_14 {
                 __v.push(<i64 as CppFrom<Reading>>::cpp_from(__it.iter_deref()));
                 __it.iter_inc();
             }

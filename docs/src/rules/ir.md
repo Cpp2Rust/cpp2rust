@@ -77,11 +77,15 @@ The fragment kinds are:
 - `method_call`: a method call split into `receiver` and `body` fragment lists,
   so the code generator can rewrite the pair (see
   [Rule Rewriting](./rewriting.md)).
-- `ref_expr`: a body that takes the address of an lvalue, `&mut a0.0`, split
-  into the `prefix` (`&`, `&mut`, `&raw const`, `&raw mut`) and the `inner`
-  fragments of the lvalue. Where the converter would dereference the rule's
-  result it emits the lvalue alone, so `p.first = 1.5` is `p.0 = 1.5` rather
-  than `(*&mut p.0) = 1.5`.
+- `ref_expr`: the reference that a body ends with, `&mut a0.0`, split into the
+  `prefix` (`&`, `&mut`, `&raw const`, `&raw mut`) and the `inner` fragments of
+  the lvalue. A reference parameter returned as is, `a0` in a rule returning
+  `&mut T`, is a `ref_expr` too. The fragments before it are the statements that
+  compute it. Where the converter would dereference the rule's result it emits
+  the lvalue alone, so `p.first = 1.5` is `p.0 = 1.5` rather than
+  `(*&mut p.0) = 1.5`. See
+  [Returning references](./writing-rules.md#returning-references) for how a
+  reference to a parameter, or to an element of one, is translated.
 - `va_args`: the expansion point for a variadic tail.
 - `init`: the value built from the call's trailing arguments. Its optional
   `conditional` flag marks construction in a branch, loop, or closure. The

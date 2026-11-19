@@ -9,14 +9,13 @@ use std::rc::Rc;
 pub unsafe fn change_0(p: *mut Option<Box<i32>>) {
     let mut q: Option<Box<i32>> = Some(Box::new(7));
     {
-        *(p as *mut Option<Box<i32>>) = q.take();
-        (p as *mut Option<Box<i32>>)
+        (*p) = q.take();
     };
 }
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
-        std::process::exit(main_0() as i32);
+        libcc2rs::cpp2rust_exit(main_0() as i32);
     }
 }
 unsafe fn main_0() -> i32 {

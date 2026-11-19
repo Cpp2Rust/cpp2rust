@@ -13,7 +13,7 @@ const _: () = assert!(
 const _: () = assert!((8usize == 8_usize), "sizeof(int *) == 8");
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let mut xu8: u8 = 8_u8;

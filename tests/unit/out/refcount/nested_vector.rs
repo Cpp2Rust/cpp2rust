@@ -8,7 +8,7 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let v1: Value<Vec<Vec<i32>>> = Rc::new(RefCell::new(Vec::new()));
@@ -18,17 +18,22 @@ fn main_0() -> i32 {
         (*v1.borrow_mut()).push(a0_clone)
     };
     assert!(
-        ((match (v1.decay().to_last(),) {
-            (__tmp_0,) => {
-                if 0_usize >= __tmp_0.decay().len() {
-                    panic!("out of bounds access")
-                } else {
-                    __tmp_0.decay().offset(0_usize as isize)
+        ({
+            ((match ({
+                let __n = (*v1.borrow()).len() - 1;
+                v1.decay().offset((__n) as isize)
+            },)
+            {
+                (__tmp_0,) => {
+                    if 0_usize >= (*__tmp_0.upgrade().deref()).len() {
+                        panic!("out of bounds access")
+                    }
+                    __tmp_0.decay().offset((0_usize) as isize)
                 }
             }
-        }
-        .read())
-            == 1)
+            .read())
+                == 1)
+        })
     );
     return 0;
 }

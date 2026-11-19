@@ -19,7 +19,10 @@ impl MyContainer_int_ {
         return self.vec_.len();
     }
     pub unsafe fn back_4(&mut self) -> *mut i32 {
-        return ((self.vec_).last_mut().unwrap());
+        return {
+            let __n = self.vec_.len() - 1;
+            &raw mut self.vec_[__n]
+        };
     }
     pub unsafe fn pop_back(&mut self) {
         self.vec_.pop();
@@ -39,8 +42,7 @@ impl MyContainer_int_ {
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut MyContainer_int_) -> *mut MyContainer_int_ {
         {
-            *(&mut self.vec_ as *mut Vec<i32>) = std::mem::take(&mut (*_a0).vec_);
-            (&mut self.vec_ as *mut Vec<i32>)
+            self.vec_ = std::mem::take(&mut (*_a0).vec_);
         };
         return &mut (*(self as *mut MyContainer_int_));
     }
@@ -58,7 +60,10 @@ impl MyContainer_char_ {
         return self.vec_.len();
     }
     pub unsafe fn back_4(&mut self) -> *mut libc::c_char {
-        return ((self.vec_).last_mut().unwrap());
+        return {
+            let __n = self.vec_.len() - 1;
+            &raw mut self.vec_[__n]
+        };
     }
     pub unsafe fn pop_back(&mut self) {
         self.vec_.pop();
@@ -78,8 +83,7 @@ impl MyContainer_char_ {
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut MyContainer_char_) -> *mut MyContainer_char_ {
         {
-            *(&mut self.vec_ as *mut Vec<libc::c_char>) = std::mem::take(&mut (*_a0).vec_);
-            (&mut self.vec_ as *mut Vec<libc::c_char>)
+            self.vec_ = std::mem::take(&mut (*_a0).vec_);
         };
         return &mut (*(self as *mut MyContainer_char_));
     }
@@ -97,7 +101,10 @@ impl MyContainer_float_ {
         return self.vec_.len();
     }
     pub unsafe fn back_4(&mut self) -> *mut f32 {
-        return ((self.vec_).last_mut().unwrap());
+        return {
+            let __n = self.vec_.len() - 1;
+            &raw mut self.vec_[__n]
+        };
     }
     pub unsafe fn pop_back(&mut self) {
         self.vec_.pop();
@@ -117,8 +124,7 @@ impl MyContainer_float_ {
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut MyContainer_float_) -> *mut MyContainer_float_ {
         {
-            *(&mut self.vec_ as *mut Vec<f32>) = std::mem::take(&mut (*_a0).vec_);
-            (&mut self.vec_ as *mut Vec<f32>)
+            self.vec_ = std::mem::take(&mut (*_a0).vec_);
         };
         return &mut (*(self as *mut MyContainer_float_));
     }
@@ -223,13 +229,13 @@ pub struct Elem {
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
-        std::process::exit(main_0() as i32);
+        libcc2rs::cpp2rust_exit(main_0() as i32);
     }
 }
 unsafe fn main_0() -> i32 {
     let mut ev: Vec<Elem> = Vec::new();
     {
-        let __a1 = Elem { i: 2 };
+        let __a1 = (Elem { i: 2 });
         ev.push(__a1)
     };
     assert!(((ev[(0_usize)].i) == (2)));

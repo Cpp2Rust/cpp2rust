@@ -17,10 +17,9 @@ pub fn All_0(arr: Ptr<Option<Value<Box<[i32]>>>>, mut N: i32, mut element: i32) 
             i.prefix_inc();
         }
     }
-    {
-        arr.write(all.take());
-        (arr).clone()
-    };
+    arr.with_mut(|__b0| {
+        (*__b0) = all.take();
+    });
 }
 pub fn Consume_1(mut arr: Option<Value<Box<[i32]>>>, mut N: i32) -> i32 {
     let mut sum: i32 = 0;
@@ -32,7 +31,7 @@ pub fn Consume_1(mut arr: Option<Value<Box<[i32]>>>, mut N: i32) -> i32 {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let mut N: i32 = 10;

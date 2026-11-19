@@ -54,7 +54,7 @@ impl Default for FieldIsLibcType {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let p: Value<libcc2rs::Pollfd> = Rc::new(RefCell::new(Default::default()));
@@ -101,12 +101,9 @@ impl UserDefinedImpl for Ptr<UserDefined> {
             }
             field_ref!((*self), a).as_pointer()
         };
-        {
-            field_ref!((*self), v)
-                .as_pointer()
-                .write(field!(_a0, v).with_mut(std::mem::take));
-            field_ref!((*self), v).as_pointer()
-        };
+        field!((*self), v).with_mut(|__b0| {
+            (*__b0) = field!(_a0, v).with_mut(std::mem::take);
+        });
         return (*self).clone();
     }
 }

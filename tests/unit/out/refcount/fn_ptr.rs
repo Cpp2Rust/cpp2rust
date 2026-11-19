@@ -47,9 +47,23 @@ thread_local!(
 pub fn add_to_total_8(mut x: i32) {
     total_7.with(|rc| *rc.borrow_mut() += x);
 }
+pub fn pair_sum_9(p: (Value<i32>, Value<i32>)) -> i32 {
+    let p: Value<(Value<i32>, Value<i32>)> = Rc::new(RefCell::new(p));
+    return ((*(*p.borrow()).0.borrow()) + (*(*p.borrow()).1.borrow()));
+}
+pub fn string_size_10(mut s: Vec<i8>) -> usize {
+    return (s.len() - 1);
+}
+pub fn vector_sum_11(mut v: Vec<i32>) -> i32 {
+    return (v[0_usize] + v[1_usize]);
+}
+pub fn is_less_12(o: std::cmp::Ordering) -> bool {
+    let o: Value<std::cmp::Ordering> = Rc::new(RefCell::new(o));
+    return ({ (*o.borrow()) }) == std::cmp::Ordering::Less;
+}
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let mut fn_: FnPtr<fn(AnyPtr) -> i32> = FnPtr::<fn(AnyPtr) -> i32>::null();
@@ -82,6 +96,28 @@ fn main_0() -> i32 {
     ({ handler.call(2) });
     ({ handler.call(3) });
     assert!((total_7.with(|rc| *rc.borrow()) == 5));
+    let mut pf: FnPtr<fn((Value<i32>, Value<i32>)) -> i32> =
+        FnPtr::<fn((Value<i32>, Value<i32>)) -> i32>::new(pair_sum_9);
+    assert!((({ pf.call((Rc::new(RefCell::new(1)), Rc::new(RefCell::new(2))),) }) == 3));
+    let mut sf: FnPtr<fn(Vec<i8>) -> usize> = FnPtr::<fn(Vec<i8>) -> usize>::new(string_size_10);
+    assert!(
+        (({
+            sf.call({
+                let mut __bytes = Ptr::<i8>::from_string_literal(b"abc").to_c_bytes();
+                __bytes.push(0);
+                __bytes
+            })
+        }) == 3_usize)
+    );
+    let mut vf: FnPtr<fn(Vec<i32>) -> i32> = FnPtr::<fn(Vec<i32>) -> i32>::new(vector_sum_11);
+    assert!((({ vf.call(Vec::from([1, 2,]),) }) == 3));
+    let mut of: FnPtr<fn(std::cmp::Ordering) -> bool> =
+        FnPtr::<fn(std::cmp::Ordering) -> bool>::new(is_less_12);
+    assert!(({ of.call(std::cmp::Ord::cmp(&(1), &(2)),) }));
+    assert!(!({ of.call(std::cmp::Ord::cmp(&(2), &(1)),) }));
+    let o: Value<std::cmp::Ordering> = Rc::new(RefCell::new(std::cmp::Ord::cmp(&(1), &(2))));
+    let mut op: Ptr<std::cmp::Ordering> = (o.as_pointer());
+    assert!(({ (*op.upgrade().deref()) }) == std::cmp::Ordering::Less);
     return 0;
 }
 pub fn __cpp2rust_init_globals() {

@@ -61,18 +61,18 @@ fn f8<T1, const T2: usize>(a0: [T1; T2]) -> Box<[T1]> {
     Box::<[T1]>::from(a0)
 }
 
-fn f9<const T1: usize, T2>(a0: Ptr<T2>) -> Ptr<T2> {
-    a0.offset(T1 as isize)
+fn f9<const T1: usize, T2>(a0: &mut Box<[T2]>) -> &mut T2 {
+    &mut a0[T1]
 }
 
-fn f10<const T1: usize, T2>(a0: Ptr<T2>) -> Ptr<T2> {
-    a0.offset(T1 as isize)
+fn f10<const T1: usize, T2>(a0: &Box<[T2]>) -> &T2 {
+    &a0[T1]
 }
 
-fn f11<const T1: usize, T2>(a0: Ptr<T2>) -> Ptr<T2> {
-    a0.offset(T1 as isize)
+fn f11<const T1: usize, T2>(a0: &mut Box<[T2]>) -> &mut T2 {
+    &mut a0[T1]
 }
 
-fn f12<const T1: usize, T2>(a0: Ptr<T2>) -> Ptr<T2> {
-    a0.offset(T1 as isize)
+fn f12<const T1: usize, T2>(a0: &Box<[T2]>) -> &T2 {
+    &a0[T1]
 }
