@@ -188,7 +188,7 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (3)) {
-            largest = ({
+            largest = (({
                 let mut __tmp_9: u64 = (largest as u64);
                 (*match ((&mut ((unsafe { size_of_2(i) }) as u64) as *const u64),) {
                     (__tmp_8,) => {
@@ -197,7 +197,7 @@ unsafe fn main_0() -> i32 {
                         if *__a < *__b { __b } else { __a }
                     }
                 })
-            } as usize);
+            }) as usize);
             i.prefix_inc();
         }
     }

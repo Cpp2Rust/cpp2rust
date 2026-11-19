@@ -52,7 +52,7 @@ pub fn sum_ref_1(v: Ptr<Vec<i32>>) -> i32 {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let v: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::from([1, 2, 3])));
@@ -88,13 +88,10 @@ fn main_0() -> i32 {
     assert!(({ ({ (*v.borrow())[2_usize] } == 9) }));
     assert!((({ sum_ref_1(v.as_pointer(),) }) == ((((3 + 0) + 9) + 42) + 5)));
     let h: Value<Holder> = Rc::new(RefCell::new(<Holder>::default()));
-    {
-        let __a0 = 2_usize;
-        (*h.borrow_mut()).values.resize_with(__a0, || 0_i32)
-    };
+    (*h.borrow_mut()).values.resize_with(2_usize, || 0_i32);
     vec_elem!(h.as_pointer(), values, 1_usize).write(6);
     {
-        let __a1 = Point { x: 1, y: 2 };
+        let __a1 = (Point { x: 1, y: 2 });
         (*h.borrow_mut()).points.push(__a1)
     };
     field!(vec_elem!(h.as_pointer(), points, 0_usize), y).write(5);
@@ -149,18 +146,12 @@ pub trait HolderImpl {
 }
 impl HolderImpl for Ptr<Holder> {
     fn move_assign(&self, _a0: Ptr<Holder>) -> Ptr<Holder> {
-        {
-            field_ref!((*self), values)
-                .as_pointer()
-                .write(field!(_a0, values).with_mut(std::mem::take));
-            field_ref!((*self), values).as_pointer()
-        };
-        {
-            field_ref!((*self), points)
-                .as_pointer()
-                .write(field!(_a0, points).with_mut(std::mem::take));
-            field_ref!((*self), points).as_pointer()
-        };
+        field!((*self), values).with_mut(|__b0| {
+            (*__b0) = field!(_a0, values).with_mut(std::mem::take);
+        });
+        field!((*self), points).with_mut(|__b0| {
+            (*__b0) = field!(_a0, points).with_mut(std::mem::take);
+        });
         return (*self).clone();
     }
 }

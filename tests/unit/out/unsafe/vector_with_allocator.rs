@@ -368,7 +368,7 @@ unsafe fn main_0() -> i32 {
     };
     assert!(((v13.len()) == (5_usize)));
     assert!(((v13[(0_usize)] as i32) == (10)) && ((v13[(4_usize)] as i32) == (50)));
-    assert!(((((s1).wrapping_add(s2)).wrapping_add((v2[0_usize] as usize))) == (103_usize)));
+    assert!(((((s1).wrapping_add(s2)).wrapping_add(((v2[0_usize]) as usize))) == (103_usize)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

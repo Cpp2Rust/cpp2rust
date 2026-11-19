@@ -82,8 +82,7 @@ pub unsafe fn sum_4(v: *mut Vec<i32>) -> i32 {
         'loop_: while it != (*v).end() {
             s += (*it.iter_deref());
             {
-                (*(&mut it as *mut UnsafeRandomAccessIterator<i32>)).iter_inc();
-                (&mut it as *mut UnsafeRandomAccessIterator<i32>)
+                it.iter_inc();
             };
         }
     }
@@ -92,7 +91,7 @@ pub unsafe fn sum_4(v: *mut Vec<i32>) -> i32 {
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
-        std::process::exit(main_0() as i32);
+        libcc2rs::cpp2rust_exit(main_0() as i32);
     }
 }
 unsafe fn main_0() -> i32 {
