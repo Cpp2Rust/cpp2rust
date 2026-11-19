@@ -149,7 +149,7 @@ impl CppEq for TmplDefaulted_int_ {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let d1: Value<Defaulted> = Rc::new(RefCell::new(Defaulted { a: 1, b: 2 }));
