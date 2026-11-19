@@ -412,6 +412,12 @@ bool Converter::VisitTranslationUnitDecl(clang::TranslationUnitDecl *decl) {
   return false;
 }
 
+static void DumpVerbose(const clang::Decl *decl) {
+  if (auto &out = log(); &out != &llvm::nulls()) {
+    decl->dump(out);
+  }
+}
+
 bool Converter::VisitFunctionDecl(clang::FunctionDecl *decl) {
   if (auto method = clang::dyn_cast<clang::CXXMethodDecl>(decl)) {
     return VisitCXXMethodDecl(method);
@@ -422,7 +428,7 @@ bool Converter::VisitFunctionDecl(clang::FunctionDecl *decl) {
   if (!IsInMainFile(decl) && !decl_ids_.insert(GetID(decl)).second) {
     return false;
   }
-  decl->dump(log());
+  DumpVerbose(decl);
   ScopedValue push_fn(curr_function_, decl);
   std::string function_name;
   if (decl->isMain()) {
@@ -872,7 +878,7 @@ bool Converter::RecordHasCopyableFields(const clang::RecordDecl *decl) {
 }
 
 bool Converter::VisitRecordDecl(clang::RecordDecl *decl) {
-  decl->dump(log());
+  DumpVerbose(decl);
 
   // VisitCXXRecordDecl already visited the record
   if (clang::isa<clang::CXXRecordDecl>(decl)) {
@@ -1105,7 +1111,7 @@ void Converter::EmitRustUnion(clang::RecordDecl *decl) {
 }
 
 bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
-  decl->dump(log());
+  DumpVerbose(decl);
 
   if (!IsConvertibleCXXRecordDecl(decl)) {
     return false;
@@ -1148,7 +1154,7 @@ bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
 }
 
 bool Converter::VisitCXXMethodDecl(clang::CXXMethodDecl *decl) {
-  decl->dump(log());
+  DumpVerbose(decl);
   if (!ShouldConvertMethod(decl)) {
     return false;
   }
