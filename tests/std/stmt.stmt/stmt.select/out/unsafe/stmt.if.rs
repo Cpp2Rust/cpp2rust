@@ -103,6 +103,38 @@ pub unsafe fn test_6() {
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut dtorCount_2)) == (2)));
     assert!(((choice) == (9)));
 }
+pub unsafe fn pick_7() -> i32 {
+    {
+        return 2;
+    }
+    panic!("ub: non-void function does not return a value")
+}
+pub unsafe fn only_then_8() -> i32 {
+    let mut r: i32 = 3;
+    {}
+    return r;
+}
+pub unsafe fn test_9() {
+    assert!(((unsafe { pick_7() }) == (2)));
+    assert!(((unsafe { only_then_8() }) == (3)));
+}
+pub unsafe fn pick_10() -> i32 {
+    {
+        return 2;
+    }
+    panic!("ub: non-void function does not return a value")
+}
+pub unsafe fn only_then_11() -> i32 {
+    let mut r: i32 = 3;
+    {
+        r = 4;
+    }
+    return r;
+}
+pub unsafe fn test_12() {
+    assert!(((unsafe { pick_10() }) == (2)));
+    assert!(((unsafe { only_then_11() }) == (4)));
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -111,6 +143,8 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     (unsafe { test_6() });
+    (unsafe { test_9() });
+    (unsafe { test_12() });
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {

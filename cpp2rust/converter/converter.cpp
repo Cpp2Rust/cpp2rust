@@ -1486,6 +1486,12 @@ void Converter::ConvertCondition(clang::Expr *cond) {
 }
 
 bool Converter::VisitIfStmt(clang::IfStmt *stmt) {
+  if (stmt->isConsteval()) {
+    ConvertBody(constant_evaluated_ != stmt->isNegatedConsteval()
+                    ? stmt->getThen()
+                    : stmt->getElse());
+    return false;
+  }
   // The variables of the init statement and of the condition are only
   // visible in the if.
   auto *cond_var = stmt->getConditionVariableDeclStmt();
@@ -1497,8 +1503,7 @@ bool Converter::VisitIfStmt(clang::IfStmt *stmt) {
     Convert(cond_var);
   }
   if (bool taken = false;
-      !stmt->getConditionVariable() && !stmt->isConsteval() &&
-      !stmt->getCond()->isValueDependent() &&
+      !stmt->getConditionVariable() && !stmt->getCond()->isValueDependent() &&
       stmt->getCond()->EvaluateAsBooleanCondition(taken, ctx_)) {
     ConvertBody(taken ? stmt->getThen() : stmt->getElse());
     return false;

@@ -112,12 +112,46 @@ pub fn test_6() {
     assert!((dtorCount_2.with(|rc| *rc.borrow()) == 2));
     assert!((choice == 9));
 }
+pub fn pick_7() -> i32 {
+    {
+        return 2;
+    }
+    panic!("ub: non-void function does not return a value")
+}
+pub fn only_then_8() -> i32 {
+    let mut r: i32 = 3;
+    {}
+    return r;
+}
+pub fn test_9() {
+    assert!((({ pick_7() }) == 2));
+    assert!((({ only_then_8() }) == 3));
+}
+pub fn pick_10() -> i32 {
+    {
+        return 2;
+    }
+    panic!("ub: non-void function does not return a value")
+}
+pub fn only_then_11() -> i32 {
+    let mut r: i32 = 3;
+    {
+        r = 4;
+    }
+    return r;
+}
+pub fn test_12() {
+    assert!((({ pick_10() }) == 2));
+    assert!((({ only_then_11() }) == 4));
+}
 pub fn main() {
     __cpp2rust_init_globals();
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     ({ test_6() });
+    ({ test_9() });
+    ({ test_12() });
     return 0;
 }
 pub trait LifetimeTrackedImpl {
