@@ -66,7 +66,10 @@ fn main_0() -> i32 {
                 && (((*buf.borrow())[(15) as usize] as i32) == (('2' as i8) as i32))
         })
     );
-    match nix::unistd::unlink(file.decay().to_rust_string().as_str()) {
+    match file
+        .decay()
+        .with_c_bytes(|__path| nix::unistd::unlink(__path))
+    {
         Ok(()) => 0,
         Err(__e) => {
             libcc2rs::cpp2rust_errno().write(__e as i32);

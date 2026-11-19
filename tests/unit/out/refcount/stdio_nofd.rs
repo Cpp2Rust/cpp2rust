@@ -88,7 +88,7 @@ pub fn test_fputc_fputs_0() {
         } == 0)
     );
     assert!(
-        (match nix::unistd::unlink(path.to_rust_string().as_str()) {
+        (match path.with_c_bytes(|__path| nix::unistd::unlink(__path)) {
             Ok(()) => 0,
             Err(__e) => {
                 libcc2rs::cpp2rust_errno().write(__e as i32);
@@ -327,7 +327,7 @@ pub fn test_fgets_getc_2() {
         } == 0)
     );
     assert!(
-        (match nix::unistd::unlink(path.to_rust_string().as_str()) {
+        (match path.with_c_bytes(|__path| nix::unistd::unlink(__path)) {
             Ok(()) => 0,
             Err(__e) => {
                 libcc2rs::cpp2rust_errno().write(__e as i32);
@@ -476,7 +476,7 @@ pub fn test_fgets_size_one_and_error_flag_3() {
         } == 0)
     );
     assert!(
-        (match nix::unistd::unlink(path.to_rust_string().as_str()) {
+        (match path.with_c_bytes(|__path| nix::unistd::unlink(__path)) {
             Ok(()) => 0,
             Err(__e) => {
                 libcc2rs::cpp2rust_errno().write(__e as i32);
@@ -542,7 +542,7 @@ pub fn test_freopen_4() {
         } == 0)
     );
     assert!(
-        (match nix::unistd::unlink(path.to_rust_string().as_str()) {
+        (match path.with_c_bytes(|__path| nix::unistd::unlink(__path)) {
             Ok(()) => 0,
             Err(__e) => {
                 libcc2rs::cpp2rust_errno().write(__e as i32);
@@ -623,7 +623,7 @@ pub fn test_fseeko_5() {
         } == 0)
     );
     assert!(
-        (match nix::unistd::unlink(path.to_rust_string().as_str()) {
+        (match path.with_c_bytes(|__path| nix::unistd::unlink(__path)) {
             Ok(()) => 0,
             Err(__e) => {
                 libcc2rs::cpp2rust_errno().write(__e as i32);
@@ -702,7 +702,7 @@ pub fn test_rename_6() {
         } == -1_i32)
     );
     assert!(
-        (match nix::unistd::unlink(to.to_rust_string().as_str()) {
+        (match to.with_c_bytes(|__path| nix::unistd::unlink(__path)) {
             Ok(()) => 0,
             Err(__e) => {
                 libcc2rs::cpp2rust_errno().write(__e as i32);
@@ -738,7 +738,7 @@ pub fn test_setvbuf_7() {
         } == 0)
     );
     assert!(
-        (match nix::unistd::unlink(path.to_rust_string().as_str()) {
+        (match path.with_c_bytes(|__path| nix::unistd::unlink(__path)) {
             Ok(()) => 0,
             Err(__e) => {
                 libcc2rs::cpp2rust_errno().write(__e as i32);

@@ -48,7 +48,7 @@ pub fn test_stat_0() {
     );
     assert!(({ ({ (*st.borrow()).st_size } == (5 as ::libc::off_t)) }));
     assert!(((field_ptr!(st.as_pointer(), st_mtime).read()) > (0 as ::libc::time_t)));
-    match nix::unistd::unlink(path.to_rust_string().as_str()) {
+    match path.with_c_bytes(|__path| nix::unistd::unlink(__path)) {
         Ok(()) => 0,
         Err(__e) => {
             libcc2rs::cpp2rust_errno().write(__e as i32);
@@ -100,7 +100,7 @@ pub fn test_fstat_1() {
             __r
         } == 0)
     );
-    match nix::unistd::unlink(path.to_rust_string().as_str()) {
+    match path.with_c_bytes(|__path| nix::unistd::unlink(__path)) {
         Ok(()) => 0,
         Err(__e) => {
             libcc2rs::cpp2rust_errno().write(__e as i32);

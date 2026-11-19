@@ -211,7 +211,7 @@ fn main_0() -> i32 {
     ({ check_name_0(fd, array_field_ptr!(un, sun_path)) });
     assert!((FdRegistry::close(fd) == 0));
     assert!(
-        (match nix::unistd::unlink(array_field_ptr!(un, sun_path).to_rust_string().as_str()) {
+        (match array_field_ptr!(un, sun_path).with_c_bytes(|__path| nix::unistd::unlink(__path)) {
             Ok(()) => 0,
             Err(__e) => {
                 libcc2rs::cpp2rust_errno().write(__e as i32);
