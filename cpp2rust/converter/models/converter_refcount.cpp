@@ -2486,6 +2486,12 @@ bool ConverterRefCount::EmitGlobalValueAssign(clang::Expr *lhs,
   if (!var || !IsGlobalVar(var) || var->getType()->isReferenceType()) {
     return false;
   }
+  PushBrace brace(*this, in_const_initializer_);
+  if (in_const_initializer_) {
+    // Initialize full-expression temporaries outside the thread-local closure.
+    StrCat(keyword::kLet, "__rhs", token::kAssign, rhs, token::kSemiColon);
+    rhs = "__rhs";
+  }
   StrCat(std::format("{}.with(|rc| *rc.borrow_mut() {} {})",
                      GetNamedDeclAsString(var), assign_operator, rhs));
   return true;
