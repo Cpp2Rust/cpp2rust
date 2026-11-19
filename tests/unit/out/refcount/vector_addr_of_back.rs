@@ -8,7 +8,7 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let outer: Value<Vec<Vec<i32>>> = Rc::new(RefCell::new(Vec::new()));
@@ -17,10 +17,16 @@ fn main_0() -> i32 {
         let a0_clone = inner.clone();
         (*outer.borrow_mut()).push(a0_clone)
     };
-    let mut sink: Ptr<Vec<i32>> = (outer.decay().to_last());
+    let mut sink: Ptr<Vec<i32>> = ({
+        let __n = (*outer.borrow()).len() - 1;
+        outer.decay().offset((__n) as isize)
+    });
     assert!(({ ((*sink.upgrade().deref()).len() == 0_usize) }));
     let mut p: Ptr<Vec<Vec<i32>>> = (outer.as_pointer());
-    sink = (p.decay().to_last());
+    sink = ({
+        let __n = (*p.upgrade().deref()).len() - 1;
+        p.decay().offset((__n) as isize)
+    });
     assert!(({ ((*sink.upgrade().deref()).len() == 0_usize) }));
     return 0;
 }

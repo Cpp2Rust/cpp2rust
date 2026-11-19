@@ -29,7 +29,7 @@ pub fn switch_enum_0(mut c: Color) -> i32 {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     assert!((({ switch_enum_0(Color_kRed,) }) == 10));

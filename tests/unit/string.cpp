@@ -182,6 +182,19 @@ int main() {
   assert(chained == "Xbc" && target == "A");
   (chained = std::move(once)).append("!", 1);
   assert(chained == "el!");
+  std::string self = "ab";
+  std::string *self_ptr = &self;
+  self.append(2, self[0]);
+  self_ptr->append(1, (*self_ptr)[1]);
+  assert(self == "abaab");
+  self_ptr->append(1, 'c').append(1, 'd');
+  std::string &self_ref = self.append(1, 'e');
+  self_ref.append(1, 'f');
+  assert(self == "abaabcdef");
+  std::string local = "x";
+  local.append(1, local[0]).append(1, 'y');
+  local = local;
+  assert(local == "xxy");
 
   // FIXME
   auto t0 = s1.length();

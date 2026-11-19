@@ -31,13 +31,9 @@ pub fn fill_1(arr: Ptr<Option<Value<Box<[Ptr<i32>]>>>>, n1: Ptr<i32>) {
             mkPair_0(_x1, _x2)
         }),
     ));
-    (*arr.upgrade().deref())
-        .decay()
-        .offset(0_usize)
+    ({ (*arr.upgrade().deref()).decay().offset(0_usize) })
         .write(({ (*pair.borrow()).x1.clone() }).clone());
-    (*arr.upgrade().deref())
-        .decay()
-        .offset(1_usize)
+    ({ (*arr.upgrade().deref()).decay().offset(1_usize) })
         .write(({ (*pair.borrow()).x2.clone() }).clone());
 }
 pub fn any_2(arr: Ptr<Option<Value<Box<[Ptr<i32>]>>>>, n1: Ptr<i32>) -> bool {
@@ -46,7 +42,8 @@ pub fn any_2(arr: Ptr<Option<Value<Box<[Ptr<i32>]>>>>, n1: Ptr<i32>) -> bool {
         let mut i: i32 = 0;
         'loop_: while ({ i } < { (n1.read()) }) {
             let __rhs = (out)
-                || ((((*arr.upgrade().deref()).decay().offset((i as usize)).read()).read()) == 0);
+                || (((({ (*arr.upgrade().deref()).decay().offset((i as usize)) }).read()).read())
+                    == 0);
             out = __rhs;
             i.prefix_inc();
         }
@@ -55,7 +52,7 @@ pub fn any_2(arr: Ptr<Option<Value<Box<[Ptr<i32>]>>>>, n1: Ptr<i32>) -> bool {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let n: Value<i32> = Rc::new(RefCell::new(2));

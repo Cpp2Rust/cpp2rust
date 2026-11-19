@@ -22,8 +22,7 @@ impl NonCopy {
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut NonCopy) -> *mut NonCopy {
         {
-            *(&mut self.data as *mut Vec<i32>) = std::mem::take(&mut (*_a0).data);
-            (&mut self.data as *mut Vec<i32>)
+            self.data = std::mem::take(&mut (*_a0).data);
         };
         self.tag = (*_a0).tag;
         return &mut (*(self as *mut NonCopy));
@@ -42,7 +41,7 @@ impl Default for NonCopy {
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
-        std::process::exit(main_0() as i32);
+        libcc2rs::cpp2rust_exit(main_0() as i32);
     }
 }
 unsafe fn main_0() -> i32 {

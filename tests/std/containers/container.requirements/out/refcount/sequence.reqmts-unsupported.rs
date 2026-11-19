@@ -23,7 +23,7 @@ pub fn test_0() {
             (__tmp_0).clone()
         }
     };
-    assert!(({ (((*(*pairs.borrow())[0_usize].0.borrow()).as_pointer().read()) == 1) }));
+    assert!(((({ (*(*pairs.borrow())[0_usize].0.borrow()).as_pointer() }).read()) == 1));
     assert!(({ (*(*source.borrow()).0.borrow()).is_none() }));
     assert!(({ ((*(*source.borrow()).1.borrow()) == 2) }));
 }
@@ -38,13 +38,13 @@ pub fn test_1() {
         let __a1 = ({ std::mem::take(&mut (*source.borrow_mut())) });
         (*pairs.borrow_mut()).push(__a1)
     };
-    assert!(({ (((*(*pairs.borrow())[0_usize].0.borrow()).as_pointer().read()) == 1) }));
+    assert!(((({ (*(*pairs.borrow())[0_usize].0.borrow()).as_pointer() }).read()) == 1));
     assert!(({ (*(*source.borrow()).0.borrow()).is_none() }));
     assert!(({ ((*(*source.borrow()).1.borrow()) == 2) }));
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     ({ test_0() });

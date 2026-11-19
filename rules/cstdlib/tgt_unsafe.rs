@@ -68,3 +68,7 @@ unsafe fn f9(
 unsafe fn f10(a0: *const libc::c_char, a1: *mut libc::c_char) -> *mut libc::c_char {
     libc::realpath(a0, a1)
 }
+
+unsafe fn f11(a0: i32) {
+    libcc2rs::cpp2rust_exit(a0);
+}

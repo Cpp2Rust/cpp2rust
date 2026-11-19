@@ -33,12 +33,10 @@ impl JPEGData {
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut JPEGData) -> *mut JPEGData {
         {
-            *(&mut self.com_data as *mut Vec<Vec<u8>>) = std::mem::take(&mut (*_a0).com_data);
-            (&mut self.com_data as *mut Vec<Vec<u8>>)
+            self.com_data = std::mem::take(&mut (*_a0).com_data);
         };
         {
-            *(&mut self.app_data as *mut Vec<Vec<u8>>) = std::mem::take(&mut (*_a0).app_data);
-            (&mut self.app_data as *mut Vec<Vec<u8>>)
+            self.app_data = std::mem::take(&mut (*_a0).app_data);
         };
         return &mut (*(self as *mut JPEGData));
     }
@@ -112,7 +110,7 @@ pub unsafe fn nested_emplace_move_5(mut bw: *mut Writer) {
 }
 pub unsafe fn self_ref_push_6(mut comps: *mut Vec<Chunk>) {
     {
-        let a0_clone = (*((*comps).first_mut().unwrap())).clone();
+        let a0_clone = (&mut (*comps))[0].clone();
         (*comps).push(a0_clone)
     };
 }
@@ -188,7 +186,7 @@ pub unsafe fn emplace_scalar_9(mut values: *mut Vec<i64>, mut x: i32) {
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
-        std::process::exit(main_0() as i32);
+        libcc2rs::cpp2rust_exit(main_0() as i32);
     }
 }
 unsafe fn main_0() -> i32 {
@@ -235,13 +233,20 @@ unsafe fn main_0() -> i32 {
     assert!(((pairs[(2_usize)].first) == (4)) && ((pairs[(2_usize)].second) == (10)));
     let mut queue: Vec<Pair> = Vec::new();
     (unsafe { emplace_deque_8((&mut queue as *mut Vec<Pair>)) });
+    assert!(((queue[0].first) == (6)) && ((queue[0].second) == (14)));
     assert!(
-        (((*((queue).first_mut().unwrap())).first) == (6))
-            && (((*((queue).first_mut().unwrap())).second) == (14))
-    );
-    assert!(
-        (((*(queue.last_mut().unwrap())).first) == (-1_i32))
-            && (((*(queue.last_mut().unwrap())).second) == (-1_i32))
+        (((*{
+            let __n = queue.len() - 1;
+            &mut queue[__n]
+        })
+        .first)
+            == (-1_i32))
+            && (((*{
+                let __n = queue.len() - 1;
+                &mut queue[__n]
+            })
+            .second)
+                == (-1_i32))
     );
     let mut values: Vec<i64> = Vec::new();
     (unsafe { emplace_scalar_9((&mut values as *mut Vec<i64>), 7) });

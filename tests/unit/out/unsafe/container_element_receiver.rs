@@ -31,22 +31,16 @@ pub unsafe fn sum_1(v: *const Vec<i32>) -> i32 {
         'loop_: while it != (*v).end() {
             total += (*it.iter_deref());
             {
-                (*(&mut it as *mut UnsafeRandomAccessIterator<i32>)).iter_inc();
-                (&mut it as *mut UnsafeRandomAccessIterator<i32>)
+                it.iter_inc();
             };
         }
     }
-    return ((total)
-        + (*if 0_usize >= (*v).len() {
-            panic!("out of bounds access")
-        } else {
-            (*v).as_ptr().add(0_usize)
-        }));
+    return ((total) + ((&(*v))[0_usize]));
 }
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
-        std::process::exit(main_0() as i32);
+        libcc2rs::cpp2rust_exit(main_0() as i32);
     }
 }
 unsafe fn main_0() -> i32 {
@@ -56,15 +50,18 @@ unsafe fn main_0() -> i32 {
         vec_: Vec::from([4, 5]),
     };
     assert!(((*(*h.ref_).as_mut_ptr()) == (1)));
-    (*((*h.ref_).first_mut().unwrap())) = 9;
+    (&mut (*h.ref_))[0] = 9;
     assert!(((v[(0_usize)]) == (9)));
-    (*((*h.ref_).first_mut().unwrap())) = 1;
-    assert!(((*((h.vec_).last_mut().unwrap())) == (5)));
+    (&mut (*h.ref_))[0] = 1;
+    assert!(
+        ((*{
+            let __n = h.vec_.len() - 1;
+            &mut h.vec_[__n]
+        }) == (5))
+    );
     let mut p: *mut Vec<i32> = (&mut h.vec_ as *mut Vec<i32>);
     assert!(((*(*p).as_mut_ptr()) == (4)));
-    (*((*(unsafe { pick_0(&mut v, &mut h.vec_, false) }))
-        .first_mut()
-        .unwrap())) = 7;
+    (&mut (*(unsafe { pick_0(&mut v, &mut h.vec_, false) })))[0] = 7;
     assert!(((h.vec_[(0_usize)]) == (7)));
     let mut m: UnsafeMap<i32, (i32, Vec<i32>)> = UnsafeMap::new();
     {
@@ -78,13 +75,7 @@ unsafe fn main_0() -> i32 {
             == (8))
     );
     let c: *const Vec<i32> = &v;
-    assert!(
-        ((*if 2_usize >= (*c).len() {
-            panic!("out of bounds access")
-        } else {
-            (*c).as_ptr().add(2_usize)
-        }) == (3))
-    );
+    assert!((((&(*c))[2_usize]) == (3)));
     assert!(((unsafe { sum_1(&v,) }) == (7)));
     return 0;
 }

@@ -40,31 +40,27 @@ fn f12<T1, T2>(a0: &mut (Value<T1>, Value<T2>)) -> (Value<T1>, Value<T2>) {
     )
 }
 
-fn f13<T1: Clone + ByteRepr, T2: Clone + ByteRepr>(
-    a0: Ptr<(Value<T1>, Value<T2>)>,
+fn f13<T1: Clone, T2: Clone>(
+    a0: &mut (Value<T1>, Value<T2>),
     a1: (Value<T1>, Value<T2>),
-) -> Ptr<(Value<T1>, Value<T2>)> {
+) -> &mut (Value<T1>, Value<T2>) {
     let __first = a1.0.borrow().clone();
     let __second = a1.1.borrow().clone();
-    a0.with(|__dst| {
-        *__dst.0.borrow_mut() = __first;
-        *__dst.1.borrow_mut() = __second;
-    });
+    *a0.0.borrow_mut() = __first;
+    *a0.1.borrow_mut() = __second;
     a0
 }
 
-fn f14<T1: ByteRepr, T2: ByteRepr>(
-    a0: Ptr<(Value<T1>, Value<T2>)>,
+fn f14<'a, T1: ByteRepr, T2: ByteRepr>(
+    a0: &'a mut (Value<T1>, Value<T2>),
     a1: &mut (Value<T1>, Value<T2>),
-) -> Ptr<(Value<T1>, Value<T2>)> {
+) -> &'a mut (Value<T1>, Value<T2>) {
     let __src_first: Ptr<T1> = a1.0.as_pointer();
     let __src_second: Ptr<T2> = a1.1.as_pointer();
     let __first = cpp_move!(__src_first);
     let __second = cpp_move!(__src_second);
-    a0.with(|__dst| {
-        *__dst.0.borrow_mut() = __first;
-        *__dst.1.borrow_mut() = __second;
-    });
+    *a0.0.borrow_mut() = __first;
+    *a0.1.borrow_mut() = __second;
     a0
 }
 
@@ -116,28 +112,24 @@ fn f24<T1: CppFrom<T3>, T2: CppFrom<T4>, T3, T4>(
 }
 
 fn f25<T1: CppFrom<T3> + ByteRepr, T2: CppFrom<T4> + ByteRepr, T3, T4>(
-    a0: Ptr<(Value<T1>, Value<T2>)>,
+    a0: &mut (Value<T1>, Value<T2>),
     a1: (Value<T3>, Value<T4>),
-) -> Ptr<(Value<T1>, Value<T2>)> {
+) -> &mut (Value<T1>, Value<T2>) {
     let __first = T1::cpp_from(a1.0.as_pointer());
     let __second = T2::cpp_from(a1.1.as_pointer());
-    a0.with(|__dst| {
-        *__dst.0.borrow_mut() = __first;
-        *__dst.1.borrow_mut() = __second;
-    });
+    *a0.0.borrow_mut() = __first;
+    *a0.1.borrow_mut() = __second;
     a0
 }
 
-fn f26<T1: CppFrom<T3> + ByteRepr, T2: CppFrom<T4> + ByteRepr, T3, T4>(
-    a0: Ptr<(Value<T1>, Value<T2>)>,
+fn f26<'a, T1: CppFrom<T3> + ByteRepr, T2: CppFrom<T4> + ByteRepr, T3, T4>(
+    a0: &'a mut (Value<T1>, Value<T2>),
     a1: &mut (Value<T3>, Value<T4>),
-) -> Ptr<(Value<T1>, Value<T2>)> {
+) -> &'a mut (Value<T1>, Value<T2>) {
     let __first = T1::cpp_from_move(a1.0.as_pointer());
     let __second = T2::cpp_from_move(a1.1.as_pointer());
-    a0.with(|__dst| {
-        *__dst.0.borrow_mut() = __first;
-        *__dst.1.borrow_mut() = __second;
-    });
+    *a0.0.borrow_mut() = __first;
+    *a0.1.borrow_mut() = __second;
     a0
 }
 

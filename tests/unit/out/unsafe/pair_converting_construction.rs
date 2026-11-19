@@ -144,7 +144,7 @@ impl Name {
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
-        std::process::exit(main_0() as i32);
+        libcc2rs::cpp2rust_exit(main_0() as i32);
     }
 }
 unsafe fn main_0() -> i32 {
@@ -173,7 +173,7 @@ unsafe fn main_0() -> i32 {
     );
     assert!(((from_copied_pair.0.degrees) == (5)));
     assert!(((from_copied_pair.1) == (6_i64)));
-    let mut meters: (Meters, Meters) = (Meters { value: 8 }, Meters { value: 9 });
+    let mut meters: (Meters, Meters) = ((Meters { value: 8 }), (Meters { value: 9 }));
     let mut from_operator_pair: (i32, i32) = (
         <i32 as CppFromUnsafe<Meters>>::cpp_from(&meters.0),
         <i32 as CppFromUnsafe<Meters>>::cpp_from(&meters.1),

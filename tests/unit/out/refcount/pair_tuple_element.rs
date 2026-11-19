@@ -8,16 +8,16 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let p: Value<(Value<f64>, Value<i32>)> = Rc::new(RefCell::new((
         Rc::new(RefCell::new(1.5_f64)),
         Rc::new(RefCell::new(2)),
     )));
-    let mut first: f64 = ((*p.borrow()).get_value::<0>().as_pointer().read());
-    let mut second: i32 = ((*p.borrow()).get_value::<1>().as_pointer().read());
-    let ref_: Ptr<i32> = (*p.borrow()).get_value::<1>().as_pointer();
+    let mut first: f64 = (({ (*p.borrow()).get_value::<0>().as_pointer() }).read());
+    let mut second: i32 = (({ (*p.borrow()).get_value::<1>().as_pointer() }).read());
+    let ref_: Ptr<i32> = ({ (*p.borrow()).get_value::<1>().as_pointer() });
     ref_.write(7);
     assert!((first == 1.5_f64));
     assert!((second == 2));

@@ -51,7 +51,7 @@ pub fn two_1(a: Ptr<Vec<i32>>, b: Ptr<Vec<i32>>) -> i32 {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     println!(
@@ -73,12 +73,9 @@ pub trait InnerImpl {
 }
 impl InnerImpl for Ptr<Inner> {
     fn move_assign(&self, _a0: Ptr<Inner>) -> Ptr<Inner> {
-        {
-            field_ref!((*self), values)
-                .as_pointer()
-                .write(field!(_a0, values).with_mut(std::mem::take));
-            field_ref!((*self), values).as_pointer()
-        };
+        field!((*self), values).with_mut(|__b0| {
+            (*__b0) = field!(_a0, values).with_mut(std::mem::take);
+        });
         return (*self).clone();
     }
 }
@@ -87,12 +84,9 @@ pub trait OuterImpl {
 }
 impl OuterImpl for Ptr<Outer> {
     fn move_assign(&self, _a0: Ptr<Outer>) -> Ptr<Outer> {
-        {
-            field_ref!((*self), values)
-                .as_pointer()
-                .write(field!(_a0, values).with_mut(std::mem::take));
-            field_ref!((*self), values).as_pointer()
-        };
+        field!((*self), values).with_mut(|__b0| {
+            (*__b0) = field!(_a0, values).with_mut(std::mem::take);
+        });
         ({
             let _arg0: Ptr<Inner> = field_ptr!(_a0, inner);
             InnerImpl::move_assign(&field_ptr!((*self), inner), _arg0)

@@ -24,7 +24,7 @@ pub fn may_throw_2() {}
 pub fn no_throw_3() {}
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let mut arr: [i64; 4] = [0_i64; 4];

@@ -90,12 +90,9 @@ pub fn sum_4(v: Ptr<Vec<i32>>) -> i32 {
     {
         let it: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(v.decay().begin()));
         'loop_: while (*it.borrow()) != v.decay().end() {
-            s += ((*it.borrow()).iter_deref().read());
+            s += (({ (*it.borrow()).iter_deref() }).read());
             {
-                it.as_pointer().with_mut(|__it| {
-                    __it.iter_inc();
-                });
-                it.as_pointer()
+                (*it.borrow_mut()).iter_inc();
             };
         }
     }
@@ -103,7 +100,7 @@ pub fn sum_4(v: Ptr<Vec<i32>>) -> i32 {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     assert!((({ median_0(1, 5, 7,) }) == 1));

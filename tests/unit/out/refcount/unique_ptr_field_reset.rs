@@ -31,7 +31,7 @@ impl Holder {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let h: Value<Holder> = Rc::new(RefCell::new(<Holder>::default()));
@@ -78,11 +78,9 @@ impl HolderImpl for Ptr<Holder> {
         };
     }
     fn move_assign(&self, _a0: Ptr<Holder>) -> Ptr<Holder> {
-        {
-            field_ptr!((*self), data)
-                .write(field!(_a0, data).with_mut(|__v: &mut Option<Value<Data>>| __v.take()));
-            field_ptr!((*self), data)
-        };
+        field!((*self), data).with_mut(|__b0| {
+            (*__b0) = field!(_a0, data).with_mut(|__v: &mut Option<Value<Data>>| __v.take());
+        });
         field!((*self), n).write({ { (*_a0.upgrade().deref()).n } });
         return (*self).clone();
     }

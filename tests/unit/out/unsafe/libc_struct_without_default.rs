@@ -15,7 +15,7 @@ pub struct UserDefined {
 impl UserDefined {
     pub unsafe fn move_from(_a0: *mut UserDefined) -> Self {
         let mut this = Self {
-            a: std::array::from_fn(|__i| (*&mut (&mut (*_a0)).a[__i])),
+            a: (*_a0).a.clone(),
             v: std::mem::take(&mut (*_a0).v),
         };
         this
@@ -23,13 +23,11 @@ impl UserDefined {
     pub unsafe fn move_assign(&mut self, _a0: *mut UserDefined) -> *mut UserDefined {
         {
             for __i in 0..1 {
-                *&mut (*(&mut self.a as *mut [i32; 1]))[__i] = (*&mut (&mut (*_a0)).a[__i]);
+                *&mut self.a[__i] = (*&mut (&mut (*_a0)).a[__i]);
             }
-            (&mut self.a as *mut [i32; 1])
         };
         {
-            *(&mut self.v as *mut Vec<i32>) = std::mem::take(&mut (*_a0).v);
-            (&mut self.v as *mut Vec<i32>)
+            self.v = std::mem::take(&mut (*_a0).v);
         };
         return &mut (*(self as *mut UserDefined));
     }
@@ -61,7 +59,7 @@ impl Default for FieldIsLibcType {
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
-        std::process::exit(main_0() as i32);
+        libcc2rs::cpp2rust_exit(main_0() as i32);
     }
 }
 unsafe fn main_0() -> i32 {

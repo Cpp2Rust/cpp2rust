@@ -25,12 +25,13 @@ fn t5<T1>() -> *const T1 {
     ::std::ptr::null()
 }
 
-unsafe fn f1<T1>(a0: &mut Vec<T1>) -> *const T1 {
-    (a0.last_mut().unwrap())
+unsafe fn f1<T1>(a0: &mut Vec<T1>) -> &mut T1 {
+    let __n = a0.len() - 1;
+    &mut a0[__n]
 }
 
-unsafe fn f2<T1>(a0: &mut Vec<T1>) -> *const T1 {
-    ((a0).first_mut().unwrap())
+unsafe fn f2<T1>(a0: &mut Vec<T1>) -> &mut T1 {
+    &mut a0[0]
 }
 
 unsafe fn f3<T1>(a0: Vec<T1>) -> bool {
@@ -57,12 +58,12 @@ unsafe fn f9<T1>(a0: &mut Vec<T1>) -> Vec<T1> {
     std::mem::take(&mut *a0)
 }
 
-unsafe fn f10<T1: Clone>(a0: *mut Vec<T1>, a1: Vec<T1>) -> *mut Vec<T1> {
+unsafe fn f10<T1: Clone>(a0: &mut Vec<T1>, a1: Vec<T1>) -> &mut Vec<T1> {
     *a0 = a1.clone();
     a0
 }
 
-unsafe fn f11<T1>(a0: *mut Vec<T1>, a1: &mut Vec<T1>) -> *mut Vec<T1> {
+unsafe fn f11<'a, T1>(a0: &'a mut Vec<T1>, a1: &mut Vec<T1>) -> &'a mut Vec<T1> {
     *a0 = std::mem::take(&mut *a1);
     a0
 }

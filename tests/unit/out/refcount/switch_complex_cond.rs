@@ -27,7 +27,7 @@ pub fn switch_complex_cond_0(mut p: Ptr<i32>, mut bias: i32) -> i32 {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let p_val: Value<i32> = Rc::new(RefCell::new(5));

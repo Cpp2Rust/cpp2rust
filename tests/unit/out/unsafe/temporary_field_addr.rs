@@ -20,8 +20,7 @@ impl Inner {
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Inner) -> *mut Inner {
         {
-            *(&mut self.values as *mut Vec<i32>) = std::mem::take(&mut (*_a0).values);
-            (&mut self.values as *mut Vec<i32>)
+            self.values = std::mem::take(&mut (*_a0).values);
         };
         return &mut (*(self as *mut Inner));
     }
@@ -44,8 +43,7 @@ impl Outer {
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Outer) -> *mut Outer {
         {
-            *(&mut self.values as *mut Vec<i32>) = std::mem::take(&mut (*_a0).values);
-            (&mut self.values as *mut Vec<i32>)
+            self.values = std::mem::take(&mut (*_a0).values);
         };
         (unsafe {
             let _arg0: *mut Inner = &mut (*_a0).inner;
@@ -86,15 +84,14 @@ pub unsafe fn sum_1(values: *const Vec<i32>) -> i32 {
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
-        std::process::exit(main_0() as i32);
+        libcc2rs::cpp2rust_exit(main_0() as i32);
     }
 }
 unsafe fn main_0() -> i32 {
     let mut calls: i32 = 0;
     let mut member: i32 = (unsafe { sum_1(&(unsafe { make_0(&mut calls) }).values) });
     let mut nested: i32 = (unsafe { sum_1(&(unsafe { make_0(&mut calls) }).inner.values) });
-    let mut element: i32 =
-        (*(&mut ((unsafe { make_0(&mut calls) }).values)[(((calls) - (2)) as usize)] as *mut i32));
+    let mut element: i32 = (unsafe { make_0(&mut calls) }).values[(((calls) - (2)) as usize)];
     let mut length: usize =
         libc::strlen(((unsafe { make_0(&mut calls) }).name.as_mut_ptr()).cast_const());
     let mut aggregate: i32 = (unsafe {

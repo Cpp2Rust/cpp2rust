@@ -62,7 +62,7 @@ impl Default for Sorted__lambda_at_lambda_decltype_type_cpp_19_23__ {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let greater: Value<FnPtr<fn(i32, i32) -> bool>> =

@@ -68,20 +68,32 @@ impl Default for LifetimeTracked {
     }
 }
 thread_local!(
-    pub static member_4: Value<LifetimeTracked> = Rc::new(RefCell::new(LifetimeTracked::new()));
+    pub static member_4: Value<LifetimeTracked> = {
+        let __static = Rc::new(RefCell::new(LifetimeTracked::new()));
+        libcc2rs::register_static_destructor(|| {
+            member_4.with(Value::clone).as_pointer().destructor()
+        });
+        __static
+    };
 );
 #[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct HasStaticMember_int_ {}
 thread_local!(
-    pub static member_5: Value<LifetimeTracked> = Rc::new(RefCell::new(LifetimeTracked::new()));
+    pub static member_5: Value<LifetimeTracked> = {
+        let __static = Rc::new(RefCell::new(LifetimeTracked::new()));
+        libcc2rs::register_static_destructor(|| {
+            member_5.with(Value::clone).as_pointer().destructor()
+        });
+        __static
+    };
 );
 #[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct HasStaticMember_long_ {}
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     ({ LifetimeTrackedImpl::use_(&member_4.with(|v| v.as_pointer())) });

@@ -159,7 +159,7 @@ void BodyFragmentDump(const BodyFragment &frag) {
 
 } // namespace
 
-bool AnyFragment(const std::vector<BodyFragment> &body,
+bool AnyFragment(llvm::ArrayRef<BodyFragment> body,
                  llvm::function_ref<bool(const BodyFragment &)> pred) {
   return std::any_of(body.begin(), body.end(), [&](const BodyFragment &frag) {
     if (pred(frag)) {
@@ -261,11 +261,35 @@ bool ExprRule::usesInit() const {
 }
 
 const std::vector<BodyFragment> *ExprRule::refExprOperand() const {
-  if (body.size() != 1) {
+  if (body.empty()) {
     return nullptr;
   }
-  auto *re = std::get_if<std::unique_ptr<RefExprFragment>>(&body[0]);
+  auto *re = std::get_if<std::unique_ptr<RefExprFragment>>(&body.back());
   return re ? &(*re)->inner : nullptr;
+}
+
+llvm::ArrayRef<BodyFragment> ExprRule::refExprEffect() const {
+  if (!refExprOperand()) {
+    return {};
+  }
+  return llvm::ArrayRef(body).drop_back();
+}
+
+const PlaceholderFragment *ExprRule::refExprBase() const {
+  auto *operand = refExprOperand();
+  if (!operand || operand->empty()) {
+    return nullptr;
+  }
+  auto *ph = std::get_if<PlaceholderFragment>(&operand->front());
+  if (!ph || operand->size() == 1) {
+    return ph;
+  }
+  auto *open = std::get_if<TextFragment>(&(*operand)[1]);
+  auto *close = std::get_if<TextFragment>(&operand->back());
+  return open && close && open->text.starts_with('[') &&
+                 close->text.ends_with(']')
+             ? ph
+             : nullptr;
 }
 
 std::vector<bool>

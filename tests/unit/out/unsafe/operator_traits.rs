@@ -131,7 +131,7 @@ pub struct Wrapped_int_ {
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
-        std::process::exit(main_0() as i32);
+        libcc2rs::cpp2rust_exit(main_0() as i32);
     }
 }
 unsafe fn main_0() -> i32 {
@@ -251,10 +251,10 @@ unsafe fn main_0() -> i32 {
         .v) == (2))
     );
     let mut m: UnsafeMap<Lt, (Lt, i32)> = UnsafeMap::new();
-    (*m.subscript_move(&mut Lt { v: 2 }, |__k| cpp_move_unsafe!(__k))) = 20;
-    (*m.subscript_move(&mut Lt { v: 1 }, |__k| cpp_move_unsafe!(__k))) = 10;
+    (*m.subscript_move((&mut Lt { v: 2 }), |__k| cpp_move_unsafe!(__k))) = 20;
+    (*m.subscript_move((&mut Lt { v: 1 }), |__k| cpp_move_unsafe!(__k))) = 10;
     assert!((((*m.begin().iter_deref()).1) == (10)));
-    assert!(((*m.subscript_move(&mut Lt { v: 2 }, |__k| cpp_move_unsafe!(__k))) == (20)));
+    assert!(((*m.subscript_move((&mut Lt { v: 2 }), |__k| cpp_move_unsafe!(__k))) == (20)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

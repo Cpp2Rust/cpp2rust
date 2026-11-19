@@ -8,7 +8,7 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let v1: Value<Vec<bool>> = Rc::new(RefCell::new(Vec::from([true])));
@@ -20,7 +20,7 @@ fn main_0() -> i32 {
     };
     assert!(!(v1.decay().offset(0_usize as isize).read()));
     let it: Value<RandomAccessIterator<bool>> = Rc::new(RefCell::new(v1.decay().begin()));
-    let mut r2: Ptr<bool> = (*it.borrow()).iter_deref();
+    let mut r2: Ptr<bool> = ({ (*it.borrow()).iter_deref() });
     {
         r2.write(true);
         (r2).clone()
@@ -28,8 +28,12 @@ fn main_0() -> i32 {
     assert!(v1.decay().offset(0_usize as isize).read());
     match (Rc::new(RefCell::new(v1.decay().offset(0_usize as isize))).as_pointer(),) {
         (__tmp_0,) => {
-            (*__tmp_0.upgrade().deref()).write(false);
-            ({ (*__tmp_0.upgrade().deref()).clone() })
+            ({
+                {
+                    (*__tmp_0.upgrade().deref()).write(false);
+                    ({ (*__tmp_0.upgrade().deref()).clone() })
+                }
+            })
         }
     };
     assert!(!(v1.decay().offset(0_usize as isize).read()));
@@ -42,8 +46,12 @@ fn main_0() -> i32 {
         .as_pointer(),)
         {
             (__tmp_1,) => {
-                (*__tmp_1.upgrade().deref()).write(true);
-                ({ (*__tmp_1.upgrade().deref()).clone() })
+                ({
+                    {
+                        (*__tmp_1.upgrade().deref()).write(true);
+                        ({ (*__tmp_1.upgrade().deref()).clone() })
+                    }
+                })
             }
         }
         .read();

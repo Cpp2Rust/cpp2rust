@@ -11,7 +11,7 @@ pub fn fopen_0(mut path: Ptr<i8>, mut mode: Ptr<i8>) -> Ptr<CFile> {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let mut fp: Ptr<CFile> = ({

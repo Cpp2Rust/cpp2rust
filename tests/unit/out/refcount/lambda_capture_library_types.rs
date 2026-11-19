@@ -8,7 +8,7 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let v: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::from([1, 2])));
@@ -31,8 +31,8 @@ fn main_0() -> i32 {
                 Rc::new(RefCell::new(Some(Rc::new(RefCell::new(5)))));
         },
         || -> i32 {
-            return if !((*u.borrow()).as_pointer()).is_null() {
-                ((*u.borrow()).as_pointer().read())
+            return if !({ (*u.borrow()).as_pointer() }).is_null() {
+                (({ (*u.borrow()).as_pointer() }).read())
             } else {
                 0
             };

@@ -23,25 +23,19 @@ impl Default for p16_rebind_member_Alloc_std_pair_const_int__int__ {
 pub fn test_0() {
     let m: Value<Map<i32, (Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
     let n: Value<Map<i32, (Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
-    Map::subscript_move(
-        m.as_pointer(),
-        Rc::new(RefCell::new(1)).as_pointer(),
-        |__k| cpp_move!(__k),
-    )
+    match (Rc::new(RefCell::new(1)).as_pointer(),) {
+        (__tmp_0,) => ({ (*m.borrow_mut()).subscript_move(__tmp_0, |__k| cpp_move!(__k)) }),
+    }
     .write(2);
     {
-        let __src = m
-            .as_pointer()
-            .with_mut(|__m: &mut Map<i32, (Value<i32>, Value<i32>)>| std::mem::take(__m));
-        n.as_pointer().write(__src);
-        n.as_pointer()
+        (*n.borrow_mut()) = ({ std::mem::take(&mut (*m.borrow_mut())) });
     };
     assert!(
-        ((Map::subscript_move(
-            n.as_pointer(),
-            Rc::new(RefCell::new(1)).as_pointer(),
-            |__k| cpp_move!(__k)
-        )
+        ((match (Rc::new(RefCell::new(1)).as_pointer(),) {
+            (__tmp_1,) => {
+                ({ (*n.borrow_mut()).subscript_move(__tmp_1, |__k| cpp_move!(__k)) })
+            }
+        }
         .read())
             == 2)
     );
@@ -52,18 +46,16 @@ pub fn test_0() {
 pub struct p18_rebind_to_container_node_Alloc_std_pair_const_int__int__ {}
 pub fn test_1() {
     let m: Value<Map<i32, (Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
-    Map::subscript_move(
-        m.as_pointer(),
-        Rc::new(RefCell::new(1)).as_pointer(),
-        |__k| cpp_move!(__k),
-    )
+    match (Rc::new(RefCell::new(1)).as_pointer(),) {
+        (__tmp_2,) => ({ (*m.borrow_mut()).subscript_move(__tmp_2, |__k| cpp_move!(__k)) }),
+    }
     .write(2);
     assert!(
-        ((Map::subscript_move(
-            m.as_pointer(),
-            Rc::new(RefCell::new(1)).as_pointer(),
-            |__k| cpp_move!(__k)
-        )
+        ((match (Rc::new(RefCell::new(1)).as_pointer(),) {
+            (__tmp_3,) => {
+                ({ (*m.borrow_mut()).subscript_move(__tmp_3, |__k| cpp_move!(__k)) })
+            }
+        }
         .read())
             == 2)
     );
@@ -71,7 +63,7 @@ pub fn test_1() {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     ({ test_0() });

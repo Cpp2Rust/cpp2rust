@@ -89,7 +89,7 @@ pub fn run_0(mut o: Ptr<S>) {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let local: Value<S> = Rc::new(RefCell::new(<S>::default()));
@@ -148,12 +148,9 @@ impl SImpl for Ptr<S> {
                 (__tmp_0).clone()
             }
         };
-        {
-            field_ref!((*self), v)
-                .as_pointer()
-                .write(field!(_a0, v).with_mut(std::mem::take));
-            field_ref!((*self), v).as_pointer()
-        };
+        field!((*self), v).with_mut(|__b0| {
+            (*__b0) = field!(_a0, v).with_mut(std::mem::take);
+        });
         return (*self).clone();
     }
 }

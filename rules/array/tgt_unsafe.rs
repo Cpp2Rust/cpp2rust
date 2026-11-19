@@ -43,12 +43,12 @@ unsafe fn f4<T1: MoveCtorUnsafe, const T2: usize>(a0: &mut [T1; T2]) -> [T1; T2]
     std::array::from_fn(|__i| T1::move_ctor(&mut a0[__i]))
 }
 
-unsafe fn f5<T1: MoveAssignUnsafe, const T2: usize>(
-    a0: *mut [T1; T2],
+unsafe fn f5<'a, T1: MoveAssignUnsafe, const T2: usize>(
+    a0: &'a mut [T1; T2],
     a1: &mut [T1; T2],
-) -> *mut [T1; T2] {
+) -> &'a mut [T1; T2] {
     for __i in 0..T2 {
-        T1::move_assign(&mut (*a0)[__i], &mut a1[__i]);
+        T1::move_assign(&mut a0[__i], &mut a1[__i]);
     }
     a0
 }
@@ -57,12 +57,12 @@ unsafe fn f6<T1: Clone, const T2: usize>(a0: [T1; T2]) -> [T1; T2] {
     a0.clone()
 }
 
-unsafe fn f7<T1: CopyAssignUnsafe, const T2: usize>(
-    a0: *mut [T1; T2],
+unsafe fn f7<'a, T1: CopyAssignUnsafe, const T2: usize>(
+    a0: &'a mut [T1; T2],
     a1: &[T1; T2],
-) -> *mut [T1; T2] {
+) -> &'a mut [T1; T2] {
     for __i in 0..T2 {
-        T1::copy_assign(&mut (*a0)[__i], &a1[__i]);
+        T1::copy_assign(&mut a0[__i], &a1[__i]);
     }
     a0
 }
@@ -71,18 +71,18 @@ unsafe fn f8<T1, const T2: usize>(a0: [T1; T2]) -> [T1; T2] {
     a0
 }
 
-unsafe fn f9<const T1: usize, T2, const T3: usize>(a0: &mut [T2; T3]) -> *mut T2 {
-    a0.as_mut_ptr().offset(T1 as isize)
+unsafe fn f9<const T1: usize, T2, const T3: usize>(a0: &mut [T2; T3]) -> &mut T2 {
+    &mut a0[T1]
 }
 
-unsafe fn f10<const T1: usize, T2, const T3: usize>(a0: &[T2; T3]) -> *const T2 {
-    a0.as_ptr().offset(T1 as isize)
+unsafe fn f10<const T1: usize, T2, const T3: usize>(a0: &[T2; T3]) -> &T2 {
+    &a0[T1]
 }
 
-unsafe fn f11<const T1: usize, T2, const T3: usize>(a0: &mut [T2; T3]) -> *mut T2 {
-    a0.as_mut_ptr().offset(T1 as isize)
+unsafe fn f11<const T1: usize, T2, const T3: usize>(a0: &mut [T2; T3]) -> &mut T2 {
+    &mut a0[T1]
 }
 
-unsafe fn f12<const T1: usize, T2, const T3: usize>(a0: &[T2; T3]) -> *const T2 {
-    a0.as_ptr().offset(T1 as isize)
+unsafe fn f12<const T1: usize, T2, const T3: usize>(a0: &[T2; T3]) -> &T2 {
+    &a0[T1]
 }

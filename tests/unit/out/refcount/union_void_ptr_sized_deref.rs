@@ -74,7 +74,7 @@ pub fn write_count_1(mut s: Ptr<Sink>, mut count: i64) {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let buf64: Value<i64> = Rc::new(RefCell::new(0_i64));

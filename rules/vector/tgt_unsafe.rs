@@ -77,8 +77,8 @@ unsafe fn f65<T1>(a0: &mut Vec<T1>) -> *mut T1 {
     a0.as_mut_ptr()
 }
 
-unsafe fn f66<T1>(a0: &mut Vec<T1>, a1: usize) -> *mut T1 {
-    (&mut (a0)[a1] as *mut T1)
+unsafe fn f66<T1>(a0: &mut Vec<T1>, a1: usize) -> &mut T1 {
+    &mut a0[a1]
 }
 
 unsafe fn f67<T1: Default>(a0: usize) -> Vec<T1> {
@@ -87,12 +87,13 @@ unsafe fn f67<T1: Default>(a0: usize) -> Vec<T1> {
         .collect::<Vec<_>>()
 }
 
-unsafe fn f68<T1>(a0: &mut Vec<T1>) -> *mut T1 {
-    ((a0).first_mut().unwrap())
+unsafe fn f68<T1>(a0: &mut Vec<T1>) -> &mut T1 {
+    &mut a0[0]
 }
 
-unsafe fn f69<T1>(a0: &mut Vec<T1>) -> *mut T1 {
-    ((a0).last_mut().unwrap())
+unsafe fn f69<T1>(a0: &mut Vec<T1>) -> &mut T1 {
+    let __n = a0.len() - 1;
+    &mut a0[__n]
 }
 
 unsafe fn f70<T1>(a0: Vec<T1>) -> usize {
@@ -116,8 +117,7 @@ unsafe fn f73<T1: Default>(a0: &mut Vec<T1>, a1: &mut T1) {
 }
 
 unsafe fn f74<T1: Default>(a0: &mut Vec<T1>, a1: usize) {
-    let __a0 = a1;
-    a0.resize_with(__a0, || <T1>::default())
+    a0.resize_with(a1, || <T1>::default())
 }
 
 unsafe fn f75<T1>(a0: &mut Vec<T1>) {
@@ -179,16 +179,13 @@ unsafe fn f97<T1>(a0: &mut Vec<T1>, a1: &mut Vec<T1>) {
     std::mem::swap(&mut *a0, &mut *a1)
 }
 
-unsafe fn f98<T1: Copy>(a0: &Vec<T1>, a1: usize) -> *const T1 {
-    if a1 >= a0.len() {
-        panic!("out of bounds access")
-    } else {
-        (a0).as_ptr().add(a1)
-    }
+unsafe fn f98<T1>(a0: &Vec<T1>, a1: usize) -> &T1 {
+    &a0[a1]
 }
 
 unsafe fn f99<T1>(a0: &Vec<T1>) -> &T1 {
-    ((a0).last().unwrap())
+    let __n = a0.len() - 1;
+    &a0[__n]
 }
 
 unsafe fn f101<T1: Clone, T2, T3: UnsafeCppInputIterator<T1>>(
@@ -209,11 +206,10 @@ unsafe fn f101<T1: Clone, T2, T3: UnsafeCppInputIterator<T1>>(
 }
 
 unsafe fn f102<T1: Default + Clone>(a0: &mut Vec<T1>, a1: usize, a2: T1) {
-    let __a0 = a1;
-    a0.resize(__a0, a2)
+    a0.resize(a1, a2)
 }
 
-unsafe fn f103<T1: Clone>(a0: *mut Vec<T1>, a1: &mut Vec<T1>) -> *mut Vec<T1> {
+unsafe fn f103<'a, T1: Clone>(a0: &'a mut Vec<T1>, a1: &mut Vec<T1>) -> &'a mut Vec<T1> {
     *a0 = std::mem::take(&mut *a1);
     a0
 }
@@ -222,7 +218,7 @@ unsafe fn f104<T1>(a0: Vec<T1>) -> UnsafeRandomAccessIterator<T1> {
     a0.end()
 }
 
-unsafe fn f105<T1: Clone>(a0: *mut Vec<T1>, a1: Vec<T1>) -> *mut Vec<T1> {
+unsafe fn f105<T1: Clone>(a0: &mut Vec<T1>, a1: Vec<T1>) -> &mut Vec<T1> {
     *a0 = a1.clone();
     a0
 }

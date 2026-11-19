@@ -8,19 +8,18 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn change_0(n: Ptr<Option<Value<i32>>>) {
     let mut m: Option<Value<i32>> = Some(Rc::new(RefCell::new(20)));
-    {
-        n.write(m.take());
-        (n).clone()
-    };
+    n.with_mut(|__b0| {
+        (*__b0) = m.take();
+    });
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let n: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(10)))));
     ({ change_0(n.as_pointer()) });
-    assert!(({ (((*n.borrow()).as_pointer().read()) == 20) }));
+    assert!(((({ (*n.borrow()).as_pointer() }).read()) == 20));
     let mut empty: Option<Value<i32>> = None;
     assert!(empty.is_none());
     assert!(({ (*n.borrow()).is_some() }));

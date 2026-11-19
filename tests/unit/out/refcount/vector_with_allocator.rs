@@ -46,7 +46,16 @@ pub fn fn_1(v: Ptr<Vec<i32>>, v3: Vec<i32>) {
     assert!(((v.decay().read()) == 4));
     assert!(((index!(v, 1_usize).read()) == 5));
     assert!(((index!(v, 2_usize).read()) == 6));
-    assert!(((v.decay().to_last().read()) == 20));
+    assert!(
+        ({
+            (({
+                let __n = (*v.upgrade().deref()).len() - 1;
+                v.decay().offset((__n) as isize)
+            }
+            .read())
+                == 20)
+        })
+    );
     assert!(({ ({ (*v3.borrow())[0_usize] } == 7) }));
     assert!(({ ({ (*v3.borrow())[1_usize] } == 13) }));
     {
@@ -56,7 +65,7 @@ pub fn fn_1(v: Ptr<Vec<i32>>, v3: Vec<i32>) {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let mut v1: Vec<i32> = Vec::new();
@@ -70,10 +79,7 @@ fn main_0() -> i32 {
     v1.pop();
     assert!(v1.is_empty());
     let mut s1: usize = v1.len();
-    {
-        let __a0 = 100_usize;
-        v1.resize_with(__a0, || 0_i32)
-    };
+    v1.resize_with(100_usize, || 0_i32);
     assert!((v1.len() == 100_usize));
     assert!((v1[99_usize] == 0));
     v1[0_usize] = 40;
@@ -177,92 +183,146 @@ fn main_0() -> i32 {
     };
     assert!(({ ((*v3.borrow()).capacity() == 201_usize) }));
     assert!(({ ((*v3.borrow()).len() == 100_usize) }));
-    assert!(((v2.decay().to_last().read()) == 3));
-    assert!(((v3.decay().to_last().read()) == 1));
-    assert!(((v6.decay().to_last().read()) == 2_f64));
-    let ref0: Ptr<f64> = v6.decay().to_last();
-    ref0.write(5_f64);
-    assert!(((v6.decay().to_last().read()) == 5_f64));
-    let mut x0: f64 = (v6.decay().to_last().read());
-    assert!((x0 == 5_f64));
-    x0 = 6_f64;
-    assert!(((v6.decay().to_last().read()) == 5_f64));
-    let mut idx: i32 = 0;
     assert!(
-        ((match ({ (idx as usize) },) {
-            (mut __tmp_2,) => {
-                if __tmp_2 >= v6.decay().len() {
-                    panic!("out of bounds access")
-                } else {
-                    v6.decay().offset(__tmp_2 as isize)
-                }
+        ({
+            (({
+                let __n = (*v2.borrow()).len() - 1;
+                v2.decay().offset((__n) as isize)
             }
-        }
-        .read())
-            == 2_f64)
+            .read())
+                == 3)
+        })
     );
     assert!(
-        ((match ({ (s2).wrapping_sub(1_usize) },) {
-            (mut __tmp_3,) => {
-                if __tmp_3 >= v6.decay().len() {
-                    panic!("out of bounds access")
-                } else {
-                    v6.decay().offset(__tmp_3 as isize)
+        ({
+            (({
+                let __n = (*v3.borrow()).len() - 1;
+                v3.decay().offset((__n) as isize)
+            }
+            .read())
+                == 1)
+        })
+    );
+    assert!(
+        ({
+            (({
+                let __n = (*v6.borrow()).len() - 1;
+                v6.decay().offset((__n) as isize)
+            }
+            .read())
+                == 2_f64)
+        })
+    );
+    let ref0: Ptr<f64> = {
+        let __n = (*v6.borrow()).len() - 1;
+        v6.decay().offset((__n) as isize)
+    };
+    ref0.write(5_f64);
+    assert!(
+        ({
+            (({
+                let __n = (*v6.borrow()).len() - 1;
+                v6.decay().offset((__n) as isize)
+            }
+            .read())
+                == 5_f64)
+        })
+    );
+    let mut x0: f64 = ({
+        let __n = (*v6.borrow()).len() - 1;
+        v6.decay().offset((__n) as isize)
+    }
+    .read());
+    assert!((x0 == 5_f64));
+    x0 = 6_f64;
+    assert!(
+        ({
+            (({
+                let __n = (*v6.borrow()).len() - 1;
+                v6.decay().offset((__n) as isize)
+            }
+            .read())
+                == 5_f64)
+        })
+    );
+    let mut idx: i32 = 0;
+    assert!(
+        ({
+            ((match ({ (idx as usize) },) {
+                (mut __tmp_2,) => {
+                    if __tmp_2 >= (*v6.borrow()).len() {
+                        panic!("out of bounds access")
+                    }
+                    v6.decay().offset((__tmp_2) as isize)
                 }
             }
-        }
-        .read())
-            == 5_f64)
+            .read())
+                == 2_f64)
+        })
+    );
+    assert!(
+        ({
+            ((match ({ (s2).wrapping_sub(1_usize) },) {
+                (mut __tmp_3,) => {
+                    if __tmp_3 >= (*v6.borrow()).len() {
+                        panic!("out of bounds access")
+                    }
+                    v6.decay().offset((__tmp_3) as isize)
+                }
+            }
+            .read())
+                == 5_f64)
+        })
     );
     let ref1: Ptr<f64> = match ({ (s2).wrapping_sub(1_usize) },) {
         (mut __tmp_4,) => {
-            if __tmp_4 >= v6.decay().len() {
+            if __tmp_4 >= (*v6.borrow()).len() {
                 panic!("out of bounds access")
-            } else {
-                v6.decay().offset(__tmp_4 as isize)
             }
+            v6.decay().offset((__tmp_4) as isize)
         }
     };
     {
         ref1.with_mut(|__v| *__v = *__v + 1.5_f64)
     };
     assert!(
-        ((match ({ (s2).wrapping_sub(1_usize) },) {
-            (mut __tmp_5,) => {
-                if __tmp_5 >= v6.decay().len() {
-                    panic!("out of bounds access")
-                } else {
-                    v6.decay().offset(__tmp_5 as isize)
+        ({
+            ((match ({ (s2).wrapping_sub(1_usize) },) {
+                (mut __tmp_5,) => {
+                    if __tmp_5 >= (*v6.borrow()).len() {
+                        panic!("out of bounds access")
+                    }
+                    v6.decay().offset((__tmp_5) as isize)
                 }
             }
-        }
-        .read())
-            == 6.5_f64)
+            .read())
+                == 6.5_f64)
+        })
     );
     let mut x1: f64 = (match ({ (s2).wrapping_sub(1_usize) },) {
         (mut __tmp_6,) => {
-            if __tmp_6 >= v6.decay().len() {
+            if __tmp_6 >= (*v6.borrow()).len() {
                 panic!("out of bounds access")
-            } else {
-                v6.decay().offset(__tmp_6 as isize)
             }
+            v6.decay().offset((__tmp_6) as isize)
         }
     }
     .read());
     assert!((x1 == 6.5_f64));
     x1 -= 1.5_f64;
     assert!(
-        ((match ({ (s2).wrapping_sub(1_usize) },) {
-            (mut __tmp_7,) => {
-                if __tmp_7 >= v6.decay().len() {
-                    panic!("out of bounds access")
-                } else {
-                    v6.decay().offset(__tmp_7 as isize)
+        ({
+            ((match ({ (s2).wrapping_sub(1_usize) },) {
+                (mut __tmp_7,) => {
+                    if __tmp_7 >= (*v6.borrow()).len() {
+                        panic!("out of bounds access")
+                    }
+                    v6.decay().offset((__tmp_7) as isize)
                 }
             }
-        }
-        .read())
-            == 6.5_f64)
+            .read())
+                == 6.5_f64)
+        })
     );
     let v7: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
     let mut v8: Vec<i32> = Vec::new();
@@ -359,14 +419,17 @@ fn main_0() -> i32 {
     assert!((v13.len() == 5_usize));
     assert!(((v13[0_usize] as i32) == 10) && ((v13[4_usize] as i32) == 50));
     assert!(
-        (((s1).wrapping_add(s2)).wrapping_add(
-            ((if 0_usize >= v2.decay().len() {
-                panic!("out of bounds access")
-            } else {
-                v2.decay().offset(0_usize as isize)
-            }
-            .read()) as usize)
-        ) == 103_usize)
+        ({
+            (((s1).wrapping_add(s2)).wrapping_add(
+                (({
+                    if 0_usize >= (*v2.borrow()).len() {
+                        panic!("out of bounds access")
+                    }
+                    v2.decay().offset((0_usize) as isize)
+                }
+                .read()) as usize),
+            ) == 103_usize)
+        })
     );
     return 0;
 }

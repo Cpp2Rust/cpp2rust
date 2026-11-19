@@ -248,7 +248,7 @@ impl Owner {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let a: Value<Tracked> = Rc::new(RefCell::new(Tracked::new_1({ 1 })));
@@ -260,22 +260,22 @@ fn main_0() -> i32 {
     ({
         let _o: Value<Tracked> = Rc::new(RefCell::new(Tracked::new_1({ 10 })));
         TrackedImpl::move_assign(
-            &Map::subscript_move(
-                m1.as_pointer(),
-                Rc::new(RefCell::new(1)).as_pointer(),
-                |__k| cpp_move!(__k),
-            ),
+            &match (Rc::new(RefCell::new(1)).as_pointer(),) {
+                (__tmp_0,) => {
+                    ({ (*m1.borrow_mut()).subscript_move(__tmp_0, |__k| cpp_move!(__k)) })
+                }
+            },
             _o.as_pointer(),
         )
     });
     ({
         let _o: Value<Tracked> = Rc::new(RefCell::new(Tracked::new_1({ 20 })));
         TrackedImpl::move_assign(
-            &Map::subscript_move(
-                m1.as_pointer(),
-                Rc::new(RefCell::new(2)).as_pointer(),
-                |__k| cpp_move!(__k),
-            ),
+            &match (Rc::new(RefCell::new(2)).as_pointer(),) {
+                (__tmp_1,) => {
+                    ({ (*m1.borrow_mut()).subscript_move(__tmp_1, |__k| cpp_move!(__k)) })
+                }
+            },
             _o.as_pointer(),
         )
     });
@@ -283,40 +283,40 @@ fn main_0() -> i32 {
     ({
         let _o: Value<Tracked> = Rc::new(RefCell::new(Tracked::new_1({ 30 })));
         TrackedImpl::move_assign(
-            &Map::subscript_move(
-                m2.as_pointer(),
-                Rc::new(RefCell::new(3)).as_pointer(),
-                |__k| cpp_move!(__k),
-            ),
+            &match (Rc::new(RefCell::new(3)).as_pointer(),) {
+                (__tmp_2,) => {
+                    ({ (*m2.borrow_mut()).subscript_move(__tmp_2, |__k| cpp_move!(__k)) })
+                }
+            },
             _o.as_pointer(),
         )
     });
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
     cpp_swap!(
-        Map::subscript_move(
-            m1.as_pointer(),
-            Rc::new(RefCell::new(1)).as_pointer(),
-            |__k| cpp_move!(__k)
-        ),
-        Map::subscript_move(
-            m1.as_pointer(),
-            Rc::new(RefCell::new(2)).as_pointer(),
-            |__k| cpp_move!(__k)
-        )
+        match (Rc::new(RefCell::new(1)).as_pointer(),) {
+            (__tmp_3,) => {
+                ({ (*m1.borrow_mut()).subscript_move(__tmp_3, |__k| cpp_move!(__k)) })
+            }
+        },
+        match (Rc::new(RefCell::new(2)).as_pointer(),) {
+            (__tmp_4,) => {
+                ({ (*m1.borrow_mut()).subscript_move(__tmp_4, |__k| cpp_move!(__k)) })
+            }
+        }
     );
     assert!(
-        (Map::subscript_move(
-            m1.as_pointer(),
-            Rc::new(RefCell::new(1)).as_pointer(),
-            |__k| cpp_move!(__k)
-        )
+        (match (Rc::new(RefCell::new(1)).as_pointer(),) {
+            (__tmp_5,) => {
+                ({ (*m1.borrow_mut()).subscript_move(__tmp_5, |__k| cpp_move!(__k)) })
+            }
+        }
         .with(|__s| __s.v)
             == 20)
-            && (Map::subscript_move(
-                m1.as_pointer(),
-                Rc::new(RefCell::new(2)).as_pointer(),
-                |__k| cpp_move!(__k)
-            )
+            && (match (Rc::new(RefCell::new(2)).as_pointer(),) {
+                (__tmp_6,) => {
+                    ({ (*m1.borrow_mut()).subscript_move(__tmp_6, |__k| cpp_move!(__k)) })
+                }
+            }
             .with(|__s| __s.v)
                 == 10)
     );
@@ -324,28 +324,28 @@ fn main_0() -> i32 {
     cpp_swap!(m1.as_pointer(), m2.as_pointer());
     assert!(
         ((*m1.borrow()).len() == 1_usize)
-            && (Map::subscript_move(
-                m1.as_pointer(),
-                Rc::new(RefCell::new(3)).as_pointer(),
-                |__k| cpp_move!(__k)
-            )
+            && (match (Rc::new(RefCell::new(3)).as_pointer(),) {
+                (__tmp_7,) => {
+                    ({ (*m1.borrow_mut()).subscript_move(__tmp_7, |__k| cpp_move!(__k)) })
+                }
+            }
             .with(|__s| __s.v)
                 == 30)
     );
     assert!(
         (((*m2.borrow()).len() == 2_usize)
-            && (Map::subscript_move(
-                m2.as_pointer(),
-                Rc::new(RefCell::new(1)).as_pointer(),
-                |__k| cpp_move!(__k)
-            )
+            && (match (Rc::new(RefCell::new(1)).as_pointer(),) {
+                (__tmp_8,) => {
+                    ({ (*m2.borrow_mut()).subscript_move(__tmp_8, |__k| cpp_move!(__k)) })
+                }
+            }
             .with(|__s| __s.v)
                 == 20))
-            && (Map::subscript_move(
-                m2.as_pointer(),
-                Rc::new(RefCell::new(2)).as_pointer(),
-                |__k| cpp_move!(__k)
-            )
+            && (match (Rc::new(RefCell::new(2)).as_pointer(),) {
+                (__tmp_9,) => {
+                    ({ (*m2.borrow_mut()).subscript_move(__tmp_9, |__k| cpp_move!(__k)) })
+                }
+            }
             .with(|__s| __s.v)
                 == 10)
     );
@@ -477,43 +477,55 @@ fn main_0() -> i32 {
     ({
         let _o: Value<Tracked> = Rc::new(RefCell::new(Tracked::new_1({ 1 })));
         TrackedImpl::move_assign(
-            &Map::subscript_move(
-                maps.decay().offset(0),
-                Rc::new(RefCell::new(1)).as_pointer(),
-                |__k| cpp_move!(__k),
-            ),
+            &match (Rc::new(RefCell::new(1)).as_pointer(),) {
+                (__tmp_10,) => {
+                    ({
+                        (*maps.borrow_mut())[(0) as usize]
+                            .subscript_move(__tmp_10, |__k| cpp_move!(__k))
+                    })
+                }
+            },
             _o.as_pointer(),
         )
     });
     ({
         let _o: Value<Tracked> = Rc::new(RefCell::new(Tracked::new_1({ 2 })));
         TrackedImpl::move_assign(
-            &Map::subscript_move(
-                maps.decay().offset(1),
-                Rc::new(RefCell::new(2)).as_pointer(),
-                |__k| cpp_move!(__k),
-            ),
+            &match (Rc::new(RefCell::new(2)).as_pointer(),) {
+                (__tmp_11,) => {
+                    ({
+                        (*maps.borrow_mut())[(1) as usize]
+                            .subscript_move(__tmp_11, |__k| cpp_move!(__k))
+                    })
+                }
+            },
             _o.as_pointer(),
         )
     });
     cpp_swap!(maps.decay().offset(0), maps.decay().offset(1));
     assert!(
         ((*maps.borrow())[(0) as usize].len() == 1_usize)
-            && (Map::subscript_move(
-                maps.decay().offset(0),
-                Rc::new(RefCell::new(2)).as_pointer(),
-                |__k| cpp_move!(__k)
-            )
+            && (match (Rc::new(RefCell::new(2)).as_pointer(),) {
+                (__tmp_12,) => {
+                    ({
+                        (*maps.borrow_mut())[(0) as usize]
+                            .subscript_move(__tmp_12, |__k| cpp_move!(__k))
+                    })
+                }
+            }
             .with(|__s| __s.v)
                 == 2)
     );
     assert!(
         ((*maps.borrow())[(1) as usize].len() == 1_usize)
-            && (Map::subscript_move(
-                maps.decay().offset(1),
-                Rc::new(RefCell::new(1)).as_pointer(),
-                |__k| cpp_move!(__k)
-            )
+            && (match (Rc::new(RefCell::new(1)).as_pointer(),) {
+                (__tmp_13,) => {
+                    ({
+                        (*maps.borrow_mut())[(1) as usize]
+                            .subscript_move(__tmp_13, |__k| cpp_move!(__k))
+                    })
+                }
+            }
             .with(|__s| __s.v)
                 == 1)
     );
@@ -762,11 +774,9 @@ pub trait OwnerImpl {
 }
 impl OwnerImpl for Ptr<Owner> {
     fn move_assign(&self, _a0: Ptr<Owner>) -> Ptr<Owner> {
-        {
-            field_ptr!((*self), p)
-                .write(field!(_a0, p).with_mut(|__v: &mut Option<Value<i32>>| __v.take()));
-            field_ptr!((*self), p)
-        };
+        field!((*self), p).with_mut(|__b0| {
+            (*__b0) = field!(_a0, p).with_mut(|__v: &mut Option<Value<i32>>| __v.take());
+        });
         return (*self).clone();
     }
 }

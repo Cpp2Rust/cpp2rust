@@ -68,7 +68,7 @@ pub struct Cursor_3 {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     assert!((({ sum_0(3, Box::new([(1).into(), (2).into(), (3).into(),])) }) == 6));

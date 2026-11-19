@@ -67,8 +67,7 @@ impl Outer {
             }
         };
         {
-            *(&mut self.v as *mut Vec<i32>) = std::mem::take(&mut (*_a0).v);
-            (&mut self.v as *mut Vec<i32>)
+            self.v = std::mem::take(&mut (*_a0).v);
         };
         self.cursor = (*_a0).cursor;
         match (
@@ -95,7 +94,7 @@ pub unsafe fn bump_1(mut o: *mut Outer) -> i32 {
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
-        std::process::exit(main_0() as i32);
+        libcc2rs::cpp2rust_exit(main_0() as i32);
     }
 }
 unsafe fn main_0() -> i32 {

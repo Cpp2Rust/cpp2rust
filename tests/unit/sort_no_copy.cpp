@@ -26,6 +26,16 @@ bool operator<(const Tracked &a, const Tracked &b) { return a.v < b.v; }
 
 bool greater(const Tracked &a, const Tracked &b) { return a.v > b.v; }
 
+struct MoveOnly {
+  int v;
+  MoveOnly(int v) : v(v) {}
+  MoveOnly(MoveOnly &&) = default;
+  MoveOnly &operator=(MoveOnly &&) = default;
+  MoveOnly(const MoveOnly &) = delete;
+};
+
+bool operator<(const MoveOnly &a, const MoveOnly &b) { return a.v < b.v; }
+
 struct Bag {
   std::vector<Tracked> items;
 };
@@ -101,5 +111,16 @@ int main() {
   assert(bag_map.find(bags[2])->second == 2);
   assert(bag_map.find(bags[1]) == bag_map.end());
   assert(copies == 0);
+
+  std::vector<MoveOnly> moves;
+  moves.emplace_back(3);
+  moves.emplace_back(1);
+  moves.emplace_back(2);
+  std::sort(moves.begin(), moves.end());
+  assert(moves[0].v == 1 && moves[1].v == 2 && moves[2].v == 3);
+  std::stable_sort(
+      moves.begin(), moves.end(),
+      [](const MoveOnly &a, const MoveOnly &b) { return a.v > b.v; });
+  assert(moves[0].v == 3 && moves[1].v == 2 && moves[2].v == 1);
   return copies;
 }

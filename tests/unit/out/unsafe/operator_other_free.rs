@@ -25,7 +25,7 @@ pub unsafe fn operator_literal__half_2(mut v: f64) -> f64 {
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
-        std::process::exit(main_0() as i32);
+        libcc2rs::cpp2rust_exit(main_0() as i32);
     }
 }
 unsafe fn main_0() -> i32 {

@@ -24,8 +24,7 @@ pub unsafe fn test_0() {
     let mut n: UnsafeMap<i32, (i32, i32)> = UnsafeMap::new();
     (*m.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k))) = 2;
     {
-        *(&mut n as *mut UnsafeMap<i32, (i32, i32)>) = std::mem::take(&mut m);
-        (&mut n as *mut UnsafeMap<i32, (i32, i32)>)
+        n = std::mem::take(&mut m);
     };
     assert!(((*n.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k))) == (2)));
     assert!(((n.len()) == (1_usize)));
@@ -42,7 +41,7 @@ pub unsafe fn test_1() {
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
-        std::process::exit(main_0() as i32);
+        libcc2rs::cpp2rust_exit(main_0() as i32);
     }
 }
 unsafe fn main_0() -> i32 {

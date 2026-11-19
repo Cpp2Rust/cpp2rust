@@ -80,19 +80,16 @@ fn f13<T1>(a0: &mut Option<Value<Box<[T1]>>>) -> Option<Value<Box<[T1]>>> {
     a0.take()
 }
 
-fn f14<T1: ByteRepr>(
-    a0: Ptr<Option<Value<T1>>>,
-    a1: &mut Option<Value<T1>>,
-) -> Ptr<Option<Value<T1>>> {
-    a0.write(a1.take());
+fn f14<'a, T1>(a0: &'a mut Option<Value<T1>>, a1: &mut Option<Value<T1>>) -> &'a mut Option<Value<T1>> {
+    *a0 = a1.take();
     a0
 }
 
-fn f15<T1: ByteRepr>(
-    a0: Ptr<Option<Value<Box<[T1]>>>>,
+fn f15<'a, T1>(
+    a0: &'a mut Option<Value<Box<[T1]>>>,
     a1: &mut Option<Value<Box<[T1]>>>,
-) -> Ptr<Option<Value<Box<[T1]>>>> {
-    a0.write(a1.take());
+) -> &'a mut Option<Value<Box<[T1]>>> {
+    *a0 = a1.take();
     a0
 }
 

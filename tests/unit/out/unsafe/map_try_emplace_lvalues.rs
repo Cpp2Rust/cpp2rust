@@ -99,8 +99,7 @@ impl Owner {
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Owner) -> *mut Owner {
         {
-            *(&mut self.ptr as *mut Option<Box<Temporary>>) = (*_a0).ptr.take();
-            (&mut self.ptr as *mut Option<Box<Temporary>>)
+            self.ptr = (*_a0).ptr.take();
         };
         return &mut (*(self as *mut Owner));
     }
@@ -230,7 +229,7 @@ pub static mut global_owned_16: std::cell::LazyCell<(
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
-        std::process::exit(main_0() as i32);
+        libcc2rs::cpp2rust_exit(main_0() as i32);
     }
 }
 unsafe fn main_0() -> i32 {

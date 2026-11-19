@@ -25,7 +25,7 @@ pub fn operator_literal__half_2(mut v: f64) -> f64 {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let s: Value<S> = Rc::new(RefCell::new(S { v: 3 }));

@@ -9,7 +9,7 @@ use std::rc::Rc;
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
-        std::process::exit(main_0() as i32);
+        libcc2rs::cpp2rust_exit(main_0() as i32);
     }
 }
 unsafe fn main_0() -> i32 {
@@ -26,12 +26,12 @@ unsafe fn main_0() -> i32 {
     assert!(((arr[(0) as usize]) == (7)));
     assert!(((arr[(2) as usize]) == (5)));
     let mut std_arr: [i32; 3] = [4, 5, 6];
-    let mut last: i32 = (*std_arr.as_mut_ptr().offset(2 as isize));
-    (*std_arr.as_mut_ptr().offset(0 as isize)) = 8;
+    let mut last: i32 = std_arr[2];
+    std_arr[0] = 8;
     let __decomp_2: *mut [i32; 3] = &mut std_arr;
-    let p: *mut i32 = (*__decomp_2).as_mut_ptr().offset(0 as isize);
-    let q: *mut i32 = (*__decomp_2).as_mut_ptr().offset(1 as isize);
-    let r: *mut i32 = (*__decomp_2).as_mut_ptr().offset(2 as isize);
+    let p: *mut i32 = &raw mut (&mut (*__decomp_2))[0];
+    let q: *mut i32 = &raw mut (&mut (*__decomp_2))[1];
+    let r: *mut i32 = &raw mut (&mut (*__decomp_2))[2];
     (*q) += 10;
     assert!(((last) == (6)));
     assert!(((std_arr[(0_usize)]) == (8)));

@@ -480,7 +480,7 @@ pub fn c_strings_8() {
 }
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let mut size: usize = 1_usize;
@@ -511,12 +511,9 @@ pub trait BagImpl {
 impl BagImpl for Ptr<Bag> {
     fn move_assign(&self, _a0: Ptr<Bag>) -> Ptr<Bag> {
         field!((*self), n).write({ { (*_a0.upgrade().deref()).n } });
-        {
-            field_ref!((*self), items)
-                .as_pointer()
-                .write(field!(_a0, items).with_mut(std::mem::take));
-            field_ref!((*self), items).as_pointer()
-        };
+        field!((*self), items).with_mut(|__b0| {
+            (*__b0) = field!(_a0, items).with_mut(std::mem::take);
+        });
         return (*self).clone();
     }
 }

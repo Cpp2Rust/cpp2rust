@@ -1,7 +1,12 @@
+// ADDITIONAL_COMPILE_FLAGS: -std=c++20
 #include <assert.h>
+#include <compare>
 #include <cstddef>
 #include <signal.h>
 #include <stddef.h>
+#include <string>
+#include <utility>
+#include <vector>
 
 typedef int (*foo_t)(void *);
 
@@ -32,6 +37,14 @@ template <class H> struct HashHolder {
 static int total = 0;
 
 void add_to_total(int x) { total += x; }
+
+int pair_sum(std::pair<int, int> p) { return p.first + p.second; }
+
+size_t string_size(std::string s) { return s.size(); }
+
+int vector_sum(std::vector<int> v) { return v[0] + v[1]; }
+
+bool is_less(std::strong_ordering o) { return o < 0; }
 
 int main() {
   foo_t fn = nullptr;
@@ -65,5 +78,22 @@ int main() {
   handler(2);
   handler(3);
   assert(total == 5);
+
+  int (*pf)(std::pair<int, int>) = pair_sum;
+  assert(pf({1, 2}) == 3);
+
+  size_t (*sf)(std::string) = string_size;
+  assert(sf(std::string("abc")) == 3);
+
+  int (*vf)(std::vector<int>) = vector_sum;
+  assert(vf({1, 2}) == 3);
+
+  bool (*of)(std::strong_ordering) = is_less;
+  assert(of(1 <=> 2));
+  assert(!of(2 <=> 1));
+
+  std::strong_ordering o = 1 <=> 2;
+  std::strong_ordering *op = &o;
+  assert(*op == std::strong_ordering::less);
   return 0;
 }

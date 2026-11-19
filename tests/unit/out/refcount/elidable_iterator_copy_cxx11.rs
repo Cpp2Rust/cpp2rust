@@ -8,7 +8,7 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn main() {
     __cpp2rust_init_globals();
-    std::process::exit(main_0());
+    libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
     let v: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
@@ -37,7 +37,7 @@ fn main_0() -> i32 {
         }),
     ));
     assert!((*it.borrow()) != v.decay().end());
-    assert!(({ (((*it.borrow()).iter_deref().read()) == 7) }));
+    assert!(((({ (*it.borrow()).iter_deref() }).read()) == 7));
     match ({ v.decay().begin() },) {
         (mut __tmp_3,) => {
             let __n = v.decay().end().iter_distance(&__tmp_3);
