@@ -3192,6 +3192,10 @@ bool Converter::VisitUnaryOperator(clang::UnaryOperator *expr) {
       ConvertMemberPtr(expr);
       break;
     }
+    if (isCallee() && expr->getType()->isFunctionPointerType()) {
+      Convert(sub_expr);
+      break;
+    }
     PushParen paren(*this);
     ConvertAddrOf(sub_expr, expr->getType());
     break;
