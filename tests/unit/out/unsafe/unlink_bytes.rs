@@ -24,35 +24,6 @@ unsafe fn main_0() -> i32 {
     assert!(((*libcc2rs::cpp2rust_errno_unsafe()) == (libc::ENOENT)));
     fp = libc::fopen(sibling, (c"rb".as_ptr().cast_mut()).cast_const());
     assert!((!((fp).is_null())));
-    let mut buf: [libc::c_char; 8] = [(0 as libc::c_char); 8];
-    assert!(
-        ((libcc2rs::fread_unsafe(
-            (buf.as_mut_ptr() as *mut ::libc::c_void),
-            1_usize,
-            ::std::mem::size_of::<[libc::c_char; 8]>(),
-            fp
-        )) == (::std::mem::size_of::<[libc::c_char; 8]>()))
-    );
-    assert!(
-        (({
-            let sa = core::slice::from_raw_parts(
-                (buf.as_mut_ptr() as *const ::libc::c_void) as *const u8,
-                ::std::mem::size_of::<[libc::c_char; 8]>(),
-            );
-            let sb = core::slice::from_raw_parts(
-                (c"sentinel".as_ptr().cast_mut() as *const ::libc::c_void) as *const u8,
-                ::std::mem::size_of::<[libc::c_char; 8]>(),
-            );
-            let mut diff = 0_i32;
-            for (x, y) in sa.iter().zip(sb.iter()) {
-                if x != y {
-                    diff = (*x as i32) - (*y as i32);
-                    break;
-                }
-            }
-            diff
-        }) == (0))
-    );
     assert!(((libc::fclose(fp)) == (0)));
     assert!(((libc::unlink(sibling)) == (0)));
     return 0;

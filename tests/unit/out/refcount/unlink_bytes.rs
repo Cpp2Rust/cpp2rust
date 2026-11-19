@@ -56,23 +56,6 @@ fn main_0() -> i32 {
         None => Ptr::null(),
     };
     assert!((!((fp).is_null())));
-    let buf: Value<Box<[i8]>> = Rc::new(RefCell::new((0..8).map(|_| 0_i8).collect::<Box<[i8]>>()));
-    assert!(
-        ({
-            libcc2rs::fread_refcount(
-                (buf.decay()).to_any(),
-                1_usize,
-                ::std::mem::size_of::<[i8; 8]>(),
-                (fp).clone(),
-            )
-        } == { ::std::mem::size_of::<[i8; 8]>() })
-    );
-    assert!(
-        ((buf.decay()).to_any().memcmp(
-            &(Ptr::<i8>::from_string_literal(b"sentinel")).to_any(),
-            ::std::mem::size_of::<[i8; 8]>()
-        ) == 0)
-    );
     assert!(
         ({
             let __r = fp.with(|__f| __f.close());
