@@ -357,7 +357,7 @@ unsafe fn main_0() -> i32 {
     assert!(((x1) == (6.5_f64)));
     x1 -= 1.5_f64;
     assert!(((v6[(s2).wrapping_sub(1_usize)]) == (6.5_f64)));
-    assert!(((((s1).wrapping_add(s2)).wrapping_add((v2[0_usize] as usize))) == (103_usize)));
+    assert!(((((s1).wrapping_add(s2)).wrapping_add(((v2[0_usize]) as usize))) == (103_usize)));
     let mut a: S = S { x: 1 };
     let mut pa: *mut S = (&mut a as *mut S);
     let mut v8: Vec<*const *mut S> = Vec::new();

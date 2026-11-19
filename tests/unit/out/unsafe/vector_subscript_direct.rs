@@ -46,7 +46,7 @@ pub unsafe fn push_and_index_0(v: *mut Vec<i32>) -> i32 {
         let __a1 = 42;
         (*v).push(__a1)
     };
-    return (((*v).len() as i32) - (1));
+    return ((((*v).len()) as i32) - (1));
 }
 pub unsafe fn sum_ref_1(v: *const Vec<i32>) -> i32 {
     let mut s: i32 = 0;

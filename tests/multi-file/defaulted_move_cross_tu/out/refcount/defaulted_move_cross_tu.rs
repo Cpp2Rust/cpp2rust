@@ -58,8 +58,9 @@ impl T {
     }
 }
 pub fn sum_0(s: Ptr<S>) -> i32 {
-    return ({ ({ ((*s.upgrade().deref()).v.len() as i32) } + { (array_elem!(s, n, 0).read()) }) }
-        + { (array_elem!(s, n, 1).read()) });
+    return ({
+        ({ (((*s.upgrade().deref()).v.len()) as i32) } + { (array_elem!(s, n, 0).read()) })
+    } + { (array_elem!(s, n, 1).read()) });
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -115,7 +116,7 @@ pub trait TImpl {
 }
 impl TImpl for Ptr<T> {
     fn size(&self) -> i32 {
-        return ((*(*self).upgrade().deref()).v.len() as i32);
+        return (((*(*self).upgrade().deref()).v.len()) as i32);
     }
     fn move_assign(&self, _a0: Ptr<T>) -> Ptr<T> {
         field!((*self), v).with_mut(|__b0| {

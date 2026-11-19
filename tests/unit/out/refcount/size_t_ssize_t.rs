@@ -57,7 +57,7 @@ fn main_0() -> i32 {
     );
     let mut fr2: u64 = ({ take_ulong_1((sz as u64)) });
     assert!((fr2 == 21_u64));
-    let mut lo: usize = ({
+    let mut lo: usize = (({
         let __tmp_0: Value<u64> = Rc::new(RefCell::new(
             (::std::mem::size_of::<i64>() as u64).wrapping_add((*ul.borrow())),
         ));
@@ -68,8 +68,8 @@ fn main_0() -> i32 {
             __tmp_1.as_pointer()
         }
         .read())
-    } as usize);
-    let mut hi: usize = ({
+    }) as usize);
+    let mut hi: usize = (({
         let __tmp_2: Value<u64> = Rc::new(RefCell::new(
             (::std::mem::size_of::<i32>() as u64).wrapping_add((sz as u64)),
         ));
@@ -79,10 +79,10 @@ fn main_0() -> i32 {
             __tmp_2.as_pointer()
         }
         .read())
-    } as usize);
+    }) as usize);
     assert!((lo == (::std::mem::size_of::<i64>() as usize).wrapping_add(10_usize)));
     assert!((hi == (::std::mem::size_of::<i32>() as usize).wrapping_add(21_usize)));
-    let mut bound: usize = ({
+    let mut bound: usize = (({
         let __tmp_3: Value<u64> = Rc::new(RefCell::new((4_usize as u64)));
         let __tmp_4: Value<u64> = Rc::new(RefCell::new((sz as u64)));
         (if CppLess::less(&__tmp_3.as_pointer(), &__tmp_4.as_pointer()) {
@@ -91,7 +91,7 @@ fn main_0() -> i32 {
             __tmp_4.as_pointer()
         }
         .read())
-    } as usize);
+    }) as usize);
     assert!((bound == 4_usize));
     let mut data: [i32; 8] = [0_i32; 8];
     let mut count: usize = (::std::mem::size_of::<[i32; 8]>() as usize)
@@ -134,7 +134,7 @@ fn main_0() -> i32 {
     let mut sm: isize = (((s2 as i64) + l) as isize);
     assert!((sm == 15_isize));
     assert!((sm > (l as isize)));
-    let mut smin: isize = ({
+    let mut smin: isize = (({
         let __tmp_5: Value<i64> = Rc::new(RefCell::new((sm as i64)));
         let __tmp_6: Value<i64> = Rc::new(RefCell::new((sd as i64)));
         (if CppLess::less(&__tmp_5.as_pointer(), &__tmp_6.as_pointer()) {
@@ -143,8 +143,8 @@ fn main_0() -> i32 {
             __tmp_6.as_pointer()
         }
         .read())
-    } as isize);
-    let mut smax: isize = ({
+    }) as isize);
+    let mut smax: isize = (({
         let __tmp_7: Value<i64> = Rc::new(RefCell::new((sd as i64)));
         let __tmp_8: Value<i64> = Rc::new(RefCell::new((sm as i64)));
         (if CppLess::less(&__tmp_7.as_pointer(), &__tmp_8.as_pointer()) {
@@ -153,7 +153,7 @@ fn main_0() -> i32 {
             __tmp_7.as_pointer()
         }
         .read())
-    } as isize);
+    }) as isize);
     assert!((smin == (-7_i32 as isize)));
     assert!((smax == 15_isize));
     let mut delta: isize = ((sz as isize) - ((*ul.borrow()) as isize));
@@ -171,7 +171,7 @@ fn main_0() -> i32 {
     let mut mx: usize = 5_usize;
     let mut mins: [usize; 4] = [
         0_usize,
-        ({
+        (({
             let __tmp_9: Value<u64> = Rc::new(RefCell::new((mx as u64)));
             let __tmp_10: Value<u64> = Rc::new(RefCell::new(1_u64));
             (if CppLess::less(&__tmp_9.as_pointer(), &__tmp_10.as_pointer()) {
@@ -180,8 +180,8 @@ fn main_0() -> i32 {
                 __tmp_10.as_pointer()
             }
             .read())
-        } as usize),
-        ({
+        }) as usize),
+        (({
             let __tmp_11: Value<u64> = Rc::new(RefCell::new(((mx).wrapping_sub(3_usize) as u64)));
             let __tmp_12: Value<u64> = Rc::new(RefCell::new((mx as u64)));
             (if CppLess::less(&__tmp_11.as_pointer(), &__tmp_12.as_pointer()) {
@@ -190,7 +190,7 @@ fn main_0() -> i32 {
                 __tmp_12.as_pointer()
             }
             .read())
-        } as usize),
+        }) as usize),
         mx,
     ];
     assert!((mins[(1) as usize] == 1_usize));
