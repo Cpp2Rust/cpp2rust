@@ -1619,7 +1619,16 @@ bool Converter::Convert(clang::Expr *expr,
       return false;
     }
     if (NeedsImplicitScalarCast(ctx_, expr->IgnoreImplicit()->getType(), to)) {
-      StrCat(ConvertScalarCast(ToString(expr), to));
+      std::string str;
+      {
+        Buffer buf(*this);
+        {
+          PushParen inner(*this, Mapper::Contains(ctx_, expr));
+          Convert(expr);
+        }
+        str = std::move(buf).str();
+      }
+      StrCat(ConvertScalarCast(std::move(str), to));
       return false;
     }
   }
