@@ -596,6 +596,13 @@ bool Converter::ConvertVarDeclSkipInit(clang::VarDecl *decl) {
 }
 
 void Converter::ConvertVarDeclInitializer(clang::VarDecl *decl) {
+  // Rust-only argument conversions can need temporaries even when Clang
+  // supplies no ExprWithCleanups for the initializer.
+  std::string declarations;
+  ScopedValue scope(full_expression_temporaries_,
+                    in_const_initializer_ ? &declarations
+                                          : full_expression_temporaries_);
+  auto start = rs_code_->size();
   bool registers_destructor = NeedsStaticDestructor(decl);
   if (registers_destructor) {
     StrCat("{ let __static = ");
@@ -611,6 +618,10 @@ void Converter::ConvertVarDeclInitializer(clang::VarDecl *decl) {
     StrCat(std::format(
         "; libcc2rs::register_static_destructor(|| {}); __static }}",
         StaticDestructorCall(decl)));
+  }
+  if (!declarations.empty()) {
+    rs_code_->insert(start, "{ " + declarations);
+    StrCat('}');
   }
 }
 
@@ -2225,8 +2236,14 @@ void Converter::EmitHoistedArgs(CallInfo &info) {
       StrCat(";");
       break;
     case Kind::Materialized: {
+      auto *declarations =
+          in_const_initializer_ ? full_expression_temporaries_ : nullptr;
+      if (declarations) {
+        // Other calls in the initializer may bind the same parameter.
+        ca.param_name = NewTempName();
+      }
       auto [binding, ref] =
-          MaterializeTemp(ca.param_name, ca.param_type, ca.expr);
+          MaterializeTemp(ca.param_name, ca.param_type, ca.expr, declarations);
       StrCat(binding);
       ca.ref_temp_name = std::move(ref);
       break;
@@ -5510,7 +5527,11 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
     auto materialized = ph_ctx.materialize_ctx->GetOrMaterialize(
         static_cast<unsigned>(ph_ctx.materialize_idx),
         [this, arg](clang::QualType type) {
-          return MaterializeTemp(NewTempName(), type, arg);
+          // Call arguments live through the full expression, not as statics
+          // alongside the global whose initializer evaluates the call.
+          return MaterializeTemp(
+              NewTempName(), type, arg,
+              in_const_initializer_ ? full_expression_temporaries_ : nullptr);
         });
     // The temporary is initialized in a statement, which ends its borrows.
     if (!materialized.empty()) {
