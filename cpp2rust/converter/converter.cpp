@@ -2044,10 +2044,14 @@ void Converter::EmitFnPtrCall(clang::CallExpr *expr) {
 }
 
 std::string Converter::GetFunctionRefName(const clang::FunctionDecl *fn_decl) {
-  if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(fn_decl);
-      method && method->isStatic()) {
-    return std::format("{}::{}", GetRecordName(method->getParent()),
-                       GetMethodName(method));
+  if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(fn_decl)) {
+    if (method->isStatic()) {
+      return std::format("{}::{}", GetRecordName(method->getParent()),
+                         GetMethodName(method));
+    }
+    if (method->isExplicitObjectMemberFunction()) {
+      return std::format("{}::{}", GetUFCSName(method), GetMethodName(method));
+    }
   }
   return Mapper::MapFunctionName(ctx_, fn_decl);
 }
