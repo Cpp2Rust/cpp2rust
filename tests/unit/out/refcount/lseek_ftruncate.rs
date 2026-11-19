@@ -159,7 +159,7 @@ fn main_0() -> i32 {
     );
     assert!((FdRegistry::close(fd) == 0));
     assert!(
-        (match nix::unistd::unlink(path.to_rust_string().as_str()) {
+        (match path.with_c_bytes(|__path| nix::unistd::unlink(__path)) {
             Ok(()) => 0,
             Err(__e) => {
                 libcc2rs::cpp2rust_errno().write(__e as i32);

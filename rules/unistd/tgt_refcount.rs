@@ -37,7 +37,7 @@ fn f3(a0: i32, a1: AnyPtr, a2: usize) -> isize {
 }
 
 fn f4(a0: Ptr<i8>) -> i32 {
-    match nix::unistd::unlink(a0.to_rust_string().as_str()) {
+    match a0.with_c_bytes(|__path| nix::unistd::unlink(__path)) {
         Ok(()) => 0,
         Err(__e) => {
             libcc2rs::cpp2rust_errno().write(__e as i32);

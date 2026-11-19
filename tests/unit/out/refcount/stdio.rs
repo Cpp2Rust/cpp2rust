@@ -116,7 +116,7 @@ pub fn test_fileno_3() {
         __r
     };
     assert!(
-        (match nix::unistd::unlink(file.to_rust_string().as_str()) {
+        (match file.with_c_bytes(|__path| nix::unistd::unlink(__path)) {
             Ok(()) => 0,
             Err(__e) => {
                 libcc2rs::cpp2rust_errno().write(__e as i32);
