@@ -245,16 +245,25 @@ impl Sockaddr {
 
     pub fn encode(ss: &nix::sys::socket::SockaddrStorage, out: &Ptr<Sockaddr>, out_len: &Ptr<u32>) {
         use nix::sys::socket::{AddressFamily, SockaddrLike};
+        let write = |bytes: &[u8]| {
+            let len = (out_len.read() as usize).min(bytes.len());
+            if len != 0 {
+                out.reinterpret_cast::<u8>()
+                    .with_slice_mut(len, |buf| buf.copy_from_slice(&bytes[..len]));
+            }
+        };
         match ss.family() {
             Some(AddressFamily::Inet) => {
                 let l = ::libc::sockaddr_in::from(*ss.as_sockaddr_in().unwrap());
-                out.reinterpret_cast::<SockaddrIn>()
-                    .write(SockaddrIn::from_libc(&l));
+                let mut bytes = [0; ::std::mem::size_of::<::libc::sockaddr_in>()];
+                SockaddrIn::from_libc(&l).to_bytes(&mut bytes);
+                write(&bytes);
             }
             Some(AddressFamily::Inet6) => {
                 let l = ::libc::sockaddr_in6::from(*ss.as_sockaddr_in6().unwrap());
-                out.reinterpret_cast::<SockaddrIn6>()
-                    .write(SockaddrIn6::from_libc(&l));
+                let mut bytes = [0; ::std::mem::size_of::<::libc::sockaddr_in6>()];
+                SockaddrIn6::from_libc(&l).to_bytes(&mut bytes);
+                write(&bytes);
             }
             Some(AddressFamily::Unix) => {
                 if let Some(addr) = ss.as_unix_addr() {
