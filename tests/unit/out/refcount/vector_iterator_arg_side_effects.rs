@@ -19,9 +19,8 @@ fn main_0() -> i32 {
     let r: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(
         match ({ <RandomAccessIterator<i32>>::from((*it.borrow_mut()).iter_post_inc()) },) {
             (mut __tmp_0,) => {
-                let __off = __tmp_0.index();
                 v.as_pointer()
-                    .with_mut(|__v: &mut Vec<i32>| __v.remove(__off));
+                    .with_mut(|__v: &mut Vec<i32>| __v.remove(__tmp_0.index()));
                 (__tmp_0).clone()
             }
         },
@@ -33,8 +32,7 @@ fn main_0() -> i32 {
         (*r.borrow_mut()) =
             match ({ <RandomAccessIterator<i32>>::from((*it2.borrow_mut()).iter_post_inc()) },) {
                 (mut __tmp_1,) => {
-                    let __off = __tmp_1.index();
-                    (*v.borrow_mut()).insert(__off, 9);
+                    (*v.borrow_mut()).insert(__tmp_1.index(), 9);
                     (__tmp_1).clone()
                 }
             };

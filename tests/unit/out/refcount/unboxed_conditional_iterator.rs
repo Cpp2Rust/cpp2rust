@@ -74,10 +74,9 @@ pub fn lehmer_3(mut sigma: Ptr<u32>, mut len: u32, mut code: Ptr<u32>) {
             elem!(code, i).write(__rhs);
             match ({ <RandomAccessIterator<u32>>::from(({ (*it.borrow()).clone() })) },) {
                 (mut __tmp_2,) => {
-                    let __off = __tmp_2.index();
                     items
                         .as_pointer()
-                        .with_mut(|__v: &mut Vec<u32>| __v.remove(__off));
+                        .with_mut(|__v: &mut Vec<u32>| __v.remove(__tmp_2.index()));
                     (__tmp_2).clone()
                 }
             };

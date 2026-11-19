@@ -132,8 +132,11 @@ struct ExprRule {
 
   void dump() const;
   bool usesInit() const;
-  // Whether the body constructs init whenever it is evaluated.
+  // Whether the body constructs init whenever it is evaluated, as it uses init
+  // unconditionally.
   bool alwaysConstructsInit() const;
+  // The number of uses of init in the body.
+  unsigned initCopies() const;
   // The operand of the reference that the body ends with, if it returns one.
   const std::vector<BodyFragment> *refExprOperand() const;
   // The statements of the body that compute the reference it returns.

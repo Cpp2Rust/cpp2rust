@@ -103,9 +103,8 @@ fn main_0() -> i32 {
     assert!(({ ((*v2.borrow()).len() == 3_usize) }));
     match ({ <RandomAccessIterator<i32>>::from(v2.decay().begin()) },) {
         (mut __tmp_0,) => {
-            let __off = __tmp_0.index();
             v2.as_pointer()
-                .with_mut(|__v: &mut Vec<i32>| __v.remove(__off));
+                .with_mut(|__v: &mut Vec<i32>| __v.remove(__tmp_0.index()));
             (__tmp_0).clone()
         }
     };
@@ -114,8 +113,7 @@ fn main_0() -> i32 {
     assert!(({ ({ (*v2.borrow())[1_usize] } == 3) }));
     match ({ <RandomAccessIterator<i32>>::from(v2.decay().begin()) },) {
         (mut __tmp_1,) => {
-            let __off = __tmp_1.index();
-            (*v2.borrow_mut()).insert(__off, 100);
+            (*v2.borrow_mut()).insert(__tmp_1.index(), 100);
             (__tmp_1).clone()
         }
     };

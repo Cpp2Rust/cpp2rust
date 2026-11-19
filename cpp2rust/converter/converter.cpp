@@ -5738,11 +5738,13 @@ std::string Converter::GetMappedAsString(clang::Expr *expr, clang::Expr **args,
   }
   auto first = ArgsToEvaluateFirst(expr, *tgt_ir, all_args, bind);
   // The object that init constructs is constructed first, rather than its
-  // arguments evaluated first one by one.
+  // arguments evaluated first one by one, and once if the body uses it more
+  // than once.
   auto num_params = std::min(tgt_ir->params.size(), all_args.size());
   bool init_first =
       tgt_ir->alwaysConstructsInit() &&
-      std::find(first.begin() + num_params, first.end(), true) != first.end();
+      (tgt_ir->initCopies() > 1 ||
+       std::find(first.begin() + num_params, first.end(), true) != first.end());
   std::vector<std::string> values, names;
   // Bindings in a global initializer are local to the expansion too.
   clang::DeclContext *binding_context = curr_function_;

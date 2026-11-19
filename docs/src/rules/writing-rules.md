@@ -374,8 +374,8 @@ asks Sema which constructor builds a `Point` from `(4, 5)` and substitutes the
 converted construction for `init`. The rule needn't bind `init` before touching
 `a0`: when its arguments, or what pointers among them point to, may be an object
 that the body borrows mutably, e.g., `v.emplace_back(v[0])` or
-`v.emplace_back(p, p + 3)`, the converter constructs `init` before the body, unless
-the body may not construct it (`std::map::try_emplace`).
+`v.emplace_back(p, p + 3)`, the converter constructs `init` before the body,
+unless the body may not construct it (`std::map::try_emplace`).
 
 ## Passthrough rules
 

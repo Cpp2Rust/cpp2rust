@@ -258,10 +258,19 @@ void ExprRule::dump() const {
 }
 
 bool ExprRule::alwaysConstructsInit() const {
-  return usesInit() && !AnyFragment(body, [](const BodyFragment &frag) {
-           auto *init = std::get_if<InitFragment>(&frag);
-           return init && init->conditional;
-         });
+  return AnyFragment(body, [](const BodyFragment &frag) {
+    auto *init = std::get_if<InitFragment>(&frag);
+    return init && !init->conditional;
+  });
+}
+
+unsigned ExprRule::initCopies() const {
+  unsigned copies = 0;
+  AnyFragment(body, [&](const BodyFragment &frag) {
+    copies += std::holds_alternative<InitFragment>(frag);
+    return false;
+  });
+  return copies;
 }
 
 bool ExprRule::usesInit() const {

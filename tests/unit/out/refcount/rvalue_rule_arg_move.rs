@@ -58,15 +58,13 @@ fn main_0() -> i32 {
     let mut b: Elem = Elem::new({ 2 });
     match ({ <RandomAccessIterator<Elem>>::from(v.decay().end()) },) {
         (mut __tmp_0,) => {
-            let __off = __tmp_0.index();
-            (*v.borrow_mut()).insert(__off, Elem::move_from({ a.as_pointer() }));
+            (*v.borrow_mut()).insert(__tmp_0.index(), Elem::move_from({ a.as_pointer() }));
             (__tmp_0).clone()
         }
     };
     match ({ <RandomAccessIterator<Elem>>::from(v.decay().end()) },) {
         (mut __tmp_1,) => {
-            let __off = __tmp_1.index();
-            (*v.borrow_mut()).insert(__off, (b).clone());
+            (*v.borrow_mut()).insert(__tmp_1.index(), (b).clone());
             (__tmp_1).clone()
         }
     };

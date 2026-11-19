@@ -38,14 +38,12 @@ fn f2(a0: &mut u8, a1: u32) -> u8 {
 }
 
 fn f3(a0: &mut u8, a1: u32) -> u8 {
-    let __n = ((*a0 as u32) << a1) as u8;
-    *a0 = __n;
+    *a0 = ((*a0 as u32) << a1) as u8;
     *a0
 }
 
 fn f4(a0: &mut u8, a1: u32) -> u8 {
-    let __n = ((*a0 as u32) >> a1) as u8;
-    *a0 = __n;
+    *a0 = ((*a0 as u32) >> a1) as u8;
     *a0
 }
 

@@ -104,14 +104,10 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new(2)),
     )));
     let mut pa: Ptr<i32> = ((*a.borrow()).0.as_pointer());
-    let b: Value<(Value<i32>, Value<i32>)> = Rc::new(RefCell::new({
-        let __first: Ptr<i32> = (*a.borrow()).0.as_pointer();
-        let __second: Ptr<i32> = (*a.borrow()).1.as_pointer();
-        (
-            Rc::new(RefCell::new(cpp_move!(__first))),
-            Rc::new(RefCell::new(cpp_move!(__second))),
-        )
-    }));
+    let b: Value<(Value<i32>, Value<i32>)> = Rc::new(RefCell::new((
+        Rc::new(RefCell::new(cpp_move!((*a.borrow()).0.as_pointer()))),
+        Rc::new(RefCell::new(cpp_move!((*a.borrow()).1.as_pointer()))),
+    )));
     pa.write(9);
     assert!(({ ((*(*b.borrow()).0.borrow()) == 1) }));
     assert!(({ ((*(*a.borrow()).0.borrow()) == 9) }));
@@ -126,10 +122,8 @@ fn main_0() -> i32 {
     let mut pd: Ptr<i32> = ((*d.borrow()).0.as_pointer());
     let mut ps: Ptr<i32> = ((*s.borrow()).0.as_pointer());
     {
-        let __src_first: Ptr<i32> = (*s.borrow()).0.as_pointer();
-        let __src_second: Ptr<i32> = (*s.borrow()).1.as_pointer();
-        let __first = cpp_move!(__src_first);
-        let __second = cpp_move!(__src_second);
+        let __first = cpp_move!((*s.borrow()).0.as_pointer());
+        let __second = cpp_move!((*s.borrow()).1.as_pointer());
         *(*d.borrow()).0.borrow_mut() = __first;
         *(*d.borrow()).1.borrow_mut() = __second;
     };
@@ -177,10 +171,8 @@ fn main_0() -> i32 {
     .borrow_mut()) = 7;
     assert!(({ ((*(*p.borrow()).1.borrow()) == 7) && ((*(*q.borrow()).1.borrow()) == 4) }));
     (*(*{
-        let __src_first: Ptr<i32> = (*q.borrow()).0.as_pointer();
-        let __src_second: Ptr<i32> = (*q.borrow()).1.as_pointer();
-        let __first = cpp_move!(__src_first);
-        let __second = cpp_move!(__src_second);
+        let __first = cpp_move!((*q.borrow()).0.as_pointer());
+        let __second = cpp_move!((*q.borrow()).1.as_pointer());
         *(*d.borrow()).0.borrow_mut() = __first;
         *(*d.borrow()).1.borrow_mut() = __second;
         d.as_pointer()

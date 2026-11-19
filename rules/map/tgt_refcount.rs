@@ -103,8 +103,7 @@ fn f67<T1: CppLess + 'static, T2: 'static>(
     a0: Ptr<Map<T1, (Value<T1>, Value<T2>)>>,
     init: cpp_type!("typename std::map<T1, T2, T3, T4>::value_type", (Value<T1>, Value<T2>)),
 ) -> (Value<BidirectionalIterator<(Value<T1>, Value<T2>)>>, Value<bool>) {
-    let __init = init;
-    let (__it, __inserted) = Map::emplace(a0, &__init.0.as_pointer(), || __init);
+    let (__it, __inserted) = Map::emplace(a0, &init.0.as_pointer(), || init);
     (Rc::new(RefCell::new(__it)), Rc::new(RefCell::new(__inserted)))
 }
 
@@ -114,8 +113,7 @@ fn f68<T1: CppLess + 'static, T2: 'static>(
     init: cpp_type!("typename std::map<T1, T2, T3, T4>::value_type", (Value<T1>, Value<T2>)),
 ) -> BidirectionalIterator<(Value<T1>, Value<T2>)> {
     let _ = a1;
-    let __init = init;
-    Map::emplace(a0, &__init.0.as_pointer(), || __init).0
+    Map::emplace(a0, &init.0.as_pointer(), || init).0
 }
 
 fn f73<T1: CppLess + Clone + ByteRepr + 'static, T2: 'static>(

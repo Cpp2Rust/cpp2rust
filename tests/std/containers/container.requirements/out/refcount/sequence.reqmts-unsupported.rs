@@ -18,8 +18,7 @@ pub fn test_0() {
     },)
     {
         (mut __tmp_0,) => {
-            let __off = __tmp_0.index();
-            (*pairs.borrow_mut()).insert(__off, cpp_move!(source.as_pointer()));
+            (*pairs.borrow_mut()).insert(__tmp_0.index(), cpp_move!(source.as_pointer()));
             (__tmp_0).clone()
         }
     };
