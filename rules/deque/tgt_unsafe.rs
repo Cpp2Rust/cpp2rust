@@ -68,9 +68,12 @@ unsafe fn f11<'a, T1>(a0: &'a mut Vec<T1>, a1: &mut Vec<T1>) -> &'a mut Vec<T1> 
     a0
 }
 
-unsafe fn f12<T1>(a0: &mut Vec<T1>, init: T1) {
-    let __init = init;
-    a0.push(__init)
+unsafe fn f12<T1>(a0: &mut Vec<T1>, init: T1) -> &mut T1 {
+    a0.push_mut(init)
+}
+
+unsafe fn f15<T1>(a0: &mut Vec<T1>, init: T1) {
+    a0.push(init)
 }
 
 unsafe fn f14<T1>() -> Vec<T1> {

@@ -87,26 +87,20 @@ pub unsafe fn emplace_local_from_field_4(mut jpg: *mut JPEGData, mut cond: bool)
     } else {
         dest = (&mut (*jpg).app_data as *mut Vec<Vec<u8>>);
     }
-    {
-        let __init = match ({ head.as_mut_ptr().offset((3) as isize) },) {
-            (mut __tmp_1,) => {
-                let mut __v = Vec::new();
-                let mut __it = head.as_mut_ptr();
-                while __it != __tmp_1 {
-                    __v.push((*__it.iter_deref()));
-                    __it.iter_inc();
-                }
-                __v
+    (*dest).push_mut(match ({ head.as_mut_ptr().offset((3) as isize) },) {
+        (mut __tmp_1,) => {
+            let mut __v = Vec::new();
+            let mut __it = head.as_mut_ptr();
+            while __it != __tmp_1 {
+                __v.push((*__it.iter_deref()));
+                __it.iter_inc();
             }
-        };
-        (*dest).push(__init)
-    };
+            __v
+        }
+    });
 }
 pub unsafe fn nested_emplace_move_5(mut bw: *mut Writer) {
-    {
-        let __init = (*bw).chunk;
-        (*(*bw).output).push(__init)
-    };
+    (*(*bw).output).push_mut((*bw).chunk);
 }
 pub unsafe fn self_ref_push_6(mut comps: *mut Vec<Chunk>) {
     {
@@ -150,38 +144,103 @@ impl Default for Pair {
     }
 }
 pub unsafe fn emplace_ctor_args_7(mut pairs: *mut Vec<Pair>) {
-    {
-        let __init = Pair::new_2();
-        (*pairs).push(__init)
-    };
-    {
-        let __init = Pair::new_1({ 3 });
-        (*pairs).push(__init)
-    };
-    {
-        let __init = Pair::new_3({ 4 }, { 5 });
-        (*pairs).push(__init)
-    };
+    (*pairs).push_mut(Pair::new_2());
+    (*pairs).push_mut(Pair::new_1({ 3 }));
+    (*pairs).push_mut(Pair::new_3({ 4 }, { 5 }));
 }
 pub unsafe fn emplace_deque_8(mut queue: *mut Vec<Pair>) {
-    {
-        let __init = Pair::new_3({ 6 }, { 7 });
-        (*queue).push(__init)
-    };
-    {
-        let __init = Pair::new_2();
-        (*queue).push(__init)
-    };
+    (*queue).push_mut(Pair::new_3({ 6 }, { 7 }));
+    (*queue).push_mut(Pair::new_2());
 }
 pub unsafe fn emplace_scalar_9(mut values: *mut Vec<i64>, mut x: i32) {
-    {
-        let __init = 0_i64;
-        (*values).push(__init)
-    };
-    {
-        let __init = (x as i64);
-        (*values).push(__init)
-    };
+    (*values).push_mut(0_i64);
+    (*values).push_mut((x as i64));
+}
+pub unsafe fn emplace_ref_through_ptr_10(mut pairs: *mut Vec<Pair>) {
+    let p: *mut Pair = (*pairs).push_mut(Pair::new_3({ 1 }, { 2 }));
+    (*p).second = 3;
+    (*(*pairs).push_mut(Pair::new_1({ 4 }))).second += 1;
+}
+pub unsafe fn emplace_addr_11(values: *mut Vec<i32>) -> *mut i32 {
+    return ((*values).push_mut(9));
+}
+pub unsafe fn emplace_self_reads_12(mut values: *mut Vec<i64>, mut pairs: *mut Vec<Pair>) {
+    (*values).push_mut((((*(values).cast_const()).len()) as i64));
+    (*pairs).push_mut((&mut (*pairs))[(0_usize)]);
+    (*pairs).push_mut(Pair::new_3(
+        {
+            (*{
+                let __n = (*pairs).len() - 1;
+                &mut (&mut (*pairs))[__n]
+            })
+            .first
+        },
+        { (((*(pairs).cast_const()).len()) as i32) },
+    ));
+}
+pub unsafe fn emplace_ref_self_read_13(values: *mut Vec<i64>) -> *mut i64 {
+    return (*values).push_mut((&mut (*values))[0]);
+}
+#[repr(C)]
+#[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
+pub struct Bytes {
+    pub v: Vec<Vec<u8>>,
+    pub b: [u8; 3],
+}
+impl Bytes {
+    pub unsafe fn move_from(_a0: *mut Bytes) -> Self {
+        let mut this = Self {
+            v: std::mem::take(&mut (*_a0).v),
+            b: std::array::from_fn::<_, 3, _>(|__i: usize| (*_a0).b[(__i)]),
+        };
+        this
+    }
+    pub unsafe fn move_assign(&mut self, _a0: *mut Bytes) -> *mut Bytes {
+        {
+            self.v = std::mem::take(&mut (*_a0).v);
+        };
+        match (
+            { ((&mut self.b as *mut [u8; 3]) as *mut ::libc::c_void) },
+            { ((&mut (*_a0).b as *mut [u8; 3]) as *const ::libc::c_void) },
+        ) {
+            (mut __tmp_2, mut __tmp_3) => {
+                if 3_usize != 0 {
+                    ::std::ptr::copy_nonoverlapping(__tmp_3, __tmp_2, 3_usize)
+                }
+                __tmp_2
+            }
+        };
+        return &mut (*(self as *mut Bytes));
+    }
+}
+pub unsafe fn emplace_from_element_14(mut v: *mut Vec<Vec<u8>>) {
+    let mut p: *mut u8 = (&mut (*v))[(0_usize)].as_mut_ptr();
+    (*v).push_mut(match ({ p.offset((3) as isize) },) {
+        (mut __tmp_4,) => {
+            let mut __v = Vec::new();
+            let mut __it = p;
+            while __it != __tmp_4 {
+                __v.push((*__it.iter_deref()));
+                __it.iter_inc();
+            }
+            __v
+        }
+    });
+}
+pub unsafe fn emplace_from_sibling_15(mut s: *mut Bytes) {
+    let mut p: *mut u8 = (*s).b.as_mut_ptr();
+    let mut v: *mut Vec<Vec<u8>> = (&mut (*s).v as *mut Vec<Vec<u8>>);
+    (*v).push_mut(match ({ p.offset((3) as isize) },) {
+        (mut __tmp_5,) => {
+            let mut __v = Vec::new();
+            let mut __it = p;
+            while __it != __tmp_5 {
+                __v.push((*__it.iter_deref()));
+                __it.iter_inc();
+            }
+            __v
+        }
+    });
 }
 pub fn main() {
     unsafe {
@@ -253,6 +312,47 @@ unsafe fn main_0() -> i32 {
     assert!(((values.len()) == (2_usize)));
     assert!(((values[(0_usize)]) == (0_i64)));
     assert!(((values[(1_usize)]) == (7_i64)));
+    let mut ints: Vec<i32> = Vec::new();
+    ints.push_mut(0);
+    let r: *mut i32 = ints.push_mut(1);
+    (*r) = 5;
+    let mut q: *mut i32 = (unsafe { emplace_addr_11(&mut ints) });
+    (*q) += 1;
+    assert!(
+        (((ints.len()) == (3_usize)) && ((ints[(1_usize)]) == (5))) && ((ints[(2_usize)]) == (10))
+    );
+    let mut ints_queue: Vec<i32> = Vec::new();
+    (*ints_queue.push_mut(2)) += 3;
+    assert!(((ints_queue[0]) == (5)));
+    let mut more_pairs: Vec<Pair> = Vec::new();
+    (unsafe { emplace_ref_through_ptr_10((&mut more_pairs as *mut Vec<Pair>)) });
+    assert!(((more_pairs[(0_usize)].first) == (1)) && ((more_pairs[(0_usize)].second) == (3)));
+    assert!(((more_pairs[(1_usize)].first) == (4)) && ((more_pairs[(1_usize)].second) == (1)));
+    let mut self_values: Vec<i64> = Vec::from([7_i64]);
+    let mut self_pairs: Vec<Pair> = Vec::new();
+    self_pairs.push_mut(Pair::new_3({ 1 }, { 2 }));
+    (unsafe {
+        emplace_self_reads_12(
+            (&mut self_values as *mut Vec<i64>),
+            (&mut self_pairs as *mut Vec<Pair>),
+        )
+    });
+    (*(unsafe { emplace_ref_self_read_13(&mut self_values) })) += 1_i64;
+    assert!(
+        (((self_values.len()) == (3_usize)) && ((self_values[(1_usize)]) == (1_i64)))
+            && ((self_values[(2_usize)]) == (8_i64))
+    );
+    assert!(((self_pairs[(1_usize)].first) == (1)) && ((self_pairs[(1_usize)].second) == (4)));
+    assert!(((self_pairs[(2_usize)].first) == (1)) && ((self_pairs[(2_usize)].second) == (4)));
+    let mut rows: Vec<Vec<u8>> = Vec::from([Vec::from([1_u8, 2_u8, 3_u8])]);
+    (unsafe { emplace_from_element_14((&mut rows as *mut Vec<Vec<u8>>)) });
+    assert!(((rows.len()) == (2_usize)) && ((rows[(1_usize)][(2_usize)] as i32) == (3)));
+    let mut bytes: Bytes = Bytes {
+        v: Vec::new(),
+        b: [4_u8, 5_u8, 6_u8],
+    };
+    (unsafe { emplace_from_sibling_15((&mut bytes as *mut Bytes)) });
+    assert!(((bytes.v.len()) == (1_usize)) && ((bytes.v[(0_usize)][(2_usize)] as i32) == (6)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

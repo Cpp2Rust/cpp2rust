@@ -415,14 +415,8 @@ unsafe fn main_0() -> i32 {
     assert!(((arr[(1) as usize].v) == (2)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
     let mut vec_: Vec<Tracked> = Vec::new();
-    {
-        let __init = Tracked::new_1({ 4 });
-        vec_.push(__init)
-    };
-    {
-        let __init = Tracked::new_1({ 5 });
-        vec_.push(__init)
-    };
+    vec_.push_mut(Tracked::new_1({ 4 }));
+    vec_.push_mut(Tracked::new_1({ 5 }));
     cpp_swap_unsafe!(&mut vec_[(0_usize)], &mut vec_[(1_usize)]);
     assert!(((vec_[(0_usize)].v) == (5)) && ((vec_[(1_usize)].v) == (4)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
@@ -461,18 +455,9 @@ unsafe fn main_0() -> i32 {
     let mut grid: Vec<Vec<Tracked>> = (0..(2_usize) as usize)
         .map(|_| Default::default())
         .collect::<Vec<_>>();
-    {
-        let __init = Tracked::new_1({ 1 });
-        grid[(0_usize)].push(__init)
-    };
-    {
-        let __init = Tracked::new_1({ 2 });
-        grid[(0_usize)].push(__init)
-    };
-    {
-        let __init = Tracked::new_1({ 3 });
-        grid[(1_usize)].push(__init)
-    };
+    grid[(0_usize)].push_mut(Tracked::new_1({ 1 }));
+    grid[(0_usize)].push_mut(Tracked::new_1({ 2 }));
+    grid[(1_usize)].push_mut(Tracked::new_1({ 3 }));
     cpp_swap_unsafe!(
         &mut grid[(0_usize)][(1_usize)],
         &mut grid[(1_usize)][(0_usize)]

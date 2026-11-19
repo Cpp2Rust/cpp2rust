@@ -359,9 +359,8 @@ unsafe fn main_0() -> i32 {
         let __a1 = Buffer::move_from({ &mut r });
         bufs.push(__a1)
     };
-    {
-        let __init = Buffer::move_from({ &mut bufs[(0_usize)] });
-        bufs.push(__init)
+    match ({ Buffer::move_from({ &mut bufs[(0_usize)] }) },) {
+        (mut __tmp_4,) => bufs.push_mut(__tmp_4),
     };
     assert!(
         (((bufs[(1_usize)].n) == (3)) && ((bufs[(1_usize)].data.len()) == (3_usize)))

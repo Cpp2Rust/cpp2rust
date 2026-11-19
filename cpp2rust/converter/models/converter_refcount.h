@@ -364,9 +364,12 @@ public:
 
   // Whether evaluating arg borrows no value that another expression may
   // borrow mutably: constants, and the values of local scalars and pointers,
-  // other than those of vars.
+  // other than those of vars. If reads_pointees, also whether what the
+  // pointers it evaluates to point to is such a value: a local array of
+  // non-pointer scalars, or such a scalar.
   bool BorrowsNothing(const clang::Expr *arg,
-                      llvm::ArrayRef<const clang::VarDecl *> vars) const;
+                      llvm::ArrayRef<const clang::VarDecl *> vars,
+                      bool reads_pointees = false) const;
 
   bool ReturnsPointerToArg(clang::Expr *arg) override;
 

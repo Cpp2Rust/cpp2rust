@@ -133,7 +133,9 @@ impl FnIr {
                 BodyFragment::MethodCall { method_call } => {
                     check(&method_call.receiver) || check(&method_call.body)
                 }
-                BodyFragment::RefExpr { ref_expr } => check(&ref_expr.inner),
+                BodyFragment::RefExpr { ref_expr } => {
+                    check(&ref_expr.setup) || check(&ref_expr.inner)
+                }
                 BodyFragment::GenericCall { generic_call } => {
                     generic_call.args.iter().any(|arg| check(arg))
                 }
@@ -243,6 +245,9 @@ pub struct MethodCallInner {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RefExprInner {
     pub prefix: String,
+    /// The statements that only compute the reference, e.g., its index.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub setup: Vec<BodyFragment>,
     pub inner: Vec<BodyFragment>,
 }
 
@@ -306,7 +311,9 @@ fn resolve_nth_unknown(
                     }
                 }
                 BodyFragment::RefExpr { ref_expr } => {
-                    if resolve(&mut ref_expr.inner, param, nth, count, patch) {
+                    if resolve(&mut ref_expr.setup, param, nth, count, patch)
+                        || resolve(&mut ref_expr.inner, param, nth, count, patch)
+                    {
                         return true;
                     }
                 }

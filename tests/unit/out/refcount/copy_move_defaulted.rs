@@ -381,9 +381,10 @@ fn main_0() -> i32 {
         let __a1 = Buffer::move_from({ r.as_pointer() });
         (*bufs.borrow_mut()).push(__a1)
     };
-    {
-        let __init = Buffer::move_from({ bufs.decay().offset(0_usize) });
-        (*bufs.borrow_mut()).push(__init)
+    match ({ Buffer::move_from({ bufs.decay().offset(0_usize) }) },) {
+        (mut __tmp_2,) => {
+            (*bufs.borrow_mut()).push(__tmp_2);
+        }
     };
     assert!(
         ({

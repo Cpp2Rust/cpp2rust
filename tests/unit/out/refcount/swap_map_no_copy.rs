@@ -366,12 +366,10 @@ fn main_0() -> i32 {
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
     let vec_: Value<Vec<Tracked>> = Rc::new(RefCell::new(Vec::new()));
     {
-        let __init = Tracked::new_1({ 4 });
-        (*vec_.borrow_mut()).push(__init)
+        (*vec_.borrow_mut()).push(Tracked::new_1({ 4 }));
     };
     {
-        let __init = Tracked::new_1({ 5 });
-        (*vec_.borrow_mut()).push(__init)
+        (*vec_.borrow_mut()).push(Tracked::new_1({ 5 }));
     };
     cpp_swap!(vec_.decay().offset(0_usize), vec_.decay().offset(1_usize));
     assert!(({ ({ (*vec_.borrow())[0_usize].v } == 5) && ({ (*vec_.borrow())[1_usize].v } == 4) }));
@@ -441,17 +439,20 @@ fn main_0() -> i32 {
             .map(|_| Default::default())
             .collect::<Vec<_>>(),
     ));
-    {
-        let __init = Tracked::new_1({ 1 });
-        elem!(grid.decay(), 0_usize).with_mut(|__v: &mut Vec<Tracked>| __v.push(__init))
+    match (grid.decay().offset(0_usize),) {
+        (__tmp_10,) => {
+            __tmp_10.with_mut(|__v: &mut Vec<Tracked>| __v.push(Tracked::new_1({ 1 })));
+        }
     };
-    {
-        let __init = Tracked::new_1({ 2 });
-        elem!(grid.decay(), 0_usize).with_mut(|__v: &mut Vec<Tracked>| __v.push(__init))
+    match (grid.decay().offset(0_usize),) {
+        (__tmp_11,) => {
+            __tmp_11.with_mut(|__v: &mut Vec<Tracked>| __v.push(Tracked::new_1({ 2 })));
+        }
     };
-    {
-        let __init = Tracked::new_1({ 3 });
-        elem!(grid.decay(), 1_usize).with_mut(|__v: &mut Vec<Tracked>| __v.push(__init))
+    match (grid.decay().offset(1_usize),) {
+        (__tmp_12,) => {
+            __tmp_12.with_mut(|__v: &mut Vec<Tracked>| __v.push(Tracked::new_1({ 3 })));
+        }
     };
     cpp_swap!(
         grid.decay().offset(0_usize).decay().offset(1_usize),
@@ -478,10 +479,10 @@ fn main_0() -> i32 {
         let _o: Value<Tracked> = Rc::new(RefCell::new(Tracked::new_1({ 1 })));
         TrackedImpl::move_assign(
             &match (Rc::new(RefCell::new(1)).as_pointer(),) {
-                (__tmp_10,) => {
+                (__tmp_13,) => {
                     ({
                         (*maps.borrow_mut())[(0) as usize]
-                            .subscript_move(__tmp_10, |__k| cpp_move!(__k))
+                            .subscript_move(__tmp_13, |__k| cpp_move!(__k))
                     })
                 }
             },
@@ -492,10 +493,10 @@ fn main_0() -> i32 {
         let _o: Value<Tracked> = Rc::new(RefCell::new(Tracked::new_1({ 2 })));
         TrackedImpl::move_assign(
             &match (Rc::new(RefCell::new(2)).as_pointer(),) {
-                (__tmp_11,) => {
+                (__tmp_14,) => {
                     ({
                         (*maps.borrow_mut())[(1) as usize]
-                            .subscript_move(__tmp_11, |__k| cpp_move!(__k))
+                            .subscript_move(__tmp_14, |__k| cpp_move!(__k))
                     })
                 }
             },
@@ -506,10 +507,10 @@ fn main_0() -> i32 {
     assert!(
         ((*maps.borrow())[(0) as usize].len() == 1_usize)
             && (match (Rc::new(RefCell::new(2)).as_pointer(),) {
-                (__tmp_12,) => {
+                (__tmp_15,) => {
                     ({
                         (*maps.borrow_mut())[(0) as usize]
-                            .subscript_move(__tmp_12, |__k| cpp_move!(__k))
+                            .subscript_move(__tmp_15, |__k| cpp_move!(__k))
                     })
                 }
             }
@@ -519,10 +520,10 @@ fn main_0() -> i32 {
     assert!(
         ((*maps.borrow())[(1) as usize].len() == 1_usize)
             && (match (Rc::new(RefCell::new(1)).as_pointer(),) {
-                (__tmp_13,) => {
+                (__tmp_16,) => {
                     ({
                         (*maps.borrow_mut())[(1) as usize]
-                            .subscript_move(__tmp_13, |__k| cpp_move!(__k))
+                            .subscript_move(__tmp_16, |__k| cpp_move!(__k))
                     })
                 }
             }

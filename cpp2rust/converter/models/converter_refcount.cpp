@@ -3234,10 +3234,11 @@ struct ArgUses {
 };
 
 std::vector<ArgUses> GetArgUses(const TranslationRule::ExprRule &rule,
-                                size_t num_args) {
+                                size_t num_args, bool discards_ref) {
   std::vector<ArgUses> uses(num_args);
   // The reference returned to an argument is not a use of it, in place or as
-  // a pointer to it, other than the index of an element.
+  // a pointer to it, other than the computation of the index of an element,
+  // which a discarded reference doesn't need.
   auto body = llvm::ArrayRef(rule.body);
   if (rule.refExprBase()) {
     body = rule.refExprEffect();
@@ -3255,7 +3256,8 @@ std::vector<ArgUses> GetArgUses(const TranslationRule::ExprRule &rule,
     return false;
   };
   TranslationRule::AnyFragment(body, add);
-  if (rule.refExprBase()) {
+  if (rule.refExprBase() && !discards_ref) {
+    TranslationRule::AnyFragment(rule.refExprSetup(), add);
     TranslationRule::AnyFragment(
         llvm::ArrayRef(*rule.refExprOperand()).drop_front(), add);
   }
@@ -3271,14 +3273,17 @@ const clang::VarDecl *GetReferencedVar(const clang::Expr *expr) {
 namespace {
 // Whether evaluating an expression borrows no value that another expression
 // may borrow mutably: constants, and the values of the variables that are
-// values of their own, as is_own_value tells.
+// values of their own, as is_own_value tells. If reads_pointees, the pointers
+// it evaluates to are read through too, so this, whose object is unknown, is
+// not one.
 class BorrowsNothingVisitor
     : public clang::ConstStmtVisitor<BorrowsNothingVisitor, bool> {
 public:
   BorrowsNothingVisitor(
-      clang::ASTContext &ctx,
+      clang::ASTContext &ctx, bool reads_pointees,
       llvm::function_ref<bool(const clang::DeclRefExpr *)> is_own_value)
-      : ctx_(ctx), is_own_value_(is_own_value) {}
+      : ctx_(ctx), reads_pointees_(reads_pointees),
+        is_own_value_(is_own_value) {}
 
   bool Traverse(const clang::Expr *expr) {
     return expr->isEvaluatable(ctx_) || Visit(expr);
@@ -3288,7 +3293,7 @@ public:
 
   bool VisitStringLiteral(const clang::StringLiteral *) { return true; }
 
-  bool VisitCXXThisExpr(const clang::CXXThisExpr *) { return true; }
+  bool VisitCXXThisExpr(const clang::CXXThisExpr *) { return !reads_pointees_; }
 
   bool VisitParenExpr(const clang::ParenExpr *expr) {
     return Traverse(expr->getSubExpr());
@@ -3330,23 +3335,34 @@ public:
 
 private:
   clang::ASTContext &ctx_;
+  bool reads_pointees_;
   llvm::function_ref<bool(const clang::DeclRefExpr *)> is_own_value_;
 };
 } // namespace
 
 bool ConverterRefCount::BorrowsNothing(
-    const clang::Expr *arg, llvm::ArrayRef<const clang::VarDecl *> vars) const {
+    const clang::Expr *arg, llvm::ArrayRef<const clang::VarDecl *> vars,
+    bool reads_pointees) const {
   // A scalar is a value of its own, unless it is accessed through a
-  // reference, as is an unboxed variable.
+  // reference, as is an unboxed variable. Of those, only the arrays of
+  // non-pointer scalars and such scalars are known to have no pointees but
+  // themselves.
   return BorrowsNothingVisitor(
-             ctx_,
+             ctx_, reads_pointees,
              [&](const clang::DeclRefExpr *ref) {
                auto *var = clang::dyn_cast<clang::VarDecl>(ref->getDecl());
-               return var && var->hasLocalStorage() &&
-                      !llvm::is_contained(vars, var) &&
-                      !GetDeclRefType(curr_function_, ref, var)
-                           ->isReferenceType() &&
-                      (var->getType()->isScalarType() || IsUnboxedVar(var));
+               if (!var || !var->hasLocalStorage() ||
+                   llvm::is_contained(vars, var) ||
+                   GetDeclRefType(curr_function_, ref, var)
+                       ->isReferenceType()) {
+                 return false;
+               }
+               if (reads_pointees) {
+                 auto *element = var->getType()->getBaseElementTypeUnsafe();
+                 return element->isArithmeticType() ||
+                        element->isEnumeralType();
+               }
+               return var->getType()->isScalarType() || IsUnboxedVar(var);
              })
       .Traverse(arg);
 }
@@ -3359,14 +3375,19 @@ bool ConverterRefCount::BorrowsNothing(
 std::vector<bool> ConverterRefCount::ArgsToEvaluateFirst(
     clang::Expr *expr, const TranslationRule::ExprRule &rule,
     llvm::ArrayRef<clang::Expr *> args, const std::vector<bool> &bind) {
-  std::vector<bool> first(args.size());
-  auto uses = GetArgUses(rule, args.size());
+  auto first = Converter::ArgsToEvaluateFirst(expr, rule, args, bind);
+  auto uses = GetArgUses(rule, args.size(), DiscardsRef(expr, rule));
   std::vector<const clang::VarDecl *> borrowed;
+  bool borrows_library_objects = true;
   for (unsigned i = 0; i < args.size(); ++i) {
     // The receiver of a call through a pointer is reached through it.
     if (uses[i].borrow_mut && !RuleRegistry::ParamIsPointer(ctx_, expr, i) &&
         (args[i]->getType()->isPointerType() || !IsUnboxedPlace(args[i]))) {
       borrowed.push_back(GetReferencedVar(args[i]));
+      auto type = args[i]->getType();
+      auto *record = (type->isPointerType() ? type->getPointeeType() : type)
+                         ->getAsRecordDecl();
+      borrows_library_objects &= record && !IsUserDefinedDecl(record);
     }
   }
   if (borrowed.empty()) {
@@ -3387,8 +3408,19 @@ std::vector<bool> ConverterRefCount::ArgsToEvaluateFirst(
                (arg->isPRValue() || rule.takesAddress(ctx_, expr, i, arg) ||
                 (arg->isLValue() && uses[i].only_moved));
     if (!first[i] && arg->HasSideEffects(ctx_)) {
-      break;
+      return first;
     }
+  }
+  // The object that init constructs from the remaining arguments, unless it
+  // may not be constructed, is constructed first if any of them, or what a
+  // pointer among them points to, may be a borrowed value. Only a library
+  // object is known not to be among the pointees that BorrowsNothing allows.
+  if (rule.alwaysConstructsInit() &&
+      llvm::any_of(args.drop_front(num_args), [&](clang::Expr *arg) {
+        return !borrows_library_objects ||
+               !BorrowsNothing(arg, borrowed, /*reads_pointees=*/true);
+      })) {
+    std::fill(first.begin() + num_args, first.end(), true);
   }
   return first;
 }
@@ -3398,7 +3430,7 @@ std::vector<bool> ConverterRefCount::ArgsToEvaluateFirst(
 void ConverterRefCount::BorrowArgsForCall(clang::Expr *expr,
                                           const TranslationRule::ExprRule &rule,
                                           llvm::ArrayRef<clang::Expr *> args) {
-  auto uses = GetArgUses(rule, args.size());
+  auto uses = GetArgUses(rule, args.size(), DiscardsRef(expr, rule));
   for (unsigned i = 0; i < args.size(); ++i) {
     auto *arg = args[i];
     if (!uses[i].borrow_mut || uses[i].count < 2 ||

@@ -108,6 +108,9 @@ ParseGenericCallFragmentJSON(const llvm::json::Object &obj) {
 RefExprFragment ParseRefExprFragmentJSON(const llvm::json::Object &obj) {
   RefExprFragment re;
   re.prefix = obj.getString("prefix").value_or("").str();
+  if (auto *setup = obj.getArray("setup")) {
+    re.setup = ParseBodyFragmentsJSON(*setup);
+  }
   if (auto *inner = obj.getArray("inner")) {
     re.inner = ParseBodyFragmentsJSON(*inner);
   }
@@ -170,7 +173,7 @@ bool AnyFragment(llvm::ArrayRef<BodyFragment> body,
              AnyFragment((*mc)->body, pred);
     }
     if (auto *re = std::get_if<std::unique_ptr<RefExprFragment>>(&frag)) {
-      return AnyFragment((*re)->inner, pred);
+      return AnyFragment((*re)->setup, pred) || AnyFragment((*re)->inner, pred);
     }
     if (auto *call = std::get_if<std::unique_ptr<GenericCallFragment>>(&frag)) {
       return llvm::any_of((*call)->args, [&](const auto &arg) {
@@ -254,6 +257,13 @@ void ExprRule::dump() const {
   }
 }
 
+bool ExprRule::alwaysConstructsInit() const {
+  return usesInit() && !AnyFragment(body, [](const BodyFragment &frag) {
+           auto *init = std::get_if<InitFragment>(&frag);
+           return init && init->conditional;
+         });
+}
+
 bool ExprRule::usesInit() const {
   return AnyFragment(body, [](const BodyFragment &frag) {
     return std::holds_alternative<InitFragment>(frag);
@@ -273,6 +283,22 @@ llvm::ArrayRef<BodyFragment> ExprRule::refExprEffect() const {
     return {};
   }
   return llvm::ArrayRef(body).drop_back();
+}
+
+llvm::ArrayRef<BodyFragment> ExprRule::refExprSetup() const {
+  if (!refExprOperand()) {
+    return {};
+  }
+  return std::get<std::unique_ptr<RefExprFragment>>(body.back())->setup;
+}
+
+bool ExprRule::refExprDiscardable() const {
+  return refExprBase() && !refExprEffect().empty() &&
+         !AnyFragment(llvm::ArrayRef(*refExprOperand()).drop_front(),
+                      [](const BodyFragment &frag) {
+                        return std::holds_alternative<PlaceholderFragment>(
+                            frag);
+                      });
 }
 
 const PlaceholderFragment *ExprRule::refExprBase() const {
@@ -395,6 +421,9 @@ bool ExprRule::takesTemporaryAddress(clang::ASTContext &ctx,
 
 void RefExprFragment::dump() const {
   log() << "  ref_expr: " << prefix << '\n';
+  for (auto &frag : setup) {
+    BodyFragmentDump(frag);
+  }
   for (auto &frag : inner) {
     BodyFragmentDump(frag);
   }

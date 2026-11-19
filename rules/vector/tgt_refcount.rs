@@ -176,3 +176,9 @@ fn f121(a0: Ptr<bool>, a1: Ptr<bool>) -> Ptr<bool> {
     a0.write(a1.read());
     a0
 }
+
+fn f114<T1>(a0: &mut Vec<T1>, init: T1) -> &mut T1 {
+    a0.push(init);
+    let __n = a0.len() - 1;
+    &mut a0[__n]
+}

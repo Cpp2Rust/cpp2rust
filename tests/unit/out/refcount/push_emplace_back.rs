@@ -88,25 +88,28 @@ pub fn emplace_local_from_field_4(mut jpg: Ptr<JPEGData>, mut cond: bool) {
         dest = (field_ref!(jpg, app_data).as_pointer());
     }
     {
-        let __init = match ({ head.decay().offset((3) as isize) },) {
-            (mut __tmp_1,) => {
-                let mut __v = Vec::new();
-                let mut __it = head.decay();
-                while __it != __tmp_1 {
-                    __v.push((__it.iter_deref().read()));
-                    __it.iter_inc();
+        dest.with_mut(|__v: &mut Vec<Vec<u8>>| {
+            __v.push(match ({ head.decay().offset((3) as isize) },) {
+                (mut __tmp_1,) => {
+                    let mut __v = Vec::new();
+                    let mut __it = head.decay();
+                    while __it != __tmp_1 {
+                        __v.push((__it.iter_deref().read()));
+                        __it.iter_inc();
+                    }
+                    __v
                 }
-                __v
-            }
-        };
-        dest.with_mut(|__v: &mut Vec<Vec<u8>>| __v.push(__init))
+            })
+        });
     };
 }
 pub fn nested_emplace_move_5(mut bw: Ptr<Writer>) {
-    {
-        let __init = bw.with(|__s| __s.chunk);
-        bw.with(|__s| __s.output.clone())
-            .with_mut(|__v: &mut Vec<Chunk>| __v.push(__init))
+    match ({ bw.with(|__s| __s.output.clone()) }, {
+        bw.with(|__s| __s.chunk)
+    }) {
+        (mut __tmp_2, mut __tmp_3) => {
+            __tmp_2.with_mut(|__v: &mut Vec<Chunk>| __v.push(__tmp_3));
+        }
     };
 }
 pub fn self_ref_push_6(mut comps: Ptr<Vec<Chunk>>) {
@@ -151,37 +154,171 @@ impl Default for Pair {
 }
 pub fn emplace_ctor_args_7(mut pairs: Ptr<Vec<Pair>>) {
     {
-        let __init = Pair::new_2();
-        pairs.with_mut(|__v: &mut Vec<Pair>| __v.push(__init))
+        pairs.with_mut(|__v: &mut Vec<Pair>| __v.push(Pair::new_2()));
     };
     {
-        let __init = Pair::new_1({ 3 });
-        pairs.with_mut(|__v: &mut Vec<Pair>| __v.push(__init))
+        pairs.with_mut(|__v: &mut Vec<Pair>| __v.push(Pair::new_1({ 3 })));
     };
     {
-        let __init = Pair::new_3({ 4 }, { 5 });
-        pairs.with_mut(|__v: &mut Vec<Pair>| __v.push(__init))
+        pairs.with_mut(|__v: &mut Vec<Pair>| __v.push(Pair::new_3({ 4 }, { 5 })));
     };
 }
 pub fn emplace_deque_8(mut queue: Ptr<Vec<Pair>>) {
     {
-        let __init = Pair::new_3({ 6 }, { 7 });
-        queue.with_mut(|__v: &mut Vec<Pair>| __v.push(__init))
+        queue.with_mut(|__v: &mut Vec<Pair>| __v.push(Pair::new_3({ 6 }, { 7 })));
     };
     {
-        let __init = Pair::new_2();
-        queue.with_mut(|__v: &mut Vec<Pair>| __v.push(__init))
+        queue.with_mut(|__v: &mut Vec<Pair>| __v.push(Pair::new_2()));
     };
 }
 pub fn emplace_scalar_9(mut values: Ptr<Vec<i64>>, x: i32) {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     {
-        let __init = 0_i64;
-        values.with_mut(|__v: &mut Vec<i64>| __v.push(__init))
+        values.with_mut(|__v: &mut Vec<i64>| __v.push(0_i64));
     };
     {
-        let __init = ((*x.borrow()) as i64);
-        values.with_mut(|__v: &mut Vec<i64>| __v.push(__init))
+        values.with_mut(|__v: &mut Vec<i64>| __v.push(((*x.borrow()) as i64)));
+    };
+}
+pub fn emplace_ref_through_ptr_10(mut pairs: Ptr<Vec<Pair>>) {
+    let p: Ptr<Pair> = pairs.with_mut(|__b0| {
+        (*__b0).push(Pair::new_3({ 1 }, { 2 }));
+        let __n = (*__b0).len() - 1;
+        pairs.decay().offset((__n) as isize)
+    });
+    field!(p, second).write(3);
+    {
+        field!(
+            pairs.with_mut(|__b0| {
+                (*__b0).push(Pair::new_1({ 4 }));
+                let __n = (*__b0).len() - 1;
+                pairs.decay().offset((__n) as isize)
+            }),
+            second
+        )
+        .with_mut(|__v| *__v = *__v + 1)
+    };
+}
+pub fn emplace_addr_11(values: Ptr<Vec<i32>>) -> Ptr<i32> {
+    return (values.with_mut(|__b0| {
+        (*__b0).push(9);
+        let __n = (*__b0).len() - 1;
+        values.decay().offset((__n) as isize)
+    }));
+}
+pub fn emplace_self_reads_12(mut values: Ptr<Vec<i64>>, mut pairs: Ptr<Vec<Pair>>) {
+    match ({ (((*values.upgrade().deref()).len()) as i64) },) {
+        (mut __tmp_4,) => {
+            values.with_mut(|__v: &mut Vec<i64>| __v.push(__tmp_4));
+        }
+    };
+    match ({ index!(pairs, 0_usize).read() },) {
+        (mut __tmp_5,) => {
+            pairs.with_mut(|__v: &mut Vec<Pair>| __v.push(__tmp_5));
+        }
+    };
+    match ({
+        Pair::new_3(
+            {
+                pairs.with(|__s| {
+                    (*{
+                        let __n = __s.len() - 1;
+                        pairs.decay().offset((__n) as isize)
+                    }
+                    .upgrade()
+                    .deref())
+                    .first
+                })
+            },
+            { (((*pairs.upgrade().deref()).len()) as i32) },
+        )
+    },)
+    {
+        (mut __tmp_6,) => {
+            pairs.with_mut(|__v: &mut Vec<Pair>| __v.push(__tmp_6));
+        }
+    };
+}
+pub fn emplace_ref_self_read_13(values: Ptr<Vec<i64>>) -> Ptr<i64> {
+    return match ({ (values.decay().read()) },) {
+        (mut __tmp_7,) => values.with_mut(|__b0| {
+            (*__b0).push(__tmp_7);
+            let __n = (*__b0).len() - 1;
+            values.decay().offset((__n) as isize)
+        }),
+    };
+}
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, MoveAssign)]
+#[byte_size(32)]
+pub struct Bytes {
+    #[offset(0)]
+    #[byte_size(24)]
+    pub v: Vec<Vec<u8>>,
+    #[offset(24)]
+    #[byte_size(3)]
+    pub b: Box<[u8]>,
+}
+impl Bytes {
+    pub fn move_from(_a0: Ptr<Bytes>) -> Self {
+        Self {
+            v: field!(_a0, v).with_mut(std::mem::take),
+            b: Box::new(std::array::from_fn::<_, 3, _>(|__i: usize| {
+                (*_a0.upgrade().deref()).b[(__i) as usize]
+            })),
+        }
+    }
+}
+impl Default for Bytes {
+    fn default() -> Self {
+        {
+            Bytes {
+                v: Default::default(),
+                b: (0..3).map(|_| 0_u8).collect::<Box<[u8]>>(),
+            }
+        }
+    }
+}
+pub fn emplace_from_element_14(mut v: Ptr<Vec<Vec<u8>>>) {
+    let p: Value<Ptr<u8>> = Rc::new(RefCell::new((v).decay().offset(0_usize).decay()));
+    match ({
+        match ({ (*p.borrow()).offset((3) as isize) },) {
+            (mut __tmp_9,) => {
+                let mut __v = Vec::new();
+                let mut __it = ({ (*p.borrow()).clone() });
+                while __it != __tmp_9 {
+                    __v.push((__it.iter_deref().read()));
+                    __it.iter_inc();
+                }
+                __v
+            }
+        }
+    },)
+    {
+        (mut __tmp_10,) => {
+            v.with_mut(|__v: &mut Vec<Vec<u8>>| __v.push(__tmp_10));
+        }
+    };
+}
+pub fn emplace_from_sibling_15(mut s: Ptr<Bytes>) {
+    let p: Value<Ptr<u8>> = Rc::new(RefCell::new(array_field_ptr!(s, b)));
+    let mut v: Ptr<Vec<Vec<u8>>> = (field_ref!(s, v).as_pointer());
+    match ({
+        match ({ (*p.borrow()).offset((3) as isize) },) {
+            (mut __tmp_11,) => {
+                let mut __v = Vec::new();
+                let mut __it = ({ (*p.borrow()).clone() });
+                while __it != __tmp_11 {
+                    __v.push((__it.iter_deref().read()));
+                    __it.iter_inc();
+                }
+                __v
+            }
+        }
+    },)
+    {
+        (mut __tmp_12,) => {
+            v.with_mut(|__v: &mut Vec<Vec<u8>>| __v.push(__tmp_12));
+        }
     };
 }
 pub fn main() {
@@ -301,7 +438,117 @@ fn main_0() -> i32 {
     assert!(({ ((*values.borrow()).len() == 2_usize) }));
     assert!(({ ({ (*values.borrow())[0_usize] } == 0_i64) }));
     assert!(({ ({ (*values.borrow())[1_usize] } == 7_i64) }));
+    let ints: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
+    {
+        (*ints.borrow_mut()).push(0);
+    };
+    let r: Ptr<i32> = {
+        (*ints.borrow_mut()).push(1);
+        let __n = (*ints.borrow()).len() - 1;
+        ints.decay().offset((__n) as isize)
+    };
+    r.write(5);
+    let mut q: Ptr<i32> = ({ emplace_addr_11(ints.as_pointer()) });
+    {
+        q.with_mut(|__v| *__v = *__v + 1)
+    };
+    assert!(
+        ({
+            (((*ints.borrow()).len() == 3_usize) && ({ (*ints.borrow())[1_usize] } == 5))
+                && ({ (*ints.borrow())[2_usize] } == 10)
+        })
+    );
+    let ints_queue: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
+    {
+        {
+            (*ints_queue.borrow_mut()).push(2);
+            let __n = (*ints_queue.borrow()).len() - 1;
+            ints_queue.decay().offset((__n) as isize)
+        }
+        .with_mut(|__v| *__v = *__v + 3)
+    };
+    assert!(((ints_queue.decay().read()) == 5));
+    let more_pairs: Value<Vec<Pair>> = Rc::new(RefCell::new(Vec::new()));
+    ({ emplace_ref_through_ptr_10((more_pairs.as_pointer())) });
+    assert!(
+        ({
+            ({ { (*more_pairs.borrow())[0_usize] }.first } == 1)
+                && ({ { (*more_pairs.borrow())[0_usize] }.second } == 3)
+        })
+    );
+    assert!(
+        ({
+            ({ { (*more_pairs.borrow())[1_usize] }.first } == 4)
+                && ({ { (*more_pairs.borrow())[1_usize] }.second } == 1)
+        })
+    );
+    let self_values: Value<Vec<i64>> = Rc::new(RefCell::new(Vec::from([7_i64])));
+    let self_pairs: Value<Vec<Pair>> = Rc::new(RefCell::new(Vec::new()));
+    {
+        (*self_pairs.borrow_mut()).push(Pair::new_3({ 1 }, { 2 }));
+    };
+    ({ emplace_self_reads_12((self_values.as_pointer()), (self_pairs.as_pointer())) });
+    {
+        ({ emplace_ref_self_read_13(self_values.as_pointer()) }).with_mut(|__v| *__v = *__v + 1_i64)
+    };
+    assert!(
+        ({
+            (((*self_values.borrow()).len() == 3_usize)
+                && ({ (*self_values.borrow())[1_usize] } == 1_i64))
+                && ({ (*self_values.borrow())[2_usize] } == 8_i64)
+        })
+    );
+    assert!(
+        ({
+            ({ { (*self_pairs.borrow())[1_usize] }.first } == 1)
+                && ({ { (*self_pairs.borrow())[1_usize] }.second } == 4)
+        })
+    );
+    assert!(
+        ({
+            ({ { (*self_pairs.borrow())[2_usize] }.first } == 1)
+                && ({ { (*self_pairs.borrow())[2_usize] }.second } == 4)
+        })
+    );
+    let rows: Value<Vec<Vec<u8>>> =
+        Rc::new(RefCell::new(Vec::from([Vec::from([1_u8, 2_u8, 3_u8])])));
+    ({ emplace_from_element_14((rows.as_pointer())) });
+    assert!(
+        ({
+            ((*rows.borrow()).len() == 2_usize)
+                && (((index!(elem!(rows.decay(), 1_usize), 2_usize).read()) as i32) == 3)
+        })
+    );
+    let bytes: Value<Bytes> = Rc::new(RefCell::new(Bytes {
+        v: Vec::new(),
+        b: Box::new([4_u8, 5_u8, 6_u8]),
+    }));
+    ({ emplace_from_sibling_15((bytes.as_pointer())) });
+    assert!(
+        ({
+            ((*bytes.borrow()).v.len() == 1_usize)
+                && (((index!(vec_elem!(bytes.as_pointer(), v, 0_usize), 2_usize).read()) as i32)
+                    == 6)
+        })
+    );
     return 0;
+}
+pub trait BytesImpl {
+    fn move_assign(&self, _a0: Ptr<Bytes>) -> Ptr<Bytes>;
+}
+impl BytesImpl for Ptr<Bytes> {
+    fn move_assign(&self, _a0: Ptr<Bytes>) -> Ptr<Bytes> {
+        field!((*self), v).with_mut(|__b0| {
+            (*__b0) = field!(_a0, v).with_mut(std::mem::take);
+        });
+        match ({ (array_field_ptr!((*self), b)).to_any() },) {
+            (mut __tmp_8,) => {
+                __tmp_8.memcpy(&(array_field_ptr!(_a0, b)).to_any(), 3_usize);
+                (__tmp_8).clone()
+            }
+        };
+        return (*self).clone();
+    }
 }
 pub trait JPEGDataImpl {
     fn move_assign(&self, _a0: Ptr<JPEGData>) -> Ptr<JPEGData>;

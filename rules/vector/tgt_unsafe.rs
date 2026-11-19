@@ -235,9 +235,12 @@ unsafe fn f110<T1: Clone>(a0: Vec<T1>) -> Vec<T1> {
     a0.clone()
 }
 
-unsafe fn f114<T1>(a0: &mut Vec<T1>, init: T1) {
-    let __init = init;
-    a0.push(__init)
+unsafe fn f114<T1>(a0: &mut Vec<T1>, init: T1) -> &mut T1 {
+    a0.push_mut(init)
+}
+
+unsafe fn f122<T1>(a0: &mut Vec<T1>, init: T1) {
+    a0.push(init)
 }
 
 unsafe fn f115<T1: Clone>(a0: &mut Vec<T1>, a1: UnsafeRandomAccessIterator<T1>, a2: usize, a3: T1) -> UnsafeRandomAccessIterator<T1> {

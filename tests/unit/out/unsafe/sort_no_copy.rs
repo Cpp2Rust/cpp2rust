@@ -226,22 +226,10 @@ unsafe fn main_0() -> i32 {
         let len_0 = vec_.len();
         vec_.reserve_exact(4_usize - len_0 as usize);
     };
-    {
-        let __init = Tracked::new_1({ 2 });
-        vec_.push(__init)
-    };
-    {
-        let __init = Tracked::new_1({ 7 });
-        vec_.push(__init)
-    };
-    {
-        let __init = Tracked::new_1({ 1 });
-        vec_.push(__init)
-    };
-    {
-        let __init = Tracked::new_1({ 8 });
-        vec_.push(__init)
-    };
+    vec_.push_mut(Tracked::new_1({ 2 }));
+    vec_.push_mut(Tracked::new_1({ 7 }));
+    vec_.push_mut(Tracked::new_1({ 1 }));
+    vec_.push_mut(Tracked::new_1({ 8 }));
     match ({ vec_.begin() },) {
         (mut __tmp_1,) => {
             let __n = vec_.end().iter_distance(&__tmp_1);
@@ -364,18 +352,9 @@ unsafe fn main_0() -> i32 {
     );
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
     let mut bags: [Bag; 3] = std::array::from_fn::<_, 3, _>(|_| <Bag>::default());
-    {
-        let __init = Tracked::new_1({ 1 });
-        bags[(0) as usize].items.push(__init)
-    };
-    {
-        let __init = Tracked::new_1({ 2 });
-        bags[(0) as usize].items.push(__init)
-    };
-    {
-        let __init = Tracked::new_1({ 3 });
-        bags[(2) as usize].items.push(__init)
-    };
+    bags[(0) as usize].items.push_mut(Tracked::new_1({ 1 }));
+    bags[(0) as usize].items.push_mut(Tracked::new_1({ 2 }));
+    bags[(2) as usize].items.push_mut(Tracked::new_1({ 3 }));
     match ({ bags.as_mut_ptr() },) {
         (mut __tmp_5,) => {
             let __n = bags
@@ -401,18 +380,9 @@ unsafe fn main_0() -> i32 {
     let mut bag_vec: Vec<Bag> = (0..(3_usize) as usize)
         .map(|_| <Bag>::default())
         .collect::<Vec<_>>();
-    {
-        let __init = Tracked::new_1({ 4 });
-        bag_vec[(1_usize)].items.push(__init)
-    };
-    {
-        let __init = Tracked::new_1({ 5 });
-        bag_vec[(1_usize)].items.push(__init)
-    };
-    {
-        let __init = Tracked::new_1({ 6 });
-        bag_vec[(2_usize)].items.push(__init)
-    };
+    bag_vec[(1_usize)].items.push_mut(Tracked::new_1({ 4 }));
+    bag_vec[(1_usize)].items.push_mut(Tracked::new_1({ 5 }));
+    bag_vec[(2_usize)].items.push_mut(Tracked::new_1({ 6 }));
     match ({ bag_vec.begin() },) {
         (mut __tmp_6,) => {
             let __n = bag_vec.end().iter_distance(&__tmp_6);
@@ -487,18 +457,9 @@ unsafe fn main_0() -> i32 {
     assert!(bag_map.find(&bags[(1) as usize]) == bag_map.end());
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
     let mut moves: Vec<MoveOnly> = Vec::new();
-    {
-        let __init = MoveOnly::new({ 3 });
-        moves.push(__init)
-    };
-    {
-        let __init = MoveOnly::new({ 1 });
-        moves.push(__init)
-    };
-    {
-        let __init = MoveOnly::new({ 2 });
-        moves.push(__init)
-    };
+    moves.push_mut(MoveOnly::new({ 3 }));
+    moves.push_mut(MoveOnly::new({ 1 }));
+    moves.push_mut(MoveOnly::new({ 2 }));
     match ({ moves.begin() },) {
         (mut __tmp_11,) => {
             let __n = moves.end().iter_distance(&__tmp_11);
