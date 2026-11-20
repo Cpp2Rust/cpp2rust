@@ -804,8 +804,7 @@ protected:
 
   virtual void ConvertFunctionReturnType(clang::FunctionDecl *decl);
 
-  virtual void ConvertFunctionMain(const clang::FunctionDecl *decl,
-                                   const std::string_view main_function_name);
+  virtual void ConvertFunctionMain(const clang::FunctionDecl *decl);
 
   virtual void ConvertAbstractClass(clang::CXXRecordDecl *decl);
 
@@ -1058,7 +1057,8 @@ protected:
   bool constant_evaluated_ = false;
   std::optional<bool> autoref_mut_;
 
-  std::vector<clang::Expr *> curr_for_inc_;
+  // The increment of the innermost loop, which continue runs.
+  clang::Expr *curr_for_inc_ = nullptr;
   // The names of the iterators of range-based for loops.
   std::unordered_map<const clang::ValueDecl *, std::string>
       range_iterator_names_;
@@ -1190,29 +1190,6 @@ protected:
     Void,
   };
 
-  static const char *expr_kind_to_string(ExprKind kind) {
-    switch (kind) {
-    case ExprKind::Callee:
-      return "Callee";
-    case ExprKind::LValue:
-      return "LValue";
-    case ExprKind::RValue:
-      return "RValue";
-    case ExprKind::FreshRValue:
-      return "FreshRValue";
-    case ExprKind::XValue:
-      return "XValue";
-    case ExprKind::AddrOf:
-      return "AddrOf";
-    case ExprKind::Object:
-      return "Object";
-    case ExprKind::Void:
-      return "Void";
-    default:
-      return "Unknown";
-    }
-  }
-
   bool isLValue() const;
   bool isRValue() const;
   bool isFreshRValue() const;
@@ -1222,26 +1199,12 @@ protected:
   bool isVoid() const;
   bool isCallee() const;
 
-  void dump_expr_kinds();
-
   struct PushExprKind {
     Converter &c;
     bool pushed;
     PushExprKind(Converter &c, ExprKind k, bool enabled = true,
                  const char *file = __builtin_FILE(),
-                 int line = __builtin_LINE())
-        : c(c), pushed(enabled) {
-      if (pushed) {
-        c.curr_expr_kind_.push_back(k);
-      }
-      log() << "PushExprKind " << file << ':' << line << ' ';
-      c.dump_expr_kinds();
-      log() << '[';
-      for (const auto k : c.curr_expr_kind_) {
-        log() << c.expr_kind_to_string(k) << ", ";
-      }
-      log() << "]\n";
-    }
+                 int line = __builtin_LINE());
     ~PushExprKind() {
       if (pushed) {
         c.curr_expr_kind_.pop_back();

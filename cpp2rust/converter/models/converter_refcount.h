@@ -314,8 +314,7 @@ public:
 
   bool IsPointerSubscript(const clang::ArraySubscriptExpr *expr) const;
 
-  void ConvertFunctionMain(const clang::FunctionDecl *decl,
-                           const std::string_view main_function_name) override;
+  void ConvertFunctionMain(const clang::FunctionDecl *decl) override;
 
   void ConvertAddrOf(clang::Expr *expr, clang::QualType pointer_type) override;
 

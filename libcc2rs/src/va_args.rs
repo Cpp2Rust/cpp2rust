@@ -5,7 +5,7 @@ use std::any::Any;
 use std::ffi::c_void;
 use std::rc::Rc;
 
-use crate::inc::PrefixInc;
+use crate::inc_dec::PrefixInc;
 use crate::rc::Ptr;
 use crate::void::AnyPtr;
 

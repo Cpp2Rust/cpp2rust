@@ -2794,36 +2794,32 @@ std::string ConverterRefCount::ForceGlobalInit(const clang::VarDecl *decl) {
   return std::format("let _ = {}.with(|_| ());", GetNamedDeclAsString(decl));
 }
 
-void ConverterRefCount::ConvertFunctionMain(
-    const clang::FunctionDecl *decl,
-    const std::string_view main_function_name) {
+void ConverterRefCount::ConvertFunctionMain(const clang::FunctionDecl *decl) {
   if (decl->getNumParams() != 0U) {
-    StrCat(std::format(R"(
-pub fn main() {{
+    StrCat(R"(
+pub fn main() {
     let size: usize = ::std::env::args().map(|arg| arg.len() + 1).sum();
     let args: Value<Box<[i8]>> = Rc::new(RefCell::new(vec![0; size].into_boxed_slice()));
     let args_ptr: Ptr<i8> = args.decay();
     let mut off = 0;
     let argv: Value<Box<[Ptr<i8>]>> = Rc::new(RefCell::new(
         ::std::env::args()
-            .map(|arg| {{
+            .map(|arg| {
                 let ptr = args_ptr.offset(off);
                 ptr.write_c_bytes(arg.as_bytes());
                 off += arg.len() + 1;
                 ptr
-            }})
+            })
             .chain(::std::iter::once(Ptr::null()))
             .collect(),
     ));
     __cpp2rust_init_globals();
-    libcc2rs::cpp2rust_exit({}(::std::env::args().len() as i32,
+    libcc2rs::cpp2rust_exit(main_0(::std::env::args().len() as i32,
                                 argv.decay()));
-}})",
-                       main_function_name));
+})");
   } else {
-    StrCat(std::format("pub fn main() {{ __cpp2rust_init_globals(); "
-                       "libcc2rs::cpp2rust_exit({}()); }}",
-                       main_function_name));
+    StrCat("pub fn main() { __cpp2rust_init_globals(); "
+           "libcc2rs::cpp2rust_exit(main_0()); }");
   }
 }
 

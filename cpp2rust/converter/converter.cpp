@@ -432,14 +432,12 @@ bool Converter::VisitFunctionDecl(clang::FunctionDecl *decl) {
   ScopedValue push_fn(curr_function_, decl);
   std::string function_name;
   if (decl->isMain()) {
+    // main_0 is private.
+    ConvertFunctionMain(decl);
     function_name = "main_0";
-    ConvertFunctionMain(decl, function_name);
   } else {
-    function_name = GetNamedDeclAsString(decl->getCanonicalDecl());
-  }
-  // main_0 should be static
-  if (!decl->isMain()) {
     StrCat(AccessSpecifierAsString(decl->getAccess()));
+    function_name = GetNamedDeclAsString(decl->getCanonicalDecl());
   }
   StrCat(keyword_unsafe_, keyword::kFn, std::move(function_name));
   {
@@ -724,7 +722,7 @@ bool Converter::VisitVarDecl(clang::VarDecl *decl) {
 }
 
 bool Converter::NeedsScopedDestructor(const clang::VarDecl *decl) const {
-  if (in_function_formals_ || !decl->isLocalVarDecl() || IsGlobalVar(decl)) {
+  if (!decl->isLocalVarDecl() || IsGlobalVar(decl)) {
     return false;
   }
   return VarTypeNeedsDestructor(decl->getType());
@@ -1568,7 +1566,7 @@ bool Converter::VisitAttributedStmt(clang::AttributedStmt *stmt) {
 bool Converter::VisitWhileStmt(clang::WhileStmt *stmt) {
   ScopedPush push(break_target_, BreakTarget::Loop);
   StrCat("'loop_:");
-  ScopedPush no_inc(curr_for_inc_, nullptr);
+  ScopedValue no_inc(curr_for_inc_, nullptr);
   if (auto *cond_var = stmt->getConditionVariableDeclStmt()) {
     StrCat(keyword::kLoop);
     PushBrace loop_brace(*this);
@@ -1607,7 +1605,7 @@ bool Converter::VisitDoStmt(clang::DoStmt *stmt) {
   {
     PushBrace loop_brace(*this);
     StrCat(control_var, token::kAssign, keyword::kFalse, token::kSemiColon);
-    ScopedPush no_inc(curr_for_inc_, nullptr);
+    ScopedValue no_inc(curr_for_inc_, nullptr);
     ConvertBodyStmts(stmt->getBody());
   }
   return false;
@@ -1637,7 +1635,7 @@ bool Converter::VisitForStmt(clang::ForStmt *stmt) {
       ConvertConditionVariableTest(cond_var, stmt->getCond());
     }
     {
-      ScopedPush inc(curr_for_inc_, stmt->getInc());
+      ScopedValue inc(curr_for_inc_, stmt->getInc());
       ConvertBodyStmts(stmt->getBody());
     }
     Convert(stmt->getInc());
@@ -1662,7 +1660,7 @@ bool Converter::VisitCXXForRangeStmt(clang::CXXForRangeStmt *stmt) {
          ConvertFreshRValue(end->getInit()), ')');
   {
     PushBrace brace(*this);
-    ScopedPush no_inc(curr_for_inc_, nullptr);
+    ScopedValue no_inc(curr_for_inc_, nullptr);
     Convert(stmt->getLoopVarStmt());
     ConvertBodyStmts(stmt->getBody());
   }
@@ -1678,8 +1676,8 @@ bool Converter::VisitBreakStmt([[maybe_unused]] clang::BreakStmt *stmt) {
 }
 
 bool Converter::VisitContinueStmt([[maybe_unused]] clang::ContinueStmt *stmt) {
-  if (!curr_for_inc_.empty()) {
-    Convert(curr_for_inc_.back());
+  if (curr_for_inc_) {
+    Convert(curr_for_inc_);
     StrCat(token::kSemiColon);
   }
   StrCat(keyword::kContinue);
@@ -2800,6 +2798,7 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     ConvertIntegralToBooleanCast(expr);
     break;
   case clang::CastKind::CK_PointerToBoolean:
+  case clang::CastKind::CK_MemberPointerToBoolean:
     StrCat(token::kNot);
     ConvertEqualsNullPtr(sub_expr);
     break;
@@ -2808,10 +2807,6 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     break;
   case clang::CastKind::CK_NullToMemberPointer:
     EmitFresh(GetUnboxedDefaultAsString(type));
-    break;
-  case clang::CastKind::CK_MemberPointerToBoolean:
-    StrCat(token::kNot);
-    ConvertEqualsNullPtr(sub_expr);
     break;
   case clang::CastKind::CK_BaseToDerivedMemberPointer:
   case clang::CastKind::CK_DerivedToBaseMemberPointer:
@@ -4946,25 +4941,22 @@ void Converter::ConvertFunctionReturnType(clang::FunctionDecl *decl) {
   }
 }
 
-void Converter::ConvertFunctionMain(const clang::FunctionDecl *decl,
-                                    const std::string_view main_function_name) {
+void Converter::ConvertFunctionMain(const clang::FunctionDecl *decl) {
   if (decl->getNumParams() != 0U) {
-    StrCat(std::format(R"(
-pub fn main() {{
+    StrCat(R"(
+pub fn main() {
     let mut args: Vec<Vec<u8>> = std::env::args().map(|arg| arg.as_bytes().to_vec()).collect();
     args.iter_mut().for_each(|v| v.push(0));
     let mut argv: Vec<*mut libc::c_char> = args.iter().map(|arg| arg.as_ptr() as *mut libc::c_char).collect();
     argv.push(::std::ptr::null_mut());
-    unsafe {{
+    unsafe {
         __cpp2rust_init_globals();
         libcc2rs::cpp2rust_exit(main_0((argv.len() - 1) as i32, argv.as_mut_ptr()) as i32)
-    }}
-}})",
-                       main_function_name));
+    }
+})");
   } else {
-    StrCat(std::format("pub fn main() {{ unsafe {{ __cpp2rust_init_globals(); "
-                       "libcc2rs::cpp2rust_exit({}() as i32); }} }}",
-                       main_function_name));
+    StrCat("pub fn main() { unsafe { __cpp2rust_init_globals(); "
+           "libcc2rs::cpp2rust_exit(main_0() as i32); } }");
   }
 }
 
@@ -6387,10 +6379,23 @@ void Converter::SetValueFreshness(clang::QualType type) {
   }
 }
 
-void Converter::dump_expr_kinds() {
-  log() << "isRValue: " << isRValue() << ", isXValue: " << isXValue()
-        << ", isAddrOf: " << isAddrOf() << ", isObject: " << isObject()
-        << ", isVoid: " << isVoid() << '\n';
+Converter::PushExprKind::PushExprKind(Converter &c, ExprKind k, bool enabled,
+                                      const char *file, int line)
+    : c(c), pushed(enabled) {
+  if (pushed) {
+    c.curr_expr_kind_.push_back(k);
+  }
+
+  // In the order of ExprKind.
+  static constexpr const char *kNames[] = {
+      "Callee", "LValue", "RValue", "FreshRValue",
+      "XValue", "AddrOf", "Object", "Void",
+  };
+  log() << "PushExprKind " << file << ':' << line << " [";
+  for (auto kind : c.curr_expr_kind_) {
+    log() << kNames[static_cast<unsigned>(kind)] << ", ";
+  }
+  log() << "]\n";
 }
 
 void Converter::ConvertConstructedValue(clang::QualType type,
