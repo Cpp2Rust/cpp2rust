@@ -520,20 +520,34 @@ fn slice_write_bytes<S: ByteRepr>(slice: &mut [S], byte_offset: usize, data: &[u
     let elem_size = S::byte_size();
     let first_elem = byte_offset / elem_size;
     let last_elem = (byte_offset + data.len()).div_ceil(elem_size);
-    if byte_offset.is_multiple_of(elem_size) && data.len() == elem_size {
-        slice[first_elem].assign_bytes(data);
+    let slice = &mut slice[first_elem..last_elem];
+    if slice.is_empty() {
+        return;
+    }
+    if data.len() == elem_size && byte_offset.is_multiple_of(elem_size) {
+        slice[0].assign_bytes(data);
         return;
     }
     with_scratch(elem_size, |elem_buf| {
-        for (idx, elem) in slice[first_elem..last_elem].iter_mut().enumerate() {
-            let elem_byte_start = (first_elem + idx) * elem_size;
+        let mut elems = slice.iter_mut();
+        let mut data = data;
+        let start = byte_offset % elem_size;
+        if start != 0 {
+            let elem = elems.next().unwrap();
+            let len = data.len().min(elem_size - start);
             elem.to_bytes(elem_buf);
-            let overlap_start = byte_offset.max(elem_byte_start) - elem_byte_start;
-            let overlap_end =
-                (byte_offset + data.len()).min(elem_byte_start + elem_size) - elem_byte_start;
-            let data_start = byte_offset.max(elem_byte_start) - byte_offset;
-            elem_buf[overlap_start..overlap_end]
-                .copy_from_slice(&data[data_start..data_start + (overlap_end - overlap_start)]);
+            elem_buf[start..start + len].copy_from_slice(&data[..len]);
+            elem.assign_bytes(elem_buf);
+            data = &data[len..];
+        }
+        let mut chunks = data.chunks_exact(elem_size);
+        for (bytes, elem) in chunks.by_ref().zip(elems.by_ref()) {
+            elem.assign_bytes(bytes);
+        }
+        if let Some(elem) = elems.next() {
+            let tail = chunks.remainder();
+            elem.to_bytes(elem_buf);
+            elem_buf[..tail.len()].copy_from_slice(tail);
             elem.assign_bytes(elem_buf);
         }
     });
