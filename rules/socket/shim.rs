@@ -252,18 +252,20 @@ impl Sockaddr {
                     .with_slice_mut(len, |buf| buf.copy_from_slice(&bytes[..len]));
             }
         };
-        match ss.family() {
+        let len = match ss.family() {
             Some(AddressFamily::Inet) => {
                 let l = ::libc::sockaddr_in::from(*ss.as_sockaddr_in().unwrap());
                 let mut bytes = [0; ::std::mem::size_of::<::libc::sockaddr_in>()];
                 SockaddrIn::from_libc(&l).to_bytes(&mut bytes);
                 write(&bytes);
+                ::std::mem::size_of_val(&l) as u32
             }
             Some(AddressFamily::Inet6) => {
                 let l = ::libc::sockaddr_in6::from(*ss.as_sockaddr_in6().unwrap());
                 let mut bytes = [0; ::std::mem::size_of::<::libc::sockaddr_in6>()];
                 SockaddrIn6::from_libc(&l).to_bytes(&mut bytes);
                 write(&bytes);
+                ::std::mem::size_of_val(&l) as u32
             }
             Some(AddressFamily::Unix) => {
                 if let Some(addr) = ss.as_unix_addr() {
@@ -281,10 +283,11 @@ impl Sockaddr {
                         });
                     }
                 }
+                ss.len()
             }
-            _ => {}
-        }
-        out_len.write(ss.len());
+            _ => panic!("unsupported socket address family"),
+        };
+        out_len.write(len);
     }
 }
 
