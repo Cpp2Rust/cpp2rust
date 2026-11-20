@@ -16,7 +16,7 @@ unsafe fn main_0() -> i32 {
     let N: i32 = 10000;
     let sentinel: i32 = ((N) / (2));
     let mut m: UnsafeMap<i32, (i32, i32)> = UnsafeMap::new();
-    (*m.subscript(&sentinel)) = sentinel;
+    (*m.subscript(&sentinel, || 0_i32)) = sentinel;
     let mut it: UnsafeBidirectionalIterator<(i32, i32)> = m.find(&sentinel);
     let mut p: *mut i32 = (&mut (*it.iter_deref()).1 as *mut i32);
     assert!(
@@ -30,14 +30,14 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (sentinel)) {
-            (*m.subscript(&i)) = i;
+            (*m.subscript(&i, || 0_i32)) = i;
             i.prefix_inc();
         }
     }
     {
         let mut i: i32 = ((sentinel) + (1));
         'loop_: while ((i) <= (N)) {
-            (*m.subscript(&i)) = i;
+            (*m.subscript(&i, || 0_i32)) = i;
             i.prefix_inc();
         }
     }
@@ -55,7 +55,7 @@ unsafe fn main_0() -> i32 {
             && (!(c"pointer does not have correct value after insert".as_ptr()).is_null())
     );
     (*it.iter_deref()).1 = 57005;
-    assert!(((*m.subscript(&sentinel)) == (57005)));
+    assert!(((*m.subscript(&sentinel, || 0_i32)) == (57005)));
     assert!(((*p) == (57005)));
     assert!(((m.len()) == ((((N) + (1)) as u32) as usize)));
     let mut prev: i32 = -1_i32;

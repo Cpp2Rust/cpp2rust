@@ -388,11 +388,15 @@ fn main_0() -> i32 {
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
     let bag_map: Value<Map<Bag, (Value<Bag>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
     match (bag_vec.decay().offset(2_usize),) {
-        (__tmp_24,) => ({ (*bag_map.borrow_mut()).subscript_move(__tmp_24, |__k| cpp_move!(__k)) }),
+        (__tmp_24,) => {
+            ({ (*bag_map.borrow_mut()).subscript_move(__tmp_24, |__k| cpp_move!(__k), || 0_i32) })
+        }
     }
     .write(2);
     match (bag_vec.decay().offset(0_usize),) {
-        (__tmp_25,) => ({ (*bag_map.borrow_mut()).subscript_move(__tmp_25, |__k| cpp_move!(__k)) }),
+        (__tmp_25,) => {
+            ({ (*bag_map.borrow_mut()).subscript_move(__tmp_25, |__k| cpp_move!(__k), || 0_i32) })
+        }
     }
     .write(0);
     assert!(

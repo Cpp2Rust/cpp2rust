@@ -262,7 +262,13 @@ fn main_0() -> i32 {
         TrackedImpl::move_assign(
             &match (Rc::new(RefCell::new(1)).as_pointer(),) {
                 (__tmp_0,) => {
-                    ({ (*m1.borrow_mut()).subscript_move(__tmp_0, |__k| cpp_move!(__k)) })
+                    ({
+                        (*m1.borrow_mut()).subscript_move(
+                            __tmp_0,
+                            |__k| cpp_move!(__k),
+                            || <Tracked>::default(),
+                        )
+                    })
                 }
             },
             _o.as_pointer(),
@@ -273,7 +279,13 @@ fn main_0() -> i32 {
         TrackedImpl::move_assign(
             &match (Rc::new(RefCell::new(2)).as_pointer(),) {
                 (__tmp_1,) => {
-                    ({ (*m1.borrow_mut()).subscript_move(__tmp_1, |__k| cpp_move!(__k)) })
+                    ({
+                        (*m1.borrow_mut()).subscript_move(
+                            __tmp_1,
+                            |__k| cpp_move!(__k),
+                            || <Tracked>::default(),
+                        )
+                    })
                 }
             },
             _o.as_pointer(),
@@ -285,7 +297,13 @@ fn main_0() -> i32 {
         TrackedImpl::move_assign(
             &match (Rc::new(RefCell::new(3)).as_pointer(),) {
                 (__tmp_2,) => {
-                    ({ (*m2.borrow_mut()).subscript_move(__tmp_2, |__k| cpp_move!(__k)) })
+                    ({
+                        (*m2.borrow_mut()).subscript_move(
+                            __tmp_2,
+                            |__k| cpp_move!(__k),
+                            || <Tracked>::default(),
+                        )
+                    })
                 }
             },
             _o.as_pointer(),
@@ -295,26 +313,50 @@ fn main_0() -> i32 {
     cpp_swap!(
         match (Rc::new(RefCell::new(1)).as_pointer(),) {
             (__tmp_3,) => {
-                ({ (*m1.borrow_mut()).subscript_move(__tmp_3, |__k| cpp_move!(__k)) })
+                ({
+                    (*m1.borrow_mut()).subscript_move(
+                        __tmp_3,
+                        |__k| cpp_move!(__k),
+                        || <Tracked>::default(),
+                    )
+                })
             }
         },
         match (Rc::new(RefCell::new(2)).as_pointer(),) {
             (__tmp_4,) => {
-                ({ (*m1.borrow_mut()).subscript_move(__tmp_4, |__k| cpp_move!(__k)) })
+                ({
+                    (*m1.borrow_mut()).subscript_move(
+                        __tmp_4,
+                        |__k| cpp_move!(__k),
+                        || <Tracked>::default(),
+                    )
+                })
             }
         }
     );
     assert!(
         (match (Rc::new(RefCell::new(1)).as_pointer(),) {
             (__tmp_5,) => {
-                ({ (*m1.borrow_mut()).subscript_move(__tmp_5, |__k| cpp_move!(__k)) })
+                ({
+                    (*m1.borrow_mut()).subscript_move(
+                        __tmp_5,
+                        |__k| cpp_move!(__k),
+                        || <Tracked>::default(),
+                    )
+                })
             }
         }
         .with(|__s| __s.v)
             == 20)
             && (match (Rc::new(RefCell::new(2)).as_pointer(),) {
                 (__tmp_6,) => {
-                    ({ (*m1.borrow_mut()).subscript_move(__tmp_6, |__k| cpp_move!(__k)) })
+                    ({
+                        (*m1.borrow_mut()).subscript_move(
+                            __tmp_6,
+                            |__k| cpp_move!(__k),
+                            || <Tracked>::default(),
+                        )
+                    })
                 }
             }
             .with(|__s| __s.v)
@@ -326,7 +368,13 @@ fn main_0() -> i32 {
         ((*m1.borrow()).len() == 1_usize)
             && (match (Rc::new(RefCell::new(3)).as_pointer(),) {
                 (__tmp_7,) => {
-                    ({ (*m1.borrow_mut()).subscript_move(__tmp_7, |__k| cpp_move!(__k)) })
+                    ({
+                        (*m1.borrow_mut()).subscript_move(
+                            __tmp_7,
+                            |__k| cpp_move!(__k),
+                            || <Tracked>::default(),
+                        )
+                    })
                 }
             }
             .with(|__s| __s.v)
@@ -336,14 +384,26 @@ fn main_0() -> i32 {
         (((*m2.borrow()).len() == 2_usize)
             && (match (Rc::new(RefCell::new(1)).as_pointer(),) {
                 (__tmp_8,) => {
-                    ({ (*m2.borrow_mut()).subscript_move(__tmp_8, |__k| cpp_move!(__k)) })
+                    ({
+                        (*m2.borrow_mut()).subscript_move(
+                            __tmp_8,
+                            |__k| cpp_move!(__k),
+                            || <Tracked>::default(),
+                        )
+                    })
                 }
             }
             .with(|__s| __s.v)
                 == 20))
             && (match (Rc::new(RefCell::new(2)).as_pointer(),) {
                 (__tmp_9,) => {
-                    ({ (*m2.borrow_mut()).subscript_move(__tmp_9, |__k| cpp_move!(__k)) })
+                    ({
+                        (*m2.borrow_mut()).subscript_move(
+                            __tmp_9,
+                            |__k| cpp_move!(__k),
+                            || <Tracked>::default(),
+                        )
+                    })
                 }
             }
             .with(|__s| __s.v)
@@ -480,8 +540,11 @@ fn main_0() -> i32 {
             &match (Rc::new(RefCell::new(1)).as_pointer(),) {
                 (__tmp_18,) => {
                     ({
-                        (*maps.borrow_mut())[(0) as usize]
-                            .subscript_move(__tmp_18, |__k| cpp_move!(__k))
+                        (*maps.borrow_mut())[(0) as usize].subscript_move(
+                            __tmp_18,
+                            |__k| cpp_move!(__k),
+                            || <Tracked>::default(),
+                        )
                     })
                 }
             },
@@ -494,8 +557,11 @@ fn main_0() -> i32 {
             &match (Rc::new(RefCell::new(2)).as_pointer(),) {
                 (__tmp_19,) => {
                     ({
-                        (*maps.borrow_mut())[(1) as usize]
-                            .subscript_move(__tmp_19, |__k| cpp_move!(__k))
+                        (*maps.borrow_mut())[(1) as usize].subscript_move(
+                            __tmp_19,
+                            |__k| cpp_move!(__k),
+                            || <Tracked>::default(),
+                        )
                     })
                 }
             },
@@ -508,8 +574,11 @@ fn main_0() -> i32 {
             && (match (Rc::new(RefCell::new(2)).as_pointer(),) {
                 (__tmp_20,) => {
                     ({
-                        (*maps.borrow_mut())[(0) as usize]
-                            .subscript_move(__tmp_20, |__k| cpp_move!(__k))
+                        (*maps.borrow_mut())[(0) as usize].subscript_move(
+                            __tmp_20,
+                            |__k| cpp_move!(__k),
+                            || <Tracked>::default(),
+                        )
                     })
                 }
             }
@@ -521,8 +590,11 @@ fn main_0() -> i32 {
             && (match (Rc::new(RefCell::new(1)).as_pointer(),) {
                 (__tmp_21,) => {
                     ({
-                        (*maps.borrow_mut())[(1) as usize]
-                            .subscript_move(__tmp_21, |__k| cpp_move!(__k))
+                        (*maps.borrow_mut())[(1) as usize].subscript_move(
+                            __tmp_21,
+                            |__k| cpp_move!(__k),
+                            || <Tracked>::default(),
+                        )
                     })
                 }
             }

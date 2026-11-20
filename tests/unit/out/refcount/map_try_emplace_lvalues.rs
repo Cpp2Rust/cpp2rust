@@ -750,7 +750,7 @@ fn main_0() -> i32 {
         })
     );
     let changed: Value<Map<i32, (Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
-    ({ (*changed.borrow_mut()).subscript(key.as_pointer()) }).write(10);
+    ({ (*changed.borrow_mut()).subscript(key.as_pointer(), || 0_i32) }).write(10);
     let effects: Value<i32> = Rc::new(RefCell::new(0));
     let erased: Value<(
         Value<BidirectionalIterator<(Value<i32>, Value<i32>)>>,
@@ -798,7 +798,7 @@ fn main_0() -> i32 {
         Value<bool>,
     )> = Rc::new(RefCell::new(
         match ({
-            ({ (*changed.borrow_mut()).subscript(key.as_pointer()) }).with_mut(|__v| {
+            ({ (*changed.borrow_mut()).subscript(key.as_pointer(), || 0_i32) }).with_mut(|__v| {
                 __v.prefix_inc();
             });
             {
@@ -888,7 +888,7 @@ fn main_0() -> i32 {
                 'loop_: for k in IterRange::new(keys.decay(), keys.decay().offset((6_i64) as isize))
                 {
                     let k: Value<i32> = Rc::new(RefCell::new((k.read())));
-                    ({ (*values.borrow_mut()).subscript(k.as_pointer()) }).write(42);
+                    ({ (*values.borrow_mut()).subscript(k.as_pointer(), || 0_i32) }).write(42);
                 }
             }
             let moved: Value<i32> = Rc::new(RefCell::new(0));
@@ -1081,7 +1081,7 @@ fn main_0() -> i32 {
                 let k: Value<i32> = Rc::new(RefCell::new((k.read())));
                 assert!(
                     ({
-                        ((({ (*values.borrow_mut()).subscript(k.as_pointer()) }).read())
+                        ((({ (*values.borrow_mut()).subscript(k.as_pointer(), || 0_i32) }).read())
                             == (if (hit != 0) {
                                 42
                             } else {
@@ -1108,7 +1108,10 @@ fn main_0() -> i32 {
                         {
                             let k: Value<i32> = Rc::new(RefCell::new((k.read())));
                             field!(
-                                ({ (*selected.borrow_mut()).subscript(k.as_pointer()) }),
+                                ({
+                                    (*selected.borrow_mut())
+                                        .subscript(k.as_pointer(), || <Item>::default())
+                                }),
                                 value
                             )
                             .write(42);
@@ -1345,7 +1348,7 @@ fn main_0() -> i32 {
                 'loop_: for k in IterRange::new(keys.decay(), keys.decay().offset((3_i64) as isize))
                 {
                     let k: Value<i32> = Rc::new(RefCell::new((k.read())));
-                    ({ (*values.borrow_mut()).subscript(k.as_pointer()) }).write(42);
+                    ({ (*values.borrow_mut()).subscript(k.as_pointer(), || 0_i32) }).write(42);
                 }
             }
             let mut before: i32 = temporary_calls_4.with(|rc| *rc.borrow());
@@ -1528,10 +1531,12 @@ fn main_0() -> i32 {
                                     )
                                 }
                             };
-                            let __rhs =
-                                (({ (*references.borrow_mut()).subscript(key.as_pointer()) })
-                                    .with(|__s| __s.ptr.clone())
-                                    .read());
+                            let __rhs = (({
+                                (*references.borrow_mut())
+                                    .subscript(key.as_pointer(), || <Held>::default())
+                            })
+                            .with(|__s| __s.ptr.clone())
+                            .read());
                             value = __rhs
                         }
                     };
@@ -1611,8 +1616,11 @@ fn main_0() -> i32 {
                                 }
                             };
                             let __rhs = (elem!(
-                                ({ (*arrays.borrow_mut()).subscript(key.as_pointer()) })
-                                    .with(|__s| __s.ptr.clone()),
+                                ({
+                                    (*arrays.borrow_mut())
+                                        .subscript(key.as_pointer(), || <Held>::default())
+                                })
+                                .with(|__s| __s.ptr.clone()),
                                 1
                             )
                             .read());
@@ -1639,7 +1647,7 @@ fn main_0() -> i32 {
                 'loop_: for k in IterRange::new(keys.decay(), keys.decay().offset((6_i64) as isize))
                 {
                     let k: Value<i32> = Rc::new(RefCell::new((k.read())));
-                    ({ (*values.borrow_mut()).subscript(k.as_pointer()) }).write(42);
+                    ({ (*values.borrow_mut()).subscript(k.as_pointer(), || 0_i32) }).write(42);
                 }
             }
             let mut before: i32 = temporary_calls_4.with(|rc| *rc.borrow());
@@ -1842,7 +1850,7 @@ fn main_0() -> i32 {
                 let k: Value<i32> = Rc::new(RefCell::new((k.read())));
                 assert!(
                     ({
-                        ((({ (*values.borrow_mut()).subscript(k.as_pointer()) }).read())
+                        ((({ (*values.borrow_mut()).subscript(k.as_pointer(), || 0_i32) }).read())
                             == (if (hit != 0) {
                                 42
                             } else {
@@ -1921,10 +1929,12 @@ fn main_0() -> i32 {
                                     )
                                 }
                             };
-                            let __rhs =
-                                (({ (*references.borrow_mut()).subscript(key.as_pointer()) })
-                                    .with(|__s| __s.ptr.clone())
-                                    .read());
+                            let __rhs = (({
+                                (*references.borrow_mut())
+                                    .subscript(key.as_pointer(), || <Held>::default())
+                            })
+                            .with(|__s| __s.ptr.clone())
+                            .read());
                             value = __rhs
                         }
                     };
@@ -1971,9 +1981,12 @@ fn main_0() -> i32 {
                                     )
                                 }
                             };
-                            let __rhs = (({ (*owners.borrow_mut()).subscript(key.as_pointer()) })
-                                .with(|__s| __s.ptr.clone())
-                                .read());
+                            let __rhs = (({
+                                (*owners.borrow_mut())
+                                    .subscript(key.as_pointer(), || <Held>::default())
+                            })
+                            .with(|__s| __s.ptr.clone())
+                            .read());
                             value = __rhs
                         }
                     };

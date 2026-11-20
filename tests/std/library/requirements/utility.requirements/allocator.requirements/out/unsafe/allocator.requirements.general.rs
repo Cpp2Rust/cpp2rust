@@ -22,11 +22,11 @@ impl Default for p16_rebind_member_Alloc_std_pair_const_int__int__ {
 pub unsafe fn test_0() {
     let mut m: UnsafeMap<i32, (i32, i32)> = UnsafeMap::new();
     let mut n: UnsafeMap<i32, (i32, i32)> = UnsafeMap::new();
-    (*m.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k))) = 2;
+    (*m.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k), || 0_i32)) = 2;
     {
         n = std::mem::take(&mut m);
     };
-    assert!(((*n.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k))) == (2)));
+    assert!(((*n.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k), || 0_i32)) == (2)));
     assert!(((n.len()) == (1_usize)));
 }
 #[repr(C)]
@@ -34,8 +34,8 @@ pub unsafe fn test_0() {
 pub struct p18_rebind_to_container_node_Alloc_std_pair_const_int__int__ {}
 pub unsafe fn test_1() {
     let mut m: UnsafeMap<i32, (i32, i32)> = UnsafeMap::new();
-    (*m.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k))) = 2;
-    assert!(((*m.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k))) == (2)));
+    (*m.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k), || 0_i32)) = 2;
+    assert!(((*m.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k), || 0_i32)) == (2)));
     assert!(((m.len()) == (1_usize)));
 }
 pub fn main() {

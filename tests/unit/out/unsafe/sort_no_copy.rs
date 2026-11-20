@@ -438,8 +438,16 @@ unsafe fn main_0() -> i32 {
     );
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
     let mut bag_map: UnsafeMap<Bag, (Bag, i32)> = UnsafeMap::new();
-    (*bag_map.subscript_move(&mut bag_vec[(2_usize)], |__k| cpp_move_unsafe!(__k))) = 2;
-    (*bag_map.subscript_move(&mut bag_vec[(0_usize)], |__k| cpp_move_unsafe!(__k))) = 0;
+    (*bag_map.subscript_move(
+        &mut bag_vec[(2_usize)],
+        |__k| cpp_move_unsafe!(__k),
+        || 0_i32,
+    )) = 2;
+    (*bag_map.subscript_move(
+        &mut bag_vec[(0_usize)],
+        |__k| cpp_move_unsafe!(__k),
+        || 0_i32,
+    )) = 0;
     assert!((((*bag_map.find(&bags[(2) as usize]).iter_deref()).1) == (2)));
     assert!(bag_map.find(&bags[(1) as usize]) == bag_map.end());
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));

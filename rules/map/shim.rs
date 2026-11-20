@@ -191,14 +191,8 @@ impl<K: CppLess + 'static, V> Map<K, Entry<K, V>> {
             .as_pointer()
     }
 
-    fn insert_after(&mut self, prev: Value<MapNode<Entry<K, V>>>, key: K) -> Ptr<V>
-    where
-        V: Default,
-    {
-        let entry = (
-            Rc::new(RefCell::new(key)),
-            Rc::new(RefCell::new(V::default())),
-        );
+    fn insert_after(&mut self, prev: Value<MapNode<Entry<K, V>>>, key: K, value: V) -> Ptr<V> {
+        let entry = (Rc::new(RefCell::new(key)), Rc::new(RefCell::new(value)));
         Self::mapped(&self.link_after(prev, entry))
     }
 
@@ -231,26 +225,29 @@ impl<K: CppLess + 'static, V> Map<K, Entry<K, V>> {
 // The functions that modify a map take a pointer to it, and borrow it after
 // their arguments are evaluated, which may access the map.
 impl<K: CppLess + 'static, V: 'static> Map<K, Entry<K, V>> {
-    // operator[] with a key that is copied if inserted.
-    pub fn subscript(&mut self, key: Ptr<K>) -> Ptr<V>
+    // operator[] with a key that is copied, and a value made by new_value, if
+    // inserted.
+    pub fn subscript(&mut self, key: Ptr<K>, new_value: impl FnOnce() -> V) -> Ptr<V>
     where
         K: Clone + ByteRepr,
-        V: Default,
     {
         match self.search(&key) {
             Ok(node) => Self::mapped(&node),
-            Err(prev) => self.insert_after(prev, key.read()),
+            Err(prev) => self.insert_after(prev, key.read(), new_value()),
         }
     }
 
-    // operator[] with a key that is moved, by new_key, if inserted.
-    pub fn subscript_move(&mut self, key: Ptr<K>, new_key: impl FnOnce(Ptr<K>) -> K) -> Ptr<V>
-    where
-        V: Default,
-    {
+    // operator[] with a key that is moved, by new_key, and a value made by
+    // new_value, if inserted.
+    pub fn subscript_move(
+        &mut self,
+        key: Ptr<K>,
+        new_key: impl FnOnce(Ptr<K>) -> K,
+        new_value: impl FnOnce() -> V,
+    ) -> Ptr<V> {
         match self.search(&key) {
             Ok(node) => Self::mapped(&node),
-            Err(prev) => self.insert_after(prev, new_key(key)),
+            Err(prev) => self.insert_after(prev, new_key(key), new_value()),
         }
     }
 
@@ -486,29 +483,32 @@ impl<K: Ord, V> UnsafeMap<K, (K, V)> {
         unsafe { &raw mut (*UnsafeMapNode::value(node)).1 }
     }
 
-    // operator[] with a key that is copied if inserted.
-    pub fn subscript(&mut self, key: &K) -> *mut V
+    // operator[] with a key that is copied, and a value made by new_value, if
+    // inserted.
+    pub fn subscript(&mut self, key: &K, new_value: impl FnOnce() -> V) -> *mut V
     where
         K: Clone,
-        V: Default,
     {
         match self.search(key) {
             Ok(node) => Self::mapped(node),
-            Err(prev) => Self::mapped(self.link_after(prev, (key.clone(), V::default()))),
+            Err(prev) => Self::mapped(self.link_after(prev, (key.clone(), new_value()))),
         }
     }
 
-    /// operator[] with a key that is moved, by new_key, if inserted.
+    /// operator[] with a key that is moved, by new_key, and a value made by
+    /// new_value, if inserted.
     ///
     /// # Safety
     /// `key` must point to a live key.
-    pub unsafe fn subscript_move(&mut self, key: *mut K, new_key: impl FnOnce(*mut K) -> K) -> *mut V
-    where
-        V: Default,
-    {
+    pub unsafe fn subscript_move(
+        &mut self,
+        key: *mut K,
+        new_key: impl FnOnce(*mut K) -> K,
+        new_value: impl FnOnce() -> V,
+    ) -> *mut V {
         match self.search(unsafe { &*key }) {
             Ok(node) => Self::mapped(node),
-            Err(prev) => Self::mapped(self.link_after(prev, (new_key(key), V::default()))),
+            Err(prev) => Self::mapped(self.link_after(prev, (new_key(key), new_value()))),
         }
     }
 

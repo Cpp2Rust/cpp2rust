@@ -20,7 +20,7 @@ fn t6<T1, T2>() -> T2 {
 }
 
 unsafe fn f1<T1: Ord + Clone, T2: Default>(a0: &mut UnsafeMap<T1, (T1, T2)>, a1: T1) -> &mut T2 {
-    &mut (*a0.subscript(&a1))
+    &mut (*a0.subscript(&a1, || T2::default()))
 }
 
 fn f2<T1, T2>(a0: UnsafeMap<T1, (T1, T2)>) -> usize {
@@ -44,7 +44,7 @@ unsafe fn f7<T1: Ord, T2>(a0: &mut UnsafeMap<T1, (T1, T2)>, a1: T1) -> *const T2
 }
 
 unsafe fn f8<T1: Ord, T2: Default>(a0: &mut UnsafeMap<T1, (T1, T2)>, a1: *mut T1) -> &mut T2 {
-    &mut (*a0.subscript_move(a1, |__k| cpp_move_unsafe!(__k)))
+    &mut (*a0.subscript_move(a1, |__k| cpp_move_unsafe!(__k), || T2::default()))
 }
 
 fn f9<T1, T2>(a0: UnsafeMap<T1, (T1, T2)>) -> UnsafeBidirectionalIterator<(T1, T2)> {

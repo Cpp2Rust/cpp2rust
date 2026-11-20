@@ -92,14 +92,28 @@ fn main_0() -> i32 {
     {
         let __a1 = 8;
         match (Rc::new(RefCell::new(1)).as_pointer(),) {
-            (__tmp_1,) => ({ (*m.borrow_mut()).subscript_move(__tmp_1, |__k| cpp_move!(__k)) }),
+            (__tmp_1,) => {
+                ({
+                    (*m.borrow_mut()).subscript_move(
+                        __tmp_1,
+                        |__k| cpp_move!(__k),
+                        || Default::default(),
+                    )
+                })
+            }
         }
         .with_mut(|__v: &mut Vec<i32>| __v.push(__a1))
     };
     assert!(
         ((match (Rc::new(RefCell::new(1)).as_pointer(),) {
             (__tmp_2,) => {
-                ({ (*m.borrow_mut()).subscript_move(__tmp_2, |__k| cpp_move!(__k)) })
+                ({
+                    (*m.borrow_mut()).subscript_move(
+                        __tmp_2,
+                        |__k| cpp_move!(__k),
+                        || Default::default(),
+                    )
+                })
             }
         }
         .decay()
