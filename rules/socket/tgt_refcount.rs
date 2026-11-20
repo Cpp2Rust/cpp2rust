@@ -84,7 +84,11 @@ fn f17(a0: i32, a1: AnyPtr, a2: usize, a3: i32, a4: Ptr<Sockaddr>, a5: Ptr<u32>)
     }) {
         Ok((__n, __from)) => {
             match __from {
-                Some(__ss) => Sockaddr::encode(&__ss, &a4, &a5),
+                Some(__ss) => {
+                    if !a4.is_null() {
+                        Sockaddr::encode(&__ss, &a4, &a5)
+                    }
+                }
                 None => {}
             }
             __n as isize

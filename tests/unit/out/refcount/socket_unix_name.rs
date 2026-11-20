@@ -34,6 +34,15 @@ pub fn check_name_0(mut fd: i32, mut path: Ptr<i8>) {
     assert!(({ (((*actual.borrow()) as usize) >= 2_usize) }));
     assert!(({ (((*actual.borrow()) as usize) < 128usize) }));
     if !(path).is_null() {
+        let mut path_len: libc::socklen_t = (((2_usize as usize)
+            .wrapping_add(path.to_c_string_iterator().count()))
+            as libc::socklen_t);
+        assert!(
+            ({
+                (((*actual.borrow()) == path_len)
+                    || ((*actual.borrow()) == (path_len).wrapping_add((1 as libc::socklen_t))))
+            })
+        );
         assert!(
             ((array_field_ptr!(
                 ((full.as_pointer()).reinterpret_cast::<libcc2rs::SockaddrUn>()),
@@ -43,7 +52,23 @@ pub fn check_name_0(mut fd: i32, mut path: Ptr<i8>) {
             .memcmp(&(path).to_any(), path.to_c_string_iterator().count())
                 == 0)
         );
+    } else {
+        assert!(
+            ({
+                ((((*actual.borrow()) as usize) == 2_usize)
+                    || (((*actual.borrow()) as usize) == 16usize))
+            })
+        );
     }
+    printf!(
+        b"%s: length %u\n",
+        if !(path).is_null() {
+            Ptr::<i8>::from_string_literal(b"named")
+        } else {
+            Ptr::<i8>::from_string_literal(b"unnamed")
+        },
+        ((*actual.borrow()) as u32)
+    );
     let mut capacities: [libc::socklen_t; 6] = [
         (0 as libc::socklen_t),
         (1 as libc::socklen_t),
