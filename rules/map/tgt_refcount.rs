@@ -13,7 +13,7 @@ fn f1<T1: CppLess + Clone + ByteRepr + 'static, T2: Default + 'static>(
     a0: &mut Map<T1, (Value<T1>, Value<T2>)>,
     a1: Ptr<T1>,
 ) -> Ptr<T2> {
-    a0.subscript(a1)
+    a0.subscript(a1, || T2::default())
 }
 
 fn f2<T1, T2>(a0: Map<T1, (Value<T1>, Value<T2>)>) -> usize {
@@ -43,7 +43,7 @@ fn f8<T1: CppLess + 'static, T2: Default + 'static>(
     a0: &mut Map<T1, (Value<T1>, Value<T2>)>,
     a1: Ptr<T1>,
 ) -> Ptr<T2> {
-    a0.subscript_move(a1, |__k| cpp_move!(__k))
+    a0.subscript_move(a1, |__k| cpp_move!(__k), || T2::default())
 }
 
 fn f9<T1: 'static, T2: 'static>(a0: Ptr<Map<T1, (Value<T1>, Value<T2>)>>) -> BidirectionalIterator<(Value<T1>, Value<T2>)> {
