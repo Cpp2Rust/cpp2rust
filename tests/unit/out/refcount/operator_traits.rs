@@ -205,11 +205,15 @@ fn main_0() -> i32 {
     );
     let m: Value<Map<Lt, (Value<Lt>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
     match (Rc::new(RefCell::new(Lt { v: 2 })).as_pointer(),) {
-        (__tmp_11,) => ({ (*m.borrow_mut()).subscript_move(__tmp_11, |__k| cpp_move!(__k)) }),
+        (__tmp_11,) => {
+            ({ (*m.borrow_mut()).subscript_move(__tmp_11, |__k| cpp_move!(__k), || 0_i32) })
+        }
     }
     .write(20);
     match (Rc::new(RefCell::new(Lt { v: 1 })).as_pointer(),) {
-        (__tmp_12,) => ({ (*m.borrow_mut()).subscript_move(__tmp_12, |__k| cpp_move!(__k)) }),
+        (__tmp_12,) => {
+            ({ (*m.borrow_mut()).subscript_move(__tmp_12, |__k| cpp_move!(__k), || 0_i32) })
+        }
     }
     .write(10);
     assert!(
@@ -226,7 +230,7 @@ fn main_0() -> i32 {
     assert!(
         ((match (Rc::new(RefCell::new(Lt { v: 2 })).as_pointer(),) {
             (__tmp_13,) => {
-                ({ (*m.borrow_mut()).subscript_move(__tmp_13, |__k| cpp_move!(__k)) })
+                ({ (*m.borrow_mut()).subscript_move(__tmp_13, |__k| cpp_move!(__k), || 0_i32) })
             }
         }
         .read())

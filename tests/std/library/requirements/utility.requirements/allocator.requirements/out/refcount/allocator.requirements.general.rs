@@ -24,7 +24,9 @@ pub fn test_0() {
     let m: Value<Map<i32, (Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
     let n: Value<Map<i32, (Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
     match (Rc::new(RefCell::new(1)).as_pointer(),) {
-        (__tmp_0,) => ({ (*m.borrow_mut()).subscript_move(__tmp_0, |__k| cpp_move!(__k)) }),
+        (__tmp_0,) => {
+            ({ (*m.borrow_mut()).subscript_move(__tmp_0, |__k| cpp_move!(__k), || 0_i32) })
+        }
     }
     .write(2);
     {
@@ -33,7 +35,7 @@ pub fn test_0() {
     assert!(
         ((match (Rc::new(RefCell::new(1)).as_pointer(),) {
             (__tmp_1,) => {
-                ({ (*n.borrow_mut()).subscript_move(__tmp_1, |__k| cpp_move!(__k)) })
+                ({ (*n.borrow_mut()).subscript_move(__tmp_1, |__k| cpp_move!(__k), || 0_i32) })
             }
         }
         .read())
@@ -47,13 +49,15 @@ pub struct p18_rebind_to_container_node_Alloc_std_pair_const_int__int__ {}
 pub fn test_1() {
     let m: Value<Map<i32, (Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
     match (Rc::new(RefCell::new(1)).as_pointer(),) {
-        (__tmp_2,) => ({ (*m.borrow_mut()).subscript_move(__tmp_2, |__k| cpp_move!(__k)) }),
+        (__tmp_2,) => {
+            ({ (*m.borrow_mut()).subscript_move(__tmp_2, |__k| cpp_move!(__k), || 0_i32) })
+        }
     }
     .write(2);
     assert!(
         ((match (Rc::new(RefCell::new(1)).as_pointer(),) {
             (__tmp_3,) => {
-                ({ (*m.borrow_mut()).subscript_move(__tmp_3, |__k| cpp_move!(__k)) })
+                ({ (*m.borrow_mut()).subscript_move(__tmp_3, |__k| cpp_move!(__k), || 0_i32) })
             }
         }
         .read())

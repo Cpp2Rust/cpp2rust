@@ -13,18 +13,22 @@ pub fn main() {
 fn main_0() -> i32 {
     let a: Value<Map<i32, (Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
     match (Rc::new(RefCell::new(1)).as_pointer(),) {
-        (__tmp_0,) => ({ (*a.borrow_mut()).subscript_move(__tmp_0, |__k| cpp_move!(__k)) }),
+        (__tmp_0,) => {
+            ({ (*a.borrow_mut()).subscript_move(__tmp_0, |__k| cpp_move!(__k), || 0_i32) })
+        }
     }
     .write(10);
     let b: Value<Map<i32, (Value<i32>, Value<i32>)>> = Rc::new(RefCell::new((*a.borrow()).clone()));
     match (Rc::new(RefCell::new(1)).as_pointer(),) {
-        (__tmp_1,) => ({ (*b.borrow_mut()).subscript_move(__tmp_1, |__k| cpp_move!(__k)) }),
+        (__tmp_1,) => {
+            ({ (*b.borrow_mut()).subscript_move(__tmp_1, |__k| cpp_move!(__k), || 0_i32) })
+        }
     }
     .write(20);
     assert!(
         ((match (Rc::new(RefCell::new(1)).as_pointer(),) {
             (__tmp_2,) => {
-                ({ (*a.borrow_mut()).subscript_move(__tmp_2, |__k| cpp_move!(__k)) })
+                ({ (*a.borrow_mut()).subscript_move(__tmp_2, |__k| cpp_move!(__k), || 0_i32) })
             }
         }
         .read())
@@ -32,18 +36,22 @@ fn main_0() -> i32 {
     );
     let x: Value<Map<i32, (Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
     match (Rc::new(RefCell::new(2)).as_pointer(),) {
-        (__tmp_3,) => ({ (*x.borrow_mut()).subscript_move(__tmp_3, |__k| cpp_move!(__k)) }),
+        (__tmp_3,) => {
+            ({ (*x.borrow_mut()).subscript_move(__tmp_3, |__k| cpp_move!(__k), || 0_i32) })
+        }
     }
     .write(3);
     let y: Value<Map<i32, (Value<i32>, Value<i32>)>> = Rc::new(RefCell::new((*x.borrow()).clone()));
     match (Rc::new(RefCell::new(2)).as_pointer(),) {
-        (__tmp_4,) => ({ (*y.borrow_mut()).subscript_move(__tmp_4, |__k| cpp_move!(__k)) }),
+        (__tmp_4,) => {
+            ({ (*y.borrow_mut()).subscript_move(__tmp_4, |__k| cpp_move!(__k), || 0_i32) })
+        }
     }
     .write(4);
     assert!(
         ((match (Rc::new(RefCell::new(2)).as_pointer(),) {
             (__tmp_5,) => {
-                ({ (*x.borrow_mut()).subscript_move(__tmp_5, |__k| cpp_move!(__k)) })
+                ({ (*x.borrow_mut()).subscript_move(__tmp_5, |__k| cpp_move!(__k), || 0_i32) })
             }
         }
         .read())

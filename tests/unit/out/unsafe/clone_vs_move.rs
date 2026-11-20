@@ -190,7 +190,7 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (N)) {
-            (*map1.subscript(&i)) = i;
+            (*map1.subscript(&i, || 0_i32)) = i;
             i.prefix_inc();
         }
     }
@@ -198,16 +198,16 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (N)) {
-            assert!(((*map2.subscript(&i)) == (i)));
-            (*map2.subscript(&i)).prefix_inc();
+            assert!(((*map2.subscript(&i, || 0_i32)) == (i)));
+            (*map2.subscript(&i, || 0_i32)).prefix_inc();
             i.prefix_inc();
         }
     }
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (N)) {
-            assert!(((*map1.subscript(&i)) == (i)));
-            assert!(((*map2.subscript(&i)) == ((i) + (1))));
+            assert!(((*map1.subscript(&i, || 0_i32)) == (i)));
+            assert!(((*map2.subscript(&i, || 0_i32)) == ((i) + (1))));
             i.prefix_inc();
         }
     }

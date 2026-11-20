@@ -56,15 +56,21 @@ fn main_0() -> i32 {
     let mut v_result_true: bool = (*it.borrow()) != v.decay().end();
     let m: Value<Map<i32, (Value<i32>, Value<f64>)>> = Rc::new(RefCell::new(Map::new()));
     match (Rc::new(RefCell::new(1)).as_pointer(),) {
-        (__tmp_2,) => ({ (*m.borrow_mut()).subscript_move(__tmp_2, |__k| cpp_move!(__k)) }),
+        (__tmp_2,) => {
+            ({ (*m.borrow_mut()).subscript_move(__tmp_2, |__k| cpp_move!(__k), || 0_f64) })
+        }
     }
     .write(1_f64);
     match (Rc::new(RefCell::new(2)).as_pointer(),) {
-        (__tmp_3,) => ({ (*m.borrow_mut()).subscript_move(__tmp_3, |__k| cpp_move!(__k)) }),
+        (__tmp_3,) => {
+            ({ (*m.borrow_mut()).subscript_move(__tmp_3, |__k| cpp_move!(__k), || 0_f64) })
+        }
     }
     .write(2_f64);
     match (Rc::new(RefCell::new(3)).as_pointer(),) {
-        (__tmp_4,) => ({ (*m.borrow_mut()).subscript_move(__tmp_4, |__k| cpp_move!(__k)) }),
+        (__tmp_4,) => {
+            ({ (*m.borrow_mut()).subscript_move(__tmp_4, |__k| cpp_move!(__k), || 0_f64) })
+        }
     }
     .write(3_f64);
     let m_begin: Value<BidirectionalIterator<(Value<i32>, Value<f64>)>> = Rc::new(RefCell::new(

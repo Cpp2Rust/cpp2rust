@@ -66,10 +66,10 @@ unsafe fn main_0() -> i32 {
     let mut m: UnsafeMap<i32, (i32, Vec<i32>)> = UnsafeMap::new();
     {
         let __a1 = 8;
-        (*m.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k))).push(__a1)
+        (*m.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k), || Default::default())).push(__a1)
     };
     assert!(
-        ((*(*m.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k)))
+        ((*(*m.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k), || Default::default()))
             .begin()
             .iter_deref())
             == (8))

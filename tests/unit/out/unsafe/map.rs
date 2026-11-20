@@ -41,27 +41,27 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut m: UnsafeMap<i16, (i16, u32)> = UnsafeMap::new();
-    (*m.subscript_move(&mut 0_i16, |__k| cpp_move_unsafe!(__k))) = 1_u32;
-    (*m.subscript_move(&mut 1_i16, |__k| cpp_move_unsafe!(__k))) = 2_u32;
-    (*m.subscript_move(&mut 2_i16, |__k| cpp_move_unsafe!(__k))) = 3_u32;
+    (*m.subscript_move(&mut 0_i16, |__k| cpp_move_unsafe!(__k), || 0_u32)) = 1_u32;
+    (*m.subscript_move(&mut 1_i16, |__k| cpp_move_unsafe!(__k), || 0_u32)) = 2_u32;
+    (*m.subscript_move(&mut 2_i16, |__k| cpp_move_unsafe!(__k), || 0_u32)) = 3_u32;
     assert!(((m.len()) == (3_usize)));
-    assert!(((*m.subscript_move(&mut 0_i16, |__k| cpp_move_unsafe!(__k))) == (1_u32)));
-    assert!(((*m.subscript_move(&mut 1_i16, |__k| cpp_move_unsafe!(__k))) == (2_u32)));
-    assert!(((*m.subscript_move(&mut 2_i16, |__k| cpp_move_unsafe!(__k))) == (3_u32)));
+    assert!(((*m.subscript_move(&mut 0_i16, |__k| cpp_move_unsafe!(__k), || 0_u32)) == (1_u32)));
+    assert!(((*m.subscript_move(&mut 1_i16, |__k| cpp_move_unsafe!(__k), || 0_u32)) == (2_u32)));
+    assert!(((*m.subscript_move(&mut 2_i16, |__k| cpp_move_unsafe!(__k), || 0_u32)) == (3_u32)));
     let mut x: i32 = 4;
-    (*m.subscript_move(&mut 1_i16, |__k| cpp_move_unsafe!(__k))) = (x as u32);
+    (*m.subscript_move(&mut 1_i16, |__k| cpp_move_unsafe!(__k), || 0_u32)) = (x as u32);
     assert!(((m.len()) == (3_usize)));
-    assert!(((*m.subscript_move(&mut 0_i16, |__k| cpp_move_unsafe!(__k))) == (1_u32)));
-    assert!(((*m.subscript_move(&mut 1_i16, |__k| cpp_move_unsafe!(__k))) == (4_u32)));
-    assert!(((*m.subscript_move(&mut 2_i16, |__k| cpp_move_unsafe!(__k))) == (3_u32)));
-    (unsafe { foo_0((*m.subscript_move(&mut 0_i16, |__k| cpp_move_unsafe!(__k)))) });
-    assert!(((*m.subscript_move(&mut 0_i16, |__k| cpp_move_unsafe!(__k))) == (1_u32)));
-    (unsafe { bar_1(&mut (*m.subscript_move(&mut 2_i16, |__k| cpp_move_unsafe!(__k)))) });
-    assert!(((*m.subscript_move(&mut 2_i16, |__k| cpp_move_unsafe!(__k))) == (4_u32)));
-    (*m.subscript_move(&mut 0_i16, |__k| cpp_move_unsafe!(__k))) = (*m
-        .subscript_move(&mut 0_i16, |__k| cpp_move_unsafe!(__k)))
-    .wrapping_add((*m.subscript_move(&mut 2_i16, |__k| cpp_move_unsafe!(__k))));
-    assert!(((*m.subscript_move(&mut 0_i16, |__k| cpp_move_unsafe!(__k))) == (5_u32)));
+    assert!(((*m.subscript_move(&mut 0_i16, |__k| cpp_move_unsafe!(__k), || 0_u32)) == (1_u32)));
+    assert!(((*m.subscript_move(&mut 1_i16, |__k| cpp_move_unsafe!(__k), || 0_u32)) == (4_u32)));
+    assert!(((*m.subscript_move(&mut 2_i16, |__k| cpp_move_unsafe!(__k), || 0_u32)) == (3_u32)));
+    (unsafe { foo_0((*m.subscript_move(&mut 0_i16, |__k| cpp_move_unsafe!(__k), || 0_u32))) });
+    assert!(((*m.subscript_move(&mut 0_i16, |__k| cpp_move_unsafe!(__k), || 0_u32)) == (1_u32)));
+    (unsafe { bar_1(&mut (*m.subscript_move(&mut 2_i16, |__k| cpp_move_unsafe!(__k), || 0_u32))) });
+    assert!(((*m.subscript_move(&mut 2_i16, |__k| cpp_move_unsafe!(__k), || 0_u32)) == (4_u32)));
+    (*m.subscript_move(&mut 0_i16, |__k| cpp_move_unsafe!(__k), || 0_u32)) =
+        (*m.subscript_move(&mut 0_i16, |__k| cpp_move_unsafe!(__k), || 0_u32))
+            .wrapping_add((*m.subscript_move(&mut 2_i16, |__k| cpp_move_unsafe!(__k), || 0_u32)));
+    assert!(((*m.subscript_move(&mut 0_i16, |__k| cpp_move_unsafe!(__k), || 0_u32)) == (5_u32)));
     let mut end: UnsafeBidirectionalIterator<(i16, u32)> = m.end();
     let mut it: UnsafeBidirectionalIterator<(i16, u32)> = m.find(&1_i16);
     let mut const_it: UnsafeBidirectionalIterator<(i16, u32)> =
@@ -91,16 +91,16 @@ unsafe fn main_0() -> i32 {
         (*const_it.iter_deref()).1
     };
     assert!(((x4) == (0_u32)));
-    (*m.subscript_move(&mut 4_i16, |__k| cpp_move_unsafe!(__k))) = 5_u32;
+    (*m.subscript_move(&mut 4_i16, |__k| cpp_move_unsafe!(__k), || 0_u32)) = 5_u32;
     let mut it4: UnsafeBidirectionalIterator<(i16, u32)> = m.find(&4_i16);
     let mut p: *mut u32 = (&mut (*it4.iter_deref()).1 as *mut u32);
     let mut x5: u32 = (*p);
-    assert!(((*m.subscript_move(&mut 4_i16, |__k| cpp_move_unsafe!(__k))) == (5_u32)));
+    assert!(((*m.subscript_move(&mut 4_i16, |__k| cpp_move_unsafe!(__k), || 0_u32)) == (5_u32)));
     assert!((((*it4.iter_deref()).1) == (5_u32)));
     assert!(((*p) == (5_u32)));
     assert!(((x5) == (5_u32)));
     (*p).prefix_inc();
-    assert!(((*m.subscript_move(&mut 4_i16, |__k| cpp_move_unsafe!(__k))) == (6_u32)));
+    assert!(((*m.subscript_move(&mut 4_i16, |__k| cpp_move_unsafe!(__k), || 0_u32)) == (6_u32)));
     assert!((((*it4.iter_deref()).1) == (6_u32)));
     assert!(((*p) == (6_u32)));
     assert!(((x5) == (5_u32)));
@@ -113,9 +113,9 @@ unsafe fn main_0() -> i32 {
     (*r).erase(&(it4).clone());
     assert!((((*r).len()) == (3_usize)));
     assert!(m.find(&4_i16) == m.end());
-    (*m.subscript_move(&mut 7_i16, |__k| cpp_move_unsafe!(__k))) = 7_u32;
-    (*m.subscript_move(&mut 8_i16, |__k| cpp_move_unsafe!(__k))) = 8_u32;
-    (*m.subscript_move(&mut 9_i16, |__k| cpp_move_unsafe!(__k))) = 9_u32;
+    (*m.subscript_move(&mut 7_i16, |__k| cpp_move_unsafe!(__k), || 0_u32)) = 7_u32;
+    (*m.subscript_move(&mut 8_i16, |__k| cpp_move_unsafe!(__k), || 0_u32)) = 8_u32;
+    (*m.subscript_move(&mut 9_i16, |__k| cpp_move_unsafe!(__k), || 0_u32)) = 9_u32;
     assert!((((*r).len()) == (6_usize)));
     assert!(((m.erase_key(&10_i16)) == (0_usize)));
     let mut key9: i32 = 9;
@@ -135,10 +135,10 @@ unsafe fn main_0() -> i32 {
     assert!(((other_map.len()) == (0_usize)));
     let mut key0: (i32, i64) = (1, (1 as i64));
     let mut value: f64 = 2_f64;
-    (*other_map.subscript(&key0)) = value;
-    value = (*other_map.subscript(&key0));
+    (*other_map.subscript(&key0, || 0_f64)) = value;
+    value = (*other_map.subscript(&key0, || 0_f64));
     assert!(((other_map.len()) == (1_usize)));
-    assert!(((*other_map.subscript(&key0)) == (value)));
+    assert!(((*other_map.subscript(&key0, || 0_f64)) == (value)));
     assert!(((m.len()) == (3_usize)));
     let mut k: i32 = 0;
     assert!((((*m.get(&(k as i16)).expect("out of range!")).1) == (5_u32)));
@@ -182,7 +182,7 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: u32 = 0_u32;
         'loop_: while ((i as usize) < (indexes.len())) {
-            (*m2.subscript(&indexes[(i as usize)])) = ((i).wrapping_rem(2_u32) != 0);
+            (*m2.subscript(&indexes[(i as usize)], || false)) = ((i).wrapping_rem(2_u32) != 0);
             i.prefix_inc();
         }
     }
@@ -205,8 +205,8 @@ unsafe fn main_0() -> i32 {
         (__tmp_0,) => ((*&mut (*__tmp_0).0), (*&mut (*__tmp_0).1)),
     });
     assert!(((m3.len()) == (2_usize)));
-    assert!(((*m3.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k))) == (2)));
-    assert!(((*m3.subscript_move(&mut 4, |__k| cpp_move_unsafe!(__k))) == (5)));
+    assert!(((*m3.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k), || 0_i32)) == (2)));
+    assert!(((*m3.subscript_move(&mut 4, |__k| cpp_move_unsafe!(__k), || 0_i32)) == (5)));
     let mut hinted: UnsafeBidirectionalIterator<(i32, i32)> = {
         let _ = <UnsafeBidirectionalIterator<(i32, i32)>>::from(m3.end());
         m3.emplace((6, 7)).0
@@ -219,17 +219,29 @@ unsafe fn main_0() -> i32 {
     let mut key8: i32 = 8;
     let mut tried_new: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = m3.try_emplace(key8, || 9);
     assert!((tried_new.1 as bool));
-    assert!(((*m3.subscript_move(&mut 8, |__k| cpp_move_unsafe!(__k))) == (9)));
+    assert!(((*m3.subscript_move(&mut 8, |__k| cpp_move_unsafe!(__k), || 0_i32)) == (9)));
     assert!(((m3.len()) == (4_usize)));
     let mut points: UnsafeMap<i32, (i32, Point)> = UnsafeMap::new();
     let mut point_new: (UnsafeBidirectionalIterator<(i32, Point)>, bool) =
         points.try_emplace(key1, || Point::new_2({ 3 }, { 4 }));
     assert!((point_new.1 as bool));
-    assert!((((*points.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k))).x) == (3)));
-    assert!((((*points.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k))).y) == (4)));
+    assert!(
+        (((*points.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k), || <Point>::default())).x)
+            == (3))
+    );
+    assert!(
+        (((*points.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k), || <Point>::default())).y)
+            == (4))
+    );
     points.emplace((key8, Point::new_2({ 5 }, { 6 })));
-    assert!((((*points.subscript_move(&mut 8, |__k| cpp_move_unsafe!(__k))).x) == (5)));
-    assert!((((*points.subscript_move(&mut 8, |__k| cpp_move_unsafe!(__k))).y) == (6)));
+    assert!(
+        (((*points.subscript_move(&mut 8, |__k| cpp_move_unsafe!(__k), || <Point>::default())).x)
+            == (5))
+    );
+    assert!(
+        (((*points.subscript_move(&mut 8, |__k| cpp_move_unsafe!(__k), || <Point>::default())).y)
+            == (6))
+    );
     assert!(((points.len()) == (2_usize)));
     let mut mi: UnsafeBidirectionalIterator<(i32, i32)> = m3.begin();
     let mr: *mut UnsafeBidirectionalIterator<(i32, i32)> = &mut (*{
@@ -262,18 +274,25 @@ unsafe fn main_0() -> i32 {
     let mut pk2: i32 = 0;
     let mut ptr_counts: UnsafeMap<*mut i32, (*mut i32, i32)> = UnsafeMap::new();
     let mut ptr_key: *mut i32 = (&mut pk1 as *mut i32);
-    (*ptr_counts.subscript(&ptr_key)) = 1;
+    (*ptr_counts.subscript(&ptr_key, || 0_i32)) = 1;
     ptr_key = (&mut pk2 as *mut i32);
-    (*ptr_counts.subscript(&ptr_key)) = 2;
-    (*ptr_counts.subscript(&ptr_key)) += 3;
+    (*ptr_counts.subscript(&ptr_key, || 0_i32)) = 2;
+    (*ptr_counts.subscript(&ptr_key, || 0_i32)) += 3;
     assert!(((ptr_counts.len()) == (2_usize)));
-    assert!(((*ptr_counts.subscript(&ptr_key)) == (5)));
+    assert!(((*ptr_counts.subscript(&ptr_key, || 0_i32)) == (5)));
     ptr_key = (&mut pk1 as *mut i32);
-    assert!(((*ptr_counts.subscript(&ptr_key)) == (1)));
-    (*ptr_counts.subscript_move(&mut (&mut pk2 as *mut i32), |__k| cpp_move_unsafe!(__k))) += 1;
+    assert!(((*ptr_counts.subscript(&ptr_key, || 0_i32)) == (1)));
+    (*ptr_counts.subscript_move(
+        &mut (&mut pk2 as *mut i32),
+        |__k| cpp_move_unsafe!(__k),
+        || 0_i32,
+    )) += 1;
     assert!(
-        ((*ptr_counts.subscript_move(&mut (&mut pk2 as *mut i32), |__k| cpp_move_unsafe!(__k)))
-            == (6))
+        ((*ptr_counts.subscript_move(
+            &mut (&mut pk2 as *mut i32),
+            |__k| cpp_move_unsafe!(__k),
+            || 0_i32
+        )) == (6))
     );
     assert!(((pk1) == (0)) && ((pk2) == (0)));
     return 0;
