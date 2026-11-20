@@ -188,7 +188,7 @@ fn main_0() -> i32 {
             })
         })
     );
-    println!("checked {} appends", cases);
+    printf!(b"checked %zu appends\n", cases);
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

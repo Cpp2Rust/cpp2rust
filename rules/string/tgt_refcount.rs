@@ -256,16 +256,16 @@ fn f38(a0: u64) -> Vec<i8> {
 
 // As sprintf's %f.
 fn f39(a0: f32) -> Vec<i8> {
-    libcc2rs::format_c("%f", &[VaArg::Double(a0 as f64)])
-        .bytes()
+    libcc2rs::format_c(b"%f", &[VaArg::Double(a0 as f64)])
+        .into_iter()
         .map(|__b| __b as i8)
         .chain([0])
         .collect::<Vec<_>>()
 }
 
 fn f40(a0: f64) -> Vec<i8> {
-    libcc2rs::format_c("%f", &[VaArg::Double(a0 as f64)])
-        .bytes()
+    libcc2rs::format_c(b"%f", &[VaArg::Double(a0 as f64)])
+        .into_iter()
         .map(|__b| __b as i8)
         .chain([0])
         .collect::<Vec<_>>()

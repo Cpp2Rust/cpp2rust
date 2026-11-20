@@ -277,8 +277,8 @@ fn main_0() -> i32 {
                 as i32))
             != 0
     };
-    println!(
-        "{} {} {}",
+    printf!(
+        b"%d %d %d\n",
         copies_0.with(|rc| *rc.borrow()),
         moves_1.with(|rc| *rc.borrow()),
         made_2.with(|rc| *rc.borrow())

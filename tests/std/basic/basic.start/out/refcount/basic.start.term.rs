@@ -15,7 +15,7 @@ pub struct Tracker {
 impl Tracker {
     pub fn new(mut tag: i32) -> Self {
         let __this: Tracker = Self { tag: tag };
-        println!("construct {}", tag);
+        printf!(b"construct %d\n", tag);
         __this
     }
 }
@@ -135,10 +135,10 @@ pub fn test_14() {
     ({ run_local_static_12() });
     ({ run_local_static_12() });
     ({ TrackerImpl::touch(&({ local_static_during_global_init_4() })) });
-    println!("trivial {}", { trivial_9.with(|rc| *rc.borrow()).value });
+    printf!(b"trivial %d\n", { trivial_9.with(|rc| *rc.borrow()).value });
     ({ TrackerImpl::touch(&member_10.with(|v| v.as_pointer())) });
-    println!(
-        "captured {}",
+    printf!(
+        b"captured %d\n",
         ({ (*capturing_11.with(Value::clone).borrow()).call() })
     );
 }
@@ -167,7 +167,7 @@ pub fn main() {
 fn main_0() -> i32 {
     ({ test_3() });
     ({ test_14() });
-    println!("return from main");
+    printf!(b"return from main\n");
     return 0;
 }
 pub trait HoldsTrackerImpl {
@@ -184,10 +184,10 @@ pub trait TrackerImpl {
 }
 impl TrackerImpl for Ptr<Tracker> {
     fn destructor(&self) {
-        println!("destroy {}", (*self).with(|__s| __s.tag));
+        printf!(b"destroy %d\n", (*self).with(|__s| __s.tag));
     }
     fn touch(&self) {
-        println!("touch {}", (*self).with(|__s| __s.tag));
+        printf!(b"touch %d\n", (*self).with(|__s| __s.tag));
     }
 }
 pub fn __cpp2rust_init_globals() {

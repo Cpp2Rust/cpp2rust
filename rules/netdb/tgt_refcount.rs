@@ -26,7 +26,8 @@ fn f1(a0: Ptr<i8>, a1: Ptr<i8>, a2: Ptr<Addrinfo>, a3: Ptr<Ptr<Addrinfo>>) -> i3
     let __port: u16 = if a1.is_null() {
         0
     } else {
-        a1.to_rust_string().parse().unwrap_or(0)
+        a1.with_c_bytes(|__s| str::from_utf8(__s).ok()?.parse().ok())
+            .unwrap_or(0)
     };
     let mut __addrs: Vec<::std::net::IpAddr> = Vec::new();
     if a0.is_null() {
@@ -36,20 +37,24 @@ fn f1(a0: Ptr<i8>, a1: Ptr<i8>, a2: Ptr<Addrinfo>, a3: Ptr<Ptr<Addrinfo>>) -> i3
             __addrs.push(::std::net::IpAddr::V4(::std::net::Ipv4Addr::UNSPECIFIED));
         }
     } else {
-        let __host = a0.to_rust_string();
-        match __host.parse::<::std::net::IpAddr>() {
-            Ok(__ip) => __addrs.push(__ip),
-            Err(_) => {
-                use ::std::net::ToSocketAddrs;
-                match (__host.as_str(), __port).to_socket_addrs() {
-                    Ok(__it) => {
-                        for __sa in __it {
-                            __addrs.push(__sa.ip());
+        // A host name that is not UTF-8 is not found, as the resolver takes a
+        // str.
+        match a0.with_c_bytes(|__s| str::from_utf8(__s).map(str::to_owned)) {
+            Ok(__host) => match __host.parse::<::std::net::IpAddr>() {
+                Ok(__ip) => __addrs.push(__ip),
+                Err(_) => {
+                    use ::std::net::ToSocketAddrs;
+                    match (__host.as_str(), __port).to_socket_addrs() {
+                        Ok(__it) => {
+                            for __sa in __it {
+                                __addrs.push(__sa.ip());
+                            }
                         }
+                        Err(_) => {}
                     }
-                    Err(_) => {}
                 }
-            }
+            },
+            Err(_) => {}
         }
     }
     __addrs.retain(|__ip| match __family {

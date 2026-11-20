@@ -40,8 +40,8 @@ fn main_0() -> i32 {
     'loop_: while __do_while || (false) {
         __do_while = false;
         let mut stream: Ptr<CFile> = match CFile::open(
-            &Ptr::<i8>::from_string_literal(b"/dev/zero").to_rust_string(),
-            &Ptr::<i8>::from_string_literal(b"rb").to_rust_string(),
+            &Ptr::<i8>::from_string_literal(b"/dev/zero").to_c_u8_bytes(),
+            &Ptr::<i8>::from_string_literal(b"rb").to_c_u8_bytes(),
         ) {
             Some(__f) => Ptr::alloc(__f),
             None => Ptr::null(),
@@ -84,8 +84,8 @@ fn main_0() -> i32 {
     'loop_: while __do_while || (false) {
         __do_while = false;
         let mut stream: Ptr<CFile> = match CFile::open(
-            &Ptr::<i8>::from_string_literal(b"/dev/zero").to_rust_string(),
-            &Ptr::<i8>::from_string_literal(b"rb").to_rust_string(),
+            &Ptr::<i8>::from_string_literal(b"/dev/zero").to_c_u8_bytes(),
+            &Ptr::<i8>::from_string_literal(b"rb").to_c_u8_bytes(),
         ) {
             Some(__f) => Ptr::alloc(__f),
             None => Ptr::null(),
@@ -144,8 +144,8 @@ fn main_0() -> i32 {
     'loop_: while __do_while || (false) {
         __do_while = false;
         let mut stream: Ptr<CFile> = match CFile::open(
-            &Ptr::<i8>::from_string_literal(b"/dev/null").to_rust_string(),
-            &Ptr::<i8>::from_string_literal(b"wb").to_rust_string(),
+            &Ptr::<i8>::from_string_literal(b"/dev/null").to_c_u8_bytes(),
+            &Ptr::<i8>::from_string_literal(b"wb").to_c_u8_bytes(),
         ) {
             Some(__f) => Ptr::alloc(__f),
             None => Ptr::null(),
@@ -174,8 +174,8 @@ fn main_0() -> i32 {
     'loop_: while __do_while || (false) {
         __do_while = false;
         let mut stream: Ptr<CFile> = match CFile::open(
-            &Ptr::<i8>::from_string_literal(b"/dev/null").to_rust_string(),
-            &Ptr::<i8>::from_string_literal(b"wb").to_rust_string(),
+            &Ptr::<i8>::from_string_literal(b"/dev/null").to_c_u8_bytes(),
+            &Ptr::<i8>::from_string_literal(b"wb").to_c_u8_bytes(),
         ) {
             Some(__f) => Ptr::alloc(__f),
             None => Ptr::null(),

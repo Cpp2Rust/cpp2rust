@@ -30,5 +30,10 @@ int main() {
   std::cout << std::endl;
   assert(made == 2);
 
+  // The bytes of C strings need not be UTF-8.
+  const char *bytes = "\xe9\xc3\xa9";
+  const unsigned char *ubytes = reinterpret_cast<const unsigned char *>(bytes);
+  std::cout << bytes << '|' << ubytes << '|' << "\xff" << std::endl;
+
   return 0;
 }

@@ -14,6 +14,10 @@ const _: () = assert!(
     ((::std::mem::size_of::<*mut i32>()) == (8_usize)),
     "sizeof(int *) == 8"
 );
+const _: () = assert!(
+    ((::std::mem::size_of::<[libc::c_char; 3]>()) == (3_usize)),
+    "sizeof(\"é\") == 3"
+);
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();

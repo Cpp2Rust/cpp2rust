@@ -45,9 +45,9 @@ fn main_0() -> i32 {
         __bytes.push(0);
         __bytes
     };
-    println!("{}", (s.len() - 1));
-    println!(
-        "{} {}",
+    printf!(b"%zu\n", (s.len() - 1));
+    printf!(
+        b"%zu %zu\n",
         buf.decay().to_c_string_iterator().count(),
         buf.decay().with_c_str(|__lookup| {
             s.iter()
@@ -62,7 +62,7 @@ fn main_0() -> i32 {
         __bytes.push(0);
         __bytes
     };
-    println!("{}", (t.len() - 1));
+    printf!(b"%zu\n", (t.len() - 1));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

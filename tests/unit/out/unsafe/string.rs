@@ -145,9 +145,8 @@ unsafe fn main_0() -> i32 {
                 1_usize
                     + match s1.iter().rposition(|&c| {
                         ::std::ffi::CStr::from_ptr(c"l".as_ptr())
-                            .to_str()
-                            .unwrap()
-                            .contains(c as u8 as char)
+                            .to_bytes()
+                            .contains(&(c as u8))
                     }) {
                         Some(idx) => idx,
                         None => usize::MAX,
@@ -334,9 +333,8 @@ unsafe fn main_0() -> i32 {
     assert!(((substr_2[(7_usize)] as i32) == (('o' as libc::c_char) as i32)));
     let mut pos: usize = match result.iter().rposition(|&c| {
         ::std::ffi::CStr::from_ptr(c"b".as_ptr())
-            .to_str()
-            .unwrap()
-            .contains(c as u8 as char)
+            .to_bytes()
+            .contains(&(c as u8))
     }) {
         Some(idx) => idx,
         None => usize::MAX,
@@ -344,9 +342,8 @@ unsafe fn main_0() -> i32 {
     assert!(((pos) == (0_usize)));
     pos = match result.iter().rposition(|&c| {
         ::std::ffi::CStr::from_ptr(c"f".as_ptr())
-            .to_str()
-            .unwrap()
-            .contains(c as u8 as char)
+            .to_bytes()
+            .contains(&(c as u8))
     }) {
         Some(idx) => idx,
         None => usize::MAX,
@@ -354,9 +351,8 @@ unsafe fn main_0() -> i32 {
     assert!(((pos) == (5_usize)));
     pos = match result.iter().rposition(|&c| {
         ::std::ffi::CStr::from_ptr(c"o".as_ptr())
-            .to_str()
-            .unwrap()
-            .contains(c as u8 as char)
+            .to_bytes()
+            .contains(&(c as u8))
     }) {
         Some(idx) => idx,
         None => usize::MAX,
@@ -364,14 +360,41 @@ unsafe fn main_0() -> i32 {
     assert!(((pos) == (7_usize)));
     pos = match result.iter().rposition(|&c| {
         ::std::ffi::CStr::from_ptr(c"x".as_ptr())
-            .to_str()
-            .unwrap()
-            .contains(c as u8 as char)
+            .to_bytes()
+            .contains(&(c as u8))
     }) {
         Some(idx) => idx,
         None => usize::MAX,
     };
     assert!(((pos) == ((-1_i64 as u64) as usize)));
+    let mut bytes: Vec<libc::c_char> = std::slice::from_raw_parts(
+        c"a\xe9".as_ptr(),
+        (0..)
+            .take_while(|&i| *c"a\xe9".as_ptr().add(i) != 0)
+            .count()
+            + 1,
+    )
+    .to_vec();
+    assert!(
+        ((match bytes.iter().rposition(|&c| {
+            ::std::ffi::CStr::from_ptr(c"\xe9".as_ptr())
+                .to_bytes()
+                .contains(&(c as u8))
+        }) {
+            Some(idx) => idx,
+            None => usize::MAX,
+        }) == (1_usize))
+    );
+    assert!(
+        ((match bytes.iter().rposition(|&c| {
+            ::std::ffi::CStr::from_ptr(c"\xc3".as_ptr())
+                .to_bytes()
+                .contains(&(c as u8))
+        }) {
+            Some(idx) => idx,
+            None => usize::MAX,
+        }) == ((-1_i64 as u64) as usize))
+    );
     pos = {
         let __hay = &result[..result.len() - 1];
         let __needle = ::std::slice::from_raw_parts(c"f".as_ptr(), libc::strlen(c"f".as_ptr()));
@@ -821,8 +844,8 @@ unsafe fn main_0() -> i32 {
             }
     );
     assert!(
-        libcc2rs::format_c("%f", &[VaArg::Double(1.5_f32 as f64)])
-            .bytes()
+        libcc2rs::format_c(b"%f", &[VaArg::Double(1.5_f32 as f64)])
+            .into_iter()
             .map(|__b| __b as libc::c_char)
             .chain([0])
             .collect::<Vec<_>>()
@@ -838,8 +861,8 @@ unsafe fn main_0() -> i32 {
             }
     );
     assert!(
-        libcc2rs::format_c("%f", &[VaArg::Double(-0.25_f64 as f64)])
-            .bytes()
+        libcc2rs::format_c(b"%f", &[VaArg::Double(-0.25_f64 as f64)])
+            .into_iter()
             .map(|__b| __b as libc::c_char)
             .chain([0])
             .collect::<Vec<_>>()

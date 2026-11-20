@@ -77,11 +77,10 @@ fn main_0() -> i32 {
                     == 0)
             );
             assert!(
-                (match nix::net::if_::if_nametoindex(
-                    ifa.with(|__s| __s.ifa_name.clone())
-                        .to_rust_string()
-                        .as_str()
-                ) {
+                (match ifa
+                    .with(|__s| __s.ifa_name.clone())
+                    .with_c_bytes(nix::net::if_::if_nametoindex)
+                {
                     Ok(__i) => __i,
                     Err(__e) => {
                         libcc2rs::cpp2rust_errno().write(__e as i32);
@@ -107,11 +106,9 @@ fn main_0() -> i32 {
         }
     };
     assert!(
-        (match nix::net::if_::if_nametoindex(
-            Ptr::<i8>::from_string_literal(b"cpp2rust_no_such_if")
-                .to_rust_string()
-                .as_str()
-        ) {
+        (match Ptr::<i8>::from_string_literal(b"cpp2rust_no_such_if")
+            .with_c_bytes(nix::net::if_::if_nametoindex)
+        {
             Ok(__i) => __i,
             Err(__e) => {
                 libcc2rs::cpp2rust_errno().write(__e as i32);

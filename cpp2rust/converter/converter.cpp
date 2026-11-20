@@ -1794,6 +1794,11 @@ std::string Converter::ConvertPointeeCast(std::string str,
                      target);
 }
 
+static bool IsCharPointer(const clang::Expr *expr) {
+  auto *ptr = expr->getType()->getAs<clang::PointerType>();
+  return ptr && ptr->getPointeeType()->isCharType();
+}
+
 bool Converter::GetFmtArg(clang::Expr *arg, std::string &fmt,
                           std::string &fmt_args, const char *&fmt_trait,
                           std::string &fmt_width) {
@@ -1818,7 +1823,7 @@ bool Converter::GetFmtArg(clang::Expr *arg, std::string &fmt,
     fmt_trait = "";
   } else if (IsStdFunction(arg, "setw")) {
     fmt_width = Trim(ToString(arg));
-  } else if (!arg->getType()->isCharType() &&
+  } else if (!arg->getType()->isCharType() && !IsCharPointer(arg) &&
              Mapper::Map(*this, arg->getType()) !=
                  std::format("Vec<{}>", CharRustType())) {
     fmt += ("{:" + fmt_width + fmt_trait + "}");
@@ -1849,6 +1854,10 @@ bool Converter::GetRawArg(clang::Expr *arg,
     raw_args.push_back("b\"\\n\"");
   } else if (clang::isa<clang::StringLiteral>(arg->IgnoreImplicit())) {
     raw_args.push_back("b" + GetEscapedStringLiteral(arg));
+  } else if (IsCharPointer(arg)) {
+    // Not formatted, as the bytes need not be UTF-8.
+    PushExprKind push(*this, ExprKind::RValue);
+    raw_args.push_back(GetCStrBytes(ToString(arg)));
   } else {
     return false;
   }
@@ -1857,6 +1866,11 @@ bool Converter::GetRawArg(clang::Expr *arg,
 
 std::string Converter::ConvertStream(clang::Expr *expr) {
   return ToString(expr);
+}
+
+std::string Converter::GetCStrBytes(std::string_view ptr) const {
+  return std::format(
+      "::std::ffi::CStr::from_ptr({} as *const libc::c_char).to_bytes()", ptr);
 }
 
 void Converter::ConvertCallToOstream(clang::CallExpr *expr) {

@@ -292,6 +292,8 @@ public:
 
   void ConvertCallToOstream(clang::CallExpr *expr);
   virtual std::string ConvertStream(clang::Expr *expr);
+  // The bytes, without the NUL, of the C string that `ptr` points to.
+  virtual std::string GetCStrBytes(std::string_view ptr) const;
 
   struct TempMaterializationCtx {
     std::vector<std::optional<clang::QualType>> materialized_args;

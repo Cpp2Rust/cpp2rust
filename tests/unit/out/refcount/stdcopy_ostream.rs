@@ -17,11 +17,13 @@ fn main_0() -> i32 {
         __bytes
     }));
     let file: Value<Box<[i8]>> = Rc::new(RefCell::new(i8::array_from_literal(
-        b"test_stdcopy_ostream.txt\0",
+        b"test_stdcopy_ostream\xff.txt\0",
     )));
     {
         let ofs: Value<::std::fs::File> = Rc::new(RefCell::new(
-            ::std::fs::File::create(file.decay().to_string()).expect("Failed to open file"),
+            file.decay()
+                .with_c_os_str(|__path| ::std::fs::File::create(__path))
+                .expect("Failed to open file"),
         ));
         {
             let mut __tmp_0 = { RandomAccessIterator::Vec(str.decay()) };
@@ -39,8 +41,8 @@ fn main_0() -> i32 {
         write!(ofs.as_pointer(), "{:}", 42,);
     }
     let mut f: Ptr<CFile> = match CFile::open(
-        &file.decay().to_rust_string(),
-        &Ptr::<i8>::from_string_literal(b"rb").to_rust_string(),
+        &file.decay().to_c_u8_bytes(),
+        &Ptr::<i8>::from_string_literal(b"rb").to_c_u8_bytes(),
     ) {
         Some(__f) => Ptr::alloc(__f),
         None => Ptr::null(),

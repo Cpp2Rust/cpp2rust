@@ -331,6 +331,29 @@ fn main_0() -> i32 {
             .unwrap_or(usize::MAX)
     });
     assert!((pos == ((-1_i64 as u64) as usize)));
+    let mut bytes: Vec<i8> = {
+        let mut __bytes = Ptr::<i8>::from_string_literal(b"a\xe9").to_c_bytes();
+        __bytes.push(0);
+        __bytes
+    };
+    assert!(
+        (Ptr::<i8>::from_string_literal(b"\xe9").with_c_str(|__lookup| {
+            bytes
+                .iter()
+                .take(bytes.len().saturating_sub(1))
+                .rposition(|&x| __lookup.contains(&x))
+                .unwrap_or(usize::MAX)
+        }) == 1_usize)
+    );
+    assert!(
+        (Ptr::<i8>::from_string_literal(b"\xc3").with_c_str(|__lookup| {
+            bytes
+                .iter()
+                .take(bytes.len().saturating_sub(1))
+                .rposition(|&x| __lookup.contains(&x))
+                .unwrap_or(usize::MAX)
+        }) == ((-1_i64 as u64) as usize))
+    );
     pos = {
         let __hay = &(*result.borrow())[..(*result.borrow()).len().saturating_sub(1)];
         Ptr::<i8>::from_string_literal(b"f").with_c_str(|__needle| {
@@ -384,7 +407,7 @@ fn main_0() -> i32 {
             __tmp1
         })
     }));
-    println!("position: {} {}", once.decay(), substr_pos);
+    printf!(b"position: %s %zu\n", once.decay(), substr_pos);
     let mut substr_count: usize = 2_usize;
     {
         (*once.borrow_mut()) = {
@@ -398,7 +421,7 @@ fn main_0() -> i32 {
             })
         };
     };
-    println!("count: {} {}", once.decay(), substr_count);
+    printf!(b"count: %s %zu\n", once.decay(), substr_count);
     let receiver_calls: Value<i32> = Rc::new(RefCell::new(0));
     {
         (*once.borrow_mut()) = Rc::new(RefCell::new(
@@ -413,7 +436,11 @@ fn main_0() -> i32 {
             __tmp1
         });
     };
-    println!("receiver: {} {}", once.decay(), (*receiver_calls.borrow()));
+    printf!(
+        b"receiver: %s %d\n",
+        once.decay(),
+        (*receiver_calls.borrow())
+    );
     let ref_calls: Value<i32> = Rc::new(RefCell::new(0));
     let target: Value<Vec<i8>> = Rc::new(RefCell::new({
         let mut __bytes = Ptr::<i8>::from_string_literal(b"ab").to_c_bytes();
@@ -436,13 +463,13 @@ fn main_0() -> i32 {
         }
     }
     .write(('A' as i8));
-    println!(
-        "reference receiver: {} {}",
+    printf!(
+        b"reference receiver: %s %d\n",
         target.decay(),
         (*ref_calls.borrow())
     );
-    println!(
-        "copy: {}",
+    printf!(
+        b"copy: %s\n",
         Rc::new(RefCell::new((*target.borrow()).clone())).decay()
     );
     let targets: Value<Box<[Vec<i8>]>> = Rc::new(RefCell::new(Box::new([
@@ -465,8 +492,8 @@ fn main_0() -> i32 {
             (*__b0).push(0)
         }),
     };
-    println!(
-        "element receiver: {} {} {}",
+    printf!(
+        b"element receiver: %s %s %d\n",
         targets.decay().offset(0).decay(),
         targets.decay().offset(1).decay(),
         target_index
@@ -482,9 +509,9 @@ fn main_0() -> i32 {
     .iter_add(-2_isize))
     .iter_deref()
     .read());
-    println!(
-        "temporary end: {} {}",
-        (before_end as i32) as u8 as char,
+    printf!(
+        b"temporary end: %c %d\n",
+        (before_end as i32),
         (*receiver_calls.borrow())
     );
     let chained: Value<Vec<i8>> = Rc::new(RefCell::new(vec![0]));
@@ -740,8 +767,8 @@ fn main_0() -> i32 {
         }
     });
     assert!(match (Rc::new(RefCell::new(
-        libcc2rs::format_c("%f", &[VaArg::Double(1.5_f32 as f64)])
-            .bytes()
+        libcc2rs::format_c(b"%f", &[VaArg::Double(1.5_f32 as f64)])
+            .into_iter()
             .map(|__b| __b as i8)
             .chain([0])
             .collect::<Vec<_>>()
@@ -757,8 +784,8 @@ fn main_0() -> i32 {
         }
     });
     assert!(match (Rc::new(RefCell::new(
-        libcc2rs::format_c("%f", &[VaArg::Double(-0.25_f64 as f64)])
-            .bytes()
+        libcc2rs::format_c(b"%f", &[VaArg::Double(-0.25_f64 as f64)])
+            .into_iter()
             .map(|__b| __b as i8)
             .chain([0])
             .collect::<Vec<_>>()

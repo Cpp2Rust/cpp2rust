@@ -36,5 +36,9 @@ int main() {
   fmt[5] = 0;
   assert(snprintf(buf, sizeof(buf), fmt, 3.26) == 5);
   assert(strcmp(buf, "  3.3") == 0);
+  // The bytes need not be UTF-8, and widths and precisions count bytes.
+  assert(snprintf(buf, sizeof(buf), "\xff%s|%4s|%.1s|%c", "\xe9", "\xc3\xa9",
+                  "\xc3\xa9", 0xe9) == 11);
+  assert(strcmp(buf, "\xff\xe9|  \xc3\xa9|\xc3|\xe9") == 0);
   return 0;
 }

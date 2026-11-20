@@ -28,7 +28,7 @@ fn f6(a0: Ptr<i8>) -> Ptr<i8> {
 }
 
 fn f9(a0: Ptr<i8>, a1: Ptr<i8>) -> Ptr<i8> {
-    match ::std::fs::canonicalize(a0.to_rust_string()) {
+    match a0.with_c_os_str(|__path| ::std::fs::canonicalize(__path)) {
         Ok(__p) => {
             let mut __bytes = __p.into_os_string().into_encoded_bytes();
             __bytes.push(0);

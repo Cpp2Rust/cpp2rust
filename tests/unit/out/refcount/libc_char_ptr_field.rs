@@ -25,29 +25,30 @@ fn main_0() -> i32 {
         return 0;
     }
     let mut home: Ptr<i8> = pw.with(|__s| __s.pw_dir.clone());
-    let mut d: Ptr<libcc2rs::Dirent> = match nix::dir::Dir::open(
-        Ptr::<i8>::from_string_literal(b"/tmp")
-            .to_rust_string()
-            .as_str(),
-        nix::fcntl::OFlag::O_RDONLY,
-        nix::sys::stat::Mode::empty(),
-    ) {
-        Ok(__dir) => Ptr::alloc(CDir::from_dir(__dir)),
-        Err(__e) => {
-            libcc2rs::cpp2rust_errno().write(__e as i32);
-            Ptr::null()
+    let mut d: Ptr<libcc2rs::Dirent> =
+        match Ptr::<i8>::from_string_literal(b"/tmp").with_c_bytes(|__path| {
+            nix::dir::Dir::open(
+                __path,
+                nix::fcntl::OFlag::O_RDONLY,
+                nix::sys::stat::Mode::empty(),
+            )
+        }) {
+            Ok(__dir) => Ptr::alloc(CDir::from_dir(__dir)),
+            Err(__e) => {
+                libcc2rs::cpp2rust_errno().write(__e as i32);
+                Ptr::null()
+            }
         }
-    }
-    .with(|__d| {
-        let __i = __d.pos.get();
-        if __i >= __d.entries.len() {
-            Ptr::null()
-        } else {
-            __d.pos.set(__i + 1);
-            let __e = &__d.entries[__i];
-            Ptr::alloc(Dirent::from_entry(__e.0, &__e.1, __e.2))
-        }
-    });
+        .with(|__d| {
+            let __i = __d.pos.get();
+            if __i >= __d.entries.len() {
+                Ptr::null()
+            } else {
+                __d.pos.set(__i + 1);
+                let __e = &__d.entries[__i];
+                Ptr::alloc(Dirent::from_entry(__e.0, &__e.1, __e.2))
+            }
+        });
     let mut dname: Ptr<i8> = array_field_ptr!(d, d_name);
     return 0;
 }

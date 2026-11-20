@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <stdio.h>
+#include <string.h>
 #include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
@@ -63,6 +64,10 @@ static void test_strftime(void) {
   printf("%s\n", buf);
   assert(strftime(buf, sizeof(buf), "%e", &tm) > 0);
   printf("%s\n", buf);
+  // The bytes of the format need not be UTF-8.
+  assert(strftime(buf, sizeof(buf), "\xff%Y\xc3\xa9", &tm) == 7);
+  assert(strcmp(buf, "\xff"
+                     "2024\xc3\xa9") == 0);
   char small[4];
   assert(strftime(small, sizeof(small), "%Y-%m-%d", &tm) == 0);
 }

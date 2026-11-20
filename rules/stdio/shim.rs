@@ -18,25 +18,24 @@ impl CFile {
         }
     }
 
-    pub fn open(path: &str, mode: &str) -> Option<CFile> {
+    pub fn open(path: &[u8], mode: &[u8]) -> Option<CFile> {
         use nix::fcntl::OFlag;
-        let mut chars = mode.chars();
-        let mut flags = match chars.next() {
-            Some('r') => OFlag::O_RDONLY,
-            Some('w') => OFlag::O_WRONLY.union(OFlag::O_CREAT).union(OFlag::O_TRUNC),
-            Some('a') => OFlag::O_WRONLY.union(OFlag::O_CREAT).union(OFlag::O_APPEND),
-            _ => panic!("fopen: unsupported mode {:?}", mode),
+        let mut flags = match mode.first() {
+            Some(b'r') => OFlag::O_RDONLY,
+            Some(b'w') => OFlag::O_WRONLY.union(OFlag::O_CREAT).union(OFlag::O_TRUNC),
+            Some(b'a') => OFlag::O_WRONLY.union(OFlag::O_CREAT).union(OFlag::O_APPEND),
+            _ => panic!("fopen: unsupported mode \"{}\"", mode.escape_ascii()),
         };
-        for c in chars {
+        for c in &mode[1..] {
             match c {
-                'b' => {}
-                '+' => {
+                b'b' => {}
+                b'+' => {
                     flags.remove(OFlag::O_WRONLY);
                     flags.insert(OFlag::O_RDWR);
                 }
-                'x' => flags.insert(OFlag::O_EXCL),
-                'e' => flags.insert(OFlag::O_CLOEXEC),
-                _ => panic!("fopen: unsupported mode {:?}", mode),
+                b'x' => flags.insert(OFlag::O_EXCL),
+                b'e' => flags.insert(OFlag::O_CLOEXEC),
+                _ => panic!("fopen: unsupported mode \"{}\"", mode.escape_ascii()),
             }
         }
         match nix::fcntl::open(path, flags, nix::sys::stat::Mode::from_bits_truncate(0o666)) {

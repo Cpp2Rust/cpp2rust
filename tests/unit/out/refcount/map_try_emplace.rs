@@ -674,8 +674,8 @@ fn main_0() -> i32 {
             != 0;
         ok = rhs_0
     };
-    println!(
-        "{} {} {} {} {}",
+    printf!(
+        b"%d %d %d %d %d\n",
         rows,
         calls_0.with(|rc| *rc.borrow()),
         made_1.with(|rc| *rc.borrow()),

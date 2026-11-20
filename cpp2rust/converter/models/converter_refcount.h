@@ -123,8 +123,6 @@ public:
   void ConvertConditionalBranch(clang::Expr *expr,
                                 clang::QualType type) override;
 
-  void ConvertPrintf(clang::CallExpr *expr);
-
   void ConvertVAArgCall(clang::CallExpr *expr) override;
 
   std::optional<TempMaterializationCtx>
@@ -243,6 +241,7 @@ public:
   bool VisitCXXDeleteExpr(clang::CXXDeleteExpr *expr) override;
 
   std::string ConvertStream(clang::Expr *expr) override;
+  std::string GetCStrBytes(std::string_view ptr) const override;
 
   bool VisitCXXConstructExpr(clang::CXXConstructExpr *expr) override;
 

@@ -136,6 +136,9 @@ int main() {
   assert(pos == 7);
   pos = result.find_last_of("x");
   assert(pos == -1ul);
+  std::string bytes = "a\xe9";
+  assert(bytes.find_last_of("\xe9") == 1);
+  assert(bytes.find_last_of("\xc3") == -1ul);
   pos = result.find("f");
   assert(pos == 5);
   pos = result.find("oo");

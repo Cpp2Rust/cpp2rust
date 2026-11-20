@@ -102,8 +102,8 @@ pub fn test_fileno_3() {
     assert!((libcc2rs::c_stderr().with(|__f| __f.fd) == 2));
     let mut file: Ptr<i8> = Ptr::<i8>::from_string_literal(b"cpp2rust_fileno_test.tmp");
     let mut fp: Ptr<CFile> = match CFile::open(
-        &file.to_rust_string(),
-        &Ptr::<i8>::from_string_literal(b"wb").to_rust_string(),
+        &file.to_c_u8_bytes(),
+        &Ptr::<i8>::from_string_literal(b"wb").to_c_u8_bytes(),
     ) {
         Some(__f) => Ptr::alloc(__f),
         None => Ptr::null(),

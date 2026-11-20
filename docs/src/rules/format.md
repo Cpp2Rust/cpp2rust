@@ -45,7 +45,7 @@ unsafe fn f4(a0: *const libc::c_char) -> i32 {
 ```rust
 // rules/unistd/tgt_refcount.rs
 fn f4(a0: Ptr<u8>) -> i32 {
-    match nix::unistd::unlink(a0.to_rust_string().as_str()) {
+    match a0.with_c_bytes(|__path| nix::unistd::unlink(__path)) {
         Ok(()) => 0,
         Err(__e) => {
             libcc2rs::cpp2rust_errno().write(__e as i32);

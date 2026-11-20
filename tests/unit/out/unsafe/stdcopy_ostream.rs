@@ -21,11 +21,15 @@ unsafe fn main_0() -> i32 {
             + 1,
     )
     .to_vec();
-    let file: [libc::c_char; 25] = std::mem::transmute(*b"test_stdcopy_ostream.txt\0");
+    let file: [libc::c_char; 26] = std::mem::transmute(*b"test_stdcopy_ostream\xff.txt\0");
     {
-        let mut ofs: ::std::fs::File =
-            ::std::fs::File::create(::std::ffi::CStr::from_ptr(file.as_ptr()).to_str().unwrap())
-                .unwrap();
+        let mut ofs: ::std::fs::File = {
+            use ::std::os::unix::ffi::OsStrExt;
+            ::std::fs::File::create(::std::ffi::OsStr::from_bytes(
+                ::std::ffi::CStr::from_ptr(file.as_ptr()).to_bytes(),
+            ))
+            .unwrap()
+        };
         {
             let mut __tmp_0 = { UnsafeRandomAccessIterator::Vec(str.as_mut_ptr()) };
             let mut __tmp_1 =

@@ -93,6 +93,19 @@ unsafe fn main_0() -> i32 {
     );
     write!((*libcc2rs::cout_unsafe()), "\n",);
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut made_0)) == (2)));
+    let mut bytes: *const libc::c_char = c"\xe9\xc3\xa9".as_ptr();
+    let mut ubytes: *const u8 = (bytes as *const u8);
+    (*libcc2rs::cout_unsafe()).write_all(
+        &([
+            (::std::ffi::CStr::from_ptr(bytes as *const libc::c_char).to_bytes() as &[u8]),
+            (&[('|' as libc::c_char) as u8] as &[u8]),
+            (::std::ffi::CStr::from_ptr(ubytes as *const libc::c_char).to_bytes() as &[u8]),
+            (&[('|' as libc::c_char) as u8] as &[u8]),
+            (b"\xff" as &[u8]),
+            (b"\n" as &[u8]),
+        ]
+        .concat()),
+    );
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {

@@ -9,7 +9,7 @@ fn f1(a0: i32, a1: Ptr<i8>, a2: AnyPtr, a3: usize, a4: i32) -> i32 {
         0 => {}
         __f => panic!("fsetxattr: unsupported flags {}", __f),
     }
-    let __name = a1.to_rust_string();
+    let __name = a1.with_c_os_str(::std::ffi::OsStr::to_os_string);
     match FdRegistry::with_fd(a0, |__fd| nix::unistd::dup(__fd)) {
         Ok(__dup) => {
             let __file = ::std::fs::File::from(__dup);

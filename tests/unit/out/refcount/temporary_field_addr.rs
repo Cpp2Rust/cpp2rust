@@ -130,8 +130,8 @@ fn main_0() -> i32 {
             }),
         )
     });
-    println!(
-        "{} {} {} {} {} {}",
+    printf!(
+        b"%d %d %d %zu %d %d\n",
         member,
         nested,
         element,

@@ -121,9 +121,8 @@ unsafe fn f15(a0: &mut Vec<libc::c_char>) -> UnsafeRandomAccessIterator<libc::c_
 unsafe fn f16(a0: Vec<libc::c_char>, a1: *const libc::c_char) -> usize {
     match a0.iter().rposition(|&c| {
         ::std::ffi::CStr::from_ptr(a1)
-            .to_str()
-            .unwrap()
-            .contains(c as u8 as char)
+            .to_bytes()
+            .contains(&(c as u8))
     }) {
         Some(idx) => idx,
         None => usize::MAX,
@@ -262,16 +261,16 @@ fn f38(a0: u64) -> Vec<libc::c_char> {
 
 // As sprintf's %f.
 fn f39(a0: f32) -> Vec<libc::c_char> {
-    libcc2rs::format_c("%f", &[VaArg::Double(a0 as f64)])
-        .bytes()
+    libcc2rs::format_c(b"%f", &[VaArg::Double(a0 as f64)])
+        .into_iter()
         .map(|__b| __b as libc::c_char)
         .chain([0])
         .collect::<Vec<_>>()
 }
 
 fn f40(a0: f64) -> Vec<libc::c_char> {
-    libcc2rs::format_c("%f", &[VaArg::Double(a0 as f64)])
-        .bytes()
+    libcc2rs::format_c(b"%f", &[VaArg::Double(a0 as f64)])
+        .into_iter()
         .map(|__b| __b as libc::c_char)
         .chain([0])
         .collect::<Vec<_>>()

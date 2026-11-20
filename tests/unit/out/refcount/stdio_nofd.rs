@@ -9,8 +9,8 @@ use std::rc::{Rc, Weak};
 pub fn test_fputc_fputs_0() {
     let mut path: Ptr<i8> = Ptr::<i8>::from_string_literal(b"cpp2rust_stdio_nofd_puts.tmp");
     let mut fp: Ptr<CFile> = match CFile::open(
-        &path.to_rust_string(),
-        &Ptr::<i8>::from_string_literal(b"wb").to_rust_string(),
+        &path.to_c_u8_bytes(),
+        &Ptr::<i8>::from_string_literal(b"wb").to_c_u8_bytes(),
     ) {
         Some(__f) => Ptr::alloc(__f),
         None => Ptr::null(),
@@ -41,8 +41,8 @@ pub fn test_fputc_fputs_0() {
         } == 0)
     );
     fp = match CFile::open(
-        &path.to_rust_string(),
-        &Ptr::<i8>::from_string_literal(b"rb").to_rust_string(),
+        &path.to_c_u8_bytes(),
+        &Ptr::<i8>::from_string_literal(b"rb").to_c_u8_bytes(),
     ) {
         Some(__f) => Ptr::alloc(__f),
         None => Ptr::null(),
@@ -112,8 +112,8 @@ pub fn test_puts_1() {
 pub fn test_fgets_getc_2() {
     let mut path: Ptr<i8> = Ptr::<i8>::from_string_literal(b"cpp2rust_stdio_nofd_gets.tmp");
     let mut fp: Ptr<CFile> = match CFile::open(
-        &path.to_rust_string(),
-        &Ptr::<i8>::from_string_literal(b"wb").to_rust_string(),
+        &path.to_c_u8_bytes(),
+        &Ptr::<i8>::from_string_literal(b"wb").to_c_u8_bytes(),
     ) {
         Some(__f) => Ptr::alloc(__f),
         None => Ptr::null(),
@@ -135,8 +135,8 @@ pub fn test_fgets_getc_2() {
         } == 0)
     );
     fp = match CFile::open(
-        &path.to_rust_string(),
-        &Ptr::<i8>::from_string_literal(b"rb").to_rust_string(),
+        &path.to_c_u8_bytes(),
+        &Ptr::<i8>::from_string_literal(b"rb").to_c_u8_bytes(),
     ) {
         Some(__f) => Ptr::alloc(__f),
         None => Ptr::null(),
@@ -335,8 +335,8 @@ pub fn test_fgets_getc_2() {
 pub fn test_fgets_size_one_and_error_flag_3() {
     let mut path: Ptr<i8> = Ptr::<i8>::from_string_literal(b"cpp2rust_stdio_nofd_gets_flag.tmp");
     let mut fp: Ptr<CFile> = match CFile::open(
-        &path.to_rust_string(),
-        &Ptr::<i8>::from_string_literal(b"wb").to_rust_string(),
+        &path.to_c_u8_bytes(),
+        &Ptr::<i8>::from_string_literal(b"wb").to_c_u8_bytes(),
     ) {
         Some(__f) => Ptr::alloc(__f),
         None => Ptr::null(),
@@ -358,8 +358,8 @@ pub fn test_fgets_size_one_and_error_flag_3() {
         } == 0)
     );
     fp = match CFile::open(
-        &path.to_rust_string(),
-        &Ptr::<i8>::from_string_literal(b"rb").to_rust_string(),
+        &path.to_c_u8_bytes(),
+        &Ptr::<i8>::from_string_literal(b"rb").to_c_u8_bytes(),
     ) {
         Some(__f) => Ptr::alloc(__f),
         None => Ptr::null(),
@@ -482,8 +482,8 @@ pub fn test_fgets_size_one_and_error_flag_3() {
 pub fn test_freopen_4() {
     let mut path: Ptr<i8> = Ptr::<i8>::from_string_literal(b"cpp2rust_stdio_nofd_reopen.tmp");
     let mut fp: Ptr<CFile> = match CFile::open(
-        &path.to_rust_string(),
-        &Ptr::<i8>::from_string_literal(b"wb").to_rust_string(),
+        &path.to_c_u8_bytes(),
+        &Ptr::<i8>::from_string_literal(b"wb").to_c_u8_bytes(),
     ) {
         Some(__f) => Ptr::alloc(__f),
         None => Ptr::null(),
@@ -506,8 +506,8 @@ pub fn test_freopen_4() {
             }
         }
         match CFile::open(
-            &path.to_rust_string(),
-            &Ptr::<i8>::from_string_literal(b"rb").to_rust_string(),
+            &path.to_c_u8_bytes(),
+            &Ptr::<i8>::from_string_literal(b"rb").to_c_u8_bytes(),
         ) {
             Some(__f) => {
                 fp.write(__f);
@@ -548,8 +548,8 @@ pub fn test_freopen_4() {
 pub fn test_fseeko_5() {
     let mut path: Ptr<i8> = Ptr::<i8>::from_string_literal(b"cpp2rust_stdio_nofd_seek.tmp");
     let mut fp: Ptr<CFile> = match CFile::open(
-        &path.to_rust_string(),
-        &Ptr::<i8>::from_string_literal(b"wb").to_rust_string(),
+        &path.to_c_u8_bytes(),
+        &Ptr::<i8>::from_string_literal(b"wb").to_c_u8_bytes(),
     ) {
         Some(__f) => Ptr::alloc(__f),
         None => Ptr::null(),
@@ -571,8 +571,8 @@ pub fn test_fseeko_5() {
         } == 0)
     );
     fp = match CFile::open(
-        &path.to_rust_string(),
-        &Ptr::<i8>::from_string_literal(b"rb").to_rust_string(),
+        &path.to_c_u8_bytes(),
+        &Ptr::<i8>::from_string_literal(b"rb").to_c_u8_bytes(),
     ) {
         Some(__f) => Ptr::alloc(__f),
         None => Ptr::null(),
@@ -630,8 +630,8 @@ pub fn test_rename_6() {
     let mut from: Ptr<i8> = Ptr::<i8>::from_string_literal(b"cpp2rust_stdio_nofd_from.tmp");
     let mut to: Ptr<i8> = Ptr::<i8>::from_string_literal(b"cpp2rust_stdio_nofd_to.tmp");
     let mut fp: Ptr<CFile> = match CFile::open(
-        &from.to_rust_string(),
-        &Ptr::<i8>::from_string_literal(b"wb").to_rust_string(),
+        &from.to_c_u8_bytes(),
+        &Ptr::<i8>::from_string_literal(b"wb").to_c_u8_bytes(),
     ) {
         Some(__f) => Ptr::alloc(__f),
         None => Ptr::null(),
@@ -653,7 +653,8 @@ pub fn test_rename_6() {
         } == 0)
     );
     assert!(
-        (match ::std::fs::rename(from.to_rust_string(), to.to_rust_string()) {
+        (match from.with_c_os_str(|__from| to.with_c_os_str(|__to| ::std::fs::rename(__from, __to)))
+        {
             Ok(()) => 0,
             Err(__e) => {
                 libcc2rs::cpp2rust_errno().write(__e.raw_os_error().unwrap_or(::libc::EIO));
@@ -663,8 +664,8 @@ pub fn test_rename_6() {
     );
     assert!(
         ((match CFile::open(
-            &from.to_rust_string(),
-            &Ptr::<i8>::from_string_literal(b"rb").to_rust_string()
+            &from.to_c_u8_bytes(),
+            &Ptr::<i8>::from_string_literal(b"rb").to_c_u8_bytes()
         ) {
             Some(__f) => Ptr::alloc(__f),
             None => Ptr::null(),
@@ -672,8 +673,8 @@ pub fn test_rename_6() {
         .is_null())
     );
     fp = match CFile::open(
-        &to.to_rust_string(),
-        &Ptr::<i8>::from_string_literal(b"rb").to_rust_string(),
+        &to.to_c_u8_bytes(),
+        &Ptr::<i8>::from_string_literal(b"rb").to_c_u8_bytes(),
     ) {
         Some(__f) => Ptr::alloc(__f),
         None => Ptr::null(),
@@ -687,7 +688,8 @@ pub fn test_rename_6() {
         } == 0)
     );
     assert!(
-        (match ::std::fs::rename(from.to_rust_string(), to.to_rust_string()) {
+        (match from.with_c_os_str(|__from| to.with_c_os_str(|__to| ::std::fs::rename(__from, __to)))
+        {
             Ok(()) => 0,
             Err(__e) => {
                 libcc2rs::cpp2rust_errno().write(__e.raw_os_error().unwrap_or(::libc::EIO));
@@ -708,8 +710,8 @@ pub fn test_rename_6() {
 pub fn test_setvbuf_7() {
     let mut path: Ptr<i8> = Ptr::<i8>::from_string_literal(b"cpp2rust_stdio_nofd_vbuf.tmp");
     let mut fp: Ptr<CFile> = match CFile::open(
-        &path.to_rust_string(),
-        &Ptr::<i8>::from_string_literal(b"wb").to_rust_string(),
+        &path.to_c_u8_bytes(),
+        &Ptr::<i8>::from_string_literal(b"wb").to_c_u8_bytes(),
     ) {
         Some(__f) => Ptr::alloc(__f),
         None => Ptr::null(),

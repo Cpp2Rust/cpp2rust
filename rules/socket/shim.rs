@@ -341,7 +341,9 @@ pub fn setsockopt_refcount(fd: i32, level: i32, optname: i32, optval: crate::Any
         }
         #[cfg(target_os = "linux")]
         (::libc::SOL_SOCKET, ::libc::SO_BINDTODEVICE) => {
-            let v = ::std::ffi::OsString::from(optval.reinterpret_cast::<u8>().to_rust_string());
+            let v = optval
+                .reinterpret_cast::<u8>()
+                .with_c_os_str(::std::ffi::OsStr::to_os_string);
             crate::FdRegistry::with_fd(fd, |borrowed| {
                 nix::sys::socket::setsockopt(&borrowed, nix::sys::socket::sockopt::BindToDevice, &v)
             })

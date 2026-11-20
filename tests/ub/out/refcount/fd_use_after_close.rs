@@ -16,13 +16,13 @@ fn main_0() -> i32 {
             Some(__m) => nix::sys::stat::Mode::from_bits_truncate(i32::get(__m) as ::libc::mode_t),
             None => nix::sys::stat::Mode::empty(),
         };
-        match nix::fcntl::open(
-            Ptr::<i8>::from_string_literal(b"/dev/null")
-                .to_rust_string()
-                .as_str(),
-            nix::fcntl::OFlag::from_bits_retain(::libc::O_RDONLY),
-            __mode,
-        ) {
+        match Ptr::<i8>::from_string_literal(b"/dev/null").with_c_bytes(|__path| {
+            nix::fcntl::open(
+                __path,
+                nix::fcntl::OFlag::from_bits_retain(::libc::O_RDONLY),
+                __mode,
+            )
+        }) {
             Ok(__ofd) => FdRegistry::register(__ofd),
             Err(__e) => {
                 libcc2rs::cpp2rust_errno().write(__e as i32);

@@ -17,7 +17,7 @@ int f1(const char *pathname, struct stat *statbuf) {
 ```rust
 // rules/stat/tgt_refcount.rs
 fn f1(a0: Ptr<u8>, a1: Ptr<Stat>) -> i32 {
-    match nix::sys::stat::stat(a0.to_rust_string().as_str()) {
+    match a0.with_c_bytes(nix::sys::stat::stat) {
         Ok(__s) => {
             a1.with_mut(|__st| *__st = Stat::from_libc(&__s));
             0

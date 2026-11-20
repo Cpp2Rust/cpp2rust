@@ -13,9 +13,9 @@ pub fn main() {
 fn main_0() -> i32 {
     let a: Value<i32> = Rc::new(RefCell::new(1));
     let mut p: Ptr<i32> = (a.as_pointer());
-    print!("{:?} {}", p, (p.read()));
+    printf!(b"%p %d", (p).clone(), (p.read()));
     let mut q: AnyPtr = (a.as_pointer()).to_any();
-    println!(" {:?}", q);
+    printf!(b" %p\n", (q).clone());
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

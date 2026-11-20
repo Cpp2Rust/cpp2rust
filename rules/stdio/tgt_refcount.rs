@@ -12,7 +12,7 @@ fn t2() -> CFile {
 }
 
 fn f1(a0: Ptr<i8>, a1: Ptr<i8>) -> Ptr<CFile> {
-    match CFile::open(&a0.to_rust_string(), &a1.to_rust_string()) {
+    match CFile::open(&a0.to_c_u8_bytes(), &a1.to_c_u8_bytes()) {
         Some(__f) => Ptr::alloc(__f),
         None => Ptr::null(),
     }
@@ -138,7 +138,7 @@ fn f18(a0: Ptr<i8>, a1: Ptr<i8>, a2: Ptr<CFile>) -> Ptr<CFile> {
             FdRegistry::close(__fd);
         }
     }
-    match CFile::open(&a0.to_rust_string(), &a1.to_rust_string()) {
+    match CFile::open(&a0.to_c_u8_bytes(), &a1.to_c_u8_bytes()) {
         Some(__f) => {
             a2.write(__f);
             a2
@@ -159,8 +159,7 @@ fn f20(a0: i32, a1: Ptr<i8>) -> Ptr<CFile> {
 }
 
 fn f21(a0: Ptr<i8>, a1: usize, a2: Ptr<i8>, va: Box<[VaArg]>) -> i32 {
-    let __s = libcc2rs::format_c(&a2.to_rust_string(), &va);
-    let __b = __s.as_bytes();
+    let __b = a2.with_c_bytes(|__fmt| libcc2rs::format_c(__fmt, &va));
     if a1 > 0 {
         let __n = ::std::cmp::min(__b.len(), a1 - 1);
         a0.write_c_bytes(&__b[..__n]);
@@ -170,7 +169,7 @@ fn f21(a0: Ptr<i8>, a1: usize, a2: Ptr<i8>, va: Box<[VaArg]>) -> i32 {
 }
 
 fn f22(a0: Ptr<i8>, a1: Ptr<i8>) -> i32 {
-    match ::std::fs::rename(a0.to_rust_string(), a1.to_rust_string()) {
+    match a0.with_c_os_str(|__from| a1.with_c_os_str(|__to| ::std::fs::rename(__from, __to))) {
         Ok(()) => 0,
         Err(__e) => {
             libcc2rs::cpp2rust_errno().write(__e.raw_os_error().unwrap_or(::libc::EIO));
@@ -188,11 +187,9 @@ fn f24(a0: Ptr<CFile>, a1: Ptr<i8>, a2: i32, a3: usize) -> i32 {
 }
 
 fn f28(a0: Ptr<CFile>, a1: Ptr<i8>, va: Box<[VaArg]>) -> i32 {
-    let __s = libcc2rs::format_c(&a1.to_rust_string(), &va);
-    a0.with_mut(|__f| __f.write(__s.as_bytes())) as i32
+    libcc2rs::fprintf(a0, a1, &va)
 }
 
 fn f29(a0: Ptr<i8>, va: Box<[VaArg]>) -> i32 {
-    let __s = libcc2rs::format_c(&a0.to_rust_string(), &va);
-    libcc2rs::c_stdout().with_mut(|__f| __f.write(__s.as_bytes())) as i32
+    libcc2rs::fprintf(libcc2rs::c_stdout(), a0, &va)
 }

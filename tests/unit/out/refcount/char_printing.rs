@@ -90,6 +90,19 @@ fn main_0() -> i32 {
     );
     write!(libcc2rs::cout(), "\n",);
     assert!((made_0.with(|rc| *rc.borrow()) == 2));
+    let mut bytes: Ptr<i8> = Ptr::<i8>::from_string_literal(b"\xe9\xc3\xa9");
+    let mut ubytes: Ptr<u8> = bytes.reinterpret_cast::<u8>();
+    libcc2rs::cout().write_all(
+        &([
+            (&(bytes).to_c_u8_bytes() as &[u8]),
+            (&[('|' as i8) as u8] as &[u8]),
+            (&(ubytes).to_c_u8_bytes() as &[u8]),
+            (&[('|' as i8) as u8] as &[u8]),
+            (b"\xff" as &[u8]),
+            (b"\n" as &[u8]),
+        ]
+        .concat()),
+    );
     return 0;
 }
 pub fn __cpp2rust_init_globals() {

@@ -33,5 +33,12 @@ int main() {
   printf("{} %ju %jd\n", (uintmax_t)5, (intmax_t)-6);
   FILE *fp = stdout;
   put(*fp, "value\n");
+  // The bytes need not be UTF-8.
+  const char *bytes = "\xe9\xc3\xa9";
+  printf("\xff%s|%c|%.1s|%5s\n", bytes, bytes[0], bytes + 1, bytes);
+  fprintf(stderr, "\xff%s\n", bytes);
+  // Written in order with the other functions that write to stdout.
+  printf("no newline, ");
+  put(*fp, "then fputs\n");
   return 0;
 }

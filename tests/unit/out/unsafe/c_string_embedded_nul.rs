@@ -41,9 +41,8 @@ unsafe fn main_0() -> i32 {
                 let mut __tmp_1 = { (buf.as_mut_ptr()).cast_const() };
                 match s.iter().rposition(|&c| {
                     ::std::ffi::CStr::from_ptr(__tmp_1)
-                        .to_str()
-                        .unwrap()
-                        .contains(c as u8 as char)
+                        .to_bytes()
+                        .contains(&(c as u8))
                 }) {
                     Some(idx) => idx,
                     None => usize::MAX,

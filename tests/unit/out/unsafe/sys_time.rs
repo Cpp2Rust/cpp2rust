@@ -158,6 +158,20 @@ pub unsafe fn test_strftime_5() {
             (buf.as_mut_ptr()),
         )
     });
+    assert!(
+        ((libc::strftime(
+            buf.as_mut_ptr(),
+            ::std::mem::size_of::<[libc::c_char; 64]>(),
+            (c"\xff%Y\xc3\xa9".as_ptr().cast_mut()).cast_const(),
+            (&mut tm as *mut ::libc::tm).cast_const()
+        )) == (7_usize))
+    );
+    assert!(
+        ((libc::strcmp(
+            (buf.as_mut_ptr()).cast_const(),
+            (c"\xff2024\xc3\xa9".as_ptr().cast_mut()).cast_const()
+        )) == (0))
+    );
     let mut small: [libc::c_char; 4] = [(0 as libc::c_char); 4];
     assert!(
         ((libc::strftime(

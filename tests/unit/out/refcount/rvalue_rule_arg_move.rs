@@ -73,8 +73,8 @@ fn main_0() -> i32 {
         && ({ (*v.borrow())[0_usize].v } == 1))
         && ({ (*v.borrow())[1_usize].v } == 2);
     let mut pa: Ptr<Elem> = (a.as_pointer());
-    println!(
-        "{} {} {}",
+    printf!(
+        b"%d %d %d\n",
         copies_0.with(|rc| *rc.borrow()),
         moves_1.with(|rc| *rc.borrow()),
         pa.with(|__s| __s.v)

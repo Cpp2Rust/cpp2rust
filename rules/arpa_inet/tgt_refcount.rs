@@ -5,22 +5,23 @@ use libcc2rs::*;
 
 fn f5(a0: i32, a1: Ptr<i8>, a2: AnyPtr) -> i32 {
     if a0 == libc::AF_INET {
-        match a1.to_rust_string().parse::<std::net::Ipv4Addr>() {
-            Ok(__ip) => {
+        // The address is ASCII, so invalid UTF-8 is not an address.
+        match a1.with_c_bytes(|__s| str::from_utf8(__s).ok()?.parse::<std::net::Ipv4Addr>().ok()) {
+            Some(__ip) => {
                 a2.reinterpret_cast::<u8>()
                     .with_slice_mut(4, |__s| __s.copy_from_slice(&__ip.octets()));
                 1
             }
-            Err(_) => 0,
+            None => 0,
         }
     } else if a0 == libc::AF_INET6 {
-        match a1.to_rust_string().parse::<std::net::Ipv6Addr>() {
-            Ok(__ip) => {
+        match a1.with_c_bytes(|__s| str::from_utf8(__s).ok()?.parse::<std::net::Ipv6Addr>().ok()) {
+            Some(__ip) => {
                 a2.reinterpret_cast::<u8>()
                     .with_slice_mut(16, |__s| __s.copy_from_slice(&__ip.octets()));
                 1
             }
-            Err(_) => 0,
+            None => 0,
         }
     } else {
         libcc2rs::cpp2rust_errno().write(::libc::EAFNOSUPPORT);

@@ -1106,160 +1106,6 @@ void ConverterRefCount::ConvertDeclRefValue(clang::Expr *expr,
   SetValueFreshness(expr->getType());
 }
 
-static std::vector<const char *> printf2fmt(std::string &format) {
-  std::vector<const char *> types;
-  std::string escaped;
-  for (char c : format) {
-    escaped += c;
-    if (c == '{' || c == '}') {
-      escaped += c;
-    }
-  }
-  format = std::move(escaped);
-  size_t pos = 0;
-  while ((pos = format.find('%', pos)) != std::string::npos) {
-    if (pos + 1 >= format.size())
-      break;
-
-    switch (auto c = format[pos + 1]) {
-    case 'c':
-      types.emplace_back("u8 as char");
-      format.replace(pos, 2, "{}");
-      pos += 2;
-      continue;
-    case 'd':
-    case 'i':
-    case 's':
-    case 'u':
-      types.emplace_back();
-      format.replace(pos, 2, "{}");
-      pos += 2;
-      continue;
-    case 'p':
-      types.emplace_back();
-      format.replace(pos, 2, "{:?}");
-      pos += 2;
-      continue;
-    case '%':
-      format.replace(pos, 2, "%");
-      pos += 1;
-      continue;
-    case 'l':
-      if (pos + 2 < format.size() &&
-          (format[pos + 2] == 'd' || format[pos + 2] == 'u')) {
-        types.emplace_back();
-        format.replace(pos, 3, "{}");
-        pos += 2;
-        continue;
-      }
-      if (pos + 3 < format.size() && format[pos + 2] == 'l' &&
-          (format[pos + 3] == 'd' || format[pos + 3] == 'u')) {
-        types.emplace_back();
-        format.replace(pos, 4, "{}");
-        pos += 2;
-        continue;
-      }
-      break;
-    case 'j':
-    case 'z':
-      if (pos + 2 < format.size() &&
-          (format[pos + 2] == 'd' || format[pos + 2] == 'u')) {
-        types.emplace_back();
-        format.replace(pos, 3, "{}");
-        pos += 2;
-        continue;
-      }
-      break;
-    case '.':
-      if (pos + 3 < format.size() && format[pos + 2] == '0') {
-        auto end = format.find_first_not_of("0123456789", pos + 3);
-        if (end != std::string::npos && format[end] == 'f') {
-          auto repl = "{:." + format.substr(pos + 3, end - pos - 3) + '}';
-          format.replace(pos, end - pos + 1, repl);
-          pos += repl.size();
-          types.emplace_back();
-          continue;
-        }
-      }
-      break;
-    default:
-      if (c >= '0' && c <= '9') {
-        auto end = format.find_first_not_of("0123456789", pos + 2);
-        if (end != std::string::npos) {
-          auto repl = "{:" + format.substr(pos + 1, end - pos - 1);
-          bool ok = true;
-          switch (c = format[end]) {
-          case 'd':
-            break;
-          case 'x':
-            repl += c;
-            break;
-          case 'z':
-            if (end + 1 < format.size() && format[end + 1] == 'u') {
-              ++end;
-            } else {
-              ok = false;
-            }
-            break;
-          default:
-            ok = false;
-            break;
-          }
-          if (ok) {
-            repl += '}';
-            format.replace(pos, end - pos + 1, repl);
-            pos += repl.size();
-            types.emplace_back();
-            continue;
-          }
-        }
-      }
-    }
-    llvm::errs() << "Unknown printf format: " << format << '\n';
-    assert(0);
-  }
-  return types;
-}
-
-void ConverterRefCount::ConvertPrintf(clang::CallExpr *expr) {
-  bool is_fprintf = IsCDecl(expr->getDirectCallee(), "fprintf");
-  auto format = GetEscapedStringLiteral(clang::cast<clang::StringLiteral>(
-      expr->getArg(is_fprintf)->IgnoreImplicit()));
-  bool ends_newline = format.ends_with("\\n\"");
-
-  llvm::StringRef stream = "stdout";
-  if (is_fprintf) {
-    auto loc = expr->getArg(0)->IgnoreParenImpCasts()->getBeginLoc();
-    stream = loc.isMacroID()
-                 ? clang::Lexer::getImmediateMacroName(
-                       loc, ctx_.getSourceManager(), ctx_.getLangOpts())
-                 : "";
-  }
-  if (stream == "stdout") {
-    StrCat(ends_newline ? "println!(" : "print!(");
-  } else if (stream == "stderr") {
-    StrCat(ends_newline ? "eprintln!(" : "eprint!(");
-  } else {
-    llvm::errs() << "Unknown fprintf fd:\n";
-    expr->getArg(0)->dump(llvm::errs(), ctx_);
-    exit(1);
-  }
-  if (ends_newline) {
-    format.replace(format.size() - 3, 2, "");
-  }
-  auto types = printf2fmt(format);
-  StrCat(format);
-
-  unsigned j = 0;
-  for (unsigned i = is_fprintf + 1, e = expr->getNumArgs(); i < e; ++i) {
-    StrCat(token::kComma);
-    Convert(expr->getArg(i));
-    if (auto *type = types[j++])
-      StrCat(keyword::kAs, type);
-  }
-  StrCat(')');
-}
-
 void ConverterRefCount::ConvertVAArgCall(clang::CallExpr *expr) {
   if (IsBuiltinVaStart(expr)) {
     StrCat(ToString(expr->getArg(0)->IgnoreImpCasts()), "= __args.decay()");
@@ -1271,11 +1117,22 @@ void ConverterRefCount::ConvertVAArgCall(clang::CallExpr *expr) {
 std::optional<Converter::TempMaterializationCtx>
 ConverterRefCount::ConvertCallExpr(clang::CallExpr *expr) {
   PushConversionKind push(*this, ConversionKind::Unboxed);
+  // With a literal format, printf and fprintf become macros, which read like
+  // print!.
   bool is_fprintf = IsCDecl(expr->getDirectCallee(), "fprintf");
   if ((is_fprintf || IsCDecl(expr->getDirectCallee(), "printf")) &&
       clang::isa<clang::StringLiteral>(
           expr->getArg(is_fprintf)->IgnoreImplicit())) {
-    ConvertPrintf(expr);
+    StrCat(is_fprintf ? "fprintf!(" : "printf!(");
+    if (is_fprintf) {
+      StrCat(ConvertFreshPointer(expr->getArg(0)), token::kComma);
+    }
+    StrCat("b" + GetEscapedStringLiteral(expr->getArg(is_fprintf)));
+    for (unsigned i = is_fprintf + 1, e = expr->getNumArgs(); i < e; ++i) {
+      StrCat(token::kComma);
+      ConvertVariadicArg(expr->getArg(i));
+    }
+    StrCat(')');
     return std::nullopt;
   }
   return Converter::ConvertCallExpr(expr);
@@ -2151,6 +2008,10 @@ void ConverterRefCount::ConvertArrayCXXConstructExpr(
 
 std::string ConverterRefCount::ConvertStream(clang::Expr *expr) {
   return ConvertPointer(expr);
+}
+
+std::string ConverterRefCount::GetCStrBytes(std::string_view ptr) const {
+  return std::format("&({}).to_c_u8_bytes()", ptr);
 }
 
 bool ConverterRefCount::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
