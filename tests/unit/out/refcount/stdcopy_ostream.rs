@@ -17,7 +17,7 @@ fn main_0() -> i32 {
         __bytes
     }));
     let file: Value<Box<[i8]>> = Rc::new(RefCell::new(i8::array_from_literal(
-        b"test_stdcopy_ostream\xff.txt\0",
+        b"test_stdcopy_ostream\xc3\xa9.txt\0",
     )));
     {
         let ofs: Value<::std::fs::File> = Rc::new(RefCell::new(

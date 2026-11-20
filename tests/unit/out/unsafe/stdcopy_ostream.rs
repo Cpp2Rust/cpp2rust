@@ -21,7 +21,7 @@ unsafe fn main_0() -> i32 {
             + 1,
     )
     .to_vec();
-    let file: [libc::c_char; 26] = std::mem::transmute(*b"test_stdcopy_ostream\xff.txt\0");
+    let file: [libc::c_char; 27] = std::mem::transmute(*b"test_stdcopy_ostream\xc3\xa9.txt\0");
     {
         let mut ofs: ::std::fs::File = {
             use ::std::os::unix::ffi::OsStrExt;
