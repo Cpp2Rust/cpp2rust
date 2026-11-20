@@ -5795,17 +5795,30 @@ std::string Converter::GetMappedAsString(clang::Expr *expr, clang::Expr **args,
       ReturnsPointerToArg(all_args[base->n])) {
     bind[base->n] = true;
   }
-
-  auto first = ArgsToEvaluateFirst(expr, *tgt_ir, all_args, bind);
+  // Construction happens inside the C++ call, after its fixed operands.
+  // Plan fixed-operand bindings before checking for conflicting init borrows.
+  auto num_params = std::min(tgt_ir->params.size(), all_args.size());
+  bool always_constructs_init = tgt_ir->alwaysConstructsInit();
+  auto init_bind = bind;
+  if (always_constructs_init && HasReceiver(expr)) {
+    for (size_t i = 0; i < num_params; ++i) {
+      init_bind[i] = init_bind[i] || all_args[i]->HasSideEffects(ctx_);
+    }
+  }
+  auto first = ArgsToEvaluateFirst(expr, *tgt_ir, all_args, init_bind);
   // The object that init constructs is constructed first, rather than its
   // arguments evaluated first one by one, and once if the body uses it more
   // than once.
-  auto num_params = std::min(tgt_ir->params.size(), all_args.size());
   bool init_first =
-      tgt_ir->alwaysConstructsInit() &&
+      always_constructs_init &&
       (tgt_ir->initCopies() > 1 ||
        std::find(first.begin() + num_params, first.end(), true) != first.end());
-
+  if (init_first) {
+    bind = std::move(init_bind);
+  } else if (init_bind != bind) {
+    // A declined plan must not hide bindings needed by the original borrows.
+    first = ArgsToEvaluateFirst(expr, *tgt_ir, all_args, bind);
+  }
   std::vector<std::string> values, names;
   bool all_by_value = true;
 
