@@ -37,17 +37,16 @@ unsafe fn main_0() -> i32 {
         (::std::mem::size_of::<S>() as usize).wrapping_add(8_usize),
     ) as *mut S);
     assert!((!((s).is_null())));
-    match ({ ((*s).name.as_mut_ptr() as *mut ::libc::c_void) },) {
-        (mut __tmp_0,) => {
-            if 8_usize != 0 {
-                ::std::ptr::copy_nonoverlapping(
-                    (c"abcdefg".as_ptr().cast_mut() as *const ::libc::c_void),
-                    __tmp_0,
-                    8_usize,
-                )
-            }
-            __tmp_0
+    {
+        let mut __tmp_0 = { ((*s).name.as_mut_ptr() as *mut ::libc::c_void) };
+        if 8_usize != 0 {
+            ::std::ptr::copy_nonoverlapping(
+                (c"abcdefg".as_ptr().cast_mut() as *const ::libc::c_void),
+                __tmp_0,
+                8_usize,
+            )
         }
+        __tmp_0
     };
     (*s).n = 5;
     assert!((((*s).n) == (5)));

@@ -87,3 +87,15 @@ std::string &f30(std::string &dst, std::string &&src) {
 std::size_t f32(const std::string &a0, const char *a1, std::size_t a2) {
   return a0.find(a1, a2);
 }
+
+std::string f33(int v) { return std::to_string(v); }
+
+std::string f34(long v) { return std::to_string(v); }
+
+std::string f35(long long v) { return std::to_string(v); }
+
+std::string f36(unsigned v) { return std::to_string(v); }
+
+std::string f37(unsigned long v) { return std::to_string(v); }
+
+std::string f38(unsigned long long v) { return std::to_string(v); }

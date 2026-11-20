@@ -165,7 +165,7 @@ fn main_0() -> i32 {
         let mut i: i32 = 0;
         'loop_: while (i < N) {
             {
-                let __a1 = (0..(10_usize) as usize).map(|_| 0_i32).collect::<Vec<_>>();
+                let __a1 = Vec::from_fn(10_usize, |_| 0_i32);
                 (*m1.borrow_mut()).push(__a1)
             };
             i.prefix_inc();
@@ -275,9 +275,7 @@ fn main_0() -> i32 {
     assert!(({ ((*(*pair1.borrow()).0.borrow()) == 1) }));
     assert!(({ ((*(*pair1.borrow()).1.borrow()) == 2) }));
     let pair3: Value<(Value<Vec<i32>>, Value<i32>)> = Rc::new(RefCell::new((
-        Rc::new(RefCell::new(
-            (0..(0_usize) as usize).map(|_| 0_i32).collect::<Vec<_>>(),
-        )),
+        Rc::new(RefCell::new(Vec::from_fn(0_usize, |_| 0_i32))),
         Rc::new(RefCell::new(0)),
     )));
     let pair4: Value<(Value<Vec<i32>>, Value<i32>)> = Rc::new(RefCell::new((

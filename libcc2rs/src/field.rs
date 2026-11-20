@@ -787,6 +787,19 @@ impl<T: ByteRepr> Place for Ptr<T> {
     }
 }
 
+// A value, e.g., of a local variable, accessed in place.
+impl<T> Place for Rc<RefCell<T>> {
+    type Target = T;
+    #[inline]
+    fn with<R>(&self, f: impl FnOnce(&T) -> R) -> R {
+        f(&self.borrow())
+    }
+    #[inline]
+    fn with_mut<R>(&self, f: impl FnOnce(&mut T) -> R) -> R {
+        f(&mut self.borrow_mut())
+    }
+}
+
 // A field of the struct in place `base`, which is accessed through `base` and
 // projected to the field, without looking the field up as a pointer to it
 // does. Written by `field!(p, x)`.

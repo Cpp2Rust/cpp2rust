@@ -452,9 +452,7 @@ unsafe fn main_0() -> i32 {
     cpp_swap_unsafe!(&mut arrays.a[(0) as usize], &mut arrays.a[(1) as usize]);
     assert!(((arrays.a[(0) as usize].v) == (0)) && ((arrays.a[(1) as usize].v) == (2)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
-    let mut grid: Vec<Vec<Tracked>> = (0..(2_usize) as usize)
-        .map(|_| Default::default())
-        .collect::<Vec<_>>();
+    let mut grid: Vec<Vec<Tracked>> = Vec::from_fn(2_usize, |_| Default::default());
     grid[(0_usize)].push_mut(Tracked::new_1({ 1 }));
     grid[(0_usize)].push_mut(Tracked::new_1({ 2 }));
     grid[(1_usize)].push_mut(Tracked::new_1({ 3 }));

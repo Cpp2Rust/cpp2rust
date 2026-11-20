@@ -26,20 +26,19 @@ unsafe fn main_0() -> i32 {
         let mut ofs: ::std::fs::File =
             ::std::fs::File::create(::std::ffi::CStr::from_ptr(file.as_ptr()).to_str().unwrap())
                 .unwrap();
-        match ({ UnsafeRandomAccessIterator::Vec(str.as_mut_ptr()) }, {
-            UnsafeRandomAccessIterator::Vec(str.as_mut_ptr().add(str.len() - 1))
-        }) {
-            (mut __tmp_0, mut __tmp_1) => {
-                let mut __it = (__tmp_0).clone();
-                let __out = &mut ofs;
-                let mut __bytes: Vec<u8> = Vec::new();
-                while __it != __tmp_1 {
-                    __bytes.push(*__it.iter_deref() as u8);
-                    __it.iter_inc();
-                }
-                __out.write_all(&__bytes);
-                __out.try_clone().unwrap()
+        {
+            let mut __tmp_0 = { UnsafeRandomAccessIterator::Vec(str.as_mut_ptr()) };
+            let mut __tmp_1 =
+                { UnsafeRandomAccessIterator::Vec(str.as_mut_ptr().add(str.len() - 1)) };
+            let mut __it = (__tmp_0).clone();
+            let __out = &mut ofs;
+            let mut __bytes: Vec<u8> = Vec::new();
+            while __it != __tmp_1 {
+                __bytes.push(*__it.iter_deref() as u8);
+                __it.iter_inc();
             }
+            __out.write_all(&__bytes);
+            __out.try_clone().unwrap()
         };
         write!(ofs, "{:}", 42,);
     }

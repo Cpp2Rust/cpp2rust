@@ -10,13 +10,13 @@ pub unsafe fn test_0() {
     let mut source: (Option<Box<i32>>, i32) =
         (Some(Box::from_raw((Box::leak(Box::new(1)) as *mut i32))), 2);
     let mut pairs: Vec<(Option<Box<i32>>, i32)> = Vec::new();
-    match ({ <UnsafeRandomAccessIterator<(Option<Box<i32>>, i32)>>::from(pairs.end()) },) {
-        (mut __tmp_0,) => {
-            let pos = __tmp_0.iter_distance(&UnsafeRandomAccessIterator::Vec(pairs.as_mut_ptr()))
-                as usize;
-            pairs.insert(pos, cpp_move_unsafe!(&mut source));
-            (__tmp_0).clone()
-        }
+    {
+        let mut __tmp_0 =
+            { <UnsafeRandomAccessIterator<(Option<Box<i32>>, i32)>>::from(pairs.end()) };
+        let pos =
+            __tmp_0.iter_distance(&UnsafeRandomAccessIterator::Vec(pairs.as_mut_ptr())) as usize;
+        pairs.insert(pos, cpp_move_unsafe!(&mut source));
+        (__tmp_0).clone()
     };
     assert!(
         ((*pairs[(0_usize)]

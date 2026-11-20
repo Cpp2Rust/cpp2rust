@@ -24,29 +24,29 @@ unsafe fn main_0() -> i32 {
     libc::fputs((buf.as_mut_ptr()).cast_const(), libcc2rs::stdout_unsafe());
     libc::fputc((('|' as libc::c_char) as i32), libcc2rs::stdout_unsafe());
     libc::puts((buf.as_mut_ptr()).cast_const());
-    let mut s: Vec<libc::c_char> = match ({ (buf.as_mut_ptr()).cast_const() },) {
-        (mut __tmp_0,) => std::slice::from_raw_parts(
+    let mut s: Vec<libc::c_char> = {
+        let mut __tmp_0 = { (buf.as_mut_ptr()).cast_const() };
+        std::slice::from_raw_parts(
             __tmp_0,
             (0..).take_while(|&i| *__tmp_0.add(i) != 0).count() + 1,
         )
-        .to_vec(),
+        .to_vec()
     };
     (unsafe { libc::printf(c"%zu\n".as_ptr() as *const libc::c_char, (s.len() - 1)) });
     (unsafe {
         libc::printf(
             c"%zu %zu\n".as_ptr() as *const libc::c_char,
             (libc::strlen((buf.as_mut_ptr()).cast_const())),
-            (match ({ (buf.as_mut_ptr()).cast_const() },) {
-                (mut __tmp_1,) => {
-                    match s.iter().rposition(|&c| {
-                        ::std::ffi::CStr::from_ptr(__tmp_1)
-                            .to_str()
-                            .unwrap()
-                            .contains(c as u8 as char)
-                    }) {
-                        Some(idx) => idx,
-                        None => usize::MAX,
-                    }
+            ({
+                let mut __tmp_1 = { (buf.as_mut_ptr()).cast_const() };
+                match s.iter().rposition(|&c| {
+                    ::std::ffi::CStr::from_ptr(__tmp_1)
+                        .to_str()
+                        .unwrap()
+                        .contains(c as u8 as char)
+                }) {
+                    Some(idx) => idx,
+                    None => usize::MAX,
                 }
             }),
         )

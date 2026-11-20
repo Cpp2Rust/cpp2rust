@@ -66,27 +66,25 @@ fn main_0() -> i32 {
     };
     assert!((fd >= 0));
     let buf: Value<Box<[i8]>> = Rc::new(RefCell::new((0..16).map(|_| 0_i8).collect::<Box<[i8]>>()));
-    match ({ (buf.decay()).to_any() },) {
-        (mut __tmp_0,) => {
-            __tmp_0.memset((0) as u8, ::std::mem::size_of::<[i8; 16]>());
-            (__tmp_0).clone()
-        }
+    {
+        let mut __tmp_0 = { (buf.decay()).to_any() };
+        __tmp_0.memset((0) as u8, ::std::mem::size_of::<[i8; 16]>());
+        (__tmp_0).clone()
     };
     assert!(
-        (match ({ (buf.decay()).to_any() },) {
-            (mut __tmp_1,) => {
-                match FdRegistry::with_fd(fd, |__fd| {
-                    __tmp_1
-                        .reinterpret_cast::<u8>()
-                        .with_slice_mut(::std::mem::size_of::<[i8; 16]>(), |__buf| {
-                            nix::unistd::read(__fd, __buf)
-                        })
-                }) {
-                    Ok(__n) => __n as isize,
-                    Err(__e) => {
-                        libcc2rs::cpp2rust_errno().write(__e as i32);
-                        -1
-                    }
+        ({
+            let mut __tmp_1 = { (buf.decay()).to_any() };
+            match FdRegistry::with_fd(fd, |__fd| {
+                __tmp_1
+                    .reinterpret_cast::<u8>()
+                    .with_slice_mut(::std::mem::size_of::<[i8; 16]>(), |__buf| {
+                        nix::unistd::read(__fd, __buf)
+                    })
+            }) {
+                Ok(__n) => __n as isize,
+                Err(__e) => {
+                    libcc2rs::cpp2rust_errno().write(__e as i32);
+                    -1
                 }
             }
         } == 11_isize)
@@ -108,20 +106,19 @@ fn main_0() -> i32 {
         } == 0)
     );
     assert!(
-        (match ({ (buf.decay()).to_any() },) {
-            (mut __tmp_2,) => {
-                match FdRegistry::with_fd(fd, |__fd| {
-                    __tmp_2
-                        .reinterpret_cast::<u8>()
-                        .with_slice_mut(::std::mem::size_of::<[i8; 16]>(), |__buf| {
-                            nix::unistd::read(__fd, __buf)
-                        })
-                }) {
-                    Ok(__n) => __n as isize,
-                    Err(__e) => {
-                        libcc2rs::cpp2rust_errno().write(__e as i32);
-                        -1
-                    }
+        ({
+            let mut __tmp_2 = { (buf.decay()).to_any() };
+            match FdRegistry::with_fd(fd, |__fd| {
+                __tmp_2
+                    .reinterpret_cast::<u8>()
+                    .with_slice_mut(::std::mem::size_of::<[i8; 16]>(), |__buf| {
+                        nix::unistd::read(__fd, __buf)
+                    })
+            }) {
+                Ok(__n) => __n as isize,
+                Err(__e) => {
+                    libcc2rs::cpp2rust_errno().write(__e as i32);
+                    -1
                 }
             }
         } == 0_isize)

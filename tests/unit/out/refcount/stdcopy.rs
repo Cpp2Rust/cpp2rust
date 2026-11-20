@@ -26,32 +26,30 @@ fn main_0() -> i32 {
     let input: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2, 3])));
     let output: Value<Box<[i32]>> =
         Rc::new(RefCell::new((0..3).map(|_| 0_i32).collect::<Box<[i32]>>()));
-    match ({ input.decay().offset((3) as isize) },) {
-        (mut __tmp_0,) => {
-            let mut __first = input.decay();
-            let mut __out = output.decay();
-            while __first != __tmp_0 {
-                __out.iter_deref().write((__first.iter_deref().read()));
-                __first.iter_inc();
-                __out.iter_inc();
-            }
-            __out
+    {
+        let mut __tmp_0 = { input.decay().offset((3) as isize) };
+        let mut __first = input.decay();
+        let mut __out = output.decay();
+        while __first != __tmp_0 {
+            __out.iter_deref().write((__first.iter_deref().read()));
+            __first.iter_inc();
+            __out.iter_inc();
         }
+        __out
     };
     let widened: Value<Vec<i64>> = Rc::new(RefCell::new(vec![0_i64; 3_usize]));
-    match ({ input.decay().offset((3) as isize) },) {
-        (mut __tmp_1,) => {
-            let mut __first = input.decay();
-            let mut __out = widened.decay().begin();
-            while __first != __tmp_1 {
-                __out
-                    .iter_deref()
-                    .write(((__first.iter_deref().read()) as i64));
-                __first.iter_inc();
-                __out.iter_inc();
-            }
+    {
+        let mut __tmp_1 = { input.decay().offset((3) as isize) };
+        let mut __first = input.decay();
+        let mut __out = widened.decay().begin();
+        while __first != __tmp_1 {
             __out
+                .iter_deref()
+                .write(((__first.iter_deref().read()) as i64));
+            __first.iter_inc();
+            __out.iter_inc();
         }
+        __out
     };
     assert!(
         ({
@@ -61,19 +59,18 @@ fn main_0() -> i32 {
     );
     let constructed: Value<Vec<Degrees>> =
         Rc::new(RefCell::new(vec![Degrees::new({ 0 },); 3_usize]));
-    match ({ input.decay().offset((3) as isize) },) {
-        (mut __tmp_2,) => {
-            let mut __first = input.decay();
-            let mut __out = constructed.decay().begin();
-            while __first != __tmp_2 {
-                __out
-                    .iter_deref()
-                    .write(<Degrees as CppFrom<i32>>::cpp_from(__first.iter_deref()));
-                __first.iter_inc();
-                __out.iter_inc();
-            }
+    {
+        let mut __tmp_2 = { input.decay().offset((3) as isize) };
+        let mut __first = input.decay();
+        let mut __out = constructed.decay().begin();
+        while __first != __tmp_2 {
             __out
+                .iter_deref()
+                .write(<Degrees as CppFrom<i32>>::cpp_from(__first.iter_deref()));
+            __first.iter_inc();
+            __out.iter_inc();
         }
+        __out
     };
     assert!(
         ({
@@ -83,19 +80,18 @@ fn main_0() -> i32 {
     );
     let wide: Value<Box<[i64]>> = Rc::new(RefCell::new(Box::new([7_i64, 8_i64])));
     let floating: Value<Vec<f64>> = Rc::new(RefCell::new(vec![0_f64; 2_usize]));
-    match ({ wide.decay().offset((2) as isize) },) {
-        (mut __tmp_3,) => {
-            let mut __first = wide.decay();
-            let mut __out = floating.decay().begin();
-            while __first != __tmp_3 {
-                __out
-                    .iter_deref()
-                    .write(((__first.iter_deref().read()) as f64));
-                __first.iter_inc();
-                __out.iter_inc();
-            }
+    {
+        let mut __tmp_3 = { wide.decay().offset((2) as isize) };
+        let mut __first = wide.decay();
+        let mut __out = floating.decay().begin();
+        while __first != __tmp_3 {
             __out
+                .iter_deref()
+                .write(((__first.iter_deref().read()) as f64));
+            __first.iter_inc();
+            __out.iter_inc();
         }
+        __out
     };
     assert!(({ ({ (*floating.borrow())[1_usize] } == 8_f64) }));
     return 0;

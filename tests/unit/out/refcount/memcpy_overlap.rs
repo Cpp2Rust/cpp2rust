@@ -13,11 +13,10 @@ pub fn main() {
 fn main_0() -> i32 {
     let buf: Value<Box<[i8]>> =
         Rc::new(RefCell::new(Box::new([1_i8, 2_i8, 3_i8, 4_i8, 5_i8, 6_i8])));
-    match ({ (buf.decay().offset((2) as isize)).to_any() },) {
-        (mut __tmp_0,) => {
-            __tmp_0.memcpy(&(buf.decay()).to_any(), 4_usize);
-            (__tmp_0).clone()
-        }
+    {
+        let mut __tmp_0 = { (buf.decay().offset((2) as isize)).to_any() };
+        __tmp_0.memcpy(&(buf.decay()).to_any(), 4_usize);
+        (__tmp_0).clone()
     };
     assert!(({ (((*buf.borrow())[(0) as usize] as i32) == 1) }));
     assert!(({ (((*buf.borrow())[(1) as usize] as i32) == 2) }));

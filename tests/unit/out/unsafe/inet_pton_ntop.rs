@@ -13,16 +13,15 @@ pub unsafe fn test_s6_addr_access_0() {
     ];
     let mut addr: ::libc::in6_addr = unsafe { std::mem::zeroed() };
     let mut ap: *mut ::libc::in6_addr = (&mut addr as *mut ::libc::in6_addr);
-    match (
-        { ((*(&mut addr as *mut ::libc::in6_addr)).s6_addr.as_mut_ptr() as *mut ::libc::c_void) },
-        { (loopback.as_ptr() as *const ::libc::c_void) },
-    ) {
-        (mut __tmp_0, mut __tmp_1) => {
-            if 16_usize != 0 {
-                ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, 16_usize)
-            }
-            __tmp_0
+    {
+        let mut __tmp_0 = {
+            ((*(&mut addr as *mut ::libc::in6_addr)).s6_addr.as_mut_ptr() as *mut ::libc::c_void)
+        };
+        let mut __tmp_1 = { (loopback.as_ptr() as *const ::libc::c_void) };
+        if 16_usize != 0 {
+            ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, 16_usize)
         }
+        __tmp_0
     };
     assert!(
         (({
@@ -62,16 +61,14 @@ pub unsafe fn test_s6_addr_access_0() {
         (&mut (*(ap as *mut ::libc::in6_addr)).s6_addr[(3) as usize] as *mut u8);
     (*fourth) = 8_u8;
     assert!((((*(&mut addr as *mut ::libc::in6_addr)).s6_addr[(3) as usize] as i32) == (8)));
-    match (
-        { ((*(ap as *mut ::libc::in6_addr)).s6_addr.as_mut_ptr() as *mut ::libc::c_void) },
-        { (loopback.as_ptr() as *const ::libc::c_void) },
-    ) {
-        (mut __tmp_2, mut __tmp_3) => {
-            if 16_usize != 0 {
-                ::std::ptr::copy_nonoverlapping(__tmp_3, __tmp_2, 16_usize)
-            }
-            __tmp_2
+    {
+        let mut __tmp_2 =
+            { ((*(ap as *mut ::libc::in6_addr)).s6_addr.as_mut_ptr() as *mut ::libc::c_void) };
+        let mut __tmp_3 = { (loopback.as_ptr() as *const ::libc::c_void) };
+        if 16_usize != 0 {
+            ::std::ptr::copy_nonoverlapping(__tmp_3, __tmp_2, 16_usize)
         }
+        __tmp_2
     };
     assert!(
         (({

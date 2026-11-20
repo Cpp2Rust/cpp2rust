@@ -44,16 +44,13 @@ fn main_0() -> i32 {
     assert!(({ ((*(*p3.borrow()).1.borrow()) == 6) }));
     let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2])));
     let mut n: u32 = 2_u32;
-    let const_ptr_pairs: Value<Vec<(Value<Ptr<i32>>, Value<u64>)>> = Rc::new(RefCell::new(
-        (0..(1_usize) as usize)
-            .map(|_| {
-                (
-                    Rc::new(RefCell::new(Ptr::<i32>::null())),
-                    Rc::new(RefCell::new(0_u64)),
-                )
-            })
-            .collect::<Vec<_>>(),
-    ));
+    let const_ptr_pairs: Value<Vec<(Value<Ptr<i32>>, Value<u64>)>> =
+        Rc::new(RefCell::new(Vec::from_fn(1_usize, |_| {
+            (
+                Rc::new(RefCell::new(Ptr::<i32>::null())),
+                Rc::new(RefCell::new(0_u64)),
+            )
+        })));
     match (
         const_ptr_pairs.decay().offset(0_usize),
         Rc::new(RefCell::new((

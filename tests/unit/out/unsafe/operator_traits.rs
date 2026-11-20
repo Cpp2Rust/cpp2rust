@@ -138,18 +138,17 @@ unsafe fn main_0() -> i32 {
     let mut w: Wrapped_int_ = Wrapped_int_ { v: 2 };
     assert!(((w.v) == (2)));
     let mut lts: Vec<Lt> = Vec::from([Lt { v: 3 }, Lt { v: 1 }, Lt { v: 2 }]);
-    match ({ lts.begin() },) {
-        (mut __tmp_0,) => {
-            let __n = lts.end().iter_distance(&__tmp_0);
-            let mut __order: Vec<isize> = (0..__n).collect();
-            __order.sort_by(|&__x, &__y| (*__tmp_0.iter_at(__x)).cmp(&*__tmp_0.iter_at(__y)));
-            let __values: Vec<_> = __order
-                .iter()
-                .map(|&__i| std::ptr::read(__tmp_0.iter_at(__i)))
-                .collect();
-            for (__i, __v) in (0..__n).zip(__values) {
-                std::ptr::write(__tmp_0.iter_at(__i), __v);
-            }
+    {
+        let mut __tmp_0 = { lts.begin() };
+        let __n = lts.end().iter_distance(&__tmp_0);
+        let mut __order: Vec<isize> = (0..__n).collect();
+        __order.sort_by(|&__x, &__y| (*__tmp_0.iter_at(__x)).cmp(&*__tmp_0.iter_at(__y)));
+        let __values: Vec<_> = __order
+            .iter()
+            .map(|&__i| std::ptr::read(__tmp_0.iter_at(__i)))
+            .collect();
+        for (__i, __v) in (0..__n).zip(__values) {
+            std::ptr::write(__tmp_0.iter_at(__i), __v);
         }
     };
     assert!(
@@ -159,93 +158,83 @@ unsafe fn main_0() -> i32 {
     let mut two: Eq = Eq { v: 2 };
     let mut nine: Eq = Eq { v: 9 };
     assert!(
-        (((*match ({ eqs.begin() }, { eqs.end() },) {
-            (mut __tmp_1, mut __tmp_2) => {
-                {
-                    let mut __it = (__tmp_1).clone();
-                    while __it != __tmp_2 && *__it.iter_deref() != two {
-                        __it.iter_inc();
-                    }
-                    __it
-                }
+        (((*{
+            let mut __tmp_1 = { eqs.begin() };
+            let mut __tmp_2 = { eqs.end() };
+            let mut __it = (__tmp_1).clone();
+            while __it != __tmp_2 && *__it.iter_deref() != two {
+                __it.iter_inc();
             }
+            __it
         }
         .iter_deref())
         .v) == (2))
     );
     assert!(
-        match ({ eqs.begin() }, { eqs.end() },) {
-            (mut __tmp_3, mut __tmp_4) => {
-                {
-                    let mut __it = (__tmp_3).clone();
-                    while __it != __tmp_4 && *__it.iter_deref() != nine {
-                        __it.iter_inc();
-                    }
-                    __it
-                }
+        {
+            let mut __tmp_3 = { eqs.begin() };
+            let mut __tmp_4 = { eqs.end() };
+            let mut __it = (__tmp_3).clone();
+            while __it != __tmp_4 && *__it.iter_deref() != nine {
+                __it.iter_inc();
             }
+            __it
         } == eqs.end()
     );
     let mut cmps: Vec<Cmp> = Vec::from([Cmp { v: 3 }, Cmp { v: 1 }, Cmp { v: 2 }]);
-    match ({ cmps.begin() },) {
-        (mut __tmp_5,) => {
-            let __n = cmps.end().iter_distance(&__tmp_5);
-            let mut __order: Vec<isize> = (0..__n).collect();
-            __order.sort_by(|&__x, &__y| (*__tmp_5.iter_at(__x)).cmp(&*__tmp_5.iter_at(__y)));
-            let __values: Vec<_> = __order
-                .iter()
-                .map(|&__i| std::ptr::read(__tmp_5.iter_at(__i)))
-                .collect();
-            for (__i, __v) in (0..__n).zip(__values) {
-                std::ptr::write(__tmp_5.iter_at(__i), __v);
-            }
+    {
+        let mut __tmp_5 = { cmps.begin() };
+        let __n = cmps.end().iter_distance(&__tmp_5);
+        let mut __order: Vec<isize> = (0..__n).collect();
+        __order.sort_by(|&__x, &__y| (*__tmp_5.iter_at(__x)).cmp(&*__tmp_5.iter_at(__y)));
+        let __values: Vec<_> = __order
+            .iter()
+            .map(|&__i| std::ptr::read(__tmp_5.iter_at(__i)))
+            .collect();
+        for (__i, __v) in (0..__n).zip(__values) {
+            std::ptr::write(__tmp_5.iter_at(__i), __v);
         }
     };
     assert!(((cmps[(0_usize)].v) == (1)) && ((cmps[(2_usize)].v) == (3)));
     let mut three: Cmp = Cmp { v: 3 };
     assert!(
-        (((*match ({ cmps.begin() }, { cmps.end() },) {
-            (mut __tmp_6, mut __tmp_7) => {
-                {
-                    let mut __it = (__tmp_6).clone();
-                    while __it != __tmp_7 && *__it.iter_deref() != three {
-                        __it.iter_inc();
-                    }
-                    __it
-                }
+        (((*{
+            let mut __tmp_6 = { cmps.begin() };
+            let mut __tmp_7 = { cmps.end() };
+            let mut __it = (__tmp_6).clone();
+            while __it != __tmp_7 && *__it.iter_deref() != three {
+                __it.iter_inc();
             }
+            __it
         }
         .iter_deref())
         .v) == (3))
     );
     let mut frees: Vec<Free> = Vec::from([Free { v: 2 }, Free { v: 1 }]);
-    match ({ frees.begin() },) {
-        (mut __tmp_8,) => {
-            let __n = frees.end().iter_distance(&__tmp_8);
-            let mut __order: Vec<isize> = (0..__n).collect();
-            __order.sort_by(|&__x, &__y| (*__tmp_8.iter_at(__x)).cmp(&*__tmp_8.iter_at(__y)));
-            let __values: Vec<_> = __order
-                .iter()
-                .map(|&__i| std::ptr::read(__tmp_8.iter_at(__i)))
-                .collect();
-            for (__i, __v) in (0..__n).zip(__values) {
-                std::ptr::write(__tmp_8.iter_at(__i), __v);
-            }
+    {
+        let mut __tmp_8 = { frees.begin() };
+        let __n = frees.end().iter_distance(&__tmp_8);
+        let mut __order: Vec<isize> = (0..__n).collect();
+        __order.sort_by(|&__x, &__y| (*__tmp_8.iter_at(__x)).cmp(&*__tmp_8.iter_at(__y)));
+        let __values: Vec<_> = __order
+            .iter()
+            .map(|&__i| std::ptr::read(__tmp_8.iter_at(__i)))
+            .collect();
+        for (__i, __v) in (0..__n).zip(__values) {
+            std::ptr::write(__tmp_8.iter_at(__i), __v);
         }
     };
     assert!(((frees[(0_usize)].v) == (1)));
     let mut ftwo: Free = Free { v: 2 };
     assert!(
-        (((*match ({ frees.begin() }, { frees.end() },) {
-            (mut __tmp_9, mut __tmp_10) => {
-                {
-                    let mut __it = (__tmp_9).clone();
-                    while __it != __tmp_10 && *__it.iter_deref() != ftwo {
-                        __it.iter_inc();
-                    }
-                    __it
-                }
+        (((*{
+            let mut __tmp_9 = { frees.begin() };
+            let mut __tmp_10 = { frees.end() };
+            let mut __it = (__tmp_9).clone();
+            while __it != __tmp_10 && *__it.iter_deref() != ftwo {
+                __it.iter_inc();
             }
+            __it
         }
         .iter_deref())
         .v) == (2))

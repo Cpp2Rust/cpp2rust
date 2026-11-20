@@ -144,16 +144,13 @@ impl Buffer {
             self.rows = std::mem::take(&mut (*_a0).rows);
         };
         self.n = (*_a0).n;
-        match (
-            { ((&mut self.arr as *mut [i32; 2]) as *mut ::libc::c_void) },
-            { ((&mut (*_a0).arr as *mut [i32; 2]) as *const ::libc::c_void) },
-        ) {
-            (mut __tmp_0, mut __tmp_1) => {
-                if 8_usize != 0 {
-                    ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, 8_usize)
-                }
-                __tmp_0
+        {
+            let mut __tmp_0 = { ((&mut self.arr as *mut [i32; 2]) as *mut ::libc::c_void) };
+            let mut __tmp_1 = { ((&mut (*_a0).arr as *mut [i32; 2]) as *const ::libc::c_void) };
+            if 8_usize != 0 {
+                ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, 8_usize)
             }
+            __tmp_0
         };
         return &mut (*(self as *mut Buffer));
     }
@@ -181,16 +178,13 @@ impl Owner {
             self.data = std::mem::take(&mut (*_a0).data);
         };
         self.n = (*_a0).n;
-        match (
-            { ((&mut self.arr as *mut [i32; 2]) as *mut ::libc::c_void) },
-            { ((&mut (*_a0).arr as *mut [i32; 2]) as *const ::libc::c_void) },
-        ) {
-            (mut __tmp_2, mut __tmp_3) => {
-                if 8_usize != 0 {
-                    ::std::ptr::copy_nonoverlapping(__tmp_3, __tmp_2, 8_usize)
-                }
-                __tmp_2
+        {
+            let mut __tmp_2 = { ((&mut self.arr as *mut [i32; 2]) as *mut ::libc::c_void) };
+            let mut __tmp_3 = { ((&mut (*_a0).arr as *mut [i32; 2]) as *const ::libc::c_void) };
+            if 8_usize != 0 {
+                ::std::ptr::copy_nonoverlapping(__tmp_3, __tmp_2, 8_usize)
             }
+            __tmp_2
         };
         {
             self.p = (*_a0).p.take();
@@ -359,8 +353,9 @@ unsafe fn main_0() -> i32 {
         let __a1 = Buffer::move_from({ &mut r });
         bufs.push(__a1)
     };
-    match ({ Buffer::move_from({ &mut bufs[(0_usize)] }) },) {
-        (mut __tmp_4,) => bufs.push_mut(__tmp_4),
+    {
+        let mut __tmp_4 = { Buffer::move_from({ &mut bufs[(0_usize)] }) };
+        bufs.push_mut(__tmp_4)
     };
     assert!(
         (((bufs[(1_usize)].n) == (3)) && ((bufs[(1_usize)].data.len()) == (3_usize)))

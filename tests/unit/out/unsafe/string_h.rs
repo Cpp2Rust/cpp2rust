@@ -9,15 +9,13 @@ use std::rc::Rc;
 pub unsafe fn test_memcpy_0() {
     let src: [libc::c_char; 6] = std::mem::transmute(*b"hello\0");
     let mut dst: [libc::c_char; 6] = [(0 as libc::c_char); 6];
-    let mut r: *mut ::libc::c_void = match ({ (dst.as_mut_ptr() as *mut ::libc::c_void) }, {
-        (src.as_ptr() as *const ::libc::c_void)
-    }) {
-        (mut __tmp_0, mut __tmp_1) => {
-            if 6_usize != 0 {
-                ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, 6_usize)
-            }
-            __tmp_0
+    let mut r: *mut ::libc::c_void = {
+        let mut __tmp_0 = { (dst.as_mut_ptr() as *mut ::libc::c_void) };
+        let mut __tmp_1 = { (src.as_ptr() as *const ::libc::c_void) };
+        if 6_usize != 0 {
+            ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, 6_usize)
         }
+        __tmp_0
     };
     assert!(((r) == (dst.as_mut_ptr() as *mut ::libc::c_void)));
     assert!(
@@ -33,14 +31,13 @@ pub unsafe fn test_memcpy_0() {
 }
 pub unsafe fn test_memset_1() {
     let mut buf: [libc::c_char; 4] = [(0 as libc::c_char); 4];
-    let mut r: *mut ::libc::c_void = match ({ (buf.as_mut_ptr() as *mut ::libc::c_void) },) {
-        (mut __tmp_2,) => {
-            let byte_0 = __tmp_2 as *mut u8;
-            for offset in 0..4_usize {
-                *byte_0.offset(offset as isize) = ('x' as i32) as u8;
-            }
-            __tmp_2
+    let mut r: *mut ::libc::c_void = {
+        let mut __tmp_2 = { (buf.as_mut_ptr() as *mut ::libc::c_void) };
+        let byte_0 = __tmp_2 as *mut u8;
+        for offset in 0..4_usize {
+            *byte_0.offset(offset as isize) = ('x' as i32) as u8;
         }
+        __tmp_2
     };
     assert!(((r) == (buf.as_mut_ptr() as *mut ::libc::c_void)));
     assert!(
@@ -139,16 +136,13 @@ pub unsafe fn test_memmove_3() {
         (('e' as i32) as libc::c_char),
         (('\0' as i32) as libc::c_char),
     ];
-    let mut r: *mut ::libc::c_void = match (
-        { (buf.as_mut_ptr().offset((1) as isize) as *mut ::libc::c_void) },
-        { (buf.as_mut_ptr() as *const ::libc::c_void) },
-    ) {
-        (mut __tmp_3, mut __tmp_4) => {
-            if 4_usize != 0 {
-                ::std::ptr::copy_nonoverlapping(__tmp_4, __tmp_3, 4_usize)
-            }
-            __tmp_3
+    let mut r: *mut ::libc::c_void = {
+        let mut __tmp_3 = { (buf.as_mut_ptr().offset((1) as isize) as *mut ::libc::c_void) };
+        let mut __tmp_4 = { (buf.as_mut_ptr() as *const ::libc::c_void) };
+        if 4_usize != 0 {
+            ::std::ptr::copy_nonoverlapping(__tmp_4, __tmp_3, 4_usize)
         }
+        __tmp_3
     };
     assert!(((r) == (buf.as_mut_ptr().offset((1) as isize) as *mut ::libc::c_void)));
     assert!(

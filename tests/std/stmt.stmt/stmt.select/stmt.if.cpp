@@ -100,7 +100,40 @@ void test() {
 }
 } // namespace p6_negated_consteval_if_at_run_time_executes_first
 
+// [dcl.attr.likelihood]: the branch that is not the likely one is cold.
+namespace likelihood_attributes_keep_both_branches {
+int classify(int x) {
+  int r = 0;
+  if (x > 0) [[likely]] {
+    r = 1;
+  }
+  if (x < -10) [[unlikely]]
+    r += 2;
+  else
+    r += 3;
+  if (x == 5) {
+    r += 4;
+  } else [[likely]] {
+    r += 5;
+  }
+  if (x == 7) [[likely]]
+    r = 7;
+  else if (x == 8)
+    r = 8;
+  return r;
+}
+
+void test() {
+  assert(classify(1) == 9);
+  assert(classify(5) == 8);
+  assert(classify(-20) == 7);
+  assert(classify(7) == 7);
+  assert(classify(8) == 8);
+}
+} // namespace likelihood_attributes_keep_both_branches
+
 int main() {
+  likelihood_attributes_keep_both_branches::test();
   p3_init_statement_variable_lives_for_whole_statement::test();
   p5_consteval_if_at_run_time_executes_else::test();
   p6_negated_consteval_if_at_run_time_executes_first::test();

@@ -268,6 +268,8 @@ public:
 
   virtual bool VisitIfStmt(clang::IfStmt *stmt);
 
+  bool VisitAttributedStmt(clang::AttributedStmt *stmt);
+
   virtual bool VisitWhileStmt(clang::WhileStmt *stmt);
 
   void ConvertConditionVariableTest(clang::DeclStmt *cond_var,
@@ -286,7 +288,7 @@ public:
   bool GetFmtArg(clang::Expr *arg, std::string &fmt, std::string &fmt_args,
                  const char *&fmt_trait, std::string &fmt_width);
 
-  bool GetRawArg(clang::Expr *arg, std::string &raw_args);
+  bool GetRawArg(clang::Expr *arg, std::vector<std::string> &raw_args);
 
   void ConvertCallToOstream(clang::CallExpr *expr);
   virtual std::string ConvertStream(clang::Expr *expr);

@@ -113,8 +113,7 @@ fn f18(a0: Vec<i8>, a1: Ptr<i8>) -> bool {
 
 fn f21(a0: &mut Vec<i8>, a1: usize, a2: i8) -> &mut Vec<i8> {
     a0.pop();
-    let __len = a0.len() + a1;
-    a0.resize(__len, a2);
+    a0.resize(a0.len() + a1, a2);
     a0.push(0);
     a0
 }
@@ -204,4 +203,70 @@ fn f32(a0: Vec<i8>, a1: Ptr<i8>, a2: usize) -> usize {
             .find(|&__i| __hay[__i..].starts_with(__needle))
             .unwrap_or(usize::MAX)
     })
+}
+
+// The digits, and the terminator.
+fn f33(a0: i32) -> Vec<i8> {
+    a0.format_into(&mut std::fmt::NumBuffer::new())
+        .bytes()
+        .map(|__b| __b as i8)
+        .chain([0])
+        .collect::<Vec<_>>()
+}
+
+fn f34(a0: i64) -> Vec<i8> {
+    a0.format_into(&mut std::fmt::NumBuffer::new())
+        .bytes()
+        .map(|__b| __b as i8)
+        .chain([0])
+        .collect::<Vec<_>>()
+}
+
+fn f35(a0: i64) -> Vec<i8> {
+    a0.format_into(&mut std::fmt::NumBuffer::new())
+        .bytes()
+        .map(|__b| __b as i8)
+        .chain([0])
+        .collect::<Vec<_>>()
+}
+
+fn f36(a0: u32) -> Vec<i8> {
+    a0.format_into(&mut std::fmt::NumBuffer::new())
+        .bytes()
+        .map(|__b| __b as i8)
+        .chain([0])
+        .collect::<Vec<_>>()
+}
+
+fn f37(a0: u64) -> Vec<i8> {
+    a0.format_into(&mut std::fmt::NumBuffer::new())
+        .bytes()
+        .map(|__b| __b as i8)
+        .chain([0])
+        .collect::<Vec<_>>()
+}
+
+fn f38(a0: u64) -> Vec<i8> {
+    a0.format_into(&mut std::fmt::NumBuffer::new())
+        .bytes()
+        .map(|__b| __b as i8)
+        .chain([0])
+        .collect::<Vec<_>>()
+}
+
+// As sprintf's %f.
+fn f39(a0: f32) -> Vec<i8> {
+    libcc2rs::format_c("%f", &[VaArg::Double(a0 as f64)])
+        .bytes()
+        .map(|__b| __b as i8)
+        .chain([0])
+        .collect::<Vec<_>>()
+}
+
+fn f40(a0: f64) -> Vec<i8> {
+    libcc2rs::format_c("%f", &[VaArg::Double(a0 as f64)])
+        .bytes()
+        .map(|__b| __b as i8)
+        .chain([0])
+        .collect::<Vec<_>>()
 }

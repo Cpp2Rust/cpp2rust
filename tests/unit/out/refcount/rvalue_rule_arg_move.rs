@@ -50,23 +50,23 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let v: Value<Vec<Elem>> = Rc::new(RefCell::new(Vec::new()));
-    if 4_usize > (*v.borrow()).capacity() as usize {
-        let len_0 = (*v.borrow()).len();
-        (*v.borrow_mut()).reserve_exact(4_usize - len_0 as usize);
-    };
+    v.with_mut(|__b0| {
+        if 4_usize > (*__b0).capacity() as usize {
+            let len_0 = (*__b0).len();
+            (*__b0).reserve_exact(4_usize - len_0 as usize);
+        }
+    });
     let a: Value<Elem> = Rc::new(RefCell::new(Elem::new({ 1 })));
     let mut b: Elem = Elem::new({ 2 });
-    match ({ <RandomAccessIterator<Elem>>::from(v.decay().end()) },) {
-        (mut __tmp_0,) => {
-            (*v.borrow_mut()).insert(__tmp_0.index(), Elem::move_from({ a.as_pointer() }));
-            (__tmp_0).clone()
-        }
+    {
+        let mut __tmp_0 = { <RandomAccessIterator<Elem>>::from(v.decay().end()) };
+        (*v.borrow_mut()).insert(__tmp_0.index(), Elem::move_from({ a.as_pointer() }));
+        (__tmp_0).clone()
     };
-    match ({ <RandomAccessIterator<Elem>>::from(v.decay().end()) },) {
-        (mut __tmp_1,) => {
-            (*v.borrow_mut()).insert(__tmp_1.index(), (b).clone());
-            (__tmp_1).clone()
-        }
+    {
+        let mut __tmp_1 = { <RandomAccessIterator<Elem>>::from(v.decay().end()) };
+        (*v.borrow_mut()).insert(__tmp_1.index(), (b).clone());
+        (__tmp_1).clone()
     };
     let mut ok: bool = (((copies_0.with(|rc| *rc.borrow()) == 1)
         && (moves_1.with(|rc| *rc.borrow()) == 1))

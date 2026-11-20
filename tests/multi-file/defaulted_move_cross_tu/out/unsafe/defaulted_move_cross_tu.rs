@@ -32,16 +32,13 @@ impl S {
         {
             self.v = std::mem::take(&mut (*_a0).v);
         };
-        match (
-            { ((&mut self.n as *mut [i32; 2]) as *mut ::libc::c_void) },
-            { ((&mut (*_a0).n as *mut [i32; 2]) as *const ::libc::c_void) },
-        ) {
-            (mut __tmp_0, mut __tmp_1) => {
-                if 8_usize != 0 {
-                    ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, 8_usize)
-                }
-                __tmp_0
+        {
+            let mut __tmp_0 = { ((&mut self.n as *mut [i32; 2]) as *mut ::libc::c_void) };
+            let mut __tmp_1 = { ((&mut (*_a0).n as *mut [i32; 2]) as *const ::libc::c_void) };
+            if 8_usize != 0 {
+                ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, 8_usize)
             }
+            __tmp_0
         };
         return &mut (*(self as *mut S));
     }

@@ -144,11 +144,48 @@ pub fn test_12() {
     assert!((({ pick_10() }) == 2));
     assert!((({ only_then_11() }) == 4));
 }
+pub fn classify_13(mut x: i32) -> i32 {
+    let r: Value<i32> = Rc::new(RefCell::new(0));
+    if (x > 0) {
+        (*r.borrow_mut()) = 1;
+    } else {
+        std::hint::cold_path();
+    }
+    if (x < -10_i32) {
+        std::hint::cold_path();
+        (*r.borrow_mut()) += 2;
+    } else {
+        (*r.borrow_mut()) += 3;
+    }
+    if (x == 5) {
+        std::hint::cold_path();
+        (*r.borrow_mut()) += 4;
+    } else {
+        (*r.borrow_mut()) += 5;
+    }
+    if (x == 7) {
+        (*r.borrow_mut()) = 7;
+    } else {
+        std::hint::cold_path();
+        if (x == 8) {
+            (*r.borrow_mut()) = 8;
+        }
+    }
+    return (*r.borrow());
+}
+pub fn test_14() {
+    assert!((({ classify_13(1,) }) == 9));
+    assert!((({ classify_13(5,) }) == 8));
+    assert!((({ classify_13(-20_i32,) }) == 7));
+    assert!((({ classify_13(7,) }) == 7));
+    assert!((({ classify_13(8,) }) == 8));
+}
 pub fn main() {
     __cpp2rust_init_globals();
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
+    ({ test_14() });
     ({ test_6() });
     ({ test_9() });
     ({ test_12() });

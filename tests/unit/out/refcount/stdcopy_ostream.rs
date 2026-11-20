@@ -23,20 +23,18 @@ fn main_0() -> i32 {
         let ofs: Value<::std::fs::File> = Rc::new(RefCell::new(
             ::std::fs::File::create(file.decay().to_string()).expect("Failed to open file"),
         ));
-        match ({ RandomAccessIterator::Vec(str.decay()) }, {
-            RandomAccessIterator::Vec(str.decay().to_last())
-        }) {
-            (mut __tmp_0, mut __tmp_1) => {
-                let mut __it = (__tmp_0).clone();
-                let __out = &mut (*ofs.borrow_mut());
-                let mut __bytes: Vec<u8> = Vec::new();
-                while __it != __tmp_1 {
-                    __bytes.push(__it.iter_deref().read() as u8);
-                    __it.iter_inc();
-                }
-                __out.write_all(&__bytes);
-                __out.try_clone().unwrap()
+        {
+            let mut __tmp_0 = { RandomAccessIterator::Vec(str.decay()) };
+            let mut __tmp_1 = { RandomAccessIterator::Vec(str.decay().to_last()) };
+            let mut __it = (__tmp_0).clone();
+            let __out = &mut (*ofs.borrow_mut());
+            let mut __bytes: Vec<u8> = Vec::new();
+            while __it != __tmp_1 {
+                __bytes.push(__it.iter_deref().read() as u8);
+                __it.iter_inc();
             }
+            __out.write_all(&__bytes);
+            __out.try_clone().unwrap()
         };
         write!(ofs.as_pointer(), "{:}", 42,);
     }

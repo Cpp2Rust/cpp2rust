@@ -40,7 +40,7 @@ fn t14<T1>() -> *const T1 {
 }
 
 unsafe fn f38(a0: usize, a1: bool) -> Vec<bool> {
-    (0..(a0) as usize).map(|_| a1).collect::<Vec<bool>>()
+    Vec::from_fn(a0, |_| a1)
 }
 
 unsafe fn f40<T1>(a0: Vec<T1>) -> *const T1 {
@@ -82,9 +82,7 @@ unsafe fn f66<T1>(a0: &mut Vec<T1>, a1: usize) -> &mut T1 {
 }
 
 unsafe fn f67<T1: Default>(a0: usize) -> Vec<T1> {
-    (0..(a0) as usize)
-        .map(|_| <T1>::default())
-        .collect::<Vec<_>>()
+    Vec::from_fn(a0, |_| <T1>::default())
 }
 
 unsafe fn f68<T1>(a0: &mut Vec<T1>) -> &mut T1 {

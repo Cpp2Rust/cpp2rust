@@ -1,6 +1,14 @@
+#include <cassert>
 #include <iostream>
 #include <string>
 #include <vector>
+
+int made = 0;
+
+std::string make(const char *s) {
+  ++made;
+  return s;
+}
 
 int main() {
   std::vector<unsigned char> vec = {0xc3, 0xa7};
@@ -16,6 +24,11 @@ int main() {
             << 'r' << 'l' << 'd' << '!' << '\n';
 
   std::cout << vec[0] << '\n' << vec[1] << '\n';
+
+  std::cout << make("once") << '\n';
+  std::cout << make("alone");
+  std::cout << std::endl;
+  assert(made == 2);
 
   return 0;
 }

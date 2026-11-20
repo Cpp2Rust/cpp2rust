@@ -86,11 +86,10 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let c: Value<Container> = <Value<Container>>::default();
-    match ({ (c.as_pointer()).to_any() },) {
-        (mut __tmp_0,) => {
-            __tmp_0.memset((0) as u8, 128usize);
-            (__tmp_0).clone()
-        }
+    {
+        let mut __tmp_0 = { (c.as_pointer()).to_any() };
+        __tmp_0.memset((0) as u8, 128usize);
+        (__tmp_0).clone()
     };
     ({
         let _out: AnyPtr = (field_ptr!(c.as_pointer(), view)).to_any();

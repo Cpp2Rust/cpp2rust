@@ -88,11 +88,10 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let c: Value<Container> = <Value<Container>>::default();
-    match ({ (c.as_pointer()).to_any() },) {
-        (mut __tmp_0,) => {
-            __tmp_0.memset((0) as u8, 256usize);
-            (__tmp_0).clone()
-        }
+    {
+        let mut __tmp_0 = { (c.as_pointer()).to_any() };
+        __tmp_0.memset((0) as u8, 256usize);
+        (__tmp_0).clone()
     };
     assert!(((anon_0::a(field_ptr!(c.as_pointer(), view)).with(|__s| __s.code) as i32) == 0));
     assert!(((anon_0::b(field_ptr!(c.as_pointer(), view)).with(|__s| __s.lo) as i32) == 0));
@@ -108,11 +107,10 @@ fn main_0() -> i32 {
     (*src.borrow_mut())[(7) as usize] = 1_u8;
     let mut len: usize = 16_usize;
     assert!((len <= ::std::mem::size_of::<[i8; 256]>()));
-    match ({ (anon_0::raw_(field_ptr!(c.as_pointer(), view))).to_any() },) {
-        (mut __tmp_1,) => {
-            __tmp_1.memcpy(&(src.decay()).to_any(), len);
-            (__tmp_1).clone()
-        }
+    {
+        let mut __tmp_1 = { (anon_0::raw_(field_ptr!(c.as_pointer(), view))).to_any() };
+        __tmp_1.memcpy(&(src.decay()).to_any(), len);
+        (__tmp_1).clone()
     };
     assert!(((anon_0::b(field_ptr!(c.as_pointer(), view)).with(|__s| __s.code) as i32) == 2));
     assert!(
@@ -124,11 +122,10 @@ fn main_0() -> i32 {
         .read()) as i32)
             == 80)
     );
-    match ({ (c.as_pointer()).to_any() },) {
-        (mut __tmp_2,) => {
-            __tmp_2.memset((0) as u8, 256usize);
-            (__tmp_2).clone()
-        }
+    {
+        let mut __tmp_2 = { (c.as_pointer()).to_any() };
+        __tmp_2.memset((0) as u8, 256usize);
+        (__tmp_2).clone()
     };
     assert!(((anon_0::b(field_ptr!(c.as_pointer(), view)).with(|__s| __s.code) as i32) == 0));
     return 0;

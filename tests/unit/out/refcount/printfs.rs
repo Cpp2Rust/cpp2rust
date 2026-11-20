@@ -43,14 +43,12 @@ pub fn log_fmt_4(mut fmt: Ptr<i8>, mut v: i32) {
     };
 }
 pub fn put_5(out: Ptr<CFile>, mut s: Ptr<i8>) {
-    match ({ (out).clone() },) {
-        (mut __tmp_0,) => {
-            match s
-                .with_c_bytes(|__bytes| __tmp_0.with_mut(|__f| __f.write(__bytes)) == __bytes.len())
-            {
-                true => 0,
-                false => -1,
-            }
+    {
+        let mut __tmp_0 = { (out).clone() };
+        match s.with_c_bytes(|__bytes| __tmp_0.with_mut(|__f| __f.write(__bytes)) == __bytes.len())
+        {
+            true => 0,
+            false => -1,
         }
     };
 }

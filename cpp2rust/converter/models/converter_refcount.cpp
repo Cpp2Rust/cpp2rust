@@ -3271,11 +3271,54 @@ const clang::VarDecl *GetReferencedVar(const clang::Expr *expr) {
 } // namespace
 
 namespace {
+// Whether type involves no user-defined record, whose constructors may run
+// user code.
+bool HasNoUserRecord(clang::QualType type) {
+  type = type->getPointeeOrArrayElementType()->getCanonicalTypeUnqualified();
+  if (type->isPointerType() || type->isArrayType()) {
+    return HasNoUserRecord(type);
+  }
+  auto *record = type->getAsCXXRecordDecl();
+  if (!record) {
+    return true;
+  }
+  if (IsUserDefinedDecl(record)) {
+    return false;
+  }
+  auto *spec = clang::dyn_cast<clang::ClassTemplateSpecializationDecl>(record);
+  return !spec ||
+         llvm::all_of(spec->getTemplateArgs().asArray(),
+                      [](const clang::TemplateArgument &arg) {
+                        return arg.getKind() != clang::TemplateArgument::Type ||
+                               HasNoUserRecord(arg.getAsType());
+                      });
+}
+
+// Whether an object of type holds nothing but numbers, so that it neither
+// points to nor holds a library object.
+bool HoldsOnlyNumbers(clang::QualType type) {
+  type = type->getBaseElementTypeUnsafe()->getCanonicalTypeUnqualified();
+  if (type->isArithmeticType() || type->isEnumeralType()) {
+    return true;
+  }
+  auto *record = type->getAsCXXRecordDecl();
+  return record && IsUserDefinedDecl(record) && !record->isUnion() &&
+         llvm::all_of(record->bases(),
+                      [](const clang::CXXBaseSpecifier &base) {
+                        return HoldsOnlyNumbers(base.getType());
+                      }) &&
+         llvm::all_of(record->fields(), [](const clang::FieldDecl *field) {
+           return HoldsOnlyNumbers(field->getType());
+         });
+}
+
 // Whether evaluating an expression borrows no value that another expression
 // may borrow mutably: constants, and the values of the variables that are
 // values of their own, as is_own_value tells. If reads_pointees, the pointers
 // it evaluates to are read through too, so this, whose object is unknown, is
-// not one.
+// not one, and so are the objects a library constructor reads them from. A
+// constructor of a user-defined record may run code that reads anything,
+// unless it is trivial.
 class BorrowsNothingVisitor
     : public clang::ConstStmtVisitor<BorrowsNothingVisitor, bool> {
 public:
@@ -3333,6 +3376,26 @@ public:
     return is_own_value_(expr);
   }
 
+  bool VisitCXXConstructExpr(const clang::CXXConstructExpr *expr) {
+    return reads_pointees_ &&
+           (expr->getConstructor()->isTrivial() ||
+            HasNoUserRecord(expr->getType())) &&
+           llvm::all_of(expr->arguments(),
+                        [&](const clang::Expr *arg) { return Traverse(arg); });
+  }
+
+  bool VisitCXXBindTemporaryExpr(const clang::CXXBindTemporaryExpr *expr) {
+    return Traverse(expr->getSubExpr());
+  }
+
+  bool VisitExprWithCleanups(const clang::ExprWithCleanups *expr) {
+    return Traverse(expr->getSubExpr());
+  }
+
+  bool VisitCXXDefaultArgExpr(const clang::CXXDefaultArgExpr *expr) {
+    return Traverse(expr->getExpr());
+  }
+
 private:
   clang::ASTContext &ctx_;
   bool reads_pointees_;
@@ -3344,9 +3407,8 @@ bool ConverterRefCount::BorrowsNothing(
     const clang::Expr *arg, llvm::ArrayRef<const clang::VarDecl *> vars,
     bool reads_pointees) const {
   // A scalar is a value of its own, unless it is accessed through a
-  // reference, as is an unboxed variable. Of those, only the arrays of
-  // non-pointer scalars and such scalars are known to have no pointees but
-  // themselves.
+  // reference, as is an unboxed variable. Of those, only the objects that hold
+  // nothing but numbers are known to have no pointees but themselves.
   return BorrowsNothingVisitor(
              ctx_, reads_pointees,
              [&](const clang::DeclRefExpr *ref) {
@@ -3358,9 +3420,7 @@ bool ConverterRefCount::BorrowsNothing(
                  return false;
                }
                if (reads_pointees) {
-                 auto *element = var->getType()->getBaseElementTypeUnsafe();
-                 return element->isArithmeticType() ||
-                        element->isEnumeralType();
+                 return HoldsOnlyNumbers(var->getType());
                }
                return var->getType()->isScalarType() || IsUnboxedVar(var);
              })
@@ -3412,14 +3472,16 @@ std::vector<bool> ConverterRefCount::ArgsToEvaluateFirst(
     }
   }
   // The object that init constructs from the remaining arguments, unless it
-  // may not be constructed, is constructed first if any of them, or what a
-  // pointer among them points to, may be a borrowed value. Only a library
-  // object is known not to be among the pointees that BorrowsNothing allows.
+  // may not be constructed, is constructed first if its construction, which
+  // reads them and what pointers among them point to, may read a borrowed
+  // value. Only a library object is known not to be among the pointees that
+  // BorrowsNothing allows.
   if (rule.alwaysConstructsInit() &&
-      llvm::any_of(args.drop_front(num_args), [&](clang::Expr *arg) {
-        return !borrows_library_objects ||
-               !BorrowsNothing(arg, borrowed, /*reads_pointees=*/true);
-      })) {
+      (!borrows_library_objects ||
+       !BorrowsNothing(
+           BuildInitExpr(GetSema(), RuleRegistry::GetInitType(ctx_, expr),
+                         args.drop_front(num_args), expr->getExprLoc()),
+           borrowed, /*reads_pointees=*/true))) {
     std::fill(first.begin() + num_args, first.end(), true);
   }
   return first;
@@ -3442,12 +3504,20 @@ void ConverterRefCount::BorrowArgsForCall(clang::Expr *expr,
     std::string ptr;
     if (arg->getType()->isPointerType()) {
       ptr = ConvertRValue(arg);
+    } else if (ConvertLValue(arg); !pending_deref_.empty()) {
+      ptr = pending_deref_.take();
     } else {
-      ConvertLValue(arg);
-      if (pending_deref_.empty()) {
+      // A local value is borrowed in place, unless the call is a place in it,
+      // which can't outlive the borrow.
+      auto *ref = clang::dyn_cast<clang::DeclRefExpr>(arg->IgnoreParens());
+      auto *var =
+          ref ? clang::dyn_cast<clang::VarDecl>(ref->getDecl()) : nullptr;
+      if (!var || !var->hasLocalStorage() || IsUnboxedVar(var) ||
+          GetDeclRefType(curr_function_, ref, var)->isReferenceType() ||
+          (expr->isGLValue() && !isAddrOf() && !DiscardsRef(expr, rule))) {
         continue;
       }
-      ptr = pending_deref_.take();
+      ptr = ConvertDeclRef(ref, var);
     }
     auto name = std::format("__b{}", mut_borrows_.size());
     mut_borrows_.emplace_back(std::move(ptr), name);

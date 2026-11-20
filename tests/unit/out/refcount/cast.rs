@@ -193,13 +193,12 @@ pub fn order_physical_2() {
         (px).clone(),
         (qy).clone(),
     ])));
-    match ({ ps.decay() },) {
-        (mut __tmp_0,) => {
-            let __n = ps.decay().offset((4) as isize).iter_distance(&__tmp_0);
-            let mut __order: Vec<isize> = (0..__n).collect();
-            __order.sort_by(|&__x, &__y| cpp_cmp(&__tmp_0.iter_at(__x), &__tmp_0.iter_at(__y)));
-            reorder(__order, |__i| __tmp_0.iter_at(__i));
-        }
+    {
+        let mut __tmp_0 = { ps.decay() };
+        let __n = ps.decay().offset((4) as isize).iter_distance(&__tmp_0);
+        let mut __order: Vec<isize> = (0..__n).collect();
+        __order.sort_by(|&__x, &__y| cpp_cmp(&__tmp_0.iter_at(__x), &__tmp_0.iter_at(__y)));
+        reorder(__order, |__i| __tmp_0.iter_at(__i));
     };
     assert!(
         ({
@@ -234,10 +233,12 @@ pub fn over_aligned_3() {
 }
 pub fn vector_capacity_4() {
     let v: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
-    if 4_usize > (*v.borrow()).capacity() as usize {
-        let len_0 = (*v.borrow()).len();
-        (*v.borrow_mut()).reserve_exact(4_usize - len_0 as usize);
-    };
+    v.with_mut(|__b0| {
+        if 4_usize > (*__b0).capacity() as usize {
+            let len_0 = (*__b0).len();
+            (*__b0).reserve_exact(4_usize - len_0 as usize);
+        }
+    });
     {
         let __a1 = 1;
         (*v.borrow_mut()).push(__a1)
@@ -264,10 +265,12 @@ pub fn vector_capacity_4() {
         .read())
             == 2)
     );
-    if 100_usize > (*v.borrow()).capacity() as usize {
-        let len_0 = (*v.borrow()).len();
-        (*v.borrow_mut()).reserve_exact(100_usize - len_0 as usize);
-    };
+    v.with_mut(|__b0| {
+        if 100_usize > (*__b0).capacity() as usize {
+            let len_0 = (*__b0).len();
+            (*__b0).reserve_exact(100_usize - len_0 as usize);
+        }
+    });
     let mut j0: usize = (v.decay().offset(0_usize)).to_int();
     assert!(
         (((v.decay().offset(2_usize)).to_int()).wrapping_sub(j0)
@@ -449,11 +452,10 @@ pub fn c_strings_8() {
         } == 0)
     );
     let d: Value<Box<[i8]>> = Rc::new(RefCell::new((0..6).map(|_| 0_i8).collect::<Box<[i8]>>()));
-    match ({ (<Ptr<i8>>::from_int(d.decay().to_int())).to_any() },) {
-        (mut __tmp_1,) => {
-            __tmp_1.memcpy(&(p).to_any(), ::std::mem::size_of::<[i8; 6]>());
-            (__tmp_1).clone()
-        }
+    {
+        let mut __tmp_1 = { (<Ptr<i8>>::from_int(d.decay().to_int())).to_any() };
+        __tmp_1.memcpy(&(p).to_any(), ::std::mem::size_of::<[i8; 6]>());
+        (__tmp_1).clone()
     };
     assert!(
         ((<Ptr<i8>>::from_int(d.decay().to_int()))

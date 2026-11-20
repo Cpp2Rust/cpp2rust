@@ -14,7 +14,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut vec_: Vec<i32> = (0..(4_usize) as usize).map(|_| 0_i32).collect::<Vec<_>>();
+    let mut vec_: Vec<i32> = Vec::from_fn(4_usize, |_| 0_i32);
     let mut it: UnsafeRandomAccessIterator<i32> = vec_.begin();
     (unsafe { foo_0((it).clone()) });
     return 0;

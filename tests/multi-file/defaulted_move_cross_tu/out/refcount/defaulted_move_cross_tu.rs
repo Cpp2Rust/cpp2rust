@@ -101,11 +101,10 @@ impl SImpl for Ptr<S> {
         field!((*self), v).with_mut(|__b0| {
             (*__b0) = field!(_a0, v).with_mut(std::mem::take);
         });
-        match ({ (array_field_ptr!((*self), n)).to_any() },) {
-            (mut __tmp_0,) => {
-                __tmp_0.memcpy(&(array_field_ptr!(_a0, n)).to_any(), 8_usize);
-                (__tmp_0).clone()
-            }
+        {
+            let mut __tmp_0 = { (array_field_ptr!((*self), n)).to_any() };
+            __tmp_0.memcpy(&(array_field_ptr!(_a0, n)).to_any(), 8_usize);
+            (__tmp_0).clone()
         };
         return (*self).clone();
     }

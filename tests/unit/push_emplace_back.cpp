@@ -109,6 +109,28 @@ void emplace_from_element(std::vector<std::vector<uint8_t>> *v) {
   v->emplace_back(p, p + 3);
 }
 
+struct Plain {
+  int a;
+  double b[2];
+};
+
+void emplace_plain(std::vector<Plain> *v) {
+  Plain p{1, {2, 3}};
+  v->emplace_back(p);
+}
+
+struct Counted;
+std::vector<Counted> *all_counted;
+
+struct Counted {
+  std::size_t seen;
+  explicit Counted(int);
+};
+
+Counted::Counted(int) : seen(all_counted->size()) {}
+
+void emplace_counted(std::vector<Counted> *v) { v->emplace_back(1); }
+
 void emplace_from_sibling(Bytes *s) {
   uint8_t *p = s->b;
   std::vector<std::vector<uint8_t>> *v = &s->v;
@@ -208,6 +230,16 @@ int main() {
   Bytes bytes{{}, {4, 5, 6}};
   emplace_from_sibling(&bytes);
   assert(bytes.v.size() == 1 && bytes.v[0][2] == 6);
+
+  std::vector<Plain> plains;
+  emplace_plain(&plains);
+  assert(plains[0].a == 1 && plains[0].b[1] == 3);
+
+  std::vector<Counted> counted;
+  all_counted = &counted;
+  emplace_counted(&counted);
+  emplace_counted(&counted);
+  assert(counted[0].seen == 0 && counted[1].seen == 1);
 
   return 0;
 }

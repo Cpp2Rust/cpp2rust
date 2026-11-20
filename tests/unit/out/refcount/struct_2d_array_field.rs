@@ -193,14 +193,13 @@ fn main_0() -> i32 {
     assert!((((elem!(p, 0).read()) as i32) == ('t' as i32)));
     assert!(({ ({ (*local.borrow()).count } == 3_usize) }));
     let copy: Value<table> = <Value<table>>::default();
-    match ({ (array_field_ptr!(copy.as_pointer(), rows)).to_any() },) {
-        (mut __tmp_0,) => {
-            __tmp_0.memcpy(
-                &(array_field_ptr!(local.as_pointer(), rows)).to_any(),
-                ::std::mem::size_of::<[[i8; 10]; 3]>(),
-            );
-            (__tmp_0).clone()
-        }
+    {
+        let mut __tmp_0 = { (array_field_ptr!(copy.as_pointer(), rows)).to_any() };
+        __tmp_0.memcpy(
+            &(array_field_ptr!(local.as_pointer(), rows)).to_any(),
+            ::std::mem::size_of::<[[i8; 10]; 3]>(),
+        );
+        (__tmp_0).clone()
     };
     assert!(
         (({
@@ -255,14 +254,13 @@ fn main_0() -> i32 {
             .map(|_| (0..3).map(|_| 0_i8).collect::<Box<[i8]>>())
             .collect::<Box<[Box<[i8]>]>>(),
     ));
-    match ({ (other.decay()).to_any() },) {
-        (mut __tmp_1,) => {
-            __tmp_1.memcpy(
-                &(grid.decay()).to_any(),
-                ::std::mem::size_of::<[[i8; 3]; 2]>(),
-            );
-            (__tmp_1).clone()
-        }
+    {
+        let mut __tmp_1 = { (other.decay()).to_any() };
+        __tmp_1.memcpy(
+            &(grid.decay()).to_any(),
+            ::std::mem::size_of::<[[i8; 3]; 2]>(),
+        );
+        (__tmp_1).clone()
     };
     assert!(
         ({

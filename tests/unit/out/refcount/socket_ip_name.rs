@@ -14,28 +14,24 @@ pub fn check_buf_0(
     mut full: AnyPtr,
     mut actual: libc::socklen_t,
 ) {
-    match ({ (buf).to_any() },) {
-        (mut __tmp_0,) => {
-            __tmp_0.memset((165) as u8, (size as usize));
-            (__tmp_0).clone()
-        }
+    {
+        let mut __tmp_0 = { (buf).to_any() };
+        __tmp_0.memset((165) as u8, (size as usize));
+        (__tmp_0).clone()
     };
     let len: Value<libc::socklen_t> = Rc::new(RefCell::new(cap));
     assert!(
-        (match ({ buf.reinterpret_cast::<libcc2rs::Sockaddr>() }, {
-            (len.as_pointer())
-        },)
-        {
-            (mut __tmp_1, mut __tmp_2) => {
-                match nix::sys::socket::getsockname::<nix::sys::socket::SockaddrStorage>(fd) {
-                    Ok(__ss) => {
-                        Sockaddr::encode(&__ss, &__tmp_1, &__tmp_2);
-                        0
-                    }
-                    Err(__e) => {
-                        libcc2rs::cpp2rust_errno().write(__e as i32);
-                        -1
-                    }
+        ({
+            let mut __tmp_1 = { buf.reinterpret_cast::<libcc2rs::Sockaddr>() };
+            let mut __tmp_2 = { (len.as_pointer()) };
+            match nix::sys::socket::getsockname::<nix::sys::socket::SockaddrStorage>(fd) {
+                Ok(__ss) => {
+                    Sockaddr::encode(&__ss, &__tmp_1, &__tmp_2);
+                    0
+                }
+                Err(__e) => {
+                    libcc2rs::cpp2rust_errno().write(__e as i32);
+                    -1
                 }
             }
         } == 0)
@@ -80,28 +76,24 @@ pub fn check_name_1(mut family: i32) {
     };
     assert!((fd >= 0));
     let full: Value<libcc2rs::SockaddrStorage> = Rc::new(RefCell::new(Default::default()));
-    match ({ (full.as_pointer()).to_any() },) {
-        (mut __tmp_3,) => {
-            __tmp_3.memset((165) as u8, 128usize);
-            (__tmp_3).clone()
-        }
+    {
+        let mut __tmp_3 = { (full.as_pointer()).to_any() };
+        __tmp_3.memset((165) as u8, 128usize);
+        (__tmp_3).clone()
     };
     let len: Value<libc::socklen_t> = Rc::new(RefCell::new((128usize as libc::socklen_t)));
     assert!(
-        (match (
-            { (full.as_pointer()).reinterpret_cast::<libcc2rs::Sockaddr>() },
-            { (len.as_pointer()) },
-        ) {
-            (mut __tmp_4, mut __tmp_5) => {
-                match nix::sys::socket::getsockname::<nix::sys::socket::SockaddrStorage>(fd) {
-                    Ok(__ss) => {
-                        Sockaddr::encode(&__ss, &__tmp_4, &__tmp_5);
-                        0
-                    }
-                    Err(__e) => {
-                        libcc2rs::cpp2rust_errno().write(__e as i32);
-                        -1
-                    }
+        ({
+            let mut __tmp_4 = { (full.as_pointer()).reinterpret_cast::<libcc2rs::Sockaddr>() };
+            let mut __tmp_5 = { (len.as_pointer()) };
+            match nix::sys::socket::getsockname::<nix::sys::socket::SockaddrStorage>(fd) {
+                Ok(__ss) => {
+                    Sockaddr::encode(&__ss, &__tmp_4, &__tmp_5);
+                    0
+                }
+                Err(__e) => {
+                    libcc2rs::cpp2rust_errno().write(__e as i32);
+                    -1
                 }
             }
         } == 0)

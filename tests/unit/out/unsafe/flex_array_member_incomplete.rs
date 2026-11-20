@@ -30,17 +30,16 @@ unsafe fn main_0() -> i32 {
             as *mut F);
     assert!((!((f).is_null())));
     (*f).n = 4;
-    match ({ ((*f).tail.as_mut_ptr() as *mut ::libc::c_void) },) {
-        (mut __tmp_0,) => {
-            if 4_usize != 0 {
-                ::std::ptr::copy_nonoverlapping(
-                    (c"xyz".as_ptr().cast_mut() as *const ::libc::c_void),
-                    __tmp_0,
-                    4_usize,
-                )
-            }
-            __tmp_0
+    {
+        let mut __tmp_0 = { ((*f).tail.as_mut_ptr() as *mut ::libc::c_void) };
+        if 4_usize != 0 {
+            ::std::ptr::copy_nonoverlapping(
+                (c"xyz".as_ptr().cast_mut() as *const ::libc::c_void),
+                __tmp_0,
+                4_usize,
+            )
         }
+        __tmp_0
     };
     assert!((((*f).n) == (4)));
     assert!(
@@ -56,17 +55,16 @@ unsafe fn main_0() -> i32 {
             as *mut F);
     assert!((!((g).is_null())));
     (*g).n = 8;
-    match ({ ((*g).tail.as_mut_ptr() as *mut ::libc::c_void) },) {
-        (mut __tmp_1,) => {
-            if 8_usize != 0 {
-                ::std::ptr::copy_nonoverlapping(
-                    (c"abcdefg".as_ptr().cast_mut() as *const ::libc::c_void),
-                    __tmp_1,
-                    8_usize,
-                )
-            }
-            __tmp_1
+    {
+        let mut __tmp_1 = { ((*g).tail.as_mut_ptr() as *mut ::libc::c_void) };
+        if 8_usize != 0 {
+            ::std::ptr::copy_nonoverlapping(
+                (c"abcdefg".as_ptr().cast_mut() as *const ::libc::c_void),
+                __tmp_1,
+                8_usize,
+            )
         }
+        __tmp_1
     };
     assert!((((*(*g).tail.as_mut_ptr().add((6) as usize)) as i32) == ('g' as i32)));
     assert!((((*(*g).tail.as_mut_ptr().add((7) as usize)) as i32) == ('\0' as i32)));

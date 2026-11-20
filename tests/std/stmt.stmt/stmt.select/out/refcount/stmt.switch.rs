@@ -153,11 +153,48 @@ pub fn test_10() {
     assert!((dtorCount_2.with(|rc| *rc.borrow()) == 1));
     assert!((selector == 9));
 }
+pub fn classify_11(mut x: i32) -> i32 {
+    let mut r: i32 = 0;
+    'switch: {
+        match { x } {
+            __v if __v == 1 => {
+                std::hint::cold_path();
+                return -1_i32;
+            }
+            __v if __v == 2 => {
+                r = 2;
+                break 'switch;
+            }
+            __v if __v == 3 => {
+                std::hint::cold_path();
+                r = 3;
+                break 'switch;
+            }
+            _ => {
+                break 'switch;
+            }
+        }
+    };
+    'loop_: while (x.postfix_dec() > 0) {
+        std::hint::cold_path();
+        {
+            r += 10;
+        };
+    }
+    return r;
+}
+pub fn test_12() {
+    assert!((({ classify_11(1,) }) == -1_i32));
+    assert!((({ classify_11(2,) }) == 22));
+    assert!((({ classify_11(3,) }) == 33));
+    assert!((({ classify_11(0,) }) == 0));
+}
 pub fn main() {
     __cpp2rust_init_globals();
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
+    ({ test_12() });
     ({ test_7() });
     ({ test_10() });
     return 0;

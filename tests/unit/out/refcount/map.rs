@@ -531,18 +531,15 @@ fn main_0() -> i32 {
     let inserted: Value<(
         Value<BidirectionalIterator<(Value<i32>, Value<i32>)>>,
         Value<bool>,
-    )> = Rc::new(RefCell::new(
-        match ({ (Rc::new(RefCell::new(1)), Rc::new(RefCell::new(2))) },) {
-            (mut __tmp_42,) => {
-                let (__it, __inserted) =
-                    Map::emplace(m3.as_pointer(), &__tmp_42.0.as_pointer(), || __tmp_42);
-                (
-                    Rc::new(RefCell::new(__it)),
-                    Rc::new(RefCell::new(__inserted)),
-                )
-            }
-        },
-    ));
+    )> = Rc::new(RefCell::new({
+        let mut __tmp_42 = { (Rc::new(RefCell::new(1)), Rc::new(RefCell::new(2))) };
+        let (__it, __inserted) =
+            Map::emplace(m3.as_pointer(), &__tmp_42.0.as_pointer(), || __tmp_42);
+        (
+            Rc::new(RefCell::new(__it)),
+            Rc::new(RefCell::new(__inserted)),
+        )
+    }));
     assert!(({ ((*(*inserted.borrow()).1.borrow()) as bool) }));
     assert!(
         ({
@@ -557,18 +554,15 @@ fn main_0() -> i32 {
     let not_inserted: Value<(
         Value<BidirectionalIterator<(Value<i32>, Value<i32>)>>,
         Value<bool>,
-    )> = Rc::new(RefCell::new(
-        match ({ (Rc::new(RefCell::new(1)), Rc::new(RefCell::new(3))) },) {
-            (mut __tmp_43,) => {
-                let (__it, __inserted) =
-                    Map::emplace(m3.as_pointer(), &__tmp_43.0.as_pointer(), || __tmp_43);
-                (
-                    Rc::new(RefCell::new(__it)),
-                    Rc::new(RefCell::new(__inserted)),
-                )
-            }
-        },
-    ));
+    )> = Rc::new(RefCell::new({
+        let mut __tmp_43 = { (Rc::new(RefCell::new(1)), Rc::new(RefCell::new(3))) };
+        let (__it, __inserted) =
+            Map::emplace(m3.as_pointer(), &__tmp_43.0.as_pointer(), || __tmp_43);
+        (
+            Rc::new(RefCell::new(__it)),
+            Rc::new(RefCell::new(__inserted)),
+        )
+    }));
     assert!(({ !(*(*not_inserted.borrow()).1.borrow()) }));
     assert!(
         ({
@@ -580,32 +574,30 @@ fn main_0() -> i32 {
                 == 2)
         })
     );
-    match ({
-        match (Rc::new(RefCell::new((
-            Rc::new(RefCell::new(4)),
-            Rc::new(RefCell::new(5)),
-        )))
-        .as_pointer(),)
-        {
-            (__tmp_44,) => (
-                Rc::new(RefCell::new(
-                    ((*__tmp_44.upgrade().deref()).0.as_pointer().read()),
-                )),
-                Rc::new(RefCell::new(
-                    ((*__tmp_44.upgrade().deref()).1.as_pointer().read()),
-                )),
-            ),
-        }
-    },)
     {
-        (mut __tmp_45,) => {
-            let (__it, __inserted) =
-                Map::emplace(m3.as_pointer(), &__tmp_45.0.as_pointer(), || __tmp_45);
-            (
-                Rc::new(RefCell::new(__it)),
-                Rc::new(RefCell::new(__inserted)),
-            )
-        }
+        let mut __tmp_45 = {
+            match (Rc::new(RefCell::new((
+                Rc::new(RefCell::new(4)),
+                Rc::new(RefCell::new(5)),
+            )))
+            .as_pointer(),)
+            {
+                (__tmp_44,) => (
+                    Rc::new(RefCell::new(
+                        ((*__tmp_44.upgrade().deref()).0.as_pointer().read()),
+                    )),
+                    Rc::new(RefCell::new(
+                        ((*__tmp_44.upgrade().deref()).1.as_pointer().read()),
+                    )),
+                ),
+            }
+        };
+        let (__it, __inserted) =
+            Map::emplace(m3.as_pointer(), &__tmp_45.0.as_pointer(), || __tmp_45);
+        (
+            Rc::new(RefCell::new(__it)),
+            Rc::new(RefCell::new(__inserted)),
+        )
     };
     assert!(({ ((*m3.borrow()).len() == 2_usize) }));
     assert!(
@@ -626,17 +618,14 @@ fn main_0() -> i32 {
         .read())
             == 5)
     );
-    let hinted: Value<BidirectionalIterator<(Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(
-        match ({ (Rc::new(RefCell::new(6)), Rc::new(RefCell::new(7))) },) {
-            (mut __tmp_48,) => {
-                let _ = <BidirectionalIterator<(Value<i32>, Value<i32>)>>::from(
-                    m3.as_pointer()
-                        .with(|__m: &Map<i32, (Value<i32>, Value<i32>)>| __m.end()),
-                );
-                Map::emplace(m3.as_pointer(), &__tmp_48.0.as_pointer(), || __tmp_48).0
-            }
-        },
-    ));
+    let hinted: Value<BidirectionalIterator<(Value<i32>, Value<i32>)>> = Rc::new(RefCell::new({
+        let mut __tmp_48 = { (Rc::new(RefCell::new(6)), Rc::new(RefCell::new(7))) };
+        let _ = <BidirectionalIterator<(Value<i32>, Value<i32>)>>::from(
+            m3.as_pointer()
+                .with(|__m: &Map<i32, (Value<i32>, Value<i32>)>| __m.end()),
+        );
+        Map::emplace(m3.as_pointer(), &__tmp_48.0.as_pointer(), || __tmp_48).0
+    }));
     assert!(
         ({
             ((*(*({ (*hinted.borrow()).iter_deref() }).upgrade().deref())
@@ -734,21 +723,19 @@ fn main_0() -> i32 {
         .with(|__s| __s.y)
             == 4)
     );
-    match ({
-        (
-            Rc::new(RefCell::new(({ (*key8.borrow()) }))),
-            Rc::new(RefCell::new(Point::new_2({ 5 }, { 6 }))),
-        )
-    },)
     {
-        (mut __tmp_52,) => {
-            let (__it, __inserted) =
-                Map::emplace(points.as_pointer(), &__tmp_52.0.as_pointer(), || __tmp_52);
+        let mut __tmp_52 = {
             (
-                Rc::new(RefCell::new(__it)),
-                Rc::new(RefCell::new(__inserted)),
+                Rc::new(RefCell::new(({ (*key8.borrow()) }))),
+                Rc::new(RefCell::new(Point::new_2({ 5 }, { 6 }))),
             )
-        }
+        };
+        let (__it, __inserted) =
+            Map::emplace(points.as_pointer(), &__tmp_52.0.as_pointer(), || __tmp_52);
+        (
+            Rc::new(RefCell::new(__it)),
+            Rc::new(RefCell::new(__inserted)),
+        )
     };
     assert!(
         (match (Rc::new(RefCell::new(8)).as_pointer(),) {

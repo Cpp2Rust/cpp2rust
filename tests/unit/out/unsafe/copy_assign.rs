@@ -147,16 +147,14 @@ impl HasCopyCounted {
             let _arg0: *const CopyCounted = &(*_a0).c;
             CopyCounted::copy_assign(&mut self.c, _arg0)
         });
-        match (
-            { ((&mut self.arr as *mut [CopyCounted; 2]) as *mut ::libc::c_void) },
-            { ((&(*_a0).arr as *const [CopyCounted; 2]) as *const ::libc::c_void) },
-        ) {
-            (mut __tmp_0, mut __tmp_1) => {
-                if 8_usize != 0 {
-                    ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, 8_usize)
-                }
-                __tmp_0
+        {
+            let mut __tmp_0 = { ((&mut self.arr as *mut [CopyCounted; 2]) as *mut ::libc::c_void) };
+            let mut __tmp_1 =
+                { ((&(*_a0).arr as *const [CopyCounted; 2]) as *const ::libc::c_void) };
+            if 8_usize != 0 {
+                ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, 8_usize)
             }
+            __tmp_0
         };
         return &mut (*(self as *mut HasCopyCounted));
     }

@@ -1525,17 +1525,43 @@ bool Converter::VisitIfStmt(clang::IfStmt *stmt) {
     ConvertBody(taken ? stmt->getThen() : stmt->getElse());
     return false;
   }
+  // The branch that is not the likely one, if either is, is cold.
+  auto likelihood =
+      clang::Stmt::getLikelihood(stmt->getThen(), stmt->getElse());
+  auto convert_branch = [&](clang::Stmt *branch, bool cold) {
+    PushBrace brace(*this);
+    if (cold) {
+      StrCat("std::hint::cold_path();");
+    }
+    if (auto *attributed =
+            clang::dyn_cast_or_null<clang::AttributedStmt>(branch)) {
+      branch = attributed->getSubStmt();
+    }
+    if (branch) {
+      ConvertBodyStmts(branch);
+    }
+  };
   StrCat(keyword::kIf);
   ConvertCondition(stmt->getCond());
-  ConvertBody(stmt->getThen());
-  if (stmt->hasElseStorage()) {
+  convert_branch(stmt->getThen(), likelihood == clang::Stmt::LH_Unlikely);
+  if (stmt->hasElseStorage() || likelihood == clang::Stmt::LH_Likely) {
     StrCat(keyword::kElse);
-    if (clang::isa<clang::IfStmt>(stmt->getElse())) {
+    if (likelihood != clang::Stmt::LH_Likely &&
+        clang::isa_and_nonnull<clang::IfStmt>(stmt->getElse())) {
       Convert(stmt->getElse());
     } else {
-      ConvertBody(stmt->getElse());
+      convert_branch(stmt->getElse(), likelihood == clang::Stmt::LH_Likely);
     }
   }
+  return false;
+}
+
+// The path through an unlikely statement is cold.
+bool Converter::VisitAttributedStmt(clang::AttributedStmt *stmt) {
+  if (clang::Stmt::getLikelihood(stmt) == clang::Stmt::LH_Unlikely) {
+    StrCat("std::hint::cold_path();");
+  }
+  Convert(stmt->getSubStmt());
   return false;
 }
 
@@ -1808,23 +1834,24 @@ bool Converter::GetFmtArg(clang::Expr *arg, std::string &fmt,
   return true;
 }
 
-bool Converter::GetRawArg(clang::Expr *arg, std::string &raw_args) {
+bool Converter::GetRawArg(clang::Expr *arg,
+                          std::vector<std::string> &raw_args) {
   if (arg->getType()->isCharType()) {
-    raw_args += "(&[" + ToString(arg) + " as u8]";
+    raw_args.push_back("&[" + ToString(arg) + " as u8]");
   } else if (Mapper::Map(*this, arg->getType()) ==
              std::format("Vec<{}>", CharRustType())) {
+    // The string, without its terminator, evaluated once.
     PushExprKind push(*this, ExprKind::RValue);
-    std::string str = ToString(arg);
-    raw_args += "(&(" + str + ").iter().take((" + str +
-                ").len() - 1).map(|&c| c as u8).collect::<Vec<u8>>()[..]";
+    raw_args.push_back("&(" + ToString(arg) +
+                       ").split_last().unwrap().1.iter().map(|&c| c as "
+                       "u8).collect::<Vec<u8>>()");
   } else if (IsStdFunction(arg, "endl")) {
-    raw_args += "(&[b'\\n']";
+    raw_args.push_back("b\"\\n\"");
   } else if (clang::isa<clang::StringLiteral>(arg->IgnoreImplicit())) {
-    raw_args += "(b" + GetEscapedStringLiteral(arg);
+    raw_args.push_back("b" + GetEscapedStringLiteral(arg));
   } else {
     return false;
   }
-  raw_args += " as &[u8]), ";
   return true;
 }
 
@@ -1866,16 +1893,22 @@ void Converter::ConvertCallToOstream(clang::CallExpr *expr) {
   const char *fmt_trait = "";
   std::string fmt_width;
   std::string fmt_args;
-  std::string raw_args;
+  std::vector<std::string> raw_args;
   std::string stream_str = ConvertStream(stream);
   size_t arg_count = args.size();
 
+  // The pieces are written at once, as the stream is not buffered.
   auto write_raw_args = [&]() {
-    if (!raw_args.empty()) {
-      StrCat(stream_str, ".write_all(&([", std::move(raw_args),
-             "].concat()));");
-      raw_args.clear();
+    if (raw_args.size() == 1) {
+      StrCat(stream_str, ".write_all(", raw_args.front(), ");");
+    } else if (!raw_args.empty()) {
+      std::string pieces;
+      for (const auto &piece : raw_args) {
+        pieces += std::format("({} as &[u8]),", piece);
+      }
+      StrCat(stream_str, ".write_all(&([", pieces, "].concat()));");
     }
+    raw_args.clear();
   };
 
   auto write_fmt_args = [&]() {
@@ -4429,6 +4462,9 @@ void Converter::EmitSwitchArm(const SwitchArm &arm, bool is_default) {
     StrCat(std::format("'{}: ", arm.label.str()));
   }
   StrCat(token::kOpenCurlyBracket);
+  if (arm.cold) {
+    StrCat("std::hint::cold_path();");
+  }
   for (auto *t : arm.body) {
     Convert(t);
   }
@@ -5689,8 +5725,20 @@ std::string Converter::ConvertMappedMethodCall(
     clang::Expr *expr, const TranslationRule::MethodCallFragment &mc,
     llvm::ArrayRef<clang::TemplateArgument> bindings,
     llvm::ArrayRef<clang::Expr *> args, TempMaterializationCtx *ctx) {
-  return ConvertIRFragment(mc.receiver, bindings, expr, args, ctx) +
-         ConvertIRFragment(mc.body, bindings, expr, args, ctx);
+  auto receiver = ConvertIRFragment(mc.receiver, bindings, expr, args, ctx);
+  // A negation binds more loosely than the method call, e.g., (-1).abs().
+  auto *ph = mc.receiver.size() == 1
+                 ? std::get_if<TranslationRule::PlaceholderFragment>(
+                       &mc.receiver.front())
+                 : nullptr;
+  auto *unary = ph ? clang::dyn_cast<clang::UnaryOperator>(
+                         args[ph->n]->IgnoreParenNoopCasts(ctx_))
+                   : nullptr;
+  if (unary && (unary->getOpcode() == clang::UO_Minus ||
+                unary->getOpcode() == clang::UO_Not)) {
+    receiver = std::format("({})", receiver);
+  }
+  return receiver + ConvertIRFragment(mc.body, bindings, expr, args, ctx);
 }
 
 std::string Converter::GetMappedAsString(clang::Expr *expr, clang::Expr **args,
@@ -5746,6 +5794,7 @@ std::string Converter::GetMappedAsString(clang::Expr *expr, clang::Expr **args,
       (tgt_ir->initCopies() > 1 ||
        std::find(first.begin() + num_params, first.end(), true) != first.end());
   std::vector<std::string> values, names;
+  bool all_by_value = true;
   // Bindings in a global initializer are local to the expansion too.
   clang::DeclContext *binding_context = curr_function_;
   if (!binding_context && tgt_ir->usesInit()) {
@@ -5761,6 +5810,7 @@ std::string Converter::GetMappedAsString(clang::Expr *expr, clang::Expr **args,
     auto type = arg->getType();
     bool by_value = (arg->isPRValue() || first[i]) &&
                     !tgt_ir->takesAddress(ctx_, expr, i, arg);
+    all_by_value &= by_value;
     if (!by_value && arg->isPRValue()) {
       arg = new (ctx_) clang::MaterializeTemporaryExpr(type, arg, false);
     }
@@ -5827,11 +5877,16 @@ std::string Converter::GetMappedAsString(clang::Expr *expr, clang::Expr **args,
   auto outer_borrows = std::exchange(borrows_, false);
   BorrowArgsForCall(expr, *tgt_ir, all_args);
   bool place = false;
+  // The statements of the rule are in the block that binds the values, if
+  // they are bound by lets.
+  bool let_block = !values.empty() && all_by_value && mut_borrows_.empty();
   std::string result;
   if (discards_ref) {
     // The reference to the argument is not used.
-    result =
-        '{' + ConvertIRFragment(effect, bindings, expr, all_args, ctx) + '}';
+    result = ConvertIRFragment(effect, bindings, expr, all_args, ctx);
+    if (!let_block) {
+      result = '{' + result + '}';
+    }
   } else if (base && ReturnsPointerToArg(all_args[base->n])) {
     auto str = ConvertIRFragment(effect, bindings, expr, all_args, ctx) +
                ConvertIRFragment(setup, bindings, expr, all_args, ctx);
@@ -5841,9 +5896,9 @@ std::string Converter::GetMappedAsString(clang::Expr *expr, clang::Expr **args,
                                 expr, all_args, ctx);
       index = index.substr(1, index.size() - 2);
     }
-    result = ConvertPointerToArg(all_args[base->n], index);
-    if (!str.empty()) {
-      result = std::format("{{ {} {} }}", str, result);
+    result = str + ConvertPointerToArg(all_args[base->n], index);
+    if (!str.empty() && !let_block) {
+      result = '{' + result + '}';
     }
   } else if (base && isAddrOf()) {
     // A pointer to the place is a raw one.
@@ -5867,7 +5922,7 @@ std::string Converter::GetMappedAsString(clang::Expr *expr, clang::Expr **args,
                                    ? *operand
                                    : tgt_ir->body,
                                bindings, expr, all_args, ctx);
-    if (tgt_ir->multi_statement) {
+    if (tgt_ir->multi_statement && (!let_block || place)) {
       result = '{' + result + '}';
     }
   }
@@ -5887,7 +5942,16 @@ std::string Converter::GetMappedAsString(clang::Expr *expr, clang::Expr **args,
     borrows_ = false;
   }
   borrows_ |= outer_borrows;
-  if (!values.empty()) {
+  // The values, whose temporaries end with them, are bound by lets, unless
+  // the call is a place in one of them. Pointers to objects are bound by a
+  // match, which keeps their temporaries until the end of the statement.
+  if (!values.empty() && all_by_value && !place) {
+    std::string lets;
+    for (size_t i = 0; i < values.size(); ++i) {
+      lets += std::format("let {} = {};", names[i], values[i]);
+    }
+    result = std::format("{{ {} {} }}", lets, result);
+  } else if (!values.empty()) {
     result =
         std::format("match ({},) {{ ({},) => {{ {} }} }}",
                     llvm::join(values, ", "), llvm::join(names, ", "), result);

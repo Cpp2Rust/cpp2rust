@@ -109,21 +109,21 @@ fn main_0() -> i32 {
     };
     assert!((((((r1 + r2) + r3) + r4) + r5) == 56));
     let values: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 7, 7, 3])));
-    let mut max: Ptr<i32> = match ({ values.decay() }, { values.decay().offset((4) as isize) }) {
-        (mut __tmp_2, mut __tmp_3) => {
-            let mut __best = __tmp_2.clone();
-            if __tmp_2 != __tmp_3 {
-                let mut __it = (__tmp_2).clone();
-                __it.iter_inc();
-                while __it != __tmp_3 {
-                    if CppLess::less(&__best.iter_deref(), &__it.iter_deref()) {
-                        __best = __it.clone();
-                    }
-                    __it.iter_inc();
+    let mut max: Ptr<i32> = {
+        let mut __tmp_2 = { values.decay() };
+        let mut __tmp_3 = { values.decay().offset((4) as isize) };
+        let mut __best = __tmp_2.clone();
+        if __tmp_2 != __tmp_3 {
+            let mut __it = (__tmp_2).clone();
+            __it.iter_inc();
+            while __it != __tmp_3 {
+                if CppLess::less(&__best.iter_deref(), &__it.iter_deref()) {
+                    __best = __it.clone();
                 }
+                __it.iter_inc();
             }
-            __best
         }
+        __best
     };
     assert!(({ (max).clone() } == { values.decay().offset((1) as isize) }));
     assert!(

@@ -38,44 +38,42 @@ fn main_0() -> i32 {
         let __a1 = (Item { key: 2, value: 20 });
         (*v.borrow_mut()).push(__a1)
     };
-    match ({ v.decay().begin() },) {
-        (mut __tmp_0,) => {
-            let __n = v.decay().end().iter_distance(&__tmp_0);
-            let mut __order: Vec<isize> = (0..__n).collect();
-            __order.sort_by(|&__x, &__y| {
-                let __a = __tmp_0.iter_at(__x);
-                let __b = __tmp_0.iter_at(__y);
-                if Compare_0.call(__a.clone(), __b.clone()) {
-                    std::cmp::Ordering::Less
-                } else if Compare_0.call(__b, __a) {
-                    std::cmp::Ordering::Greater
-                } else {
-                    std::cmp::Ordering::Equal
-                }
-            });
-            reorder(__order, |__i| __tmp_0.iter_at(__i));
-        }
+    {
+        let mut __tmp_0 = { v.decay().begin() };
+        let __n = v.decay().end().iter_distance(&__tmp_0);
+        let mut __order: Vec<isize> = (0..__n).collect();
+        __order.sort_by(|&__x, &__y| {
+            let __a = __tmp_0.iter_at(__x);
+            let __b = __tmp_0.iter_at(__y);
+            if Compare_0.call(__a.clone(), __b.clone()) {
+                std::cmp::Ordering::Less
+            } else if Compare_0.call(__b, __a) {
+                std::cmp::Ordering::Greater
+            } else {
+                std::cmp::Ordering::Equal
+            }
+        });
+        reorder(__order, |__i| __tmp_0.iter_at(__i));
     };
     assert!(({ ({ { (*v.borrow())[0_usize] }.key } == 1) }));
     assert!(({ ({ { (*v.borrow())[1_usize] }.key } == 2) }));
     assert!(({ ({ { (*v.borrow())[2_usize] }.key } == 3) }));
-    match ({ v.decay().begin() },) {
-        (mut __tmp_1,) => {
-            let __n = v.decay().end().iter_distance(&__tmp_1);
-            let mut __order: Vec<isize> = (0..__n).collect();
-            __order.sort_by(|&__x, &__y| {
-                let __a = __tmp_1.iter_at(__x);
-                let __b = __tmp_1.iter_at(__y);
-                if CompareDesc_1.call(__a.clone(), __b.clone()) {
-                    std::cmp::Ordering::Less
-                } else if CompareDesc_1.call(__b, __a) {
-                    std::cmp::Ordering::Greater
-                } else {
-                    std::cmp::Ordering::Equal
-                }
-            });
-            reorder(__order, |__i| __tmp_1.iter_at(__i));
-        }
+    {
+        let mut __tmp_1 = { v.decay().begin() };
+        let __n = v.decay().end().iter_distance(&__tmp_1);
+        let mut __order: Vec<isize> = (0..__n).collect();
+        __order.sort_by(|&__x, &__y| {
+            let __a = __tmp_1.iter_at(__x);
+            let __b = __tmp_1.iter_at(__y);
+            if CompareDesc_1.call(__a.clone(), __b.clone()) {
+                std::cmp::Ordering::Less
+            } else if CompareDesc_1.call(__b, __a) {
+                std::cmp::Ordering::Greater
+            } else {
+                std::cmp::Ordering::Equal
+            }
+        });
+        reorder(__order, |__i| __tmp_1.iter_at(__i));
     };
     assert!(({ ({ { (*v.borrow())[0_usize] }.key } == 3) }));
     assert!(({ ({ { (*v.borrow())[1_usize] }.key } == 2) }));

@@ -210,3 +210,69 @@ unsafe fn f32(a0: Vec<libc::c_char>, a1: *const libc::c_char, a2: usize) -> usiz
         .find(|&__i| __hay[__i..].starts_with(__needle))
         .unwrap_or(usize::MAX)
 }
+
+// The digits, and the terminator.
+unsafe fn f33(a0: i32) -> Vec<libc::c_char> {
+    a0.format_into(&mut std::fmt::NumBuffer::new())
+        .bytes()
+        .map(|__b| __b as libc::c_char)
+        .chain([0])
+        .collect::<Vec<_>>()
+}
+
+unsafe fn f34(a0: i64) -> Vec<libc::c_char> {
+    a0.format_into(&mut std::fmt::NumBuffer::new())
+        .bytes()
+        .map(|__b| __b as libc::c_char)
+        .chain([0])
+        .collect::<Vec<_>>()
+}
+
+unsafe fn f35(a0: i64) -> Vec<libc::c_char> {
+    a0.format_into(&mut std::fmt::NumBuffer::new())
+        .bytes()
+        .map(|__b| __b as libc::c_char)
+        .chain([0])
+        .collect::<Vec<_>>()
+}
+
+unsafe fn f36(a0: u32) -> Vec<libc::c_char> {
+    a0.format_into(&mut std::fmt::NumBuffer::new())
+        .bytes()
+        .map(|__b| __b as libc::c_char)
+        .chain([0])
+        .collect::<Vec<_>>()
+}
+
+unsafe fn f37(a0: u64) -> Vec<libc::c_char> {
+    a0.format_into(&mut std::fmt::NumBuffer::new())
+        .bytes()
+        .map(|__b| __b as libc::c_char)
+        .chain([0])
+        .collect::<Vec<_>>()
+}
+
+unsafe fn f38(a0: u64) -> Vec<libc::c_char> {
+    a0.format_into(&mut std::fmt::NumBuffer::new())
+        .bytes()
+        .map(|__b| __b as libc::c_char)
+        .chain([0])
+        .collect::<Vec<_>>()
+}
+
+// As sprintf's %f.
+unsafe fn f39(a0: f32) -> Vec<libc::c_char> {
+    libcc2rs::format_c("%f", &[VaArg::Double(a0 as f64)])
+        .bytes()
+        .map(|__b| __b as libc::c_char)
+        .chain([0])
+        .collect::<Vec<_>>()
+}
+
+unsafe fn f40(a0: f64) -> Vec<libc::c_char> {
+    libcc2rs::format_c("%f", &[VaArg::Double(a0 as f64)])
+        .bytes()
+        .map(|__b| __b as libc::c_char)
+        .chain([0])
+        .collect::<Vec<_>>()
+}

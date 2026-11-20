@@ -33,14 +33,13 @@ unsafe fn main_0() -> i32 {
     assert!(((libc::lseek(fd, (0 as ::libc::off_t), ::libc::SEEK_END)) == (11 as ::libc::off_t)));
     assert!(((libc::lseek(fd, (6 as ::libc::off_t), ::libc::SEEK_SET)) == (6 as ::libc::off_t)));
     let mut buf: [libc::c_char; 16] = [(0 as libc::c_char); 16];
-    match ({ (buf.as_mut_ptr() as *mut ::libc::c_void) },) {
-        (mut __tmp_0,) => {
-            let byte_0 = __tmp_0 as *mut u8;
-            for offset in 0..::std::mem::size_of::<[libc::c_char; 16]>() {
-                *byte_0.offset(offset as isize) = 0 as u8;
-            }
-            __tmp_0
+    {
+        let mut __tmp_0 = { (buf.as_mut_ptr() as *mut ::libc::c_void) };
+        let byte_0 = __tmp_0 as *mut u8;
+        for offset in 0..::std::mem::size_of::<[libc::c_char; 16]>() {
+            *byte_0.offset(offset as isize) = 0 as u8;
         }
+        __tmp_0
     };
     assert!(
         ((libc::read(

@@ -9,11 +9,10 @@ use std::rc::{Rc, Weak};
 pub fn test_memcpy_0() {
     let src: Value<Box<[i8]>> = Rc::new(RefCell::new(i8::array_from_literal(b"hello\0")));
     let dst: Value<Box<[i8]>> = Rc::new(RefCell::new(Box::new([0_i8; 6])));
-    let mut r: AnyPtr = match ({ (dst.decay()).to_any() },) {
-        (mut __tmp_0,) => {
-            __tmp_0.memcpy(&(src.decay()).to_any(), 6_usize);
-            (__tmp_0).clone()
-        }
+    let mut r: AnyPtr = {
+        let mut __tmp_0 = { (dst.decay()).to_any() };
+        __tmp_0.memcpy(&(src.decay()).to_any(), 6_usize);
+        (__tmp_0).clone()
     };
     assert!(({ (r).clone() } == { (dst.decay()).to_any() }));
     assert!(
@@ -33,11 +32,10 @@ pub fn test_memcpy_0() {
 }
 pub fn test_memset_1() {
     let buf: Value<Box<[i8]>> = Rc::new(RefCell::new((0..4).map(|_| 0_i8).collect::<Box<[i8]>>()));
-    let mut r: AnyPtr = match ({ (buf.decay()).to_any() },) {
-        (mut __tmp_1,) => {
-            __tmp_1.memset((('x' as i8) as i32) as u8, 4_usize);
-            (__tmp_1).clone()
-        }
+    let mut r: AnyPtr = {
+        let mut __tmp_1 = { (buf.decay()).to_any() };
+        __tmp_1.memset((('x' as i8) as i32) as u8, 4_usize);
+        (__tmp_1).clone()
     };
     assert!(({ (r).clone() } == { (buf.decay()).to_any() }));
     assert!(
@@ -66,11 +64,10 @@ pub fn test_memmove_3() {
         ('e' as i8),
         ('\0' as i8),
     ])));
-    let mut r: AnyPtr = match ({ (buf.decay().offset((1) as isize)).to_any() },) {
-        (mut __tmp_2,) => {
-            __tmp_2.memcpy(&(buf.decay()).to_any(), 4_usize);
-            (__tmp_2).clone()
-        }
+    let mut r: AnyPtr = {
+        let mut __tmp_2 = { (buf.decay().offset((1) as isize)).to_any() };
+        __tmp_2.memcpy(&(buf.decay()).to_any(), 4_usize);
+        (__tmp_2).clone()
     };
     assert!(({ (r).clone() } == { (buf.decay().offset((1) as isize)).to_any() }));
     assert!(
@@ -338,22 +335,18 @@ pub fn test_strncmp_7() {
         } == 0)
     );
     assert!(
-        (match ({ (n).wrapping_add(1_usize) },) {
-            (mut __tmp_3,) => {
-                {
-                    let mut __it1 = p.to_c_string_iterator().take(__tmp_3);
-                    let mut __it2 = q.to_c_string_iterator().take(__tmp_3);
-                    loop {
-                        let __c1 = __it1.next();
-                        let __c2 = __it2.next();
-                        if __c1 != __c2 {
-                            break (__c1.unwrap_or(0) as u8 as i32)
-                                - (__c2.unwrap_or(0) as u8 as i32);
-                        }
-                        if __c1.is_none() {
-                            break 0;
-                        }
-                    }
+        ({
+            let mut __tmp_3 = { (n).wrapping_add(1_usize) };
+            let mut __it1 = p.to_c_string_iterator().take(__tmp_3);
+            let mut __it2 = q.to_c_string_iterator().take(__tmp_3);
+            loop {
+                let __c1 = __it1.next();
+                let __c2 = __it2.next();
+                if __c1 != __c2 {
+                    break (__c1.unwrap_or(0) as u8 as i32) - (__c2.unwrap_or(0) as u8 as i32);
+                }
+                if __c1.is_none() {
+                    break 0;
                 }
             }
         } < 0)
@@ -481,24 +474,21 @@ pub fn test_strrchr_9() {
         ('\0' as i8),
     ])));
     assert!(
-        (match ({ buf.decay() },) {
-            (mut __tmp_4,) => {
-                {
-                    let __t = (('a' as i8) as i32) as i8;
-                    match __tmp_4
-                        .to_c_string_iterator()
-                        .enumerate()
-                        .filter(|__e| __e.1 == __t)
-                        .last()
-                    {
-                        Some((__i, _)) => __tmp_4.offset(__i),
-                        None => {
-                            if __t == 0 {
-                                __tmp_4.offset(__tmp_4.to_c_string_iterator().count())
-                            } else {
-                                Ptr::null()
-                            }
-                        }
+        ({
+            let mut __tmp_4 = { buf.decay() };
+            let __t = (('a' as i8) as i32) as i8;
+            match __tmp_4
+                .to_c_string_iterator()
+                .enumerate()
+                .filter(|__e| __e.1 == __t)
+                .last()
+            {
+                Some((__i, _)) => __tmp_4.offset(__i),
+                None => {
+                    if __t == 0 {
+                        __tmp_4.offset(__tmp_4.to_c_string_iterator().count())
+                    } else {
+                        Ptr::null()
                     }
                 }
             }
@@ -742,16 +732,15 @@ pub fn test_strpbrk_14() {
         ('\0' as i8),
     ])));
     assert!(
-        (match ({ buf.decay() },) {
-            (mut __tmp_5,) => {
-                match __tmp_5.to_c_string_iterator().position(|__c| {
-                    Ptr::<i8>::from_string_literal(b"b")
-                        .to_c_string_iterator()
-                        .any(|__r| __r == __c)
-                }) {
-                    Some(__i) => __tmp_5.offset(__i),
-                    None => Ptr::null(),
-                }
+        ({
+            let mut __tmp_5 = { buf.decay() };
+            match __tmp_5.to_c_string_iterator().position(|__c| {
+                Ptr::<i8>::from_string_literal(b"b")
+                    .to_c_string_iterator()
+                    .any(|__r| __r == __c)
+            }) {
+                Some(__i) => __tmp_5.offset(__i),
+                None => Ptr::null(),
             }
         } == (buf.decay().offset(1)))
     );

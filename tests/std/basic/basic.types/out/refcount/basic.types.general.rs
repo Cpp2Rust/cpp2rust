@@ -23,19 +23,17 @@ pub fn test_0() {
     ));
     let bytes: Value<Box<[u8]>> =
         Rc::new(RefCell::new((0..8).map(|_| 0_u8).collect::<Box<[u8]>>()));
-    match ({ (bytes.decay()).to_any() },) {
-        (mut __tmp_0,) => {
-            __tmp_0.memcpy(&(pm.as_pointer()).to_any(), ::std::mem::size_of::<isize>());
-            (__tmp_0).clone()
-        }
+    {
+        let mut __tmp_0 = { (bytes.decay()).to_any() };
+        __tmp_0.memcpy(&(pm.as_pointer()).to_any(), ::std::mem::size_of::<isize>());
+        (__tmp_0).clone()
     };
     (*pm.borrow_mut()) =
         (offset_of_field!(p2_pointer_to_data_member_bytes_round_trip_HasTwoInts, first) as isize);
-    match ({ (pm.as_pointer()).to_any() },) {
-        (mut __tmp_1,) => {
-            __tmp_1.memcpy(&(bytes.decay()).to_any(), ::std::mem::size_of::<isize>());
-            (__tmp_1).clone()
-        }
+    {
+        let mut __tmp_1 = { (pm.as_pointer()).to_any() };
+        __tmp_1.memcpy(&(bytes.decay()).to_any(), ::std::mem::size_of::<isize>());
+        (__tmp_1).clone()
     };
     assert!(
         ({
@@ -54,22 +52,20 @@ pub fn test_0() {
     ));
     assert!(({ (((obj.as_pointer()).member::<i32>((*pm.borrow())).read()) == 4) }));
     let null_pm: Value<isize> = Rc::new(RefCell::new(-1_isize));
-    match ({ (bytes.decay()).to_any() },) {
-        (mut __tmp_2,) => {
-            __tmp_2.memcpy(
-                &(null_pm.as_pointer()).to_any(),
-                ::std::mem::size_of::<isize>(),
-            );
-            (__tmp_2).clone()
-        }
+    {
+        let mut __tmp_2 = { (bytes.decay()).to_any() };
+        __tmp_2.memcpy(
+            &(null_pm.as_pointer()).to_any(),
+            ::std::mem::size_of::<isize>(),
+        );
+        (__tmp_2).clone()
     };
     (*null_pm.borrow_mut()) =
         (offset_of_field!(p2_pointer_to_data_member_bytes_round_trip_HasTwoInts, first) as isize);
-    match ({ (null_pm.as_pointer()).to_any() },) {
-        (mut __tmp_3,) => {
-            __tmp_3.memcpy(&(bytes.decay()).to_any(), ::std::mem::size_of::<isize>());
-            (__tmp_3).clone()
-        }
+    {
+        let mut __tmp_3 = { (null_pm.as_pointer()).to_any() };
+        __tmp_3.memcpy(&(bytes.decay()).to_any(), ::std::mem::size_of::<isize>());
+        (__tmp_3).clone()
     };
     assert!(({ ((*null_pm.borrow()) == -1_isize) }));
 }
@@ -94,14 +90,13 @@ pub fn test_1() {
             first
         ) as isize),
     ));
-    match ({ (destination.as_pointer()).to_any() },) {
-        (mut __tmp_4,) => {
-            __tmp_4.memcpy(
-                &(source.as_pointer()).to_any(),
-                ::std::mem::size_of::<isize>(),
-            );
-            (__tmp_4).clone()
-        }
+    {
+        let mut __tmp_4 = { (destination.as_pointer()).to_any() };
+        __tmp_4.memcpy(
+            &(source.as_pointer()).to_any(),
+            ::std::mem::size_of::<isize>(),
+        );
+        (__tmp_4).clone()
     };
     assert!(({ ((*destination.borrow()) == (*source.borrow())) }));
     let obj: Value<p3_pointer_to_data_member_bytes_copied_to_other_object_HasTwoInts> =
@@ -120,14 +115,13 @@ pub fn test_1() {
         })
     );
     let null_source: Value<isize> = Rc::new(RefCell::new(-1_isize));
-    match ({ (destination.as_pointer()).to_any() },) {
-        (mut __tmp_5,) => {
-            __tmp_5.memcpy(
-                &(null_source.as_pointer()).to_any(),
-                ::std::mem::size_of::<isize>(),
-            );
-            (__tmp_5).clone()
-        }
+    {
+        let mut __tmp_5 = { (destination.as_pointer()).to_any() };
+        __tmp_5.memcpy(
+            &(null_source.as_pointer()).to_any(),
+            ::std::mem::size_of::<isize>(),
+        );
+        (__tmp_5).clone()
     };
     assert!(({ ((*destination.borrow()) == -1_isize) }));
 }

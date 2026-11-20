@@ -56,16 +56,15 @@ pub unsafe fn push_local_from_field_1(mut jpg: *mut JPEGData, mut cond: bool) {
         dest = (&mut (*jpg).app_data as *mut Vec<Vec<u8>>);
     }
     {
-        let __a1 = match ({ head.as_mut_ptr().offset((3) as isize) },) {
-            (mut __tmp_0,) => {
-                let mut __v = Vec::new();
-                let mut __it = head.as_mut_ptr();
-                while __it != __tmp_0 {
-                    __v.push((*__it.iter_deref()));
-                    __it.iter_inc();
-                }
-                __v
+        let __a1 = {
+            let mut __tmp_0 = { head.as_mut_ptr().offset((3) as isize) };
+            let mut __v = Vec::new();
+            let mut __it = head.as_mut_ptr();
+            while __it != __tmp_0 {
+                __v.push((*__it.iter_deref()));
+                __it.iter_inc();
             }
+            __v
         };
         (*dest).push(__a1)
     };
@@ -87,16 +86,15 @@ pub unsafe fn emplace_local_from_field_4(mut jpg: *mut JPEGData, mut cond: bool)
     } else {
         dest = (&mut (*jpg).app_data as *mut Vec<Vec<u8>>);
     }
-    (*dest).push_mut(match ({ head.as_mut_ptr().offset((3) as isize) },) {
-        (mut __tmp_1,) => {
-            let mut __v = Vec::new();
-            let mut __it = head.as_mut_ptr();
-            while __it != __tmp_1 {
-                __v.push((*__it.iter_deref()));
-                __it.iter_inc();
-            }
-            __v
+    (*dest).push_mut({
+        let mut __tmp_1 = { head.as_mut_ptr().offset((3) as isize) };
+        let mut __v = Vec::new();
+        let mut __it = head.as_mut_ptr();
+        while __it != __tmp_1 {
+            __v.push((*__it.iter_deref()));
+            __it.iter_inc();
         }
+        __v
     });
 }
 pub unsafe fn nested_emplace_move_5(mut bw: *mut Writer) {
@@ -199,47 +197,75 @@ impl Bytes {
         {
             self.v = std::mem::take(&mut (*_a0).v);
         };
-        match (
-            { ((&mut self.b as *mut [u8; 3]) as *mut ::libc::c_void) },
-            { ((&mut (*_a0).b as *mut [u8; 3]) as *const ::libc::c_void) },
-        ) {
-            (mut __tmp_2, mut __tmp_3) => {
-                if 3_usize != 0 {
-                    ::std::ptr::copy_nonoverlapping(__tmp_3, __tmp_2, 3_usize)
-                }
-                __tmp_2
+        {
+            let mut __tmp_2 = { ((&mut self.b as *mut [u8; 3]) as *mut ::libc::c_void) };
+            let mut __tmp_3 = { ((&mut (*_a0).b as *mut [u8; 3]) as *const ::libc::c_void) };
+            if 3_usize != 0 {
+                ::std::ptr::copy_nonoverlapping(__tmp_3, __tmp_2, 3_usize)
             }
+            __tmp_2
         };
         return &mut (*(self as *mut Bytes));
     }
 }
 pub unsafe fn emplace_from_element_14(mut v: *mut Vec<Vec<u8>>) {
     let mut p: *mut u8 = (&mut (*v))[(0_usize)].as_mut_ptr();
-    (*v).push_mut(match ({ p.offset((3) as isize) },) {
-        (mut __tmp_4,) => {
-            let mut __v = Vec::new();
-            let mut __it = p;
-            while __it != __tmp_4 {
-                __v.push((*__it.iter_deref()));
-                __it.iter_inc();
-            }
-            __v
+    (*v).push_mut({
+        let mut __tmp_4 = { p.offset((3) as isize) };
+        let mut __v = Vec::new();
+        let mut __it = p;
+        while __it != __tmp_4 {
+            __v.push((*__it.iter_deref()));
+            __it.iter_inc();
         }
+        __v
     });
 }
-pub unsafe fn emplace_from_sibling_15(mut s: *mut Bytes) {
+#[repr(C)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+pub struct Plain {
+    pub a: i32,
+    pub b: [f64; 2],
+}
+pub unsafe fn emplace_plain_15(mut v: *mut Vec<Plain>) {
+    let mut p: Plain = Plain {
+        a: 1,
+        b: [2_f64, 3_f64],
+    };
+    (*v).push_mut(p);
+}
+pub static mut all_counted_16: std::cell::LazyCell<*mut Vec<Counted>> =
+    std::cell::LazyCell::new(|| unsafe { std::ptr::null_mut() });
+#[repr(C)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+pub struct Counted {
+    pub seen: usize,
+}
+impl Counted {
+    pub unsafe fn new(mut _a0: i32) -> Self {
+        let mut this = Self {
+            seen: (*(*std::cell::LazyCell::force_mut(&mut *&raw mut all_counted_16)).cast_const())
+                .len(),
+        };
+        this
+    }
+}
+impl Counted {}
+pub unsafe fn emplace_counted_17(mut v: *mut Vec<Counted>) {
+    (*v).push_mut(Counted::new({ 1 }));
+}
+pub unsafe fn emplace_from_sibling_18(mut s: *mut Bytes) {
     let mut p: *mut u8 = (*s).b.as_mut_ptr();
     let mut v: *mut Vec<Vec<u8>> = (&mut (*s).v as *mut Vec<Vec<u8>>);
-    (*v).push_mut(match ({ p.offset((3) as isize) },) {
-        (mut __tmp_5,) => {
-            let mut __v = Vec::new();
-            let mut __it = p;
-            while __it != __tmp_5 {
-                __v.push((*__it.iter_deref()));
-                __it.iter_inc();
-            }
-            __v
+    (*v).push_mut({
+        let mut __tmp_5 = { p.offset((3) as isize) };
+        let mut __v = Vec::new();
+        let mut __it = p;
+        while __it != __tmp_5 {
+            __v.push((*__it.iter_deref()));
+            __it.iter_inc();
         }
+        __v
     });
 }
 pub fn main() {
@@ -351,8 +377,19 @@ unsafe fn main_0() -> i32 {
         v: Vec::new(),
         b: [4_u8, 5_u8, 6_u8],
     };
-    (unsafe { emplace_from_sibling_15((&mut bytes as *mut Bytes)) });
+    (unsafe { emplace_from_sibling_18((&mut bytes as *mut Bytes)) });
     assert!(((bytes.v.len()) == (1_usize)) && ((bytes.v[(0_usize)][(2_usize)] as i32) == (6)));
+    let mut plains: Vec<Plain> = Vec::new();
+    (unsafe { emplace_plain_15((&mut plains as *mut Vec<Plain>)) });
+    assert!(((plains[(0_usize)].a) == (1)) && ((plains[(0_usize)].b[(1) as usize]) == (3_f64)));
+    let mut counted: Vec<Counted> = Vec::new();
+    (*std::cell::LazyCell::force_mut(&mut *&raw mut all_counted_16)) =
+        (&mut counted as *mut Vec<Counted>);
+    (unsafe { emplace_counted_17((&mut counted as *mut Vec<Counted>)) });
+    (unsafe { emplace_counted_17((&mut counted as *mut Vec<Counted>)) });
+    assert!(((counted[(0_usize)].seen) == (0_usize)) && ((counted[(1_usize)].seen) == (1_usize)));
     return 0;
 }
-pub unsafe fn __cpp2rust_init_globals() {}
+pub unsafe fn __cpp2rust_init_globals() {
+    std::cell::LazyCell::force(&*&raw const all_counted_16);
+}
