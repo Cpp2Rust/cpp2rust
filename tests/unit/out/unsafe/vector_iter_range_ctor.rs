@@ -117,9 +117,9 @@ unsafe fn main_0() -> i32 {
     assert!(((v5.len()) == (5_usize)));
     assert!(((v5[(0_usize)] as i32) == (10)) && ((v5[(4_usize)] as i32) == (50)));
     let mut m: UnsafeMap<i32, (i32, i32)> = UnsafeMap::new();
-    (*m.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k))) = 10;
-    (*m.subscript_move(&mut 2, |__k| cpp_move_unsafe!(__k))) = 20;
-    (*m.subscript_move(&mut 3, |__k| cpp_move_unsafe!(__k))) = 30;
+    (*m.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k), || 0_i32)) = 10;
+    (*m.subscript_move(&mut 2, |__k| cpp_move_unsafe!(__k), || 0_i32)) = 20;
+    (*m.subscript_move(&mut 3, |__k| cpp_move_unsafe!(__k), || 0_i32)) = 30;
     let mut v6: Vec<(i32, i32)> = {
         let mut __tmp_6 = { m.begin() };
         let mut __tmp_7 = { m.end() };

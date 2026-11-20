@@ -364,14 +364,14 @@ unsafe fn main_0() -> i32 {
     (unsafe {
         let mut _o: Tracked = Tracked::new_1({ 10 });
         Tracked::move_assign(
-            &mut (*m1.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k))),
+            &mut (*m1.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k), || <Tracked>::default())),
             &mut _o,
         )
     });
     (unsafe {
         let mut _o: Tracked = Tracked::new_1({ 20 });
         Tracked::move_assign(
-            &mut (*m1.subscript_move(&mut 2, |__k| cpp_move_unsafe!(__k))),
+            &mut (*m1.subscript_move(&mut 2, |__k| cpp_move_unsafe!(__k), || <Tracked>::default())),
             &mut _o,
         )
     });
@@ -379,29 +379,50 @@ unsafe fn main_0() -> i32 {
     (unsafe {
         let mut _o: Tracked = Tracked::new_1({ 30 });
         Tracked::move_assign(
-            &mut (*m2.subscript_move(&mut 3, |__k| cpp_move_unsafe!(__k))),
+            &mut (*m2.subscript_move(&mut 3, |__k| cpp_move_unsafe!(__k), || <Tracked>::default())),
             &mut _o,
         )
     });
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
     cpp_swap_unsafe!(
-        &mut (*m1.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k))),
-        &mut (*m1.subscript_move(&mut 2, |__k| cpp_move_unsafe!(__k)))
+        &mut (*m1.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k), || <Tracked>::default())),
+        &mut (*m1.subscript_move(&mut 2, |__k| cpp_move_unsafe!(__k), || <Tracked>::default()))
     );
     assert!(
-        (((*m1.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k))).v) == (20))
-            && (((*m1.subscript_move(&mut 2, |__k| cpp_move_unsafe!(__k))).v) == (10))
+        (((*m1.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k), || <Tracked>::default())).v)
+            == (20))
+            && (((*m1.subscript_move(
+                &mut 2,
+                |__k| cpp_move_unsafe!(__k),
+                || <Tracked>::default()
+            ))
+            .v) == (10))
     );
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
     cpp_swap_unsafe!(&mut m1, &mut m2);
     assert!(
         ((m1.len()) == (1_usize))
-            && (((*m1.subscript_move(&mut 3, |__k| cpp_move_unsafe!(__k))).v) == (30))
+            && (((*m1.subscript_move(
+                &mut 3,
+                |__k| cpp_move_unsafe!(__k),
+                || <Tracked>::default()
+            ))
+            .v) == (30))
     );
     assert!(
         (((m2.len()) == (2_usize))
-            && (((*m2.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k))).v) == (20)))
-            && (((*m2.subscript_move(&mut 2, |__k| cpp_move_unsafe!(__k))).v) == (10))
+            && (((*m2.subscript_move(
+                &mut 1,
+                |__k| cpp_move_unsafe!(__k),
+                || <Tracked>::default()
+            ))
+            .v) == (20)))
+            && (((*m2.subscript_move(
+                &mut 2,
+                |__k| cpp_move_unsafe!(__k),
+                || <Tracked>::default()
+            ))
+            .v) == (10))
     );
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
     let mut arr: [Tracked; 3] = [
@@ -469,27 +490,43 @@ unsafe fn main_0() -> i32 {
     (unsafe {
         let mut _o: Tracked = Tracked::new_1({ 1 });
         Tracked::move_assign(
-            &mut (*maps[(0) as usize].subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k))),
+            &mut (*maps[(0) as usize].subscript_move(
+                &mut 1,
+                |__k| cpp_move_unsafe!(__k),
+                || <Tracked>::default(),
+            )),
             &mut _o,
         )
     });
     (unsafe {
         let mut _o: Tracked = Tracked::new_1({ 2 });
         Tracked::move_assign(
-            &mut (*maps[(1) as usize].subscript_move(&mut 2, |__k| cpp_move_unsafe!(__k))),
+            &mut (*maps[(1) as usize].subscript_move(
+                &mut 2,
+                |__k| cpp_move_unsafe!(__k),
+                || <Tracked>::default(),
+            )),
             &mut _o,
         )
     });
     cpp_swap_unsafe!(&mut maps[(0) as usize], &mut maps[(1) as usize]);
     assert!(
         ((maps[(0) as usize].len()) == (1_usize))
-            && (((*maps[(0) as usize].subscript_move(&mut 2, |__k| cpp_move_unsafe!(__k))).v)
-                == (2))
+            && (((*maps[(0) as usize].subscript_move(
+                &mut 2,
+                |__k| cpp_move_unsafe!(__k),
+                || <Tracked>::default()
+            ))
+            .v) == (2))
     );
     assert!(
         ((maps[(1) as usize].len()) == (1_usize))
-            && (((*maps[(1) as usize].subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k))).v)
-                == (1))
+            && (((*maps[(1) as usize].subscript_move(
+                &mut 1,
+                |__k| cpp_move_unsafe!(__k),
+                || <Tracked>::default()
+            ))
+            .v) == (1))
     );
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
     let mut c1: CopyOnly = CopyOnly::new({ 1 });

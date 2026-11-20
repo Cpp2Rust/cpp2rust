@@ -101,15 +101,21 @@ fn main_0() -> i32 {
     assert!(((v5[0_usize] as i32) == 10) && ((v5[4_usize] as i32) == 50));
     let m: Value<Map<i32, (Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
     match (Rc::new(RefCell::new(1)).as_pointer(),) {
-        (__tmp_5,) => ({ (*m.borrow_mut()).subscript_move(__tmp_5, |__k| cpp_move!(__k)) }),
+        (__tmp_5,) => {
+            ({ (*m.borrow_mut()).subscript_move(__tmp_5, |__k| cpp_move!(__k), || 0_i32) })
+        }
     }
     .write(10);
     match (Rc::new(RefCell::new(2)).as_pointer(),) {
-        (__tmp_6,) => ({ (*m.borrow_mut()).subscript_move(__tmp_6, |__k| cpp_move!(__k)) }),
+        (__tmp_6,) => {
+            ({ (*m.borrow_mut()).subscript_move(__tmp_6, |__k| cpp_move!(__k), || 0_i32) })
+        }
     }
     .write(20);
     match (Rc::new(RefCell::new(3)).as_pointer(),) {
-        (__tmp_7,) => ({ (*m.borrow_mut()).subscript_move(__tmp_7, |__k| cpp_move!(__k)) }),
+        (__tmp_7,) => {
+            ({ (*m.borrow_mut()).subscript_move(__tmp_7, |__k| cpp_move!(__k), || 0_i32) })
+        }
     }
     .write(30);
     let v6: Value<Vec<(Value<i32>, Value<i32>)>> = Rc::new(RefCell::new({
