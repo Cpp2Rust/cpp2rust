@@ -940,19 +940,28 @@ protected:
   // e.g., a guard of a RefCell, which lives until the end of the statement.
   bool borrows_ = false;
 
-  // The variables that arguments of rules are bound to by value, whose
-  // address is not taken.
-  std::unordered_set<const clang::VarDecl *> bound_values_;
-  // The variables bound to values, or pointers, that are moved into the body
-  // of a rule.
-  std::unordered_set<const clang::VarDecl *> moved_values_;
+  // The variables that arguments of rules are bound to.
+  struct BoundVar {
+    // Bound to the value, whose address is not taken, rather than to a
+    // pointer.
+    bool by_value = false;
+    // The value, or the pointer, is moved into the body of the rule.
+    bool moved = false;
+    // Bound to an argument of the init of the rule, which may need a mapped
+    // move constructor when forwarding the original rvalue from its pointer.
+    bool init_arg = false;
+  };
+  std::unordered_map<const clang::VarDecl *, BoundVar> bound_vars_;
+
+  // How var is bound to an argument of a rule, if it is.
+  BoundVar GetBoundVar(const clang::VarDecl *var) const {
+    auto it = bound_vars_.find(var);
+    return it == bound_vars_.end() ? BoundVar() : it->second;
+  }
 
   // Whether the body of rule evaluates argument n once.
   static bool UsedOnce(const TranslationRule::ExprRule &rule, unsigned n);
 
-  // Bound initializer arguments may need a mapped move constructor when
-  // forwarding the original rvalue from its pointer binding.
-  std::unordered_set<const clang::VarDecl *> bound_init_args_;
   // The variables bound to the objects that the init of rules construct.
   std::unordered_map<const clang::Expr *, std::string> bound_inits_;
 
@@ -1064,13 +1073,9 @@ protected:
       range_iterator_names_;
   std::vector<clang::QualType> curr_init_type_;
 
-  enum class BreakTarget : int8_t { Loop, FallthroughSwitch, Switch };
-  std::vector<BreakTarget> break_target_;
-
-  bool isSwitchBreak() const {
-    return !break_target_.empty() &&
-           break_target_.back() == BreakTarget::Switch;
-  }
+  // Whether break exits a switch labeled 'switch, rather than a loop or a
+  // switch! macro, which a plain break exits.
+  bool break_switch_ = false;
 
   // Local variables hoisted outside a goto_block so that all labels can see and
   // use the variables.

@@ -9,8 +9,8 @@ use std::{
 };
 
 use crate::escape;
-use crate::field::{Root, upgrade as upgrade_root};
-use crate::rc::{ElemStorage, Ptr, SliceParent, SliceRoot, reclaim};
+use crate::field::Root;
+use crate::rc::{ElemStorage, Ptr, SliceParent, SliceRoot, reclaim, upgrade};
 
 pub trait ByteRepr: 'static {
     fn byte_size() -> usize
@@ -366,9 +366,9 @@ impl OriginalAlloc {
     #[inline]
     fn with_storage<R>(&self, f: impl FnOnce(&dyn Any) -> R) -> R {
         match &self.storage {
-            Storage::Alloc(weak) => f(&*weak.upgrade().expect("ub: dangling pointer")),
+            Storage::Alloc(weak) => f(&*upgrade(weak)),
             Storage::Field(root, field) => f(&FieldStorage {
-                root: upgrade_root(root),
+                root: upgrade(root),
                 field: *field,
             }),
             Storage::Nested(parent, _) => f(&**parent),
@@ -406,7 +406,7 @@ impl OriginalAlloc {
         match &self.storage {
             Storage::Alloc(_) => (self, offset),
             Storage::Field(root, field) => (
-                upgrade_root(root).original_alloc(root.clone()),
+                upgrade(root).original_alloc(root.clone()),
                 field.wrapping_add(offset),
             ),
             // The elements of a vector are in an allocation of their own.

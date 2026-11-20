@@ -274,15 +274,16 @@ public:
   bool
   Convert(clang::Expr *expr,
           std::optional<clang::QualType> implicit_convert_to = {}) override {
-    auto *record_ptr = record_ptr_;
-    if (!expr || expr->IgnoreParenImpCasts() != record_base_) {
-      record_ptr_ = nullptr;
-    }
+    // Only the dereference of record_base_ itself is emitted as `__s`.
+    ScopedValue record_ptr(record_ptr_,
+                           expr && expr->IgnoreParenImpCasts() == record_base_
+                               ? record_ptr_
+                               : nullptr);
     auto result = Converter::Convert(expr, implicit_convert_to);
-    record_ptr_ = record_ptr;
-    if (computed_expr_type_ == ComputedExprType::Pending) {
-      assert(!pending_deref_.empty() && "pending_deref_ taken without type");
-    }
+
+    assert((computed_expr_type_ != ComputedExprType::Pending ||
+            !pending_deref_.empty()) &&
+           "pending_deref_ taken without type");
     return result;
   }
   bool Convert(clang::Stmt *stmt) override {
@@ -594,20 +595,6 @@ private:
     FullRefCount,
   };
 
-  static const char *ConversionKindToString(ConversionKind k) {
-    switch (k) {
-    case ConversionKind::Unboxed:
-      return "Unboxed";
-    case ConversionKind::Pointee:
-      return "Pointee";
-    case ConversionKind::Ptr:
-      return "Ptr";
-    case ConversionKind::FullRefCount:
-      return "FullRefCount";
-    }
-    std::unreachable();
-  }
-
   ConversionKind getConversionKind() const { return conversion_kind_.back(); }
 
   // How a variable is stored.
@@ -618,27 +605,8 @@ private:
     bool pushed;
 
     PushConversionKind(ConverterRefCount &c, ConversionKind k, bool cond = true,
-                       int line = __builtin_LINE())
-        : c(c), pushed(cond) {
-      if (pushed) {
-        c.conversion_kind_.push_back(k);
-      }
-      log() << "[PushConversionKind:" << line << "] ";
-      for (auto ck : c.conversion_kind_) {
-        log() << ConversionKindToString(ck) << ", ";
-      }
-      log() << '\n';
-    }
-    ~PushConversionKind() {
-      if (pushed) {
-        c.conversion_kind_.pop_back();
-      }
-      log() << "[PopConversionKind] ";
-      for (auto ck : c.conversion_kind_) {
-        log() << ConversionKindToString(ck) << ", ";
-      }
-      log() << '\n';
-    }
+                       int line = __builtin_LINE());
+    ~PushConversionKind();
   };
 
   std::string BoxType(std::string &&str) const;

@@ -25,7 +25,7 @@ use std::rc::{Rc, Weak};
 
 use crate::rc::{
     AsPointer, Decay, ElemStorage, Elems, FieldShape, Ptr, PtrKind, SliceParent, SliceRoot,
-    StrongPtr, Value, dangling, null_deref,
+    StrongPtr, Value, null_deref, upgrade,
 };
 use crate::reinterpret::{ByteRepr, OriginalAlloc};
 
@@ -411,7 +411,7 @@ where
     M: Fn(&mut R) -> &mut C,
 {
     fn root(&self) -> SliceRoot {
-        SliceRoot::Alloc(self.root.upgrade().unwrap_or_else(|| dangling()))
+        SliceRoot::Alloc(upgrade(&self.root) as Rc<dyn Any>)
     }
 
     fn elem_storage(&self) -> ElemStorage {
@@ -432,12 +432,12 @@ where
     }
 
     fn with_elem(&self, idx: usize, f: &mut dyn FnMut(&T)) {
-        let root = self.root.upgrade().unwrap_or_else(|| dangling());
+        let root = upgrade(&self.root);
         f(&(self.get)(&root.borrow()).as_ref()[idx])
     }
 
     fn with_elem_mut(&self, idx: usize, f: &mut dyn FnMut(&mut T)) {
-        let root = self.root.upgrade().unwrap_or_else(|| dangling());
+        let root = upgrade(&self.root);
         f(&mut (self.get_mut)(&mut root.borrow_mut()).as_mut()[idx])
     }
 
@@ -456,7 +456,7 @@ fn in_value_storage<R: 'static>(root: &Weak<RefCell<R>>, address: usize) -> Elem
 where
     RefCell<R>: Root,
 {
-    let value = root.upgrade().unwrap_or_else(|| dangling());
+    let value = upgrade(root);
     let start = address.wrapping_sub(root.as_ptr() as usize);
     ElemStorage::In(value.original_alloc(root.clone()), start)
 }
@@ -468,7 +468,7 @@ fn in_value_own<R: 'static, T, C: Elems<T> + ?Sized>(
     root: &Weak<RefCell<R>>,
     get: &dyn Fn(&R) -> &C,
 ) -> ElemStorage {
-    let value = root.upgrade().unwrap_or_else(|| dangling());
+    let value = upgrade(root);
     ElemStorage::own(get(&value.borrow()))
 }
 
@@ -1266,11 +1266,6 @@ impl<T: 'static> Ptr<T> {
             obj.downcast_mut::<T>().unwrap_or_else(|| invalid_field())
         })
     }
-}
-
-#[inline]
-pub(crate) fn upgrade(root: &Weak<dyn Root>) -> Rc<dyn Root> {
-    root.upgrade().unwrap_or_else(|| crate::rc::dangling())
 }
 
 #[cfg(test)]
