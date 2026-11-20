@@ -68,38 +68,38 @@ fn main_0() -> i32 {
     };
     println!("temporary: {} {}", out.decay(), (*calls.borrow()));
     {
-        (*out.borrow_mut()) = match ({
-            ({
-                (*s.borrow_mut())[0_usize] = ('j' as i8);
-                0
-            } as usize)
-        },)
-        {
-            (mut __tmp_2,) => s.as_pointer().with(|__s: &Vec<i8>| {
+        (*out.borrow_mut()) = {
+            let mut __tmp_2 = {
+                ({
+                    (*s.borrow_mut())[0_usize] = ('j' as i8);
+                    0
+                } as usize)
+            };
+            s.as_pointer().with(|__s: &Vec<i8>| {
                 let mut __tmp1 = __s
                     [__tmp_2..::std::cmp::min(__tmp_2 + 2_usize, __s.len().saturating_sub(1))]
                     .to_vec();
                 __tmp1.push(0);
                 __tmp1
-            }),
+            })
         };
     };
     println!("position mutation: {} {}", out.decay(), s.decay());
     {
-        (*out.borrow_mut()) = match ({
-            ({
-                (*s.borrow_mut())[1_usize] = ('a' as i8);
-                2
-            } as usize)
-        },)
-        {
-            (mut __tmp_3,) => s.as_pointer().with(|__s: &Vec<i8>| {
+        (*out.borrow_mut()) = {
+            let mut __tmp_3 = {
+                ({
+                    (*s.borrow_mut())[1_usize] = ('a' as i8);
+                    2
+                } as usize)
+            };
+            s.as_pointer().with(|__s: &Vec<i8>| {
                 let mut __tmp1 = __s
                     [0_usize..::std::cmp::min(0_usize + __tmp_3, __s.len().saturating_sub(1))]
                     .to_vec();
                 __tmp1.push(0);
                 __tmp1
-            }),
+            })
         };
     };
     println!("count mutation: {} {}", out.decay(), s.decay());
@@ -144,14 +144,15 @@ fn main_0() -> i32 {
     };
     println!("nested: {}", out.decay());
     {
-        (*out.borrow_mut()) = match ({ ((*s.borrow()).len() - 1) },) {
-            (mut __tmp_4,) => s.as_pointer().with(|__s: &Vec<i8>| {
+        (*out.borrow_mut()) = {
+            let mut __tmp_4 = { ((*s.borrow()).len() - 1) };
+            s.as_pointer().with(|__s: &Vec<i8>| {
                 let mut __tmp1 = __s
                     [__tmp_4..::std::cmp::min(__tmp_4 + 0_usize, __s.len().saturating_sub(1))]
                     .to_vec();
                 __tmp1.push(0);
                 __tmp1
-            }),
+            })
         };
     };
     println!("empty: {}", ((*out.borrow()).len() - 1));

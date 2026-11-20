@@ -18,27 +18,23 @@ pub unsafe fn test_0() {
         second
     ) as isize);
     let mut bytes: [u8; 8] = [0_u8; 8];
-    match ({ (bytes.as_mut_ptr() as *mut ::libc::c_void) }, {
-        ((&mut pm as *mut isize) as *const ::libc::c_void)
-    }) {
-        (mut __tmp_0, mut __tmp_1) => {
-            if ::std::mem::size_of::<isize>() != 0 {
-                ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, ::std::mem::size_of::<isize>())
-            }
-            __tmp_0
+    {
+        let mut __tmp_0 = { (bytes.as_mut_ptr() as *mut ::libc::c_void) };
+        let mut __tmp_1 = { ((&mut pm as *mut isize) as *const ::libc::c_void) };
+        if ::std::mem::size_of::<isize>() != 0 {
+            ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, ::std::mem::size_of::<isize>())
         }
+        __tmp_0
     };
     pm = (::std::mem::offset_of!(p2_pointer_to_data_member_bytes_round_trip_HasTwoInts, first)
         as isize);
-    match ({ ((&mut pm as *mut isize) as *mut ::libc::c_void) }, {
-        (bytes.as_mut_ptr() as *const ::libc::c_void)
-    }) {
-        (mut __tmp_2, mut __tmp_3) => {
-            if ::std::mem::size_of::<isize>() != 0 {
-                ::std::ptr::copy_nonoverlapping(__tmp_3, __tmp_2, ::std::mem::size_of::<isize>())
-            }
-            __tmp_2
+    {
+        let mut __tmp_2 = { ((&mut pm as *mut isize) as *mut ::libc::c_void) };
+        let mut __tmp_3 = { (bytes.as_mut_ptr() as *const ::libc::c_void) };
+        if ::std::mem::size_of::<isize>() != 0 {
+            ::std::ptr::copy_nonoverlapping(__tmp_3, __tmp_2, ::std::mem::size_of::<isize>())
         }
+        __tmp_2
     };
     assert!(
         ((pm)
@@ -59,27 +55,23 @@ pub unsafe fn test_0() {
             == (4))
     );
     let mut null_pm: isize = -1_isize;
-    match ({ (bytes.as_mut_ptr() as *mut ::libc::c_void) }, {
-        ((&mut null_pm as *mut isize) as *const ::libc::c_void)
-    }) {
-        (mut __tmp_4, mut __tmp_5) => {
-            if ::std::mem::size_of::<isize>() != 0 {
-                ::std::ptr::copy_nonoverlapping(__tmp_5, __tmp_4, ::std::mem::size_of::<isize>())
-            }
-            __tmp_4
+    {
+        let mut __tmp_4 = { (bytes.as_mut_ptr() as *mut ::libc::c_void) };
+        let mut __tmp_5 = { ((&mut null_pm as *mut isize) as *const ::libc::c_void) };
+        if ::std::mem::size_of::<isize>() != 0 {
+            ::std::ptr::copy_nonoverlapping(__tmp_5, __tmp_4, ::std::mem::size_of::<isize>())
         }
+        __tmp_4
     };
     null_pm = (::std::mem::offset_of!(p2_pointer_to_data_member_bytes_round_trip_HasTwoInts, first)
         as isize);
-    match ({ ((&mut null_pm as *mut isize) as *mut ::libc::c_void) }, {
-        (bytes.as_mut_ptr() as *const ::libc::c_void)
-    }) {
-        (mut __tmp_6, mut __tmp_7) => {
-            if ::std::mem::size_of::<isize>() != 0 {
-                ::std::ptr::copy_nonoverlapping(__tmp_7, __tmp_6, ::std::mem::size_of::<isize>())
-            }
-            __tmp_6
+    {
+        let mut __tmp_6 = { ((&mut null_pm as *mut isize) as *mut ::libc::c_void) };
+        let mut __tmp_7 = { (bytes.as_mut_ptr() as *const ::libc::c_void) };
+        if ::std::mem::size_of::<isize>() != 0 {
+            ::std::ptr::copy_nonoverlapping(__tmp_7, __tmp_6, ::std::mem::size_of::<isize>())
         }
+        __tmp_6
     };
     assert!(((null_pm) == -1_isize));
 }
@@ -98,16 +90,13 @@ pub unsafe fn test_1() {
         p3_pointer_to_data_member_bytes_copied_to_other_object_HasTwoInts,
         first
     ) as isize);
-    match (
-        { ((&mut destination as *mut isize) as *mut ::libc::c_void) },
-        { ((&mut source as *mut isize) as *const ::libc::c_void) },
-    ) {
-        (mut __tmp_8, mut __tmp_9) => {
-            if ::std::mem::size_of::<isize>() != 0 {
-                ::std::ptr::copy_nonoverlapping(__tmp_9, __tmp_8, ::std::mem::size_of::<isize>())
-            }
-            __tmp_8
+    {
+        let mut __tmp_8 = { ((&mut destination as *mut isize) as *mut ::libc::c_void) };
+        let mut __tmp_9 = { ((&mut source as *mut isize) as *const ::libc::c_void) };
+        if ::std::mem::size_of::<isize>() != 0 {
+            ::std::ptr::copy_nonoverlapping(__tmp_9, __tmp_8, ::std::mem::size_of::<isize>())
         }
+        __tmp_8
     };
     assert!(((destination) == (source)));
     let mut obj: p3_pointer_to_data_member_bytes_copied_to_other_object_HasTwoInts =
@@ -122,16 +111,13 @@ pub unsafe fn test_1() {
             == (4))
     );
     let mut null_source: isize = -1_isize;
-    match (
-        { ((&mut destination as *mut isize) as *mut ::libc::c_void) },
-        { ((&mut null_source as *mut isize) as *const ::libc::c_void) },
-    ) {
-        (mut __tmp_10, mut __tmp_11) => {
-            if ::std::mem::size_of::<isize>() != 0 {
-                ::std::ptr::copy_nonoverlapping(__tmp_11, __tmp_10, ::std::mem::size_of::<isize>())
-            }
-            __tmp_10
+    {
+        let mut __tmp_10 = { ((&mut destination as *mut isize) as *mut ::libc::c_void) };
+        let mut __tmp_11 = { ((&mut null_source as *mut isize) as *const ::libc::c_void) };
+        if ::std::mem::size_of::<isize>() != 0 {
+            ::std::ptr::copy_nonoverlapping(__tmp_11, __tmp_10, ::std::mem::size_of::<isize>())
         }
+        __tmp_10
     };
     assert!(((destination) == -1_isize));
 }

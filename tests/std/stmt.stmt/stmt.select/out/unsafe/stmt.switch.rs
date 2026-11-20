@@ -147,6 +147,42 @@ pub unsafe fn test_10() {
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut dtorCount_2)) == (1)));
     assert!(((selector) == (9)));
 }
+pub unsafe fn classify_11(mut x: i32) -> i32 {
+    let mut r: i32 = 0;
+    'switch: {
+        match { x } {
+            __v if __v == 1 => {
+                std::hint::cold_path();
+                return -1_i32;
+            }
+            __v if __v == 2 => {
+                r = 2;
+                break 'switch;
+            }
+            __v if __v == 3 => {
+                std::hint::cold_path();
+                r = 3;
+                break 'switch;
+            }
+            _ => {
+                break 'switch;
+            }
+        }
+    };
+    'loop_: while ((x.postfix_dec()) > (0)) {
+        std::hint::cold_path();
+        {
+            r += 10;
+        };
+    }
+    return r;
+}
+pub unsafe fn test_12() {
+    assert!(((unsafe { classify_11(1,) }) == (-1_i32)));
+    assert!(((unsafe { classify_11(2,) }) == (22)));
+    assert!(((unsafe { classify_11(3,) }) == (33)));
+    assert!(((unsafe { classify_11(0,) }) == (0)));
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -154,6 +190,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
+    (unsafe { test_12() });
     (unsafe { test_7() });
     (unsafe { test_10() });
     return 0;

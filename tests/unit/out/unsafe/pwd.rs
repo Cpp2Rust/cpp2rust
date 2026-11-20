@@ -26,7 +26,7 @@ pub unsafe fn test_getpwuid_missing_1() {
     assert!(((*libcc2rs::cpp2rust_errno_unsafe()) == (0)));
 }
 pub unsafe fn test_getpwuid_r_2() {
-    let mut pw: ::libc::passwd = unsafe { std::mem::zeroed() };
+    let mut pw: ::libc::passwd = std::mem::zeroed();
     let mut buf: [libc::c_char; 4096] = [(0 as libc::c_char); 4096];
     let mut result: *mut ::libc::passwd = std::ptr::null_mut();
     assert!(
@@ -52,7 +52,7 @@ pub unsafe fn test_getpwuid_r_2() {
     });
 }
 pub unsafe fn test_getpwuid_r_erange_3() {
-    let mut pw: ::libc::passwd = unsafe { std::mem::zeroed() };
+    let mut pw: ::libc::passwd = std::mem::zeroed();
     let mut tiny: [libc::c_char; 1] = [(0 as libc::c_char); 1];
     let mut result: *mut ::libc::passwd = std::ptr::null_mut();
     assert!(

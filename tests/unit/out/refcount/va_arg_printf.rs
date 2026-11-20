@@ -24,7 +24,7 @@ pub fn lenf_2(fmt: Ptr<i8>, __args: Box<[VaArg]>) -> i32 {
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
     (*ap.borrow_mut()) = __args.decay();
     let mut s: Ptr<i8> = (*ap.borrow_mut()).arg::<Ptr<i8>>();
-    let mut result: i32 = (s.to_c_string_iterator().count() as i32);
+    let mut result: i32 = ((s.to_c_string_iterator().count()) as i32);
     return result;
 }
 pub fn main() {

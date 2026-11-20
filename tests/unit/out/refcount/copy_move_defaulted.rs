@@ -382,8 +382,8 @@ fn main_0() -> i32 {
         (*bufs.borrow_mut()).push(__a1)
     };
     {
-        let __init = Buffer::move_from({ bufs.decay().offset(0_usize) });
-        (*bufs.borrow_mut()).push(__init)
+        let mut __tmp_2 = { Buffer::move_from({ bufs.decay().offset(0_usize) }) };
+        (*bufs.borrow_mut()).push(__tmp_2);
     };
     assert!(
         ({
@@ -489,11 +489,10 @@ impl BufferImpl for Ptr<Buffer> {
             (*__b0) = field!(_a0, rows).with_mut(std::mem::take);
         });
         field!((*self), n).write({ { (*_a0.upgrade().deref()).n } });
-        match ({ (array_field_ptr!((*self), arr)).to_any() },) {
-            (mut __tmp_0,) => {
-                __tmp_0.memcpy(&(array_field_ptr!(_a0, arr)).to_any(), 8_usize);
-                (__tmp_0).clone()
-            }
+        {
+            let mut __tmp_0 = { (array_field_ptr!((*self), arr)).to_any() };
+            __tmp_0.memcpy(&(array_field_ptr!(_a0, arr)).to_any(), 8_usize);
+            (__tmp_0).clone()
         };
         return (*self).clone();
     }
@@ -551,11 +550,10 @@ impl OwnerImpl for Ptr<Owner> {
             (*__b0) = field!(_a0, data).with_mut(std::mem::take);
         });
         field!((*self), n).write({ { (*_a0.upgrade().deref()).n } });
-        match ({ (array_field_ptr!((*self), arr)).to_any() },) {
-            (mut __tmp_1,) => {
-                __tmp_1.memcpy(&(array_field_ptr!(_a0, arr)).to_any(), 8_usize);
-                (__tmp_1).clone()
-            }
+        {
+            let mut __tmp_1 = { (array_field_ptr!((*self), arr)).to_any() };
+            __tmp_1.memcpy(&(array_field_ptr!(_a0, arr)).to_any(), 8_usize);
+            (__tmp_1).clone()
         };
         field!((*self), p).with_mut(|__b0| {
             (*__b0) = field!(_a0, p).with_mut(|__v: &mut Option<Value<i32>>| __v.take());

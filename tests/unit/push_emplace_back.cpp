@@ -81,6 +81,62 @@ void emplace_scalar(std::vector<long> *values, int x) {
   values->emplace_back(x);
 }
 
+void emplace_ref_through_ptr(std::vector<Pair> *pairs) {
+  Pair &p = pairs->emplace_back(1, 2);
+  p.second = 3;
+  pairs->emplace_back(4).second += 1;
+}
+
+int *emplace_addr(std::vector<int> &values) { return &values.emplace_back(9); }
+
+void emplace_self_reads(std::vector<long> *values, std::vector<Pair> *pairs) {
+  values->emplace_back(values->size());
+  pairs->emplace_back((*pairs)[0]);
+  pairs->emplace_back(pairs->back().first, (int)pairs->size());
+}
+
+long &emplace_ref_self_read(std::vector<long> &values) {
+  return values.emplace_back(values.front());
+}
+
+struct Bytes {
+  std::vector<std::vector<uint8_t>> v;
+  uint8_t b[3];
+};
+
+void emplace_from_element(std::vector<std::vector<uint8_t>> *v) {
+  uint8_t *p = (*v)[0].data();
+  v->emplace_back(p, p + 3);
+}
+
+struct Plain {
+  int a;
+  double b[2];
+};
+
+void emplace_plain(std::vector<Plain> *v) {
+  Plain p{1, {2, 3}};
+  v->emplace_back(p);
+}
+
+struct Counted;
+std::vector<Counted> *all_counted;
+
+struct Counted {
+  std::size_t seen;
+  explicit Counted(int);
+};
+
+Counted::Counted(int) : seen(all_counted->size()) {}
+
+void emplace_counted(std::vector<Counted> *v) { v->emplace_back(1); }
+
+void emplace_from_sibling(Bytes *s) {
+  uint8_t *p = s->b;
+  std::vector<std::vector<uint8_t>> *v = &s->v;
+  v->emplace_back(p, p + 3);
+}
+
 int main() {
   std::vector<std::vector<uint8_t>> vecs;
   push_param(&vecs);
@@ -141,6 +197,49 @@ int main() {
   assert(values.size() == 2);
   assert(values[0] == 0);
   assert(values[1] == 7);
+
+  std::vector<int> ints;
+  ints.emplace_back(0);
+  int &r = ints.emplace_back(1);
+  r = 5;
+  int *q = emplace_addr(ints);
+  *q += 1;
+  assert(ints.size() == 3 && ints[1] == 5 && ints[2] == 10);
+
+  std::deque<int> ints_queue;
+  ints_queue.emplace_back(2) += 3;
+  assert(ints_queue.front() == 5);
+
+  std::vector<Pair> more_pairs;
+  emplace_ref_through_ptr(&more_pairs);
+  assert(more_pairs[0].first == 1 && more_pairs[0].second == 3);
+  assert(more_pairs[1].first == 4 && more_pairs[1].second == 1);
+
+  std::vector<long> self_values{7};
+  std::vector<Pair> self_pairs;
+  self_pairs.emplace_back(1, 2);
+  emplace_self_reads(&self_values, &self_pairs);
+  emplace_ref_self_read(self_values) += 1;
+  assert(self_values.size() == 3 && self_values[1] == 1 && self_values[2] == 8);
+  assert(self_pairs[1].first == 1 && self_pairs[1].second == 4);
+  assert(self_pairs[2].first == 1 && self_pairs[2].second == 4);
+
+  std::vector<std::vector<uint8_t>> rows{{1, 2, 3}};
+  emplace_from_element(&rows);
+  assert(rows.size() == 2 && rows[1][2] == 3);
+  Bytes bytes{{}, {4, 5, 6}};
+  emplace_from_sibling(&bytes);
+  assert(bytes.v.size() == 1 && bytes.v[0][2] == 6);
+
+  std::vector<Plain> plains;
+  emplace_plain(&plains);
+  assert(plains[0].a == 1 && plains[0].b[1] == 3);
+
+  std::vector<Counted> counted;
+  all_counted = &counted;
+  emplace_counted(&counted);
+  emplace_counted(&counted);
+  assert(counted[0].seen == 0 && counted[1].seen == 1);
 
   return 0;
 }

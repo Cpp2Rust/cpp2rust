@@ -84,11 +84,10 @@ fn main_0() -> i32 {
             d: 8_i16,
         },
     ])));
-    match ({ (buf.decay()).to_any() },) {
-        (mut __tmp_0,) => {
-            __tmp_0.memcpy(&(p.decay()).to_any(), 16usize);
-            (__tmp_0).clone()
-        }
+    {
+        let mut __tmp_0 = { (buf.decay()).to_any() };
+        __tmp_0.memcpy(&(p.decay()).to_any(), 16usize);
+        (__tmp_0).clone()
     };
     assert!(
         ({ (((*buf.borrow())[((8usize as usize).wrapping_add(4_usize)) as usize] as i32) == 6) })
@@ -98,11 +97,10 @@ fn main_0() -> i32 {
             .map(|_| <packed>::default())
             .collect::<Box<[packed]>>(),
     ));
-    match ({ (p2.decay()).to_any() },) {
-        (mut __tmp_1,) => {
-            __tmp_1.memcpy(&(buf.decay()).to_any(), 16usize);
-            (__tmp_1).clone()
-        }
+    {
+        let mut __tmp_1 = { (p2.decay()).to_any() };
+        __tmp_1.memcpy(&(buf.decay()).to_any(), 16usize);
+        (__tmp_1).clone()
     };
     assert!(
         ({
@@ -124,11 +122,10 @@ fn main_0() -> i32 {
             c: 6_i8,
         },
     ])));
-    match ({ (buf.decay()).to_any() },) {
-        (mut __tmp_2,) => {
-            __tmp_2.memcpy(&(r.decay()).to_any(), 24usize);
-            (__tmp_2).clone()
-        }
+    {
+        let mut __tmp_2 = { (buf.decay()).to_any() };
+        __tmp_2.memcpy(&(r.decay()).to_any(), 24usize);
+        (__tmp_2).clone()
     };
     assert!(
         ({ (((*buf.borrow())[((12usize as usize).wrapping_add(8_usize)) as usize] as i32) == 6) })
@@ -138,11 +135,10 @@ fn main_0() -> i32 {
             .map(|_| <reordered>::default())
             .collect::<Box<[reordered]>>(),
     ));
-    match ({ (r2.decay()).to_any() },) {
-        (mut __tmp_3,) => {
-            __tmp_3.memcpy(&(buf.decay()).to_any(), 24usize);
-            (__tmp_3).clone()
-        }
+    {
+        let mut __tmp_3 = { (r2.decay()).to_any() };
+        __tmp_3.memcpy(&(buf.decay()).to_any(), 24usize);
+        (__tmp_3).clone()
     };
     assert!(
         ({
@@ -167,11 +163,10 @@ fn main_0() -> i32 {
             c: 6_i8,
         },
     ])));
-    match ({ (buf.decay()).to_any() },) {
-        (mut __tmp_4,) => {
-            __tmp_4.memcpy(&(n.decay()).to_any(), 48usize);
-            (__tmp_4).clone()
-        }
+    {
+        let mut __tmp_4 = { (buf.decay()).to_any() };
+        __tmp_4.memcpy(&(n.decay()).to_any(), 48usize);
+        (__tmp_4).clone()
     };
     assert!(
         ({ (((*buf.borrow())[((24usize as usize).wrapping_add(16_usize)) as usize] as i32) == 6) })
@@ -181,11 +176,10 @@ fn main_0() -> i32 {
             .map(|_| <nested>::default())
             .collect::<Box<[nested]>>(),
     ));
-    match ({ (n2.decay()).to_any() },) {
-        (mut __tmp_5,) => {
-            __tmp_5.memcpy(&(buf.decay()).to_any(), 48usize);
-            (__tmp_5).clone()
-        }
+    {
+        let mut __tmp_5 = { (n2.decay()).to_any() };
+        __tmp_5.memcpy(&(buf.decay()).to_any(), 48usize);
+        (__tmp_5).clone()
     };
     assert!(
         ({
@@ -204,11 +198,10 @@ fn main_0() -> i32 {
             x: 2,
         },
     ])));
-    match ({ (buf.decay()).to_any() },) {
-        (mut __tmp_6,) => {
-            __tmp_6.memcpy(&(a.decay()).to_any(), 16usize);
-            (__tmp_6).clone()
-        }
+    {
+        let mut __tmp_6 = { (buf.decay()).to_any() };
+        __tmp_6.memcpy(&(a.decay()).to_any(), 16usize);
+        (__tmp_6).clone()
     };
     assert!(
         ({
@@ -219,11 +212,10 @@ fn main_0() -> i32 {
     let a2: Value<Box<[array]>> = Rc::new(RefCell::new(
         (0..2).map(|_| <array>::default()).collect::<Box<[array]>>(),
     ));
-    match ({ (a2.decay()).to_any() },) {
-        (mut __tmp_7,) => {
-            __tmp_7.memcpy(&(buf.decay()).to_any(), 16usize);
-            (__tmp_7).clone()
-        }
+    {
+        let mut __tmp_7 = { (a2.decay()).to_any() };
+        __tmp_7.memcpy(&(buf.decay()).to_any(), 16usize);
+        (__tmp_7).clone()
     };
     assert!(
         ({

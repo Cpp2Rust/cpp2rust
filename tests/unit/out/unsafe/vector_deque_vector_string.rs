@@ -14,14 +14,8 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut v: Vec<Vec<Vec<Vec<libc::c_char>>>> = Vec::new();
-    {
-        let __init = Vec::new();
-        v.push(__init)
-    };
-    {
-        let __init = Vec::new();
-        v.push(__init)
-    };
+    v.push_mut(Vec::new());
+    v.push_mut(Vec::new());
     let mut row: Vec<Vec<libc::c_char>> = Vec::new();
     {
         let __a1 = std::slice::from_raw_parts(
@@ -49,10 +43,7 @@ unsafe fn main_0() -> i32 {
         row.push(__a1)
     };
     v[(1_usize)].push((row).clone());
-    {
-        let __init = Vec::new();
-        v[(1_usize)].push(__init)
-    };
+    v[(1_usize)].push_mut(Vec::new());
     match (
         (match ((&mut v[(1_usize)] as *mut Vec<Vec<Vec<libc::c_char>>>),) {
             (__tmp_1,) => {

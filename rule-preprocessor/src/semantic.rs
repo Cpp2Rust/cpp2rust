@@ -1,7 +1,7 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use crate::ir::{Access, FnIr, RuleIr, RulesIR};
+use crate::ir::{Access, FnIr, Model, RuleIr, RulesIR};
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 
@@ -77,7 +77,6 @@ fn build_rustc_args(crate_root: &Path) -> Vec<String> {
         "libcc2rs",
         "libcc2rs_macros",
         "libc",
-        "rustls_ffi",
         "nix",
         "jiff",
         "xattr",
@@ -196,6 +195,95 @@ impl<'tcx> FnDecl<'tcx> {
         }
         visitor.visit_expr(self.body.value, Access::Borrow);
     }
+
+    fn unsafe_uses(&self, tcx: rustc_middle::ty::TyCtxt<'tcx>) -> UnsafeUses {
+        use rustc_hir::intravisit::Visitor;
+        let mut finder = UnsafeFinder {
+            tcx,
+            typeck: tcx.typeck_body(self.body.id()),
+            uses: UnsafeUses::default(),
+        };
+        finder.visit_expr(self.body.value);
+        finder.uses
+    }
+}
+
+/// What a rule body has that needs an unsafe context.
+#[derive(Default)]
+struct UnsafeUses {
+    block: bool,
+    op: bool,
+}
+
+struct UnsafeFinder<'tcx> {
+    tcx: rustc_middle::ty::TyCtxt<'tcx>,
+    typeck: &'tcx rustc_middle::ty::TypeckResults<'tcx>,
+    uses: UnsafeUses,
+}
+
+impl<'tcx> UnsafeFinder<'tcx> {
+    fn is_unsafe_op(&self, expr: &'tcx rustc_hir::Expr<'tcx>) -> bool {
+        use rustc_hir::def::{DefKind, Res};
+        use rustc_middle::ty::TyKind;
+
+        match &expr.kind {
+            rustc_hir::ExprKind::Call(callee, _) => {
+                let ty = self.typeck.expr_ty_adjusted(callee);
+                matches!(ty.kind(), TyKind::FnDef(..) | TyKind::FnPtr(..))
+                    && ty.fn_sig(self.tcx).safety().is_unsafe()
+            }
+            rustc_hir::ExprKind::MethodCall(..) => self
+                .typeck
+                .type_dependent_def_id(expr.hir_id)
+                .is_some_and(|def_id| self.tcx.fn_sig(def_id).skip_binder().safety().is_unsafe()),
+            rustc_hir::ExprKind::Unary(rustc_hir::UnOp::Deref, inner) => {
+                self.typeck.expr_ty_adjusted(inner).is_raw_ptr()
+            }
+            rustc_hir::ExprKind::Field(base, _) => self
+                .typeck
+                .expr_ty_adjusted(base)
+                .ty_adt_def()
+                .is_some_and(|adt| adt.is_union()),
+            rustc_hir::ExprKind::Path(qpath) => match self.typeck.qpath_res(qpath, expr.hir_id) {
+                Res::Def(DefKind::Static { mutability, .. }, def_id) => {
+                    mutability.is_mut() || self.tcx.is_foreign_item(def_id)
+                }
+                _ => false,
+            },
+            rustc_hir::ExprKind::InlineAsm(_) => true,
+            _ => false,
+        }
+    }
+}
+
+impl<'tcx> rustc_hir::intravisit::Visitor<'tcx> for UnsafeFinder<'tcx> {
+    type NestedFilter = rustc_middle::hir::nested_filter::OnlyBodies;
+
+    fn maybe_tcx(&mut self) -> rustc_middle::ty::TyCtxt<'tcx> {
+        self.tcx
+    }
+
+    fn visit_block(&mut self, block: &'tcx rustc_hir::Block<'tcx>) {
+        let rustc_hir::BlockCheckMode::UnsafeBlock(source) = block.rules else {
+            rustc_hir::intravisit::walk_block(self, block);
+            return;
+        };
+        // Like the `unsafe_code` lint, trust the unsafe blocks of the compiler
+        // and of the macros that allow internal unsafe, e.g., `panic!`.
+        if source == rustc_hir::UnsafeSource::UserProvided && !block.span.allows_unsafe() {
+            // The unsafe block of a macro is an unsafe operation of the rule.
+            if block.span.from_expansion() {
+                self.uses.op = true;
+            } else {
+                self.uses.block = true;
+            }
+        }
+    }
+
+    fn visit_expr(&mut self, expr: &'tcx rustc_hir::Expr<'tcx>) {
+        self.uses.op |= self.is_unsafe_op(expr);
+        rustc_hir::intravisit::walk_expr(self, expr);
+    }
 }
 
 struct MethodResolver {
@@ -204,6 +292,13 @@ struct MethodResolver {
 
 impl MethodResolver {
     fn resolve_rule<'tcx>(&mut self, tcx: rustc_middle::ty::TyCtxt<'tcx>, f: &FnDecl<'tcx>) {
+        // The refcount model falls back to the unsafe rules it does not have.
+        let used_by_refcount = f.source_file.ends_with(Model::Refcount.src_filename())
+            || !self
+                .ir
+                .refcount_ir
+                .as_ref()
+                .is_some_and(|ir| ir.contains_key(&f.name));
         let Some(file_ir) = self.ir.get_mut(&f.source_file) else {
             return;
         };
@@ -213,7 +308,33 @@ impl MethodResolver {
                 let ret_ty = tcx.fn_sig(f.def_id).skip_binder().output().skip_binder();
                 type_ir.type_info.derives = type_derives(tcx, tcx.param_env(f.def_id), ret_ty);
             }
-            None => {}
+            None => return,
+        }
+
+        // A rule is either unsafe as a whole or does nothing unsafe.
+        let uses = f.unsafe_uses(tcx);
+        assert!(
+            !uses.block,
+            "{} ({}): rules must not have unsafe blocks; mark the rule unsafe instead",
+            f.name, f.source_file
+        );
+        if tcx.fn_sig(f.def_id).skip_binder().safety().is_unsafe() {
+            assert!(
+                !used_by_refcount,
+                "{} ({}): the refcount model uses this rule, so it must not be unsafe",
+                f.name, f.source_file
+            );
+            assert!(
+                uses.op,
+                "{} ({}): the rule does no unsafe operation, so it must not be unsafe",
+                f.name, f.source_file
+            );
+        } else {
+            assert!(
+                !uses.op,
+                "{} ({}): the rule does an unsafe operation, so it must be unsafe",
+                f.name, f.source_file
+            );
         }
     }
 

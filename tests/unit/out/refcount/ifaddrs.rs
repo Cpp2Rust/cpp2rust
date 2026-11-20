@@ -14,24 +14,23 @@ fn main_0() -> i32 {
     let list: Value<Ptr<libcc2rs::Ifaddrs>> =
         Rc::new(RefCell::new(Ptr::<libcc2rs::Ifaddrs>::null()));
     assert!(
-        (match ({ (list.as_pointer()) },) {
-            (mut __tmp_0,) => {
-                match nix::ifaddrs::getifaddrs() {
-                    Ok(__ifas) => {
-                        let __list: Vec<nix::ifaddrs::InterfaceAddress> = __ifas.collect();
-                        let mut __next = Ptr::<Ifaddrs>::null();
-                        for __ifa in __list.iter().rev() {
-                            let mut __node = Ifaddrs::from_interface_address(__ifa);
-                            __node.ifa_next = __next.clone();
-                            __next = Ptr::alloc(__node);
-                        }
-                        __tmp_0.write(__next);
-                        0
+        ({
+            let mut __tmp_0 = { (list.as_pointer()) };
+            match nix::ifaddrs::getifaddrs() {
+                Ok(__ifas) => {
+                    let __list: Vec<nix::ifaddrs::InterfaceAddress> = __ifas.collect();
+                    let mut __next = Ptr::<Ifaddrs>::null();
+                    for __ifa in __list.iter().rev() {
+                        let mut __node = Ifaddrs::from_interface_address(__ifa);
+                        __node.ifa_next = __next.clone();
+                        __next = Ptr::alloc(__node);
                     }
-                    Err(__e) => {
-                        libcc2rs::cpp2rust_errno().write(__e as i32);
-                        -1
-                    }
+                    __tmp_0.write(__next);
+                    0
+                }
+                Err(__e) => {
+                    libcc2rs::cpp2rust_errno().write(__e as i32);
+                    -1
                 }
             }
         } == 0)

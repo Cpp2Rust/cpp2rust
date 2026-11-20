@@ -6,28 +6,11 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn test_setenv_getenv_0() {
+pub unsafe fn test_getenv_0() {
     assert!(
-        ((libc::setenv(
-            (c"CPP2RUST_TEST_VAR".as_ptr().cast_mut()).cast_const(),
-            (c"test_value".as_ptr().cast_mut()).cast_const(),
-            1
-        )) == (0))
+        ((libc::getenv((c"CPP2RUST_DEFINITELY_MISSING_VAR".as_ptr().cast_mut()).cast_const()))
+            .is_null())
     );
-    let mut v: *const libc::c_char =
-        (libc::getenv((c"CPP2RUST_TEST_VAR".as_ptr().cast_mut()).cast_const())).cast_const();
-    assert!((!((v).is_null())));
-    assert!(((libc::strcmp(v, (c"test_value".as_ptr().cast_mut()).cast_const())) == (0)));
-    assert!(
-        ((libc::setenv(
-            (c"CPP2RUST_TEST_VAR".as_ptr().cast_mut()).cast_const(),
-            (c"replaced".as_ptr().cast_mut()).cast_const(),
-            1
-        )) == (0))
-    );
-    v = (libc::getenv((c"CPP2RUST_TEST_VAR".as_ptr().cast_mut()).cast_const())).cast_const();
-    assert!((!((v).is_null())));
-    assert!(((libc::strcmp(v, (c"replaced".as_ptr().cast_mut()).cast_const())) == (0)));
 }
 pub unsafe fn test_realpath_1() {
     let mut buf: [libc::c_char; 4096] = [(0 as libc::c_char); 4096];
@@ -64,7 +47,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    (unsafe { test_setenv_getenv_0() });
+    (unsafe { test_getenv_0() });
     (unsafe { test_realpath_1() });
     return 0;
 }

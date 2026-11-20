@@ -20,15 +20,13 @@ fn main_0() -> i32 {
     assert!((shr1 == ((2) as u8)));
     let mut ushift3: u32 = 5_u32;
     {
-        let __n = ((b1 as u32) << ushift3) as u8;
-        b1 = __n;
+        b1 = ((b1 as u32) << ushift3) as u8;
         b1
     };
     assert!((b1 == ((32) as u8)));
     let mut ushift4: u32 = 3_u32;
     {
-        let __n = ((b1 as u32) >> ushift4) as u8;
-        b1 = __n;
+        b1 = ((b1 as u32) >> ushift4) as u8;
         b1
     };
     assert!((b1 == ((4) as u8)));
@@ -44,16 +42,14 @@ fn main_0() -> i32 {
     assert!((shr2 == ((0) as u8)));
     let mut ushift7: u32 = 9_u32;
     {
-        let __n = ((b2 as u32) << ushift7) as u8;
-        b2 = __n;
+        b2 = ((b2 as u32) << ushift7) as u8;
         b2
     };
     assert!((b2 == ((0) as u8)));
     let mut b3: u8 = 129_u8;
     let mut ushift8: u32 = 8_u32;
     {
-        let __n = ((b3 as u32) >> ushift8) as u8;
-        b3 = __n;
+        b3 = ((b3 as u32) >> ushift8) as u8;
         b3
     };
     assert!((b3 == ((0) as u8)));

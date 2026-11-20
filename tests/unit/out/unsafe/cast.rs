@@ -146,18 +146,17 @@ pub unsafe fn order_physical_2() {
     assert!(((((px) < (py)) as i32) == (((qx) < (qy)) as i32)));
     assert!(((((py) < (px)) as i32) == (((qy) < (qx)) as i32)));
     let mut ps: [*mut i32; 4] = [py, qx, px, qy];
-    match ({ ps.as_mut_ptr() },) {
-        (mut __tmp_0,) => {
-            let __n = ps.as_mut_ptr().offset((4) as isize).iter_distance(&__tmp_0);
-            let mut __order: Vec<isize> = (0..__n).collect();
-            __order.sort_by(|&__x, &__y| (*__tmp_0.iter_at(__x)).cmp(&*__tmp_0.iter_at(__y)));
-            let __values: Vec<_> = __order
-                .iter()
-                .map(|&__i| std::ptr::read(__tmp_0.iter_at(__i)))
-                .collect();
-            for (__i, __v) in (0..__n).zip(__values) {
-                std::ptr::write(__tmp_0.iter_at(__i), __v);
-            }
+    {
+        let mut __tmp_0 = { ps.as_mut_ptr() };
+        let __n = ps.as_mut_ptr().offset((4) as isize).iter_distance(&__tmp_0);
+        let mut __order: Vec<isize> = (0..__n).collect();
+        __order.sort_by(|&__x, &__y| (*__tmp_0.iter_at(__x)).cmp(&*__tmp_0.iter_at(__y)));
+        let __values: Vec<_> = __order
+            .iter()
+            .map(|&__i| std::ptr::read(__tmp_0.iter_at(__i)))
+            .collect();
+        for (__i, __v) in (0..__n).zip(__values) {
+            std::ptr::write(__tmp_0.iter_at(__i), __v);
         }
     };
     assert!(
@@ -367,7 +366,7 @@ pub unsafe fn heap_7() {
         }
     };
     let mut l: *mut i64 =
-        (libcc2rs::malloc_unsafe((2_usize).wrapping_mul((::std::mem::size_of::<i64>() as usize)))
+        ((libcc2rs::malloc_unsafe((2_usize).wrapping_mul((::std::mem::size_of::<i64>() as usize))))
             as *mut i64);
     (*l.offset((1) as isize)) = 7_i64;
     let mut back: *mut i64 = (((l.offset((1) as isize)) as usize) as *mut i64);
@@ -383,20 +382,18 @@ pub unsafe fn c_strings_8() {
     assert!(((libc::strlen((p).cast_const())) == (5_usize)));
     assert!(((libc::strcmp((p).cast_const(), c"hello".as_ptr())) == (0)));
     let mut d: [libc::c_char; 6] = [(0 as libc::c_char); 6];
-    match (
-        { (((d.as_mut_ptr() as usize) as *mut libc::c_char) as *mut ::libc::c_void) },
-        { (p as *const ::libc::c_void) },
-    ) {
-        (mut __tmp_1, mut __tmp_2) => {
-            if ::std::mem::size_of::<[libc::c_char; 6]>() != 0 {
-                ::std::ptr::copy_nonoverlapping(
-                    __tmp_2,
-                    __tmp_1,
-                    ::std::mem::size_of::<[libc::c_char; 6]>(),
-                )
-            }
-            __tmp_1
+    {
+        let mut __tmp_1 =
+            { (((d.as_mut_ptr() as usize) as *mut libc::c_char) as *mut ::libc::c_void) };
+        let mut __tmp_2 = { (p as *const ::libc::c_void) };
+        if ::std::mem::size_of::<[libc::c_char; 6]>() != 0 {
+            ::std::ptr::copy_nonoverlapping(
+                __tmp_2,
+                __tmp_1,
+                ::std::mem::size_of::<[libc::c_char; 6]>(),
+            )
         }
+        __tmp_1
     };
     assert!(
         (({

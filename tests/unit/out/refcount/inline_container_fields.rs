@@ -283,11 +283,8 @@ fn main_0() -> i32 {
                 && ((index!(field!(vec_elem!(p, elems, 3_usize), hist), 0).read()) == 100)
         })
     );
-    let elems: Value<Vec<Elem>> = Rc::new(RefCell::new(
-        (0..(2_usize) as usize)
-            .map(|_| <Elem>::default())
-            .collect::<Vec<_>>(),
-    ));
+    let elems: Value<Vec<Elem>> =
+        Rc::new(RefCell::new(Vec::from_fn(2_usize, |_| <Elem>::default())));
     let mut first: Ptr<Elem> = (elems.decay().offset(0_usize));
     (*elems.borrow_mut())[1_usize]
         .coeffs
@@ -467,11 +464,10 @@ pub trait ElemImpl {
 impl ElemImpl for Ptr<Elem> {
     fn move_assign(&self, _a0: Ptr<Elem>) -> Ptr<Elem> {
         field!((*self), id).write({ { (*_a0.upgrade().deref()).id } });
-        match ({ (array_field_ptr!((*self), hist)).to_any() },) {
-            (mut __tmp_0,) => {
-                __tmp_0.memcpy(&(array_field_ptr!(_a0, hist)).to_any(), 16_usize);
-                (__tmp_0).clone()
-            }
+        {
+            let mut __tmp_0 = { (array_field_ptr!((*self), hist)).to_any() };
+            __tmp_0.memcpy(&(array_field_ptr!(_a0, hist)).to_any(), 16_usize);
+            (__tmp_0).clone()
         };
         field!((*self), coeffs).with_mut(|__b0| {
             (*__b0) = field!(_a0, coeffs).with_mut(std::mem::take);
@@ -485,11 +481,10 @@ pub trait StateImpl {
 impl StateImpl for Ptr<State> {
     fn move_assign(&self, _a0: Ptr<State>) -> Ptr<State> {
         field!((*self), count).write({ { (*_a0.upgrade().deref()).count } });
-        match ({ (array_field_ptr!((*self), grid)).to_any() },) {
-            (mut __tmp_1,) => {
-                __tmp_1.memcpy(&(array_field_ptr!(_a0, grid)).to_any(), 24_usize);
-                (__tmp_1).clone()
-            }
+        {
+            let mut __tmp_1 = { (array_field_ptr!((*self), grid)).to_any() };
+            __tmp_1.memcpy(&(array_field_ptr!(_a0, grid)).to_any(), 24_usize);
+            (__tmp_1).clone()
         };
         {
             for __i in 0..3 {

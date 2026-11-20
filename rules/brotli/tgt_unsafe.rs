@@ -31,7 +31,7 @@ fn t7() -> BrotliDecoderState {
     Default::default()
 }
 
-unsafe fn f1() -> BrotliEncoderMode {
+fn f1() -> BrotliEncoderMode {
     BROTLI_MODE_FONT
 }
 unsafe fn f2(
@@ -45,17 +45,17 @@ unsafe fn f2(
 ) -> libc::c_int {
     BrotliEncoderCompress_unsafe(a0, a1, a2, a3, a4, a5, a6)
 }
-unsafe fn f3() -> BrotliEncoderMode {
+fn f3() -> BrotliEncoderMode {
     BROTLI_MODE_TEXT
 }
-unsafe fn f4() -> BrotliDecoderResult {
+fn f4() -> BrotliDecoderResult {
     BROTLI_DECODER_RESULT_SUCCESS
 }
 unsafe fn f5(a0: usize, a1: *mut u8, a2: *mut usize, a3: *mut u8) -> BrotliDecoderResult {
     BrotliDecoderDecompress_unsafe(a0, a1, a2, a3)
 }
 
-unsafe fn f6() -> *mut BrotliDecoderState {
+fn f6() -> *mut BrotliDecoderState {
     BrotliDecoderCreateInstance_unsafe()
 }
 
@@ -78,83 +78,83 @@ unsafe fn f9(a0: *mut BrotliDecoderState, a1: *mut usize) -> *const u8 {
     BrotliDecoderTakeOutput_unsafe(a0, a1)
 }
 
-unsafe fn f10() -> BrotliDecoderResult {
+fn f10() -> BrotliDecoderResult {
     BROTLI_DECODER_RESULT_ERROR
 }
 
-unsafe fn f11() -> BrotliDecoderResult {
+fn f11() -> BrotliDecoderResult {
     BROTLI_DECODER_RESULT_NEEDS_MORE_OUTPUT
 }
 
-unsafe fn f12() -> BrotliEncoderMode {
+fn f12() -> BrotliEncoderMode {
     BROTLI_MODE_GENERIC
 }
 
-unsafe fn f13() -> BrotliDecoderResult {
+fn f13() -> BrotliDecoderResult {
     BROTLI_DECODER_RESULT_NEEDS_MORE_INPUT
 }
 
-unsafe fn f14() -> BrotliDecoderErrorCode {
+fn f14() -> BrotliDecoderErrorCode {
     BROTLI_DECODER_ERROR_FORMAT_EXUBERANT_NIBBLE
 }
-unsafe fn f15() -> BrotliDecoderErrorCode {
+fn f15() -> BrotliDecoderErrorCode {
     BROTLI_DECODER_ERROR_FORMAT_EXUBERANT_META_NIBBLE
 }
-unsafe fn f16() -> BrotliDecoderErrorCode {
+fn f16() -> BrotliDecoderErrorCode {
     BROTLI_DECODER_ERROR_FORMAT_SIMPLE_HUFFMAN_ALPHABET
 }
-unsafe fn f17() -> BrotliDecoderErrorCode {
+fn f17() -> BrotliDecoderErrorCode {
     BROTLI_DECODER_ERROR_FORMAT_SIMPLE_HUFFMAN_SAME
 }
-unsafe fn f18() -> BrotliDecoderErrorCode {
+fn f18() -> BrotliDecoderErrorCode {
     BROTLI_DECODER_ERROR_FORMAT_CL_SPACE
 }
-unsafe fn f19() -> BrotliDecoderErrorCode {
+fn f19() -> BrotliDecoderErrorCode {
     BROTLI_DECODER_ERROR_FORMAT_HUFFMAN_SPACE
 }
-unsafe fn f20() -> BrotliDecoderErrorCode {
+fn f20() -> BrotliDecoderErrorCode {
     BROTLI_DECODER_ERROR_FORMAT_CONTEXT_MAP_REPEAT
 }
-unsafe fn f21() -> BrotliDecoderErrorCode {
+fn f21() -> BrotliDecoderErrorCode {
     BROTLI_DECODER_ERROR_FORMAT_BLOCK_LENGTH_1
 }
-unsafe fn f22() -> BrotliDecoderErrorCode {
+fn f22() -> BrotliDecoderErrorCode {
     BROTLI_DECODER_ERROR_FORMAT_BLOCK_LENGTH_2
 }
-unsafe fn f23() -> BrotliDecoderErrorCode {
+fn f23() -> BrotliDecoderErrorCode {
     BROTLI_DECODER_ERROR_FORMAT_TRANSFORM
 }
-unsafe fn f24() -> BrotliDecoderErrorCode {
+fn f24() -> BrotliDecoderErrorCode {
     BROTLI_DECODER_ERROR_FORMAT_DICTIONARY
 }
-unsafe fn f25() -> BrotliDecoderErrorCode {
+fn f25() -> BrotliDecoderErrorCode {
     BROTLI_DECODER_ERROR_FORMAT_WINDOW_BITS
 }
-unsafe fn f26() -> BrotliDecoderErrorCode {
+fn f26() -> BrotliDecoderErrorCode {
     BROTLI_DECODER_ERROR_FORMAT_PADDING_1
 }
-unsafe fn f27() -> BrotliDecoderErrorCode {
+fn f27() -> BrotliDecoderErrorCode {
     BROTLI_DECODER_ERROR_FORMAT_PADDING_2
 }
-unsafe fn f28() -> BrotliDecoderErrorCode {
+fn f28() -> BrotliDecoderErrorCode {
     BROTLI_DECODER_ERROR_INVALID_ARGUMENTS
 }
-unsafe fn f29() -> BrotliDecoderErrorCode {
+fn f29() -> BrotliDecoderErrorCode {
     BROTLI_DECODER_ERROR_ALLOC_CONTEXT_MODES
 }
-unsafe fn f30() -> BrotliDecoderErrorCode {
+fn f30() -> BrotliDecoderErrorCode {
     BROTLI_DECODER_ERROR_ALLOC_TREE_GROUPS
 }
-unsafe fn f31() -> BrotliDecoderErrorCode {
+fn f31() -> BrotliDecoderErrorCode {
     BROTLI_DECODER_ERROR_ALLOC_CONTEXT_MAP
 }
-unsafe fn f32() -> BrotliDecoderErrorCode {
+fn f32() -> BrotliDecoderErrorCode {
     BROTLI_DECODER_ERROR_ALLOC_RING_BUFFER_1
 }
-unsafe fn f33() -> BrotliDecoderErrorCode {
+fn f33() -> BrotliDecoderErrorCode {
     BROTLI_DECODER_ERROR_ALLOC_RING_BUFFER_2
 }
-unsafe fn f34() -> BrotliDecoderErrorCode {
+fn f34() -> BrotliDecoderErrorCode {
     BROTLI_DECODER_ERROR_ALLOC_BLOCK_TYPE_TREES
 }
 
@@ -162,6 +162,6 @@ unsafe fn f35(a0: *const BrotliDecoderState) -> BrotliDecoderErrorCode {
     BrotliDecoderGetErrorCode_unsafe(a0)
 }
 
-unsafe fn f36() -> u32 {
+fn f36() -> u32 {
     BrotliDecoderVersion()
 }

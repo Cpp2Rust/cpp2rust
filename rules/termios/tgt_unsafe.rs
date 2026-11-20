@@ -1,12 +1,12 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-fn t1() -> ::libc::termios {
-    unsafe { std::mem::zeroed() }
+unsafe fn t1() -> ::libc::termios {
+    std::mem::zeroed()
 }
 
-fn t2() -> ::libc::winsize {
-    unsafe { std::mem::zeroed() }
+unsafe fn t2() -> ::libc::winsize {
+    std::mem::zeroed()
 }
 
 unsafe fn f1(a0: i32, a1: i32, a2: *const ::libc::termios) -> i32 {

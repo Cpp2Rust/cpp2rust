@@ -74,6 +74,8 @@ struct MethodCallFragment {
 
 struct RefExprFragment {
   std::string prefix;
+  // The statements that only compute the reference, e.g., its index.
+  std::vector<BodyFragment> setup;
   std::vector<BodyFragment> inner;
 
   void dump() const;
@@ -130,10 +132,20 @@ struct ExprRule {
 
   void dump() const;
   bool usesInit() const;
+  // Whether the body constructs init whenever it is evaluated, as it uses init
+  // unconditionally.
+  bool alwaysConstructsInit() const;
+  // The number of uses of init in the body.
+  unsigned initCopies() const;
   // The operand of the reference that the body ends with, if it returns one.
   const std::vector<BodyFragment> *refExprOperand() const;
   // The statements of the body that compute the reference it returns.
   llvm::ArrayRef<BodyFragment> refExprEffect() const;
+  // The statements, after the effect, that only compute the reference.
+  llvm::ArrayRef<BodyFragment> refExprSetup() const;
+  // Whether the reference may be dropped, leaving the statements before it:
+  // it is to an argument, or to an element at an index of no argument.
+  bool refExprDiscardable() const;
   // The placeholder of the argument that the reference is to, or to an element
   // of: a0 or a0[...].
   const PlaceholderFragment *refExprBase() const;

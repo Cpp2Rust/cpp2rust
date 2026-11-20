@@ -43,14 +43,13 @@ unsafe fn main_0() -> i32 {
     standalone.b = 4;
     assert!(((unsafe { sum_inner_0((&mut standalone as *mut Inner),) }) == (7)));
     let mut outer: Outer = <Outer>::default();
-    match ({ ((&mut outer as *mut Outer) as *mut ::libc::c_void) },) {
-        (mut __tmp_0,) => {
-            let byte_0 = __tmp_0 as *mut u8;
-            for offset in 0..::std::mem::size_of::<Outer>() {
-                *byte_0.offset(offset as isize) = 0 as u8;
-            }
-            __tmp_0
+    {
+        let mut __tmp_0 = { ((&mut outer as *mut Outer) as *mut ::libc::c_void) };
+        let byte_0 = __tmp_0 as *mut u8;
+        for offset in 0..::std::mem::size_of::<Outer>() {
+            *byte_0.offset(offset as isize) = 0 as u8;
         }
+        __tmp_0
     };
     outer.u.inner.a = 3;
     outer.u.inner.b = 4;

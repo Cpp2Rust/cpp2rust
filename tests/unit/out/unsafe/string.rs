@@ -412,17 +412,16 @@ unsafe fn main_0() -> i32 {
     diff += 6_i64;
     assert!(((diff) == (3_i64)));
     let mut substr_pos: usize = 1_usize;
-    let mut once: Vec<libc::c_char> = match ({ substr_pos.postfix_inc() },) {
-        (mut __tmp_0,) => {
-            let __range = __tmp_0
-                ..::std::cmp::min(
-                    __tmp_0 + 2_usize,
-                    (*(&mut s1 as *const Vec<libc::c_char>)).len() - 1,
-                );
-            let mut __tmp1 = (&*(&mut s1 as *const Vec<libc::c_char>))[__range].to_vec();
-            __tmp1.push(0);
-            __tmp1
-        }
+    let mut once: Vec<libc::c_char> = {
+        let mut __tmp_0 = { substr_pos.postfix_inc() };
+        let __range = __tmp_0
+            ..::std::cmp::min(
+                __tmp_0 + 2_usize,
+                (*(&mut s1 as *const Vec<libc::c_char>)).len() - 1,
+            );
+        let mut __tmp1 = (&*(&mut s1 as *const Vec<libc::c_char>))[__range].to_vec();
+        __tmp1.push(0);
+        __tmp1
     };
     (unsafe {
         libc::printf(
@@ -719,6 +718,187 @@ unsafe fn main_0() -> i32 {
     let mut t3: usize = (t2).wrapping_add((s3.len() - 1));
     let mut t4: usize = (t3).wrapping_add((s4.len() - 1));
     assert!((((t4).wrapping_add((s5.len() - 1))) == (139_usize)));
+    assert!(
+        (-42_i32)
+            .format_into(&mut std::fmt::NumBuffer::new())
+            .bytes()
+            .map(|__b| __b as libc::c_char)
+            .chain([0])
+            .collect::<Vec<_>>()
+            == {
+                std::slice::from_raw_parts(
+                    c"-42".as_ptr(),
+                    (0..).take_while(|&i| *c"-42".as_ptr().add(i) != 0).count() + 1,
+                )
+                .to_vec()
+            }
+    );
+    assert!(
+        ((-9223372036854775807_i64) - (1_i64))
+            .format_into(&mut std::fmt::NumBuffer::new())
+            .bytes()
+            .map(|__b| __b as libc::c_char)
+            .chain([0])
+            .collect::<Vec<_>>()
+            == {
+                std::slice::from_raw_parts(
+                    c"-9223372036854775808".as_ptr(),
+                    (0..)
+                        .take_while(|&i| *c"-9223372036854775808".as_ptr().add(i) != 0)
+                        .count()
+                        + 1,
+                )
+                .to_vec()
+            }
+    );
+    assert!(
+        ((1_i64) << (40))
+            .format_into(&mut std::fmt::NumBuffer::new())
+            .bytes()
+            .map(|__b| __b as libc::c_char)
+            .chain([0])
+            .collect::<Vec<_>>()
+            == {
+                std::slice::from_raw_parts(
+                    c"1099511627776".as_ptr(),
+                    (0..)
+                        .take_while(|&i| *c"1099511627776".as_ptr().add(i) != 0)
+                        .count()
+                        + 1,
+                )
+                .to_vec()
+            }
+    );
+    assert!(
+        4294967295_u32
+            .format_into(&mut std::fmt::NumBuffer::new())
+            .bytes()
+            .map(|__b| __b as libc::c_char)
+            .chain([0])
+            .collect::<Vec<_>>()
+            == {
+                std::slice::from_raw_parts(
+                    c"4294967295".as_ptr(),
+                    (0..)
+                        .take_while(|&i| *c"4294967295".as_ptr().add(i) != 0)
+                        .count()
+                        + 1,
+                )
+                .to_vec()
+            }
+    );
+    assert!(
+        18446744073709551615_u64
+            .format_into(&mut std::fmt::NumBuffer::new())
+            .bytes()
+            .map(|__b| __b as libc::c_char)
+            .chain([0])
+            .collect::<Vec<_>>()
+            == {
+                std::slice::from_raw_parts(
+                    c"18446744073709551615".as_ptr(),
+                    (0..)
+                        .take_while(|&i| *c"18446744073709551615".as_ptr().add(i) != 0)
+                        .count()
+                        + 1,
+                )
+                .to_vec()
+            }
+    );
+    assert!(
+        0_u64
+            .format_into(&mut std::fmt::NumBuffer::new())
+            .bytes()
+            .map(|__b| __b as libc::c_char)
+            .chain([0])
+            .collect::<Vec<_>>()
+            == {
+                std::slice::from_raw_parts(
+                    c"0".as_ptr(),
+                    (0..).take_while(|&i| *c"0".as_ptr().add(i) != 0).count() + 1,
+                )
+                .to_vec()
+            }
+    );
+    assert!(
+        libcc2rs::format_c("%f", &[VaArg::Double(1.5_f32 as f64)])
+            .bytes()
+            .map(|__b| __b as libc::c_char)
+            .chain([0])
+            .collect::<Vec<_>>()
+            == {
+                std::slice::from_raw_parts(
+                    c"1.500000".as_ptr(),
+                    (0..)
+                        .take_while(|&i| *c"1.500000".as_ptr().add(i) != 0)
+                        .count()
+                        + 1,
+                )
+                .to_vec()
+            }
+    );
+    assert!(
+        libcc2rs::format_c("%f", &[VaArg::Double(-0.25_f64 as f64)])
+            .bytes()
+            .map(|__b| __b as libc::c_char)
+            .chain([0])
+            .collect::<Vec<_>>()
+            == {
+                std::slice::from_raw_parts(
+                    c"-0.250000".as_ptr(),
+                    (0..)
+                        .take_while(|&i| *c"-0.250000".as_ptr().add(i) != 0)
+                        .count()
+                        + 1,
+                )
+                .to_vec()
+            }
+    );
+    let mut label: Vec<libc::c_char> = (t0 as u64)
+        .format_into(&mut std::fmt::NumBuffer::new())
+        .bytes()
+        .map(|__b| __b as libc::c_char)
+        .chain([0])
+        .collect::<Vec<_>>();
+    assert!(
+        label == {
+            std::slice::from_raw_parts(
+                c"5".as_ptr(),
+                (0..).take_while(|&i| *c"5".as_ptr().add(i) != 0).count() + 1,
+            )
+            .to_vec()
+        }
+    );
+    let mut five: i32 = (t0 as i32);
+    let mut bits: u32 = 4294967280_u32;
+    assert!(
+        ((-five)
+            .format_into(&mut std::fmt::NumBuffer::new())
+            .bytes()
+            .map(|__b| __b as libc::c_char)
+            .chain([0])
+            .collect::<Vec<_>>()
+            == {
+                std::slice::from_raw_parts(
+                    c"-5".as_ptr(),
+                    (0..).take_while(|&i| *c"-5".as_ptr().add(i) != 0).count() + 1,
+                )
+                .to_vec()
+            })
+            && ((!bits)
+                .format_into(&mut std::fmt::NumBuffer::new())
+                .bytes()
+                .map(|__b| __b as libc::c_char)
+                .chain([0])
+                .collect::<Vec<_>>()
+                == {
+                    std::slice::from_raw_parts(
+                        c"15".as_ptr(),
+                        (0..).take_while(|&i| *c"15".as_ptr().add(i) != 0).count() + 1,
+                    )
+                    .to_vec()
+                })
+    );
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

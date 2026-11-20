@@ -61,32 +61,29 @@ fn main_0() -> i32 {
         (::std::mem::size_of::<i32>() as libc::socklen_t),
     ));
     assert!(
-        (match ({ (err.as_pointer()).to_any() }, { (len.as_pointer()) },) {
-            (mut __tmp_0, mut __tmp_1) => {
-                match (libc::SOL_SOCKET, libc::SO_ERROR) {
-                    (::libc::SOL_SOCKET, ::libc::SO_ERROR) => {
-                        match FdRegistry::with_fd(s, |__fd| {
-                            nix::sys::socket::getsockopt(
-                                &__fd,
-                                nix::sys::socket::sockopt::SocketError,
-                            )
-                        }) {
-                            Ok(__err) => {
-                                __tmp_0.reinterpret_cast::<i32>().write(__err);
-                                __tmp_1.write(::std::mem::size_of::<i32>() as u32);
-                                0
-                            }
-                            Err(__e) => {
-                                libcc2rs::cpp2rust_errno().write(__e as i32);
-                                -1
-                            }
+        ({
+            let mut __tmp_0 = { (err.as_pointer()).to_any() };
+            let mut __tmp_1 = { (len.as_pointer()) };
+            match (libc::SOL_SOCKET, libc::SO_ERROR) {
+                (::libc::SOL_SOCKET, ::libc::SO_ERROR) => {
+                    match FdRegistry::with_fd(s, |__fd| {
+                        nix::sys::socket::getsockopt(&__fd, nix::sys::socket::sockopt::SocketError)
+                    }) {
+                        Ok(__err) => {
+                            __tmp_0.reinterpret_cast::<i32>().write(__err);
+                            __tmp_1.write(::std::mem::size_of::<i32>() as u32);
+                            0
+                        }
+                        Err(__e) => {
+                            libcc2rs::cpp2rust_errno().write(__e as i32);
+                            -1
                         }
                     }
-                    (__l, __o) => panic!(
-                        "getsockopt: unsupported option (level={}, optname={})",
-                        __l, __o
-                    ),
                 }
+                (__l, __o) => panic!(
+                    "getsockopt: unsupported option (level={}, optname={})",
+                    __l, __o
+                ),
             }
         } == 0)
     );

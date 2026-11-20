@@ -7,19 +7,19 @@ fn t1() -> Option<Box<dyn std::any::Any>> {
     None
 }
 
-unsafe fn f1() -> Option<Box<dyn std::any::Any>> {
+fn f1() -> Option<Box<dyn std::any::Any>> {
     None
 }
 
-unsafe fn f6(a0: &mut Option<Box<dyn std::any::Any>>) {
+fn f6(a0: &mut Option<Box<dyn std::any::Any>>) {
     *a0 = None
 }
 
-unsafe fn f8(a0: Option<Box<dyn std::any::Any>>) -> bool {
+fn f8(a0: Option<Box<dyn std::any::Any>>) -> bool {
     a0.is_some()
 }
 
-unsafe fn f14<T1: 'static>(a0: &mut Option<Box<dyn std::any::Any>>, init: cpp_type!("std::decay_t<T1>", T1)) -> &mut T1 {
+fn f14<T1: 'static>(a0: &mut Option<Box<dyn std::any::Any>>, init: cpp_type!("std::decay_t<T1>", T1)) -> &mut T1 {
     *a0 = Some(Box::new(init));
     a0.as_mut().unwrap().downcast_mut::<T1>().unwrap()
 }
@@ -31,6 +31,6 @@ unsafe fn f19<T1: 'static>(a0: *mut Option<Box<dyn std::any::Any>>) -> *mut T1 {
     }
 }
 
-unsafe fn f27<T1: 'static>(init: cpp_type!("std::decay_t<T1>", T1)) -> Option<Box<dyn std::any::Any>> {
+fn f27<T1: 'static>(init: cpp_type!("std::decay_t<T1>", T1)) -> Option<Box<dyn std::any::Any>> {
     Some(Box::new(init))
 }

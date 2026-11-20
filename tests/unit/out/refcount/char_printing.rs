@@ -6,6 +6,17 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+thread_local!(
+    pub static made_0: Value<i32> = Rc::new(RefCell::new(0));
+);
+pub fn make_1(mut s: Ptr<i8>) -> Vec<i8> {
+    (*made_0.with(Value::clone).borrow_mut()).prefix_inc();
+    return {
+        let mut __bytes = s.to_c_bytes();
+        __bytes.push(0);
+        __bytes
+    };
+}
 pub fn main() {
     __cpp2rust_init_globals();
     libcc2rs::cpp2rust_exit(main_0());
@@ -25,11 +36,13 @@ fn main_0() -> i32 {
             (&[vec_[1_usize] as u8] as &[u8]),
             (&[('o' as i8) as u8] as &[u8]),
             (&(*str.borrow())
+                .split_last()
+                .unwrap()
+                .1
                 .iter()
-                .take((*str.borrow()).len() - 1)
                 .map(|&c| c as u8)
-                .collect::<Vec<u8>>()[..] as &[u8]),
-            (&[b'\n'] as &[u8]),
+                .collect::<Vec<u8>>() as &[u8]),
+            (b"\n" as &[u8]),
         ]
         .concat()),
     );
@@ -53,6 +66,32 @@ fn main_0() -> i32 {
         ]
         .concat()),
     );
+    libcc2rs::cout().write_all(
+        &([
+            (&({ make_1(Ptr::<i8>::from_string_literal(b"once")) })
+                .split_last()
+                .unwrap()
+                .1
+                .iter()
+                .map(|&c| c as u8)
+                .collect::<Vec<u8>>() as &[u8]),
+            (&[('\n' as i8) as u8] as &[u8]),
+        ]
+        .concat()),
+    );
+    libcc2rs::cout().write_all(
+        &({ make_1(Ptr::<i8>::from_string_literal(b"alone")) })
+            .split_last()
+            .unwrap()
+            .1
+            .iter()
+            .map(|&c| c as u8)
+            .collect::<Vec<u8>>(),
+    );
+    write!(libcc2rs::cout(), "\n",);
+    assert!((made_0.with(|rc| *rc.borrow()) == 2));
     return 0;
 }
-pub fn __cpp2rust_init_globals() {}
+pub fn __cpp2rust_init_globals() {
+    let _ = made_0.with(|_| ());
+}

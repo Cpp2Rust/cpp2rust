@@ -33,30 +33,26 @@ unsafe fn main_0() -> i32 {
     };
     let mut p: *mut S = (libcc2rs::malloc_unsafe(::std::mem::size_of::<S>()) as *mut S);
     assert!((!((p).is_null())));
-    match ({ ((&mut (*p).x as *mut i32) as *mut ::libc::c_void) }, {
-        ((&mut src as *mut S) as *const ::libc::c_void)
-    }) {
-        (mut __tmp_0, mut __tmp_1) => {
-            if ::std::mem::size_of::<S>() != 0 {
-                ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, ::std::mem::size_of::<S>())
-            }
-            __tmp_0
+    {
+        let mut __tmp_0 = { ((&mut (*p).x as *mut i32) as *mut ::libc::c_void) };
+        let mut __tmp_1 = { ((&mut src as *mut S) as *const ::libc::c_void) };
+        if ::std::mem::size_of::<S>() != 0 {
+            ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, ::std::mem::size_of::<S>())
         }
+        __tmp_0
     };
     assert!(
         ((((((*p).x) == (1)) && (((*p).in_.a as i32) == (2))) && (((*p).in_.b as i32) == (3)))
             && (((*p).z) == (4)))
     );
     let mut n: In = In { a: 5_i16, b: 6_i16 };
-    match ({ ((&mut (*p).in_ as *mut In) as *mut ::libc::c_void) }, {
-        ((&mut n as *mut In) as *const ::libc::c_void)
-    }) {
-        (mut __tmp_2, mut __tmp_3) => {
-            if ::std::mem::size_of::<In>() != 0 {
-                ::std::ptr::copy_nonoverlapping(__tmp_3, __tmp_2, ::std::mem::size_of::<In>())
-            }
-            __tmp_2
+    {
+        let mut __tmp_2 = { ((&mut (*p).in_ as *mut In) as *mut ::libc::c_void) };
+        let mut __tmp_3 = { ((&mut n as *mut In) as *const ::libc::c_void) };
+        if ::std::mem::size_of::<In>() != 0 {
+            ::std::ptr::copy_nonoverlapping(__tmp_3, __tmp_2, ::std::mem::size_of::<In>())
         }
+        __tmp_2
     };
     assert!(
         ((((((*p).x) == (1)) && (((*p).in_.a as i32) == (5))) && (((*p).in_.b as i32) == (6)))

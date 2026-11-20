@@ -30,8 +30,7 @@ fn f47(a0: Ptr<bool>) -> bool {
 }
 
 fn f60<T1: ByteRepr>(a0: Ptr<Vec<T1>>, a1: RandomAccessIterator<T1>) -> RandomAccessIterator<T1> {
-    let __off = a1.index();
-    a0.with_mut(|__v: &mut Vec<T1>| __v.remove(__off));
+    a0.with_mut(|__v: &mut Vec<T1>| __v.remove(a1.index()));
     a1
 }
 
@@ -64,14 +63,12 @@ fn f76<T1>(a0: Ptr<T1>) -> RandomAccessIterator<T1> {
 }
 
 fn f77<T1: ByteRepr>(a0: &mut Vec<T1>, a1: RandomAccessIterator<T1>, a2: T1) -> RandomAccessIterator<T1> {
-    let __off = a1.index();
-    a0.insert(__off, a2);
+    a0.insert(a1.index(), a2);
     a1
 }
 
 fn f79<T1: ByteRepr>(a0: &mut Vec<T1>, a1: RandomAccessIterator<T1>, a2: T1) -> RandomAccessIterator<T1> {
-    let __off = a1.index();
-    a0.insert(__off, a2);
+    a0.insert(a1.index(), a2);
     a1
 }
 
@@ -175,4 +172,10 @@ fn f120(a0: Ptr<bool>, a1: bool) -> Ptr<bool> {
 fn f121(a0: Ptr<bool>, a1: Ptr<bool>) -> Ptr<bool> {
     a0.write(a1.read());
     a0
+}
+
+fn f114<T1>(a0: &mut Vec<T1>, init: T1) -> &mut T1 {
+    a0.push(init);
+    let __n = a0.len() - 1;
+    &mut a0[__n]
 }

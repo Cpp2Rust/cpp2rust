@@ -24,16 +24,13 @@ impl Elem {
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Elem) -> *mut Elem {
         self.id = (*_a0).id;
-        match (
-            { ((&mut self.hist as *mut [i32; 4]) as *mut ::libc::c_void) },
-            { ((&mut (*_a0).hist as *mut [i32; 4]) as *const ::libc::c_void) },
-        ) {
-            (mut __tmp_0, mut __tmp_1) => {
-                if 16_usize != 0 {
-                    ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, 16_usize)
-                }
-                __tmp_0
+        {
+            let mut __tmp_0 = { ((&mut self.hist as *mut [i32; 4]) as *mut ::libc::c_void) };
+            let mut __tmp_1 = { ((&mut (*_a0).hist as *mut [i32; 4]) as *const ::libc::c_void) };
+            if 16_usize != 0 {
+                ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, 16_usize)
             }
+            __tmp_0
         };
         {
             self.coeffs = std::mem::take(&mut (*_a0).coeffs);
@@ -65,16 +62,14 @@ impl State {
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut State) -> *mut State {
         self.count = (*_a0).count;
-        match (
-            { ((&mut self.grid as *mut [[i32; 3]; 2]) as *mut ::libc::c_void) },
-            { ((&mut (*_a0).grid as *mut [[i32; 3]; 2]) as *const ::libc::c_void) },
-        ) {
-            (mut __tmp_2, mut __tmp_3) => {
-                if 24_usize != 0 {
-                    ::std::ptr::copy_nonoverlapping(__tmp_3, __tmp_2, 24_usize)
-                }
-                __tmp_2
+        {
+            let mut __tmp_2 = { ((&mut self.grid as *mut [[i32; 3]; 2]) as *mut ::libc::c_void) };
+            let mut __tmp_3 =
+                { ((&mut (*_a0).grid as *mut [[i32; 3]; 2]) as *const ::libc::c_void) };
+            if 24_usize != 0 {
+                ::std::ptr::copy_nonoverlapping(__tmp_3, __tmp_2, 24_usize)
             }
+            __tmp_2
         };
         {
             for __i in 0..3 {
@@ -251,9 +246,7 @@ unsafe fn main_0() -> i32 {
         (((*p).elems.len()) == (4_usize))
             && (((&mut (*p)).elems[(3_usize)].hist[(0) as usize]) == (100))
     );
-    let mut elems: Vec<Elem> = (0..(2_usize) as usize)
-        .map(|_| <Elem>::default())
-        .collect::<Vec<_>>();
+    let mut elems: Vec<Elem> = Vec::from_fn(2_usize, |_| <Elem>::default());
     let mut first: *mut Elem = (&mut elems[(0_usize)] as *mut Elem);
     elems[(1_usize)].coeffs.resize_with(2_usize, || 0_i16);
     elems[(1_usize)].coeffs[(1_usize)] = 4_i16;

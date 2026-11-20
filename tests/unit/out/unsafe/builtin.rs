@@ -19,7 +19,7 @@ pub unsafe fn test_clz_2() {
     assert!(((2147483648_u32.leading_zeros() as i32) == (0)));
 }
 pub unsafe fn test_bswap16_3() {
-    assert!((((4660 as u16).swap_bytes() as i32) == (13330)));
+    assert!(((((4660 as u16).swap_bytes()) as i32) == (13330)));
 }
 pub unsafe fn test_bswap32_4() {
     assert!(((305419896_u32.swap_bytes()) == (2018915346_u32)));

@@ -422,6 +422,8 @@ struct SwitchArm {
   clang::SwitchCase *head;
   bool is_default_case;
   bool has_fallthrough;
+  // Whether the case is [[unlikely]].
+  bool cold = false;
 };
 
 std::vector<SwitchArm> AnalyzeSwitchArms(clang::CompoundStmt *body);

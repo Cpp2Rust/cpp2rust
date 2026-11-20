@@ -199,5 +199,15 @@ int main() {
   int *last = &vp->back();
   *last += 1;
   assert(v15[0] == 2 && v15[2] == 3);
+  // Inserting into a full vector reallocates; the iterator is to the new
+  // element.
+  std::vector<int> v16 = {1, 2, 3, 4, 5, 6, 7, 8};
+  std::vector<int> after_v16 = {0};
+  auto inserted = v16.insert(v16.begin() + 1, 7);
+  *inserted += 1;
+  int nine = 9;
+  auto inserted_copy = v16.insert(v16.begin(), nine);
+  *inserted_copy += 1;
+  assert(v16[0] == 10 && v16[2] == 8 && after_v16[0] == 0);
   return 0;
 }

@@ -729,6 +729,10 @@ impl<'a> FnIrBuilder<'a> {
         let stmt_list = body.stmt_list().unwrap();
         let tail = stmt_list.tail_expr();
         let ref_tail = tail.as_ref().and_then(|tail| self.ref_tail(tail, params));
+        let setup = ref_tail
+            .as_ref()
+            .map(|(_, place)| Self::place_lets(&stmt_list, place))
+            .unwrap_or_default();
 
         let mut ctx = FragmentCtx::new(self, params, generic_names);
         for child in stmt_list.syntax().children_with_tokens() {
@@ -740,7 +744,8 @@ impl<'a> FnIrBuilder<'a> {
             }
             if ref_tail.is_some()
                 && let ra_ap_syntax::NodeOrToken::Node(ref node) = child
-                && tail.as_ref().is_some_and(|tail| tail.syntax() == node)
+                && (tail.as_ref().is_some_and(|tail| tail.syntax() == node)
+                    || setup.iter().any(|stmt| stmt.syntax() == node))
             {
                 continue;
             }
@@ -751,16 +756,54 @@ impl<'a> FnIrBuilder<'a> {
         // The reference that the rule returns is a fragment of its own, after
         // the statements that compute it.
         if let Some((prefix, place)) = ref_tail {
+            let mut setup_ctx = FragmentCtx::new(self, params, generic_names);
+            for stmt in &setup {
+                setup_ctx.visit(ra_ap_syntax::NodeOrToken::Node(stmt.syntax().clone()));
+            }
             let mut inner_ctx = FragmentCtx::new(self, params, generic_names);
             inner_ctx.visit(ra_ap_syntax::NodeOrToken::Node(place));
             fragments.push(BodyFragment::RefExpr {
                 ref_expr: RefExprInner {
                     prefix,
+                    setup: setup_ctx.finish(),
                     inner: inner_ctx.finish(),
                 },
             });
         }
         fragments
+    }
+
+    /// The trailing `let` statements whose variables only the place that the
+    /// rule returns a reference to uses, e.g., as the index of an element.
+    fn place_lets(
+        stmt_list: &ast::StmtList,
+        place: &ra_ap_syntax::SyntaxNode,
+    ) -> Vec<ast::LetStmt> {
+        let mut users = vec![place.clone()];
+        let mut lets = Vec::new();
+        let stmts: Vec<_> = stmt_list.statements().collect();
+        for stmt in stmts.iter().rev() {
+            let ast::Stmt::LetStmt(let_stmt) = stmt else {
+                break;
+            };
+            let Some(ast::Pat::IdentPat(pat)) = let_stmt.pat() else {
+                break;
+            };
+            let Some(name) = pat.name() else { break };
+            let uses_name = |node: &ra_ap_syntax::SyntaxNode| {
+                node.descendants_with_tokens().any(|t| {
+                    t.as_token()
+                        .is_some_and(|t| t.kind() == SyntaxKind::IDENT && t.text() == name.text())
+                })
+            };
+            if !users.iter().any(uses_name) {
+                break;
+            }
+            users.push(let_stmt.syntax().clone());
+            lets.push(let_stmt.clone());
+        }
+        lets.reverse();
+        lets
     }
 
     /// The prefix and the operand of the reference that a tail expression

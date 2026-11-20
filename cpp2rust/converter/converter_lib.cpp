@@ -2584,6 +2584,9 @@ static bool SwitchCaseHasFallthrough(clang::Stmt *stmt) {
     }
     return SwitchCaseHasFallthrough(compound->body_back());
   }
+  if (auto *attributed = clang::dyn_cast<clang::AttributedStmt>(stmt)) {
+    return SwitchCaseHasFallthrough(attributed->getSubStmt());
+  }
   if (clang::isa<clang::BreakStmt>(stmt) ||
       clang::isa<clang::ContinueStmt>(stmt) ||
       clang::isa<clang::ReturnStmt>(stmt) ||
@@ -2604,11 +2607,17 @@ std::vector<SwitchArm> AnalyzeSwitchArms(clang::CompoundStmt *body) {
         inner = clang::cast<clang::LabelStmt>(inner)->getSubStmt();
       } while (clang::isa<clang::LabelStmt>(inner));
     }
+    auto *attributed = clang::dyn_cast<clang::AttributedStmt>(inner);
+    if (attributed && clang::isa<clang::SwitchCase>(attributed->getSubStmt())) {
+      inner = attributed->getSubStmt();
+    }
 
     if (auto *sc = clang::dyn_cast<clang::SwitchCase>(inner)) {
       arms.emplace_back(std::vector<clang::Stmt *>{GetLastStmtOfSwitchCase(sc)},
                         label, sc, CaseChainHasDefault(sc),
-                        /*has_fallthrough=*/false);
+                        /*has_fallthrough=*/false,
+                        attributed && clang::Stmt::getLikelihood(attributed) ==
+                                          clang::Stmt::LH_Unlikely);
     } else if (!arms.empty()) {
       arms.back().body.push_back(s);
     }

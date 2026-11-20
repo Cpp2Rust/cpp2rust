@@ -37,9 +37,7 @@ pub unsafe fn assign_2(mut c: bool, mut v: i32) -> i32 {
     return (((a) * (10)) + (b));
 }
 pub unsafe fn lehmer_3(mut sigma: *const u32, mut len: u32, mut code: *mut u32) {
-    let mut items: Vec<u32> = (0..(len as usize) as usize)
-        .map(|_| 0_u32)
-        .collect::<Vec<_>>();
+    let mut items: Vec<u32> = Vec::from_fn((len as usize), |_| 0_u32);
     {
         let mut i: u32 = 0_u32;
         'loop_: while ((i) < (len)) {
@@ -50,26 +48,24 @@ pub unsafe fn lehmer_3(mut sigma: *const u32, mut len: u32, mut code: *mut u32) 
     {
         let mut i: u32 = 0_u32;
         'loop_: while ((i) < (len)) {
-            let mut it: UnsafeRandomAccessIterator<u32> = match ({ items.begin() }, { items.end() })
-            {
-                (mut __tmp_0, mut __tmp_1) => {
-                    let mut __it = (__tmp_0).clone();
-                    while __it != __tmp_1 && *__it.iter_deref() != (*sigma.offset((i) as isize)) {
-                        __it.iter_inc();
-                    }
-                    __it
+            let mut it: UnsafeRandomAccessIterator<u32> = {
+                let mut __tmp_0 = { items.begin() };
+                let mut __tmp_1 = { items.end() };
+                let mut __it = (__tmp_0).clone();
+                while __it != __tmp_1 && *__it.iter_deref() != (*sigma.offset((i) as isize)) {
+                    __it.iter_inc();
                 }
+                __it
             };
             assert!(it != items.end());
-            (*code.offset((i) as isize)) = (it.iter_distance(&items.begin()) as u32);
-            match ({ <UnsafeRandomAccessIterator<u32>>::from((it).clone()) },) {
-                (mut __tmp_2,) => {
-                    let pos = __tmp_2
-                        .iter_distance(&UnsafeRandomAccessIterator::Vec(items.as_mut_ptr()))
-                        as usize;
-                    items.remove(pos);
-                    (__tmp_2).clone()
-                }
+            (*code.offset((i) as isize)) = ((it.iter_distance(&items.begin())) as u32);
+            {
+                let mut __tmp_2 = { <UnsafeRandomAccessIterator<u32>>::from((it).clone()) };
+                let pos = __tmp_2
+                    .iter_distance(&UnsafeRandomAccessIterator::Vec(items.as_mut_ptr()))
+                    as usize;
+                items.remove(pos);
+                (__tmp_2).clone()
             };
             i.prefix_inc();
         }

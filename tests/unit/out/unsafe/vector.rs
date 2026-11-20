@@ -79,24 +79,20 @@ unsafe fn main_0() -> i32 {
         v2.push(__a1)
     };
     assert!(((v2.len()) == (3_usize)));
-    match ({ <UnsafeRandomAccessIterator<i32>>::from(v2.begin()) },) {
-        (mut __tmp_0,) => {
-            let pos =
-                __tmp_0.iter_distance(&UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr())) as usize;
-            v2.remove(pos);
-            (__tmp_0).clone()
-        }
+    {
+        let mut __tmp_0 = { <UnsafeRandomAccessIterator<i32>>::from(v2.begin()) };
+        let pos = __tmp_0.iter_distance(&UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr())) as usize;
+        v2.remove(pos);
+        (__tmp_0).clone()
     };
     assert!(((v2.len()) == (2_usize)));
     assert!(((v2[(0_usize)]) == (2)));
     assert!(((v2[(1_usize)]) == (3)));
-    match ({ <UnsafeRandomAccessIterator<i32>>::from(v2.begin()) },) {
-        (mut __tmp_1,) => {
-            let pos =
-                __tmp_1.iter_distance(&UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr())) as usize;
-            v2.insert(pos, 100);
-            (__tmp_1).clone()
-        }
+    {
+        let pos = <UnsafeRandomAccessIterator<i32>>::from(v2.begin())
+            .iter_distance(&UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr()))
+            as usize;
+        UnsafeRandomAccessIterator::Vec(v2.insert_mut(pos, 100))
     };
     (unsafe { copy_0(v2.clone()) });
     assert!(((v2.len()) == (3_usize)));
@@ -104,13 +100,11 @@ unsafe fn main_0() -> i32 {
     assert!(((v2[(1_usize)]) == (2)));
     assert!(((v2[(2_usize)]) == (3)));
     let mut x: i32 = 7;
-    match ({ <UnsafeRandomAccessIterator<i32>>::from(v2.begin().iter_add(1_isize)) },) {
-        (mut __tmp_2,) => {
-            let pos =
-                __tmp_2.iter_distance(&UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr())) as usize;
-            v2.insert(pos, x);
-            (__tmp_2).clone()
-        }
+    {
+        let pos = <UnsafeRandomAccessIterator<i32>>::from(v2.begin().iter_add(1_isize))
+            .iter_distance(&UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr()))
+            as usize;
+        UnsafeRandomAccessIterator::Vec(v2.insert_mut(pos, x))
     };
     assert!(((v2.len()) == (4_usize)));
     assert!(((v2[(0_usize)]) == (100)));
@@ -141,55 +135,47 @@ unsafe fn main_0() -> i32 {
     assert!(((v2[(5_usize)]) == (2)));
     assert!(((v2[(8_usize)]) == (9)));
     let mut src: Vec<i32> = Vec::from([21, 22]);
-    match (
-        { <UnsafeRandomAccessIterator<i32>>::from(v2.begin()) },
-        { src.begin() },
-        { src.end() },
-    ) {
-        (mut __tmp_3, mut __tmp_4, mut __tmp_5) => {
-            let __off =
-                __tmp_3.iter_distance(&UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr())) as usize;
-            let mut __tmp = Vec::new();
-            let mut __it = (__tmp_4).clone();
-            while __it != __tmp_5 {
-                __tmp.push((*__it.iter_deref()).clone());
-                __it.iter_inc();
-            }
-            v2.splice(__off..__off, __tmp);
-            UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr().add(__off))
+    {
+        let mut __tmp_1 = { <UnsafeRandomAccessIterator<i32>>::from(v2.begin()) };
+        let mut __tmp_2 = { src.begin() };
+        let mut __tmp_3 = { src.end() };
+        let __off =
+            __tmp_1.iter_distance(&UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr())) as usize;
+        let mut __tmp = Vec::new();
+        let mut __it = (__tmp_2).clone();
+        while __it != __tmp_3 {
+            __tmp.push((*__it.iter_deref()).clone());
+            __it.iter_inc();
         }
+        v2.splice(__off..__off, __tmp);
+        UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr().add(__off))
     };
     assert!(((v2.len()) == (11_usize)));
     assert!(((v2[(0_usize)]) == (21)));
     assert!(((v2[(1_usize)]) == (22)));
     assert!(((v2[(2_usize)]) == (100)));
-    match ({ <UnsafeRandomAccessIterator<i32>>::from(v2.begin()) },) {
-        (mut __tmp_6,) => {
-            let pos =
-                __tmp_6.iter_distance(&UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr())) as usize;
-            v2.remove(pos);
-            (__tmp_6).clone()
-        }
+    {
+        let mut __tmp_4 = { <UnsafeRandomAccessIterator<i32>>::from(v2.begin()) };
+        let pos = __tmp_4.iter_distance(&UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr())) as usize;
+        v2.remove(pos);
+        (__tmp_4).clone()
     };
-    match ({ <UnsafeRandomAccessIterator<i32>>::from(v2.begin()) },) {
-        (mut __tmp_7,) => {
-            let pos =
-                __tmp_7.iter_distance(&UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr())) as usize;
-            v2.remove(pos);
-            (__tmp_7).clone()
-        }
+    {
+        let mut __tmp_5 = { <UnsafeRandomAccessIterator<i32>>::from(v2.begin()) };
+        let pos = __tmp_5.iter_distance(&UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr())) as usize;
+        v2.remove(pos);
+        (__tmp_5).clone()
     };
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (4)) {
-            match ({ <UnsafeRandomAccessIterator<i32>>::from(v2.begin().iter_add(1_isize)) },) {
-                (mut __tmp_8,) => {
-                    let pos = __tmp_8
-                        .iter_distance(&UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr()))
-                        as usize;
-                    v2.remove(pos);
-                    (__tmp_8).clone()
-                }
+            {
+                let mut __tmp_6 =
+                    { <UnsafeRandomAccessIterator<i32>>::from(v2.begin().iter_add(1_isize)) };
+                let pos = __tmp_6.iter_distance(&UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr()))
+                    as usize;
+                v2.remove(pos);
+                (__tmp_6).clone()
             };
             i.prefix_inc();
         }
@@ -210,9 +196,7 @@ unsafe fn main_0() -> i32 {
             i.prefix_inc();
         }
     }
-    let mut v4: Vec<*mut i32> = (0..(100_usize) as usize)
-        .map(|_| std::ptr::null_mut())
-        .collect::<Vec<_>>();
+    let mut v4: Vec<*mut i32> = Vec::from_fn(100_usize, |_| std::ptr::null_mut());
     assert!(((v4.len()) == (100_usize)));
     {
         let mut i: u32 = 0_u32;
@@ -221,9 +205,7 @@ unsafe fn main_0() -> i32 {
             i.prefix_inc();
         }
     }
-    let mut v5: Vec<*const i32> = (0..(100_usize) as usize)
-        .map(|_| std::ptr::null())
-        .collect::<Vec<_>>();
+    let mut v5: Vec<*const i32> = Vec::from_fn(100_usize, |_| std::ptr::null());
     assert!(((v5.len()) == (100_usize)));
     {
         let mut i: u32 = 0_u32;
@@ -241,9 +223,8 @@ unsafe fn main_0() -> i32 {
             i.prefix_inc();
         }
     }
-    let mut v7: Vec<(*const i32, i32)> = (0..(200_usize) as usize)
-        .map(|_| <(*const i32, i32)>::default())
-        .collect::<Vec<_>>();
+    let mut v7: Vec<(*const i32, i32)> =
+        Vec::from_fn(200_usize, |_| <(*const i32, i32)>::default());
     assert!(((v7.len()) == (200_usize)));
     {
         let mut i: u32 = 0_u32;
@@ -357,7 +338,7 @@ unsafe fn main_0() -> i32 {
     assert!(((x1) == (6.5_f64)));
     x1 -= 1.5_f64;
     assert!(((v6[(s2).wrapping_sub(1_usize)]) == (6.5_f64)));
-    assert!(((((s1).wrapping_add(s2)).wrapping_add((v2[0_usize] as usize))) == (103_usize)));
+    assert!(((((s1).wrapping_add(s2)).wrapping_add(((v2[0_usize]) as usize))) == (103_usize)));
     let mut a: S = S { x: 1 };
     let mut pa: *mut S = (&mut a as *mut S);
     let mut v8: Vec<*const *mut S> = Vec::new();
@@ -441,6 +422,27 @@ unsafe fn main_0() -> i32 {
     });
     (*last) += 1;
     assert!(((v15[(0_usize)]) == (2)) && ((v15[(2_usize)]) == (3)));
+    let mut v16: Vec<i32> = Vec::from([1, 2, 3, 4, 5, 6, 7, 8]);
+    let mut after_v16: Vec<i32> = Vec::from([0]);
+    let mut inserted: UnsafeRandomAccessIterator<i32> = {
+        let pos = <UnsafeRandomAccessIterator<i32>>::from(v16.begin().iter_add(1_isize))
+            .iter_distance(&UnsafeRandomAccessIterator::Vec(v16.as_mut_ptr()))
+            as usize;
+        UnsafeRandomAccessIterator::Vec(v16.insert_mut(pos, 7))
+    };
+    (*inserted.iter_deref()) += 1;
+    let mut nine: i32 = 9;
+    let mut inserted_copy: UnsafeRandomAccessIterator<i32> = {
+        let pos = <UnsafeRandomAccessIterator<i32>>::from(v16.begin())
+            .iter_distance(&UnsafeRandomAccessIterator::Vec(v16.as_mut_ptr()))
+            as usize;
+        UnsafeRandomAccessIterator::Vec(v16.insert_mut(pos, nine))
+    };
+    (*inserted_copy.iter_deref()) += 1;
+    assert!(
+        (((v16[(0_usize)]) == (10)) && ((v16[(2_usize)]) == (8)))
+            && ((after_v16[(0_usize)]) == (0))
+    );
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

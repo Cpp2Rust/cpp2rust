@@ -268,6 +268,8 @@ public:
 
   virtual bool VisitIfStmt(clang::IfStmt *stmt);
 
+  bool VisitAttributedStmt(clang::AttributedStmt *stmt);
+
   virtual bool VisitWhileStmt(clang::WhileStmt *stmt);
 
   void ConvertConditionVariableTest(clang::DeclStmt *cond_var,
@@ -286,7 +288,7 @@ public:
   bool GetFmtArg(clang::Expr *arg, std::string &fmt, std::string &fmt_args,
                  const char *&fmt_trait, std::string &fmt_width);
 
-  bool GetRawArg(clang::Expr *arg, std::string &raw_args);
+  bool GetRawArg(clang::Expr *arg, std::vector<std::string> &raw_args);
 
   void ConvertCallToOstream(clang::CallExpr *expr);
   virtual std::string ConvertStream(clang::Expr *expr);
@@ -950,6 +952,8 @@ protected:
   // Bound initializer arguments may need a mapped move constructor when
   // forwarding the original rvalue from its pointer binding.
   std::unordered_set<const clang::VarDecl *> bound_init_args_;
+  // The variables bound to the objects that the init of rules construct.
+  std::unordered_map<const clang::Expr *, std::string> bound_inits_;
 
   // Updates the pointee using its previous value, borrowing it once.
   virtual std::string
@@ -978,6 +982,11 @@ protected:
   ArgsToEvaluateFirst(clang::Expr *expr, const TranslationRule::ExprRule &rule,
                       llvm::ArrayRef<clang::Expr *> args,
                       const std::vector<bool> &bind);
+
+  // Whether expr discards the reference that its rule returns, so only the
+  // statements before the reference are emitted.
+  bool DiscardsRef(const clang::Expr *expr,
+                   const TranslationRule::ExprRule &rule) const;
 
   // Borrows the arguments that the body of a rule borrows mutably and uses
   // more than once for the whole call, rather than once for each use.

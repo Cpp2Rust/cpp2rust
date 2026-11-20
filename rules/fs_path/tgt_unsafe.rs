@@ -19,6 +19,6 @@ unsafe fn f1(a0: *const libc::c_char) -> Vec<libc::c_char> {
     __v
 }
 
-unsafe fn f2(a0: Vec<libc::c_char>) -> Vec<libc::c_char> {
+fn f2(a0: Vec<libc::c_char>) -> Vec<libc::c_char> {
     a0
 }

@@ -30,14 +30,6 @@ fn main() {
     println!("cargo:rerun-if-changed=build.rs");
     println!("cargo:rerun-if-changed=Cargo.toml");
 
-    println!("cargo:rerun-if-env-changed=DEP_RUSTLS_FFI_INCLUDE");
-    let inc = env::var("DEP_RUSTLS_FFI_INCLUDE")
-        .expect("rustls-ffi did not export its include dir (DEP_RUSTLS_FFI_INCLUDE)");
-    let src = Path::new(&inc).join("rustls.h");
-    let dst = crate_root.join("rustls").join("rustls.h");
-    fs::copy(&src, &dst)
-        .unwrap_or_else(|e| panic!("failed to copy {} to {}: {e}", src.display(), dst.display()));
-
     // Generate modules that include absolute paths
     let mut buf = String::new();
     for f in files {

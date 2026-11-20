@@ -164,11 +164,10 @@ impl OuterImpl for Ptr<Outer> {
             let _arg0: Ptr<Inner> = field_ptr!(_a0, inner);
             InnerImpl::move_assign(&field_ptr!((*self), inner), _arg0)
         });
-        match ({ (array_field_ptr!((*self), name)).to_any() },) {
-            (mut __tmp_0,) => {
-                __tmp_0.memcpy(&(array_field_ptr!(_a0, name)).to_any(), 8_usize);
-                (__tmp_0).clone()
-            }
+        {
+            let mut __tmp_0 = { (array_field_ptr!((*self), name)).to_any() };
+            __tmp_0.memcpy(&(array_field_ptr!(_a0, name)).to_any(), 8_usize);
+            (__tmp_0).clone()
         };
         return (*self).clone();
     }

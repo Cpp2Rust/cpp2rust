@@ -137,13 +137,12 @@ fn main_0() -> i32 {
         Tracked::new_1({ 1 }),
         Tracked::new_1({ 5 }),
     ])));
-    match ({ arr.decay() },) {
-        (mut __tmp_0,) => {
-            let __n = arr.decay().offset((5) as isize).iter_distance(&__tmp_0);
-            let mut __order: Vec<isize> = (0..__n).collect();
-            __order.sort_by(|&__x, &__y| cpp_cmp(&__tmp_0.iter_at(__x), &__tmp_0.iter_at(__y)));
-            reorder(__order, |__i| __tmp_0.iter_at(__i));
-        }
+    {
+        let mut __tmp_0 = { arr.decay() };
+        let __n = arr.decay().offset((5) as isize).iter_distance(&__tmp_0);
+        let mut __order: Vec<isize> = (0..__n).collect();
+        __order.sort_by(|&__x, &__y| cpp_cmp(&__tmp_0.iter_at(__x), &__tmp_0.iter_at(__y)));
+        reorder(__order, |__i| __tmp_0.iter_at(__i));
     };
     assert!(
         ({
@@ -156,33 +155,34 @@ fn main_0() -> i32 {
     );
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
     let vec_: Value<Vec<Tracked>> = Rc::new(RefCell::new(Vec::new()));
-    if 4_usize > (*vec_.borrow()).capacity() as usize {
-        let len_0 = (*vec_.borrow()).len();
-        (*vec_.borrow_mut()).reserve_exact(4_usize - len_0 as usize);
-    };
-    {
-        let __init = Tracked::new_1({ 2 });
-        (*vec_.borrow_mut()).push(__init)
-    };
-    {
-        let __init = Tracked::new_1({ 7 });
-        (*vec_.borrow_mut()).push(__init)
-    };
-    {
-        let __init = Tracked::new_1({ 1 });
-        (*vec_.borrow_mut()).push(__init)
-    };
-    {
-        let __init = Tracked::new_1({ 8 });
-        (*vec_.borrow_mut()).push(__init)
-    };
-    match ({ vec_.decay().begin() },) {
-        (mut __tmp_1,) => {
-            let __n = vec_.decay().end().iter_distance(&__tmp_1);
-            let mut __order: Vec<isize> = (0..__n).collect();
-            __order.sort_by(|&__x, &__y| cpp_cmp(&__tmp_1.iter_at(__x), &__tmp_1.iter_at(__y)));
-            reorder(__order, |__i| __tmp_1.iter_at(__i));
+    vec_.with_mut(|__b0| {
+        if 4_usize > (*__b0).capacity() as usize {
+            let len_0 = (*__b0).len();
+            (*__b0).reserve_exact(4_usize - len_0 as usize);
         }
+    });
+    {
+        let mut __tmp_1 = { Tracked::new_1({ 2 }) };
+        (*vec_.borrow_mut()).push(__tmp_1);
+    };
+    {
+        let mut __tmp_2 = { Tracked::new_1({ 7 }) };
+        (*vec_.borrow_mut()).push(__tmp_2);
+    };
+    {
+        let mut __tmp_3 = { Tracked::new_1({ 1 }) };
+        (*vec_.borrow_mut()).push(__tmp_3);
+    };
+    {
+        let mut __tmp_4 = { Tracked::new_1({ 8 }) };
+        (*vec_.borrow_mut()).push(__tmp_4);
+    };
+    {
+        let mut __tmp_5 = { vec_.decay().begin() };
+        let __n = vec_.decay().end().iter_distance(&__tmp_5);
+        let mut __order: Vec<isize> = (0..__n).collect();
+        __order.sort_by(|&__x, &__y| cpp_cmp(&__tmp_5.iter_at(__x), &__tmp_5.iter_at(__y)));
+        reorder(__order, |__i| __tmp_5.iter_at(__i));
     };
     assert!(
         ({
@@ -192,79 +192,76 @@ fn main_0() -> i32 {
         })
     );
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
-    match ({ vec_.decay().begin() },) {
-        (mut __tmp_2,) => {
-            let __n = vec_.decay().end().iter_distance(&__tmp_2);
-            let mut __order: Vec<isize> = (0..__n).collect();
-            __order.sort_by(|&__x, &__y| {
-                let __a = __tmp_2.iter_at(__x);
-                let __b = __tmp_2.iter_at(__y);
-                if greater_2.call(__a.clone(), __b.clone()) {
-                    std::cmp::Ordering::Less
-                } else if greater_2.call(__b, __a) {
-                    std::cmp::Ordering::Greater
-                } else {
-                    std::cmp::Ordering::Equal
-                }
-            });
-            reorder(__order, |__i| __tmp_2.iter_at(__i));
-        }
+    {
+        let mut __tmp_6 = { vec_.decay().begin() };
+        let __n = vec_.decay().end().iter_distance(&__tmp_6);
+        let mut __order: Vec<isize> = (0..__n).collect();
+        __order.sort_by(|&__x, &__y| {
+            let __a = __tmp_6.iter_at(__x);
+            let __b = __tmp_6.iter_at(__y);
+            if greater_2.call(__a.clone(), __b.clone()) {
+                std::cmp::Ordering::Less
+            } else if greater_2.call(__b, __a) {
+                std::cmp::Ordering::Greater
+            } else {
+                std::cmp::Ordering::Equal
+            }
+        });
+        reorder(__order, |__i| __tmp_6.iter_at(__i));
     };
     assert!(({ ({ (*vec_.borrow())[0_usize].v } == 8) && ({ (*vec_.borrow())[3_usize].v } == 1) }));
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
-    match ({ vec_.decay().begin() },) {
-        (mut __tmp_3,) => {
-            let __n = vec_.decay().end().iter_distance(&__tmp_3);
-            let mut __order: Vec<isize> = (0..__n).collect();
-            __order.sort_by(|&__x, &__y| {
-                let __a = __tmp_3.iter_at(__x);
-                let __b = __tmp_3.iter_at(__y);
-                if FnPtr::<fn(Ptr<Tracked>, Ptr<Tracked>) -> bool>::new(
-                    |a: Ptr<Tracked>, b: Ptr<Tracked>| -> bool {
-                        {
-                            return ({ a.with(|__s| __s.v) } < { b.with(|__s| __s.v) });
-                        }
-                    },
-                )
-                .call(__a.clone(), __b.clone())
-                {
-                    std::cmp::Ordering::Less
-                } else if FnPtr::<fn(Ptr<Tracked>, Ptr<Tracked>) -> bool>::new(
-                    |a: Ptr<Tracked>, b: Ptr<Tracked>| -> bool {
-                        {
-                            return ({ a.with(|__s| __s.v) } < { b.with(|__s| __s.v) });
-                        }
-                    },
-                )
-                .call(__b, __a)
-                {
-                    std::cmp::Ordering::Greater
-                } else {
-                    std::cmp::Ordering::Equal
-                }
-            });
-            reorder(__order, |__i| __tmp_3.iter_at(__i));
-        }
+    {
+        let mut __tmp_7 = { vec_.decay().begin() };
+        let __n = vec_.decay().end().iter_distance(&__tmp_7);
+        let mut __order: Vec<isize> = (0..__n).collect();
+        __order.sort_by(|&__x, &__y| {
+            let __a = __tmp_7.iter_at(__x);
+            let __b = __tmp_7.iter_at(__y);
+            if FnPtr::<fn(Ptr<Tracked>, Ptr<Tracked>) -> bool>::new(
+                |a: Ptr<Tracked>, b: Ptr<Tracked>| -> bool {
+                    {
+                        return ({ a.with(|__s| __s.v) } < { b.with(|__s| __s.v) });
+                    }
+                },
+            )
+            .call(__a.clone(), __b.clone())
+            {
+                std::cmp::Ordering::Less
+            } else if FnPtr::<fn(Ptr<Tracked>, Ptr<Tracked>) -> bool>::new(
+                |a: Ptr<Tracked>, b: Ptr<Tracked>| -> bool {
+                    {
+                        return ({ a.with(|__s| __s.v) } < { b.with(|__s| __s.v) });
+                    }
+                },
+            )
+            .call(__b, __a)
+            {
+                std::cmp::Ordering::Greater
+            } else {
+                std::cmp::Ordering::Equal
+            }
+        });
+        reorder(__order, |__i| __tmp_7.iter_at(__i));
     };
     assert!(({ ({ (*vec_.borrow())[0_usize].v } == 1) && ({ (*vec_.borrow())[3_usize].v } == 8) }));
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
-    match ({ vec_.decay().begin().iter_add(1_isize) },) {
-        (mut __tmp_4,) => {
-            let __n = vec_.decay().end().iter_distance(&__tmp_4);
-            let mut __order: Vec<isize> = (0..__n).collect();
-            __order.sort_by(|&__x, &__y| {
-                let __a = __tmp_4.iter_at(__x);
-                let __b = __tmp_4.iter_at(__y);
-                if greater_2.call(__a.clone(), __b.clone()) {
-                    std::cmp::Ordering::Less
-                } else if greater_2.call(__b, __a) {
-                    std::cmp::Ordering::Greater
-                } else {
-                    std::cmp::Ordering::Equal
-                }
-            });
-            reorder(__order, |__i| __tmp_4.iter_at(__i));
-        }
+    {
+        let mut __tmp_8 = { vec_.decay().begin().iter_add(1_isize) };
+        let __n = vec_.decay().end().iter_distance(&__tmp_8);
+        let mut __order: Vec<isize> = (0..__n).collect();
+        __order.sort_by(|&__x, &__y| {
+            let __a = __tmp_8.iter_at(__x);
+            let __b = __tmp_8.iter_at(__y);
+            if greater_2.call(__a.clone(), __b.clone()) {
+                std::cmp::Ordering::Less
+            } else if greater_2.call(__b, __a) {
+                std::cmp::Ordering::Greater
+            } else {
+                std::cmp::Ordering::Equal
+            }
+        });
+        reorder(__order, |__i| __tmp_8.iter_at(__i));
     };
     assert!(
         ({
@@ -277,24 +274,23 @@ fn main_0() -> i32 {
         (0..3).map(|_| <Bag>::default()).collect::<Box<[Bag]>>(),
     ));
     {
-        let __init = Tracked::new_1({ 1 });
-        (*bags.borrow_mut())[(0) as usize].items.push(__init)
+        let mut __tmp_9 = { Tracked::new_1({ 1 }) };
+        (*bags.borrow_mut())[(0) as usize].items.push(__tmp_9);
     };
     {
-        let __init = Tracked::new_1({ 2 });
-        (*bags.borrow_mut())[(0) as usize].items.push(__init)
+        let mut __tmp_10 = { Tracked::new_1({ 2 }) };
+        (*bags.borrow_mut())[(0) as usize].items.push(__tmp_10);
     };
     {
-        let __init = Tracked::new_1({ 3 });
-        (*bags.borrow_mut())[(2) as usize].items.push(__init)
+        let mut __tmp_11 = { Tracked::new_1({ 3 }) };
+        (*bags.borrow_mut())[(2) as usize].items.push(__tmp_11);
     };
-    match ({ bags.decay() },) {
-        (mut __tmp_5,) => {
-            let __n = bags.decay().offset((3) as isize).iter_distance(&__tmp_5);
-            let mut __order: Vec<isize> = (0..__n).collect();
-            __order.sort_by(|&__x, &__y| cpp_cmp(&__tmp_5.iter_at(__x), &__tmp_5.iter_at(__y)));
-            reorder(__order, |__i| __tmp_5.iter_at(__i));
-        }
+    {
+        let mut __tmp_12 = { bags.decay() };
+        let __n = bags.decay().offset((3) as isize).iter_distance(&__tmp_12);
+        let mut __order: Vec<isize> = (0..__n).collect();
+        __order.sort_by(|&__x, &__y| cpp_cmp(&__tmp_12.iter_at(__x), &__tmp_12.iter_at(__y)));
+        reorder(__order, |__i| __tmp_12.iter_at(__i));
     };
     assert!(
         ({
@@ -304,30 +300,38 @@ fn main_0() -> i32 {
         })
     );
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
-    let bag_vec: Value<Vec<Bag>> = Rc::new(RefCell::new(
-        (0..(3_usize) as usize)
-            .map(|_| <Bag>::default())
-            .collect::<Vec<_>>(),
-    ));
-    {
-        let __init = Tracked::new_1({ 4 });
-        (*bag_vec.borrow_mut())[1_usize].items.push(__init)
-    };
-    {
-        let __init = Tracked::new_1({ 5 });
-        (*bag_vec.borrow_mut())[1_usize].items.push(__init)
-    };
-    {
-        let __init = Tracked::new_1({ 6 });
-        (*bag_vec.borrow_mut())[2_usize].items.push(__init)
-    };
-    match ({ bag_vec.decay().begin() },) {
-        (mut __tmp_6,) => {
-            let __n = bag_vec.decay().end().iter_distance(&__tmp_6);
-            let mut __order: Vec<isize> = (0..__n).collect();
-            __order.sort_by(|&__x, &__y| cpp_cmp(&__tmp_6.iter_at(__x), &__tmp_6.iter_at(__y)));
-            reorder(__order, |__i| __tmp_6.iter_at(__i));
+    let bag_vec: Value<Vec<Bag>> =
+        Rc::new(RefCell::new(Vec::from_fn(3_usize, |_| <Bag>::default())));
+    match (
+        field_ref!(bag_vec.decay().offset(1_usize), items).as_pointer(),
+        { Tracked::new_1({ 4 }) },
+    ) {
+        (__tmp_13, mut __tmp_14) => {
+            __tmp_13.with_mut(|__v: &mut Vec<Tracked>| __v.push(__tmp_14));
         }
+    };
+    match (
+        field_ref!(bag_vec.decay().offset(1_usize), items).as_pointer(),
+        { Tracked::new_1({ 5 }) },
+    ) {
+        (__tmp_15, mut __tmp_16) => {
+            __tmp_15.with_mut(|__v: &mut Vec<Tracked>| __v.push(__tmp_16));
+        }
+    };
+    match (
+        field_ref!(bag_vec.decay().offset(2_usize), items).as_pointer(),
+        { Tracked::new_1({ 6 }) },
+    ) {
+        (__tmp_17, mut __tmp_18) => {
+            __tmp_17.with_mut(|__v: &mut Vec<Tracked>| __v.push(__tmp_18));
+        }
+    };
+    {
+        let mut __tmp_19 = { bag_vec.decay().begin() };
+        let __n = bag_vec.decay().end().iter_distance(&__tmp_19);
+        let mut __order: Vec<isize> = (0..__n).collect();
+        __order.sort_by(|&__x, &__y| cpp_cmp(&__tmp_19.iter_at(__x), &__tmp_19.iter_at(__y)));
+        reorder(__order, |__i| __tmp_19.iter_at(__i));
     };
     assert!(
         ({
@@ -339,38 +343,32 @@ fn main_0() -> i32 {
     );
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
     assert!(
-        match ({ bag_vec.decay().begin() }, { bag_vec.decay().end() },) {
-            (mut __tmp_7, mut __tmp_8) => {
-                {
-                    let mut __it = (__tmp_7).clone();
-                    while __it != __tmp_8
-                        && !CppEq::equal(&__it.iter_deref(), &bags.decay().offset(1))
-                    {
-                        __it.iter_inc();
-                    }
-                    __it
-                }
+        {
+            let mut __tmp_20 = { bag_vec.decay().begin() };
+            let mut __tmp_21 = { bag_vec.decay().end() };
+            let mut __it = (__tmp_20).clone();
+            while __it != __tmp_21 && !CppEq::equal(&__it.iter_deref(), &bags.decay().offset(1)) {
+                __it.iter_inc();
             }
+            __it
         } == bag_vec.decay().begin().iter_add(1_isize)
     );
     assert!(
-        match ({ bag_vec.decay().begin() }, { bag_vec.decay().end() },) {
-            (mut __tmp_9, mut __tmp_10) => {
-                {
-                    let mut __best = __tmp_9.clone();
-                    if __tmp_9 != __tmp_10 {
-                        let mut __it = (__tmp_9).clone();
-                        __it.iter_inc();
-                        while __it != __tmp_10 {
-                            if CppLess::less(&__best.iter_deref(), &__it.iter_deref()) {
-                                __best = __it.clone();
-                            }
-                            __it.iter_inc();
-                        }
+        {
+            let mut __tmp_22 = { bag_vec.decay().begin() };
+            let mut __tmp_23 = { bag_vec.decay().end() };
+            let mut __best = __tmp_22.clone();
+            if __tmp_22 != __tmp_23 {
+                let mut __it = (__tmp_22).clone();
+                __it.iter_inc();
+                while __it != __tmp_23 {
+                    if CppLess::less(&__best.iter_deref(), &__it.iter_deref()) {
+                        __best = __it.clone();
                     }
-                    __best
+                    __it.iter_inc();
                 }
             }
+            __best
         } == bag_vec.decay().begin().iter_add(2_isize)
     );
     assert!(
@@ -390,15 +388,11 @@ fn main_0() -> i32 {
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
     let bag_map: Value<Map<Bag, (Value<Bag>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
     match (bag_vec.decay().offset(2_usize),) {
-        (__tmp_11,) => {
-            ({ (*bag_map.borrow_mut()).subscript_move(__tmp_11, |__k| cpp_move!(__k), || 0_i32) })
-        }
+        (__tmp_24,) => ({ (*bag_map.borrow_mut()).subscript_move(__tmp_24, |__k| cpp_move!(__k)) }),
     }
     .write(2);
     match (bag_vec.decay().offset(0_usize),) {
-        (__tmp_12,) => {
-            ({ (*bag_map.borrow_mut()).subscript_move(__tmp_12, |__k| cpp_move!(__k), || 0_i32) })
-        }
+        (__tmp_25,) => ({ (*bag_map.borrow_mut()).subscript_move(__tmp_25, |__k| cpp_move!(__k)) }),
     }
     .write(0);
     assert!(
@@ -423,24 +417,23 @@ fn main_0() -> i32 {
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
     let moves: Value<Vec<MoveOnly>> = Rc::new(RefCell::new(Vec::new()));
     {
-        let __init = MoveOnly::new({ 3 });
-        (*moves.borrow_mut()).push(__init)
+        let mut __tmp_26 = { MoveOnly::new({ 3 }) };
+        (*moves.borrow_mut()).push(__tmp_26);
     };
     {
-        let __init = MoveOnly::new({ 1 });
-        (*moves.borrow_mut()).push(__init)
+        let mut __tmp_27 = { MoveOnly::new({ 1 }) };
+        (*moves.borrow_mut()).push(__tmp_27);
     };
     {
-        let __init = MoveOnly::new({ 2 });
-        (*moves.borrow_mut()).push(__init)
+        let mut __tmp_28 = { MoveOnly::new({ 2 }) };
+        (*moves.borrow_mut()).push(__tmp_28);
     };
-    match ({ moves.decay().begin() },) {
-        (mut __tmp_13,) => {
-            let __n = moves.decay().end().iter_distance(&__tmp_13);
-            let mut __order: Vec<isize> = (0..__n).collect();
-            __order.sort_by(|&__x, &__y| cpp_cmp(&__tmp_13.iter_at(__x), &__tmp_13.iter_at(__y)));
-            reorder(__order, |__i| __tmp_13.iter_at(__i));
-        }
+    {
+        let mut __tmp_29 = { moves.decay().begin() };
+        let __n = moves.decay().end().iter_distance(&__tmp_29);
+        let mut __order: Vec<isize> = (0..__n).collect();
+        __order.sort_by(|&__x, &__y| cpp_cmp(&__tmp_29.iter_at(__x), &__tmp_29.iter_at(__y)));
+        reorder(__order, |__i| __tmp_29.iter_at(__i));
     };
     assert!(
         ({
@@ -448,39 +441,38 @@ fn main_0() -> i32 {
                 && ({ (*moves.borrow())[2_usize].v } == 3)
         })
     );
-    match ({ moves.decay().begin() },) {
-        (mut __tmp_14,) => {
-            let __n = moves.decay().end().iter_distance(&__tmp_14);
-            let mut __order: Vec<isize> = (0..__n).collect();
-            __order.sort_by(|&__x, &__y| {
-                let __a = __tmp_14.iter_at(__x);
-                let __b = __tmp_14.iter_at(__y);
-                if FnPtr::<fn(Ptr<MoveOnly>, Ptr<MoveOnly>) -> bool>::new(
-                    |a: Ptr<MoveOnly>, b: Ptr<MoveOnly>| -> bool {
-                        {
-                            return ({ a.with(|__s| __s.v) } > { b.with(|__s| __s.v) });
-                        }
-                    },
-                )
-                .call(__a.clone(), __b.clone())
-                {
-                    std::cmp::Ordering::Less
-                } else if FnPtr::<fn(Ptr<MoveOnly>, Ptr<MoveOnly>) -> bool>::new(
-                    |a: Ptr<MoveOnly>, b: Ptr<MoveOnly>| -> bool {
-                        {
-                            return ({ a.with(|__s| __s.v) } > { b.with(|__s| __s.v) });
-                        }
-                    },
-                )
-                .call(__b, __a)
-                {
-                    std::cmp::Ordering::Greater
-                } else {
-                    std::cmp::Ordering::Equal
-                }
-            });
-            reorder(__order, |__i| __tmp_14.iter_at(__i));
-        }
+    {
+        let mut __tmp_30 = { moves.decay().begin() };
+        let __n = moves.decay().end().iter_distance(&__tmp_30);
+        let mut __order: Vec<isize> = (0..__n).collect();
+        __order.sort_by(|&__x, &__y| {
+            let __a = __tmp_30.iter_at(__x);
+            let __b = __tmp_30.iter_at(__y);
+            if FnPtr::<fn(Ptr<MoveOnly>, Ptr<MoveOnly>) -> bool>::new(
+                |a: Ptr<MoveOnly>, b: Ptr<MoveOnly>| -> bool {
+                    {
+                        return ({ a.with(|__s| __s.v) } > { b.with(|__s| __s.v) });
+                    }
+                },
+            )
+            .call(__a.clone(), __b.clone())
+            {
+                std::cmp::Ordering::Less
+            } else if FnPtr::<fn(Ptr<MoveOnly>, Ptr<MoveOnly>) -> bool>::new(
+                |a: Ptr<MoveOnly>, b: Ptr<MoveOnly>| -> bool {
+                    {
+                        return ({ a.with(|__s| __s.v) } > { b.with(|__s| __s.v) });
+                    }
+                },
+            )
+            .call(__b, __a)
+            {
+                std::cmp::Ordering::Greater
+            } else {
+                std::cmp::Ordering::Equal
+            }
+        });
+        reorder(__order, |__i| __tmp_30.iter_at(__i));
     };
     assert!(
         ({

@@ -49,16 +49,15 @@ impl Outer {
             let _arg0: *mut Inner = &mut (*_a0).inner;
             Inner::move_assign(&mut self.inner, _arg0)
         });
-        match (
-            { ((&mut self.name as *mut [libc::c_char; 8]) as *mut ::libc::c_void) },
-            { ((&mut (*_a0).name as *mut [libc::c_char; 8]) as *const ::libc::c_void) },
-        ) {
-            (mut __tmp_0, mut __tmp_1) => {
-                if 8_usize != 0 {
-                    ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, 8_usize)
-                }
-                __tmp_0
+        {
+            let mut __tmp_0 =
+                { ((&mut self.name as *mut [libc::c_char; 8]) as *mut ::libc::c_void) };
+            let mut __tmp_1 =
+                { ((&mut (*_a0).name as *mut [libc::c_char; 8]) as *const ::libc::c_void) };
+            if 8_usize != 0 {
+                ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, 8_usize)
             }
+            __tmp_0
         };
         return &mut (*(self as *mut Outer));
     }

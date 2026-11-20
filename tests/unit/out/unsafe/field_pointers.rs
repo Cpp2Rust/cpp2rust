@@ -55,31 +55,25 @@ impl Outer {
     pub unsafe fn move_assign(&mut self, _a0: *mut Outer) -> *mut Outer {
         self.x = (*_a0).x;
         self.inner = (*_a0).inner;
-        match (
-            { ((&mut self.items as *mut [Inner; 3]) as *mut ::libc::c_void) },
-            { ((&mut (*_a0).items as *mut [Inner; 3]) as *const ::libc::c_void) },
-        ) {
-            (mut __tmp_0, mut __tmp_1) => {
-                if 36_usize != 0 {
-                    ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, 36_usize)
-                }
-                __tmp_0
+        {
+            let mut __tmp_0 = { ((&mut self.items as *mut [Inner; 3]) as *mut ::libc::c_void) };
+            let mut __tmp_1 = { ((&mut (*_a0).items as *mut [Inner; 3]) as *const ::libc::c_void) };
+            if 36_usize != 0 {
+                ::std::ptr::copy_nonoverlapping(__tmp_1, __tmp_0, 36_usize)
             }
+            __tmp_0
         };
         {
             self.v = std::mem::take(&mut (*_a0).v);
         };
         self.cursor = (*_a0).cursor;
-        match (
-            { ((&mut self.buf as *mut [i32; 4]) as *mut ::libc::c_void) },
-            { ((&mut (*_a0).buf as *mut [i32; 4]) as *const ::libc::c_void) },
-        ) {
-            (mut __tmp_2, mut __tmp_3) => {
-                if 16_usize != 0 {
-                    ::std::ptr::copy_nonoverlapping(__tmp_3, __tmp_2, 16_usize)
-                }
-                __tmp_2
+        {
+            let mut __tmp_2 = { ((&mut self.buf as *mut [i32; 4]) as *mut ::libc::c_void) };
+            let mut __tmp_3 = { ((&mut (*_a0).buf as *mut [i32; 4]) as *const ::libc::c_void) };
+            if 16_usize != 0 {
+                ::std::ptr::copy_nonoverlapping(__tmp_3, __tmp_2, 16_usize)
             }
+            __tmp_2
         };
         return &mut (*(self as *mut Outer));
     }
@@ -143,26 +137,21 @@ unsafe fn main_0() -> i32 {
     assert!(((o.v.len()) == (1_usize)) && ((o.v[(0_usize)]) == (7)));
     assert!(((unsafe { Outer::sum(&o,) }) == (7)));
     let mut y: i32 = 0;
-    match (
-        { ((&mut o.items[(2) as usize].a as *mut i32) as *mut ::libc::c_void) },
-        { ((&mut o.items[(1) as usize].a as *mut i32) as *const ::libc::c_void) },
-    ) {
-        (mut __tmp_4, mut __tmp_5) => {
-            if ::std::mem::size_of::<i32>() != 0 {
-                ::std::ptr::copy_nonoverlapping(__tmp_5, __tmp_4, ::std::mem::size_of::<i32>())
-            }
-            __tmp_4
+    {
+        let mut __tmp_4 = { ((&mut o.items[(2) as usize].a as *mut i32) as *mut ::libc::c_void) };
+        let mut __tmp_5 = { ((&mut o.items[(1) as usize].a as *mut i32) as *const ::libc::c_void) };
+        if ::std::mem::size_of::<i32>() != 0 {
+            ::std::ptr::copy_nonoverlapping(__tmp_5, __tmp_4, ::std::mem::size_of::<i32>())
         }
+        __tmp_4
     };
-    match ({ ((&mut y as *mut i32) as *mut ::libc::c_void) }, {
-        ((&mut o.items[(2) as usize].a as *mut i32) as *const ::libc::c_void)
-    }) {
-        (mut __tmp_6, mut __tmp_7) => {
-            if ::std::mem::size_of::<i32>() != 0 {
-                ::std::ptr::copy_nonoverlapping(__tmp_7, __tmp_6, ::std::mem::size_of::<i32>())
-            }
-            __tmp_6
+    {
+        let mut __tmp_6 = { ((&mut y as *mut i32) as *mut ::libc::c_void) };
+        let mut __tmp_7 = { ((&mut o.items[(2) as usize].a as *mut i32) as *const ::libc::c_void) };
+        if ::std::mem::size_of::<i32>() != 0 {
+            ::std::ptr::copy_nonoverlapping(__tmp_7, __tmp_6, ::std::mem::size_of::<i32>())
         }
+        __tmp_6
     };
     assert!(((y) == (4)));
     let mut bytes: [u8; 8] = [0_u8; 8];

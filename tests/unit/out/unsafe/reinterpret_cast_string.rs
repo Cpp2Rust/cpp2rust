@@ -18,7 +18,7 @@ unsafe fn main_0() -> i32 {
         (0..).take_while(|&i| *c"ABCD".as_ptr().add(i) != 0).count() + 1,
     )
     .to_vec();
-    let mut bytes: *const u8 = (s.as_ptr() as *const u8);
+    let mut bytes: *const u8 = ((s.as_ptr()) as *const u8);
     assert!((((*bytes.offset((0) as isize)) as i32) == (('A' as libc::c_char) as i32)));
     assert!((((*bytes.offset((1) as isize)) as i32) == (('B' as libc::c_char) as i32)));
     assert!((((*bytes.offset((2) as isize)) as i32) == (('C' as libc::c_char) as i32)));

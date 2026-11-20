@@ -203,6 +203,20 @@ int main() {
   auto t3 = t2 + s3.size();
   auto t4 = t3 + s4.size();
   assert(t4 + s5.size() == 139);
+
+  assert(std::to_string(-42) == "-42");
+  assert(std::to_string(-9223372036854775807L - 1) == "-9223372036854775808");
+  assert(std::to_string(1LL << 40) == "1099511627776");
+  assert(std::to_string(4294967295u) == "4294967295");
+  assert(std::to_string(18446744073709551615ul) == "18446744073709551615");
+  assert(std::to_string(0ull) == "0");
+  assert(std::to_string(1.5f) == "1.500000");
+  assert(std::to_string(-0.25) == "-0.250000");
+  std::string label = std::to_string(t0);
+  assert(label == "5");
+  int five = (int)t0;
+  unsigned bits = 0xfffffff0u;
+  assert(std::to_string(-five) == "-5" && std::to_string(~bits) == "15");
   return 0;
   // return s1.length() + *p1 + s2.length() + s3.size() + s4.size() + s5.size();
 }

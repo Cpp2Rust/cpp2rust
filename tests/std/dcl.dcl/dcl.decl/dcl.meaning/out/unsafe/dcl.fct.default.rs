@@ -224,30 +224,27 @@ pub unsafe fn test_20() {
     assert!(((unsafe { (s).unwrap()(2, 5,) }) == (10)));
     assert!(((unsafe { p9_not_part_of_the_type_Scale::times(2, 3,) }) == (6)));
     let mut values: Vec<i32> = Vec::from([3, -1_i32, 4, 1, 5]);
-    match ({ values.begin() },) {
-        (mut __tmp_0,) => {
-            let __n = values.end().iter_distance(&__tmp_0);
-            let mut __order: Vec<isize> = (0..__n).collect();
-            __order.sort_by(|&__x, &__y| {
-                let __a = __tmp_0.iter_at(__x) as *const _;
-                let __b = __tmp_0.iter_at(__y) as *const _;
-                if (descending_19 as unsafe fn(*const i32, *const i32) -> bool).call(__a, __b) {
-                    std::cmp::Ordering::Less
-                } else if (descending_19 as unsafe fn(*const i32, *const i32) -> bool)
-                    .call(__b, __a)
-                {
-                    std::cmp::Ordering::Greater
-                } else {
-                    std::cmp::Ordering::Equal
-                }
-            });
-            let __values: Vec<_> = __order
-                .iter()
-                .map(|&__i| std::ptr::read(__tmp_0.iter_at(__i)))
-                .collect();
-            for (__i, __v) in (0..__n).zip(__values) {
-                std::ptr::write(__tmp_0.iter_at(__i), __v);
+    {
+        let mut __tmp_0 = { values.begin() };
+        let __n = values.end().iter_distance(&__tmp_0);
+        let mut __order: Vec<isize> = (0..__n).collect();
+        __order.sort_by(|&__x, &__y| {
+            let __a = __tmp_0.iter_at(__x) as *const _;
+            let __b = __tmp_0.iter_at(__y) as *const _;
+            if (descending_19 as unsafe fn(*const i32, *const i32) -> bool).call(__a, __b) {
+                std::cmp::Ordering::Less
+            } else if (descending_19 as unsafe fn(*const i32, *const i32) -> bool).call(__b, __a) {
+                std::cmp::Ordering::Greater
+            } else {
+                std::cmp::Ordering::Equal
             }
+        });
+        let __values: Vec<_> = __order
+            .iter()
+            .map(|&__i| std::ptr::read(__tmp_0.iter_at(__i)))
+            .collect();
+        for (__i, __v) in (0..__n).zip(__values) {
+            std::ptr::write(__tmp_0.iter_at(__i), __v);
         }
     };
     assert!(((values[(0_usize)]) == (5)));

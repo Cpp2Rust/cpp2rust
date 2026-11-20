@@ -88,7 +88,7 @@ pub fn test_fputc_fputs_0() {
         } == 0)
     );
     assert!(
-        (match nix::unistd::unlink(path.to_rust_string().as_str()) {
+        (match path.with_c_bytes(|__path| nix::unistd::unlink(__path)) {
             Ok(()) => 0,
             Err(__e) => {
                 libcc2rs::cpp2rust_errno().write(__e as i32);
@@ -144,39 +144,38 @@ pub fn test_fgets_getc_2() {
     assert!((!((fp).is_null())));
     let buf: Value<Box<[i8]>> = Rc::new(RefCell::new((0..8).map(|_| 0_i8).collect::<Box<[i8]>>()));
     assert!(
-        (!((match ({ buf.decay() },) {
-            (mut __tmp_0,) => {
-                if 8 <= 0 {
+        (!(({
+            let mut __tmp_0 = { buf.decay() };
+            if 8 <= 0 {
+                Ptr::null()
+            } else {
+                let __max = (8 - 1) as usize;
+                let mut __dst = __tmp_0.clone();
+                let mut __count: usize = 0;
+                let __failed = fp.with_mut(|__f| {
+                    let __prev_err = __f.err;
+                    __f.err = false;
+                    while __count < __max {
+                        let __c = __f.getc();
+                        if __c < 0 {
+                            break;
+                        }
+                        __dst.write(__c as i8);
+                        __dst += 1;
+                        __count += 1;
+                        if __c as u8 == b'\n' {
+                            break;
+                        }
+                    }
+                    let __read_err = __f.err;
+                    __f.err |= __prev_err;
+                    __read_err
+                });
+                if __failed || (__max > 0 && __count == 0) {
                     Ptr::null()
                 } else {
-                    let __max = (8 - 1) as usize;
-                    let mut __dst = __tmp_0.clone();
-                    let mut __count: usize = 0;
-                    let __failed = fp.with_mut(|__f| {
-                        let __prev_err = __f.err;
-                        __f.err = false;
-                        while __count < __max {
-                            let __c = __f.getc();
-                            if __c < 0 {
-                                break;
-                            }
-                            __dst.write(__c as i8);
-                            __dst += 1;
-                            __count += 1;
-                            if __c as u8 == b'\n' {
-                                break;
-                            }
-                        }
-                        let __read_err = __f.err;
-                        __f.err |= __prev_err;
-                        __read_err
-                    });
-                    if __failed || (__max > 0 && __count == 0) {
-                        Ptr::null()
-                    } else {
-                        __dst.write(0);
-                        (__tmp_0).clone()
-                    }
+                    __dst.write(0);
+                    (__tmp_0).clone()
                 }
             }
         })
@@ -190,39 +189,38 @@ pub fn test_fgets_getc_2() {
     );
     assert!((fp.with_mut(|__f| __f.getc()) == ('l' as i32)));
     assert!(
-        (!((match ({ buf.decay() },) {
-            (mut __tmp_1,) => {
-                if 4 <= 0 {
+        (!(({
+            let mut __tmp_1 = { buf.decay() };
+            if 4 <= 0 {
+                Ptr::null()
+            } else {
+                let __max = (4 - 1) as usize;
+                let mut __dst = __tmp_1.clone();
+                let mut __count: usize = 0;
+                let __failed = fp.with_mut(|__f| {
+                    let __prev_err = __f.err;
+                    __f.err = false;
+                    while __count < __max {
+                        let __c = __f.getc();
+                        if __c < 0 {
+                            break;
+                        }
+                        __dst.write(__c as i8);
+                        __dst += 1;
+                        __count += 1;
+                        if __c as u8 == b'\n' {
+                            break;
+                        }
+                    }
+                    let __read_err = __f.err;
+                    __f.err |= __prev_err;
+                    __read_err
+                });
+                if __failed || (__max > 0 && __count == 0) {
                     Ptr::null()
                 } else {
-                    let __max = (4 - 1) as usize;
-                    let mut __dst = __tmp_1.clone();
-                    let mut __count: usize = 0;
-                    let __failed = fp.with_mut(|__f| {
-                        let __prev_err = __f.err;
-                        __f.err = false;
-                        while __count < __max {
-                            let __c = __f.getc();
-                            if __c < 0 {
-                                break;
-                            }
-                            __dst.write(__c as i8);
-                            __dst += 1;
-                            __count += 1;
-                            if __c as u8 == b'\n' {
-                                break;
-                            }
-                        }
-                        let __read_err = __f.err;
-                        __f.err |= __prev_err;
-                        __read_err
-                    });
-                    if __failed || (__max > 0 && __count == 0) {
-                        Ptr::null()
-                    } else {
-                        __dst.write(0);
-                        (__tmp_1).clone()
-                    }
+                    __dst.write(0);
+                    (__tmp_1).clone()
                 }
             }
         })
@@ -235,39 +233,38 @@ pub fn test_fgets_getc_2() {
             == 0)
     );
     assert!(
-        (!((match ({ buf.decay() },) {
-            (mut __tmp_2,) => {
-                if 8 <= 0 {
+        (!(({
+            let mut __tmp_2 = { buf.decay() };
+            if 8 <= 0 {
+                Ptr::null()
+            } else {
+                let __max = (8 - 1) as usize;
+                let mut __dst = __tmp_2.clone();
+                let mut __count: usize = 0;
+                let __failed = fp.with_mut(|__f| {
+                    let __prev_err = __f.err;
+                    __f.err = false;
+                    while __count < __max {
+                        let __c = __f.getc();
+                        if __c < 0 {
+                            break;
+                        }
+                        __dst.write(__c as i8);
+                        __dst += 1;
+                        __count += 1;
+                        if __c as u8 == b'\n' {
+                            break;
+                        }
+                    }
+                    let __read_err = __f.err;
+                    __f.err |= __prev_err;
+                    __read_err
+                });
+                if __failed || (__max > 0 && __count == 0) {
                     Ptr::null()
                 } else {
-                    let __max = (8 - 1) as usize;
-                    let mut __dst = __tmp_2.clone();
-                    let mut __count: usize = 0;
-                    let __failed = fp.with_mut(|__f| {
-                        let __prev_err = __f.err;
-                        __f.err = false;
-                        while __count < __max {
-                            let __c = __f.getc();
-                            if __c < 0 {
-                                break;
-                            }
-                            __dst.write(__c as i8);
-                            __dst += 1;
-                            __count += 1;
-                            if __c as u8 == b'\n' {
-                                break;
-                            }
-                        }
-                        let __read_err = __f.err;
-                        __f.err |= __prev_err;
-                        __read_err
-                    });
-                    if __failed || (__max > 0 && __count == 0) {
-                        Ptr::null()
-                    } else {
-                        __dst.write(0);
-                        (__tmp_2).clone()
-                    }
+                    __dst.write(0);
+                    (__tmp_2).clone()
                 }
             }
         })
@@ -280,39 +277,38 @@ pub fn test_fgets_getc_2() {
             == 0)
     );
     assert!(
-        ((match ({ buf.decay() },) {
-            (mut __tmp_3,) => {
-                if 8 <= 0 {
+        (({
+            let mut __tmp_3 = { buf.decay() };
+            if 8 <= 0 {
+                Ptr::null()
+            } else {
+                let __max = (8 - 1) as usize;
+                let mut __dst = __tmp_3.clone();
+                let mut __count: usize = 0;
+                let __failed = fp.with_mut(|__f| {
+                    let __prev_err = __f.err;
+                    __f.err = false;
+                    while __count < __max {
+                        let __c = __f.getc();
+                        if __c < 0 {
+                            break;
+                        }
+                        __dst.write(__c as i8);
+                        __dst += 1;
+                        __count += 1;
+                        if __c as u8 == b'\n' {
+                            break;
+                        }
+                    }
+                    let __read_err = __f.err;
+                    __f.err |= __prev_err;
+                    __read_err
+                });
+                if __failed || (__max > 0 && __count == 0) {
                     Ptr::null()
                 } else {
-                    let __max = (8 - 1) as usize;
-                    let mut __dst = __tmp_3.clone();
-                    let mut __count: usize = 0;
-                    let __failed = fp.with_mut(|__f| {
-                        let __prev_err = __f.err;
-                        __f.err = false;
-                        while __count < __max {
-                            let __c = __f.getc();
-                            if __c < 0 {
-                                break;
-                            }
-                            __dst.write(__c as i8);
-                            __dst += 1;
-                            __count += 1;
-                            if __c as u8 == b'\n' {
-                                break;
-                            }
-                        }
-                        let __read_err = __f.err;
-                        __f.err |= __prev_err;
-                        __read_err
-                    });
-                    if __failed || (__max > 0 && __count == 0) {
-                        Ptr::null()
-                    } else {
-                        __dst.write(0);
-                        (__tmp_3).clone()
-                    }
+                    __dst.write(0);
+                    (__tmp_3).clone()
                 }
             }
         })
@@ -327,7 +323,7 @@ pub fn test_fgets_getc_2() {
         } == 0)
     );
     assert!(
-        (match nix::unistd::unlink(path.to_rust_string().as_str()) {
+        (match path.with_c_bytes(|__path| nix::unistd::unlink(__path)) {
             Ok(()) => 0,
             Err(__e) => {
                 libcc2rs::cpp2rust_errno().write(__e as i32);
@@ -373,39 +369,38 @@ pub fn test_fgets_size_one_and_error_flag_3() {
     (*buf.borrow_mut())[(0) as usize] = (('x' as i32) as i8);
     assert!(
         ({
-            match ({ buf.decay() },) {
-                (mut __tmp_4,) => {
-                    if 1 <= 0 {
+            {
+                let mut __tmp_4 = { buf.decay() };
+                if 1 <= 0 {
+                    Ptr::null()
+                } else {
+                    let __max = (1 - 1) as usize;
+                    let mut __dst = __tmp_4.clone();
+                    let mut __count: usize = 0;
+                    let __failed = fp.with_mut(|__f| {
+                        let __prev_err = __f.err;
+                        __f.err = false;
+                        while __count < __max {
+                            let __c = __f.getc();
+                            if __c < 0 {
+                                break;
+                            }
+                            __dst.write(__c as i8);
+                            __dst += 1;
+                            __count += 1;
+                            if __c as u8 == b'\n' {
+                                break;
+                            }
+                        }
+                        let __read_err = __f.err;
+                        __f.err |= __prev_err;
+                        __read_err
+                    });
+                    if __failed || (__max > 0 && __count == 0) {
                         Ptr::null()
                     } else {
-                        let __max = (1 - 1) as usize;
-                        let mut __dst = __tmp_4.clone();
-                        let mut __count: usize = 0;
-                        let __failed = fp.with_mut(|__f| {
-                            let __prev_err = __f.err;
-                            __f.err = false;
-                            while __count < __max {
-                                let __c = __f.getc();
-                                if __c < 0 {
-                                    break;
-                                }
-                                __dst.write(__c as i8);
-                                __dst += 1;
-                                __count += 1;
-                                if __c as u8 == b'\n' {
-                                    break;
-                                }
-                            }
-                            let __read_err = __f.err;
-                            __f.err |= __prev_err;
-                            __read_err
-                        });
-                        if __failed || (__max > 0 && __count == 0) {
-                            Ptr::null()
-                        } else {
-                            __dst.write(0);
-                            (__tmp_4).clone()
-                        }
+                        __dst.write(0);
+                        (__tmp_4).clone()
                     }
                 }
             }
@@ -423,39 +418,38 @@ pub fn test_fgets_size_one_and_error_flag_3() {
     assert!((fp.with(|__f| __f.err) as i32 != 0));
     assert!(
         ({
-            match ({ buf.decay() },) {
-                (mut __tmp_5,) => {
-                    if 8 <= 0 {
+            {
+                let mut __tmp_5 = { buf.decay() };
+                if 8 <= 0 {
+                    Ptr::null()
+                } else {
+                    let __max = (8 - 1) as usize;
+                    let mut __dst = __tmp_5.clone();
+                    let mut __count: usize = 0;
+                    let __failed = fp.with_mut(|__f| {
+                        let __prev_err = __f.err;
+                        __f.err = false;
+                        while __count < __max {
+                            let __c = __f.getc();
+                            if __c < 0 {
+                                break;
+                            }
+                            __dst.write(__c as i8);
+                            __dst += 1;
+                            __count += 1;
+                            if __c as u8 == b'\n' {
+                                break;
+                            }
+                        }
+                        let __read_err = __f.err;
+                        __f.err |= __prev_err;
+                        __read_err
+                    });
+                    if __failed || (__max > 0 && __count == 0) {
                         Ptr::null()
                     } else {
-                        let __max = (8 - 1) as usize;
-                        let mut __dst = __tmp_5.clone();
-                        let mut __count: usize = 0;
-                        let __failed = fp.with_mut(|__f| {
-                            let __prev_err = __f.err;
-                            __f.err = false;
-                            while __count < __max {
-                                let __c = __f.getc();
-                                if __c < 0 {
-                                    break;
-                                }
-                                __dst.write(__c as i8);
-                                __dst += 1;
-                                __count += 1;
-                                if __c as u8 == b'\n' {
-                                    break;
-                                }
-                            }
-                            let __read_err = __f.err;
-                            __f.err |= __prev_err;
-                            __read_err
-                        });
-                        if __failed || (__max > 0 && __count == 0) {
-                            Ptr::null()
-                        } else {
-                            __dst.write(0);
-                            (__tmp_5).clone()
-                        }
+                        __dst.write(0);
+                        (__tmp_5).clone()
                     }
                 }
             }
@@ -476,7 +470,7 @@ pub fn test_fgets_size_one_and_error_flag_3() {
         } == 0)
     );
     assert!(
-        (match nix::unistd::unlink(path.to_rust_string().as_str()) {
+        (match path.with_c_bytes(|__path| nix::unistd::unlink(__path)) {
             Ok(()) => 0,
             Err(__e) => {
                 libcc2rs::cpp2rust_errno().write(__e as i32);
@@ -542,7 +536,7 @@ pub fn test_freopen_4() {
         } == 0)
     );
     assert!(
-        (match nix::unistd::unlink(path.to_rust_string().as_str()) {
+        (match path.with_c_bytes(|__path| nix::unistd::unlink(__path)) {
             Ok(()) => 0,
             Err(__e) => {
                 libcc2rs::cpp2rust_errno().write(__e as i32);
@@ -623,7 +617,7 @@ pub fn test_fseeko_5() {
         } == 0)
     );
     assert!(
-        (match nix::unistd::unlink(path.to_rust_string().as_str()) {
+        (match path.with_c_bytes(|__path| nix::unistd::unlink(__path)) {
             Ok(()) => 0,
             Err(__e) => {
                 libcc2rs::cpp2rust_errno().write(__e as i32);
@@ -702,7 +696,7 @@ pub fn test_rename_6() {
         } == -1_i32)
     );
     assert!(
-        (match nix::unistd::unlink(to.to_rust_string().as_str()) {
+        (match to.with_c_bytes(|__path| nix::unistd::unlink(__path)) {
             Ok(()) => 0,
             Err(__e) => {
                 libcc2rs::cpp2rust_errno().write(__e as i32);
@@ -738,7 +732,7 @@ pub fn test_setvbuf_7() {
         } == 0)
     );
     assert!(
-        (match nix::unistd::unlink(path.to_rust_string().as_str()) {
+        (match path.with_c_bytes(|__path| nix::unistd::unlink(__path)) {
             Ok(()) => 0,
             Err(__e) => {
                 libcc2rs::cpp2rust_errno().write(__e as i32);
