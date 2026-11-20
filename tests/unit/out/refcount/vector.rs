@@ -578,6 +578,32 @@ fn main_0() -> i32 {
         last.with_mut(|__v| *__v = *__v + 1)
     };
     assert!(({ ({ (*v15.borrow())[0_usize] } == 2) && ({ (*v15.borrow())[2_usize] } == 3) }));
+    let v16: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::from([1, 2, 3, 4, 5, 6, 7, 8])));
+    let mut after_v16: Vec<i32> = Vec::from([0]);
+    let inserted: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new({
+        let mut __tmp_17 =
+            { <RandomAccessIterator<i32>>::from(v16.decay().begin().iter_add(1_isize)) };
+        (*v16.borrow_mut()).insert(__tmp_17.index(), 7);
+        (__tmp_17).clone()
+    }));
+    {
+        ({ (*inserted.borrow()).iter_deref() }).with_mut(|__v| *__v = *__v + 1)
+    };
+    let mut nine: i32 = 9;
+    let inserted_copy: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new({
+        let mut __tmp_18 = { <RandomAccessIterator<i32>>::from(v16.decay().begin()) };
+        (*v16.borrow_mut()).insert(__tmp_18.index(), nine);
+        (__tmp_18).clone()
+    }));
+    {
+        ({ (*inserted_copy.borrow()).iter_deref() }).with_mut(|__v| *__v = *__v + 1)
+    };
+    assert!(
+        ({
+            (({ (*v16.borrow())[0_usize] } == 10) && ({ (*v16.borrow())[2_usize] } == 8))
+                && (after_v16[0_usize] == 0)
+        })
+    );
     return 0;
 }
 pub trait FooImpl {

@@ -126,20 +126,20 @@ unsafe fn f76<T1>(a0: &mut Vec<T1>) -> UnsafeRandomAccessIterator<T1> {
     a0.end()
 }
 
+// The insertion may reallocate, so a1 may no longer point into a0.
 unsafe fn f77<T1>(a0: &mut Vec<T1>, a1: UnsafeRandomAccessIterator<T1>, a2: T1) -> UnsafeRandomAccessIterator<T1> {
     let pos = a1.iter_distance(&UnsafeRandomAccessIterator::Vec(a0.as_mut_ptr())) as usize;
-    a0.insert(pos, a2);
-    a1
+    UnsafeRandomAccessIterator::Vec(a0.insert_mut(pos, a2))
 }
 
 unsafe fn f78<T1: Default + Clone>(a0: usize, a1: T1) -> Vec<T1> {
     vec![a1; a0]
 }
 
+// The insertion may reallocate, so a1 may no longer point into a0.
 unsafe fn f79<T1>(a0: &mut Vec<T1>, a1: UnsafeRandomAccessIterator<T1>, a2: T1) -> UnsafeRandomAccessIterator<T1> {
     let pos = a1.iter_distance(&UnsafeRandomAccessIterator::Vec(a0.as_mut_ptr())) as usize;
-    a0.insert(pos, a2);
-    a1
+    UnsafeRandomAccessIterator::Vec(a0.insert_mut(pos, a2))
 }
 
 unsafe fn f80<T1: Clone>(a0: &mut Vec<T1>, a1: T1) {
