@@ -14,7 +14,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut fd: i32 = 0;
-    let mut ssloc: libc::sockaddr_storage = unsafe { std::mem::zeroed() };
+    let mut ssloc: libc::sockaddr_storage = std::mem::zeroed();
     let mut slen: libc::socklen_t =
         (::std::mem::size_of::<libc::sockaddr_storage>() as libc::socklen_t);
     assert!(
@@ -24,7 +24,7 @@ unsafe fn main_0() -> i32 {
             (&mut slen as *mut libc::socklen_t)
         )) == (-1_i32))
     );
-    let mut sin: ::libc::sockaddr_in = unsafe { std::mem::zeroed() };
+    let mut sin: ::libc::sockaddr_in = std::mem::zeroed();
     let mut inlen: libc::socklen_t =
         (::std::mem::size_of::<::libc::sockaddr_in>() as libc::socklen_t);
     assert!(

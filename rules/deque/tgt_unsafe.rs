@@ -25,57 +25,57 @@ fn t5<T1>() -> *const T1 {
     ::std::ptr::null()
 }
 
-unsafe fn f1<T1>(a0: &mut Vec<T1>) -> &mut T1 {
+fn f1<T1>(a0: &mut Vec<T1>) -> &mut T1 {
     let __n = a0.len() - 1;
     &mut a0[__n]
 }
 
-unsafe fn f2<T1>(a0: &mut Vec<T1>) -> &mut T1 {
+fn f2<T1>(a0: &mut Vec<T1>) -> &mut T1 {
     &mut a0[0]
 }
 
-unsafe fn f3<T1>(a0: Vec<T1>) -> bool {
+fn f3<T1>(a0: Vec<T1>) -> bool {
     a0.is_empty()
 }
 
-unsafe fn f4<T1: Default>(a0: &mut Vec<T1>, a1: &mut T1) {
+fn f4<T1: Default>(a0: &mut Vec<T1>, a1: &mut T1) {
     a0.push(std::mem::take(&mut *a1))
 }
 
-unsafe fn f5<T1>(a0: &mut Vec<T1>) -> T1 {
+fn f5<T1>(a0: &mut Vec<T1>) -> T1 {
     a0.remove(0)
 }
 
-unsafe fn f7<T1>(a0: &mut Vec<T1>, a1: T1) {
+fn f7<T1>(a0: &mut Vec<T1>, a1: T1) {
     a0.push(a1)
 }
 
-unsafe fn f8<T1: Clone>(a0: Vec<T1>) -> Vec<T1> {
+fn f8<T1: Clone>(a0: Vec<T1>) -> Vec<T1> {
     a0.clone()
 }
 
-unsafe fn f9<T1>(a0: &mut Vec<T1>) -> Vec<T1> {
+fn f9<T1>(a0: &mut Vec<T1>) -> Vec<T1> {
     std::mem::take(&mut *a0)
 }
 
-unsafe fn f10<T1: Clone>(a0: &mut Vec<T1>, a1: Vec<T1>) -> &mut Vec<T1> {
+fn f10<T1: Clone>(a0: &mut Vec<T1>, a1: Vec<T1>) -> &mut Vec<T1> {
     *a0 = a1.clone();
     a0
 }
 
-unsafe fn f11<'a, T1>(a0: &'a mut Vec<T1>, a1: &mut Vec<T1>) -> &'a mut Vec<T1> {
+fn f11<'a, T1>(a0: &'a mut Vec<T1>, a1: &mut Vec<T1>) -> &'a mut Vec<T1> {
     *a0 = std::mem::take(&mut *a1);
     a0
 }
 
-unsafe fn f12<T1>(a0: &mut Vec<T1>, init: T1) -> &mut T1 {
+fn f12<T1>(a0: &mut Vec<T1>, init: T1) -> &mut T1 {
     a0.push_mut(init)
 }
 
-unsafe fn f15<T1>(a0: &mut Vec<T1>, init: T1) {
+fn f15<T1>(a0: &mut Vec<T1>, init: T1) {
     a0.push(init)
 }
 
-unsafe fn f14<T1>() -> Vec<T1> {
+fn f14<T1>() -> Vec<T1> {
     Vec::new()
 }

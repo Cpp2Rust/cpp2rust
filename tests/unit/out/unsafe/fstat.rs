@@ -30,7 +30,7 @@ unsafe fn main_0() -> i32 {
             5_usize
         )) == (5_isize))
     );
-    let mut st: ::libc::stat = unsafe { std::mem::zeroed() };
+    let mut st: ::libc::stat = std::mem::zeroed();
     assert!(((libc::fstat(fd, (&mut st as *mut ::libc::stat))) == (0)));
     assert!(((st.st_size) == (5 as ::libc::off_t)));
     assert!(((libc::close(fd)) == (0)));

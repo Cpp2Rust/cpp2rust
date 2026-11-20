@@ -11,10 +11,10 @@ fn t2() -> usize {
     0_usize
 }
 
-unsafe fn f1<T1>(a0: Vec<T1>) -> usize {
+fn f1<T1>(a0: Vec<T1>) -> usize {
     a0.len()
 }
 
-unsafe fn f2<T1, const T2: usize>(a0: [T1; T2]) -> Vec<T1> {
+fn f2<T1, const T2: usize>(a0: [T1; T2]) -> Vec<T1> {
     Vec::from(a0)
 }

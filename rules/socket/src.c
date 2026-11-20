@@ -59,34 +59,28 @@ int f14(int sockfd, struct sockaddr *addr, socklen_t *addrlen) {
   return getpeername(sockfd, addr, addrlen);
 }
 
-#ifdef __linux__
-int f15(int sockfd, struct sockaddr *addr, socklen_t *addrlen, int flags) {
-  return accept4(sockfd, addr, addrlen, flags);
-}
-#endif
-
-int f16(int sockfd, const struct sockaddr *addr, socklen_t addrlen) {
+int f15(int sockfd, const struct sockaddr *addr, socklen_t addrlen) {
   return bind(sockfd, addr, addrlen);
 }
 
-int f17(int sockfd, int backlog) { return listen(sockfd, backlog); }
+int f16(int sockfd, int backlog) { return listen(sockfd, backlog); }
 
-ssize_t f18(int sockfd, void *buf, size_t len, int flags,
+ssize_t f17(int sockfd, void *buf, size_t len, int flags,
             struct sockaddr *src_addr, socklen_t *addrlen) {
   return recvfrom(sockfd, buf, len, flags, src_addr, addrlen);
 }
 
-ssize_t f19(int sockfd, const void *buf, size_t len, int flags,
+ssize_t f18(int sockfd, const void *buf, size_t len, int flags,
             const struct sockaddr *dest_addr, socklen_t addrlen) {
   return sendto(sockfd, buf, len, flags, dest_addr, addrlen);
 }
 
-int f20(void) { return AF_INET; }
+int f19(void) { return AF_INET; }
 
-int f21(void) { return AF_INET6; }
+int f20(void) { return AF_INET6; }
 
-int f22(void) { return SOL_SOCKET; }
+int f21(void) { return SOL_SOCKET; }
 
-int f23(void) { return SO_KEEPALIVE; }
+int f22(void) { return SO_KEEPALIVE; }
 
-int f24(void) { return SO_ERROR; }
+int f23(void) { return SO_ERROR; }

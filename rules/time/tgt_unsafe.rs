@@ -1,16 +1,16 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-fn t1() -> ::libc::tm {
-    unsafe { std::mem::zeroed() }
+unsafe fn t1() -> ::libc::tm {
+    std::mem::zeroed()
 }
 
-fn t2() -> ::libc::timeval {
-    unsafe { std::mem::zeroed() }
+unsafe fn t2() -> ::libc::timeval {
+    std::mem::zeroed()
 }
 
-fn t3() -> ::libc::timespec {
-    unsafe { std::mem::zeroed() }
+unsafe fn t3() -> ::libc::timespec {
+    std::mem::zeroed()
 }
 
 fn t4() -> ::libc::time_t {
@@ -60,15 +60,15 @@ unsafe fn f8(a0: *mut libc::timeval, a1: *mut libc::c_void) -> i32 {
     libc::gettimeofday(a0, a1)
 }
 
-unsafe fn f9() -> libc::clockid_t {
+fn f9() -> libc::clockid_t {
     libc::CLOCK_REALTIME
 }
 
-unsafe fn f10() -> libc::clockid_t {
+fn f10() -> libc::clockid_t {
     libc::CLOCK_MONOTONIC
 }
 
 #[cfg(target_os = "linux")]
-unsafe fn f11() -> libc::clockid_t {
+fn f11() -> libc::clockid_t {
     libc::CLOCK_MONOTONIC_RAW
 }

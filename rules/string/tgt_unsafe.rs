@@ -33,7 +33,7 @@ unsafe fn f1(a0: *const Vec<libc::c_char>, a1: usize, a2: usize) -> Vec<libc::c_
     __tmp1.push(0);
     __tmp1
 }
-unsafe fn f2(a0: Vec<libc::c_char>) -> usize {
+fn f2(a0: Vec<libc::c_char>) -> usize {
     (a0.len() - 1)
 }
 unsafe fn f3(a0: Vec<libc::c_char>, a1: *const libc::c_char) -> Vec<libc::c_char> {
@@ -54,10 +54,10 @@ unsafe fn f4(a0: &mut Vec<libc::c_char>, a1: *mut libc::c_char, a2: usize) -> &m
     });
     a0
 }
-unsafe fn f5(a0: Vec<libc::c_char>) -> *const libc::c_char {
+fn f5(a0: Vec<libc::c_char>) -> *const libc::c_char {
     a0.as_ptr()
 }
-unsafe fn f6(a0: &mut Vec<libc::c_char>) -> *const libc::c_char {
+fn f6(a0: &mut Vec<libc::c_char>) -> *const libc::c_char {
     a0.as_mut_ptr()
 }
 unsafe fn f7(a0: *const libc::c_char, a1: usize) -> Vec<libc::c_char> {
@@ -71,7 +71,7 @@ unsafe fn f7(a0: *const libc::c_char, a1: usize) -> Vec<libc::c_char> {
 // TODO: this does not care for a1
 use std::io::Read;
 
-unsafe fn f8(a0: std::fs::File, a1: std::fs::File) -> Vec<libc::c_char> {
+fn f8(a0: std::fs::File, a1: std::fs::File) -> Vec<libc::c_char> {
     let mut __bytes: Vec<u8> = Vec::new();
     let mut __f = &a0;
     __f.read_to_end(&mut __bytes)
@@ -81,7 +81,7 @@ unsafe fn f8(a0: std::fs::File, a1: std::fs::File) -> Vec<libc::c_char> {
     __buf
 }
 
-unsafe fn f9(a0: usize, a1: libc::c_char) -> Vec<libc::c_char> {
+fn f9(a0: usize, a1: libc::c_char) -> Vec<libc::c_char> {
     vec![a1; (a0) as usize]
         .iter()
         .cloned()
@@ -91,13 +91,13 @@ unsafe fn f9(a0: usize, a1: libc::c_char) -> Vec<libc::c_char> {
 unsafe fn f10(a0: *const libc::c_char) -> Vec<libc::c_char> {
     std::slice::from_raw_parts(a0, (0..).take_while(|&i| *a0.add(i) != 0).count() + 1).to_vec()
 }
-unsafe fn f11(a0: Vec<libc::c_char>) -> *const libc::c_char {
+fn f11(a0: Vec<libc::c_char>) -> *const libc::c_char {
     a0.as_ptr()
 }
-unsafe fn f12(a0: &mut Vec<libc::c_char>) -> UnsafeRandomAccessIterator<libc::c_char> {
+fn f12(a0: &mut Vec<libc::c_char>) -> UnsafeRandomAccessIterator<libc::c_char> {
     UnsafeRandomAccessIterator::Vec(a0.as_mut_ptr())
 }
-unsafe fn f13(a0: &mut Vec<libc::c_char>, a1: usize) {
+fn f13(a0: &mut Vec<libc::c_char>, a1: usize) {
     a0.pop();
     a0.resize((a1) as usize, 0);
     a0.push(0)
@@ -144,10 +144,10 @@ unsafe fn f18(a0: Vec<libc::c_char>, a1: *const libc::c_char) -> bool {
         std::slice::from_raw_parts(a1, (0..).take_while(|&i| *a1.add(i) != 0).count() + 1).to_vec()
     }
 }
-unsafe fn f19(a0: Vec<libc::c_char>) -> usize {
+fn f19(a0: Vec<libc::c_char>) -> usize {
     (a0.len() - 1)
 }
-unsafe fn f21(a0: &mut Vec<libc::c_char>, a1: usize, a2: libc::c_char) -> &mut Vec<libc::c_char> {
+fn f21(a0: &mut Vec<libc::c_char>, a1: usize, a2: libc::c_char) -> &mut Vec<libc::c_char> {
     a0.splice(
         a0.len() - 1..a0.len() - 1,
         ::std::vec::from_elem(a2, a1 as usize),
@@ -155,44 +155,44 @@ unsafe fn f21(a0: &mut Vec<libc::c_char>, a1: usize, a2: libc::c_char) -> &mut V
     a0
 }
 
-unsafe fn f22(a0: Vec<libc::c_char>) -> bool {
+fn f22(a0: Vec<libc::c_char>) -> bool {
     a0.len() <= 1
 }
 
-unsafe fn f23() -> Vec<libc::c_char> {
+fn f23() -> Vec<libc::c_char> {
     vec![0]
 }
 
-unsafe fn f24(a0: &mut Vec<libc::c_char>) {
+fn f24(a0: &mut Vec<libc::c_char>) {
     a0.clear();
     a0.push(0)
 }
 
-unsafe fn f25(a0: &mut Vec<libc::c_char>) {
+fn f25(a0: &mut Vec<libc::c_char>) {
     a0.shrink_to_fit()
 }
 
-unsafe fn f26(a0: &mut Vec<libc::c_char>, a1: usize) -> &mut libc::c_char {
+fn f26(a0: &mut Vec<libc::c_char>, a1: usize) -> &mut libc::c_char {
     if a1 >= a0.len() - 1 {
         panic!("out of bounds access")
     }
     &mut a0[a1]
 }
 
-unsafe fn f27(a0: Vec<libc::c_char>) -> Vec<libc::c_char> {
+fn f27(a0: Vec<libc::c_char>) -> Vec<libc::c_char> {
     a0.clone()
 }
 
-unsafe fn f28(a0: &mut Vec<libc::c_char>) -> Vec<libc::c_char> {
+fn f28(a0: &mut Vec<libc::c_char>) -> Vec<libc::c_char> {
     std::mem::take(&mut *a0)
 }
 
-unsafe fn f29(a0: &mut Vec<libc::c_char>, a1: Vec<libc::c_char>) -> &mut Vec<libc::c_char> {
+fn f29(a0: &mut Vec<libc::c_char>, a1: Vec<libc::c_char>) -> &mut Vec<libc::c_char> {
     *a0 = a1.clone();
     a0
 }
 
-unsafe fn f30<'a>(a0: &'a mut Vec<libc::c_char>, a1: &mut Vec<libc::c_char>) -> &'a mut Vec<libc::c_char> {
+fn f30<'a>(a0: &'a mut Vec<libc::c_char>, a1: &mut Vec<libc::c_char>) -> &'a mut Vec<libc::c_char> {
     *a0 = std::mem::take(&mut *a1);
     a0
 }
@@ -212,7 +212,7 @@ unsafe fn f32(a0: Vec<libc::c_char>, a1: *const libc::c_char, a2: usize) -> usiz
 }
 
 // The digits, and the terminator.
-unsafe fn f33(a0: i32) -> Vec<libc::c_char> {
+fn f33(a0: i32) -> Vec<libc::c_char> {
     a0.format_into(&mut std::fmt::NumBuffer::new())
         .bytes()
         .map(|__b| __b as libc::c_char)
@@ -220,7 +220,7 @@ unsafe fn f33(a0: i32) -> Vec<libc::c_char> {
         .collect::<Vec<_>>()
 }
 
-unsafe fn f34(a0: i64) -> Vec<libc::c_char> {
+fn f34(a0: i64) -> Vec<libc::c_char> {
     a0.format_into(&mut std::fmt::NumBuffer::new())
         .bytes()
         .map(|__b| __b as libc::c_char)
@@ -228,7 +228,7 @@ unsafe fn f34(a0: i64) -> Vec<libc::c_char> {
         .collect::<Vec<_>>()
 }
 
-unsafe fn f35(a0: i64) -> Vec<libc::c_char> {
+fn f35(a0: i64) -> Vec<libc::c_char> {
     a0.format_into(&mut std::fmt::NumBuffer::new())
         .bytes()
         .map(|__b| __b as libc::c_char)
@@ -236,7 +236,7 @@ unsafe fn f35(a0: i64) -> Vec<libc::c_char> {
         .collect::<Vec<_>>()
 }
 
-unsafe fn f36(a0: u32) -> Vec<libc::c_char> {
+fn f36(a0: u32) -> Vec<libc::c_char> {
     a0.format_into(&mut std::fmt::NumBuffer::new())
         .bytes()
         .map(|__b| __b as libc::c_char)
@@ -244,7 +244,7 @@ unsafe fn f36(a0: u32) -> Vec<libc::c_char> {
         .collect::<Vec<_>>()
 }
 
-unsafe fn f37(a0: u64) -> Vec<libc::c_char> {
+fn f37(a0: u64) -> Vec<libc::c_char> {
     a0.format_into(&mut std::fmt::NumBuffer::new())
         .bytes()
         .map(|__b| __b as libc::c_char)
@@ -252,7 +252,7 @@ unsafe fn f37(a0: u64) -> Vec<libc::c_char> {
         .collect::<Vec<_>>()
 }
 
-unsafe fn f38(a0: u64) -> Vec<libc::c_char> {
+fn f38(a0: u64) -> Vec<libc::c_char> {
     a0.format_into(&mut std::fmt::NumBuffer::new())
         .bytes()
         .map(|__b| __b as libc::c_char)
@@ -261,7 +261,7 @@ unsafe fn f38(a0: u64) -> Vec<libc::c_char> {
 }
 
 // As sprintf's %f.
-unsafe fn f39(a0: f32) -> Vec<libc::c_char> {
+fn f39(a0: f32) -> Vec<libc::c_char> {
     libcc2rs::format_c("%f", &[VaArg::Double(a0 as f64)])
         .bytes()
         .map(|__b| __b as libc::c_char)
@@ -269,7 +269,7 @@ unsafe fn f39(a0: f32) -> Vec<libc::c_char> {
         .collect::<Vec<_>>()
 }
 
-unsafe fn f40(a0: f64) -> Vec<libc::c_char> {
+fn f40(a0: f64) -> Vec<libc::c_char> {
     libcc2rs::format_c("%f", &[VaArg::Double(a0 as f64)])
         .bytes()
         .map(|__b| __b as libc::c_char)

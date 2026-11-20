@@ -18,7 +18,7 @@ unsafe fn main_0() -> i32 {
     let mut rset: ::libc::fd_set = std::mem::zeroed::<::libc::fd_set>();
     libc::FD_ZERO((&mut rset as *mut ::libc::fd_set));
     libc::FD_SET(fds[(0) as usize], (&mut rset as *mut ::libc::fd_set));
-    let mut tv: ::libc::timeval = unsafe { std::mem::zeroed() };
+    let mut tv: ::libc::timeval = std::mem::zeroed();
     {
         let mut __tmp_0 = { ((&mut tv as *mut ::libc::timeval) as *mut ::libc::c_void) };
         let byte_0 = __tmp_0 as *mut u8;

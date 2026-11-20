@@ -165,8 +165,6 @@ add_custom_target("check"
                   DEPENDS check-libcc2rs check-libcc2rs-macros check-unit
                  )
 
-set(RUSTLS_HEADER "${PROJECT_SOURCE_DIR}/rules/rustls/rustls.h")
-
 set(PREPROCESSOR_BIN "${CMAKE_BINARY_DIR}/rule-preprocessor-target/release/rule-preprocessor")
 set(PREPROCESSOR_ARTIFACTS "${CMAKE_BINARY_DIR}/rule-preprocessor-target/artifacts.json")
 set(RULES_LIB "${CMAKE_BINARY_DIR}/rules-target/release/librules.rlib")
@@ -192,7 +190,7 @@ execute_process(
 )
 
 add_custom_command(
-  OUTPUT ${RUSTLS_HEADER} ${RULES_LIB}
+  OUTPUT ${RULES_LIB}
   COMMAND ${CARGO_ENV_RULES}
           cargo +${RUST_STABLE_VERSION} build --release
           --manifest-path "${PROJECT_SOURCE_DIR}/rules/Cargo.toml"
@@ -243,7 +241,7 @@ foreach(_rule_dir IN LISTS rule_subdirs)
     OUTPUT ${_part}
     COMMAND ${CMAKE_COMMAND} -E make_directory ${rules_index_parts_dir}
     COMMAND $<TARGET_FILE:cpp-rule-indexer> --dir ${_rule_dir} -o ${_part}
-    DEPENDS ${_cpp_srcs} ${_rule_headers} ${rule_common_headers} ${rule_indexer_sources} ${RUSTLS_HEADER}
+    DEPENDS ${_cpp_srcs} ${_rule_headers} ${rule_common_headers} ${rule_indexer_sources}
     VERBATIM
   )
   list(APPEND rules_index_parts ${_part})

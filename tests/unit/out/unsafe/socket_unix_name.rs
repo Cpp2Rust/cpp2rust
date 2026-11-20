@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn check_name_0(mut fd: i32, mut path: *const libc::c_char) {
-    let mut full: libc::sockaddr_storage = unsafe { std::mem::zeroed() };
+    let mut full: libc::sockaddr_storage = std::mem::zeroed();
     {
         let mut __tmp_0 = { ((&mut full as *mut libc::sockaddr_storage) as *mut ::libc::c_void) };
         let byte_0 = __tmp_0 as *mut u8;
@@ -133,7 +133,7 @@ unsafe fn main_0() -> i32 {
     let mut fd: i32 = libc::socket(1, libc::SOCK_DGRAM, 0);
     assert!(((fd) >= (0)));
     (unsafe { check_name_0(fd, std::ptr::null()) });
-    let mut addr: libc::sockaddr_storage = unsafe { std::mem::zeroed() };
+    let mut addr: libc::sockaddr_storage = std::mem::zeroed();
     {
         let mut __tmp_4 = { ((&mut addr as *mut libc::sockaddr_storage) as *mut ::libc::c_void) };
         let byte_0 = __tmp_4 as *mut u8;

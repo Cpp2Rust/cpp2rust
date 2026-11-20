@@ -58,7 +58,7 @@ pub unsafe fn check_buf_0(
 pub unsafe fn check_name_1(mut family: i32) {
     let mut fd: i32 = libc::socket(family, libc::SOCK_DGRAM, 0);
     assert!(((fd) >= (0)));
-    let mut full: libc::sockaddr_storage = unsafe { std::mem::zeroed() };
+    let mut full: libc::sockaddr_storage = std::mem::zeroed();
     {
         let mut __tmp_2 = { ((&mut full as *mut libc::sockaddr_storage) as *mut ::libc::c_void) };
         let byte_0 = __tmp_2 as *mut u8;

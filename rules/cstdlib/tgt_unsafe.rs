@@ -1,7 +1,7 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-unsafe fn f1() {
+fn f1() {
     std::process::abort();
 }
 
@@ -25,11 +25,7 @@ unsafe fn f6(a0: *const libc::c_char) -> *mut libc::c_char {
     libc::getenv(a0)
 }
 
-unsafe fn f7(a0: *const libc::c_char, a1: *const libc::c_char, a2: i32) -> i32 {
-    libc::setenv(a0, a1, a2)
-}
-
-unsafe fn f8(
+unsafe fn f7(
     a0: *const ::libc::c_void,
     a1: *const ::libc::c_void,
     a2: usize,
@@ -48,7 +44,7 @@ unsafe fn f8(
     )
 }
 
-unsafe fn f9(
+unsafe fn f8(
     a0: *mut ::libc::c_void,
     a1: usize,
     a2: usize,
@@ -65,10 +61,10 @@ unsafe fn f9(
     )
 }
 
-unsafe fn f10(a0: *const libc::c_char, a1: *mut libc::c_char) -> *mut libc::c_char {
+unsafe fn f9(a0: *const libc::c_char, a1: *mut libc::c_char) -> *mut libc::c_char {
     libc::realpath(a0, a1)
 }
 
-unsafe fn f11(a0: i32) {
+fn f10(a0: i32) {
     libcc2rs::cpp2rust_exit(a0);
 }

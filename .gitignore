@@ -4,8 +4,6 @@ _buildconfig.py
 Cargo.lock
 target/
 
-rules/rustls/rustls.h
-
 # Python
 *.pyc
 __pycache__

@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn test_ipv4_literal_0() {
-    let mut hints: ::libc::addrinfo = unsafe { std::mem::zeroed() };
+    let mut hints: ::libc::addrinfo = std::mem::zeroed();
     hints.ai_flags = 0;
     hints.ai_protocol = 0;
     hints.ai_addrlen = (0 as libc::socklen_t);
@@ -79,7 +79,7 @@ pub unsafe fn test_ipv4_literal_0() {
     libc::freeaddrinfo(res);
 }
 pub unsafe fn test_ipv6_literal_1() {
-    let mut hints: ::libc::addrinfo = unsafe { std::mem::zeroed() };
+    let mut hints: ::libc::addrinfo = std::mem::zeroed();
     hints.ai_flags = 0;
     hints.ai_protocol = 0;
     hints.ai_addrlen = (0 as libc::socklen_t);

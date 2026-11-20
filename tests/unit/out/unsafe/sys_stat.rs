@@ -13,7 +13,7 @@ pub unsafe fn test_stat_0() {
     assert!((!((fp).is_null())));
     libc::fputs((c"hello".as_ptr().cast_mut()).cast_const(), fp);
     assert!(((libc::fclose(fp)) == (0)));
-    let mut st: ::libc::stat = unsafe { std::mem::zeroed() };
+    let mut st: ::libc::stat = std::mem::zeroed();
     assert!(((libc::stat(path, (&mut st as *mut ::libc::stat))) == (0)));
     assert!(((st.st_size) == (5 as ::libc::off_t)));
     assert!((((*(&mut st as *mut ::libc::stat)).st_mtime) > (0 as ::libc::time_t)));
@@ -27,7 +27,7 @@ pub unsafe fn test_fstat_1() {
     libc::fputs((c"hello world".as_ptr().cast_mut()).cast_const(), fp);
     libc::fflush(fp);
     let mut fd: i32 = libc::fileno(fp);
-    let mut st: ::libc::stat = unsafe { std::mem::zeroed() };
+    let mut st: ::libc::stat = std::mem::zeroed();
     assert!(((libc::fstat(fd, (&mut st as *mut ::libc::stat))) == (0)));
     assert!(((st.st_size) == (11 as ::libc::off_t)));
     assert!((((*(&mut st as *mut ::libc::stat)).st_mtime) > (0 as ::libc::time_t)));
@@ -35,7 +35,7 @@ pub unsafe fn test_fstat_1() {
     libc::unlink(path);
 }
 pub unsafe fn test_st_mtime_access_2() {
-    let mut st: ::libc::stat = unsafe { std::mem::zeroed() };
+    let mut st: ::libc::stat = std::mem::zeroed();
     let mut sp: *mut ::libc::stat = (&mut st as *mut ::libc::stat);
     (*(&mut st as *mut ::libc::stat)).st_mtime = (5 as ::libc::time_t);
     assert!((((*(&mut st as *mut ::libc::stat)).st_mtime) == (5 as ::libc::time_t)));

@@ -6,7 +6,3 @@
 #include <signal.h>
 
 typedef sig_t t1;
-
-int f1(int signum, const struct sigaction *act, struct sigaction *oldact) {
-  return sigaction(signum, act, oldact);
-}
