@@ -54,14 +54,13 @@ fn main_0() -> i32 {
         },
     ])));
     let mut table_size: usize = 4_usize;
-    match ({ (table.decay().offset(table_size)).to_any() },) {
-        (mut __tmp_0,) => {
-            __tmp_0.memcpy(
-                &(table.decay().offset(0)).to_any(),
-                ((table_size as u64).wrapping_mul((4usize as u64)) as usize),
-            );
-            (__tmp_0).clone()
-        }
+    {
+        let mut __tmp_0 = { (table.decay().offset(table_size)).to_any() };
+        __tmp_0.memcpy(
+            &(table.decay().offset(0)).to_any(),
+            ((table_size as u64).wrapping_mul((4usize as u64)) as usize),
+        );
+        (__tmp_0).clone()
     };
     assert!(
         ({

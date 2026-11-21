@@ -26,9 +26,8 @@ unsafe fn main_0() -> i32 {
     assert!(((p3.1) == (6)));
     let arr: [i32; 2] = [1, 2];
     let mut n: u32 = 2_u32;
-    let mut const_ptr_pairs: Vec<(*const i32, u64)> = (0..(1_usize) as usize)
-        .map(|_| <(*const i32, u64)>::default())
-        .collect::<Vec<_>>();
+    let mut const_ptr_pairs: Vec<(*const i32, u64)> =
+        Vec::from_fn(1_usize, |_| <(*const i32, u64)>::default());
     match (
         (&mut const_ptr_pairs[(0_usize)] as *mut (*const i32, u64)),
         (&mut (arr.as_ptr().offset((1) as isize), n) as *mut (*const i32, u32)),

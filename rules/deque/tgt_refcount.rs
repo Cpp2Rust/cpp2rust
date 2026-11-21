@@ -31,3 +31,9 @@ fn f11<'a, T1>(a0: &'a mut Vec<T1>, a1: &mut Vec<T1>) -> &'a mut Vec<T1> {
     *a0 = std::mem::take(&mut *a1);
     a0
 }
+
+fn f12<T1>(a0: &mut Vec<T1>, init: T1) -> &mut T1 {
+    a0.push(init);
+    let __n = a0.len() - 1;
+    &mut a0[__n]
+}

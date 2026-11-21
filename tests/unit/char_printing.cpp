@@ -1,6 +1,14 @@
+#include <cassert>
 #include <iostream>
 #include <string>
 #include <vector>
+
+int made = 0;
+
+std::string make(const char *s) {
+  ++made;
+  return s;
+}
 
 int main() {
   std::vector<unsigned char> vec = {0xc3, 0xa7};
@@ -16,6 +24,16 @@ int main() {
             << 'r' << 'l' << 'd' << '!' << '\n';
 
   std::cout << vec[0] << '\n' << vec[1] << '\n';
+
+  std::cout << make("once") << '\n';
+  std::cout << make("alone");
+  std::cout << std::endl;
+  assert(made == 2);
+
+  // The bytes of C strings need not be UTF-8.
+  const char *bytes = "\xe9\xc3\xa9";
+  const unsigned char *ubytes = reinterpret_cast<const unsigned char *>(bytes);
+  std::cout << bytes << '|' << ubytes << '|' << "\xff" << std::endl;
 
   return 0;
 }

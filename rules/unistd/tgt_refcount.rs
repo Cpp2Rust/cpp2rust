@@ -37,7 +37,7 @@ fn f3(a0: i32, a1: AnyPtr, a2: usize) -> isize {
 }
 
 fn f4(a0: Ptr<i8>) -> i32 {
-    match nix::unistd::unlink(a0.to_rust_string().as_str()) {
+    match a0.with_c_bytes(|__path| nix::unistd::unlink(__path)) {
         Ok(()) => 0,
         Err(__e) => {
             libcc2rs::cpp2rust_errno().write(__e as i32);
@@ -116,7 +116,7 @@ fn f10(a0: i32, a1: AnyPtr, a2: usize) -> isize {
 }
 
 fn f11(a0: Ptr<i8>) -> i32 {
-    match ::std::fs::remove_dir(a0.to_rust_string()) {
+    match a0.with_c_os_str(|__path| ::std::fs::remove_dir(__path)) {
         Ok(()) => 0,
         Err(__e) => {
             libcc2rs::cpp2rust_errno().write(__e.raw_os_error().unwrap_or(::libc::EIO));

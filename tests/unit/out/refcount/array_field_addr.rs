@@ -36,23 +36,21 @@ fn main_0() -> i32 {
     let mut s: Ptr<S> = libcc2rs::malloc_refcount(12usize).reinterpret_cast::<S>();
     assert!((!((s).is_null())));
     field!(s, before).write(1);
-    match ({ (array_field_ptr!(s, mask)).to_any() },) {
-        (mut __tmp_0,) => {
-            __tmp_0.memset((5) as u8, ::std::mem::size_of::<[u8; 4]>());
-            (__tmp_0).clone()
-        }
+    {
+        let mut __tmp_0 = { (array_field_ptr!(s, mask)).to_any() };
+        __tmp_0.memset((5) as u8, ::std::mem::size_of::<[u8; 4]>());
+        (__tmp_0).clone()
     };
     field!(s, after).write(2);
     (array_field_ptr!(s, mask)).write(7_u8);
     let out: Value<Box<[u8]>> = Rc::new(RefCell::new((0..4).map(|_| 0_u8).collect::<Box<[u8]>>()));
-    match ({ (out.decay()).to_any() },) {
-        (mut __tmp_1,) => {
-            __tmp_1.memcpy(
-                &(array_field_ptr!(s, mask)).to_any(),
-                ::std::mem::size_of::<[u8; 4]>(),
-            );
-            (__tmp_1).clone()
-        }
+    {
+        let mut __tmp_1 = { (out.decay()).to_any() };
+        __tmp_1.memcpy(
+            &(array_field_ptr!(s, mask)).to_any(),
+            ::std::mem::size_of::<[u8; 4]>(),
+        );
+        (__tmp_1).clone()
     };
     assert!(
         ({

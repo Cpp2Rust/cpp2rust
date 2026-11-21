@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <stddef.h>
+#include <stdio.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <sys/un.h>
@@ -13,9 +14,16 @@ static void check_name(int fd, const char *path) {
   assert(full.ss_family == AF_UNIX);
   assert(actual >= offsetof(struct sockaddr_un, sun_path));
   assert(actual < sizeof(full));
-  if (path)
+  if (path) {
+    socklen_t path_len = offsetof(struct sockaddr_un, sun_path) + strlen(path);
+    assert(actual == path_len || actual == path_len + 1);
     assert(memcmp(((struct sockaddr_un *)&full)->sun_path, path,
                   strlen(path)) == 0);
+  } else {
+    assert(actual == offsetof(struct sockaddr_un, sun_path) ||
+           actual == sizeof(struct sockaddr));
+  }
+  printf("%s: length %u\n", path ? "named" : "unnamed", (unsigned)actual);
 
   socklen_t capacities[] = {0, 1, 2, actual - 1, actual, actual + 1};
   for (unsigned i = 0; i < sizeof(capacities) / sizeof(capacities[0]); ++i) {

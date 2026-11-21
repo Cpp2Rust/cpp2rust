@@ -27,8 +27,8 @@ fn f6(a0: Ptr<i8>) -> Ptr<i8> {
     }
 }
 
-fn f10(a0: Ptr<i8>, a1: Ptr<i8>) -> Ptr<i8> {
-    match ::std::fs::canonicalize(a0.to_rust_string()) {
+fn f9(a0: Ptr<i8>, a1: Ptr<i8>) -> Ptr<i8> {
+    match a0.with_c_os_str(|__path| ::std::fs::canonicalize(__path)) {
         Ok(__p) => {
             let mut __bytes = __p.into_os_string().into_encoded_bytes();
             __bytes.push(0);
@@ -46,7 +46,7 @@ fn f10(a0: Ptr<i8>, a1: Ptr<i8>) -> Ptr<i8> {
     }
 }
 
-fn f8(a0: AnyPtr, a1: AnyPtr, a2: usize, a3: usize, a4: fn(AnyPtr, AnyPtr) -> i32) -> AnyPtr {
+fn f7(a0: AnyPtr, a1: AnyPtr, a2: usize, a3: usize, a4: fn(AnyPtr, AnyPtr) -> i32) -> AnyPtr {
     let __base = a1.reinterpret_cast::<u8>();
     let mut __lo: isize = 0;
     let mut __hi: isize = a2 as isize - 1;
@@ -66,7 +66,7 @@ fn f8(a0: AnyPtr, a1: AnyPtr, a2: usize, a3: usize, a4: fn(AnyPtr, AnyPtr) -> i3
     __found
 }
 
-fn f9(a0: AnyPtr, a1: usize, a2: usize, a3: fn(AnyPtr, AnyPtr) -> i32) {
+fn f8(a0: AnyPtr, a1: usize, a2: usize, a3: fn(AnyPtr, AnyPtr) -> i32) {
     let __base = a0.reinterpret_cast::<u8>();
     for __i in 0..a1 {
         let mut __min = __i;

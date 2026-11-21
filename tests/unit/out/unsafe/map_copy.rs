@@ -14,15 +14,15 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut a: UnsafeMap<i32, (i32, i32)> = UnsafeMap::new();
-    (*a.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k))) = 10;
+    (*a.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k), || 0_i32)) = 10;
     let mut b: UnsafeMap<i32, (i32, i32)> = a.clone();
-    (*b.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k))) = 20;
-    assert!(((*a.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k))) == (10)));
+    (*b.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k), || 0_i32)) = 20;
+    assert!(((*a.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k), || 0_i32)) == (10)));
     let mut x: UnsafeMap<i32, (i32, i32)> = UnsafeMap::new();
-    (*x.subscript_move(&mut 2, |__k| cpp_move_unsafe!(__k))) = 3;
+    (*x.subscript_move(&mut 2, |__k| cpp_move_unsafe!(__k), || 0_i32)) = 3;
     let mut y: UnsafeMap<i32, (i32, i32)> = x.clone();
-    (*y.subscript_move(&mut 2, |__k| cpp_move_unsafe!(__k))) = 4;
-    assert!(((*x.subscript_move(&mut 2, |__k| cpp_move_unsafe!(__k))) == (3)));
+    (*y.subscript_move(&mut 2, |__k| cpp_move_unsafe!(__k), || 0_i32)) = 4;
+    assert!(((*x.subscript_move(&mut 2, |__k| cpp_move_unsafe!(__k), || 0_i32)) == (3)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

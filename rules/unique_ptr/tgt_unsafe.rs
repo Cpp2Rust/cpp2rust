@@ -19,10 +19,10 @@ fn t4<T1>() -> *mut T1 {
     ::std::ptr::null_mut()
 }
 
-unsafe fn f1<T1: CppArray<T2>, T2: Default>(a0: usize) -> Option<Box<[T2]>> {
+fn f1<T1: CppArray<T2>, T2: Default>(a0: usize) -> Option<Box<[T2]>> {
     Some((0..a0).map(|_| <T2>::default()).collect::<Box<[_]>>())
 }
-unsafe fn f2<T1>(a0: &mut Option<Box<T1>>) -> *mut T1 {
+fn f2<T1>(a0: &mut Option<Box<T1>>) -> *mut T1 {
     a0.as_deref_mut()
         .map_or(::std::ptr::null_mut(), |v| v as *mut T1)
 }
@@ -43,45 +43,45 @@ unsafe fn f5<T1: Default>(a0: &mut Option<Box<T1>>, a1: *mut T1) {
 unsafe fn f6<T1>(a0: &mut Option<Box<T1>>, a1: *mut T1) {
     *a0 = Some(Box::from_raw(a1))
 }
-unsafe fn f7<T1>(a0: &mut Option<Box<[T1]>>) -> *mut T1 {
+fn f7<T1>(a0: &mut Option<Box<[T1]>>) -> *mut T1 {
     a0.as_deref_mut()
         .map_or(::std::ptr::null_mut(), |s| s.as_mut_ptr())
 }
 
-unsafe fn f8<T1>(init: T1) -> Option<Box<T1>> {
+fn f8<T1>(init: T1) -> Option<Box<T1>> {
     Some(Box::new(init))
 }
 
-unsafe fn f9<T1>(a0: &mut Option<Box<[T1]>>) {
+fn f9<T1>(a0: &mut Option<Box<[T1]>>) {
     *a0 = None
 }
 
-unsafe fn f16<T1>(a0: &mut Option<Box<T1>>) {
+fn f16<T1>(a0: &mut Option<Box<T1>>) {
     *a0 = None
 }
 
-unsafe fn f10<T1: Default>() -> Option<Box<T1>> {
+fn f10<T1: Default>() -> Option<Box<T1>> {
     None
 }
 
-unsafe fn f11<T1>() -> Option<Box<[T1]>> {
+fn f11<T1>() -> Option<Box<[T1]>> {
     None
 }
 
-unsafe fn f12<T1>(a0: &mut Option<Box<T1>>) -> Option<Box<T1>> {
+fn f12<T1>(a0: &mut Option<Box<T1>>) -> Option<Box<T1>> {
     a0.take()
 }
 
-unsafe fn f13<T1>(a0: &mut Option<Box<[T1]>>) -> Option<Box<[T1]>> {
+fn f13<T1>(a0: &mut Option<Box<[T1]>>) -> Option<Box<[T1]>> {
     a0.take()
 }
 
-unsafe fn f14<'a, T1>(a0: &'a mut Option<Box<T1>>, a1: &mut Option<Box<T1>>) -> &'a mut Option<Box<T1>> {
+fn f14<'a, T1>(a0: &'a mut Option<Box<T1>>, a1: &mut Option<Box<T1>>) -> &'a mut Option<Box<T1>> {
     *a0 = a1.take();
     a0
 }
 
-unsafe fn f15<'a, T1>(
+fn f15<'a, T1>(
     a0: &'a mut Option<Box<[T1]>>,
     a1: &mut Option<Box<[T1]>>,
 ) -> &'a mut Option<Box<[T1]>> {
@@ -89,12 +89,12 @@ unsafe fn f15<'a, T1>(
     a0
 }
 
-unsafe fn f17<T1>(a0: &mut Option<Box<T1>>) -> *mut T1 {
+fn f17<T1>(a0: &mut Option<Box<T1>>) -> *mut T1 {
     a0.as_deref()
         .map_or(::std::ptr::null_mut(), |v| v as *const T1 as *mut T1)
 }
 
-unsafe fn f18<T1>(a0: &mut Option<Box<T1>>) -> *mut T1 {
+fn f18<T1>(a0: &mut Option<Box<T1>>) -> *mut T1 {
     a0.as_deref()
         .map_or(::std::ptr::null_mut(), |v| v as *const T1 as *mut T1)
 }
@@ -105,10 +105,10 @@ unsafe fn f19<T1>(a0: &mut Option<Box<[T1]>>, a1: usize) -> *mut T1 {
         .add(a1)
 }
 
-unsafe fn f20<T1>(a0: &mut Option<Box<T1>>) -> bool {
+fn f20<T1>(a0: &mut Option<Box<T1>>) -> bool {
     a0.is_none()
 }
 
-unsafe fn f21<T1>(a0: &mut Option<Box<T1>>) -> bool {
+fn f21<T1>(a0: &mut Option<Box<T1>>) -> bool {
     a0.is_some()
 }

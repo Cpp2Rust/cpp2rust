@@ -17,7 +17,7 @@ int f1(const char *pathname, struct stat *statbuf) {
 ```rust
 // rules/stat/tgt_refcount.rs
 fn f1(a0: Ptr<u8>, a1: Ptr<Stat>) -> i32 {
-    match nix::sys::stat::stat(a0.to_rust_string().as_str()) {
+    match a0.with_c_bytes(nix::sys::stat::stat) {
         Ok(__s) => {
             a1.with_mut(|__st| *__st = Stat::from_libc(&__s));
             0
@@ -147,7 +147,9 @@ fn f69<T1>(a0: &mut Vec<T1>) -> &mut T1 {
 The converter decides what the reference becomes at each call site:
 
 - If the result is discarded, as in `s.append(p, n);`, only the statements are
-  emitted.
+  emitted, without the trailing `let` statements whose variables only the place
+  uses, such as the `let __n` of an element's index. Those must have no side
+  effects. A place whose index uses an argument is emitted too.
 - If the result is the argument of another rule, as in
   `s.append(p, n).append(q, m)`, the statements are emitted first and the
   argument is passed to the other rule in place of the result.
@@ -349,34 +351,34 @@ Bodies read the arguments through the va-args API in `libcc2rs` (`VaArg`,
 Functions like `emplace_back` forward their arguments to a constructor. Rust has
 no equivalent, so the rule receives the finished value instead: the Rust side
 takes a trailing parameter named `init`, and the converter builds it at the call
-site from the arguments after the fixed ones. The C++ side spells the pack as
-`Init<T, Args>`, a transparent alias
-(`template <typename T, typename A> using Init = A;`) whose `T` names the type
-to build:
+site from the arguments after the fixed ones, which the C++ side forwards as a
+pack:
 
 ```cpp
-// rules/vector/src.cpp
-template <typename T1, typename... Args>
-T1 &f112(std::vector<T1> &o, Init<T1, Args> &&...args) {
-  return o.emplace_back(std::forward<Args>(args)...);
+// rules/vector/src_cxx17.cpp
+template <typename T1, typename T2 = std::allocator<T1>, typename... T3>
+T1 &f114(std::vector<T1, T2> &o, T3 &&...a1) {
+  return o.emplace_back(std::forward<T3>(a1)...);
 }
 ```
 
 ```rust
 // rules/vector/tgt_unsafe.rs
-unsafe fn f112<T1>(a0: &mut Vec<T1>, init: T1) {
-    let __init = init;
-    a0.push(__init)
+unsafe fn f114<T1>(a0: &mut Vec<T1>, init: T1) -> &mut T1 {
+    a0.push_mut(init)
 }
 ```
 
-`T` must be one of the callee's template arguments. The preprocessor records its
-position as a (depth, index) pair, and at a call like `v.emplace_back(4, 5)` on
-a `std::vector<Point>` the converter reads the template argument at that
-position from the resolved callee (`Point`). It then asks Sema which constructor
-builds a `Point` from `(4, 5)` and substitutes the converted construction for
-`init`. Binding `init` to a local before touching `a0` keeps the construction
-from overlapping a borrow of the container.
+At a call like `v.emplace_back(4, 5)` on a `std::vector<Point>`, the converter
+asks Sema which constructor builds a `Point` from `(4, 5)` and substitutes the
+converted construction for `init`. The rule needn't bind `init` before touching
+`a0`: when its arguments, or what pointers among them point to, may be an object
+that the body borrows mutably, e.g., `v.emplace_back(v[0])` or
+`v.emplace_back(p, p + 3)`, or when a user-defined constructor, which may read
+anything, constructs it, the converter constructs `init` before the body, unless
+the body may not construct it (`std::map::try_emplace`). Likewise, when the body
+uses `init` more than once, the converter constructs it once, before the body,
+and the rule uses that value.
 
 ## Passthrough rules
 

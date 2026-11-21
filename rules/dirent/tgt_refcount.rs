@@ -12,11 +12,13 @@ fn t2() -> libcc2rs::Dirent {
 }
 
 fn f1(a0: Ptr<i8>) -> Ptr<CDir> {
-    match nix::dir::Dir::open(
-        a0.to_rust_string().as_str(),
-        nix::fcntl::OFlag::O_RDONLY,
-        nix::sys::stat::Mode::empty(),
-    ) {
+    match a0.with_c_bytes(|__path| {
+        nix::dir::Dir::open(
+            __path,
+            nix::fcntl::OFlag::O_RDONLY,
+            nix::sys::stat::Mode::empty(),
+        )
+    }) {
         Ok(__dir) => Ptr::alloc(CDir::from_dir(__dir)),
         Err(__e) => {
             libcc2rs::cpp2rust_errno().write(__e as i32);

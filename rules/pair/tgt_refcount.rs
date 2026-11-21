@@ -32,11 +32,9 @@ fn f10<T1, T2>(a0: T1, a1: T2) -> (Value<T1>, Value<T2>) {
 }
 
 fn f12<T1, T2>(a0: &mut (Value<T1>, Value<T2>)) -> (Value<T1>, Value<T2>) {
-    let __first: Ptr<T1> = a0.0.as_pointer();
-    let __second: Ptr<T2> = a0.1.as_pointer();
     (
-        Rc::new(RefCell::new(cpp_move!(__first))),
-        Rc::new(RefCell::new(cpp_move!(__second))),
+        Rc::new(RefCell::new(cpp_move!(a0.0.as_pointer()))),
+        Rc::new(RefCell::new(cpp_move!(a0.1.as_pointer()))),
     )
 }
 
@@ -55,10 +53,8 @@ fn f14<'a, T1: ByteRepr, T2: ByteRepr>(
     a0: &'a mut (Value<T1>, Value<T2>),
     a1: &mut (Value<T1>, Value<T2>),
 ) -> &'a mut (Value<T1>, Value<T2>) {
-    let __src_first: Ptr<T1> = a1.0.as_pointer();
-    let __src_second: Ptr<T2> = a1.1.as_pointer();
-    let __first = cpp_move!(__src_first);
-    let __second = cpp_move!(__src_second);
+    let __first = cpp_move!(a1.0.as_pointer());
+    let __second = cpp_move!(a1.1.as_pointer());
     *a0.0.borrow_mut() = __first;
     *a0.1.borrow_mut() = __second;
     a0

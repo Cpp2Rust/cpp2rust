@@ -9,13 +9,12 @@ use std::rc::{Rc, Weak};
 pub fn f1_0(first: RandomAccessIterator<i32>, last: RandomAccessIterator<i32>) {
     let first: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(first));
     let last: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(last));
-    match ({ (*first.borrow()).clone() },) {
-        (mut __tmp_0,) => {
-            let __n = ({ (*last.borrow()).clone() }).iter_distance(&__tmp_0);
-            let mut __order: Vec<isize> = (0..__n).collect();
-            __order.sort_by(|&__x, &__y| cpp_cmp(&__tmp_0.iter_at(__x), &__tmp_0.iter_at(__y)));
-            reorder(__order, |__i| __tmp_0.iter_at(__i));
-        }
+    {
+        let mut __tmp_0 = { (*first.borrow()).clone() };
+        let __n = ({ (*last.borrow()).clone() }).iter_distance(&__tmp_0);
+        let mut __order: Vec<isize> = (0..__n).collect();
+        __order.sort_by(|&__x, &__y| cpp_cmp(&__tmp_0.iter_at(__x), &__tmp_0.iter_at(__y)));
+        reorder(__order, |__i| __tmp_0.iter_at(__i));
     };
     return;
 }

@@ -27,11 +27,13 @@ unsafe fn main_0() -> i32 {
             (&[vec_[(1_usize)] as u8] as &[u8]),
             (&[('o' as libc::c_char) as u8] as &[u8]),
             (&(str)
+                .split_last()
+                .unwrap()
+                .1
                 .iter()
-                .take((str).len() - 1)
                 .map(|&c| c as u8)
-                .collect::<Vec<u8>>()[..] as &[u8]),
-            (&[b'\n'] as &[u8]),
+                .collect::<Vec<u8>>() as &[u8]),
+            (b"\n" as &[u8]),
         ]
         .concat()),
     );

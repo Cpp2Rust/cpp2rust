@@ -61,7 +61,7 @@ fn f14(a0: i32, a1: Ptr<Sockaddr>, a2: Ptr<u32>) -> i32 {
     }
 }
 
-fn f16(a0: i32, a1: Ptr<Sockaddr>, a2: u32) -> i32 {
+fn f15(a0: i32, a1: Ptr<Sockaddr>, a2: u32) -> i32 {
     match Sockaddr::decode(&a1, a2) {
         Some(__addr) => match nix::sys::socket::bind(a0, &*__addr) {
             Ok(()) => 0,
@@ -77,14 +77,18 @@ fn f16(a0: i32, a1: Ptr<Sockaddr>, a2: u32) -> i32 {
     }
 }
 
-fn f18(a0: i32, a1: AnyPtr, a2: usize, a3: i32, a4: Ptr<Sockaddr>, a5: Ptr<u32>) -> isize {
+fn f17(a0: i32, a1: AnyPtr, a2: usize, a3: i32, a4: Ptr<Sockaddr>, a5: Ptr<u32>) -> isize {
     let __buf = a1.reinterpret_cast::<u8>();
     match __buf.with_slice_mut(a2, |__s| {
         nix::sys::socket::recvfrom::<nix::sys::socket::SockaddrStorage>(a0, __s)
     }) {
         Ok((__n, __from)) => {
             match __from {
-                Some(__ss) => Sockaddr::encode(&__ss, &a4, &a5),
+                Some(__ss) => {
+                    if !a4.is_null() {
+                        Sockaddr::encode(&__ss, &a4, &a5)
+                    }
+                }
                 None => {}
             }
             __n as isize
@@ -96,7 +100,7 @@ fn f18(a0: i32, a1: AnyPtr, a2: usize, a3: i32, a4: Ptr<Sockaddr>, a5: Ptr<u32>)
     }
 }
 
-fn f19(a0: i32, a1: AnyPtr, a2: usize, a3: i32, a4: Ptr<Sockaddr>, a5: u32) -> isize {
+fn f18(a0: i32, a1: AnyPtr, a2: usize, a3: i32, a4: Ptr<Sockaddr>, a5: u32) -> isize {
     let __buf = a1.reinterpret_cast::<u8>();
     match Sockaddr::decode(&a4, a5) {
         Some(__addr) => match __buf.with_slice(a2, |__s| {
@@ -206,7 +210,7 @@ fn f11(a0: i32, a1: i32, a2: i32, a3: Ptr<i32>) -> i32 {
     }
 }
 
-fn f17(a0: i32, a1: i32) -> i32 {
+fn f16(a0: i32, a1: i32) -> i32 {
     match nix::sys::socket::Backlog::new(a1) {
         Ok(__b) => match FdRegistry::with_fd(a0, |__fd| nix::sys::socket::listen(&__fd, __b)) {
             Ok(()) => 0,

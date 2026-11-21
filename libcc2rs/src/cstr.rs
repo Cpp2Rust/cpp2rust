@@ -3,7 +3,6 @@
 
 use std::cell::RefCell;
 use std::collections::HashMap;
-use std::fmt;
 use std::rc::Rc;
 
 use crate::CStringIterator;
@@ -92,20 +91,6 @@ impl CChar for i8 {
     }
     fn from_byte_vec(v: Vec<u8>) -> Vec<Self> {
         v.into_iter().map(|b| b as i8).collect()
-    }
-}
-
-impl<T: CChar> fmt::Display for Ptr<T> {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match &self.kind {
-            PtrKind::Null => write!(f, "NULL"),
-            _ => {
-                for ch in self.to_c_string_iterator() {
-                    write!(f, "{}", char::from(ch.to_byte()))?;
-                }
-                Ok(())
-            }
-        }
     }
 }
 
@@ -286,8 +271,11 @@ impl<T: CChar> Ptr<T> {
         T::into_byte_vec(self.to_c_bytes())
     }
 
-    pub fn to_rust_string(&self) -> String {
-        self.with_c_bytes(|s| String::from_utf8_lossy(s).into_owned())
+    // Like `with_c_bytes`, with the C string viewed as an `OsStr`, like a path.
+    // The bytes need not be UTF-8, unlike those of a `str`.
+    pub fn with_c_os_str<R>(&self, f: impl FnOnce(&std::ffi::OsStr) -> R) -> R {
+        use std::os::unix::ffi::OsStrExt;
+        self.with_c_bytes(|s| f(std::ffi::OsStr::from_bytes(s)))
     }
 }
 
@@ -302,7 +290,7 @@ mod tests {
     fn check(p: &Ptr<u8>) {
         assert_eq!(p.c_str_len(), 2);
         assert_eq!(p.to_c_bytes(), b"ab");
-        assert_eq!(p.to_rust_string(), "ab");
+        assert_eq!(p.with_c_os_str(|s| s.to_owned()), "ab");
         assert_eq!(p.to_c_string_iterator().count(), 2);
         assert_eq!(p.to_c_string_iterator().collect::<Vec<u8>>(), b"ab");
         assert_eq!(p.with_c_str(|s| s.to_vec()), b"ab");
@@ -342,7 +330,7 @@ mod tests {
         let p = Ptr::<u8>::from_string_literal(b"");
         assert_eq!(p.c_str_len(), 0);
         assert!(p.to_c_bytes().is_empty());
-        assert_eq!(p.to_rust_string(), "");
+        assert_eq!(p.with_c_os_str(|s| s.to_owned()), "");
     }
 
     #[test]
@@ -352,6 +340,7 @@ mod tests {
         assert_eq!(p.c_str_len(), 2);
         assert_eq!(p.to_c_bytes(), [-23, b'a' as i8]);
         assert_eq!(p.to_c_u8_bytes(), b"\xe9a");
+        assert_eq!(p.with_c_os_str(|s| s.as_encoded_bytes().to_vec()), b"\xe9a");
         // memcmp compares bytes as unsigned char.
         let q = Ptr::<i8>::from_string_literal(b"a");
         assert!(p.memcmp(&q, 1) > 0);

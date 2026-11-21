@@ -12,8 +12,8 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let mut fp: Ptr<CFile> = match CFile::open(
-        &Ptr::<i8>::from_string_literal(b"/tmp/cpp2rust_uafc_test.tmp").to_rust_string(),
-        &Ptr::<i8>::from_string_literal(b"wb").to_rust_string(),
+        &Ptr::<i8>::from_string_literal(b"/tmp/cpp2rust_uafc_test.tmp").to_c_u8_bytes(),
+        &Ptr::<i8>::from_string_literal(b"wb").to_c_u8_bytes(),
     ) {
         Some(__f) => Ptr::alloc(__f),
         None => Ptr::null(),

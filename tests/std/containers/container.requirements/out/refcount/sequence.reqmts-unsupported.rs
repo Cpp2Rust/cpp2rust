@@ -13,15 +13,14 @@ pub fn test_0() {
     )));
     let pairs: Value<Vec<(Value<Option<Value<i32>>>, Value<i32>)>> =
         Rc::new(RefCell::new(Vec::new()));
-    match ({
-        <RandomAccessIterator<(Value<Option<Value<i32>>>, Value<i32>)>>::from(pairs.decay().end())
-    },)
     {
-        (mut __tmp_0,) => {
-            let __off = __tmp_0.index();
-            (*pairs.borrow_mut()).insert(__off, cpp_move!(source.as_pointer()));
-            (__tmp_0).clone()
-        }
+        let mut __tmp_0 = {
+            <RandomAccessIterator<(Value<Option<Value<i32>>>, Value<i32>)>>::from(
+                pairs.decay().end(),
+            )
+        };
+        (*pairs.borrow_mut()).insert(__tmp_0.index(), cpp_move!(source.as_pointer()));
+        (__tmp_0).clone()
     };
     assert!(((({ (*(*pairs.borrow())[0_usize].0.borrow()).as_pointer() }).read()) == 1));
     assert!(({ (*(*source.borrow()).0.borrow()).is_none() }));

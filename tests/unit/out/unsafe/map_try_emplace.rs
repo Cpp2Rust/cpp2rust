@@ -93,8 +93,10 @@ pub static mut global_counter_8: std::cell::LazyCell<i32> =
     std::cell::LazyCell::new(|| unsafe { 0 });
 pub static mut seed_9: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe {
     {
-        (*(*std::cell::LazyCell::force_mut(&mut *&raw mut global_map_6))
-            .subscript(&(*std::cell::LazyCell::force_mut(&mut *&raw mut global_key_7)))) = 10;
+        (*(*std::cell::LazyCell::force_mut(&mut *&raw mut global_map_6)).subscript(
+            &(*std::cell::LazyCell::force_mut(&mut *&raw mut global_key_7)),
+            || 0_i32,
+        )) = 10;
         0
     }
 });
@@ -146,7 +148,7 @@ unsafe fn main_0() -> i32 {
                                         let mut k: i32 = 0;
                                         'loop_: while ((k) < (3)) {
                                             if (((subset) & ((1) << (k))) != 0) {
-                                                (*m.subscript(&k)) = ((10) + (k));
+                                                (*m.subscript(&k, || 0_i32)) = ((10) + (k));
                                                 size.prefix_inc();
                                             }
                                             k.prefix_inc();
@@ -183,7 +185,7 @@ unsafe fn main_0() -> i32 {
                                     ok = ((ok as i32) & (((counter) == ((initial) + (1))) as i32))
                                         != 0;
                                     ok = ((ok as i32)
-                                        & (((result.1 as i32) == (!(hit) as i32)) as i32))
+                                        & ((((result.1) as i32) == (!(hit) as i32)) as i32))
                                         != 0;
                                     let mut found: bool = result.0 == m.find(&key);
                                     ok = ((ok as i32) & (found as i32)) != 0;

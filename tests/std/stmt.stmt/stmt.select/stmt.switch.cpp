@@ -66,7 +66,38 @@ void test() {
 }
 } // namespace p7_init_statement_variable_lives_for_whole_statement
 
+// [dcl.attr.likelihood]: an attribute on a case label keeps the case.
+namespace likelihood_attributes_on_cases {
+int classify(int x) {
+  int r = 0;
+  switch (x) {
+  case 1:
+    [[unlikely]] return -1;
+  [[likely]] case 2:
+    r = 2;
+    break;
+  [[unlikely]] case 3:
+    r = 3;
+    break;
+  default:
+    break;
+  }
+  while (x-- > 0) [[unlikely]] {
+    r += 10;
+  }
+  return r;
+}
+
+void test() {
+  assert(classify(1) == -1);
+  assert(classify(2) == 22);
+  assert(classify(3) == 33);
+  assert(classify(0) == 0);
+}
+} // namespace likelihood_attributes_on_cases
+
 int main() {
+  likelihood_attributes_on_cases::test();
   p2_condition_variable_lives_for_whole_statement::test();
   p7_init_statement_variable_lives_for_whole_statement::test();
   return 0;

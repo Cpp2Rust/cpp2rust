@@ -22,8 +22,9 @@ pub fn test_time_0() {
         }
     };
     let t2: Value<::libc::time_t> = Rc::new(RefCell::new((0 as ::libc::time_t)));
-    let mut t3: ::libc::time_t = match ({ (t2.as_pointer()) },) {
-        (mut __tmp_0,) => match nix::time::clock_gettime(nix::time::ClockId::CLOCK_REALTIME) {
+    let mut t3: ::libc::time_t = {
+        let mut __tmp_0 = { (t2.as_pointer()) };
+        match nix::time::clock_gettime(nix::time::ClockId::CLOCK_REALTIME) {
             Ok(__ts) => {
                 let __s = __ts.tv_sec();
                 if !__tmp_0.is_null() {
@@ -35,7 +36,7 @@ pub fn test_time_0() {
                 libcc2rs::cpp2rust_errno().write(__e as i32);
                 -1
             }
-        },
+        }
     };
     assert!((t1 > (1500000000 as ::libc::time_t)));
     assert!(({ ((*t2.borrow()) == t3) }));
@@ -45,25 +46,24 @@ pub fn print_tm_1(t: ::libc::time_t) {
     let t: Value<::libc::time_t> = Rc::new(RefCell::new(t));
     let tm: Value<libcc2rs::Tm> = Rc::new(RefCell::new(Default::default()));
     assert!(
-        (!((match ({ (tm.as_pointer()) },) {
-            (mut __tmp_1,) => {
-                match jiff::Timestamp::from_second((t.as_pointer()).read()) {
-                    Ok(__ts) => {
-                        let __dt = __ts.to_zoned(jiff::tz::TimeZone::UTC);
-                        __tmp_1.with_mut(|__tm| *__tm = Tm::from_zoned(&__dt));
-                        (__tmp_1).clone()
-                    }
-                    Err(_) => {
-                        libcc2rs::cpp2rust_errno().write(::libc::EOVERFLOW);
-                        Ptr::null()
-                    }
+        (!(({
+            let mut __tmp_1 = { (tm.as_pointer()) };
+            match jiff::Timestamp::from_second((t.as_pointer()).read()) {
+                Ok(__ts) => {
+                    let __dt = __ts.to_zoned(jiff::tz::TimeZone::UTC);
+                    __tmp_1.with_mut(|__tm| *__tm = Tm::from_zoned(&__dt));
+                    (__tmp_1).clone()
+                }
+                Err(_) => {
+                    libcc2rs::cpp2rust_errno().write(::libc::EOVERFLOW);
+                    Ptr::null()
                 }
             }
         })
         .is_null()))
     );
-    println!(
-        "{}-{}-{} {}:{}:{} wday={} yday={} {} gmtoff={} isdst={}",
+    printf!(
+        b"%d-%d-%d %d:%d:%d wday=%d yday=%d %s gmtoff=%ld isdst=%d\n",
         { (*tm.borrow()).tm_year },
         { (*tm.borrow()).tm_mon },
         { (*tm.borrow()).tm_mday },
@@ -93,31 +93,30 @@ pub fn print_local_tm_3(t: ::libc::time_t) {
     let t: Value<::libc::time_t> = Rc::new(RefCell::new(t));
     let tm: Value<libcc2rs::Tm> = Rc::new(RefCell::new(Default::default()));
     assert!(
-        (!((match ({ (tm.as_pointer()) },) {
-            (mut __tmp_2,) => {
-                match jiff::Timestamp::from_second((t.as_pointer()).read()) {
-                    Ok(__ts) => {
-                        let __dt = __ts.to_zoned(jiff::tz::TimeZone::system());
-                        let __info = __dt.time_zone().to_offset_info(__ts);
-                        let __isdst = if __info.dst().is_dst() { 1 } else { 0 };
-                        __tmp_2.with_mut(|__tm| {
-                            *__tm = Tm::from_zoned(&__dt);
-                            __tm.tm_isdst = __isdst;
-                            __tm.tm_zone = Ptr::alloc_c_str(__info.abbreviation().as_bytes());
-                        });
-                        (__tmp_2).clone()
-                    }
-                    Err(_) => {
-                        libcc2rs::cpp2rust_errno().write(::libc::EOVERFLOW);
-                        Ptr::null()
-                    }
+        (!(({
+            let mut __tmp_2 = { (tm.as_pointer()) };
+            match jiff::Timestamp::from_second((t.as_pointer()).read()) {
+                Ok(__ts) => {
+                    let __dt = __ts.to_zoned(jiff::tz::TimeZone::system());
+                    let __info = __dt.time_zone().to_offset_info(__ts);
+                    let __isdst = if __info.dst().is_dst() { 1 } else { 0 };
+                    __tmp_2.with_mut(|__tm| {
+                        *__tm = Tm::from_zoned(&__dt);
+                        __tm.tm_isdst = __isdst;
+                        __tm.tm_zone = Ptr::alloc_c_str(__info.abbreviation().as_bytes());
+                    });
+                    (__tmp_2).clone()
+                }
+                Err(_) => {
+                    libcc2rs::cpp2rust_errno().write(::libc::EOVERFLOW);
+                    Ptr::null()
                 }
             }
         })
         .is_null()))
     );
-    println!(
-        "{}-{}-{} {}:{}:{} wday={} yday={} {} gmtoff={} isdst={}",
+    printf!(
+        b"%d-%d-%d %d:%d:%d wday=%d yday=%d %s gmtoff=%ld isdst=%d\n",
         { (*tm.borrow()).tm_year },
         { (*tm.borrow()).tm_mon },
         { (*tm.borrow()).tm_mday },
@@ -142,18 +141,17 @@ pub fn test_strftime_5() {
     let t: Value<::libc::time_t> = Rc::new(RefCell::new((1721126096 as ::libc::time_t)));
     let tm: Value<libcc2rs::Tm> = Rc::new(RefCell::new(Default::default()));
     assert!(
-        (!((match ({ (tm.as_pointer()) },) {
-            (mut __tmp_3,) => {
-                match jiff::Timestamp::from_second((t.as_pointer()).read()) {
-                    Ok(__ts) => {
-                        let __dt = __ts.to_zoned(jiff::tz::TimeZone::UTC);
-                        __tmp_3.with_mut(|__tm| *__tm = Tm::from_zoned(&__dt));
-                        (__tmp_3).clone()
-                    }
-                    Err(_) => {
-                        libcc2rs::cpp2rust_errno().write(::libc::EOVERFLOW);
-                        Ptr::null()
-                    }
+        (!(({
+            let mut __tmp_3 = { (tm.as_pointer()) };
+            match jiff::Timestamp::from_second((t.as_pointer()).read()) {
+                Ok(__ts) => {
+                    let __dt = __ts.to_zoned(jiff::tz::TimeZone::UTC);
+                    __tmp_3.with_mut(|__tm| *__tm = Tm::from_zoned(&__dt));
+                    (__tmp_3).clone()
+                }
+                Err(_) => {
+                    libcc2rs::cpp2rust_errno().write(::libc::EOVERFLOW);
+                    Ptr::null()
                 }
             }
         })
@@ -161,138 +159,199 @@ pub fn test_strftime_5() {
     );
     let buf: Value<Box<[i8]>> = Rc::new(RefCell::new((0..64).map(|_| 0_i8).collect::<Box<[i8]>>()));
     assert!(
-        (match ({ buf.decay() },) {
-            (mut __tmp_4,) => {
-                {
-                    let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
-                    let __text = match __dt {
-                        Ok(__d) => jiff::fmt::strtime::format(
-                            Ptr::<i8>::from_string_literal(b"%Y-%m-%d %H:%M:%S")
-                                .to_rust_string()
-                                .as_str(),
-                            __d,
-                        )
-                        .unwrap_or_default(),
-                        Err(_) => String::new(),
-                    };
-                    if __text.is_empty() || __text.len() + 1 > ::std::mem::size_of::<[i8; 64]>() {
-                        0
-                    } else {
-                        __tmp_4.write_c_bytes(__text.as_bytes());
-                        elem!(__tmp_4, __text.len()).write(0);
-                        __text.len()
-                    }
+        ({
+            let mut __tmp_4 = { buf.decay() };
+            let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
+            // jiff formats UTF-8, so the bytes of the format that are not UTF-8 are
+            // copied.
+            let __text = match __dt {
+                Ok(__d) => {
+                    Ptr::<i8>::from_string_literal(b"%Y-%m-%d %H:%M:%S").with_c_bytes(|__fmt| {
+                        __fmt
+                            .utf8_chunks()
+                            .map(|__c| {
+                                jiff::fmt::strtime::format(__c.valid(), __d)
+                                    .map(|__s| [__s.as_bytes(), __c.invalid()].concat())
+                            })
+                            .collect::<Result<Vec<_>, _>>()
+                            .map_or(Vec::new(), |__v| __v.concat())
+                    })
                 }
+                Err(_) => Vec::new(),
+            };
+            if __text.is_empty() || __text.len() + 1 > ::std::mem::size_of::<[i8; 64]>() {
+                0
+            } else {
+                __tmp_4.write_c_bytes(&__text);
+                elem!(__tmp_4, __text.len()).write(0);
+                __text.len()
             }
         } > 0_usize)
     );
-    println!("{}", buf.decay());
+    printf!(b"%s\n", buf.decay());
     assert!(
-        (match ({ buf.decay() },) {
-            (mut __tmp_5,) => {
-                {
-                    let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
-                    let __text = match __dt {
-                        Ok(__d) => jiff::fmt::strtime::format(
-                            Ptr::<i8>::from_string_literal(b"%a, %d %b %Y %T")
-                                .to_rust_string()
-                                .as_str(),
-                            __d,
-                        )
-                        .unwrap_or_default(),
-                        Err(_) => String::new(),
-                    };
-                    if __text.is_empty() || __text.len() + 1 > ::std::mem::size_of::<[i8; 64]>() {
-                        0
-                    } else {
-                        __tmp_5.write_c_bytes(__text.as_bytes());
-                        elem!(__tmp_5, __text.len()).write(0);
-                        __text.len()
-                    }
+        ({
+            let mut __tmp_5 = { buf.decay() };
+            let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
+            // jiff formats UTF-8, so the bytes of the format that are not UTF-8 are
+            // copied.
+            let __text = match __dt {
+                Ok(__d) => {
+                    Ptr::<i8>::from_string_literal(b"%a, %d %b %Y %T").with_c_bytes(|__fmt| {
+                        __fmt
+                            .utf8_chunks()
+                            .map(|__c| {
+                                jiff::fmt::strtime::format(__c.valid(), __d)
+                                    .map(|__s| [__s.as_bytes(), __c.invalid()].concat())
+                            })
+                            .collect::<Result<Vec<_>, _>>()
+                            .map_or(Vec::new(), |__v| __v.concat())
+                    })
                 }
+                Err(_) => Vec::new(),
+            };
+            if __text.is_empty() || __text.len() + 1 > ::std::mem::size_of::<[i8; 64]>() {
+                0
+            } else {
+                __tmp_5.write_c_bytes(&__text);
+                elem!(__tmp_5, __text.len()).write(0);
+                __text.len()
             }
         } > 0_usize)
     );
-    println!("{}", buf.decay());
+    printf!(b"%s\n", buf.decay());
     assert!(
-        (match ({ buf.decay() },) {
-            (mut __tmp_6,) => {
-                {
-                    let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
-                    let __text = match __dt {
-                        Ok(__d) => jiff::fmt::strtime::format(
-                            Ptr::<i8>::from_string_literal(b"day %j 100%%")
-                                .to_rust_string()
-                                .as_str(),
-                            __d,
-                        )
-                        .unwrap_or_default(),
-                        Err(_) => String::new(),
-                    };
-                    if __text.is_empty() || __text.len() + 1 > ::std::mem::size_of::<[i8; 64]>() {
-                        0
-                    } else {
-                        __tmp_6.write_c_bytes(__text.as_bytes());
-                        elem!(__tmp_6, __text.len()).write(0);
-                        __text.len()
-                    }
-                }
+        ({
+            let mut __tmp_6 = { buf.decay() };
+            let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
+            // jiff formats UTF-8, so the bytes of the format that are not UTF-8 are
+            // copied.
+            let __text = match __dt {
+                Ok(__d) => Ptr::<i8>::from_string_literal(b"day %j 100%%").with_c_bytes(|__fmt| {
+                    __fmt
+                        .utf8_chunks()
+                        .map(|__c| {
+                            jiff::fmt::strtime::format(__c.valid(), __d)
+                                .map(|__s| [__s.as_bytes(), __c.invalid()].concat())
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                        .map_or(Vec::new(), |__v| __v.concat())
+                }),
+                Err(_) => Vec::new(),
+            };
+            if __text.is_empty() || __text.len() + 1 > ::std::mem::size_of::<[i8; 64]>() {
+                0
+            } else {
+                __tmp_6.write_c_bytes(&__text);
+                elem!(__tmp_6, __text.len()).write(0);
+                __text.len()
             }
         } > 0_usize)
     );
-    println!("{}", buf.decay());
+    printf!(b"%s\n", buf.decay());
     assert!(
-        (match ({ buf.decay() },) {
-            (mut __tmp_7,) => {
-                {
-                    let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
-                    let __text = match __dt {
-                        Ok(__d) => jiff::fmt::strtime::format(
-                            Ptr::<i8>::from_string_literal(b"%e")
-                                .to_rust_string()
-                                .as_str(),
-                            __d,
-                        )
-                        .unwrap_or_default(),
-                        Err(_) => String::new(),
-                    };
-                    if __text.is_empty() || __text.len() + 1 > ::std::mem::size_of::<[i8; 64]>() {
-                        0
-                    } else {
-                        __tmp_7.write_c_bytes(__text.as_bytes());
-                        elem!(__tmp_7, __text.len()).write(0);
-                        __text.len()
-                    }
-                }
+        ({
+            let mut __tmp_7 = { buf.decay() };
+            let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
+            // jiff formats UTF-8, so the bytes of the format that are not UTF-8 are
+            // copied.
+            let __text = match __dt {
+                Ok(__d) => Ptr::<i8>::from_string_literal(b"%e").with_c_bytes(|__fmt| {
+                    __fmt
+                        .utf8_chunks()
+                        .map(|__c| {
+                            jiff::fmt::strtime::format(__c.valid(), __d)
+                                .map(|__s| [__s.as_bytes(), __c.invalid()].concat())
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                        .map_or(Vec::new(), |__v| __v.concat())
+                }),
+                Err(_) => Vec::new(),
+            };
+            if __text.is_empty() || __text.len() + 1 > ::std::mem::size_of::<[i8; 64]>() {
+                0
+            } else {
+                __tmp_7.write_c_bytes(&__text);
+                elem!(__tmp_7, __text.len()).write(0);
+                __text.len()
             }
         } > 0_usize)
     );
-    println!("{}", buf.decay());
+    printf!(b"%s\n", buf.decay());
+    assert!(
+        ({
+            let mut __tmp_8 = { buf.decay() };
+            let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
+            // jiff formats UTF-8, so the bytes of the format that are not UTF-8 are
+            // copied.
+            let __text = match __dt {
+                Ok(__d) => {
+                    Ptr::<i8>::from_string_literal(b"\xff%Y\xc3\xa9").with_c_bytes(|__fmt| {
+                        __fmt
+                            .utf8_chunks()
+                            .map(|__c| {
+                                jiff::fmt::strtime::format(__c.valid(), __d)
+                                    .map(|__s| [__s.as_bytes(), __c.invalid()].concat())
+                            })
+                            .collect::<Result<Vec<_>, _>>()
+                            .map_or(Vec::new(), |__v| __v.concat())
+                    })
+                }
+                Err(_) => Vec::new(),
+            };
+            if __text.is_empty() || __text.len() + 1 > ::std::mem::size_of::<[i8; 64]>() {
+                0
+            } else {
+                __tmp_8.write_c_bytes(&__text);
+                elem!(__tmp_8, __text.len()).write(0);
+                __text.len()
+            }
+        } == 7_usize)
+    );
+    assert!(
+        ({
+            let mut __it1 = buf.decay().to_c_string_iterator();
+            let mut __it2 =
+                Ptr::<i8>::from_string_literal(b"\xff2024\xc3\xa9").to_c_string_iterator();
+            loop {
+                let __c1 = __it1.next();
+                let __c2 = __it2.next();
+                if __c1 != __c2 {
+                    break (__c1.unwrap_or(0) as u8 as i32) - (__c2.unwrap_or(0) as u8 as i32);
+                }
+                if __c1.is_none() {
+                    break 0;
+                }
+            }
+        } == 0)
+    );
     let small: Value<Box<[i8]>> =
         Rc::new(RefCell::new((0..4).map(|_| 0_i8).collect::<Box<[i8]>>()));
     assert!(
-        (match ({ small.decay() },) {
-            (mut __tmp_8,) => {
-                {
-                    let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
-                    let __text = match __dt {
-                        Ok(__d) => jiff::fmt::strtime::format(
-                            Ptr::<i8>::from_string_literal(b"%Y-%m-%d")
-                                .to_rust_string()
-                                .as_str(),
-                            __d,
-                        )
-                        .unwrap_or_default(),
-                        Err(_) => String::new(),
-                    };
-                    if __text.is_empty() || __text.len() + 1 > ::std::mem::size_of::<[i8; 4]>() {
-                        0
-                    } else {
-                        __tmp_8.write_c_bytes(__text.as_bytes());
-                        elem!(__tmp_8, __text.len()).write(0);
-                        __text.len()
-                    }
-                }
+        ({
+            let mut __tmp_9 = { small.decay() };
+            let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
+            // jiff formats UTF-8, so the bytes of the format that are not UTF-8 are
+            // copied.
+            let __text = match __dt {
+                Ok(__d) => Ptr::<i8>::from_string_literal(b"%Y-%m-%d").with_c_bytes(|__fmt| {
+                    __fmt
+                        .utf8_chunks()
+                        .map(|__c| {
+                            jiff::fmt::strtime::format(__c.valid(), __d)
+                                .map(|__s| [__s.as_bytes(), __c.invalid()].concat())
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                        .map_or(Vec::new(), |__v| __v.concat())
+                }),
+                Err(_) => Vec::new(),
+            };
+            if __text.is_empty() || __text.len() + 1 > ::std::mem::size_of::<[i8; 4]>() {
+                0
+            } else {
+                __tmp_9.write_c_bytes(&__text);
+                elem!(__tmp_9, __text.len()).write(0);
+                __text.len()
             }
         } == 0_usize)
     );

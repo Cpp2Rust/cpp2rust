@@ -13,9 +13,9 @@ pub fn print_moved_from_0(mut label: Ptr<i8>, from: Ptr<Vec<i8>>, to: Ptr<Vec<i8
         __tmp1.push(0);
         __tmp1
     })));
-    println!(
-        "{}: {} {} {} {} {} [{}]",
-        label,
+    printf!(
+        b"%s: %zu %zu %d %zu %d [%s]\n",
+        (label).clone(),
         ((*from.upgrade().deref()).len() - 1),
         ((*sub.borrow()).len() - 1),
         ((elem!(from.decay(), 0).read()) as i32),
@@ -110,13 +110,17 @@ fn main_0() -> i32 {
             assigned_short.as_pointer(),
         )
     });
-    {
-        (*word.borrow_mut()).pop();
+    word.with_mut(|__b0| {
+        (*__b0).pop();
         Ptr::<i8>::from_string_literal(b"again")
-            .with_slice(5_usize, |__s| (*word.borrow_mut()).extend_from_slice(__s));
-        (*word.borrow_mut()).push(0);
-    };
-    println!("reuse: {} {}", ((*word.borrow()).len() - 1), word.decay());
+            .with_slice(5_usize, |__s| (*__b0).extend_from_slice(__s));
+        (*__b0).push(0);
+    });
+    printf!(
+        b"reuse: %zu %s\n",
+        ((*word.borrow()).len() - 1),
+        word.decay()
+    );
     let local: Value<Vec<i8>> = Rc::new(RefCell::new(({ return_local_1() })));
     let parameter: Value<Vec<i8>> = Rc::new(RefCell::new(
         ({
@@ -128,7 +132,7 @@ fn main_0() -> i32 {
             })
         }),
     ));
-    println!("returns: {} {}", local.decay(), parameter.decay());
+    printf!(b"returns: %s %s\n", local.decay(), parameter.decay());
     let source: Value<Vec<i8>> = Rc::new(RefCell::new({
         let mut __bytes = Ptr::<i8>::from_string_literal(b"returned reference").to_c_bytes();
         __bytes.push(0);
@@ -143,13 +147,12 @@ fn main_0() -> i32 {
             reference.as_pointer(),
         )
     });
-    {
-        (*source.borrow_mut()).pop();
-        Ptr::<i8>::from_string_literal(b"rvalue reference").with_slice(16_usize, |__s| {
-            (*source.borrow_mut()).extend_from_slice(__s)
-        });
-        (*source.borrow_mut()).push(0);
-    };
+    source.with_mut(|__b0| {
+        (*__b0).pop();
+        Ptr::<i8>::from_string_literal(b"rvalue reference")
+            .with_slice(16_usize, |__s| (*__b0).extend_from_slice(__s));
+        (*__b0).push(0);
+    });
     let rvalue_reference: Value<Vec<i8>> = Rc::new(RefCell::new(
         ({ return_rvalue_reference_4(source.as_pointer()) }),
     ));

@@ -30,14 +30,14 @@ fn main_0() -> i32 {
         RandomAccessIterator::Vec(x.decay().to_last()),
     ) {
         let c: Ptr<i8> = c.iter_deref();
-        println!("{}", ((c.read()) as i32) as u8 as char);
+        printf!(b"%c\n", ((c.read()) as i32));
     }
     'loop_: for c in IterRange::new(
         RandomAccessIterator::Vec(x.decay()),
         RandomAccessIterator::Vec(x.decay().to_last()),
     ) {
         let mut c: i8 = (c.iter_deref().read());
-        println!("{}", (c as i32) as u8 as char);
+        printf!(b"%c\n", (c as i32));
     }
     let v: Value<Vec<Ptr<i32>>> = Rc::new(RefCell::new(Vec::new()));
     {
@@ -50,7 +50,7 @@ fn main_0() -> i32 {
     };
     'loop_: for p in IterRange::new(v.decay().begin(), v.decay().end()) {
         let mut p: Ptr<i32> = (p.iter_deref().read());
-        println!("{}", (p.read()));
+        printf!(b"%d\n", (p.read()));
     }
     return 0;
 }

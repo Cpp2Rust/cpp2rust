@@ -18,30 +18,38 @@ fn t4() -> ::std::fs::File {
 }
 
 unsafe fn f1(a0: *const libc::c_char) -> ::std::fs::File {
-    ::std::fs::File::create(::std::ffi::CStr::from_ptr(a0).to_str().unwrap()).unwrap()
+    use ::std::os::unix::ffi::OsStrExt;
+    ::std::fs::File::create(::std::ffi::OsStr::from_bytes(
+        ::std::ffi::CStr::from_ptr(a0).to_bytes(),
+    ))
+    .unwrap()
 }
 
-unsafe fn f2(a0: ::std::fs::File) -> ::std::fs::File {
+fn f2(a0: ::std::fs::File) -> ::std::fs::File {
     a0.try_clone().unwrap()
 }
-unsafe fn f3(a0: &mut ::std::fs::File) -> &mut ::std::fs::File {
+fn f3(a0: &mut ::std::fs::File) -> &mut ::std::fs::File {
     a0
 }
-unsafe fn f4(a0: ::std::fs::File) -> ::std::fs::File {
+fn f4(a0: ::std::fs::File) -> ::std::fs::File {
     a0
 }
 unsafe fn f5(a0: *const libc::c_char) -> ::std::fs::File {
-    ::std::fs::File::open(::std::ffi::CStr::from_ptr(a0).to_str().unwrap()).unwrap()
+    use ::std::os::unix::ffi::OsStrExt;
+    ::std::fs::File::open(::std::ffi::OsStr::from_bytes(
+        ::std::ffi::CStr::from_ptr(a0).to_bytes(),
+    ))
+    .unwrap()
 }
 
-unsafe fn f6(a0: ::std::fs::File) -> ::std::fs::File {
+fn f6(a0: ::std::fs::File) -> ::std::fs::File {
     a0.try_clone().unwrap()
 }
 
-unsafe fn f7(a0: ::std::fs::File) -> ::std::fs::File {
+fn f7(a0: ::std::fs::File) -> ::std::fs::File {
     a0.try_clone().unwrap()
 }
 
-unsafe fn f8(a0: ::std::fs::File) -> ::std::fs::File {
+fn f8(a0: ::std::fs::File) -> ::std::fs::File {
     a0
 }

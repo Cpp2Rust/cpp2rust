@@ -7,15 +7,14 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn check_name_0(mut fd: i32, mut path: *const libc::c_char) {
-    let mut full: libc::sockaddr_storage = unsafe { std::mem::zeroed() };
-    match ({ ((&mut full as *mut libc::sockaddr_storage) as *mut ::libc::c_void) },) {
-        (mut __tmp_0,) => {
-            let byte_0 = __tmp_0 as *mut u8;
-            for offset in 0..::std::mem::size_of::<libc::sockaddr_storage>() {
-                *byte_0.offset(offset as isize) = 165 as u8;
-            }
-            __tmp_0
+    let mut full: libc::sockaddr_storage = std::mem::zeroed();
+    {
+        let mut __tmp_0 = { ((&mut full as *mut libc::sockaddr_storage) as *mut ::libc::c_void) };
+        let byte_0 = __tmp_0 as *mut u8;
+        for offset in 0..::std::mem::size_of::<libc::sockaddr_storage>() {
+            *byte_0.offset(offset as isize) = 165 as u8;
         }
+        __tmp_0
     };
     let mut actual: libc::socklen_t =
         (::std::mem::size_of::<libc::sockaddr_storage>() as libc::socklen_t);
@@ -30,35 +29,53 @@ pub unsafe fn check_name_0(mut fd: i32, mut path: *const libc::c_char) {
     assert!(((actual as usize) >= (::std::mem::offset_of!(libc::sockaddr_un, sun_path))));
     assert!(((actual as usize) < (::std::mem::size_of::<libc::sockaddr_storage>())));
     if !(path).is_null() {
+        let mut path_len: libc::socklen_t =
+            (((::std::mem::offset_of!(libc::sockaddr_un, sun_path) as usize)
+                .wrapping_add(libc::strlen(path))) as libc::socklen_t);
         assert!(
-            ((match ({ libc::strlen(path) },) {
-                (mut __tmp_1,) => {
-                    {
-                        let sa = core::slice::from_raw_parts(
-                            ((*((&mut full as *mut libc::sockaddr_storage)
-                                as *mut libc::sockaddr_un))
-                                .sun_path
-                                .as_mut_ptr() as *const ::libc::c_void)
-                                as *const u8,
-                            __tmp_1,
-                        );
-                        let sb = core::slice::from_raw_parts(
-                            (path as *const ::libc::c_void) as *const u8,
-                            __tmp_1,
-                        );
-                        let mut diff = 0_i32;
-                        for (x, y) in sa.iter().zip(sb.iter()) {
-                            if x != y {
-                                diff = (*x as i32) - (*y as i32);
-                                break;
-                            }
-                        }
-                        diff
+            (((actual) == (path_len))
+                || ((actual) == ((path_len).wrapping_add((1 as libc::socklen_t)))))
+        );
+        assert!(
+            (({
+                let mut __tmp_1 = { libc::strlen(path) };
+                let sa = core::slice::from_raw_parts(
+                    ((*((&mut full as *mut libc::sockaddr_storage) as *mut libc::sockaddr_un))
+                        .sun_path
+                        .as_mut_ptr() as *const ::libc::c_void) as *const u8,
+                    __tmp_1,
+                );
+                let sb = core::slice::from_raw_parts(
+                    (path as *const ::libc::c_void) as *const u8,
+                    __tmp_1,
+                );
+                let mut diff = 0_i32;
+                for (x, y) in sa.iter().zip(sb.iter()) {
+                    if x != y {
+                        diff = (*x as i32) - (*y as i32);
+                        break;
                     }
                 }
+                diff
             }) == (0))
         );
+    } else {
+        assert!(
+            (((actual as usize) == (::std::mem::offset_of!(libc::sockaddr_un, sun_path)))
+                || ((actual as usize) == (::std::mem::size_of::<libc::sockaddr>())))
+        );
     }
+    (unsafe {
+        libc::printf(
+            (c"%s: length %u\n".as_ptr().cast_mut()).cast_const() as *const libc::c_char,
+            (if !(path).is_null() {
+                c"named".as_ptr().cast_mut()
+            } else {
+                c"unnamed".as_ptr().cast_mut()
+            }),
+            (actual as u32),
+        )
+    });
     let mut capacities: [libc::socklen_t; 6] = [
         (0 as libc::socklen_t),
         (1 as libc::socklen_t),
@@ -74,14 +91,13 @@ pub unsafe fn check_name_0(mut fd: i32, mut path: *const libc::c_char) {
                 .wrapping_div((::std::mem::size_of::<libc::socklen_t>() as usize))))
         {
             let mut out: [u8; 136] = [0_u8; 136];
-            match ({ (out.as_mut_ptr() as *mut ::libc::c_void) },) {
-                (mut __tmp_2,) => {
-                    let byte_0 = __tmp_2 as *mut u8;
-                    for offset in 0..::std::mem::size_of::<[u8; 136]>() {
-                        *byte_0.offset(offset as isize) = 165 as u8;
-                    }
-                    __tmp_2
+            {
+                let mut __tmp_2 = { (out.as_mut_ptr() as *mut ::libc::c_void) };
+                let byte_0 = __tmp_2 as *mut u8;
+                for offset in 0..::std::mem::size_of::<[u8; 136]>() {
+                    *byte_0.offset(offset as isize) = 165 as u8;
                 }
+                __tmp_2
             };
             let mut len: libc::socklen_t = capacities[(i) as usize];
             assert!(
@@ -98,29 +114,25 @@ pub unsafe fn check_name_0(mut fd: i32, mut path: *const libc::c_char) {
                 actual
             } as u32);
             assert!(
-                ((match ({ (copied as usize) },) {
-                    (mut __tmp_3,) => {
-                        {
-                            let sa = core::slice::from_raw_parts(
-                                (out.as_mut_ptr() as *const ::libc::c_void) as *const u8,
-                                __tmp_3,
-                            );
-                            let sb = core::slice::from_raw_parts(
-                                ((&mut full as *mut libc::sockaddr_storage)
-                                    as *const ::libc::c_void)
-                                    as *const u8,
-                                __tmp_3,
-                            );
-                            let mut diff = 0_i32;
-                            for (x, y) in sa.iter().zip(sb.iter()) {
-                                if x != y {
-                                    diff = (*x as i32) - (*y as i32);
-                                    break;
-                                }
-                            }
-                            diff
+                (({
+                    let mut __tmp_3 = { (copied as usize) };
+                    let sa = core::slice::from_raw_parts(
+                        (out.as_mut_ptr() as *const ::libc::c_void) as *const u8,
+                        __tmp_3,
+                    );
+                    let sb = core::slice::from_raw_parts(
+                        ((&mut full as *mut libc::sockaddr_storage) as *const ::libc::c_void)
+                            as *const u8,
+                        __tmp_3,
+                    );
+                    let mut diff = 0_i32;
+                    for (x, y) in sa.iter().zip(sb.iter()) {
+                        if x != y {
+                            diff = (*x as i32) - (*y as i32);
+                            break;
                         }
                     }
+                    diff
                 }) == (0))
             );
             {
@@ -144,15 +156,14 @@ unsafe fn main_0() -> i32 {
     let mut fd: i32 = libc::socket(1, libc::SOCK_DGRAM, 0);
     assert!(((fd) >= (0)));
     (unsafe { check_name_0(fd, std::ptr::null()) });
-    let mut addr: libc::sockaddr_storage = unsafe { std::mem::zeroed() };
-    match ({ ((&mut addr as *mut libc::sockaddr_storage) as *mut ::libc::c_void) },) {
-        (mut __tmp_4,) => {
-            let byte_0 = __tmp_4 as *mut u8;
-            for offset in 0..::std::mem::size_of::<libc::sockaddr_storage>() {
-                *byte_0.offset(offset as isize) = 0 as u8;
-            }
-            __tmp_4
+    let mut addr: libc::sockaddr_storage = std::mem::zeroed();
+    {
+        let mut __tmp_4 = { ((&mut addr as *mut libc::sockaddr_storage) as *mut ::libc::c_void) };
+        let byte_0 = __tmp_4 as *mut u8;
+        for offset in 0..::std::mem::size_of::<libc::sockaddr_storage>() {
+            *byte_0.offset(offset as isize) = 0 as u8;
         }
+        __tmp_4
     };
     let mut len: libc::socklen_t =
         (::std::mem::size_of::<libc::sockaddr_storage>() as libc::socklen_t);
@@ -165,17 +176,16 @@ unsafe fn main_0() -> i32 {
     );
     let mut un: *mut libc::sockaddr_un =
         ((&mut addr as *mut libc::sockaddr_storage) as *mut libc::sockaddr_un);
-    match ({ ((*un).sun_path.as_mut_ptr() as *mut ::libc::c_void) },) {
-        (mut __tmp_5,) => {
-            if ::std::mem::size_of::<[libc::c_char; 17]>() != 0 {
-                ::std::ptr::copy_nonoverlapping(
-                    (c"socket-unix-name".as_ptr().cast_mut() as *const ::libc::c_void),
-                    __tmp_5,
-                    ::std::mem::size_of::<[libc::c_char; 17]>(),
-                )
-            }
-            __tmp_5
+    {
+        let mut __tmp_5 = { ((*un).sun_path.as_mut_ptr() as *mut ::libc::c_void) };
+        if ::std::mem::size_of::<[libc::c_char; 17]>() != 0 {
+            ::std::ptr::copy_nonoverlapping(
+                (c"socket-unix-name".as_ptr().cast_mut() as *const ::libc::c_void),
+                __tmp_5,
+                ::std::mem::size_of::<[libc::c_char; 17]>(),
+            )
         }
+        __tmp_5
     };
     assert!(
         ((libc::bind(

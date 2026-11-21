@@ -83,16 +83,25 @@ fn f5(a0: Ptr<::libc::time_t>, a1: Ptr<Tm>) -> Ptr<Tm> {
 
 fn f6(a0: Ptr<i8>, a1: usize, a2: Ptr<i8>, a3: Ptr<Tm>) -> usize {
     let __dt = a3.with(|__tm| __tm.to_civil());
+    // jiff formats UTF-8, so the bytes of the format that are not UTF-8 are
+    // copied.
     let __text = match __dt {
-        Ok(__d) => {
-            jiff::fmt::strtime::format(a2.to_rust_string().as_str(), __d).unwrap_or_default()
-        }
-        Err(_) => String::new(),
+        Ok(__d) => a2.with_c_bytes(|__fmt| {
+            __fmt
+                .utf8_chunks()
+                .map(|__c| {
+                    jiff::fmt::strtime::format(__c.valid(), __d)
+                        .map(|__s| [__s.as_bytes(), __c.invalid()].concat())
+                })
+                .collect::<Result<Vec<_>, _>>()
+                .map_or(Vec::new(), |__v| __v.concat())
+        }),
+        Err(_) => Vec::new(),
     };
     if __text.is_empty() || __text.len() + 1 > a1 {
         0
     } else {
-        a0.write_c_bytes(__text.as_bytes());
+        a0.write_c_bytes(&__text);
         elem!(a0, __text.len()).write(0);
         __text.len()
     }
@@ -111,7 +120,7 @@ fn f7(a0: Ptr<i8>, a1: Ptr<Timeval>) -> i32 {
             __tv.tv_usec as ::libc::suseconds_t,
         )
     });
-    match nix::sys::stat::utimes(a0.to_rust_string().as_str(), &__at, &__mt) {
+    match a0.with_c_bytes(|__path| nix::sys::stat::utimes(__path, &__at, &__mt)) {
         Ok(()) => 0,
         Err(__e) => {
             libcc2rs::cpp2rust_errno().write(__e as i32);

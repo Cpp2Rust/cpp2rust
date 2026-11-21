@@ -1,7 +1,7 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use crate::{AnyPtr, AsPointer, CFile, Ptr, Value};
+use crate::{AnyPtr, AsPointer, CFile, Ptr, VaArg, Value};
 use std::cell::{RefCell, UnsafeCell};
 use std::os::fd::AsFd;
 use std::rc::Rc;
@@ -28,6 +28,32 @@ thread_local! {
     static C_STDIN: Value<CFile> = Rc::new(RefCell::new(CFile::new(0)));
     static C_STDOUT: Value<CFile> = Rc::new(RefCell::new(CFile::new(1)));
     static C_STDERR: Value<CFile> = Rc::new(RefCell::new(CFile::new(2)));
+}
+
+// Like C's `fprintf`: writes `fmt`, formatted with `va`, to `stream`.
+pub fn fprintf(stream: Ptr<CFile>, fmt: Ptr<i8>, va: &[VaArg]) -> i32 {
+    let s = fmt.with_c_bytes(|fmt| crate::format_c(fmt, va));
+    stream.with_mut(|f| f.write(&s)) as i32
+}
+
+// `fprintf` and `printf` with a literal format, which the converter emits so
+// that the call reads like `print!`.
+#[macro_export]
+macro_rules! fprintf {
+    ($stream:expr, $fmt:literal $(, $arg:expr)* $(,)?) => {
+        $crate::fprintf(
+            $stream,
+            $crate::Ptr::<i8>::from_string_literal($fmt),
+            &[$($crate::VaArg::from($arg)),*],
+        )
+    };
+}
+
+#[macro_export]
+macro_rules! printf {
+    ($fmt:literal $(, $arg:expr)* $(,)?) => {
+        $crate::fprintf!($crate::c_stdout(), $fmt $(, $arg)*)
+    };
 }
 
 pub fn c_stdin() -> Ptr<CFile> {

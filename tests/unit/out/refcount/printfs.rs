@@ -19,38 +19,33 @@ pub fn fn2_1(v: Ptr<Vec<i8>>) -> Ptr<Vec<i8>> {
     return (v).clone();
 }
 pub fn log_to_2(mut out: Ptr<CFile>, mut fmt: Ptr<i8>, mut args_2: Ptr<i8>, mut args_3: i32) {
-    {
-        let __s = libcc2rs::format_c(
-            &fmt.to_rust_string(),
-            &Box::<[VaArg]>::from([((args_2).clone()).into(), (args_3).into()]),
-        );
-        out.with_mut(|__f| __f.write(__s.as_bytes())) as i32
-    };
+    libcc2rs::fprintf(
+        (out).clone(),
+        (fmt).clone(),
+        &Box::<[VaArg]>::from([((args_2).clone()).into(), (args_3).into()]),
+    );
 }
 pub fn log_to_3(mut out: Ptr<CFile>, mut fmt: Ptr<i8>, mut args: i32) {
-    {
-        let __s = libcc2rs::format_c(
-            &fmt.to_rust_string(),
-            &Box::<[VaArg]>::from([(args).into()]),
-        );
-        out.with_mut(|__f| __f.write(__s.as_bytes())) as i32
-    };
+    libcc2rs::fprintf(
+        (out).clone(),
+        (fmt).clone(),
+        &Box::<[VaArg]>::from([(args).into()]),
+    );
 }
 pub fn log_fmt_4(mut fmt: Ptr<i8>, mut v: i32) {
-    {
-        let __s = libcc2rs::format_c(&fmt.to_rust_string(), &Box::<[VaArg]>::from([(v).into()]));
-        libcc2rs::c_stdout().with_mut(|__f| __f.write(__s.as_bytes())) as i32
-    };
+    libcc2rs::fprintf(
+        libcc2rs::c_stdout(),
+        (fmt).clone(),
+        &Box::<[VaArg]>::from([(v).into()]),
+    );
 }
 pub fn put_5(out: Ptr<CFile>, mut s: Ptr<i8>) {
-    match ({ (out).clone() },) {
-        (mut __tmp_0,) => {
-            match s
-                .with_c_bytes(|__bytes| __tmp_0.with_mut(|__f| __f.write(__bytes)) == __bytes.len())
-            {
-                true => 0,
-                false => -1,
-            }
+    {
+        let mut __tmp_0 = { (out).clone() };
+        match s.with_c_bytes(|__bytes| __tmp_0.with_mut(|__f| __f.write(__bytes)) == __bytes.len())
+        {
+            true => 0,
+            false => -1,
         }
     };
 }
@@ -59,21 +54,25 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    println!("{}", Ptr::<i8>::from_string_literal(b"fprintf stdout"));
-    println!("{} {} {}", 1, 2_u32, 3_i64);
-    print!("hello world");
+    fprintf!(
+        libcc2rs::c_stdout(),
+        b"%s\n",
+        Ptr::<i8>::from_string_literal(b"fprintf stdout")
+    );
+    fprintf!(libcc2rs::c_stdout(), b"%d %u %ld\n", 1, 2_u32, 3_i64);
+    fprintf!(libcc2rs::c_stdout(), b"hello world");
     let mut in_: Ptr<CFile> = libcc2rs::c_stdin();
     assert!(!((in_).is_null()));
-    println!("{}", Ptr::<i8>::from_string_literal(b"printf"));
-    print!("hello world");
+    printf!(b"%s\n", Ptr::<i8>::from_string_literal(b"printf"));
+    printf!(b"hello world");
     let s: Value<Vec<i8>> = Rc::new(RefCell::new({
         let mut __bytes = Ptr::<i8>::from_string_literal(b"a string").to_c_bytes();
         __bytes.push(0);
         __bytes
     }));
-    println!("{}", s.decay());
-    println!(
-        "{}",
+    printf!(b"%s\n", s.decay());
+    printf!(
+        b"%s\n",
         Rc::new(RefCell::new(
             ({
                 fn_0({
@@ -85,7 +84,7 @@ fn main_0() -> i32 {
         ))
         .decay()
     );
-    println!("{}", ({ fn2_1(s.as_pointer(),) }).decay());
+    printf!(b"%s\n", ({ fn2_1(s.as_pointer(),) }).decay());
     ({
         log_to_2(
             libcc2rs::c_stdout(),
@@ -102,9 +101,25 @@ fn main_0() -> i32 {
         )
     });
     ({ log_fmt_4(Ptr::<i8>::from_string_literal(b"%d\n"), 6) });
-    println!("{{}} {} {}", 5_u64, (-6_i32 as i64));
+    printf!(b"{} %ju %jd\n", 5_u64, (-6_i32 as i64));
     let mut fp: Ptr<CFile> = libcc2rs::c_stdout();
     ({ put_5((fp).clone(), Ptr::<i8>::from_string_literal(b"value\n")) });
+    let mut bytes: Ptr<i8> = Ptr::<i8>::from_string_literal(b"\xe9\xc3\xa9");
+    printf!(
+        b"\xff%s|%c|%.1s|%5s\n",
+        (bytes).clone(),
+        ((elem!(bytes, 0).read()) as i32),
+        bytes.offset((1) as isize),
+        (bytes).clone()
+    );
+    fprintf!(libcc2rs::c_stderr(), b"\xff%s\n", (bytes).clone());
+    printf!(b"no newline, ");
+    ({
+        put_5(
+            (fp).clone(),
+            Ptr::<i8>::from_string_literal(b"then fputs\n"),
+        )
+    });
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

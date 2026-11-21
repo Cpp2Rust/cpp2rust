@@ -188,13 +188,12 @@ fn main_0() -> i32 {
         }) == 7)
     );
     let xs: Value<Box<[X]>> = Rc::new(RefCell::new(Box::new([X { v: 3 }, X { v: 1 }, X { v: 2 }])));
-    match ({ xs.decay() },) {
-        (mut __tmp_0,) => {
-            let __n = xs.decay().offset((3) as isize).iter_distance(&__tmp_0);
-            let mut __order: Vec<isize> = (0..__n).collect();
-            __order.sort_by(|&__x, &__y| cpp_cmp(&__tmp_0.iter_at(__x), &__tmp_0.iter_at(__y)));
-            reorder(__order, |__i| __tmp_0.iter_at(__i));
-        }
+    {
+        let mut __tmp_0 = { xs.decay() };
+        let __n = xs.decay().offset((3) as isize).iter_distance(&__tmp_0);
+        let mut __order: Vec<isize> = (0..__n).collect();
+        __order.sort_by(|&__x, &__y| cpp_cmp(&__tmp_0.iter_at(__x), &__tmp_0.iter_at(__y)));
+        reorder(__order, |__i| __tmp_0.iter_at(__i));
     };
     assert!(
         ({
@@ -215,13 +214,12 @@ fn main_0() -> i32 {
         Mixed { v: 4 },
         Mixed { v: 5 },
     ])));
-    match ({ ms.decay() },) {
-        (mut __tmp_1,) => {
-            let __n = ms.decay().offset((3) as isize).iter_distance(&__tmp_1);
-            let mut __order: Vec<isize> = (0..__n).collect();
-            __order.sort_by(|&__x, &__y| cpp_cmp(&__tmp_1.iter_at(__x), &__tmp_1.iter_at(__y)));
-            reorder(__order, |__i| __tmp_1.iter_at(__i));
-        }
+    {
+        let mut __tmp_1 = { ms.decay() };
+        let __n = ms.decay().offset((3) as isize).iter_distance(&__tmp_1);
+        let mut __order: Vec<isize> = (0..__n).collect();
+        __order.sort_by(|&__x, &__y| cpp_cmp(&__tmp_1.iter_at(__x), &__tmp_1.iter_at(__y)));
+        reorder(__order, |__i| __tmp_1.iter_at(__i));
     };
     assert!(
         ({
@@ -273,13 +271,12 @@ fn main_0() -> i32 {
         Boolish { v: 1 },
         Boolish { v: 2 },
     ])));
-    match ({ bs.decay() },) {
-        (mut __tmp_2,) => {
-            let __n = bs.decay().offset((3) as isize).iter_distance(&__tmp_2);
-            let mut __order: Vec<isize> = (0..__n).collect();
-            __order.sort_by(|&__x, &__y| cpp_cmp(&__tmp_2.iter_at(__x), &__tmp_2.iter_at(__y)));
-            reorder(__order, |__i| __tmp_2.iter_at(__i));
-        }
+    {
+        let mut __tmp_2 = { bs.decay() };
+        let __n = bs.decay().offset((3) as isize).iter_distance(&__tmp_2);
+        let mut __order: Vec<isize> = (0..__n).collect();
+        __order.sort_by(|&__x, &__y| cpp_cmp(&__tmp_2.iter_at(__x), &__tmp_2.iter_at(__y)));
+        reorder(__order, |__i| __tmp_2.iter_at(__i));
     };
     assert!(
         ({
@@ -299,16 +296,13 @@ fn main_0() -> i32 {
     let ris: Value<Box<[RefInt]>> =
         Rc::new(RefCell::new(Box::new([RefInt { v: 1 }, RefInt { v: 2 }])));
     assert!(
-        (match ({ ris.decay().offset((2) as isize) },) {
-            (mut __tmp_3,) => {
-                {
-                    let mut __it = ris.decay();
-                    while __it != __tmp_3 && !CppEq::equal(&__it.iter_deref(), &ri2.as_pointer()) {
-                        __it.iter_inc();
-                    }
-                    __it
-                }
+        ({
+            let mut __tmp_3 = { ris.decay().offset((2) as isize) };
+            let mut __it = ris.decay();
+            while __it != __tmp_3 && !CppEq::equal(&__it.iter_deref(), &ri2.as_pointer()) {
+                __it.iter_inc();
             }
+            __it
         } == ris.decay())
     );
     return 0;

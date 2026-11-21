@@ -21,10 +21,10 @@ impl_hasminmax!(
     u8, i8, u16, i16, u32, i32, u64, i64, u128, i128, usize, isize
 );
 
-unsafe fn f1<T1: HasMinMax>() -> T1 {
+fn f1<T1: HasMinMax>() -> T1 {
     <T1>::MAX
 }
 
-unsafe fn f2<T1: HasMinMax>() -> T1 {
+fn f2<T1: HasMinMax>() -> T1 {
     <T1>::MIN
 }

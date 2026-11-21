@@ -73,17 +73,17 @@ fn main_0() -> i32 {
     let b: Value<Key> = Rc::new(RefCell::new(Key::new({ 2 })));
     let c: Value<Key> = Rc::new(RefCell::new(Key::new({ 3 })));
     match (a.as_pointer(),) {
-        (__tmp_0,) => ({ (*m.borrow_mut()).subscript(__tmp_0) }),
+        (__tmp_0,) => ({ (*m.borrow_mut()).subscript(__tmp_0, || 0_i32) }),
     }
     .write(10);
     ok = { ((ok as i32) & ((copies_0.with(|rc| *rc.borrow()) == 1) as i32)) != 0 };
     match (b.as_pointer(),) {
-        (__tmp_1,) => ({ (*m.borrow_mut()).subscript(__tmp_1) }),
+        (__tmp_1,) => ({ (*m.borrow_mut()).subscript(__tmp_1, || 0_i32) }),
     }
     .write(20);
     ok = { ((ok as i32) & ((copies_0.with(|rc| *rc.borrow()) == 2) as i32)) != 0 };
     match (a.as_pointer(),) {
-        (__tmp_2,) => ({ (*m.borrow_mut()).subscript(__tmp_2) }),
+        (__tmp_2,) => ({ (*m.borrow_mut()).subscript(__tmp_2, || 0_i32) }),
     }
     .write(11);
     ok = { ((ok as i32) & ((copies_0.with(|rc| *rc.borrow()) == 2) as i32)) != 0 };
@@ -118,11 +118,15 @@ fn main_0() -> i32 {
     };
     ok = { ((ok as i32) & ((copies_0.with(|rc| *rc.borrow()) == 2) as i32)) != 0 };
     match (Rc::new(RefCell::new(({ make_key_3(4) }))).as_pointer(),) {
-        (__tmp_3,) => ({ (*m.borrow_mut()).subscript_move(__tmp_3, |__k| cpp_move!(__k)) }),
+        (__tmp_3,) => {
+            ({ (*m.borrow_mut()).subscript_move(__tmp_3, |__k| cpp_move!(__k), || 0_i32) })
+        }
     }
     .write(40);
     match (Rc::new(RefCell::new(({ make_key_3(4) }))).as_pointer(),) {
-        (__tmp_4,) => ({ (*m.borrow_mut()).subscript_move(__tmp_4, |__k| cpp_move!(__k)) }),
+        (__tmp_4,) => {
+            ({ (*m.borrow_mut()).subscript_move(__tmp_4, |__k| cpp_move!(__k), || 0_i32) })
+        }
     }
     .write(41);
     ok = {
@@ -132,11 +136,15 @@ fn main_0() -> i32 {
             != 0
     };
     match (c.as_pointer(),) {
-        (__tmp_5,) => ({ (*m.borrow_mut()).subscript_move(__tmp_5, |__k| cpp_move!(__k)) }),
+        (__tmp_5,) => {
+            ({ (*m.borrow_mut()).subscript_move(__tmp_5, |__k| cpp_move!(__k), || 0_i32) })
+        }
     }
     .write(30);
     match (c.as_pointer(),) {
-        (__tmp_6,) => ({ (*m.borrow_mut()).subscript_move(__tmp_6, |__k| cpp_move!(__k)) }),
+        (__tmp_6,) => {
+            ({ (*m.borrow_mut()).subscript_move(__tmp_6, |__k| cpp_move!(__k), || 0_i32) })
+        }
     }
     .write(31);
     ok = {
@@ -159,7 +167,7 @@ fn main_0() -> i32 {
         .0
         .as_pointer(),)
         {
-            (__tmp_7,) => ({ (*m.borrow_mut()).subscript(__tmp_7) }),
+            (__tmp_7,) => ({ (*m.borrow_mut()).subscript(__tmp_7, || 0_i32) }),
         }
         .with_mut(|__v| *__v = *__v + 1)
     };
@@ -167,7 +175,7 @@ fn main_0() -> i32 {
         let rhs_0 = ((ok as i32)
             & (((copies_0.with(|rc| *rc.borrow()) == 2)
                 && ((match (a.as_pointer(),) {
-                    (__tmp_8,) => ({ (*m.borrow_mut()).subscript(__tmp_8) }),
+                    (__tmp_8,) => ({ (*m.borrow_mut()).subscript(__tmp_8, || 0_i32) }),
                 }
                 .read())
                     == 12)) as i32))
@@ -183,7 +191,9 @@ fn main_0() -> i32 {
     .0
     .as_pointer());
     match (Rc::new(RefCell::new(Key::new({ 0 }))).as_pointer(),) {
-        (__tmp_9,) => ({ (*m.borrow_mut()).subscript_move(__tmp_9, |__k| cpp_move!(__k)) }),
+        (__tmp_9,) => {
+            ({ (*m.borrow_mut()).subscript_move(__tmp_9, |__k| cpp_move!(__k), || 0_i32) })
+        }
     }
     .write(0);
     ok = { ((ok as i32) & ((moves_1.with(|rc| *rc.borrow()) == 3) as i32)) != 0 };
@@ -207,7 +217,7 @@ fn main_0() -> i32 {
         let rhs_0 = ((ok as i32)
             & ((((*n.borrow()).len() == 5_usize)
                 && ((match (a.as_pointer(),) {
-                    (__tmp_10,) => ({ (*n.borrow_mut()).subscript(__tmp_10) }),
+                    (__tmp_10,) => ({ (*n.borrow_mut()).subscript(__tmp_10, || 0_i32) }),
                 }
                 .read())
                     == 12)) as i32))
@@ -277,8 +287,8 @@ fn main_0() -> i32 {
                 as i32))
             != 0
     };
-    println!(
-        "{} {} {}",
+    printf!(
+        b"%d %d %d\n",
         copies_0.with(|rc| *rc.borrow()),
         moves_1.with(|rc| *rc.borrow()),
         made_2.with(|rc| *rc.borrow())

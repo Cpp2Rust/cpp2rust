@@ -29,6 +29,32 @@ pub unsafe fn test_2() {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+pub struct p3_2_explicit_object_member_is_ordinary_pointer_HasExplicitObjectMember {
+    pub base: i32,
+}
+impl p3_2_explicit_object_member_is_ordinary_pointer_HasExplicitObjectMember {
+    pub unsafe fn add(
+        self_: *const p3_2_explicit_object_member_is_ordinary_pointer_HasExplicitObjectMember,
+        mut amount: i32,
+    ) -> i32 {
+        return (((*self_).base) + (amount));
+    }
+}
+pub unsafe fn test_3() {
+    let mut function_pointer: Option<
+        unsafe fn(
+            *const p3_2_explicit_object_member_is_ordinary_pointer_HasExplicitObjectMember,
+            i32,
+        ) -> i32,
+    > = (Some(p3_2_explicit_object_member_is_ordinary_pointer_HasExplicitObjectMember::add));
+    let mut object: p3_2_explicit_object_member_is_ordinary_pointer_HasExplicitObjectMember =
+        p3_2_explicit_object_member_is_ordinary_pointer_HasExplicitObjectMember { base: 3 };
+    assert!(((unsafe { (function_pointer).unwrap()(&object, 4,) }) == (7)));
+    object.base = 5;
+    assert!(((unsafe { (function_pointer).unwrap()(&object, 1,) }) == (6)));
+}
+#[repr(C)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct p4_parenthesized_qualified_id_is_object_pointer_TakesAddressOfOwnMember {
     pub value: i32,
 }
@@ -40,7 +66,7 @@ impl p4_parenthesized_qualified_id_is_object_pointer_TakesAddressOfOwnMember {
         return (&mut self.value as *mut i32);
     }
 }
-pub unsafe fn test_3() {
+pub unsafe fn test_4() {
     let mut first: p4_parenthesized_qualified_id_is_object_pointer_TakesAddressOfOwnMember =
         p4_parenthesized_qualified_id_is_object_pointer_TakesAddressOfOwnMember { value: 3 };
     let mut second: p4_parenthesized_qualified_id_is_object_pointer_TakesAddressOfOwnMember =
@@ -73,6 +99,7 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     (unsafe { test_2() });
     (unsafe { test_3() });
+    (unsafe { test_4() });
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {

@@ -245,16 +245,27 @@ impl Sockaddr {
 
     pub fn encode(ss: &nix::sys::socket::SockaddrStorage, out: &Ptr<Sockaddr>, out_len: &Ptr<u32>) {
         use nix::sys::socket::{AddressFamily, SockaddrLike};
-        match ss.family() {
+        let write = |bytes: &[u8]| {
+            let len = (out_len.read() as usize).min(bytes.len());
+            if len != 0 {
+                out.reinterpret_cast::<u8>()
+                    .with_slice_mut(len, |buf| buf.copy_from_slice(&bytes[..len]));
+            }
+        };
+        let len = match ss.family() {
             Some(AddressFamily::Inet) => {
                 let l = ::libc::sockaddr_in::from(*ss.as_sockaddr_in().unwrap());
-                out.reinterpret_cast::<SockaddrIn>()
-                    .write(SockaddrIn::from_libc(&l));
+                let mut bytes = [0; ::std::mem::size_of::<::libc::sockaddr_in>()];
+                SockaddrIn::from_libc(&l).to_bytes(&mut bytes);
+                write(&bytes);
+                ::std::mem::size_of_val(&l) as u32
             }
             Some(AddressFamily::Inet6) => {
                 let l = ::libc::sockaddr_in6::from(*ss.as_sockaddr_in6().unwrap());
-                out.reinterpret_cast::<SockaddrIn6>()
-                    .write(SockaddrIn6::from_libc(&l));
+                let mut bytes = [0; ::std::mem::size_of::<::libc::sockaddr_in6>()];
+                SockaddrIn6::from_libc(&l).to_bytes(&mut bytes);
+                write(&bytes);
+                ::std::mem::size_of_val(&l) as u32
             }
             Some(AddressFamily::Unix) => {
                 if let Some(addr) = ss.as_unix_addr() {
@@ -272,10 +283,11 @@ impl Sockaddr {
                         });
                     }
                 }
+                ss.len()
             }
-            _ => {}
-        }
-        out_len.write(ss.len());
+            _ => panic!("unsupported socket address family"),
+        };
+        out_len.write(len);
     }
 }
 
@@ -332,7 +344,9 @@ pub fn setsockopt_refcount(fd: i32, level: i32, optname: i32, optval: crate::Any
         }
         #[cfg(target_os = "linux")]
         (::libc::SOL_SOCKET, ::libc::SO_BINDTODEVICE) => {
-            let v = ::std::ffi::OsString::from(optval.reinterpret_cast::<u8>().to_rust_string());
+            let v = optval
+                .reinterpret_cast::<u8>()
+                .with_c_os_str(::std::ffi::OsStr::to_os_string);
             crate::FdRegistry::with_fd(fd, |borrowed| {
                 nix::sys::socket::setsockopt(&borrowed, nix::sys::socket::sockopt::BindToDevice, &v)
             })

@@ -49,7 +49,7 @@ fn main_0() -> i32 {
             __tmp_0 => field_ref!(__tmp_0, values).as_pointer(),
         })
     });
-    println!("{}", h.last);
+    printf!(b"%d\n", h.last);
     return 0;
 }
 pub trait OuterImpl {

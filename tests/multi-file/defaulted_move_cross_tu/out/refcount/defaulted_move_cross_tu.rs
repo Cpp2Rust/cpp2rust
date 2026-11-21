@@ -58,8 +58,9 @@ impl T {
     }
 }
 pub fn sum_0(s: Ptr<S>) -> i32 {
-    return ({ ({ ((*s.upgrade().deref()).v.len() as i32) } + { (array_elem!(s, n, 0).read()) }) }
-        + { (array_elem!(s, n, 1).read()) });
+    return ({
+        ({ (((*s.upgrade().deref()).v.len()) as i32) } + { (array_elem!(s, n, 0).read()) })
+    } + { (array_elem!(s, n, 1).read()) });
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -100,11 +101,10 @@ impl SImpl for Ptr<S> {
         field!((*self), v).with_mut(|__b0| {
             (*__b0) = field!(_a0, v).with_mut(std::mem::take);
         });
-        match ({ (array_field_ptr!((*self), n)).to_any() },) {
-            (mut __tmp_0,) => {
-                __tmp_0.memcpy(&(array_field_ptr!(_a0, n)).to_any(), 8_usize);
-                (__tmp_0).clone()
-            }
+        {
+            let mut __tmp_0 = { (array_field_ptr!((*self), n)).to_any() };
+            __tmp_0.memcpy(&(array_field_ptr!(_a0, n)).to_any(), 8_usize);
+            (__tmp_0).clone()
         };
         return (*self).clone();
     }
@@ -115,7 +115,7 @@ pub trait TImpl {
 }
 impl TImpl for Ptr<T> {
     fn size(&self) -> i32 {
-        return ((*(*self).upgrade().deref()).v.len() as i32);
+        return (((*(*self).upgrade().deref()).v.len()) as i32);
     }
     fn move_assign(&self, _a0: Ptr<T>) -> Ptr<T> {
         field!((*self), v).with_mut(|__b0| {

@@ -22,7 +22,7 @@ unsafe fn main_0() -> i32 {
             1_usize
         )) == (1_isize))
     );
-    let mut pfd: [::libc::pollfd; 2] = [unsafe { std::mem::zeroed() }; 2];
+    let mut pfd: [::libc::pollfd; 2] = [std::mem::zeroed(); 2];
     pfd[(0) as usize].fd = fds[(0) as usize];
     pfd[(0) as usize].events = 1_i16;
     pfd[(0) as usize].revents = 0_i16;

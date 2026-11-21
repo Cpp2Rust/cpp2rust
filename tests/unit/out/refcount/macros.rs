@@ -32,7 +32,7 @@ pub fn base_name_0(mut path: Ptr<i8>) -> Ptr<i8> {
     };
 }
 pub fn log_1(mut file: Ptr<i8>, mut line: i32, mut func: Ptr<i8>) {
-    println!("{} {} {}", file, line, func);
+    printf!(b"%s %d %s\n", (file).clone(), line, (func).clone());
 }
 pub fn line_2() -> i32 {
     return (line!() as u32 as i32);
@@ -45,8 +45,8 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    println!(
-        "{} {} {}",
+    printf!(
+        b"%s %d %s\n",
         Ptr::<i8>::from_string_literal(b"macros.cpp"),
         19,
         Ptr::<i8>::from_string_literal(b"main")
@@ -68,7 +68,7 @@ fn main_0() -> i32 {
             != (('\0' as i8) as i32))
     );
     assert!((({ line_2() }) > 0));
-    println!("{}", ({ function_3() }));
+    printf!(b"%s\n", ({ function_3() }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

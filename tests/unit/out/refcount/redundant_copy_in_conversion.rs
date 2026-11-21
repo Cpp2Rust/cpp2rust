@@ -28,7 +28,9 @@ pub fn main() {
 fn main_0() -> i32 {
     let m: Value<Map<i32, (Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
     match (Rc::new(RefCell::new(0)).as_pointer(),) {
-        (__tmp_0,) => ({ (*m.borrow_mut()).subscript_move(__tmp_0, |__k| cpp_move!(__k)) }),
+        (__tmp_0,) => {
+            ({ (*m.borrow_mut()).subscript_move(__tmp_0, |__k| cpp_move!(__k), || 0_i32) })
+        }
     }
     .write(1);
     let end: Value<BidirectionalIterator<(Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(

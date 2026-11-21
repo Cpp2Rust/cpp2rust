@@ -8,7 +8,8 @@
 
 int main() {
   std::string str = "Hello, world!\n";
-  const char file[] = "test_stdcopy_ostream.txt";
+  // The name is UTF-8, which all file systems take, and not ASCII.
+  const char file[] = "test_stdcopy_ostream\xc3\xa9.txt";
   {
     std::ofstream ofs(file, std::ios::binary);
     std::copy(str.begin(), str.end(), std::ostream_iterator<char>(ofs));

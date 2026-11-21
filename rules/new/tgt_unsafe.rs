@@ -17,6 +17,6 @@ unsafe fn f4(a0: *mut ::libc::c_void) {
     libcc2rs::free_unsafe(a0)
 }
 
-unsafe fn f5<T1>(a0: *mut T1) -> *mut T1 {
+fn f5<T1>(a0: *mut T1) -> *mut T1 {
     a0
 }

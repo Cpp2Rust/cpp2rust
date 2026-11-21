@@ -73,11 +73,8 @@ pub mod __capture {
 mod callable;
 pub use callable::*;
 
-mod inc;
-pub use inc::*;
-
-mod dec;
-pub use dec::*;
+mod inc_dec;
+pub use inc_dec::*;
 
 mod rules;
 pub use rules::*;

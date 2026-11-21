@@ -14,6 +14,7 @@
 #include <clang/Lex/Lexer.h>
 #include <clang/Sema/Initialization.h>
 #include <clang/Sema/Sema.h>
+#include <llvm/Support/ConvertUTF.h>
 #include <llvm/Support/ErrorHandling.h>
 #include <llvm/Support/raw_ostream.h>
 
@@ -164,13 +165,20 @@ std::string GetAssertMessageAsString(const clang::Expr *expr,
   auto text = clang::Lexer::getSourceText(
       clang::CharSourceRange::getTokenRange(expr->getSourceRange()),
       ctx.getSourceManager(), ctx.getLangOpts());
+  auto start = reinterpret_cast<const llvm::UTF8 *>(text.data());
+  bool utf8 = llvm::isLegalUTF8String(&start, start + text.size());
   std::string message = R"(, ")";
   for (char c : text) {
     // Doubled so that assert! does not read them as a format placeholder.
     if (c == '{' || c == '}') {
       message += c;
     }
-    message += GetEscapedCharLiteral(c);
+    // A str holds UTF-8, but the message need not be exact.
+    if (static_cast<unsigned char>(c) >= 0x80) {
+      message += utf8 ? std::string(1, c) : "\\u{fffd}";
+    } else {
+      message += GetEscapedCharLiteral(c);
+    }
   }
   return message + '"';
 }
@@ -2584,6 +2592,9 @@ static bool SwitchCaseHasFallthrough(clang::Stmt *stmt) {
     }
     return SwitchCaseHasFallthrough(compound->body_back());
   }
+  if (auto *attributed = clang::dyn_cast<clang::AttributedStmt>(stmt)) {
+    return SwitchCaseHasFallthrough(attributed->getSubStmt());
+  }
   if (clang::isa<clang::BreakStmt>(stmt) ||
       clang::isa<clang::ContinueStmt>(stmt) ||
       clang::isa<clang::ReturnStmt>(stmt) ||
@@ -2604,11 +2615,17 @@ std::vector<SwitchArm> AnalyzeSwitchArms(clang::CompoundStmt *body) {
         inner = clang::cast<clang::LabelStmt>(inner)->getSubStmt();
       } while (clang::isa<clang::LabelStmt>(inner));
     }
+    auto *attributed = clang::dyn_cast<clang::AttributedStmt>(inner);
+    if (attributed && clang::isa<clang::SwitchCase>(attributed->getSubStmt())) {
+      inner = attributed->getSubStmt();
+    }
 
     if (auto *sc = clang::dyn_cast<clang::SwitchCase>(inner)) {
       arms.emplace_back(std::vector<clang::Stmt *>{GetLastStmtOfSwitchCase(sc)},
                         label, sc, CaseChainHasDefault(sc),
-                        /*has_fallthrough=*/false);
+                        /*has_fallthrough=*/false,
+                        attributed && clang::Stmt::getLikelihood(attributed) ==
+                                          clang::Stmt::LH_Unlikely);
     } else if (!arms.empty()) {
       arms.back().body.push_back(s);
     }

@@ -109,21 +109,21 @@ fn main_0() -> i32 {
     };
     assert!((((((r1 + r2) + r3) + r4) + r5) == 56));
     let values: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 7, 7, 3])));
-    let mut max: Ptr<i32> = match ({ values.decay() }, { values.decay().offset((4) as isize) }) {
-        (mut __tmp_2, mut __tmp_3) => {
-            let mut __best = __tmp_2.clone();
-            if __tmp_2 != __tmp_3 {
-                let mut __it = (__tmp_2).clone();
-                __it.iter_inc();
-                while __it != __tmp_3 {
-                    if CppLess::less(&__best.iter_deref(), &__it.iter_deref()) {
-                        __best = __it.clone();
-                    }
-                    __it.iter_inc();
+    let mut max: Ptr<i32> = {
+        let mut __tmp_2 = { values.decay() };
+        let mut __tmp_3 = { values.decay().offset((4) as isize) };
+        let mut __best = __tmp_2.clone();
+        if __tmp_2 != __tmp_3 {
+            let mut __it = (__tmp_2).clone();
+            __it.iter_inc();
+            while __it != __tmp_3 {
+                if CppLess::less(&__best.iter_deref(), &__it.iter_deref()) {
+                    __best = __it.clone();
                 }
+                __it.iter_inc();
             }
-            __best
         }
+        __best
     };
     assert!(({ (max).clone() } == { values.decay().offset((1) as isize) }));
     assert!(
@@ -190,7 +190,7 @@ fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while (i < 3) {
-            let __rhs = ({
+            let __rhs = (({
                 let __tmp_13: Value<u64> = Rc::new(RefCell::new((largest as u64)));
                 (match (Rc::new(RefCell::new((({ size_of_2(i) }) as u64))).as_pointer(),) {
                     (__tmp_12,) => {
@@ -202,7 +202,7 @@ fn main_0() -> i32 {
                     }
                 }
                 .read())
-            } as usize);
+            }) as usize);
             largest = __rhs;
             i.prefix_inc();
         }

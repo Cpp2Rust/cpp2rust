@@ -10,18 +10,17 @@ pub unsafe fn f1_0(
     mut first: UnsafeRandomAccessIterator<i32>,
     mut last: UnsafeRandomAccessIterator<i32>,
 ) {
-    match ({ (first).clone() },) {
-        (mut __tmp_0,) => {
-            let __n = (last).clone().iter_distance(&__tmp_0);
-            let mut __order: Vec<isize> = (0..__n).collect();
-            __order.sort_by(|&__x, &__y| (*__tmp_0.iter_at(__x)).cmp(&*__tmp_0.iter_at(__y)));
-            let __values: Vec<_> = __order
-                .iter()
-                .map(|&__i| std::ptr::read(__tmp_0.iter_at(__i)))
-                .collect();
-            for (__i, __v) in (0..__n).zip(__values) {
-                std::ptr::write(__tmp_0.iter_at(__i), __v);
-            }
+    {
+        let mut __tmp_0 = { (first).clone() };
+        let __n = (last).clone().iter_distance(&__tmp_0);
+        let mut __order: Vec<isize> = (0..__n).collect();
+        __order.sort_by(|&__x, &__y| (*__tmp_0.iter_at(__x)).cmp(&*__tmp_0.iter_at(__y)));
+        let __values: Vec<_> = __order
+            .iter()
+            .map(|&__i| std::ptr::read(__tmp_0.iter_at(__i)))
+            .collect();
+        for (__i, __v) in (0..__n).zip(__values) {
+            std::ptr::write(__tmp_0.iter_at(__i), __v);
         }
     };
     return;

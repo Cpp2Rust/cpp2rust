@@ -1,13 +1,13 @@
-fn t1() -> libc::sockaddr {
-    unsafe { std::mem::zeroed() }
+unsafe fn t1() -> libc::sockaddr {
+    std::mem::zeroed()
 }
 
-fn t2() -> libc::sockaddr_storage {
-    unsafe { std::mem::zeroed() }
+unsafe fn t2() -> libc::sockaddr_storage {
+    std::mem::zeroed()
 }
 
-fn t3() -> libc::sockaddr_un {
-    unsafe { std::mem::zeroed() }
+unsafe fn t3() -> libc::sockaddr_un {
+    std::mem::zeroed()
 }
 
 fn t4() -> libc::socklen_t {
@@ -18,25 +18,25 @@ fn t5() -> libc::sa_family_t {
     0 as libc::sa_family_t
 }
 
-unsafe fn f1() -> i32 {
+fn f1() -> i32 {
     libc::MSG_NOSIGNAL
 }
 
-unsafe fn f2() -> i32 {
+fn f2() -> i32 {
     libc::SOCK_STREAM
 }
 
-unsafe fn f3() -> i32 {
+fn f3() -> i32 {
     libc::SOCK_DGRAM
 }
 
 #[cfg(target_os = "linux")]
-unsafe fn f4() -> i32 {
+fn f4() -> i32 {
     libc::SOCK_CLOEXEC
 }
 
 #[cfg(target_os = "linux")]
-unsafe fn f5() -> i32 {
+fn f5() -> i32 {
     libc::SOCK_NONBLOCK
 }
 
@@ -76,20 +76,15 @@ unsafe fn f14(a0: i32, a1: *mut ::libc::sockaddr, a2: *mut u32) -> i32 {
     libc::getpeername(a0, a1, a2)
 }
 
-#[cfg(target_os = "linux")]
-unsafe fn f15(a0: i32, a1: *mut ::libc::sockaddr, a2: *mut u32, a3: i32) -> i32 {
-    libc::accept4(a0, a1, a2, a3)
-}
-
-unsafe fn f16(a0: i32, a1: *const ::libc::sockaddr, a2: u32) -> i32 {
+unsafe fn f15(a0: i32, a1: *const ::libc::sockaddr, a2: u32) -> i32 {
     libc::bind(a0, a1, a2)
 }
 
-unsafe fn f17(a0: i32, a1: i32) -> i32 {
+unsafe fn f16(a0: i32, a1: i32) -> i32 {
     libc::listen(a0, a1)
 }
 
-unsafe fn f18(
+unsafe fn f17(
     a0: i32,
     a1: *mut ::libc::c_void,
     a2: usize,
@@ -100,7 +95,7 @@ unsafe fn f18(
     libc::recvfrom(a0, a1, a2, a3, a4, a5)
 }
 
-unsafe fn f19(
+unsafe fn f18(
     a0: i32,
     a1: *const ::libc::c_void,
     a2: usize,
@@ -111,22 +106,22 @@ unsafe fn f19(
     libc::sendto(a0, a1, a2, a3, a4, a5)
 }
 
-unsafe fn f20() -> i32 {
+fn f19() -> i32 {
     libc::AF_INET
 }
 
-unsafe fn f21() -> i32 {
+fn f20() -> i32 {
     libc::AF_INET6
 }
 
-unsafe fn f22() -> i32 {
+fn f21() -> i32 {
     libc::SOL_SOCKET
 }
 
-unsafe fn f23() -> i32 {
+fn f22() -> i32 {
     libc::SO_KEEPALIVE
 }
 
-unsafe fn f24() -> i32 {
+fn f23() -> i32 {
     libc::SO_ERROR
 }

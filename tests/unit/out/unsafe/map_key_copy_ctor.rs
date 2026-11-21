@@ -82,15 +82,15 @@ unsafe fn main_0() -> i32 {
     let mut a: Key = Key::new({ 1 });
     let mut b: Key = Key::new({ 2 });
     let mut c: Key = Key::new({ 3 });
-    (*m.subscript(&a)) = 10;
+    (*m.subscript(&a, || 0_i32)) = 10;
     ok = ((ok as i32)
         & (((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (1)) as i32))
         != 0;
-    (*m.subscript(&b)) = 20;
+    (*m.subscript(&b, || 0_i32)) = 20;
     ok = ((ok as i32)
         & (((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (2)) as i32))
         != 0;
-    (*m.subscript(&a)) = 11;
+    (*m.subscript(&a, || 0_i32)) = 11;
     ok = ((ok as i32)
         & (((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (2)) as i32))
         != 0;
@@ -99,29 +99,37 @@ unsafe fn main_0() -> i32 {
     ok = ((ok as i32)
         & (((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (2)) as i32))
         != 0;
-    (*m.subscript_move(&mut (unsafe { make_key_3(4) }), |__k| cpp_move_unsafe!(__k))) = 40;
-    (*m.subscript_move(&mut (unsafe { make_key_3(4) }), |__k| cpp_move_unsafe!(__k))) = 41;
+    (*m.subscript_move(
+        &mut (unsafe { make_key_3(4) }),
+        |__k| cpp_move_unsafe!(__k),
+        || 0_i32,
+    )) = 40;
+    (*m.subscript_move(
+        &mut (unsafe { make_key_3(4) }),
+        |__k| cpp_move_unsafe!(__k),
+        || 0_i32,
+    )) = 41;
     ok = ((ok as i32)
         & (((((*std::cell::LazyCell::force_mut(&mut *&raw mut made_2)) == (2))
             && ((*std::cell::LazyCell::force_mut(&mut *&raw mut moves_1)) == (1)))
             && ((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (2)))
             as i32))
         != 0;
-    (*m.subscript_move(&mut c, |__k| cpp_move_unsafe!(__k))) = 30;
-    (*m.subscript_move(&mut c, |__k| cpp_move_unsafe!(__k))) = 31;
+    (*m.subscript_move(&mut c, |__k| cpp_move_unsafe!(__k), || 0_i32)) = 30;
+    (*m.subscript_move(&mut c, |__k| cpp_move_unsafe!(__k), || 0_i32)) = 31;
     ok = ((ok as i32)
         & (((((*std::cell::LazyCell::force_mut(&mut *&raw mut moves_1)) == (2))
             && ((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (2)))
             && ((c.k) == (3))) as i32))
         != 0;
     ok = ((ok as i32) & (((m.len()) == (4_usize)) as i32)) != 0;
-    (*m.subscript(&(*m.begin().iter_deref()).0)) += 1;
+    (*m.subscript(&(*m.begin().iter_deref()).0, || 0_i32)) += 1;
     ok = ((ok as i32)
         & ((((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (2))
-            && ((*m.subscript(&a)) == (12))) as i32))
+            && ((*m.subscript(&a, || 0_i32)) == (12))) as i32))
         != 0;
     let mut first: *const Key = (&(*m.begin().iter_deref()).0 as *const Key);
-    (*m.subscript_move(&mut Key::new({ 0 }), |__k| cpp_move_unsafe!(__k))) = 0;
+    (*m.subscript_move(&mut Key::new({ 0 }), |__k| cpp_move_unsafe!(__k), || 0_i32)) = 0;
     ok = ((ok as i32)
         & (((*std::cell::LazyCell::force_mut(&mut *&raw mut moves_1)) == (3)) as i32))
         != 0;
@@ -130,7 +138,9 @@ unsafe fn main_0() -> i32 {
     ok = ((ok as i32)
         & (((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == ((2) + (5))) as i32))
         != 0;
-    ok = ((ok as i32) & ((((n.len()) == (5_usize)) && ((*n.subscript(&a)) == (12))) as i32)) != 0;
+    ok = ((ok as i32)
+        & ((((n.len()) == (5_usize)) && ((*n.subscript(&a, || 0_i32)) == (12))) as i32))
+        != 0;
     m.erase(&m.find(&a));
     ok = ((ok as i32) & (((m.erase_key(&b)) == (1_usize)) as i32)) != 0;
     ok = ((ok as i32) & (((m.erase_key(&b)) == (0_usize)) as i32)) != 0;

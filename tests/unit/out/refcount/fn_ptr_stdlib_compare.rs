@@ -40,8 +40,8 @@ fn main_0() -> i32 {
     'loop_: while __do_while || (false) {
         __do_while = false;
         let mut stream: Ptr<CFile> = match CFile::open(
-            &Ptr::<i8>::from_string_literal(b"/dev/zero").to_rust_string(),
-            &Ptr::<i8>::from_string_literal(b"rb").to_rust_string(),
+            &Ptr::<i8>::from_string_literal(b"/dev/zero").to_c_u8_bytes(),
+            &Ptr::<i8>::from_string_literal(b"rb").to_c_u8_bytes(),
         ) {
             Some(__f) => Ptr::alloc(__f),
             None => Ptr::null(),
@@ -49,14 +49,13 @@ fn main_0() -> i32 {
         assert!(!((stream).is_null()));
         let buf: Value<Box<[i8]>> =
             Rc::new(RefCell::new((0..16).map(|_| 0_i8).collect::<Box<[i8]>>()));
-        match ({ (buf.decay()).to_any() },) {
-            (mut __tmp_0,) => {
-                __tmp_0.memset(
-                    (('X' as i8) as i32) as u8,
-                    ::std::mem::size_of::<[i8; 16]>(),
-                );
-                (__tmp_0).clone()
-            }
+        {
+            let mut __tmp_0 = { (buf.decay()).to_any() };
+            __tmp_0.memset(
+                (('X' as i8) as i32) as u8,
+                ::std::mem::size_of::<[i8; 16]>(),
+            );
+            (__tmp_0).clone()
         };
         let mut n: usize =
             libcc2rs::fread_refcount((buf.decay()).to_any(), 1_usize, 10_usize, (stream).clone());
@@ -85,8 +84,8 @@ fn main_0() -> i32 {
     'loop_: while __do_while || (false) {
         __do_while = false;
         let mut stream: Ptr<CFile> = match CFile::open(
-            &Ptr::<i8>::from_string_literal(b"/dev/zero").to_rust_string(),
-            &Ptr::<i8>::from_string_literal(b"rb").to_rust_string(),
+            &Ptr::<i8>::from_string_literal(b"/dev/zero").to_c_u8_bytes(),
+            &Ptr::<i8>::from_string_literal(b"rb").to_c_u8_bytes(),
         ) {
             Some(__f) => Ptr::alloc(__f),
             None => Ptr::null(),
@@ -94,14 +93,13 @@ fn main_0() -> i32 {
         assert!(!((stream).is_null()));
         let buf: Value<Box<[i8]>> =
             Rc::new(RefCell::new((0..16).map(|_| 0_i8).collect::<Box<[i8]>>()));
-        match ({ (buf.decay()).to_any() },) {
-            (mut __tmp_1,) => {
-                __tmp_1.memset(
-                    (('X' as i8) as i32) as u8,
-                    ::std::mem::size_of::<[i8; 16]>(),
-                );
-                (__tmp_1).clone()
-            }
+        {
+            let mut __tmp_1 = { (buf.decay()).to_any() };
+            __tmp_1.memset(
+                (('X' as i8) as i32) as u8,
+                ::std::mem::size_of::<[i8; 16]>(),
+            );
+            (__tmp_1).clone()
         };
         let mut n: usize =
             ({ (fn1).call((buf.decay()).to_any(), 1_usize, 10_usize, (stream).clone()) });
@@ -146,8 +144,8 @@ fn main_0() -> i32 {
     'loop_: while __do_while || (false) {
         __do_while = false;
         let mut stream: Ptr<CFile> = match CFile::open(
-            &Ptr::<i8>::from_string_literal(b"/dev/null").to_rust_string(),
-            &Ptr::<i8>::from_string_literal(b"wb").to_rust_string(),
+            &Ptr::<i8>::from_string_literal(b"/dev/null").to_c_u8_bytes(),
+            &Ptr::<i8>::from_string_literal(b"wb").to_c_u8_bytes(),
         ) {
             Some(__f) => Ptr::alloc(__f),
             None => Ptr::null(),
@@ -155,14 +153,13 @@ fn main_0() -> i32 {
         assert!(!((stream).is_null()));
         let buf: Value<Box<[i8]>> =
             Rc::new(RefCell::new((0..10).map(|_| 0_i8).collect::<Box<[i8]>>()));
-        match ({ (buf.decay()).to_any() },) {
-            (mut __tmp_2,) => {
-                __tmp_2.memset(
-                    (('Y' as i8) as i32) as u8,
-                    ::std::mem::size_of::<[i8; 10]>(),
-                );
-                (__tmp_2).clone()
-            }
+        {
+            let mut __tmp_2 = { (buf.decay()).to_any() };
+            __tmp_2.memset(
+                (('Y' as i8) as i32) as u8,
+                ::std::mem::size_of::<[i8; 10]>(),
+            );
+            (__tmp_2).clone()
         };
         let mut n: usize =
             libcc2rs::fwrite_refcount((buf.decay()).to_any(), 1_usize, 10_usize, (stream).clone());
@@ -177,8 +174,8 @@ fn main_0() -> i32 {
     'loop_: while __do_while || (false) {
         __do_while = false;
         let mut stream: Ptr<CFile> = match CFile::open(
-            &Ptr::<i8>::from_string_literal(b"/dev/null").to_rust_string(),
-            &Ptr::<i8>::from_string_literal(b"wb").to_rust_string(),
+            &Ptr::<i8>::from_string_literal(b"/dev/null").to_c_u8_bytes(),
+            &Ptr::<i8>::from_string_literal(b"wb").to_c_u8_bytes(),
         ) {
             Some(__f) => Ptr::alloc(__f),
             None => Ptr::null(),
@@ -186,14 +183,13 @@ fn main_0() -> i32 {
         assert!(!((stream).is_null()));
         let buf: Value<Box<[i8]>> =
             Rc::new(RefCell::new((0..10).map(|_| 0_i8).collect::<Box<[i8]>>()));
-        match ({ (buf.decay()).to_any() },) {
-            (mut __tmp_3,) => {
-                __tmp_3.memset(
-                    (('Y' as i8) as i32) as u8,
-                    ::std::mem::size_of::<[i8; 10]>(),
-                );
-                (__tmp_3).clone()
-            }
+        {
+            let mut __tmp_3 = { (buf.decay()).to_any() };
+            __tmp_3.memset(
+                (('Y' as i8) as i32) as u8,
+                ::std::mem::size_of::<[i8; 10]>(),
+            );
+            (__tmp_3).clone()
         };
         let mut n: usize =
             ({ (gn1).call((buf.decay()).to_any(), 1_usize, 10_usize, (stream).clone()) });

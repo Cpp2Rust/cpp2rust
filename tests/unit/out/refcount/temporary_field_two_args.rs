@@ -54,8 +54,8 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    println!(
-        "{}",
+    printf!(
+        b"%d\n",
         ({
             let _a: Ptr<Vec<i32>> = (match Rc::new(RefCell::new(({ make_0() }))).as_pointer() {
                 __tmp_0 => field_ref!(__tmp_0, values).as_pointer(),

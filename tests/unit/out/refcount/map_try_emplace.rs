@@ -114,7 +114,7 @@ thread_local!(
     pub static seed_9: Value<i32> = Rc::new(RefCell::new({
         ({
             (*global_map_6.with(Value::clone).borrow_mut())
-                .subscript(global_key_7.with(|v| v.as_pointer()))
+                .subscript(global_key_7.with(|v| v.as_pointer()), || 0_i32)
         })
         .write(10);
         0
@@ -186,8 +186,11 @@ fn main_0() -> i32 {
                                         'loop_: while ((*k.borrow()) < 3) {
                                             if ((subset & (1 << (*k.borrow()))) != 0) {
                                                 let __rhs = (10 + (*k.borrow()));
-                                                ({ (*m.borrow_mut()).subscript(k.as_pointer()) })
-                                                    .write(__rhs);
+                                                ({
+                                                    (*m.borrow_mut())
+                                                        .subscript(k.as_pointer(), || 0_i32)
+                                                })
+                                                .write(__rhs);
                                                 size.prefix_inc();
                                             }
                                             (*k.borrow_mut()).prefix_inc();
@@ -674,8 +677,8 @@ fn main_0() -> i32 {
             != 0;
         ok = rhs_0
     };
-    println!(
-        "{} {} {} {} {}",
+    printf!(
+        b"%d %d %d %d %d\n",
         rows,
         calls_0.with(|rc| *rc.borrow()),
         made_1.with(|rc| *rc.borrow()),

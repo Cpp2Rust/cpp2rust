@@ -453,7 +453,7 @@ unsafe fn main_0() -> i32 {
             && (((*narrowed.0.iter_deref()).1) == (1_u32))
     );
     let mut changed: UnsafeMap<i32, (i32, i32)> = UnsafeMap::new();
-    (*changed.subscript(&key)) = 10;
+    (*changed.subscript(&key, || 0_i32)) = 10;
     let mut effects: i32 = 0;
     let mut erased: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = match (({
         changed.erase_key(&key);
@@ -468,7 +468,7 @@ unsafe fn main_0() -> i32 {
     };
     assert!((((effects) == (1)) && (erased.1)) && (((*erased.0.iter_deref()).1) == (1)));
     let mut updated: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = match (({
-        (*changed.subscript(&key)).prefix_inc();
+        (*changed.subscript(&key, || 0_i32)).prefix_inc();
         {
             let __tmp_42 = &mut effects;
             (*__tmp_42).prefix_inc();
@@ -505,7 +505,7 @@ unsafe fn main_0() -> i32 {
                     IterRange::new(keys.as_ptr(), keys.as_ptr().offset((6_i64) as isize))
                 {
                     let mut k: i32 = (*k);
-                    (*values.subscript(&k)) = 42;
+                    (*values.subscript(&k, || 0_i32)) = 42;
                 }
             }
             let mut moved: i32 = 0;
@@ -577,17 +577,17 @@ unsafe fn main_0() -> i32 {
                     && ((nested) == (1))
             );
             assert!(
-                ((((((r0.1 as i32) == (!(hit != 0) as i32))
-                    && ((r1.1 as i32) == (!(hit != 0) as i32)))
-                    && ((r2.1 as i32) == (!(hit != 0) as i32)))
-                    && ((r3.1 as i32) == (!(hit != 0) as i32)))
-                    && ((r4.1 as i32) == (!(hit != 0) as i32)))
-                    && ((r5.1 as i32) == (!(hit != 0) as i32))
+                (((((((r0.1) as i32) == (!(hit != 0) as i32))
+                    && (((r1.1) as i32) == (!(hit != 0) as i32)))
+                    && (((r2.1) as i32) == (!(hit != 0) as i32)))
+                    && (((r3.1) as i32) == (!(hit != 0) as i32)))
+                    && (((r4.1) as i32) == (!(hit != 0) as i32)))
+                    && (((r5.1) as i32) == (!(hit != 0) as i32))
             );
             'loop_: for k in IterRange::new(keys.as_ptr(), keys.as_ptr().offset((6_i64) as isize)) {
                 let mut k: i32 = (*k);
                 assert!(
-                    ((*values.subscript(&k))
+                    ((*values.subscript(&k, || 0_i32))
                         == (if (hit != 0) {
                             42
                         } else {
@@ -611,7 +611,7 @@ unsafe fn main_0() -> i32 {
                             IterRange::new(keys.as_ptr(), keys.as_ptr().offset((3_i64) as isize))
                         {
                             let mut k: i32 = (*k);
-                            (*selected.subscript(&k)).value = 42;
+                            (*selected.subscript(&k, || <Item>::default())).value = 42;
                         }
                     }
                     let mut a: i32 = 0;
@@ -720,9 +720,9 @@ unsafe fn main_0() -> i32 {
                             }))
                     );
                     assert!(
-                        (((prefix.1 as i32) == (!(hit != 0) as i32))
-                            && ((assignment.1 as i32) == (!(hit != 0) as i32)))
-                            && ((compound.1 as i32) == (!(hit != 0) as i32))
+                        ((((prefix.1) as i32) == (!(hit != 0) as i32))
+                            && (((assignment.1) as i32) == (!(hit != 0) as i32)))
+                            && (((compound.1) as i32) == (!(hit != 0) as i32))
                     );
                     assert!(
                         (((*prefix.0.iter_deref()).1.value) == (if (hit != 0) { 42 } else { 3 }))
@@ -753,7 +753,7 @@ unsafe fn main_0() -> i32 {
                     IterRange::new(keys.as_ptr(), keys.as_ptr().offset((3_i64) as isize))
                 {
                     let mut k: i32 = (*k);
-                    (*values.subscript(&k)) = 42;
+                    (*values.subscript(&k, || 0_i32)) = 42;
                 }
             }
             let mut before: i32 =
@@ -799,9 +799,9 @@ unsafe fn main_0() -> i32 {
                     && ((index) == (1))
             );
             assert!(
-                (((member.1 as i32) == (!(hit != 0) as i32))
-                    && ((nested.1 as i32) == (!(hit != 0) as i32)))
-                    && ((element.1 as i32) == (!(hit != 0) as i32))
+                ((((member.1) as i32) == (!(hit != 0) as i32))
+                    && (((nested.1) as i32) == (!(hit != 0) as i32)))
+                    && (((element.1) as i32) == (!(hit != 0) as i32))
             );
             assert!(
                 ((((*member.0.iter_deref()).1) == (if (hit != 0) { 42 } else { 5 }))
@@ -843,7 +843,7 @@ unsafe fn main_0() -> i32 {
                                     references.try_emplace(key, || Held::new_1({ __tmp_79 }))
                                 }
                             };
-                            value = (*(*references.subscript(&key)).ptr)
+                            value = (*(*references.subscript(&key, || <Held>::default())).ptr)
                         }
                     };
                     assert!(
@@ -888,7 +888,9 @@ unsafe fn main_0() -> i32 {
                                     arrays.try_emplace(key, || Held::new_3({ __tmp_82 }, { 0 }))
                                 }
                             };
-                            value = (*(*arrays.subscript(&key)).ptr.offset((1) as isize))
+                            value = (*(*arrays.subscript(&key, || <Held>::default()))
+                                .ptr
+                                .offset((1) as isize))
                         }
                     };
                     assert!(
@@ -912,7 +914,7 @@ unsafe fn main_0() -> i32 {
                     IterRange::new(keys.as_ptr(), keys.as_ptr().offset((6_i64) as isize))
                 {
                     let mut k: i32 = (*k);
-                    (*values.subscript(&k)) = 42;
+                    (*values.subscript(&k, || 0_i32)) = 42;
                 }
             }
             let mut before: i32 =
@@ -1017,17 +1019,17 @@ unsafe fn main_0() -> i32 {
                     && ((index) == (1))
             );
             assert!(
-                ((((((arrow.1 as i32) == (!(hit != 0) as i32))
-                    && ((nested.1 as i32) == (!(hit != 0) as i32)))
-                    && ((element.1 as i32) == (!(hit != 0) as i32)))
-                    && ((get.1 as i32) == (!(hit != 0) as i32)))
-                    && ((deref.1 as i32) == (!(hit != 0) as i32)))
-                    && ((indirect.1 as i32) == (!(hit != 0) as i32))
+                (((((((arrow.1) as i32) == (!(hit != 0) as i32))
+                    && (((nested.1) as i32) == (!(hit != 0) as i32)))
+                    && (((element.1) as i32) == (!(hit != 0) as i32)))
+                    && (((get.1) as i32) == (!(hit != 0) as i32)))
+                    && (((deref.1) as i32) == (!(hit != 0) as i32)))
+                    && (((indirect.1) as i32) == (!(hit != 0) as i32))
             );
             'loop_: for k in IterRange::new(keys.as_ptr(), keys.as_ptr().offset((6_i64) as isize)) {
                 let mut k: i32 = (*k);
                 assert!(
-                    ((*values.subscript(&k))
+                    ((*values.subscript(&k, || 0_i32))
                         == (if (hit != 0) {
                             42
                         } else {
@@ -1077,7 +1079,7 @@ unsafe fn main_0() -> i32 {
                                     references.try_emplace(key, || Held::new_1({ __tmp_97 }))
                                 }
                             };
-                            value = (*(*references.subscript(&key)).ptr)
+                            value = (*(*references.subscript(&key, || <Held>::default())).ptr)
                         }
                     };
                     assert!(
@@ -1110,7 +1112,7 @@ unsafe fn main_0() -> i32 {
                                     owners.try_emplace(key, || Held::new_1({ __tmp_100 }))
                                 }
                             };
-                            value = (*(*owners.subscript(&key)).ptr)
+                            value = (*(*owners.subscript(&key, || <Held>::default())).ptr)
                         }
                     };
                     assert!(((value) == (5)));

@@ -19,7 +19,7 @@ pub unsafe fn lenf_2(mut fmt: *const libc::c_char, __args: Box<[VaArg]>) -> i32 
     let mut ap: *const VaArg = ::std::ptr::null();
     ap = __args.as_ptr();
     let mut s: *const libc::c_char = ap.arg::<*const libc::c_char>();
-    let mut result: i32 = (libc::strlen(s) as i32);
+    let mut result: i32 = ((libc::strlen(s)) as i32);
     return result;
 }
 pub fn main() {

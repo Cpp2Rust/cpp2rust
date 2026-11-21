@@ -53,7 +53,7 @@ fn main_0() -> i32 {
             }),
         },
     ));
-    println!("receiver: {} {}", out.decay(), (*calls.borrow()));
+    printf!(b"receiver: %s %d\n", out.decay(), (*calls.borrow()));
     (*calls.borrow_mut()) = 0;
     {
         (*out.borrow_mut()) = Rc::new(RefCell::new(({ temporary_1(calls.as_pointer()) })))
@@ -66,46 +66,46 @@ fn main_0() -> i32 {
                 __tmp1
             });
     };
-    println!("temporary: {} {}", out.decay(), (*calls.borrow()));
+    printf!(b"temporary: %s %d\n", out.decay(), (*calls.borrow()));
     {
-        (*out.borrow_mut()) = match ({
-            ({
-                (*s.borrow_mut())[0_usize] = ('j' as i8);
-                0
-            } as usize)
-        },)
-        {
-            (mut __tmp_2,) => s.as_pointer().with(|__s: &Vec<i8>| {
+        (*out.borrow_mut()) = {
+            let mut __tmp_2 = {
+                ({
+                    (*s.borrow_mut())[0_usize] = ('j' as i8);
+                    0
+                } as usize)
+            };
+            s.as_pointer().with(|__s: &Vec<i8>| {
                 let mut __tmp1 = __s
                     [__tmp_2..::std::cmp::min(__tmp_2 + 2_usize, __s.len().saturating_sub(1))]
                     .to_vec();
                 __tmp1.push(0);
                 __tmp1
-            }),
+            })
         };
     };
-    println!("position mutation: {} {}", out.decay(), s.decay());
+    printf!(b"position mutation: %s %s\n", out.decay(), s.decay());
     {
-        (*out.borrow_mut()) = match ({
-            ({
-                (*s.borrow_mut())[1_usize] = ('a' as i8);
-                2
-            } as usize)
-        },)
-        {
-            (mut __tmp_3,) => s.as_pointer().with(|__s: &Vec<i8>| {
+        (*out.borrow_mut()) = {
+            let mut __tmp_3 = {
+                ({
+                    (*s.borrow_mut())[1_usize] = ('a' as i8);
+                    2
+                } as usize)
+            };
+            s.as_pointer().with(|__s: &Vec<i8>| {
                 let mut __tmp1 = __s
                     [0_usize..::std::cmp::min(0_usize + __tmp_3, __s.len().saturating_sub(1))]
                     .to_vec();
                 __tmp1.push(0);
                 __tmp1
-            }),
+            })
         };
     };
-    println!("count mutation: {} {}", out.decay(), s.decay());
+    printf!(b"count mutation: %s %s\n", out.decay(), s.decay());
     (*out.borrow_mut())[0_usize] = ('X' as i8);
     (*s.borrow_mut())[1_usize] = ('b' as i8);
-    println!("independent: {} {}", out.decay(), s.decay());
+    printf!(b"independent: %s %s\n", out.decay(), s.decay());
     let mut p: Ptr<Vec<i8>> = (s.as_pointer());
     {
         (*out.borrow_mut()) = p.with(|__s: &Vec<i8>| {
@@ -116,7 +116,7 @@ fn main_0() -> i32 {
             __tmp1
         });
     };
-    println!("pointer: {}", out.decay());
+    printf!(b"pointer: %s\n", out.decay());
     {
         (*out.borrow_mut()) = Rc::new(RefCell::new(
             Rc::new(RefCell::new({
@@ -142,19 +142,20 @@ fn main_0() -> i32 {
             __tmp1
         });
     };
-    println!("nested: {}", out.decay());
+    printf!(b"nested: %s\n", out.decay());
     {
-        (*out.borrow_mut()) = match ({ ((*s.borrow()).len() - 1) },) {
-            (mut __tmp_4,) => s.as_pointer().with(|__s: &Vec<i8>| {
+        (*out.borrow_mut()) = {
+            let mut __tmp_4 = { ((*s.borrow()).len() - 1) };
+            s.as_pointer().with(|__s: &Vec<i8>| {
                 let mut __tmp1 = __s
                     [__tmp_4..::std::cmp::min(__tmp_4 + 0_usize, __s.len().saturating_sub(1))]
                     .to_vec();
                 __tmp1.push(0);
                 __tmp1
-            }),
+            })
         };
     };
-    println!("empty: {}", ((*out.borrow()).len() - 1));
+    printf!(b"empty: %zu\n", ((*out.borrow()).len() - 1));
     let field: Value<Vec<i8>> = Rc::new(RefCell::new({
         let mut __bytes = Ptr::<i8>::from_string_literal(b"hello").to_c_bytes();
         __bytes.push(0);
@@ -172,8 +173,8 @@ fn main_0() -> i32 {
             __tmp1
         });
     };
-    println!(
-        "field: {} {}",
+    printf!(
+        b"field: %s %s\n",
         out.decay(),
         ({ { (*text.borrow()).value.clone() }.decay() })
     );
@@ -202,7 +203,7 @@ fn main_0() -> i32 {
                 __tmp1
             });
     };
-    println!("element: {} {}", out.decay(), index);
+    printf!(b"element: %s %zu\n", out.decay(), index);
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

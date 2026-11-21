@@ -215,6 +215,25 @@ unsafe fn main_0() -> i32 {
             (c"  3.3".as_ptr().cast_mut()).cast_const()
         )) == (0))
     );
+    assert!(
+        ((unsafe {
+            libc::snprintf(
+                buf.as_mut_ptr() as *mut libc::c_char,
+                ::std::mem::size_of::<[libc::c_char; 32]>() as usize,
+                (c"\xff%s|%4s|%.1s|%c".as_ptr().cast_mut()).cast_const() as *const libc::c_char,
+                (c"\xe9".as_ptr().cast_mut()),
+                (c"\xc3\xa9".as_ptr().cast_mut()),
+                (c"\xc3\xa9".as_ptr().cast_mut()),
+                (233),
+            )
+        }) == (11))
+    );
+    assert!(
+        ((libc::strcmp(
+            (buf.as_mut_ptr()).cast_const(),
+            (c"\xff\xe9|  \xc3\xa9|\xc3|\xe9".as_ptr().cast_mut()).cast_const()
+        )) == (0))
+    );
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

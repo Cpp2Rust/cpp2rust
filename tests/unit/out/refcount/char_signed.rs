@@ -19,30 +19,30 @@ pub fn main() {
 fn main_0() -> i32 {
     let mut c: i8 = -56_i8;
     let mut widened: i32 = (c as i32);
-    println!("{} {}", widened, ({ to_int_0((b'\xff' as i8),) }));
-    println!("{}", (((c as i32) < 0) as i32));
+    printf!(b"%d %d\n", widened, ({ to_int_0((b'\xff' as i8),) }));
+    printf!(b"%d\n", (((c as i32) < 0) as i32));
     let lit: Value<Box<[i8]>> = Rc::new(RefCell::new(i8::array_from_literal(b"\xe9t\xe9\0")));
     let mut ulit: [u8; 4] = b"\xe9t\xe9\0".map(u8::from_byte);
-    println!(
-        "{} {}",
+    printf!(
+        b"%d %d\n",
         ((*lit.borrow())[(0) as usize] as i32),
         (ulit[(0) as usize] as i32)
     );
-    println!("{}", (({ is_negative_1(lit.decay(),) }) as i32));
+    printf!(b"%d\n", (({ is_negative_1(lit.decay(),) }) as i32));
     let mut u8s: Ptr<i8> = Ptr::<i8>::from_string_literal(b"\xc3\xa9");
-    println!(
-        "{} {}",
+    printf!(
+        b"%d %d\n",
         ((elem!(u8s, 0).read()) as i32),
         ((elem!(u8s, 1).read()) as i32)
     );
     let mut p: Ptr<i8> = Ptr::<i8>::from_string_literal(b"\x80");
-    println!(
-        "{} {}",
+    printf!(
+        b"%d %d\n",
         ((elem!(p, 0).read()) as i32),
         (((elem!(p, 0).read()) as u8) as i32)
     );
-    println!(
-        "{}",
+    printf!(
+        b"%d\n",
         (({
             let mut __it1 = Ptr::<i8>::from_string_literal(b"\x80").to_c_string_iterator();
             let mut __it2 = Ptr::<i8>::from_string_literal(b"a").to_c_string_iterator();
@@ -63,9 +63,9 @@ fn main_0() -> i32 {
         __bytes.push(0);
         __bytes
     };
-    println!("{} {}", (s[0_usize] as i32), (s[1_usize] as i32));
+    printf!(b"%d %d\n", (s[0_usize] as i32), (s[1_usize] as i32));
     let mut sum: i8 = (((c as i32) + (c as i32)) as i8);
-    println!("{}", (sum as i32));
+    printf!(b"%d\n", (sum as i32));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

@@ -31,7 +31,7 @@ fn main_0() -> i32 {
         let v2: Ptr<Vec<i32>> = v2.iter_deref();
         'loop_: for i in IterRange::new(v2.decay().begin(), v2.decay().end()) {
             let mut i: i32 = (i.iter_deref().read());
-            println!("{}", (i + 3));
+            printf!(b"%d\n", (i + 3));
         }
     }
     'loop_: for v2 in IterRange::new(v.decay().begin(), v.decay().end()) {
@@ -39,7 +39,7 @@ fn main_0() -> i32 {
             Rc::new(RefCell::new((*v2.iter_deref().upgrade().deref()).clone()));
         'loop_: for i in IterRange::new(v2.decay().begin(), v2.decay().end()) {
             let mut i: i32 = (i.iter_deref().read());
-            println!("{}", i);
+            printf!(b"%d\n", i);
         }
     }
     return 0;

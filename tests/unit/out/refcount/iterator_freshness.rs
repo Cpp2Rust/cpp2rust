@@ -14,9 +14,7 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let vec_: Value<Vec<i32>> = Rc::new(RefCell::new(
-        (0..(4_usize) as usize).map(|_| 0_i32).collect::<Vec<_>>(),
-    ));
+    let vec_: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::from_fn(4_usize, |_| 0_i32)));
     let it: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(vec_.decay().begin()));
     ({ foo_0((*it.borrow()).clone()) });
     return 0;

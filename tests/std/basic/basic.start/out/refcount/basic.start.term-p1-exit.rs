@@ -15,7 +15,7 @@ pub struct Tracker {
 impl Tracker {
     pub fn new(mut tag: i32) -> Self {
         let __this: Tracker = Self { tag: tag };
-        println!("construct {}", tag);
+        printf!(b"construct %d\n", tag);
         __this
     }
 }
@@ -29,7 +29,7 @@ thread_local!(
     };
 );
 pub fn exit_from_nested_call_1() {
-    println!("local static {}", {
+    printf!(b"local static %d\n", {
         (*local_static_2.with(Value::clone).borrow()).tag
     });
     let automatic: Value<Tracker> = Rc::new(RefCell::new(Tracker::new({ 3 })));
@@ -52,7 +52,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     ({ exit_from_nested_call_1() });
-    println!("not reached");
+    printf!(b"not reached\n");
     return 0;
 }
 pub trait TrackerImpl {
@@ -60,7 +60,7 @@ pub trait TrackerImpl {
 }
 impl TrackerImpl for Ptr<Tracker> {
     fn destructor(&self) {
-        println!("destroy {}", (*self).with(|__s| __s.tag));
+        printf!(b"destroy %d\n", (*self).with(|__s| __s.tag));
     }
 }
 pub fn __cpp2rust_init_globals() {

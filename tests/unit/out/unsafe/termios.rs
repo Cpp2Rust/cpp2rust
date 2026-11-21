@@ -23,7 +23,7 @@ unsafe fn main_0() -> i32 {
         )
     });
     assert!(((fd) >= (0)));
-    let mut tio: ::libc::termios = unsafe { std::mem::zeroed() };
+    let mut tio: ::libc::termios = std::mem::zeroed();
     assert!(((libc::tcgetattr(fd, (&mut tio as *mut ::libc::termios))) == (-1_i32)));
     assert!(
         ((libc::tcsetattr(fd, 0, (&mut tio as *mut ::libc::termios).cast_const())) == (-1_i32))

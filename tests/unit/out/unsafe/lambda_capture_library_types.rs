@@ -19,7 +19,7 @@ unsafe fn main_0() -> i32 {
             let v: Vec<i32> = v.clone();
         },
         || -> i32 {
-            return (v.len() as i32);
+            return ((v.len()) as i32);
         }
     );
     let mut g: FnPtr<fn() -> i32> = f.copy_from();

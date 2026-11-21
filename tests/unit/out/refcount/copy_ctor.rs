@@ -309,11 +309,10 @@ impl HolderImpl for Ptr<Holder> {
             let _arg0: Ptr<Counted> = field_ptr!(_a0, c);
             CountedImpl::copy_assign(&field_ptr!((*self), c), _arg0)
         });
-        match ({ (array_field_ptr!((*self), arr)).to_any() },) {
-            (mut __tmp_0,) => {
-                __tmp_0.memcpy(&(array_field_ptr!(_a0, arr)).to_any(), 8_usize);
-                (__tmp_0).clone()
-            }
+        {
+            let mut __tmp_0 = { (array_field_ptr!((*self), arr)).to_any() };
+            __tmp_0.memcpy(&(array_field_ptr!(_a0, arr)).to_any(), 8_usize);
+            (__tmp_0).clone()
         };
         return (*self).clone();
     }

@@ -1,8 +1,8 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-fn t1() -> ::libc::pollfd {
-    unsafe { std::mem::zeroed() }
+unsafe fn t1() -> ::libc::pollfd {
+    std::mem::zeroed()
 }
 
 fn t2() -> ::libc::nfds_t {

@@ -81,9 +81,11 @@ The fragment kinds are:
   `prefix` (`&`, `&mut`, `&raw const`, `&raw mut`) and the `inner` fragments of
   the lvalue. A reference parameter returned as is, `a0` in a rule returning
   `&mut T`, is a `ref_expr` too. The fragments before it are the statements that
-  compute it. Where the converter would dereference the rule's result it emits
-  the lvalue alone, so `p.first = 1.5` is `p.0 = 1.5` rather than
-  `(*&mut p.0) = 1.5`. See
+  compute it; its optional `setup` holds the trailing `let` statements whose
+  variables only the lvalue uses, e.g., `let __n = a0.len() - 1;` for
+  `&mut a0[__n]`, which a discarded reference doesn't need. Where the converter
+  would dereference the rule's result it emits the lvalue alone, so
+  `p.first = 1.5` is `p.0 = 1.5` rather than `(*&mut p.0) = 1.5`. See
   [Returning references](./writing-rules.md#returning-references) for how a
   reference to a parameter, or to an element of one, is translated.
 - `va_args`: the expansion point for a variadic tail.

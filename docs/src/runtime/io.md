@@ -45,39 +45,46 @@ In the refcount model `cin`, `cout`, and `cerr` are translated as
 `Ptr<std::fs::File>` values over duplicates of the standard descriptors,
 returned by the `cin`, `cout`, and `cerr` functions. `Ptr<T>` implements
 `write_fmt` and `write_all` whenever `T: Write`, forwarding to the pointee
-through `with_mut`, so `cout << x` becomes `write!(cout(), "{}", x)` and a raw
-byte range is written with `cout().write_all(..)`. In the unsafe model
-`cin_unsafe`, `cout_unsafe`, and `cerr_unsafe` return raw pointers to
-thread-local `std::fs::File` values. C++ streams do not map fully onto
-`std::fs::File`, so this translation may change in the future.
+through `with_mut`, so `cout << x` becomes `write!(cout(), "{}", x)`, while
+characters and strings, which are bytes, are written with
+`cout().write_all(..)`. In the unsafe model `cin_unsafe`, `cout_unsafe`, and
+`cerr_unsafe` return raw pointers to thread-local `std::fs::File` values. C++
+streams do not map fully onto `std::fs::File`, so this translation may change in
+the future.
 
 ## Formatting
 
-The code generator first translates the `printf` family into the idiomatic
-`print!` and `println!` macros. That is not always possible: the target stream
-may not be known at translation time, or the format string may be a runtime
-value. For those cases, and for functions that format into a buffer such as
-`snprintf`, the refcount model falls back to `format_c`; the unsafe model calls
-libc directly.
-
-`format_c` evaluates a C format string against a slice of
-[variadic arguments](./va-args.md) and returns the formatted `String`:
+C strings and formats are bytes, which need not be UTF-8, so the `printf` family
+is not translated into `print!` and `println!`, which write a `str`. In the
+refcount model, it is formatted by `format_c`, and `printf` and `fprintf` write
+the result to the `CFile`, as `fputs` does; the unsafe model calls libc
+directly. A call to `printf` or `fprintf` with a literal format becomes the
+`printf!` or `fprintf!` macro, which reads like `print!`:
 
 ```rust
-pub fn format_c(fmt: &str, va: &[VaArg]) -> String;
+printf!(b"%d: %s\n", i, name);
+fprintf!(libcc2rs::c_stderr(), b"error %d\n", code);
 ```
 
-Parsing and rendering come from the `sprintf` crate. The integer, character,
-string, and floating-point conversions are supported, and `%s` reads the
-argument through the refcounted pointer as a Rust string. A malformed format
+Other calls, and the other functions of the family, go through their rules.
+
+`format_c` evaluates a C format string against a slice of
+[variadic arguments](./va-args.md) and returns the formatted bytes:
+
+```rust
+pub fn format_c(fmt: &[u8], va: &[VaArg]) -> Vec<u8>;
+```
+
+`%s` and `%c` are formatted by `format_c` itself, which copies the bytes and
+counts widths and precisions in bytes, as C does. The numeric conversions are
+rendered by the `sprintf` crate, one conversion at a time. A malformed format
 string or an argument of the wrong kind is a panic. Three things are not
 supported yet:
 
 1. `%p` renders through the pointer's [integer cast](./rc.md#integer-casts),
    which currently panics.
 2. `%n` is not handled.
-3. A `*` width or precision (`%*d`, `%.*s`) is parsed but its integer argument
-   is not consumed, so the remaining arguments are misaligned.
+3. A `*` width or precision (`%*d`, `%.*s`) is a panic.
 
 ## File descriptors
 

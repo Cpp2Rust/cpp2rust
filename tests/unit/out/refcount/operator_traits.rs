@@ -89,13 +89,12 @@ fn main_0() -> i32 {
         Lt { v: 1 },
         Lt { v: 2 },
     ])));
-    match ({ lts.decay().begin() },) {
-        (mut __tmp_0,) => {
-            let __n = lts.decay().end().iter_distance(&__tmp_0);
-            let mut __order: Vec<isize> = (0..__n).collect();
-            __order.sort_by(|&__x, &__y| cpp_cmp(&__tmp_0.iter_at(__x), &__tmp_0.iter_at(__y)));
-            reorder(__order, |__i| __tmp_0.iter_at(__i));
-        }
+    {
+        let mut __tmp_0 = { lts.decay().begin() };
+        let __n = lts.decay().end().iter_distance(&__tmp_0);
+        let mut __order: Vec<isize> = (0..__n).collect();
+        __order.sort_by(|&__x, &__y| cpp_cmp(&__tmp_0.iter_at(__x), &__tmp_0.iter_at(__y)));
+        reorder(__order, |__i| __tmp_0.iter_at(__i));
     };
     assert!(
         ({
@@ -111,32 +110,28 @@ fn main_0() -> i32 {
     let two: Value<Eq> = Rc::new(RefCell::new(Eq { v: 2 }));
     let nine: Value<Eq> = Rc::new(RefCell::new(Eq { v: 9 }));
     assert!(
-        (match ({ eqs.decay().begin() }, { eqs.decay().end() },) {
-            (mut __tmp_1, mut __tmp_2) => {
-                {
-                    let mut __it = (__tmp_1).clone();
-                    while __it != __tmp_2 && !CppEq::equal(&__it.iter_deref(), &two.as_pointer()) {
-                        __it.iter_inc();
-                    }
-                    __it
-                }
+        ({
+            let mut __tmp_1 = { eqs.decay().begin() };
+            let mut __tmp_2 = { eqs.decay().end() };
+            let mut __it = (__tmp_1).clone();
+            while __it != __tmp_2 && !CppEq::equal(&__it.iter_deref(), &two.as_pointer()) {
+                __it.iter_inc();
             }
+            __it
         }
         .iter_deref()
         .with(|__s| __s.v)
             == 2)
     );
     assert!(
-        match ({ eqs.decay().begin() }, { eqs.decay().end() },) {
-            (mut __tmp_3, mut __tmp_4) => {
-                {
-                    let mut __it = (__tmp_3).clone();
-                    while __it != __tmp_4 && !CppEq::equal(&__it.iter_deref(), &nine.as_pointer()) {
-                        __it.iter_inc();
-                    }
-                    __it
-                }
+        {
+            let mut __tmp_3 = { eqs.decay().begin() };
+            let mut __tmp_4 = { eqs.decay().end() };
+            let mut __it = (__tmp_3).clone();
+            while __it != __tmp_4 && !CppEq::equal(&__it.iter_deref(), &nine.as_pointer()) {
+                __it.iter_inc();
             }
+            __it
         } == eqs.decay().end()
     );
     let cmps: Value<Vec<Cmp>> = Rc::new(RefCell::new(Vec::from([
@@ -144,13 +139,12 @@ fn main_0() -> i32 {
         Cmp { v: 1 },
         Cmp { v: 2 },
     ])));
-    match ({ cmps.decay().begin() },) {
-        (mut __tmp_5,) => {
-            let __n = cmps.decay().end().iter_distance(&__tmp_5);
-            let mut __order: Vec<isize> = (0..__n).collect();
-            __order.sort_by(|&__x, &__y| cpp_cmp(&__tmp_5.iter_at(__x), &__tmp_5.iter_at(__y)));
-            reorder(__order, |__i| __tmp_5.iter_at(__i));
-        }
+    {
+        let mut __tmp_5 = { cmps.decay().begin() };
+        let __n = cmps.decay().end().iter_distance(&__tmp_5);
+        let mut __order: Vec<isize> = (0..__n).collect();
+        __order.sort_by(|&__x, &__y| cpp_cmp(&__tmp_5.iter_at(__x), &__tmp_5.iter_at(__y)));
+        reorder(__order, |__i| __tmp_5.iter_at(__i));
     };
     assert!(
         ({
@@ -159,45 +153,38 @@ fn main_0() -> i32 {
     );
     let three: Value<Cmp> = Rc::new(RefCell::new(Cmp { v: 3 }));
     assert!(
-        (match ({ cmps.decay().begin() }, { cmps.decay().end() },) {
-            (mut __tmp_6, mut __tmp_7) => {
-                {
-                    let mut __it = (__tmp_6).clone();
-                    while __it != __tmp_7 && !CppEq::equal(&__it.iter_deref(), &three.as_pointer())
-                    {
-                        __it.iter_inc();
-                    }
-                    __it
-                }
+        ({
+            let mut __tmp_6 = { cmps.decay().begin() };
+            let mut __tmp_7 = { cmps.decay().end() };
+            let mut __it = (__tmp_6).clone();
+            while __it != __tmp_7 && !CppEq::equal(&__it.iter_deref(), &three.as_pointer()) {
+                __it.iter_inc();
             }
+            __it
         }
         .iter_deref()
         .with(|__s| __s.v)
             == 3)
     );
     let frees: Value<Vec<Free>> = Rc::new(RefCell::new(Vec::from([Free { v: 2 }, Free { v: 1 }])));
-    match ({ frees.decay().begin() },) {
-        (mut __tmp_8,) => {
-            let __n = frees.decay().end().iter_distance(&__tmp_8);
-            let mut __order: Vec<isize> = (0..__n).collect();
-            __order.sort_by(|&__x, &__y| cpp_cmp(&__tmp_8.iter_at(__x), &__tmp_8.iter_at(__y)));
-            reorder(__order, |__i| __tmp_8.iter_at(__i));
-        }
+    {
+        let mut __tmp_8 = { frees.decay().begin() };
+        let __n = frees.decay().end().iter_distance(&__tmp_8);
+        let mut __order: Vec<isize> = (0..__n).collect();
+        __order.sort_by(|&__x, &__y| cpp_cmp(&__tmp_8.iter_at(__x), &__tmp_8.iter_at(__y)));
+        reorder(__order, |__i| __tmp_8.iter_at(__i));
     };
     assert!(({ ({ { (*frees.borrow())[0_usize] }.v } == 1) }));
     let ftwo: Value<Free> = Rc::new(RefCell::new(Free { v: 2 }));
     assert!(
-        (match ({ frees.decay().begin() }, { frees.decay().end() },) {
-            (mut __tmp_9, mut __tmp_10) => {
-                {
-                    let mut __it = (__tmp_9).clone();
-                    while __it != __tmp_10 && !CppEq::equal(&__it.iter_deref(), &ftwo.as_pointer())
-                    {
-                        __it.iter_inc();
-                    }
-                    __it
-                }
+        ({
+            let mut __tmp_9 = { frees.decay().begin() };
+            let mut __tmp_10 = { frees.decay().end() };
+            let mut __it = (__tmp_9).clone();
+            while __it != __tmp_10 && !CppEq::equal(&__it.iter_deref(), &ftwo.as_pointer()) {
+                __it.iter_inc();
             }
+            __it
         }
         .iter_deref()
         .with(|__s| __s.v)
@@ -205,11 +192,15 @@ fn main_0() -> i32 {
     );
     let m: Value<Map<Lt, (Value<Lt>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
     match (Rc::new(RefCell::new(Lt { v: 2 })).as_pointer(),) {
-        (__tmp_11,) => ({ (*m.borrow_mut()).subscript_move(__tmp_11, |__k| cpp_move!(__k)) }),
+        (__tmp_11,) => {
+            ({ (*m.borrow_mut()).subscript_move(__tmp_11, |__k| cpp_move!(__k), || 0_i32) })
+        }
     }
     .write(20);
     match (Rc::new(RefCell::new(Lt { v: 1 })).as_pointer(),) {
-        (__tmp_12,) => ({ (*m.borrow_mut()).subscript_move(__tmp_12, |__k| cpp_move!(__k)) }),
+        (__tmp_12,) => {
+            ({ (*m.borrow_mut()).subscript_move(__tmp_12, |__k| cpp_move!(__k), || 0_i32) })
+        }
     }
     .write(10);
     assert!(
@@ -226,7 +217,7 @@ fn main_0() -> i32 {
     assert!(
         ((match (Rc::new(RefCell::new(Lt { v: 2 })).as_pointer(),) {
             (__tmp_13,) => {
-                ({ (*m.borrow_mut()).subscript_move(__tmp_13, |__k| cpp_move!(__k)) })
+                ({ (*m.borrow_mut()).subscript_move(__tmp_13, |__k| cpp_move!(__k), || 0_i32) })
             }
         }
         .read())

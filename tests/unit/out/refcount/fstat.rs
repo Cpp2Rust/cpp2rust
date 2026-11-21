@@ -17,13 +17,15 @@ fn main_0() -> i32 {
             Some(__m) => nix::sys::stat::Mode::from_bits_truncate(i32::get(__m) as ::libc::mode_t),
             None => nix::sys::stat::Mode::empty(),
         };
-        match nix::fcntl::open(
-            path.to_rust_string().as_str(),
-            nix::fcntl::OFlag::from_bits_retain(
-                ((::libc::O_RDWR | ::libc::O_CREAT) | ::libc::O_TRUNC),
-            ),
-            __mode,
-        ) {
+        match path.with_c_bytes(|__path| {
+            nix::fcntl::open(
+                __path,
+                nix::fcntl::OFlag::from_bits_retain(
+                    ((::libc::O_RDWR | ::libc::O_CREAT) | ::libc::O_TRUNC),
+                ),
+                __mode,
+            )
+        }) {
             Ok(__ofd) => FdRegistry::register(__ofd),
             Err(__e) => {
                 libcc2rs::cpp2rust_errno().write(__e as i32);
@@ -48,17 +50,16 @@ fn main_0() -> i32 {
     );
     let st: Value<libcc2rs::Stat> = Rc::new(RefCell::new(Default::default()));
     assert!(
-        (match ({ (st.as_pointer()) },) {
-            (mut __tmp_0,) => {
-                match FdRegistry::with_fd(fd, |__fd| nix::sys::stat::fstat(__fd)) {
-                    Ok(__s) => {
-                        __tmp_0.with_mut(|__st| *__st = Stat::from_libc(&__s));
-                        0
-                    }
-                    Err(__e) => {
-                        libcc2rs::cpp2rust_errno().write(__e as i32);
-                        -1
-                    }
+        ({
+            let mut __tmp_0 = { (st.as_pointer()) };
+            match FdRegistry::with_fd(fd, |__fd| nix::sys::stat::fstat(__fd)) {
+                Ok(__s) => {
+                    __tmp_0.with_mut(|__st| *__st = Stat::from_libc(&__s));
+                    0
+                }
+                Err(__e) => {
+                    libcc2rs::cpp2rust_errno().write(__e as i32);
+                    -1
                 }
             }
         } == 0)
@@ -66,7 +67,7 @@ fn main_0() -> i32 {
     assert!(({ ({ (*st.borrow()).st_size } == (5 as ::libc::off_t)) }));
     assert!((FdRegistry::close(fd) == 0));
     assert!(
-        (match nix::unistd::unlink(path.to_rust_string().as_str()) {
+        (match path.with_c_bytes(|__path| nix::unistd::unlink(__path)) {
             Ok(()) => 0,
             Err(__e) => {
                 libcc2rs::cpp2rust_errno().write(__e as i32);

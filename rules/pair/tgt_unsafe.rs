@@ -15,16 +15,16 @@ fn t3<T1, T2>() -> T2 {
     unimplemented!()
 }
 
-unsafe fn f2<T1: Clone, T2: Clone>(a0: (T1, T2)) -> (T1, T2) {
+fn f2<T1: Clone, T2: Clone>(a0: (T1, T2)) -> (T1, T2) {
     a0.clone()
 }
-unsafe fn f7<T1, T2>(a0: T1, a1: T2) -> (T1, T2) {
+fn f7<T1, T2>(a0: T1, a1: T2) -> (T1, T2) {
     (a0, a1)
 }
-unsafe fn f9<T1, T2>(a0: T1, a1: T2) -> (T1, T2) {
+fn f9<T1, T2>(a0: T1, a1: T2) -> (T1, T2) {
     (a0, a1)
 }
-unsafe fn f10<T1, T2>(a0: T1, a1: T2) -> (T1, T2) {
+fn f10<T1, T2>(a0: T1, a1: T2) -> (T1, T2) {
     (a0, a1)
 }
 
@@ -32,39 +32,39 @@ unsafe fn f12<T1, T2>(a0: &mut (T1, T2)) -> (T1, T2) {
     (cpp_move_unsafe!(&mut a0.0), cpp_move_unsafe!(&mut a0.1))
 }
 
-unsafe fn f13<T1: Clone, T2: Clone>(a0: &mut (T1, T2), a1: (T1, T2)) -> &mut (T1, T2) {
+fn f13<T1: Clone, T2: Clone>(a0: &mut (T1, T2), a1: (T1, T2)) -> &mut (T1, T2) {
     *a0 = a1.clone();
     a0
 }
 
-unsafe fn f14<'a, T1: Default, T2: Default>(a0: &'a mut (T1, T2), a1: &mut (T1, T2)) -> &'a mut (T1, T2) {
+fn f14<'a, T1: Default, T2: Default>(a0: &'a mut (T1, T2), a1: &mut (T1, T2)) -> &'a mut (T1, T2) {
     *a0 = std::mem::take(&mut *a1);
     a0
 }
 
-unsafe fn f15<T1, T2>(a0: (T1, T2)) -> T2 {
+fn f15<T1, T2>(a0: (T1, T2)) -> T2 {
     a0.1
 }
 
-unsafe fn f16<T1, T2>(a0: (T1, T2)) -> T1 {
+fn f16<T1, T2>(a0: (T1, T2)) -> T1 {
     a0.0
 }
 
-unsafe fn f17<const T1: usize, T2, T3>(a0: &mut (T2, T3)) -> *mut <(T2, T3) as TupleElement<T1>>::Type
+fn f17<const T1: usize, T2, T3>(a0: &mut (T2, T3)) -> *mut <(T2, T3) as TupleElement<T1>>::Type
 where
     (T2, T3): TupleElement<T1>,
 {
     &mut *a0.get_mut::<T1>()
 }
 
-unsafe fn f19<const T1: usize, T2, T3>(a0: &(T2, T3)) -> *const <(T2, T3) as TupleElement<T1>>::Type
+fn f19<const T1: usize, T2, T3>(a0: &(T2, T3)) -> *const <(T2, T3) as TupleElement<T1>>::Type
 where
     (T2, T3): TupleElement<T1>,
 {
     &*a0.get::<T1>()
 }
 
-unsafe fn f21<const T1: usize, T2, T3>(a0: &mut (T2, T3)) -> *mut <(T2, T3) as TupleElement<T1>>::Type
+fn f21<const T1: usize, T2, T3>(a0: &mut (T2, T3)) -> *mut <(T2, T3) as TupleElement<T1>>::Type
 where
     (T2, T3): TupleElement<T1>,
 {
@@ -89,29 +89,29 @@ unsafe fn f26<'a, T1: CppFromUnsafe<T3>, T2: CppFromUnsafe<T4>, T3, T4>(a0: &'a 
     a0
 }
 
-unsafe fn f27<const T1: usize, T2, T3>(a0: &(T2, T3)) -> *const <(T2, T3) as TupleElement<T1>>::Type
+fn f27<const T1: usize, T2, T3>(a0: &(T2, T3)) -> *const <(T2, T3) as TupleElement<T1>>::Type
 where
     (T2, T3): TupleElement<T1>,
 {
     &*a0.get::<T1>()
 }
 
-unsafe fn f28<T1: PartialEq, T2: PartialEq>(a0: (T1, T2), a1: (T1, T2)) -> bool {
+fn f28<T1: PartialEq, T2: PartialEq>(a0: (T1, T2), a1: (T1, T2)) -> bool {
     a0 != a1
 }
 
-unsafe fn f29<T1: PartialOrd, T2: PartialOrd>(a0: (T1, T2), a1: (T1, T2)) -> bool {
+fn f29<T1: PartialOrd, T2: PartialOrd>(a0: (T1, T2), a1: (T1, T2)) -> bool {
     a0 < a1
 }
 
-unsafe fn f30<T1: PartialOrd, T2: PartialOrd>(a0: (T1, T2), a1: (T1, T2)) -> bool {
+fn f30<T1: PartialOrd, T2: PartialOrd>(a0: (T1, T2), a1: (T1, T2)) -> bool {
     a0 <= a1
 }
 
-unsafe fn f31<T1: PartialOrd, T2: PartialOrd>(a0: (T1, T2), a1: (T1, T2)) -> bool {
+fn f31<T1: PartialOrd, T2: PartialOrd>(a0: (T1, T2), a1: (T1, T2)) -> bool {
     a0 > a1
 }
 
-unsafe fn f32<T1: PartialOrd, T2: PartialOrd>(a0: (T1, T2), a1: (T1, T2)) -> bool {
+fn f32<T1: PartialOrd, T2: PartialOrd>(a0: (T1, T2), a1: (T1, T2)) -> bool {
     a0 >= a1
 }

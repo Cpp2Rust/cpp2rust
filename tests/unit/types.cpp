@@ -8,6 +8,7 @@
 
 static_assert(sizeof(std::size_t) == sizeof(void *), "");
 static_assert(sizeof(int *) == 8, "");
+static_assert(sizeof("é") == 3, "");
 
 int main() {
   const uint8_t xu8 = 8;

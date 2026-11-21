@@ -220,23 +220,22 @@ pub fn test_20() {
     assert!((({ s.call(2, 5,) }) == 10));
     assert!((({ p9_not_part_of_the_type_Scale::times(2, 3,) }) == 6));
     let values: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::from([3, -1_i32, 4, 1, 5])));
-    match ({ values.decay().begin() },) {
-        (mut __tmp_0,) => {
-            let __n = values.decay().end().iter_distance(&__tmp_0);
-            let mut __order: Vec<isize> = (0..__n).collect();
-            __order.sort_by(|&__x, &__y| {
-                let __a = __tmp_0.iter_at(__x);
-                let __b = __tmp_0.iter_at(__y);
-                if descending_19.call(__a.clone(), __b.clone()) {
-                    std::cmp::Ordering::Less
-                } else if descending_19.call(__b, __a) {
-                    std::cmp::Ordering::Greater
-                } else {
-                    std::cmp::Ordering::Equal
-                }
-            });
-            reorder(__order, |__i| __tmp_0.iter_at(__i));
-        }
+    {
+        let mut __tmp_0 = { values.decay().begin() };
+        let __n = values.decay().end().iter_distance(&__tmp_0);
+        let mut __order: Vec<isize> = (0..__n).collect();
+        __order.sort_by(|&__x, &__y| {
+            let __a = __tmp_0.iter_at(__x);
+            let __b = __tmp_0.iter_at(__y);
+            if descending_19.call(__a.clone(), __b.clone()) {
+                std::cmp::Ordering::Less
+            } else if descending_19.call(__b, __a) {
+                std::cmp::Ordering::Greater
+            } else {
+                std::cmp::Ordering::Equal
+            }
+        });
+        reorder(__order, |__i| __tmp_0.iter_at(__i));
     };
     assert!(({ ({ (*values.borrow())[0_usize] } == 5) }));
     assert!(({ ({ (*values.borrow())[1_usize] } == 4) }));

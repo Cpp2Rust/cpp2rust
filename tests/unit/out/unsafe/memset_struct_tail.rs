@@ -24,26 +24,24 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut p: *mut S = (libcc2rs::malloc_unsafe(::std::mem::size_of::<S>()) as *mut S);
     assert!((!((p).is_null())));
-    match ({ (p as *mut ::libc::c_void) },) {
-        (mut __tmp_0,) => {
-            let byte_0 = __tmp_0 as *mut u8;
-            for offset in 0..::std::mem::size_of::<S>() {
-                *byte_0.offset(offset as isize) = 255 as u8;
-            }
-            __tmp_0
+    {
+        let mut __tmp_0 = { (p as *mut ::libc::c_void) };
+        let byte_0 = __tmp_0 as *mut u8;
+        for offset in 0..::std::mem::size_of::<S>() {
+            *byte_0.offset(offset as isize) = 255 as u8;
         }
+        __tmp_0
     };
     (*p).keep = 7;
-    match ({ ((&mut (*p).a as *mut i32) as *mut ::libc::c_void) },) {
-        (mut __tmp_1,) => {
-            let byte_0 = __tmp_1 as *mut u8;
-            for offset in 0..(::std::mem::size_of::<S>() as usize)
-                .wrapping_sub((::std::mem::offset_of!(S, a) as usize))
-            {
-                *byte_0.offset(offset as isize) = 0 as u8;
-            }
-            __tmp_1
+    {
+        let mut __tmp_1 = { ((&mut (*p).a as *mut i32) as *mut ::libc::c_void) };
+        let byte_0 = __tmp_1 as *mut u8;
+        for offset in 0..(::std::mem::size_of::<S>() as usize)
+            .wrapping_sub((::std::mem::offset_of!(S, a) as usize))
+        {
+            *byte_0.offset(offset as isize) = 0 as u8;
         }
+        __tmp_1
     };
     assert!((((*p).keep) == (7)));
     assert!(
@@ -54,16 +52,15 @@ unsafe fn main_0() -> i32 {
     (*p).b = 2_i64;
     (*p).c[(0) as usize] = (('x' as i32) as libc::c_char);
     (*p).last = 3;
-    match ({ ((&mut (*p).b as *mut i64) as *mut ::libc::c_void) },) {
-        (mut __tmp_2,) => {
-            let byte_0 = __tmp_2 as *mut u8;
-            for offset in 0..(::std::mem::offset_of!(S, last) as usize)
-                .wrapping_sub((::std::mem::offset_of!(S, b) as usize))
-            {
-                *byte_0.offset(offset as isize) = 0 as u8;
-            }
-            __tmp_2
+    {
+        let mut __tmp_2 = { ((&mut (*p).b as *mut i64) as *mut ::libc::c_void) };
+        let byte_0 = __tmp_2 as *mut u8;
+        for offset in 0..(::std::mem::offset_of!(S, last) as usize)
+            .wrapping_sub((::std::mem::offset_of!(S, b) as usize))
+        {
+            *byte_0.offset(offset as isize) = 0 as u8;
         }
+        __tmp_2
     };
     assert!(((((*p).keep) == (7)) && (((*p).a) == (1))));
     assert!(((((*p).b) == (0_i64)) && (((*p).c[(0) as usize] as i32) == (0))));

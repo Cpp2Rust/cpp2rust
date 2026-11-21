@@ -75,7 +75,8 @@ fn main_0() -> i32 {
         ok = rhs_0
     };
     let distinct: Value<Map<Key, (Value<Key>, Value<Mapped>)>> = Rc::new(RefCell::new(Map::new()));
-    let a: Ptr<Mapped> = ({ (*distinct.borrow_mut()).subscript(distinct_a.as_pointer()) });
+    let a: Ptr<Mapped> =
+        ({ (*distinct.borrow_mut()).subscript(distinct_a.as_pointer(), || <Mapped>::default()) });
     field!(a, value).write(11);
     let a_it: Value<BidirectionalIterator<(Value<Key>, Value<Mapped>)>> =
         Rc::new(RefCell::new(distinct.as_pointer().with(
@@ -85,7 +86,8 @@ fn main_0() -> i32 {
         .1
         .as_pointer());
     ok = { ((ok as i32) & ((default_constructions_0.with(|rc| *rc.borrow()) == 1) as i32)) != 0 };
-    let b: Ptr<Mapped> = ({ (*distinct.borrow_mut()).subscript(distinct_b.as_pointer()) });
+    let b: Ptr<Mapped> =
+        ({ (*distinct.borrow_mut()).subscript(distinct_b.as_pointer(), || <Mapped>::default()) });
     field!(b, value).write(22);
     let b_it: Value<BidirectionalIterator<(Value<Key>, Value<Mapped>)>> =
         Rc::new(RefCell::new(distinct.as_pointer().with(
@@ -210,7 +212,9 @@ fn main_0() -> i32 {
     let equivalent: Value<Map<Key, (Value<Key>, Value<Mapped>)>> =
         Rc::new(RefCell::new(Map::new()));
     let mut before_equivalent: i32 = default_constructions_0.with(|rc| *rc.borrow());
-    let first: Ptr<Mapped> = ({ (*equivalent.borrow_mut()).subscript(equivalent_a.as_pointer()) });
+    let first: Ptr<Mapped> = ({
+        (*equivalent.borrow_mut()).subscript(equivalent_a.as_pointer(), || <Mapped>::default())
+    });
     field!(first, value).write(31);
     let first_it: Value<BidirectionalIterator<(Value<Key>, Value<Mapped>)>> =
         Rc::new(RefCell::new(equivalent.as_pointer().with(
@@ -225,7 +229,9 @@ fn main_0() -> i32 {
             & ((default_constructions_0.with(|rc| *rc.borrow()) == (before_equivalent + 1)) as i32))
             != 0
     };
-    let second: Ptr<Mapped> = ({ (*equivalent.borrow_mut()).subscript(equivalent_b.as_pointer()) });
+    let second: Ptr<Mapped> = ({
+        (*equivalent.borrow_mut()).subscript(equivalent_b.as_pointer(), || <Mapped>::default())
+    });
     let mut reused: bool =
         (default_constructions_0.with(|rc| *rc.borrow()) == (before_equivalent + 1));
     ok = { ((ok as i32) & (reused as i32)) != 0 };
@@ -319,7 +325,8 @@ fn main_0() -> i32 {
         order: 4,
         identity: 10,
     }));
-    let later: Ptr<Mapped> = ({ (*equivalent.borrow_mut()).subscript(later_key.as_pointer()) });
+    let later: Ptr<Mapped> =
+        ({ (*equivalent.borrow_mut()).subscript(later_key.as_pointer(), || <Mapped>::default()) });
     field!(later, value).write(41);
     ok = {
         ((ok as i32)
@@ -374,7 +381,8 @@ fn main_0() -> i32 {
     }));
     let mut before_matching: i32 = default_constructions_0.with(|rc| *rc.borrow());
     let matching: Value<Map<Key, (Value<Key>, Value<Mapped>)>> = Rc::new(RefCell::new(Map::new()));
-    let matched: Ptr<Mapped> = ({ (*matching.borrow_mut()).subscript(matching_a.as_pointer()) });
+    let matched: Ptr<Mapped> =
+        ({ (*matching.borrow_mut()).subscript(matching_a.as_pointer(), || <Mapped>::default()) });
     field!(matched, value).write(51);
     let matched_it: Value<BidirectionalIterator<(Value<Key>, Value<Mapped>)>> =
         Rc::new(RefCell::new(matching.as_pointer().with(
@@ -390,7 +398,7 @@ fn main_0() -> i32 {
             != 0
     };
     let matched_again: Ptr<Mapped> =
-        ({ (*matching.borrow_mut()).subscript(matching_b.as_pointer()) });
+        ({ (*matching.borrow_mut()).subscript(matching_b.as_pointer(), || <Mapped>::default()) });
     ok = {
         ((ok as i32)
             & ((default_constructions_0.with(|rc| *rc.borrow()) == (before_matching + 1)) as i32))
@@ -429,7 +437,8 @@ fn main_0() -> i32 {
             != 0;
         ok = rhs_0
     };
-    let other: Ptr<Mapped> = ({ (*matching.borrow_mut()).subscript(matching_c.as_pointer()) });
+    let other: Ptr<Mapped> =
+        ({ (*matching.borrow_mut()).subscript(matching_c.as_pointer(), || <Mapped>::default()) });
     field!(other, value).write(61);
     ok = {
         ((ok as i32)

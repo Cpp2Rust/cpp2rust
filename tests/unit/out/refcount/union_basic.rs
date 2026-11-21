@@ -77,11 +77,10 @@ fn main_0() -> i32 {
     basic::f(u.as_pointer()).write(3.14_f32);
     assert!(((basic::f(u.as_pointer()).read()) == 3.14_f32));
     let buf: Value<Box<[u8]>> = Rc::new(RefCell::new((0..4).map(|_| 0_u8).collect::<Box<[u8]>>()));
-    match ({ (buf.decay()).to_any() },) {
-        (mut __tmp_0,) => {
-            __tmp_0.memset((0) as u8, ::std::mem::size_of::<[u8; 4]>());
-            (__tmp_0).clone()
-        }
+    {
+        let mut __tmp_0 = { (buf.decay()).to_any() };
+        __tmp_0.memset((0) as u8, ::std::mem::size_of::<[u8; 4]>());
+        (__tmp_0).clone()
     };
     let mut ru: Ptr<basic> = buf.decay().reinterpret_cast::<basic>();
     let mut pi: Ptr<i32> = (basic::i(ru.clone())).clone();

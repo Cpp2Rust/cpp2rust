@@ -132,6 +132,25 @@ unsafe fn main_0() -> i32 {
     });
     let mut fp: *mut ::libc::FILE = libcc2rs::stdout_unsafe();
     (unsafe { put_5(&mut (*fp), c"value\n".as_ptr()) });
+    let mut bytes: *const libc::c_char = c"\xe9\xc3\xa9".as_ptr();
+    (unsafe {
+        libc::printf(
+            c"\xff%s|%c|%.1s|%5s\n".as_ptr() as *const libc::c_char,
+            (bytes),
+            ((*bytes.offset((0) as isize)) as i32),
+            (bytes.offset((1) as isize)),
+            (bytes),
+        )
+    });
+    (unsafe {
+        libc::fprintf(
+            libcc2rs::stderr_unsafe() as *mut ::libc::FILE,
+            c"\xff%s\n".as_ptr() as *const libc::c_char,
+            (bytes),
+        )
+    });
+    (unsafe { libc::printf(c"no newline, ".as_ptr() as *const libc::c_char) });
+    (unsafe { put_5(&mut (*fp), c"then fputs\n".as_ptr()) });
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

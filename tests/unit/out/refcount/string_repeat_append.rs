@@ -9,8 +9,7 @@ use std::rc::{Rc, Weak};
 pub fn append_to_reference_0(s: Ptr<Vec<i8>>) {
     s.with_mut(|__b0| {
         (*__b0).pop();
-        let __len = (*__b0).len() + 1_usize;
-        (*__b0).resize(__len, ('r' as i8));
+        (*__b0).resize((*__b0).len() + 1_usize, ('r' as i8));
         (*__b0).push(0);
     });
 }
@@ -90,12 +89,11 @@ fn main_0() -> i32 {
                         if (shrink != 0) {
                             (*s.borrow_mut()).shrink_to_fit();
                         }
-                        {
-                            (*s.borrow_mut()).pop();
-                            let __len = (*s.borrow()).len() + count;
-                            (*s.borrow_mut()).resize(__len, character);
-                            (*s.borrow_mut()).push(0);
-                        };
+                        s.with_mut(|__b0| {
+                            (*__b0).pop();
+                            (*__b0).resize((*__b0).len() + count, character);
+                            (*__b0).push(0);
+                        });
                         assert!(({ (((*s.borrow()).len() - 1) == (length).wrapping_add(count)) }));
                         let mut data: Ptr<i8> = s.decay();
                         {
@@ -133,8 +131,7 @@ fn main_0() -> i32 {
     };
     {
         unboxed.pop();
-        let __len = unboxed.len() + 2_usize;
-        unboxed.resize(__len, ('b' as i8));
+        unboxed.resize(unboxed.len() + 2_usize, ('b' as i8));
         unboxed.push(0);
     };
     assert!(
@@ -157,8 +154,7 @@ fn main_0() -> i32 {
     let mut pointer: Ptr<Vec<i8>> = (indirect.as_pointer());
     pointer.with_mut(|__b0| {
         (*__b0).pop();
-        let __len = (*__b0).len() + 0_usize;
-        (*__b0).resize(__len, ('\0' as i8));
+        (*__b0).resize((*__b0).len() + 0_usize, ('\0' as i8));
         (*__b0).push(0);
     });
     assert!(
@@ -174,18 +170,16 @@ fn main_0() -> i32 {
         __bytes
     }));
     {
-        {
-            (*chained.borrow_mut()).pop();
-            let __len = (*chained.borrow()).len() + 3_usize;
-            (*chained.borrow_mut()).resize(__len, ('x' as i8));
-            (*chained.borrow_mut()).push(0);
-        };
-        {
-            (*chained.borrow_mut()).pop();
-            let __len = (*chained.borrow()).len() + 2_usize;
-            (*chained.borrow_mut()).resize(__len, ('y' as i8));
-            (*chained.borrow_mut()).push(0);
-        }
+        chained.with_mut(|__b0| {
+            (*__b0).pop();
+            (*__b0).resize((*__b0).len() + 3_usize, ('x' as i8));
+            (*__b0).push(0);
+        });
+        chained.with_mut(|__b0| {
+            (*__b0).pop();
+            (*__b0).resize((*__b0).len() + 2_usize, ('y' as i8));
+            (*__b0).push(0);
+        })
     };
     assert!(
         ({
@@ -194,7 +188,7 @@ fn main_0() -> i32 {
             })
         })
     );
-    println!("checked {} appends", cases);
+    printf!(b"checked %zu appends\n", cases);
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

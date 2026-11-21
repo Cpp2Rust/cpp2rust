@@ -17,32 +17,32 @@ fn main_0() -> i32 {
         __bytes
     }));
     let file: Value<Box<[i8]>> = Rc::new(RefCell::new(i8::array_from_literal(
-        b"test_stdcopy_ostream.txt\0",
+        b"test_stdcopy_ostream\xc3\xa9.txt\0",
     )));
     {
         let ofs: Value<::std::fs::File> = Rc::new(RefCell::new(
-            ::std::fs::File::create(file.decay().to_string()).expect("Failed to open file"),
+            file.decay()
+                .with_c_os_str(|__path| ::std::fs::File::create(__path))
+                .expect("Failed to open file"),
         ));
-        match ({ RandomAccessIterator::Vec(str.decay()) }, {
-            RandomAccessIterator::Vec(str.decay().to_last())
-        }) {
-            (mut __tmp_0, mut __tmp_1) => {
-                let mut __it = (__tmp_0).clone();
-                let __out = &mut (*ofs.borrow_mut());
-                let mut __bytes: Vec<u8> = Vec::new();
-                while __it != __tmp_1 {
-                    __bytes.push(__it.iter_deref().read() as u8);
-                    __it.iter_inc();
-                }
-                __out.write_all(&__bytes);
-                __out.try_clone().unwrap()
+        {
+            let mut __tmp_0 = { RandomAccessIterator::Vec(str.decay()) };
+            let mut __tmp_1 = { RandomAccessIterator::Vec(str.decay().to_last()) };
+            let mut __it = (__tmp_0).clone();
+            let __out = &mut (*ofs.borrow_mut());
+            let mut __bytes: Vec<u8> = Vec::new();
+            while __it != __tmp_1 {
+                __bytes.push(__it.iter_deref().read() as u8);
+                __it.iter_inc();
             }
+            __out.write_all(&__bytes);
+            __out.try_clone().unwrap()
         };
         write!(ofs.as_pointer(), "{:}", 42,);
     }
     let mut f: Ptr<CFile> = match CFile::open(
-        &file.decay().to_rust_string(),
-        &Ptr::<i8>::from_string_literal(b"rb").to_rust_string(),
+        &file.decay().to_c_u8_bytes(),
+        &Ptr::<i8>::from_string_literal(b"rb").to_c_u8_bytes(),
     ) {
         Some(__f) => Ptr::alloc(__f),
         None => Ptr::null(),
@@ -66,7 +66,10 @@ fn main_0() -> i32 {
                 && (((*buf.borrow())[(15) as usize] as i32) == (('2' as i8) as i32))
         })
     );
-    match nix::unistd::unlink(file.decay().to_rust_string().as_str()) {
+    match file
+        .decay()
+        .with_c_bytes(|__path| nix::unistd::unlink(__path))
+    {
         Ok(()) => 0,
         Err(__e) => {
             libcc2rs::cpp2rust_errno().write(__e as i32);

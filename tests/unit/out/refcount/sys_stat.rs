@@ -9,8 +9,8 @@ use std::rc::{Rc, Weak};
 pub fn test_stat_0() {
     let mut path: Ptr<i8> = Ptr::<i8>::from_string_literal(b"cpp2rust_stat_test.tmp");
     let mut fp: Ptr<CFile> = match CFile::open(
-        &path.to_rust_string(),
-        &Ptr::<i8>::from_string_literal(b"wb").to_rust_string(),
+        &path.to_c_u8_bytes(),
+        &Ptr::<i8>::from_string_literal(b"wb").to_c_u8_bytes(),
     ) {
         Some(__f) => Ptr::alloc(__f),
         None => Ptr::null(),
@@ -31,24 +31,23 @@ pub fn test_stat_0() {
     );
     let st: Value<libcc2rs::Stat> = Rc::new(RefCell::new(Default::default()));
     assert!(
-        (match ({ (st.as_pointer()) },) {
-            (mut __tmp_0,) => {
-                match nix::sys::stat::stat(path.to_rust_string().as_str()) {
-                    Ok(__s) => {
-                        __tmp_0.with_mut(|__st| *__st = Stat::from_libc(&__s));
-                        0
-                    }
-                    Err(__e) => {
-                        libcc2rs::cpp2rust_errno().write(__e as i32);
-                        -1
-                    }
+        ({
+            let mut __tmp_0 = { (st.as_pointer()) };
+            match path.with_c_bytes(nix::sys::stat::stat) {
+                Ok(__s) => {
+                    __tmp_0.with_mut(|__st| *__st = Stat::from_libc(&__s));
+                    0
+                }
+                Err(__e) => {
+                    libcc2rs::cpp2rust_errno().write(__e as i32);
+                    -1
                 }
             }
         } == 0)
     );
     assert!(({ ({ (*st.borrow()).st_size } == (5 as ::libc::off_t)) }));
     assert!(((field_ptr!(st.as_pointer(), st_mtime).read()) > (0 as ::libc::time_t)));
-    match nix::unistd::unlink(path.to_rust_string().as_str()) {
+    match path.with_c_bytes(|__path| nix::unistd::unlink(__path)) {
         Ok(()) => 0,
         Err(__e) => {
             libcc2rs::cpp2rust_errno().write(__e as i32);
@@ -59,8 +58,8 @@ pub fn test_stat_0() {
 pub fn test_fstat_1() {
     let mut path: Ptr<i8> = Ptr::<i8>::from_string_literal(b"cpp2rust_fstat_test.tmp");
     let mut fp: Ptr<CFile> = match CFile::open(
-        &path.to_rust_string(),
-        &Ptr::<i8>::from_string_literal(b"wb").to_rust_string(),
+        &path.to_c_u8_bytes(),
+        &Ptr::<i8>::from_string_literal(b"wb").to_c_u8_bytes(),
     ) {
         Some(__f) => Ptr::alloc(__f),
         None => Ptr::null(),
@@ -76,17 +75,16 @@ pub fn test_fstat_1() {
     let mut fd: i32 = fp.with(|__f| __f.fd);
     let st: Value<libcc2rs::Stat> = Rc::new(RefCell::new(Default::default()));
     assert!(
-        (match ({ (st.as_pointer()) },) {
-            (mut __tmp_1,) => {
-                match FdRegistry::with_fd(fd, |__fd| nix::sys::stat::fstat(__fd)) {
-                    Ok(__s) => {
-                        __tmp_1.with_mut(|__st| *__st = Stat::from_libc(&__s));
-                        0
-                    }
-                    Err(__e) => {
-                        libcc2rs::cpp2rust_errno().write(__e as i32);
-                        -1
-                    }
+        ({
+            let mut __tmp_1 = { (st.as_pointer()) };
+            match FdRegistry::with_fd(fd, |__fd| nix::sys::stat::fstat(__fd)) {
+                Ok(__s) => {
+                    __tmp_1.with_mut(|__st| *__st = Stat::from_libc(&__s));
+                    0
+                }
+                Err(__e) => {
+                    libcc2rs::cpp2rust_errno().write(__e as i32);
+                    -1
                 }
             }
         } == 0)
@@ -100,7 +98,7 @@ pub fn test_fstat_1() {
             __r
         } == 0)
     );
-    match nix::unistd::unlink(path.to_rust_string().as_str()) {
+    match path.with_c_bytes(|__path| nix::unistd::unlink(__path)) {
         Ok(()) => 0,
         Err(__e) => {
             libcc2rs::cpp2rust_errno().write(__e as i32);

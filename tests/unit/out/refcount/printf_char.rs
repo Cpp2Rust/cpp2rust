@@ -13,15 +13,10 @@ pub fn main() {
 fn main_0() -> i32 {
     let mut c: i8 = (('a' as i32) as i8);
     let mut n: i32 = 3;
-    println!("{}", (c as i32) as u8 as char);
-    println!("{} {}", n, (c as i32) as u8 as char);
-    println!("100% {}", (c as i32) as u8 as char);
-    println!(
-        "{}{}{}",
-        (c as i32) as u8 as char,
-        ((c as i32) + 1) as u8 as char,
-        n
-    );
+    printf!(b"%c\n", (c as i32));
+    printf!(b"%d %c\n", n, (c as i32));
+    printf!(b"100%% %c\n", (c as i32));
+    printf!(b"%c%c%d\n", (c as i32), ((c as i32) + 1), n);
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

@@ -31,12 +31,13 @@ unsafe fn main_0() -> i32 {
         }
     );
     let mut names: [*mut libc::c_char; 1] = [arr.as_mut_ptr()];
-    let copy: Vec<libc::c_char> = match ({ (names[(0) as usize]).cast_const() },) {
-        (mut __tmp_0,) => std::slice::from_raw_parts(
+    let copy: Vec<libc::c_char> = {
+        let mut __tmp_0 = { (names[(0) as usize]).cast_const() };
+        std::slice::from_raw_parts(
             __tmp_0,
             (0..).take_while(|&i| *__tmp_0.add(i) != 0).count() + 1,
         )
-        .to_vec(),
+        .to_vec()
     };
     assert!(
         copy == {

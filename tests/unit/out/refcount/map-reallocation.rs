@@ -15,7 +15,7 @@ fn main_0() -> i32 {
     let sentinel: Value<i32> = Rc::new(RefCell::new((N / 2)));
     let m: Value<Map<i32, (Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
     let __rhs = (*sentinel.borrow());
-    ({ (*m.borrow_mut()).subscript(sentinel.as_pointer()) }).write(__rhs);
+    ({ (*m.borrow_mut()).subscript(sentinel.as_pointer(), || 0_i32) }).write(__rhs);
     let it: Value<BidirectionalIterator<(Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(
         m.as_pointer()
             .with(|__m: &Map<i32, (Value<i32>, Value<i32>)>| __m.find(&sentinel.as_pointer())),
@@ -48,7 +48,7 @@ fn main_0() -> i32 {
         let i: Value<i32> = Rc::new(RefCell::new(0));
         'loop_: while ((*i.borrow()) < (*sentinel.borrow())) {
             let __rhs = (*i.borrow());
-            ({ (*m.borrow_mut()).subscript(i.as_pointer()) }).write(__rhs);
+            ({ (*m.borrow_mut()).subscript(i.as_pointer(), || 0_i32) }).write(__rhs);
             (*i.borrow_mut()).prefix_inc();
         }
     }
@@ -56,7 +56,7 @@ fn main_0() -> i32 {
         let i: Value<i32> = Rc::new(RefCell::new(((*sentinel.borrow()) + 1)));
         'loop_: while ((*i.borrow()) <= N) {
             let __rhs = (*i.borrow());
-            ({ (*m.borrow_mut()).subscript(i.as_pointer()) }).write(__rhs);
+            ({ (*m.borrow_mut()).subscript(i.as_pointer(), || 0_i32) }).write(__rhs);
             (*i.borrow_mut()).prefix_inc();
         }
     }
@@ -96,7 +96,7 @@ fn main_0() -> i32 {
     (*(*({ (*it.borrow()).iter_deref() }).upgrade().deref())
         .1
         .borrow_mut()) = 57005;
-    assert!(((({ (*m.borrow_mut()).subscript(sentinel.as_pointer()) }).read()) == 57005));
+    assert!(((({ (*m.borrow_mut()).subscript(sentinel.as_pointer(), || 0_i32) }).read()) == 57005));
     assert!(((p.read()) == 57005));
     assert!(({ ((*m.borrow()).len() == (((N + 1) as u32) as usize)) }));
     let mut prev: i32 = -1_i32;

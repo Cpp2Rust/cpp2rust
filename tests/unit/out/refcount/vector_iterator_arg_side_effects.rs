@@ -16,28 +16,22 @@ fn main_0() -> i32 {
     {
         (*it.borrow_mut()).iter_inc();
     };
-    let r: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(
-        match ({ <RandomAccessIterator<i32>>::from((*it.borrow_mut()).iter_post_inc()) },) {
-            (mut __tmp_0,) => {
-                let __off = __tmp_0.index();
-                v.as_pointer()
-                    .with_mut(|__v: &mut Vec<i32>| __v.remove(__off));
-                (__tmp_0).clone()
-            }
-        },
-    ));
+    let r: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new({
+        let mut __tmp_0 = { <RandomAccessIterator<i32>>::from((*it.borrow_mut()).iter_post_inc()) };
+        v.as_pointer()
+            .with_mut(|__v: &mut Vec<i32>| __v.remove(__tmp_0.index()));
+        (__tmp_0).clone()
+    }));
     assert!(((({ (*r.borrow()).iter_deref() }).read()) == 3));
     assert!(({ ((*v.borrow()).len() == 3_usize) }));
     let it2: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(v.decay().begin()));
     {
-        (*r.borrow_mut()) =
-            match ({ <RandomAccessIterator<i32>>::from((*it2.borrow_mut()).iter_post_inc()) },) {
-                (mut __tmp_1,) => {
-                    let __off = __tmp_1.index();
-                    (*v.borrow_mut()).insert(__off, 9);
-                    (__tmp_1).clone()
-                }
-            };
+        (*r.borrow_mut()) = {
+            let mut __tmp_1 =
+                { <RandomAccessIterator<i32>>::from((*it2.borrow_mut()).iter_post_inc()) };
+            (*v.borrow_mut()).insert(__tmp_1.index(), 9);
+            (__tmp_1).clone()
+        };
     };
     assert!(
         ({
@@ -49,13 +43,12 @@ fn main_0() -> i32 {
     let mut i: i32 = 1;
     assert!(
         ({
-            ((match ({ (i.postfix_inc() as usize) },) {
-                (mut __tmp_2,) => {
-                    if __tmp_2 >= (*c.upgrade().deref()).len() {
-                        panic!("out of bounds access")
-                    }
-                    c.decay().offset((__tmp_2) as isize)
+            (({
+                let mut __tmp_2 = { (i.postfix_inc() as usize) };
+                if __tmp_2 >= (*c.upgrade().deref()).len() {
+                    panic!("out of bounds access")
                 }
+                c.decay().offset((__tmp_2) as isize)
             }
             .read())
                 == 1)

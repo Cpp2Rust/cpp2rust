@@ -4,7 +4,7 @@
 use std::cell::{Ref, RefCell, RefMut};
 use std::rc::{Rc, Weak};
 
-use crate::rc::{Ptr, PtrKind};
+use crate::rc::{Ptr, PtrKind, null_deref, upgrade};
 
 pub struct StrongPtrDyn<T: ?Sized> {
     rc: Rc<RefCell<T>>,
@@ -39,10 +39,8 @@ impl<T: ?Sized> Clone for PtrDyn<T> {
 
 impl<T: ?Sized> PtrDyn<T> {
     pub fn upgrade(&self) -> StrongPtrDyn<T> {
-        let weak = self.0.as_ref().expect("ub: dereference of null pointer");
-        StrongPtrDyn {
-            rc: weak.upgrade().expect("ub: dangling pointer"),
-        }
+        let weak = self.0.as_ref().unwrap_or_else(|| null_deref());
+        StrongPtrDyn { rc: upgrade(weak) }
     }
 }
 

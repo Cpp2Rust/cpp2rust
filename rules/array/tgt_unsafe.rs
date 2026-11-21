@@ -27,15 +27,15 @@ fn t6<T2>() -> T2 {
     unimplemented!()
 }
 
-unsafe fn f1<T1, const T2: usize>(a0: [T1; T2]) -> *const T1 {
+fn f1<T1, const T2: usize>(a0: [T1; T2]) -> *const T1 {
     a0.as_ptr()
 }
 
-unsafe fn f2<T1, const T2: usize>(a0: [T1; T2]) -> usize {
+fn f2<T1, const T2: usize>(a0: [T1; T2]) -> usize {
     T2
 }
 
-unsafe fn f3<T1, const T2: usize>(a0: &mut [T1; T2]) -> *mut T1 {
+fn f3<T1, const T2: usize>(a0: &mut [T1; T2]) -> *mut T1 {
     a0.as_mut_ptr()
 }
 
@@ -53,7 +53,7 @@ unsafe fn f5<'a, T1: MoveAssignUnsafe, const T2: usize>(
     a0
 }
 
-unsafe fn f6<T1: Clone, const T2: usize>(a0: [T1; T2]) -> [T1; T2] {
+fn f6<T1: Clone, const T2: usize>(a0: [T1; T2]) -> [T1; T2] {
     a0.clone()
 }
 
@@ -67,22 +67,22 @@ unsafe fn f7<'a, T1: CopyAssignUnsafe, const T2: usize>(
     a0
 }
 
-unsafe fn f8<T1, const T2: usize>(a0: [T1; T2]) -> [T1; T2] {
+fn f8<T1, const T2: usize>(a0: [T1; T2]) -> [T1; T2] {
     a0
 }
 
-unsafe fn f9<const T1: usize, T2, const T3: usize>(a0: &mut [T2; T3]) -> &mut T2 {
+fn f9<const T1: usize, T2, const T3: usize>(a0: &mut [T2; T3]) -> &mut T2 {
     &mut a0[T1]
 }
 
-unsafe fn f10<const T1: usize, T2, const T3: usize>(a0: &[T2; T3]) -> &T2 {
+fn f10<const T1: usize, T2, const T3: usize>(a0: &[T2; T3]) -> &T2 {
     &a0[T1]
 }
 
-unsafe fn f11<const T1: usize, T2, const T3: usize>(a0: &mut [T2; T3]) -> &mut T2 {
+fn f11<const T1: usize, T2, const T3: usize>(a0: &mut [T2; T3]) -> &mut T2 {
     &mut a0[T1]
 }
 
-unsafe fn f12<const T1: usize, T2, const T3: usize>(a0: &[T2; T3]) -> &T2 {
+fn f12<const T1: usize, T2, const T3: usize>(a0: &[T2; T3]) -> &T2 {
     &a0[T1]
 }

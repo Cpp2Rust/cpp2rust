@@ -11,14 +11,10 @@ pub fn test_0() {
         Rc::new(RefCell::new(Ptr::alloc(1).to_owned_opt())),
         Rc::new(RefCell::new(2)),
     )));
-    let target: Value<(Value<Option<Value<i32>>>, Value<i32>)> = Rc::new(RefCell::new({
-        let __first: Ptr<Option<Value<i32>>> = (*source.borrow()).0.as_pointer();
-        let __second: Ptr<i32> = (*source.borrow()).1.as_pointer();
-        (
-            Rc::new(RefCell::new(cpp_move!(__first))),
-            Rc::new(RefCell::new(cpp_move!(__second))),
-        )
-    }));
+    let target: Value<(Value<Option<Value<i32>>>, Value<i32>)> = Rc::new(RefCell::new((
+        Rc::new(RefCell::new(cpp_move!((*source.borrow()).0.as_pointer()))),
+        Rc::new(RefCell::new(cpp_move!((*source.borrow()).1.as_pointer()))),
+    )));
     assert!(((({ (*(*target.borrow()).0.borrow()).as_pointer() }).read()) == 1));
     assert!(({ ((*(*target.borrow()).1.borrow()) == 2) }));
     assert!(({ (*(*source.borrow()).0.borrow()).is_none() }));

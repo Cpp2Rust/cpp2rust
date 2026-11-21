@@ -5,8 +5,8 @@ fn t1() -> *mut ::libc::DIR {
     std::ptr::null_mut()
 }
 
-fn t2() -> ::libc::dirent {
-    unsafe { std::mem::zeroed() }
+unsafe fn t2() -> ::libc::dirent {
+    std::mem::zeroed()
 }
 
 fn t3() -> ::libc::DIR {

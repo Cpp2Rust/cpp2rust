@@ -268,6 +268,8 @@ public:
 
   virtual bool VisitIfStmt(clang::IfStmt *stmt);
 
+  bool VisitAttributedStmt(clang::AttributedStmt *stmt);
+
   virtual bool VisitWhileStmt(clang::WhileStmt *stmt);
 
   void ConvertConditionVariableTest(clang::DeclStmt *cond_var,
@@ -286,10 +288,12 @@ public:
   bool GetFmtArg(clang::Expr *arg, std::string &fmt, std::string &fmt_args,
                  const char *&fmt_trait, std::string &fmt_width);
 
-  bool GetRawArg(clang::Expr *arg, std::string &raw_args);
+  bool GetRawArg(clang::Expr *arg, std::vector<std::string> &raw_args);
 
   void ConvertCallToOstream(clang::CallExpr *expr);
   virtual std::string ConvertStream(clang::Expr *expr);
+  // The bytes, without the NUL, of the C string that `ptr` points to.
+  virtual std::string GetCStrBytes(std::string_view ptr) const;
 
   struct TempMaterializationCtx {
     std::vector<std::optional<clang::QualType>> materialized_args;
@@ -800,8 +804,7 @@ protected:
 
   virtual void ConvertFunctionReturnType(clang::FunctionDecl *decl);
 
-  virtual void ConvertFunctionMain(const clang::FunctionDecl *decl,
-                                   const std::string_view main_function_name);
+  virtual void ConvertFunctionMain(const clang::FunctionDecl *decl);
 
   virtual void ConvertAbstractClass(clang::CXXRecordDecl *decl);
 
@@ -937,19 +940,30 @@ protected:
   // e.g., a guard of a RefCell, which lives until the end of the statement.
   bool borrows_ = false;
 
-  // The variables that arguments of rules are bound to by value, whose
-  // address is not taken.
-  std::unordered_set<const clang::VarDecl *> bound_values_;
-  // The variables bound to values, or pointers, that are moved into the body
-  // of a rule.
-  std::unordered_set<const clang::VarDecl *> moved_values_;
+  // The variables that arguments of rules are bound to.
+  struct BoundVar {
+    // Bound to the value, whose address is not taken, rather than to a
+    // pointer.
+    bool by_value = false;
+    // The value, or the pointer, is moved into the body of the rule.
+    bool moved = false;
+    // Bound to an argument of the init of the rule, which may need a mapped
+    // move constructor when forwarding the original rvalue from its pointer.
+    bool init_arg = false;
+  };
+  std::unordered_map<const clang::VarDecl *, BoundVar> bound_vars_;
+
+  // How var is bound to an argument of a rule, if it is.
+  BoundVar GetBoundVar(const clang::VarDecl *var) const {
+    auto it = bound_vars_.find(var);
+    return it == bound_vars_.end() ? BoundVar() : it->second;
+  }
 
   // Whether the body of rule evaluates argument n once.
   static bool UsedOnce(const TranslationRule::ExprRule &rule, unsigned n);
 
-  // Bound initializer arguments may need a mapped move constructor when
-  // forwarding the original rvalue from its pointer binding.
-  std::unordered_set<const clang::VarDecl *> bound_init_args_;
+  // The variables bound to the objects that the init of rules construct.
+  std::unordered_map<const clang::Expr *, std::string> bound_inits_;
 
   // Updates the pointee using its previous value, borrowing it once.
   virtual std::string
@@ -978,6 +992,11 @@ protected:
   ArgsToEvaluateFirst(clang::Expr *expr, const TranslationRule::ExprRule &rule,
                       llvm::ArrayRef<clang::Expr *> args,
                       const std::vector<bool> &bind);
+
+  // Whether expr discards the reference that its rule returns, so only the
+  // statements before the reference are emitted.
+  bool DiscardsRef(const clang::Expr *expr,
+                   const TranslationRule::ExprRule &rule) const;
 
   // Borrows the arguments that the body of a rule borrows mutably and uses
   // more than once for the whole call, rather than once for each use.
@@ -1047,19 +1066,16 @@ protected:
   bool constant_evaluated_ = false;
   std::optional<bool> autoref_mut_;
 
-  std::vector<clang::Expr *> curr_for_inc_;
+  // The increment of the innermost loop, which continue runs.
+  clang::Expr *curr_for_inc_ = nullptr;
   // The names of the iterators of range-based for loops.
   std::unordered_map<const clang::ValueDecl *, std::string>
       range_iterator_names_;
   std::vector<clang::QualType> curr_init_type_;
 
-  enum class BreakTarget : int8_t { Loop, FallthroughSwitch, Switch };
-  std::vector<BreakTarget> break_target_;
-
-  bool isSwitchBreak() const {
-    return !break_target_.empty() &&
-           break_target_.back() == BreakTarget::Switch;
-  }
+  // Whether break exits a switch labeled 'switch, rather than a loop or a
+  // switch! macro, which a plain break exits.
+  bool break_switch_ = false;
 
   // Local variables hoisted outside a goto_block so that all labels can see and
   // use the variables.
@@ -1179,29 +1195,6 @@ protected:
     Void,
   };
 
-  static const char *expr_kind_to_string(ExprKind kind) {
-    switch (kind) {
-    case ExprKind::Callee:
-      return "Callee";
-    case ExprKind::LValue:
-      return "LValue";
-    case ExprKind::RValue:
-      return "RValue";
-    case ExprKind::FreshRValue:
-      return "FreshRValue";
-    case ExprKind::XValue:
-      return "XValue";
-    case ExprKind::AddrOf:
-      return "AddrOf";
-    case ExprKind::Object:
-      return "Object";
-    case ExprKind::Void:
-      return "Void";
-    default:
-      return "Unknown";
-    }
-  }
-
   bool isLValue() const;
   bool isRValue() const;
   bool isFreshRValue() const;
@@ -1211,26 +1204,12 @@ protected:
   bool isVoid() const;
   bool isCallee() const;
 
-  void dump_expr_kinds();
-
   struct PushExprKind {
     Converter &c;
     bool pushed;
     PushExprKind(Converter &c, ExprKind k, bool enabled = true,
                  const char *file = __builtin_FILE(),
-                 int line = __builtin_LINE())
-        : c(c), pushed(enabled) {
-      if (pushed) {
-        c.curr_expr_kind_.push_back(k);
-      }
-      log() << "PushExprKind " << file << ':' << line << ' ';
-      c.dump_expr_kinds();
-      log() << '[';
-      for (const auto k : c.curr_expr_kind_) {
-        log() << c.expr_kind_to_string(k) << ", ";
-      }
-      log() << "]\n";
-    }
+                 int line = __builtin_LINE());
     ~PushExprKind() {
       if (pushed) {
         c.curr_expr_kind_.pop_back();

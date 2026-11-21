@@ -51,7 +51,7 @@ impl Default for FieldIsLibcType {
     fn default() -> Self {
         unsafe {
             FieldIsLibcType {
-                addr: unsafe { std::mem::zeroed() },
+                addr: std::mem::zeroed(),
             }
         }
     }
@@ -63,24 +63,24 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut p: ::libc::pollfd = unsafe { std::mem::zeroed() };
+    let mut p: ::libc::pollfd = std::mem::zeroed();
     p.fd = -1_i32;
     p.events = 0_i16;
     p.revents = 2_i16;
     assert!(((p.fd) == (-1_i32)));
     assert!(((p.events as i32) == (0)));
     assert!(((p.revents as i32) == (2)));
-    let mut ia: ::libc::in_addr = unsafe { std::mem::zeroed() };
+    let mut ia: ::libc::in_addr = std::mem::zeroed();
     ia.s_addr = (1 as ::libc::in_addr_t);
     assert!(((ia.s_addr) == (1 as ::libc::in_addr_t)));
-    let mut t: ::libc::tm = unsafe { std::mem::zeroed() };
+    let mut t: ::libc::tm = std::mem::zeroed();
     t.tm_year = 124;
     t.tm_mon = 5;
     t.tm_mday = 15;
     assert!(((t.tm_year) == (124)));
     assert!(((t.tm_mon) == (5)));
     assert!(((t.tm_mday) == (15)));
-    let mut st: ::libc::stat = unsafe { std::mem::zeroed() };
+    let mut st: ::libc::stat = std::mem::zeroed();
     st.st_size = (1024 as ::libc::off_t);
     assert!(((st.st_size) == (1024 as ::libc::off_t)));
     let mut ud: UserDefined = <UserDefined>::default();
