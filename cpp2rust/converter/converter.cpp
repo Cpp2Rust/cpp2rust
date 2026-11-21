@@ -1745,9 +1745,8 @@ bool Converter::VisitMaterializeTemporaryExpr(
   // A temporary bound to a reference variable lives as long as the variable.
   bool extended = IsExtendedTemporary(expr);
   // A consuming conversion moves the temporary into its result instead.
-  if (isFreshRValue() ||
-      (!extended &&
-       (!retain_bound_temporaries_ || !full_expression_temporaries_))) {
+  if (isFreshRValue() || (!extended && (!retain_bound_temporaries_ ||
+                                        !full_expression_temporaries_))) {
     return true;
   }
   // Keep the owner through the full expression, or the scope of the variable
@@ -1757,11 +1756,10 @@ bool Converter::VisitMaterializeTemporaryExpr(
   // initialized before the variable instead.
   std::string *declarations = full_expression_temporaries_;
   if (extended) {
-    declarations =
-        in_const_initializer_ ||
-                extending_decl_->getInit()->IgnoreImpCasts() == expr
-            ? nullptr
-            : materialized_temp_bindings_;
+    declarations = in_const_initializer_ ||
+                           extending_decl_->getInit()->IgnoreImpCasts() == expr
+                       ? nullptr
+                       : materialized_temp_bindings_;
   }
   bool pointer = isAddrOf();
   auto name = NewTempName();
