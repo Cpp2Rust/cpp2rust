@@ -1953,6 +1953,46 @@ mod tests {
     }
 
     #[test]
+    fn reinterpreted_slice_writeback_encodes_only_partial_elements() {
+        #[derive(Clone)]
+        struct Word([u8; 4], Rc<std::cell::Cell<usize>>);
+        impl ByteRepr for Word {
+            fn byte_size() -> usize {
+                4
+            }
+            fn to_bytes(&self, buf: &mut [u8]) {
+                self.1.set(self.1.get() + 1);
+                buf.copy_from_slice(&self.0);
+            }
+            fn assign_bytes(&mut self, buf: &[u8]) {
+                self.0.copy_from_slice(buf);
+            }
+        }
+
+        let encodes = Rc::new(std::cell::Cell::new(0));
+        let words: Value<Box<[Word]>> = Rc::new(RefCell::new(
+            vec![Word([0xA5; 4], encodes.clone()); 3].into_boxed_slice(),
+        ));
+        let bytes = words.decay().reinterpret_cast::<u8>();
+        bytes.with_slice_mut(12, |buf| {
+            assert_eq!(buf, &[0xA5; 12]);
+            encodes.set(0);
+            buf.fill(1);
+        });
+        assert_eq!(encodes.get(), 0);
+        bytes.offset(2).with_slice_mut(8, |buf| {
+            assert_eq!(buf, &[1; 8]);
+            encodes.set(0);
+            buf.fill(2);
+        });
+        assert_eq!(encodes.get(), 2);
+        let words = words.borrow();
+        assert_eq!(words[0].0, [1, 1, 2, 2]);
+        assert_eq!(words[1].0, [2; 4]);
+        assert_eq!(words[2].0, [2, 2, 1, 1]);
+    }
+
+    #[test]
     fn reinterpreted_u8_storage_is_read_and_written_bytewise() {
         let p: Ptr<u8> = Ptr::alloc_array(vec![0u8; 16].into_boxed_slice());
         let ints = p.reinterpret_cast::<u32>();
