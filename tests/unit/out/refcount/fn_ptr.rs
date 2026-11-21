@@ -117,7 +117,10 @@ fn main_0() -> i32 {
     assert!(!({ of.call(std::cmp::Ord::cmp(&(2), &(1)),) }));
     let o: Value<std::cmp::Ordering> = Rc::new(RefCell::new(std::cmp::Ord::cmp(&(1), &(2))));
     let mut op: Ptr<std::cmp::Ordering> = (o.as_pointer());
-    assert!(({ (*op.upgrade().deref()) }) == std::cmp::Ordering::Less);
+    assert!(
+        ({ (*op.upgrade().deref()) })
+            == ({ (*libcc2rs::strong_ordering_less().upgrade().deref()) })
+    );
     return 0;
 }
 pub fn __cpp2rust_init_globals() {

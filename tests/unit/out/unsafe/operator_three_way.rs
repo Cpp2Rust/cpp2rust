@@ -14,12 +14,12 @@ pub struct S {
 impl S {
     pub unsafe fn operator_cmp(&self, o: *const S) -> std::cmp::Ordering {
         if ((self.v) < ((*o).v)) {
-            return std::cmp::Ordering::Less;
+            return libcc2rs::STRONG_ORDERING_LESS;
         }
         if ((self.v) > ((*o).v)) {
-            return std::cmp::Ordering::Greater;
+            return libcc2rs::STRONG_ORDERING_GREATER;
         }
-        return std::cmp::Ordering::Equal;
+        return libcc2rs::STRONG_ORDERING_EQUAL;
     }
     pub unsafe fn operator_eq(&self, o: *const S) -> bool {
         return ((self.v) == ((*o).v));
@@ -55,7 +55,7 @@ unsafe fn main_0() -> i32 {
     assert!((unsafe { S::operator_cmp(&a, &b,) }) != std::cmp::Ordering::Greater);
     assert!((unsafe { S::operator_cmp(&b, &a,) }) != std::cmp::Ordering::Less);
     assert!(!(unsafe { S::operator_eq(&a, &b,) }));
-    assert!((unsafe { S::operator_cmp(&a, &b,) }) == std::cmp::Ordering::Less);
+    assert!((unsafe { S::operator_cmp(&a, &b,) }) == libcc2rs::STRONG_ORDERING_LESS);
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

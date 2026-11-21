@@ -1040,6 +1040,11 @@ void ConverterRefCount::ConvertDeclRefValue(clang::Expr *expr,
 
   if (ShouldReplaceWithMappedBody(decl)) {
     if (auto str = GetMappedAsString(expr); !str.empty()) {
+      if (RuleRegistry::ReturnsReference(expr) && !isAddrOf() &&
+          !Mapper::IsRefExpr(ctx_, expr)) {
+        EmitPointee(str, expr->getType(), /*fresh=*/true);
+        return;
+      }
       EmitFresh(str);
       return;
     }

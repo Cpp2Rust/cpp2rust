@@ -118,7 +118,7 @@ unsafe fn main_0() -> i32 {
     assert!(!(unsafe { (of).unwrap()(std::cmp::Ord::cmp(&(2), &(1)),) }));
     let mut o: std::cmp::Ordering = std::cmp::Ord::cmp(&(1), &(2));
     let mut op: *mut std::cmp::Ordering = (&mut o as *mut std::cmp::Ordering);
-    assert!((*op) == std::cmp::Ordering::Less);
+    assert!((*op) == libcc2rs::STRONG_ORDERING_LESS);
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {

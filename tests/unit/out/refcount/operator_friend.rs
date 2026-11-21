@@ -33,7 +33,7 @@ pub fn operator_cmp_1(_a0: Ptr<DefaultedOrd>, _a1: Ptr<DefaultedOrd>) -> std::cm
             return (*cmp.borrow_mut());
         }
     }
-    return std::cmp::Ordering::Equal;
+    return (*libcc2rs::strong_ordering_equal().upgrade().deref());
 }
 pub fn operator_eq_2(_a0: Ptr<DefaultedOrd>, _a1: Ptr<DefaultedOrd>) -> bool {
     return ({ _a0.with(|__s| __s.a) } == { _a1.with(|__s| __s.a) });
@@ -198,7 +198,7 @@ fn main_0() -> i32 {
         ({
             let _arg0: Ptr<DefaultedOrd> = o1.as_pointer();
             operator_cmp_1(_arg0, o2.as_pointer())
-        }) == std::cmp::Ordering::Less
+        }) == ({ (*libcc2rs::strong_ordering_less().upgrade().deref()) })
     );
     let i1: Value<Inline> = Rc::new(RefCell::new(Inline { a: 1 }));
     let i2: Value<Inline> = Rc::new(RefCell::new(Inline { a: 2 }));

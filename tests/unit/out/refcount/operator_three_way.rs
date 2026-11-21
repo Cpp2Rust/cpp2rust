@@ -43,7 +43,8 @@ fn main_0() -> i32 {
     );
     assert!(!({ SImpl::operator_eq(&a.as_pointer(), b.as_pointer(),) }));
     assert!(
-        ({ SImpl::operator_cmp(&a.as_pointer(), b.as_pointer(),) }) == std::cmp::Ordering::Less
+        ({ SImpl::operator_cmp(&a.as_pointer(), b.as_pointer(),) })
+            == ({ (*libcc2rs::strong_ordering_less().upgrade().deref()) })
     );
     return 0;
 }
@@ -54,12 +55,12 @@ pub trait SImpl {
 impl SImpl for Ptr<S> {
     fn operator_cmp(&self, o: Ptr<S>) -> std::cmp::Ordering {
         if ({ (*self).with(|__s| __s.v) } < { o.with(|__s| __s.v) }) {
-            return std::cmp::Ordering::Less;
+            return (*libcc2rs::strong_ordering_less().upgrade().deref());
         }
         if ({ (*self).with(|__s| __s.v) } > { o.with(|__s| __s.v) }) {
-            return std::cmp::Ordering::Greater;
+            return (*libcc2rs::strong_ordering_greater().upgrade().deref());
         }
-        return std::cmp::Ordering::Equal;
+        return (*libcc2rs::strong_ordering_equal().upgrade().deref());
     }
     fn operator_eq(&self, o: Ptr<S>) -> bool {
         return ({ (*self).with(|__s| __s.v) } == { o.with(|__s| __s.v) });
