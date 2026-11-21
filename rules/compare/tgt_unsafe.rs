@@ -5,19 +5,19 @@ fn t1() -> std::cmp::Ordering {
     std::cmp::Ordering::Equal
 }
 
-unsafe fn f1() -> *const std::cmp::Ordering {
+fn f1() -> *const std::cmp::Ordering {
     &raw const libcc2rs::STRONG_ORDERING_LESS
 }
 
-unsafe fn f2() -> *const std::cmp::Ordering {
+fn f2() -> *const std::cmp::Ordering {
     &raw const libcc2rs::STRONG_ORDERING_EQUAL
 }
 
-unsafe fn f3() -> *const std::cmp::Ordering {
+fn f3() -> *const std::cmp::Ordering {
     &raw const libcc2rs::STRONG_ORDERING_EQUIVALENT
 }
 
-unsafe fn f4() -> *const std::cmp::Ordering {
+fn f4() -> *const std::cmp::Ordering {
     &raw const libcc2rs::STRONG_ORDERING_GREATER
 }
 

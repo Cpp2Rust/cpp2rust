@@ -1847,8 +1847,12 @@ void ConverterRefCount::ConvertInlineField(clang::MemberExpr *expr) {
   auto type = expr->getType();
   auto *base = expr->getBase();
   if (isAddrOf()) {
-    // The outermost field of a temporary binds a pointer to the temporary.
+    // The outermost field of a temporary binds a pointer to the temporary,
+    // unless the temporary outlives the statement.
     FieldTemporary temporary{GetFieldTemporary(ctx_, expr), ""};
+    if (IsExtendedTemporary(temporary.temporary)) {
+      temporary.temporary = nullptr;
+    }
     bool outermost = temporary.temporary &&
                      (!field_temporary_ ||
                       field_temporary_->temporary != temporary.temporary);
@@ -2353,7 +2357,9 @@ std::string ConverterRefCount::ConvertVarInitValue(clang::QualType qual_type,
 
   ScopedPush init_type(curr_init_type_, qual_type);
   if (qual_type->isReferenceType() || qual_type->isFunctionPointerType()) {
-    if (llvm::isa<clang::MaterializeTemporaryExpr>(expr->IgnoreImpCasts())) {
+    if (auto *temp = expr->IgnoreImpCasts();
+        llvm::isa<clang::MaterializeTemporaryExpr>(temp) &&
+        !IsExtendedTemporary(temp)) {
       return EmitMaterializedTempBinding(qual_type, expr);
     }
     if (auto pointee = qual_type.getNonReferenceType();

@@ -1108,6 +1108,14 @@ protected:
     return std::format("__tmp_{}", materialized_temp_id_++);
   }
   std::string *materialized_temp_bindings_ = nullptr;
+  // The variable whose initializer is converted, which extends the lifetime
+  // of the temporaries bound to its reference to its own.
+  const clang::VarDecl *extending_decl_ = nullptr;
+  bool IsExtendedTemporary(const clang::Expr *expr) const {
+    auto *temp = clang::dyn_cast_or_null<clang::MaterializeTemporaryExpr>(expr);
+    return temp && extending_decl_ &&
+           temp->getExtendingDecl() == extending_decl_;
+  }
   // Owning temporaries needed by references bound before a rule expansion.
   std::string *full_expression_temporaries_ = nullptr;
   bool retain_bound_temporaries_ = false;

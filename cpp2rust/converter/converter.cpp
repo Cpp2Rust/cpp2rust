@@ -301,6 +301,14 @@ Converter::MaterializeTemp(const std::string &binding_name,
   if (declarations) {
     *declarations += std::format("let mut {} : {};", binding_name, type_str);
     binding = std::format("{} = {};", binding_name, value);
+  } else if (is_static && LazyStaticInit()) {
+    // A static is initialized on its first use, like a global variable.
+    binding = std::format("static mut {} : {}{}> = {} unsafe {{ {} }});",
+                          binding_name, token::kLazyCellType, type_str,
+                          token::kLazyCellNew, value);
+    return {binding, std::format("std::cell::LazyCell::force_mut(&mut *&raw "
+                                 "mut {})",
+                                 binding_name)};
   } else {
     binding = std::format("{} mut {} : {} = {};", decl, binding_name, type_str,
                           value);
@@ -647,6 +655,7 @@ void Converter::ConvertVarDecl(clang::VarDecl *decl) {
   }
 
   HoistMaterializedTempBindings hoist_temps(*this);
+  ScopedValue extending(extending_decl_, decl);
   if (decl->isLocalVarDecl() && !IsGlobalVar(decl) && decl->hasInit() &&
       ReferencesVar(decl->getInit(), decl)) {
     if (decl->getType()->isReferenceType()) {
@@ -676,6 +685,7 @@ void Converter::ConvertVarDecl(clang::VarDecl *decl) {
 
 void Converter::ConvertGlobalVarDecl(clang::VarDecl *decl) {
   HoistMaterializedTempBindings hoist_temps(*this);
+  ScopedValue extending(extending_decl_, decl);
   if (!ConvertVarDeclSkipInit(decl)) {
     // Skip global variables declared extern
     return;
@@ -1732,22 +1742,41 @@ bool Converter::VisitExprWithCleanups(clang::ExprWithCleanups *expr) {
 
 bool Converter::VisitMaterializeTemporaryExpr(
     clang::MaterializeTemporaryExpr *expr) {
+  // A temporary bound to a reference variable lives as long as the variable.
+  bool extended = IsExtendedTemporary(expr);
   // A consuming conversion moves the temporary into its result instead.
-  if (!retain_bound_temporaries_ || !full_expression_temporaries_ ||
-      isFreshRValue()) {
+  if (isFreshRValue() ||
+      (!extended &&
+       (!retain_bound_temporaries_ || !full_expression_temporaries_))) {
     return true;
   }
-  // Keep the owner through the full expression, but evaluate it at its
-  // original operand, so unselected conditional branches stay unevaluated.
+  // Keep the owner through the full expression, or the scope of the variable
+  // that extends it, but evaluate it at its original operand, so unselected
+  // conditional branches stay unevaluated. A static, which is initialized on
+  // its first use, and the whole initializer, which is evaluated first, are
+  // initialized before the variable instead.
+  std::string *declarations = full_expression_temporaries_;
+  if (extended) {
+    declarations =
+        in_const_initializer_ ||
+                extending_decl_->getInit()->IgnoreImpCasts() == expr
+            ? nullptr
+            : materialized_temp_bindings_;
+  }
   bool pointer = isAddrOf();
   auto name = NewTempName();
   auto type = ctx_.getLValueReferenceType(expr->getType());
   auto [binding, ref] =
-      pointer ? MaterializeTemp(name, type, expr->getSubExpr(),
-                                full_expression_temporaries_)
+      pointer ? MaterializeTemp(name, type, expr->getSubExpr(), declarations)
               : Converter::MaterializeTemp(name, type, expr->getSubExpr(),
-                                           full_expression_temporaries_);
-  if (pointer) {
+                                           declarations);
+  if (!declarations) {
+    *materialized_temp_bindings_ += std::move(binding);
+    binding.clear();
+  }
+  if (pointer && binding.empty()) {
+    EmitFresh(ref);
+  } else if (pointer) {
     EmitFresh(std::format("{{ {} {} }}", binding, ref));
   } else {
     // A borrowed owning value needs a place, not a moved-out value or another
@@ -4764,7 +4793,14 @@ void Converter::ConvertVarInit(clang::QualType qual_type, clang::Expr *expr) {
     return;
   }
   if (qual_type->isReferenceType() && !IsReferenceType(expr)) {
-    if (llvm::isa<clang::MaterializeTemporaryExpr>(expr->IgnoreImpCasts())) {
+    // A reference to a temporary is a pointer to the temporary's owner.
+    auto *temp = expr->IgnoreImpCasts();
+    if (IsExtendedTemporary(temp)) {
+      PushExprKind push(*this, ExprKind::AddrOf);
+      Convert(temp);
+      return;
+    }
+    if (llvm::isa<clang::MaterializeTemporaryExpr>(temp)) {
       StrCat(EmitMaterializedTempBinding(qual_type, expr));
       return;
     }
