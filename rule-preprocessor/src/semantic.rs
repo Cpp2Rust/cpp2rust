@@ -461,7 +461,19 @@ fn type_derives<'tcx>(
         .into_iter()
         .flatten()
         .filter(|&trait_def_id| {
-            let args = std::iter::repeat_n(ty, tcx.generics_of(trait_def_id).count());
+            let arity = tcx.generics_of(trait_def_id).count();
+            #[cfg(test)]
+            let allocations = tests::allocation_count();
+            let args = std::iter::repeat_n(ty, arity);
+            #[cfg(test)]
+            {
+                std::hint::black_box(&args);
+                assert_eq!(
+                    tests::allocation_count(),
+                    allocations,
+                    "trait argument construction allocated"
+                );
+            }
             infcx
                 .type_implements_trait(trait_def_id, args, param_env)
                 .must_apply_modulo_regions()
@@ -742,5 +754,99 @@ impl<'a, 'tcx> AstVisitor<'a, 'tcx> {
             }
             _ => Access::Borrow,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    extern crate rustc_session;
+
+    use std::alloc::{GlobalAlloc, Layout, System};
+    use std::cell::Cell;
+    use std::hint::black_box;
+
+    thread_local! {
+        static ALLOCATIONS: Cell<usize> = const { Cell::new(0) };
+    }
+
+    struct CountingAllocator;
+    #[global_allocator]
+    static ALLOCATOR: CountingAllocator = CountingAllocator;
+
+    unsafe impl GlobalAlloc for CountingAllocator {
+        unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
+            let _ = ALLOCATIONS.try_with(|n| n.set(n.get() + 1));
+            unsafe { System.alloc(layout) }
+        }
+
+        unsafe fn alloc_zeroed(&self, layout: Layout) -> *mut u8 {
+            let _ = ALLOCATIONS.try_with(|n| n.set(n.get() + 1));
+            unsafe { System.alloc_zeroed(layout) }
+        }
+
+        unsafe fn realloc(&self, ptr: *mut u8, layout: Layout, size: usize) -> *mut u8 {
+            let _ = ALLOCATIONS.try_with(|n| n.set(n.get() + 1));
+            unsafe { System.realloc(ptr, layout, size) }
+        }
+
+        unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {
+            unsafe { System.dealloc(ptr, layout) }
+        }
+    }
+
+    pub(super) fn allocation_count() -> usize {
+        ALLOCATIONS.with(Cell::get)
+    }
+
+    #[test]
+    #[cfg_attr(
+        debug_assertions,
+        ignore = "run with cargo test --release to observe argument allocations"
+    )]
+    fn trait_arguments_do_not_allocate() {
+        struct Callbacks(bool);
+        impl rustc_driver::Callbacks for Callbacks {
+            fn config(&mut self, config: &mut rustc_interface::interface::Config) {
+                config.input = rustc_session::config::Input::Str {
+                    name: rustc_span::FileName::Custom("trait_arguments.rs".into()),
+                    input: String::new(),
+                };
+            }
+
+            fn after_analysis(
+                &mut self,
+                _compiler: &rustc_interface::interface::Compiler,
+                tcx: rustc_middle::ty::TyCtxt<'_>,
+            ) -> rustc_driver::Compilation {
+                let before = allocation_count();
+                let control = vec![tcx.types.i32; 1];
+                black_box(&control);
+                assert!(
+                    allocation_count() > before,
+                    "allocation observer missed a vector"
+                );
+
+                black_box(super::type_derives(
+                    tcx,
+                    rustc_middle::ty::ParamEnv::empty(),
+                    tcx.types.i32,
+                ));
+                self.0 = true;
+                rustc_driver::Compilation::Stop
+            }
+        }
+
+        let mut callbacks = Callbacks(false);
+        rustc_driver::compiler_entrypoint(
+            &[
+                "rustc".into(),
+                "--crate-name=trait_arguments".into(),
+                "--crate-type=lib".into(),
+                format!("--sysroot={}", super::get_sysroot().display()),
+                "-".into(),
+            ],
+            &mut callbacks,
+        );
+        assert!(callbacks.0, "compiler did not run the trait check");
     }
 }
