@@ -7,7 +7,11 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn array_ref_0(a: *mut [u64; 3]) -> u64 {
-    (*a)[(0) as usize] = ((*a)[(0) as usize]).wrapping_add(1_u64);
+    match ({ 1_u64 }, &mut ((*a)[(0) as usize])) {
+        (__tmp_0, __tmp_1) => {
+            (*__tmp_1) = (((*__tmp_1) as u64).wrapping_add((__tmp_0 as u64))) as u64;
+        }
+    };
     return (*a)[((3_u64 as u64).wrapping_sub(1_u64)) as usize];
 }
 #[repr(C)]

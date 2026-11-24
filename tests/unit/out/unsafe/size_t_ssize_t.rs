@@ -39,9 +39,21 @@ unsafe fn main_0() -> i32 {
                 .wrapping_add((::std::mem::size_of::<i64>() as usize))))
     );
     let mut acc: usize = 100_usize;
-    acc = ((acc as u64).wrapping_add((::std::mem::size_of::<f64>() as u64))) as usize;
-    acc = (acc).wrapping_mul(2_usize);
-    acc = ((acc as u64).wrapping_sub(ul)) as usize;
+    match ({ ::std::mem::size_of::<f64>() }, &mut (acc)) {
+        (__tmp_0, __tmp_1) => {
+            (*__tmp_1) = (((*__tmp_1) as u64).wrapping_add((__tmp_0 as u64))) as usize;
+        }
+    };
+    match ({ 2_usize }, &mut (acc)) {
+        (__tmp_2, __tmp_3) => {
+            (*__tmp_3) = (((*__tmp_3) as usize).wrapping_mul((__tmp_2 as usize))) as usize;
+        }
+    };
+    match ({ ul }, &mut (acc)) {
+        (__tmp_4, __tmp_5) => {
+            (*__tmp_5) = (((*__tmp_5) as u64).wrapping_sub((__tmp_4 as u64))) as usize;
+        }
+    };
     assert!(
         ((acc)
             == (((((100_usize).wrapping_add((::std::mem::size_of::<f64>() as usize))) as usize)
@@ -64,18 +76,18 @@ unsafe fn main_0() -> i32 {
     let mut fr2: u64 = (unsafe { take_ulong_1((sz as u64)) });
     assert!(((fr2) == (21_u64)));
     let mut lo: usize = (({
-        let mut __tmp_0: u64 = (sz as u64);
-        let mut __tmp_1: u64 = (::std::mem::size_of::<i64>() as u64).wrapping_add(ul);
+        let mut __tmp_6: u64 = (sz as u64);
+        let mut __tmp_7: u64 = (::std::mem::size_of::<i64>() as u64).wrapping_add(ul);
         (*{
-            let __a: *const _ = &mut __tmp_0;
-            let __b: *const _ = &mut __tmp_1;
+            let __a: *const _ = &mut __tmp_6;
+            let __b: *const _ = &mut __tmp_7;
             if *__b < *__a { __b } else { __a }
         })
     }) as usize);
     let mut hi: usize = (({
-        let mut __tmp_2: u64 = (::std::mem::size_of::<i32>() as u64).wrapping_add((sz as u64));
+        let mut __tmp_8: u64 = (::std::mem::size_of::<i32>() as u64).wrapping_add((sz as u64));
         (*{
-            let __a: *const _ = &mut __tmp_2;
+            let __a: *const _ = &mut __tmp_8;
             let __b: *const _ = &mut ul;
             if *__a < *__b { __b } else { __a }
         })
@@ -83,11 +95,11 @@ unsafe fn main_0() -> i32 {
     assert!(((lo) == ((::std::mem::size_of::<i64>() as usize).wrapping_add(10_usize))));
     assert!(((hi) == ((::std::mem::size_of::<i32>() as usize).wrapping_add(21_usize))));
     let mut bound: usize = (({
-        let mut __tmp_3: u64 = (sz as u64);
-        let mut __tmp_4: u64 = (4_usize as u64);
+        let mut __tmp_9: u64 = (sz as u64);
+        let mut __tmp_10: u64 = (4_usize as u64);
         (*{
-            let __a: *const _ = &mut __tmp_3;
-            let __b: *const _ = &mut __tmp_4;
+            let __a: *const _ = &mut __tmp_9;
+            let __b: *const _ = &mut __tmp_10;
             if *__b < *__a { __b } else { __a }
         })
     }) as usize);
@@ -106,7 +118,12 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: usize = 0_usize;
         'loop_: while ((i) < (count)) {
-            total = (total).wrapping_add((data[(i)] as usize));
+            match ({ (data[(i)] as usize) }, &mut (total)) {
+                (__tmp_11, __tmp_12) => {
+                    (*__tmp_12) =
+                        (((*__tmp_12) as usize).wrapping_add((__tmp_11 as usize))) as usize;
+                }
+            };
             i.postfix_inc();
         }
     }
@@ -134,20 +151,20 @@ unsafe fn main_0() -> i32 {
     assert!(((sm) == (15_isize)));
     assert!(((sm) > (l as isize)));
     let mut smin: isize = (({
-        let mut __tmp_5: i64 = (sd as i64);
-        let mut __tmp_6: i64 = (sm as i64);
+        let mut __tmp_13: i64 = (sd as i64);
+        let mut __tmp_14: i64 = (sm as i64);
         (*{
-            let __a: *const _ = &mut __tmp_5;
-            let __b: *const _ = &mut __tmp_6;
+            let __a: *const _ = &mut __tmp_13;
+            let __b: *const _ = &mut __tmp_14;
             if *__b < *__a { __b } else { __a }
         })
     }) as isize);
     let mut smax: isize = (({
-        let mut __tmp_7: i64 = (sd as i64);
-        let mut __tmp_8: i64 = (sm as i64);
+        let mut __tmp_15: i64 = (sd as i64);
+        let mut __tmp_16: i64 = (sm as i64);
         (*{
-            let __a: *const _ = &mut __tmp_7;
-            let __b: *const _ = &mut __tmp_8;
+            let __a: *const _ = &mut __tmp_15;
+            let __b: *const _ = &mut __tmp_16;
             if *__a < *__b { __b } else { __a }
         })
     }) as isize);
@@ -169,20 +186,20 @@ unsafe fn main_0() -> i32 {
     let mut mins: [usize; 4] = [
         0_usize,
         (({
-            let mut __tmp_9: u64 = 1_u64;
-            let mut __tmp_10: u64 = (mx as u64);
+            let mut __tmp_17: u64 = 1_u64;
+            let mut __tmp_18: u64 = (mx as u64);
             (*{
-                let __a: *const _ = &mut __tmp_9;
-                let __b: *const _ = &mut __tmp_10;
+                let __a: *const _ = &mut __tmp_17;
+                let __b: *const _ = &mut __tmp_18;
                 if *__b < *__a { __b } else { __a }
             })
         }) as usize),
         (({
-            let mut __tmp_11: u64 = (mx as u64);
-            let mut __tmp_12: u64 = ((mx).wrapping_sub(3_usize) as u64);
+            let mut __tmp_19: u64 = (mx as u64);
+            let mut __tmp_20: u64 = ((mx).wrapping_sub(3_usize) as u64);
             (*{
-                let __a: *const _ = &mut __tmp_11;
-                let __b: *const _ = &mut __tmp_12;
+                let __a: *const _ = &mut __tmp_19;
+                let __b: *const _ = &mut __tmp_20;
                 if *__b < *__a { __b } else { __a }
             })
         }) as usize),

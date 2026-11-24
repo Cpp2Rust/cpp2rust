@@ -12,17 +12,21 @@ pub unsafe fn sum_then_product_0(mut first: i32, __args: Box<[VaArg]>) -> i32 {
     let mut product: i32 = first;
     ap = __args.as_ptr();
     let mut val: i32 = 0_i32;
-    'loop_: while (({
-        val = ap.arg::<i32>();
-        val
+    'loop_: while ((match ({ ap.arg::<i32>() }, &mut (val)) {
+        (__tmp_0, __tmp_1) => {
+            (*__tmp_1) = __tmp_0;
+            (*__tmp_1).clone()
+        }
     }) != (0))
     {
         sum += val;
     }
     ap = __args.as_ptr();
-    'loop_: while (({
-        val = ap.arg::<i32>();
-        val
+    'loop_: while ((match ({ ap.arg::<i32>() }, &mut (val)) {
+        (__tmp_2, __tmp_3) => {
+            (*__tmp_3) = __tmp_2;
+            (*__tmp_3).clone()
+        }
     }) != (0))
     {
         product *= val;

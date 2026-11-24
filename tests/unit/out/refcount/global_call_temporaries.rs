@@ -36,60 +36,72 @@ thread_local!(
 );
 thread_local!(
     pub static assigned_4: Value<i32> = Rc::new(RefCell::new({
-        let __tmp_2: Value<i32>;
-        let __tmp_3: Value<i32>;
-        ({
+        let __tmp_4: Value<i32>;
+        let __tmp_5: Value<i32>;
+        (match (
             {
-                let __rhs = {
-                    __tmp_2 = Rc::new(RefCell::new(6));
-                    __tmp_3 = Rc::new(RefCell::new(5));
-                    (if CppLess::less(&__tmp_2.as_pointer(), &__tmp_3.as_pointer()) {
-                        __tmp_2.as_pointer()
+                {
+                    __tmp_4 = Rc::new(RefCell::new(6));
+                    __tmp_5 = Rc::new(RefCell::new(5));
+                    (if CppLess::less(&__tmp_4.as_pointer(), &__tmp_5.as_pointer()) {
+                        __tmp_4.as_pointer()
                     } else {
-                        __tmp_3.as_pointer()
+                        __tmp_5.as_pointer()
                     }
                     .read())
-                };
-                x_2.with(|rc| *rc.borrow_mut() = __rhs)
-            };
-            x_2.with(|rc| *rc.borrow())
+                }
+            },
+            &mut (*x_2.with(Value::clone).borrow_mut()),
+        ) {
+            (__tmp_2, __tmp_3) => {
+                (*__tmp_3) = __tmp_2;
+                (*__tmp_3).clone()
+            }
         })
     }));
 );
 thread_local!(
     pub static accumulated_5: Value<i32> = Rc::new(RefCell::new({
-        let __tmp_4: Value<i32>;
-        let __tmp_5: Value<i32>;
-        ({
+        let __tmp_8: Value<i32>;
+        let __tmp_9: Value<i32>;
+        (match (
             {
-                let __rhs = {
-                    __tmp_4 = Rc::new(RefCell::new(1));
-                    __tmp_5 = Rc::new(RefCell::new(2));
-                    (if CppLess::less(&__tmp_4.as_pointer(), &__tmp_5.as_pointer()) {
-                        __tmp_5.as_pointer()
+                {
+                    __tmp_8 = Rc::new(RefCell::new(1));
+                    __tmp_9 = Rc::new(RefCell::new(2));
+                    (if CppLess::less(&__tmp_8.as_pointer(), &__tmp_9.as_pointer()) {
+                        __tmp_9.as_pointer()
                     } else {
-                        __tmp_4.as_pointer()
+                        __tmp_8.as_pointer()
                     }
                     .read())
-                };
-                y_3.with(|rc| *rc.borrow_mut() += __rhs)
-            };
-            y_3.with(|rc| *rc.borrow())
+                }
+            },
+            &mut (*y_3.with(Value::clone).borrow_mut()),
+        ) {
+            (__tmp_6, __tmp_7) => {
+                (*__tmp_7) = (((*__tmp_7) as i32) + (__tmp_6 as i32)) as i32;
+                (*__tmp_7).clone()
+            }
         })
     }));
 );
 thread_local!(
     pub static call_assigned_6: Value<i32> = Rc::new(RefCell::new({
-        let __tmp_6: Value<i32>;
-        ({
+        let __tmp_12: Value<i32>;
+        (match (
             {
-                let __rhs = ({
-                    __tmp_6 = Rc::new(RefCell::new(5));
-                    read_0(__tmp_6.as_pointer())
-                });
-                x_2.with(|rc| *rc.borrow_mut() = __rhs)
-            };
-            x_2.with(|rc| *rc.borrow())
+                ({
+                    __tmp_12 = Rc::new(RefCell::new(5));
+                    read_0(__tmp_12.as_pointer())
+                })
+            },
+            &mut (*x_2.with(Value::clone).borrow_mut()),
+        ) {
+            (__tmp_10, __tmp_11) => {
+                (*__tmp_11) = __tmp_10;
+                (*__tmp_11).clone()
+            }
         })
     }));
 );
@@ -107,38 +119,38 @@ pub fn read_record_8(value: Ptr<Item>) -> i32 {
 }
 thread_local!(
     pub static aggregate_selected_9: Value<i32> = Rc::new(RefCell::new({
-        let __tmp_8: Value<i32>;
-        let __tmp_9: Value<i32>;
-        let __tmp_7: Value<Box<[i32]>>;
-        let __tmp_11: Value<i32>;
-        let __tmp_12: Value<i32>;
-        let __tmp_10: Value<Item>;
+        let __tmp_14: Value<i32>;
+        let __tmp_15: Value<i32>;
+        let __tmp_13: Value<Box<[i32]>>;
+        let __tmp_17: Value<i32>;
+        let __tmp_18: Value<i32>;
+        let __tmp_16: Value<Item>;
         (({
-            __tmp_7 = Rc::new(RefCell::new(Box::new([{
-                __tmp_8 = Rc::new(RefCell::new(4));
-                __tmp_9 = Rc::new(RefCell::new(3));
-                (if CppLess::less(&__tmp_8.as_pointer(), &__tmp_9.as_pointer()) {
-                    __tmp_8.as_pointer()
+            __tmp_13 = Rc::new(RefCell::new(Box::new([{
+                __tmp_14 = Rc::new(RefCell::new(4));
+                __tmp_15 = Rc::new(RefCell::new(3));
+                (if CppLess::less(&__tmp_14.as_pointer(), &__tmp_15.as_pointer()) {
+                    __tmp_14.as_pointer()
                 } else {
-                    __tmp_9.as_pointer()
+                    __tmp_15.as_pointer()
                 }
                 .read())
             }])));
-            read_array_7(__tmp_7.decay())
+            read_array_7(__tmp_13.decay())
         }) + ({
-            __tmp_10 = Rc::new(RefCell::new(Item {
+            __tmp_16 = Rc::new(RefCell::new(Item {
                 value: {
-                    __tmp_11 = Rc::new(RefCell::new(5));
-                    __tmp_12 = Rc::new(RefCell::new(6));
-                    (if CppLess::less(&__tmp_11.as_pointer(), &__tmp_12.as_pointer()) {
-                        __tmp_12.as_pointer()
+                    __tmp_17 = Rc::new(RefCell::new(5));
+                    __tmp_18 = Rc::new(RefCell::new(6));
+                    (if CppLess::less(&__tmp_17.as_pointer(), &__tmp_18.as_pointer()) {
+                        __tmp_18.as_pointer()
                     } else {
-                        __tmp_11.as_pointer()
+                        __tmp_17.as_pointer()
                     }
                     .read())
                 },
             }));
-            read_record_8(__tmp_10.as_pointer())
+            read_record_8(__tmp_16.as_pointer())
         }))
     }));
 );
@@ -150,12 +162,12 @@ thread_local!(
 );
 thread_local!(
     pub static mapped_selected_12: Value<usize> = {
-        let __tmp_13: Value<u64>;
+        let __tmp_19: Value<u64>;
         Rc::new(RefCell::new(
             (({
-                __tmp_13 = Rc::new(RefCell::new((right_11.with(|rc| *rc.borrow()) as u64)));
-                (if CppLess::less(&__tmp_13.as_pointer(), &left_10.with(|v| v.as_pointer())) {
-                    __tmp_13.as_pointer()
+                __tmp_19 = Rc::new(RefCell::new((right_11.with(|rc| *rc.borrow()) as u64)));
+                (if CppLess::less(&__tmp_19.as_pointer(), &left_10.with(|v| v.as_pointer())) {
+                    __tmp_19.as_pointer()
                 } else {
                     left_10.with(|v| v.as_pointer())
                 }
@@ -169,12 +181,12 @@ pub fn get_13() -> usize {
 }
 thread_local!(
     static value_14: Value<usize> = {
-        let __tmp_14: Value<u64>;
+        let __tmp_20: Value<u64>;
         Rc::new(RefCell::new(
             (({
-                __tmp_14 = Rc::new(RefCell::new((right_11.with(|rc| *rc.borrow()) as u64)));
-                (if CppLess::less(&left_10.with(|v| v.as_pointer()), &__tmp_14.as_pointer()) {
-                    __tmp_14.as_pointer()
+                __tmp_20 = Rc::new(RefCell::new((right_11.with(|rc| *rc.borrow()) as u64)));
+                (if CppLess::less(&left_10.with(|v| v.as_pointer()), &__tmp_20.as_pointer()) {
+                    __tmp_20.as_pointer()
                 } else {
                     left_10.with(|v| v.as_pointer())
                 }
@@ -200,38 +212,38 @@ fn main_0() -> i32 {
 }
 thread_local!(
     static aggregate_static_15: Value<i32> = Rc::new(RefCell::new({
-        let __tmp_16: Value<i32>;
-        let __tmp_17: Value<i32>;
-        let __tmp_15: Value<Box<[i32]>>;
-        let __tmp_19: Value<i32>;
-        let __tmp_20: Value<i32>;
-        let __tmp_18: Value<Item>;
+        let __tmp_22: Value<i32>;
+        let __tmp_23: Value<i32>;
+        let __tmp_21: Value<Box<[i32]>>;
+        let __tmp_25: Value<i32>;
+        let __tmp_26: Value<i32>;
+        let __tmp_24: Value<Item>;
         (({
-            __tmp_15 = Rc::new(RefCell::new(Box::new([{
-                __tmp_16 = Rc::new(RefCell::new(7));
-                __tmp_17 = Rc::new(RefCell::new(8));
-                (if CppLess::less(&__tmp_16.as_pointer(), &__tmp_17.as_pointer()) {
-                    __tmp_17.as_pointer()
+            __tmp_21 = Rc::new(RefCell::new(Box::new([{
+                __tmp_22 = Rc::new(RefCell::new(7));
+                __tmp_23 = Rc::new(RefCell::new(8));
+                (if CppLess::less(&__tmp_22.as_pointer(), &__tmp_23.as_pointer()) {
+                    __tmp_23.as_pointer()
                 } else {
-                    __tmp_16.as_pointer()
+                    __tmp_22.as_pointer()
                 }
                 .read())
             }])));
-            read_array_7(__tmp_15.decay())
+            read_array_7(__tmp_21.decay())
         }) + ({
-            __tmp_18 = Rc::new(RefCell::new(Item {
+            __tmp_24 = Rc::new(RefCell::new(Item {
                 value: {
-                    __tmp_19 = Rc::new(RefCell::new(10));
-                    __tmp_20 = Rc::new(RefCell::new(9));
-                    (if CppLess::less(&__tmp_19.as_pointer(), &__tmp_20.as_pointer()) {
-                        __tmp_19.as_pointer()
+                    __tmp_25 = Rc::new(RefCell::new(10));
+                    __tmp_26 = Rc::new(RefCell::new(9));
+                    (if CppLess::less(&__tmp_25.as_pointer(), &__tmp_26.as_pointer()) {
+                        __tmp_25.as_pointer()
                     } else {
-                        __tmp_20.as_pointer()
+                        __tmp_26.as_pointer()
                     }
                     .read())
                 },
             }));
-            read_record_8(__tmp_18.as_pointer())
+            read_record_8(__tmp_24.as_pointer())
         }))
     }));
 );

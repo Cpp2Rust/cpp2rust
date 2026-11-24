@@ -211,7 +211,11 @@ fn main_0() -> i32 {
             k.prefix_inc();
         }
     }
-    c.write({ (((c.read()) as i32) + 5) as i16 });
+    match ({ 5 }, &(c)) {
+        (__tmp_2, __tmp_3) => __tmp_3.with_mut(|__tmp_3| {
+            (*__tmp_3) = (((*__tmp_3) as i32) + (__tmp_2 as i32)) as i16;
+        }),
+    };
     id.write(11);
     (*s.borrow_mut()).count = 3;
     assert!(

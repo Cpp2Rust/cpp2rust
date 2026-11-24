@@ -42,15 +42,19 @@ unsafe fn main_0() -> i32 {
     }
     assert!((((*s).a) == (5)) && (((*s).c) == (1)));
     let mut x: i32 = (((*s).a)
-        + ({
-            (*s).b = 3;
-            (*s).b
+        + (match ({ 3 }, &mut ((*s).b)) {
+            (__tmp_0, __tmp_1) => {
+                (*__tmp_1) = __tmp_0;
+                (*__tmp_1).clone()
+            }
         }));
     assert!(((x) == (8)) && (((*s).b) == (3)));
     let mut y: i32 = 0;
-    (*s).c = ({
-        y = 99;
-        y
+    (*s).c = (match ({ 99 }, &mut (y)) {
+        (__tmp_2, __tmp_3) => {
+            (*__tmp_3) = __tmp_2;
+            (*__tmp_3).clone()
+        }
     });
     assert!((((*s).c) == (99)) && ((y) == (99)));
     (*s).a += (unsafe { bump_0(s) });

@@ -47,15 +47,34 @@ pub struct LifetimeTracked {
 }
 impl LifetimeTracked {
     pub unsafe fn reset() {
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut ctorCount_1)) = {
-            (*std::cell::LazyCell::force_mut(&mut *&raw mut copyCount_2)) = {
-                (*std::cell::LazyCell::force_mut(&mut *&raw mut dtorCount_3)) = {
-                    (*std::cell::LazyCell::force_mut(&mut *&raw mut useCount_4)) = 0;
-                    (*std::cell::LazyCell::force_mut(&mut *&raw mut useCount_4))
-                };
-                (*std::cell::LazyCell::force_mut(&mut *&raw mut dtorCount_3))
-            };
-            (*std::cell::LazyCell::force_mut(&mut *&raw mut copyCount_2))
+        (*std::cell::LazyCell::force_mut(&mut *&raw mut ctorCount_1)) = match (
+            {
+                match (
+                    {
+                        match (
+                            { 0 },
+                            &mut (*std::cell::LazyCell::force_mut(&mut *&raw mut useCount_4)),
+                        ) {
+                            (__tmp_4, __tmp_5) => {
+                                (*__tmp_5) = __tmp_4;
+                                (*__tmp_5).clone()
+                            }
+                        }
+                    },
+                    &mut (*std::cell::LazyCell::force_mut(&mut *&raw mut dtorCount_3)),
+                ) {
+                    (__tmp_2, __tmp_3) => {
+                        (*__tmp_3) = __tmp_2;
+                        (*__tmp_3).clone()
+                    }
+                }
+            },
+            &mut (*std::cell::LazyCell::force_mut(&mut *&raw mut copyCount_2)),
+        ) {
+            (__tmp_0, __tmp_1) => {
+                (*__tmp_1) = __tmp_0;
+                (*__tmp_1).clone()
+            }
         };
     }
     pub unsafe fn new() -> Self {

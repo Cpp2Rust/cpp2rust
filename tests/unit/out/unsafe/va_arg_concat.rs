@@ -11,9 +11,11 @@ pub unsafe fn sum_ints_0(mut first: i32, __args: Box<[VaArg]>) -> i32 {
     let mut total: i32 = first;
     args = __args.as_ptr();
     let mut val: i32 = 0_i32;
-    'loop_: while (({
-        val = args.arg::<i32>();
-        val
+    'loop_: while ((match ({ args.arg::<i32>() }, &mut (val)) {
+        (__tmp_0, __tmp_1) => {
+            (*__tmp_1) = __tmp_0;
+            (*__tmp_1).clone()
+        }
     }) != (0))
     {
         total += val;

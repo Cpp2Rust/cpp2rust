@@ -96,15 +96,19 @@ unsafe fn main_0() -> i32 {
     s.x = 1;
     s.z = 2;
     assert!(
-        ({
-            s.x = 1;
-            s.x
+        (match ({ 1 }, &mut (s.x)) {
+            (__tmp_0, __tmp_1) => {
+                (*__tmp_1) = __tmp_0;
+                (*__tmp_1).clone()
+            }
         } != 0)
     );
     assert!(
-        ({
-            s.z = 2;
-            s.z
+        (match ({ 2 }, &mut (s.z)) {
+            (__tmp_2, __tmp_3) => {
+                (*__tmp_3) = __tmp_2;
+                (*__tmp_3).clone()
+            }
         } != 0)
     );
     return 0;

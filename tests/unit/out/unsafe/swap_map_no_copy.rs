@@ -322,12 +322,24 @@ pub unsafe fn swapped_once_6() -> bool {
     let mut ok: bool = (((*std::cell::LazyCell::force_mut(&mut *&raw mut moves_3)) == (1))
         && ((*std::cell::LazyCell::force_mut(&mut *&raw mut move_assigns_4)) == (2)))
         && ((*std::cell::LazyCell::force_mut(&mut *&raw mut moved_dtors_5)) == (1));
-    (*std::cell::LazyCell::force_mut(&mut *&raw mut moves_3)) = {
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut move_assigns_4)) = {
-            (*std::cell::LazyCell::force_mut(&mut *&raw mut moved_dtors_5)) = 0;
-            (*std::cell::LazyCell::force_mut(&mut *&raw mut moved_dtors_5))
-        };
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut move_assigns_4))
+    (*std::cell::LazyCell::force_mut(&mut *&raw mut moves_3)) = match (
+        {
+            match (
+                { 0 },
+                &mut (*std::cell::LazyCell::force_mut(&mut *&raw mut moved_dtors_5)),
+            ) {
+                (__tmp_2, __tmp_3) => {
+                    (*__tmp_3) = __tmp_2;
+                    (*__tmp_3).clone()
+                }
+            }
+        },
+        &mut (*std::cell::LazyCell::force_mut(&mut *&raw mut move_assigns_4)),
+    ) {
+        (__tmp_0, __tmp_1) => {
+            (*__tmp_1) = __tmp_0;
+            (*__tmp_1).clone()
+        }
     };
     return ok;
 }

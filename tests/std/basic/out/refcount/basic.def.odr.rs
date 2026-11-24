@@ -59,19 +59,31 @@ pub struct LifetimeTracked {
 impl LifetimeTracked {
     pub fn reset() {
         ctorCount_1.with(|rc| {
-            *rc.borrow_mut() = {
-                copyCount_2.with(|rc| {
-                    *rc.borrow_mut() = {
-                        dtorCount_3.with(|rc| {
-                            *rc.borrow_mut() = {
-                                useCount_4.with(|rc| *rc.borrow_mut() = 0);
-                                useCount_4.with(|rc| *rc.borrow())
+            *rc.borrow_mut() = match (
+                {
+                    match (
+                        {
+                            match ({ 0 }, &mut (*useCount_4.with(Value::clone).borrow_mut())) {
+                                (__tmp_4, __tmp_5) => {
+                                    (*__tmp_5) = __tmp_4;
+                                    (*__tmp_5).clone()
+                                }
                             }
-                        });
-                        dtorCount_3.with(|rc| *rc.borrow())
+                        },
+                        &mut (*dtorCount_3.with(Value::clone).borrow_mut()),
+                    ) {
+                        (__tmp_2, __tmp_3) => {
+                            (*__tmp_3) = __tmp_2;
+                            (*__tmp_3).clone()
+                        }
                     }
-                });
-                copyCount_2.with(|rc| *rc.borrow())
+                },
+                &mut (*copyCount_2.with(Value::clone).borrow_mut()),
+            ) {
+                (__tmp_0, __tmp_1) => {
+                    (*__tmp_1) = __tmp_0;
+                    (*__tmp_1).clone()
+                }
             }
         });
     }

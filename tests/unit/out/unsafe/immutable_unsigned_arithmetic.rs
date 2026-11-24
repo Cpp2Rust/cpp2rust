@@ -15,7 +15,11 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut a: u32 = 0_u32;
     let mut p: *mut u32 = (&mut a as *mut u32);
-    (*p) = (*p).wrapping_add((*p));
+    match ({ (*p) }, &mut (*p)) {
+        (__tmp_0, __tmp_1) => {
+            (*__tmp_1) = (((*__tmp_1) as u32).wrapping_add((__tmp_0 as u32))) as u32;
+        }
+    };
     return ((*p) as i32);
 }
 pub unsafe fn __cpp2rust_init_globals() {}

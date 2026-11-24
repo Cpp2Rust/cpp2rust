@@ -209,7 +209,11 @@ unsafe fn main_0() -> i32 {
             k.prefix_inc();
         }
     }
-    (*c) = (((*c) as i32) + 5) as i16;
+    match ({ 5 }, &mut (*c)) {
+        (__tmp_4, __tmp_5) => {
+            (*__tmp_5) = (((*__tmp_5) as i32) + (__tmp_4 as i32)) as i16;
+        }
+    };
     (*id) = 11;
     s.count = 3;
     assert!(

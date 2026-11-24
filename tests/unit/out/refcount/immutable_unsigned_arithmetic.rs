@@ -13,7 +13,11 @@ pub fn main() {
 fn main_0() -> i32 {
     let a: Value<u32> = Rc::new(RefCell::new(0_u32));
     let mut p: Ptr<u32> = (a.as_pointer());
-    p.write({ (p.read()).wrapping_add((p.read())) });
+    match ({ (p.read()) }, &(p)) {
+        (__tmp_0, __tmp_1) => __tmp_1.with_mut(|__tmp_1| {
+            (*__tmp_1) = (((*__tmp_1) as u32).wrapping_add((__tmp_0 as u32))) as u32;
+        }),
+    };
     return ((p.read()) as i32);
 }
 pub fn __cpp2rust_init_globals() {}

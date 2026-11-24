@@ -283,9 +283,11 @@ unsafe fn main_0() -> i32 {
     assert!((unsafe { same_0(&e, &b,) }) && (unsafe { same_0(&f, &c,) }));
     let mut g: Explicit = Explicit::new({ 4 });
     let _dtor_g = std::mem::DropGuard::new(&raw mut g, |__p| unsafe { (*__p).destructor() });
-    g = {
-        e = (f).clone();
-        (e).clone()
+    g = match ({ (f).clone() }, &mut (e)) {
+        (__tmp_4, __tmp_5) => {
+            (*__tmp_5) = __tmp_4;
+            (*__tmp_5).clone()
+        }
     };
     assert!((unsafe { same_0(&g, &f,) }) && (unsafe { same_0(&e, &f,) }));
     let mut i: Implicit = Implicit {
@@ -354,8 +356,8 @@ unsafe fn main_0() -> i32 {
         bufs.push(__a1)
     };
     {
-        let mut __tmp_4 = { Buffer::move_from({ &mut bufs[(0_usize)] }) };
-        bufs.push_mut(__tmp_4)
+        let mut __tmp_6 = { Buffer::move_from({ &mut bufs[(0_usize)] }) };
+        bufs.push_mut(__tmp_6)
     };
     assert!(
         (((bufs[(1_usize)].n) == (3)) && ((bufs[(1_usize)].data.len()) == (3_usize)))

@@ -50,7 +50,11 @@ unsafe fn main_0() -> i32 {
             (*total) += ((x) * (y));
         },
         |mut x: u32, mut y: u32| {
-            (*total) = (((*total) as u32).wrapping_add((x).wrapping_mul(y))) as i32;
+            match ({ (x).wrapping_mul(y) }, &mut (*total)) {
+                (__tmp_0, __tmp_1) => {
+                    (*__tmp_1) = (((*__tmp_1) as u32).wrapping_add((__tmp_0 as u32))) as i32;
+                }
+            };
         }
     );
     (unsafe { accumulate.spec::<fn(i32, i32)>(0).call(2, 3) });
