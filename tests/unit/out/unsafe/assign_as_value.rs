@@ -23,13 +23,21 @@ unsafe fn main_0() -> i32 {
         }
     };
     assert!(((q) == (buf.as_mut_ptr().offset((1) as isize))));
+    q = match ({ 1 }, &mut (p)) {
+        (__tmp_2, __tmp_3) => {
+            (*__tmp_3) = (*__tmp_3).offset(-(__tmp_2 as isize));
+            (*__tmp_3).clone()
+        }
+    };
+    assert!(((p) == (buf.as_mut_ptr())));
+    assert!(((q) == (buf.as_mut_ptr())));
     let mut out: libc::c_char = (0 as libc::c_char);
     'switch: {
         match {
             ((match ({ (('x' as i32) as libc::c_char) }, &mut (out)) {
-                (__tmp_2, __tmp_3) => {
-                    (*__tmp_3) = __tmp_2;
-                    (*__tmp_3).clone()
+                (__tmp_4, __tmp_5) => {
+                    (*__tmp_5) = __tmp_4;
+                    (*__tmp_5).clone()
                 }
             }) as i32)
         } {

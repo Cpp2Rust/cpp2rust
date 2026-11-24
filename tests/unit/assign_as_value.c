@@ -5,6 +5,9 @@ int main(void) {
   char *p = buf, *q;
   q = p += 1;
   assert(q == buf + 1);
+  q = p -= 1;
+  assert(p == buf);
+  assert(q == buf);
 
   char out;
   switch (out = 'x') {
