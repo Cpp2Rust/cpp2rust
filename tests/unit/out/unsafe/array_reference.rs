@@ -27,7 +27,9 @@ pub unsafe fn fill_3(a: *mut [i32; 3], mut v: i32) {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (3)) {
-            (*a)[(i) as usize] = v;
+            'for_body: {
+                (*a)[(i) as usize] = v;
+            }
             i.prefix_inc();
         }
     }

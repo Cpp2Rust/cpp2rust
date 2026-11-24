@@ -45,19 +45,25 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (3)) {
-            assert!(
-                (((*std::cell::LazyCell::force_mut(&mut *&raw mut s_0)).tail[(i) as usize]) == (0))
-            );
+            'for_body: {
+                assert!(
+                    (((*std::cell::LazyCell::force_mut(&mut *&raw mut s_0)).tail[(i) as usize])
+                        == (0))
+                );
+            }
             i.postfix_inc();
         }
     }
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (4)) {
-            assert!(
-                (((*std::cell::LazyCell::force_mut(&mut *&raw mut s_0)).buf[(i) as usize] as i32)
-                    == (0))
-            );
+            'for_body: {
+                assert!(
+                    (((*std::cell::LazyCell::force_mut(&mut *&raw mut s_0)).buf[(i) as usize]
+                        as i32)
+                        == (0))
+                );
+            }
             i.postfix_inc();
         }
     }
@@ -65,7 +71,9 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (10)) {
-            assert!(((a[(i) as usize]) == (0)));
+            'for_body: {
+                assert!(((a[(i) as usize]) == (0)));
+            }
             i.postfix_inc();
         }
     }
@@ -74,7 +82,9 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: i32 = 1;
         'loop_: while ((i) < (4)) {
-            assert!(((seven[(i) as usize]) == (0)));
+            'for_body: {
+                assert!(((seven[(i) as usize]) == (0)));
+            }
             i.postfix_inc();
         }
     }
@@ -85,7 +95,9 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: i32 = 3;
         'loop_: while ((i) < (6)) {
-            assert!(((b[(i) as usize]) == (0)));
+            'for_body: {
+                assert!(((b[(i) as usize]) == (0)));
+            }
             i.postfix_inc();
         }
     }

@@ -90,56 +90,60 @@ pub unsafe fn check_name_0(mut fd: i32, mut path: *const libc::c_char) {
             < ((::std::mem::size_of::<[libc::socklen_t; 6]>() as usize)
                 .wrapping_div((::std::mem::size_of::<libc::socklen_t>() as usize))))
         {
-            let mut out: [u8; 136] = [0_u8; 136];
-            {
-                let mut __tmp_2 = { (out.as_mut_ptr() as *mut ::libc::c_void) };
-                let byte_0 = __tmp_2 as *mut u8;
-                for offset in 0..::std::mem::size_of::<[u8; 136]>() {
-                    *byte_0.offset(offset as isize) = 165 as u8;
-                }
-                __tmp_2
-            };
-            let mut len: libc::socklen_t = capacities[(i) as usize];
-            assert!(
-                ((libc::getsockname(
-                    fd,
-                    (out.as_mut_ptr() as *mut libc::sockaddr),
-                    (&mut len as *mut libc::socklen_t)
-                )) == (0))
-            );
-            assert!(((len) == (actual)));
-            let mut copied: u32 = (if ((capacities[(i) as usize]) < (actual)) {
-                capacities[(i) as usize]
-            } else {
-                actual
-            } as u32);
-            assert!(
-                (({
-                    let mut __tmp_3 = { (copied as usize) };
-                    let sa = core::slice::from_raw_parts(
-                        (out.as_mut_ptr() as *const ::libc::c_void) as *const u8,
-                        __tmp_3,
-                    );
-                    let sb = core::slice::from_raw_parts(
-                        ((&mut full as *mut libc::sockaddr_storage) as *const ::libc::c_void)
-                            as *const u8,
-                        __tmp_3,
-                    );
-                    let mut diff = 0_i32;
-                    for (x, y) in sa.iter().zip(sb.iter()) {
-                        if x != y {
-                            diff = (*x as i32) - (*y as i32);
-                            break;
-                        }
+            'for_body: {
+                let mut out: [u8; 136] = [0_u8; 136];
+                {
+                    let mut __tmp_2 = { (out.as_mut_ptr() as *mut ::libc::c_void) };
+                    let byte_0 = __tmp_2 as *mut u8;
+                    for offset in 0..::std::mem::size_of::<[u8; 136]>() {
+                        *byte_0.offset(offset as isize) = 165 as u8;
                     }
-                    diff
-                }) == (0))
-            );
-            {
-                let mut j: u32 = copied;
-                'loop_: while ((j as usize) < (::std::mem::size_of::<[u8; 136]>())) {
-                    assert!(((out[(j) as usize] as i32) == (165)));
-                    j.prefix_inc();
+                    __tmp_2
+                };
+                let mut len: libc::socklen_t = capacities[(i) as usize];
+                assert!(
+                    ((libc::getsockname(
+                        fd,
+                        (out.as_mut_ptr() as *mut libc::sockaddr),
+                        (&mut len as *mut libc::socklen_t)
+                    )) == (0))
+                );
+                assert!(((len) == (actual)));
+                let mut copied: u32 = (if ((capacities[(i) as usize]) < (actual)) {
+                    capacities[(i) as usize]
+                } else {
+                    actual
+                } as u32);
+                assert!(
+                    (({
+                        let mut __tmp_3 = { (copied as usize) };
+                        let sa = core::slice::from_raw_parts(
+                            (out.as_mut_ptr() as *const ::libc::c_void) as *const u8,
+                            __tmp_3,
+                        );
+                        let sb = core::slice::from_raw_parts(
+                            ((&mut full as *mut libc::sockaddr_storage) as *const ::libc::c_void)
+                                as *const u8,
+                            __tmp_3,
+                        );
+                        let mut diff = 0_i32;
+                        for (x, y) in sa.iter().zip(sb.iter()) {
+                            if x != y {
+                                diff = (*x as i32) - (*y as i32);
+                                break;
+                            }
+                        }
+                        diff
+                    }) == (0))
+                );
+                {
+                    let mut j: u32 = copied;
+                    'loop_: while ((j as usize) < (::std::mem::size_of::<[u8; 136]>())) {
+                        'for_body: {
+                            assert!(((out[(j) as usize] as i32) == (165)));
+                        }
+                        j.prefix_inc();
+                    }
                 }
             }
             i.prefix_inc();

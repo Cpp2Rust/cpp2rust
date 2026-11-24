@@ -30,14 +30,18 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (sentinel)) {
-            (*m.subscript(&i, || 0_i32)) = i;
+            'for_body: {
+                (*m.subscript(&i, || 0_i32)) = i;
+            }
             i.prefix_inc();
         }
     }
     {
         let mut i: i32 = ((sentinel) + (1));
         'loop_: while ((i) <= (N)) {
-            (*m.subscript(&i, || 0_i32)) = i;
+            'for_body: {
+                (*m.subscript(&i, || 0_i32)) = i;
+            }
             i.prefix_inc();
         }
     }

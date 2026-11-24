@@ -26,8 +26,10 @@ fn main_0() -> i32 {
     {
         let mut i: u32 = 0_u32;
         'loop_: while ((i as usize) < items.len()) {
-            let __rhs = (i).wrapping_mul(2_u32);
-            items[(i as usize)] = __rhs;
+            'for_body: {
+                let __rhs = (i).wrapping_mul(2_u32);
+                items[(i as usize)] = __rhs;
+            }
             i.prefix_inc();
         }
     }

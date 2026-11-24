@@ -130,10 +130,12 @@ fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while (i < N) {
-            {
-                let a0_clone = i.clone();
-                v1.push(a0_clone)
-            };
+            'for_body: {
+                {
+                    let a0_clone = i.clone();
+                    v1.push(a0_clone)
+                };
+            }
             i.prefix_inc();
         }
     }
@@ -141,22 +143,28 @@ fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while (i < N) {
-            assert!((v2[(i as usize)] == i));
+            'for_body: {
+                assert!((v2[(i as usize)] == i));
+            }
             i.prefix_inc();
         }
     }
     {
         let mut i: i32 = 0;
         'loop_: while (i < N) {
-            v2[(i as usize)].prefix_inc();
+            'for_body: {
+                v2[(i as usize)].prefix_inc();
+            }
             i.prefix_inc();
         }
     }
     {
         let mut i: i32 = 0;
         'loop_: while (i < N) {
-            assert!((v2[(i as usize)] == (i + 1)));
-            assert!((v1[(i as usize)] == i));
+            'for_body: {
+                assert!((v2[(i as usize)] == (i + 1)));
+                assert!((v1[(i as usize)] == i));
+            }
             i.prefix_inc();
         }
     }
@@ -164,10 +172,12 @@ fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while (i < N) {
-            {
-                let __a1 = Vec::from_fn(10_usize, |_| 0_i32);
-                (*m1.borrow_mut()).push(__a1)
-            };
+            'for_body: {
+                {
+                    let __a1 = Vec::from_fn(10_usize, |_| 0_i32);
+                    (*m1.borrow_mut()).push(__a1)
+                };
+            }
             i.prefix_inc();
         }
     }
@@ -175,14 +185,28 @@ fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while (i < N) {
-            assert!(({ ((*m1.decay().offset((i as usize)).upgrade().deref()).len() == 10_usize) }));
-            assert!(({ ((*m2.decay().offset((i as usize)).upgrade().deref()).len() == 10_usize) }));
-            {
-                let mut j: i32 = 0;
-                'loop_: while (j < 10) {
-                    assert!(((index!(elem!(m1.decay(), (i as usize)), (j as usize)).read()) == 0));
-                    assert!(((index!(elem!(m2.decay(), (i as usize)), (j as usize)).read()) == 0));
-                    j.prefix_inc();
+            'for_body: {
+                assert!(
+                    ({ ((*m1.decay().offset((i as usize)).upgrade().deref()).len() == 10_usize) })
+                );
+                assert!(
+                    ({ ((*m2.decay().offset((i as usize)).upgrade().deref()).len() == 10_usize) })
+                );
+                {
+                    let mut j: i32 = 0;
+                    'loop_: while (j < 10) {
+                        'for_body: {
+                            assert!(
+                                ((index!(elem!(m1.decay(), (i as usize)), (j as usize)).read())
+                                    == 0)
+                            );
+                            assert!(
+                                ((index!(elem!(m2.decay(), (i as usize)), (j as usize)).read())
+                                    == 0)
+                            );
+                        }
+                        j.prefix_inc();
+                    }
                 }
             }
             i.prefix_inc();
@@ -191,12 +215,16 @@ fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while (i < N) {
-            {
-                let mut j: i32 = 0;
-                'loop_: while (j < 10) {
-                    index!(elem!(m2.decay(), (i as usize)), (j as usize))
-                        .with_mut(|__v| __v.postfix_inc());
-                    j.prefix_inc();
+            'for_body: {
+                {
+                    let mut j: i32 = 0;
+                    'loop_: while (j < 10) {
+                        'for_body: {
+                            index!(elem!(m2.decay(), (i as usize)), (j as usize))
+                                .with_mut(|__v| __v.postfix_inc());
+                        }
+                        j.prefix_inc();
+                    }
                 }
             }
             i.prefix_inc();
@@ -205,14 +233,28 @@ fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while (i < N) {
-            assert!(({ ((*m1.decay().offset((i as usize)).upgrade().deref()).len() == 10_usize) }));
-            assert!(({ ((*m2.decay().offset((i as usize)).upgrade().deref()).len() == 10_usize) }));
-            {
-                let mut j: i32 = 0;
-                'loop_: while (j < 10) {
-                    assert!(((index!(elem!(m1.decay(), (i as usize)), (j as usize)).read()) == 0));
-                    assert!(((index!(elem!(m2.decay(), (i as usize)), (j as usize)).read()) == 1));
-                    j.prefix_inc();
+            'for_body: {
+                assert!(
+                    ({ ((*m1.decay().offset((i as usize)).upgrade().deref()).len() == 10_usize) })
+                );
+                assert!(
+                    ({ ((*m2.decay().offset((i as usize)).upgrade().deref()).len() == 10_usize) })
+                );
+                {
+                    let mut j: i32 = 0;
+                    'loop_: while (j < 10) {
+                        'for_body: {
+                            assert!(
+                                ((index!(elem!(m1.decay(), (i as usize)), (j as usize)).read())
+                                    == 0)
+                            );
+                            assert!(
+                                ((index!(elem!(m2.decay(), (i as usize)), (j as usize)).read())
+                                    == 1)
+                            );
+                        }
+                        j.prefix_inc();
+                    }
                 }
             }
             i.prefix_inc();
@@ -222,8 +264,10 @@ fn main_0() -> i32 {
     {
         let i: Value<i32> = Rc::new(RefCell::new(0));
         'loop_: while ((*i.borrow()) < N) {
-            let __rhs = (*i.borrow());
-            ({ (*map1.borrow_mut()).subscript(i.as_pointer(), || 0_i32) }).write(__rhs);
+            'for_body: {
+                let __rhs = (*i.borrow());
+                ({ (*map1.borrow_mut()).subscript(i.as_pointer(), || 0_i32) }).write(__rhs);
+            }
             (*i.borrow_mut()).prefix_inc();
         }
     }
@@ -232,33 +276,37 @@ fn main_0() -> i32 {
     {
         let i: Value<i32> = Rc::new(RefCell::new(0));
         'loop_: while ((*i.borrow()) < N) {
-            assert!(
-                ({
-                    ((({ (*map2.borrow_mut()).subscript(i.as_pointer(), || 0_i32) }).read())
-                        == (*i.borrow()))
-                })
-            );
-            ({ (*map2.borrow_mut()).subscript(i.as_pointer(), || 0_i32) }).with_mut(|__v| {
-                __v.prefix_inc();
-            });
+            'for_body: {
+                assert!(
+                    ({
+                        ((({ (*map2.borrow_mut()).subscript(i.as_pointer(), || 0_i32) }).read())
+                            == (*i.borrow()))
+                    })
+                );
+                ({ (*map2.borrow_mut()).subscript(i.as_pointer(), || 0_i32) }).with_mut(|__v| {
+                    __v.prefix_inc();
+                });
+            }
             (*i.borrow_mut()).prefix_inc();
         }
     }
     {
         let i: Value<i32> = Rc::new(RefCell::new(0));
         'loop_: while ((*i.borrow()) < N) {
-            assert!(
-                ({
-                    ((({ (*map1.borrow_mut()).subscript(i.as_pointer(), || 0_i32) }).read())
-                        == (*i.borrow()))
-                })
-            );
-            assert!(
-                ({
-                    ((({ (*map2.borrow_mut()).subscript(i.as_pointer(), || 0_i32) }).read())
-                        == ((*i.borrow()) + 1))
-                })
-            );
+            'for_body: {
+                assert!(
+                    ({
+                        ((({ (*map1.borrow_mut()).subscript(i.as_pointer(), || 0_i32) }).read())
+                            == (*i.borrow()))
+                    })
+                );
+                assert!(
+                    ({
+                        ((({ (*map2.borrow_mut()).subscript(i.as_pointer(), || 0_i32) }).read())
+                            == ((*i.borrow()) + 1))
+                    })
+                );
+            }
             (*i.borrow_mut()).prefix_inc();
         }
     }
@@ -321,16 +369,20 @@ fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while (i < N) {
-            assert!((v4[(i as usize)] == (i + 1)));
-            v4[(i as usize)].prefix_inc();
+            'for_body: {
+                assert!((v4[(i as usize)] == (i + 1)));
+                v4[(i as usize)].prefix_inc();
+            }
             i.prefix_inc();
         }
     }
     {
         let mut i: i32 = 0;
         'loop_: while (i < N) {
-            assert!((v4[(i as usize)] == (i + 2)));
-            assert!((v2[(i as usize)] == (i + 1)));
+            'for_body: {
+                assert!((v4[(i as usize)] == (i + 2)));
+                assert!((v2[(i as usize)] == (i + 1)));
+            }
             i.prefix_inc();
         }
     }

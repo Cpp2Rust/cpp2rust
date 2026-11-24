@@ -47,16 +47,20 @@ fn main_0() -> i32 {
     {
         let i: Value<i32> = Rc::new(RefCell::new(0));
         'loop_: while ((*i.borrow()) < (*sentinel.borrow())) {
-            let __rhs = (*i.borrow());
-            ({ (*m.borrow_mut()).subscript(i.as_pointer(), || 0_i32) }).write(__rhs);
+            'for_body: {
+                let __rhs = (*i.borrow());
+                ({ (*m.borrow_mut()).subscript(i.as_pointer(), || 0_i32) }).write(__rhs);
+            }
             (*i.borrow_mut()).prefix_inc();
         }
     }
     {
         let i: Value<i32> = Rc::new(RefCell::new(((*sentinel.borrow()) + 1)));
         'loop_: while ((*i.borrow()) <= N) {
-            let __rhs = (*i.borrow());
-            ({ (*m.borrow_mut()).subscript(i.as_pointer(), || 0_i32) }).write(__rhs);
+            'for_body: {
+                let __rhs = (*i.borrow());
+                ({ (*m.borrow_mut()).subscript(i.as_pointer(), || 0_i32) }).write(__rhs);
+            }
             (*i.borrow_mut()).prefix_inc();
         }
     }

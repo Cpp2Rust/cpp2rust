@@ -20,14 +20,16 @@ fn main_0() -> i32 {
             < (((::std::mem::size_of::<[i8; 41]>() as usize)
                 .wrapping_div((::std::mem::size_of::<i8>() as usize))) as i32))
         {
-            assert!(
-                ({ ((elem!(special, i).read()) as i32) } == {
-                    (({
-                        let __idx0 = (i) as usize;
-                        expected_0.with(|rc| rc.borrow()[__idx0])
-                    }) as i32)
-                })
-            );
+            'for_body: {
+                assert!(
+                    ({ ((elem!(special, i).read()) as i32) } == {
+                        (({
+                            let __idx0 = (i) as usize;
+                            expected_0.with(|rc| rc.borrow()[__idx0])
+                        }) as i32)
+                    })
+                );
+            }
             i.postfix_inc();
         }
     }

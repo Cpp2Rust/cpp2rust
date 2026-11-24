@@ -67,14 +67,18 @@ fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while (i < 3) {
-            assert!(((array_elem!(s_0.with(|v| v.as_pointer()), tail, i).read()) == 0));
+            'for_body: {
+                assert!(((array_elem!(s_0.with(|v| v.as_pointer()), tail, i).read()) == 0));
+            }
             i.postfix_inc();
         }
     }
     {
         let mut i: i32 = 0;
         'loop_: while (i < 4) {
-            assert!((((array_elem!(s_0.with(|v| v.as_pointer()), buf, i).read()) as i32) == 0));
+            'for_body: {
+                assert!((((array_elem!(s_0.with(|v| v.as_pointer()), buf, i).read()) as i32) == 0));
+            }
             i.postfix_inc();
         }
     }
@@ -82,7 +86,9 @@ fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while (i < 10) {
-            assert!((a[(i) as usize] == 0));
+            'for_body: {
+                assert!((a[(i) as usize] == 0));
+            }
             i.postfix_inc();
         }
     }
@@ -91,7 +97,9 @@ fn main_0() -> i32 {
     {
         let mut i: i32 = 1;
         'loop_: while (i < 4) {
-            assert!((seven[(i) as usize] == 0));
+            'for_body: {
+                assert!((seven[(i) as usize] == 0));
+            }
             i.postfix_inc();
         }
     }
@@ -100,7 +108,9 @@ fn main_0() -> i32 {
     {
         let mut i: i32 = 3;
         'loop_: while (i < 6) {
-            assert!((b[(i) as usize] == 0));
+            'for_body: {
+                assert!((b[(i) as usize] == 0));
+            }
             i.postfix_inc();
         }
     }

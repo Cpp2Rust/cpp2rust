@@ -69,7 +69,9 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (4)) {
-            assert!(((sevens[(i) as usize].v) == (7)));
+            'for_body: {
+                assert!(((sevens[(i) as usize].v) == (7)));
+            }
             i.postfix_inc();
         }
     }

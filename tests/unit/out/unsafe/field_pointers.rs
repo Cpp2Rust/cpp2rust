@@ -111,7 +111,10 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (3)) {
-            (*name.offset((i) as isize)) = (((('a' as libc::c_char) as i32) + (i)) as libc::c_char);
+            'for_body: {
+                (*name.offset((i) as isize)) =
+                    (((('a' as libc::c_char) as i32) + (i)) as libc::c_char);
+            }
             i.prefix_inc();
         }
     }

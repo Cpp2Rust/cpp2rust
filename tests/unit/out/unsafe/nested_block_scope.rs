@@ -28,12 +28,14 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (3)) {
-            let mut y: i32 = i;
-            {
-                let mut y: i32 = 10;
+            'for_body: {
+                let mut y: i32 = i;
+                {
+                    let mut y: i32 = 10;
+                    sum += y;
+                }
                 sum += y;
             }
-            sum += y;
             i.postfix_inc();
         }
     }

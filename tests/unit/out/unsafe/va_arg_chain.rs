@@ -10,7 +10,9 @@ pub unsafe fn extract_nth_0(mut n: i32, mut ap: *const VaArg) -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (n)) {
-            ap.arg::<i32>();
+            'for_body: {
+                ap.arg::<i32>();
+            }
             i.postfix_inc();
         }
     }

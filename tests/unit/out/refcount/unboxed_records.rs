@@ -71,8 +71,10 @@ pub fn consume_3(cookie: Ptr<Cookie>) -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while (i < 4) {
-            elem!(c.data, i).write({ ({ (elem!(c.in_, i).read()) } * { c.x }) });
-            sum += { (elem!(c.data, i).read()) };
+            'for_body: {
+                elem!(c.data, i).write({ ({ (elem!(c.in_, i).read()) } * { c.x }) });
+                sum += { (elem!(c.data, i).read()) };
+            }
             i.prefix_inc();
         }
     }

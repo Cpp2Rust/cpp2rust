@@ -51,8 +51,10 @@ pub unsafe fn consume_3(cookie: *const Cookie) -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (4)) {
-            (*c.data.offset((i) as isize)) = ((*c.in_.offset((i) as isize)) * (c.x));
-            sum += (*c.data.offset((i) as isize));
+            'for_body: {
+                (*c.data.offset((i) as isize)) = ((*c.in_.offset((i) as isize)) * (c.x));
+                sum += (*c.data.offset((i) as isize));
+            }
             i.prefix_inc();
         }
     }

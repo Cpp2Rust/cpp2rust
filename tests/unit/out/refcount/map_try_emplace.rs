@@ -169,168 +169,187 @@ fn main_0() -> i32 {
     {
         let mut subset: i32 = 0;
         'loop_: while (subset < 8) {
-            {
-                let key: Value<i32> = Rc::new(RefCell::new(0));
-                'loop_: while ((*key.borrow()) < 3) {
-                    {
-                        let mut initial: i32 = 0;
-                        'loop_: while (initial < 3) {
+            'for_body: {
+                {
+                    let key: Value<i32> = Rc::new(RefCell::new(0));
+                    'loop_: while ((*key.borrow()) < 3) {
+                        'for_body: {
                             {
-                                let mut post: i32 = 0;
-                                'loop_: while (post < 2) {
-                                    let m: Value<Map<i32, (Value<i32>, Value<i32>)>> =
-                                        Rc::new(RefCell::new(Map::new()));
-                                    let mut size: i32 = 0;
-                                    {
-                                        let k: Value<i32> = Rc::new(RefCell::new(0));
-                                        'loop_: while ((*k.borrow()) < 3) {
-                                            if ((subset & (1 << (*k.borrow()))) != 0) {
-                                                let __rhs = (10 + (*k.borrow()));
-                                                ({
-                                                    (*m.borrow_mut())
-                                                        .subscript(k.as_pointer(), || 0_i32)
-                                                })
-                                                .write(__rhs);
-                                                size.prefix_inc();
+                                let mut initial: i32 = 0;
+                                'loop_: while (initial < 3) {
+                                    'for_body: {
+                                        {
+                                            let mut post: i32 = 0;
+                                            'loop_: while (post < 2) {
+                                                'for_body: {
+                                                    let m: Value<
+                                                        Map<i32, (Value<i32>, Value<i32>)>,
+                                                    > = Rc::new(RefCell::new(Map::new()));
+                                                    let mut size: i32 = 0;
+                                                    {
+                                                        let k: Value<i32> =
+                                                            Rc::new(RefCell::new(0));
+                                                        'loop_: while ((*k.borrow()) < 3) {
+                                                            'for_body: {
+                                                                if ((subset & (1 << (*k.borrow())))
+                                                                    != 0)
+                                                                {
+                                                                    let __rhs =
+                                                                        (10 + (*k.borrow()));
+                                                                    ({
+                                                                        (*m.borrow_mut()).subscript(
+                                                                            k.as_pointer(),
+                                                                            || 0_i32,
+                                                                        )
+                                                                    })
+                                                                    .write(__rhs);
+                                                                    size.prefix_inc();
+                                                                }
+                                                            }
+                                                            (*k.borrow_mut()).prefix_inc();
+                                                        }
+                                                    }
+                                                    let counter: Value<i32> =
+                                                        Rc::new(RefCell::new(initial));
+                                                    let result: Value<(
+                                                        Value<
+                                                            BidirectionalIterator<(
+                                                                Value<i32>,
+                                                                Value<i32>,
+                                                            )>,
+                                                        >,
+                                                        Value<bool>,
+                                                    )> = Rc::new(RefCell::new({
+                                                        let __tmp_3: Value<i32>;
+                                                        if (post != 0) {
+                                                            match ({
+                                                                __tmp_3 = Rc::new(RefCell::new(
+                                                                    (*counter.borrow_mut())
+                                                                        .postfix_inc(),
+                                                                ));
+                                                                __tmp_3.as_pointer()
+                                                            },)
+                                                            {
+                                                                (__tmp_2,) => {
+                                                                    let (__it, __inserted) =
+                                                                        Map::emplace(
+                                                                            m.as_pointer(),
+                                                                            &key.as_pointer(),
+                                                                            || {
+                                                                                (Rc::new(RefCell::new(key .as_pointer() .read())), Rc::new(RefCell::new((__tmp_2.read()) )))
+                                                                            },
+                                                                        );
+                                                                    (
+                                                                        Rc::new(RefCell::new(__it)),
+                                                                        Rc::new(RefCell::new(
+                                                                            __inserted,
+                                                                        )),
+                                                                    )
+                                                                }
+                                                            }
+                                                        } else {
+                                                            match ({
+                                                                let __tmp_5 = counter.as_pointer();
+                                                                __tmp_5.with_mut(|__v| {
+                                                                    __v.prefix_inc();
+                                                                });
+                                                                __tmp_5
+                                                            },)
+                                                            {
+                                                                (__tmp_4,) => {
+                                                                    let (__it, __inserted) =
+                                                                        Map::emplace(
+                                                                            m.as_pointer(),
+                                                                            &key.as_pointer(),
+                                                                            || {
+                                                                                (Rc::new(RefCell::new(key .as_pointer() .read())), Rc::new(RefCell::new((__tmp_4.read()) )))
+                                                                            },
+                                                                        );
+                                                                    (
+                                                                        Rc::new(RefCell::new(__it)),
+                                                                        Rc::new(RefCell::new(
+                                                                            __inserted,
+                                                                        )),
+                                                                    )
+                                                                }
+                                                            }
+                                                        }
+                                                    }));
+                                                    let mut hit: bool =
+                                                        ((subset & (1 << (*key.borrow()))) != 0);
+                                                    ok = {
+                                                        ((ok as i32)
+                                                            & (((*counter.borrow())
+                                                                == (initial + 1))
+                                                                as i32))
+                                                            != 0
+                                                    };
+                                                    ok = {
+                                                        ((ok as i32)
+                                                            & ((((*(*result.borrow()).1.borrow())
+                                                                as i32)
+                                                                == (!(hit) as i32))
+                                                                as i32))
+                                                            != 0
+                                                    };
+                                                    let mut found : bool  = (*(*result.borrow()) .0.borrow())  == m .as_pointer() .with(|__m: &Map<i32  , (Value<i32  >, Value<i32  >)>| __m.find(&key .as_pointer() ))     ;
+                                                    ok = { ((ok as i32) & (found as i32)) != 0 };
+                                                    {
+                                                        let rhs_0 = ((ok as i32)
+                                                            & (((*(*({
+                                                                (*(*result.borrow()).0.borrow())
+                                                                    .iter_deref()
+                                                            })
+                                                            .upgrade()
+                                                            .deref())
+                                                            .0
+                                                            .borrow())
+                                                                == (*key.borrow()))
+                                                                as i32))
+                                                            != 0;
+                                                        ok = rhs_0
+                                                    };
+                                                    {
+                                                        let rhs_0 = ((ok as i32)
+                                                            & (((*(*({
+                                                                (*(*result.borrow()).0.borrow())
+                                                                    .iter_deref()
+                                                            })
+                                                            .upgrade()
+                                                            .deref())
+                                                            .1
+                                                            .borrow())
+                                                                == (if hit {
+                                                                    (10 + (*key.borrow()))
+                                                                } else {
+                                                                    (initial
+                                                                        + (!(post != 0) as i32))
+                                                                }))
+                                                                as i32))
+                                                            != 0;
+                                                        ok = rhs_0
+                                                    };
+                                                    {
+                                                        let rhs_0 = ((ok as i32)
+                                                            & (((*m.borrow()).len()
+                                                                == ((size + (!(hit) as i32))
+                                                                    as usize))
+                                                                as i32))
+                                                            != 0;
+                                                        ok = rhs_0
+                                                    };
+                                                    rows.prefix_inc();
+                                                }
+                                                post.prefix_inc();
                                             }
-                                            (*k.borrow_mut()).prefix_inc();
                                         }
                                     }
-                                    let counter: Value<i32> = Rc::new(RefCell::new(initial));
-                                    let result: Value<(
-                                        Value<BidirectionalIterator<(Value<i32>, Value<i32>)>>,
-                                        Value<bool>,
-                                    )> = Rc::new(RefCell::new({
-                                        let __tmp_3: Value<i32>;
-                                        if (post != 0) {
-                                            match ({
-                                                __tmp_3 = Rc::new(RefCell::new(
-                                                    (*counter.borrow_mut()).postfix_inc(),
-                                                ));
-                                                __tmp_3.as_pointer()
-                                            },)
-                                            {
-                                                (__tmp_2,) => {
-                                                    let (__it, __inserted) = Map::emplace(
-                                                        m.as_pointer(),
-                                                        &key.as_pointer(),
-                                                        || {
-                                                            (
-                                                                Rc::new(RefCell::new(
-                                                                    key.as_pointer().read(),
-                                                                )),
-                                                                Rc::new(RefCell::new(
-                                                                    (__tmp_2.read()),
-                                                                )),
-                                                            )
-                                                        },
-                                                    );
-                                                    (
-                                                        Rc::new(RefCell::new(__it)),
-                                                        Rc::new(RefCell::new(__inserted)),
-                                                    )
-                                                }
-                                            }
-                                        } else {
-                                            match ({
-                                                let __tmp_5 = counter.as_pointer();
-                                                __tmp_5.with_mut(|__v| {
-                                                    __v.prefix_inc();
-                                                });
-                                                __tmp_5
-                                            },)
-                                            {
-                                                (__tmp_4,) => {
-                                                    let (__it, __inserted) = Map::emplace(
-                                                        m.as_pointer(),
-                                                        &key.as_pointer(),
-                                                        || {
-                                                            (
-                                                                Rc::new(RefCell::new(
-                                                                    key.as_pointer().read(),
-                                                                )),
-                                                                Rc::new(RefCell::new(
-                                                                    (__tmp_4.read()),
-                                                                )),
-                                                            )
-                                                        },
-                                                    );
-                                                    (
-                                                        Rc::new(RefCell::new(__it)),
-                                                        Rc::new(RefCell::new(__inserted)),
-                                                    )
-                                                }
-                                            }
-                                        }
-                                    }));
-                                    let mut hit: bool = ((subset & (1 << (*key.borrow()))) != 0);
-                                    ok = {
-                                        ((ok as i32)
-                                            & (((*counter.borrow()) == (initial + 1)) as i32))
-                                            != 0
-                                    };
-                                    ok = {
-                                        ((ok as i32)
-                                            & ((((*(*result.borrow()).1.borrow()) as i32)
-                                                == (!(hit) as i32))
-                                                as i32))
-                                            != 0
-                                    };
-                                    let mut found: bool = (*(*result.borrow()).0.borrow())
-                                        == m.as_pointer().with(
-                                            |__m: &Map<i32, (Value<i32>, Value<i32>)>| {
-                                                __m.find(&key.as_pointer())
-                                            },
-                                        );
-                                    ok = { ((ok as i32) & (found as i32)) != 0 };
-                                    {
-                                        let rhs_0 = ((ok as i32)
-                                            & (((*(*({
-                                                (*(*result.borrow()).0.borrow()).iter_deref()
-                                            })
-                                            .upgrade()
-                                            .deref())
-                                            .0
-                                            .borrow())
-                                                == (*key.borrow()))
-                                                as i32))
-                                            != 0;
-                                        ok = rhs_0
-                                    };
-                                    {
-                                        let rhs_0 = ((ok as i32)
-                                            & (((*(*({
-                                                (*(*result.borrow()).0.borrow()).iter_deref()
-                                            })
-                                            .upgrade()
-                                            .deref())
-                                            .1
-                                            .borrow())
-                                                == (if hit {
-                                                    (10 + (*key.borrow()))
-                                                } else {
-                                                    (initial + (!(post != 0) as i32))
-                                                }))
-                                                as i32))
-                                            != 0;
-                                        ok = rhs_0
-                                    };
-                                    {
-                                        let rhs_0 = ((ok as i32)
-                                            & (((*m.borrow()).len()
-                                                == ((size + (!(hit) as i32)) as usize))
-                                                as i32))
-                                            != 0;
-                                        ok = rhs_0
-                                    };
-                                    rows.prefix_inc();
-                                    post.prefix_inc();
+                                    initial.prefix_inc();
                                 }
                             }
-                            initial.prefix_inc();
                         }
+                        (*key.borrow_mut()).prefix_inc();
                     }
-                    (*key.borrow_mut()).prefix_inc();
                 }
             }
             subset.prefix_inc();

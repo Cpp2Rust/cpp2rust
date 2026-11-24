@@ -62,7 +62,9 @@ fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while (i < 4) {
-            elem!(bz, i).write(1_u8);
+            'for_body: {
+                elem!(bz, i).write(1_u8);
+            }
             i.postfix_inc();
         }
     }

@@ -24,7 +24,9 @@ impl Buffer {
         {
             let mut i: i32 = 0;
             'loop_: while ((i) < (4)) {
-                this.data[(i) as usize] = if ((i) < (size)) { i } else { -1_i32 };
+                'for_body: {
+                    this.data[(i) as usize] = if ((i) < (size)) { i } else { -1_i32 };
+                }
                 i.prefix_inc();
             }
         }
@@ -42,7 +44,9 @@ impl Buffer {
         {
             let mut i: i32 = 0;
             'loop_: while ((i) < (4)) {
-                this.data[(i) as usize] = (*o).data[(i) as usize];
+                'for_body: {
+                    this.data[(i) as usize] = (*o).data[(i) as usize];
+                }
                 i.prefix_inc();
             }
         }
@@ -58,7 +62,9 @@ impl Buffer {
         {
             let mut i: i32 = 0;
             'loop_: while ((i) < (4)) {
-                self.data[(i) as usize] = (*o).data[(i) as usize];
+                'for_body: {
+                    self.data[(i) as usize] = (*o).data[(i) as usize];
+                }
                 i.prefix_inc();
             }
         }
@@ -76,7 +82,9 @@ pub unsafe fn sum_2(b: *const Buffer) -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < ((*b).size)) {
-            s += (*b).data[(i) as usize];
+            'for_body: {
+                s += (*b).data[(i) as usize];
+            }
             i.prefix_inc();
         }
     }

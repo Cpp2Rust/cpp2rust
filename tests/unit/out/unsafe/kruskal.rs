@@ -22,14 +22,16 @@ pub unsafe fn partition_0(arr: *mut Option<Box<[Edge]>>, mut start: i32, mut end
     {
         let mut i: i32 = ((start) + (1));
         'loop_: while ((i) <= (end)) {
-            if (((*(*arr)
-                .as_deref()
-                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Edge)
-                .add((i as usize)))
-            .weight)
-                <= ((*pivot).weight))
-            {
-                count.postfix_inc();
+            'for_body: {
+                if (((*(*arr)
+                    .as_deref()
+                    .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Edge)
+                    .add((i as usize)))
+                .weight)
+                    <= ((*pivot).weight))
+                {
+                    count.postfix_inc();
+                }
             }
             i.prefix_inc();
         }
@@ -188,16 +190,18 @@ impl DisjointSet {
         {
             let mut i: i32 = 0;
             'loop_: while ((i) < (self.n)) {
-                (*self
-                    .parent
-                    .as_deref()
-                    .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
-                    .add((i as usize))) = i;
-                (*self
-                    .rank
-                    .as_deref()
-                    .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
-                    .add((i as usize))) = 1;
+                'for_body: {
+                    (*self
+                        .parent
+                        .as_deref()
+                        .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
+                        .add((i as usize))) = i;
+                    (*self
+                        .rank
+                        .as_deref()
+                        .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
+                        .add((i as usize))) = 1;
+                }
                 i.postfix_inc();
             }
         }
@@ -353,29 +357,31 @@ pub unsafe fn MSTKruskal_2(graph: *mut Graph) -> f64 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < ((*graph).E)) {
-            let mut x: i32 = (*(*graph)
-                .edges
-                .as_deref()
-                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Edge)
-                .add((i as usize)))
-            .u;
-            let mut y: i32 = (*(*graph)
-                .edges
-                .as_deref()
-                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Edge)
-                .add((i as usize)))
-            .v;
-            let mut w: f64 = (*(*graph)
-                .edges
-                .as_deref()
-                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Edge)
-                .add((i as usize)))
-            .weight;
-            if ((unsafe { DisjointSet::find(&mut set, x) })
-                != (unsafe { DisjointSet::find(&mut set, y) }))
-            {
-                (unsafe { DisjointSet::merge(&mut set, x, y) });
-                total_weight += w;
+            'for_body: {
+                let mut x: i32 = (*(*graph)
+                    .edges
+                    .as_deref()
+                    .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Edge)
+                    .add((i as usize)))
+                .u;
+                let mut y: i32 = (*(*graph)
+                    .edges
+                    .as_deref()
+                    .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Edge)
+                    .add((i as usize)))
+                .v;
+                let mut w: f64 = (*(*graph)
+                    .edges
+                    .as_deref()
+                    .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Edge)
+                    .add((i as usize)))
+                .weight;
+                if ((unsafe { DisjointSet::find(&mut set, x) })
+                    != (unsafe { DisjointSet::find(&mut set, y) }))
+                {
+                    (unsafe { DisjointSet::merge(&mut set, x, y) });
+                    total_weight += w;
+                }
             }
             i.prefix_inc();
         }

@@ -95,7 +95,9 @@ pub fn sum_0(mut p: Ptr<i32>, mut n: i32) -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while (i < n) {
-            s += { (elem!(p, i).read()) };
+            'for_body: {
+                s += { (elem!(p, i).read()) };
+            }
             i.prefix_inc();
         }
     }
@@ -105,11 +107,15 @@ pub fn fill_1(mut s: Ptr<State>) {
     {
         let mut i: i32 = 0;
         'loop_: while (i < 2) {
-            {
-                let mut j: i32 = 0;
-                'loop_: while (j < 3) {
-                    index!(index!(field!(s, grid), i), j).write({ ((i * 3) + j) });
-                    j.prefix_inc();
+            'for_body: {
+                {
+                    let mut j: i32 = 0;
+                    'loop_: while (j < 3) {
+                        'for_body: {
+                            index!(index!(field!(s, grid), i), j).write({ ((i * 3) + j) });
+                        }
+                        j.prefix_inc();
+                    }
                 }
             }
             i.prefix_inc();
@@ -120,12 +126,14 @@ pub fn fill_1(mut s: Ptr<State>) {
     {
         let mut i: i32 = 0;
         'loop_: while (i < 3) {
-            let __rhs = i;
-            field!(vec_elem!(s, elems, (i as usize)), id).write(__rhs);
-            let __rhs = (10 * i);
-            index!(field!(vec_elem!(s, elems, (i as usize)), hist), i).write(__rhs);
-            field!(vec_elem!(s, elems, (i as usize)), coeffs)
-                .with_mut(|__v: &mut Vec<i16>| __v.resize(4_usize, (i as i16)));
+            'for_body: {
+                let __rhs = i;
+                field!(vec_elem!(s, elems, (i as usize)), id).write(__rhs);
+                let __rhs = (10 * i);
+                index!(field!(vec_elem!(s, elems, (i as usize)), hist), i).write(__rhs);
+                field!(vec_elem!(s, elems, (i as usize)), coeffs)
+                    .with_mut(|__v: &mut Vec<i16>| __v.resize(4_usize, (i as i16)));
+            }
             i.prefix_inc();
         }
     }
@@ -204,10 +212,12 @@ fn main_0() -> i32 {
     {
         let mut k: i32 = 0;
         'loop_: while (k < 4) {
-            {
-                let __rhs = { k };
-                elem!(h, k).with_mut(|__v| *__v = *__v + __rhs)
-            };
+            'for_body: {
+                {
+                    let __rhs = { k };
+                    elem!(h, k).with_mut(|__v| *__v = *__v + __rhs)
+                };
+            }
             k.prefix_inc();
         }
     }

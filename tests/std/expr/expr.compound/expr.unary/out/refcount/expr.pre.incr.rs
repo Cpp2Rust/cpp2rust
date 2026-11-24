@@ -63,7 +63,9 @@ pub fn test_0() {
     {
         let mut k: i32 = 0;
         'loop_: while (k < 3) {
-            sum += (*y.prefix_inc());
+            'for_body: {
+                sum += (*y.prefix_inc());
+            }
             k.prefix_inc();
         }
     }

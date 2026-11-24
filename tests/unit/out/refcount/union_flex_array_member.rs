@@ -52,18 +52,22 @@ fn main_0() -> i32 {
     {
         let mut i: usize = 0_usize;
         'loop_: while (i < tail_size) {
-            elem!(anon_0::bytes(field_ptr!(n, x)), i).write({ ((i & 255_usize) as u8) });
+            'for_body: {
+                elem!(anon_0::bytes(field_ptr!(n, x)), i).write({ ((i & 255_usize) as u8) });
+            }
             i.postfix_inc();
         }
     }
     {
         let mut i: usize = 0_usize;
         'loop_: while (i < tail_size) {
-            assert!(
-                ({ ((elem!(anon_0::bytes(field_ptr!(n, x)), i).read()) as i32) } == {
-                    (((i & 255_usize) as u8) as i32)
-                })
-            );
+            'for_body: {
+                assert!(
+                    ({ ((elem!(anon_0::bytes(field_ptr!(n, x)), i).read()) as i32) } == {
+                        (((i & 255_usize) as u8) as i32)
+                    })
+                );
+            }
             i.postfix_inc();
         }
     }

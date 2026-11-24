@@ -29,7 +29,9 @@ pub unsafe fn sum_1(v: *const Vec<i32>) -> i32 {
     {
         let mut it: UnsafeRandomAccessIterator<i32> = (*v).begin();
         'loop_: while it != (*v).end() {
-            total += (*it.iter_deref());
+            'for_body: {
+                total += (*it.iter_deref());
+            }
             {
                 it.iter_inc();
             };

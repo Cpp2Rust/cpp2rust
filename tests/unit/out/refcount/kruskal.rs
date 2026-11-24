@@ -22,11 +22,14 @@ pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, mut start: i32, mut end
     {
         let mut i: i32 = (start + 1);
         'loop_: while (i <= end) {
-            if ({
-                ({ (*arr.upgrade().deref()).decay().offset((i as usize)) }).with(|__s| __s.weight)
-            } <= { pivot.with(|__s| __s.weight) })
-            {
-                count.postfix_inc();
+            'for_body: {
+                if ({
+                    ({ (*arr.upgrade().deref()).decay().offset((i as usize)) })
+                        .with(|__s| __s.weight)
+                } <= { pivot.with(|__s| __s.weight) })
+                {
+                    count.postfix_inc();
+                }
             }
             i.prefix_inc();
         }
@@ -178,26 +181,28 @@ pub fn MSTKruskal_2(graph: Ptr<Graph>) -> f64 {
     {
         let mut i: i32 = 0;
         'loop_: while ({ i } < { graph.with(|__s| __s.E) }) {
-            let mut x: i32 = graph
-                .with(|__s| __s.edges.clone())
-                .decay()
-                .offset((i as usize))
-                .with(|__s| __s.u);
-            let mut y: i32 = graph
-                .with(|__s| __s.edges.clone())
-                .decay()
-                .offset((i as usize))
-                .with(|__s| __s.v);
-            let mut w: f64 = graph
-                .with(|__s| __s.edges.clone())
-                .decay()
-                .offset((i as usize))
-                .with(|__s| __s.weight);
-            if (({ DisjointSetImpl::find(&set.as_pointer(), x) })
-                != ({ DisjointSetImpl::find(&set.as_pointer(), y) }))
-            {
-                ({ DisjointSetImpl::merge(&set.as_pointer(), x, y) });
-                total_weight += w;
+            'for_body: {
+                let mut x: i32 = graph
+                    .with(|__s| __s.edges.clone())
+                    .decay()
+                    .offset((i as usize))
+                    .with(|__s| __s.u);
+                let mut y: i32 = graph
+                    .with(|__s| __s.edges.clone())
+                    .decay()
+                    .offset((i as usize))
+                    .with(|__s| __s.v);
+                let mut w: f64 = graph
+                    .with(|__s| __s.edges.clone())
+                    .decay()
+                    .offset((i as usize))
+                    .with(|__s| __s.weight);
+                if (({ DisjointSetImpl::find(&set.as_pointer(), x) })
+                    != ({ DisjointSetImpl::find(&set.as_pointer(), y) }))
+                {
+                    ({ DisjointSetImpl::merge(&set.as_pointer(), x, y) });
+                    total_weight += w;
+                }
             }
             i.prefix_inc();
         }
@@ -275,17 +280,19 @@ impl DisjointSetImpl for Ptr<DisjointSet> {
         {
             let mut i: i32 = 0;
             'loop_: while (i < (*self).with(|__s| __s.n)) {
-                let __rhs = i;
-                (*self)
-                    .with(|__s| __s.parent.clone())
-                    .decay()
-                    .offset((i as usize))
-                    .write(__rhs);
-                (*self)
-                    .with(|__s| __s.rank.clone())
-                    .decay()
-                    .offset((i as usize))
-                    .write(1);
+                'for_body: {
+                    let __rhs = i;
+                    (*self)
+                        .with(|__s| __s.parent.clone())
+                        .decay()
+                        .offset((i as usize))
+                        .write(__rhs);
+                    (*self)
+                        .with(|__s| __s.rank.clone())
+                        .decay()
+                        .offset((i as usize))
+                        .write(1);
+                }
                 i.postfix_inc();
             }
         }

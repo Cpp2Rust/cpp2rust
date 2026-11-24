@@ -39,17 +39,21 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: usize = 0_usize;
         'loop_: while ((i) < (tail_size)) {
-            (*(*n).x.bytes.as_mut_ptr().add((i) as usize)) = (((i) & (255_usize)) as u8);
+            'for_body: {
+                (*(*n).x.bytes.as_mut_ptr().add((i) as usize)) = (((i) & (255_usize)) as u8);
+            }
             i.postfix_inc();
         }
     }
     {
         let mut i: usize = 0_usize;
         'loop_: while ((i) < (tail_size)) {
-            assert!(
-                (((*(*n).x.bytes.as_mut_ptr().add((i) as usize)) as i32)
-                    == ((((i) & (255_usize)) as u8) as i32))
-            );
+            'for_body: {
+                assert!(
+                    (((*(*n).x.bytes.as_mut_ptr().add((i) as usize)) as i32)
+                        == ((((i) & (255_usize)) as u8) as i32))
+                );
+            }
             i.postfix_inc();
         }
     }

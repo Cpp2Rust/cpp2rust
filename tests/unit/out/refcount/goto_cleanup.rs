@@ -33,11 +33,13 @@ pub fn from_loop_1(mut n: i32) -> i32 {
             {
                 let mut i: i32 = 0;
                 'loop_: while (i < n) {
-                    if (i == 3) {
-                        ret = 7;
-                        goto!('out);
+                    'for_body: {
+                        if (i == 3) {
+                            ret = 7;
+                            goto!('out);
+                        }
+                        ret += i;
                     }
-                    ret += i;
                     i.postfix_inc();
                 }
             }

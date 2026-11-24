@@ -31,7 +31,9 @@ pub unsafe fn sum_3(mut arr: *const i32, mut n: i32) -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (n)) {
-            s += (*arr.offset((i) as isize));
+            'for_body: {
+                s += (*arr.offset((i) as isize));
+            }
             i.prefix_inc();
         }
     }

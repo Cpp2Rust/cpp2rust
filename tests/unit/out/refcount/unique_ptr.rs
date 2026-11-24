@@ -97,7 +97,9 @@ pub fn RndStuff_2() {
     {
         let mut i: i32 = 0;
         'loop_: while (i < 100) {
-            ({ (*x2.borrow()).decay().offset((i as usize)) }).write(1);
+            'for_body: {
+                ({ (*x2.borrow()).decay().offset((i as usize)) }).write(1);
+            }
             i.prefix_inc();
         }
     }
@@ -107,7 +109,9 @@ pub fn RndStuff_2() {
     {
         let mut i: i32 = 0;
         'loop_: while (i < 200) {
-            ({ (*x2.borrow()).decay().offset((i as usize)) }).write(2);
+            'for_body: {
+                ({ (*x2.borrow()).decay().offset((i as usize)) }).write(2);
+            }
             i.prefix_inc();
         }
     }
@@ -115,7 +119,9 @@ pub fn RndStuff_2() {
     {
         let mut i: i32 = 0;
         'loop_: while (i < 200) {
-            assert!(((elem!(p2, i).read()) == 2));
+            'for_body: {
+                assert!(((elem!(p2, i).read()) == 2));
+            }
             i.prefix_inc();
         }
     }
@@ -127,7 +133,9 @@ pub fn RndStuff_2() {
     {
         let mut i: i32 = 0;
         'loop_: while (i < 10) {
-            ({ (*x3.borrow()).decay().offset((i as usize)) }).write(Pair { x: 1, y: 2 });
+            'for_body: {
+                ({ (*x3.borrow()).decay().offset((i as usize)) }).write(Pair { x: 1, y: 2 });
+            }
             i.prefix_inc();
         }
     }
@@ -135,11 +143,13 @@ pub fn RndStuff_2() {
     {
         let mut i: i32 = 0;
         'loop_: while (i < 10) {
-            assert!((elem!(p3_0, i).with(|__s| __s.x) == 1));
-            assert!((elem!(p3_0, i).with(|__s| __s.y) == 2));
-            ({ PairImpl::inc(&({ (*x3.borrow()).decay().offset((i as usize)) }), 10) });
-            assert!((elem!(p3_0, i).with(|__s| __s.x) == 11));
-            assert!((elem!(p3_0, i).with(|__s| __s.y) == 12));
+            'for_body: {
+                assert!((elem!(p3_0, i).with(|__s| __s.x) == 1));
+                assert!((elem!(p3_0, i).with(|__s| __s.y) == 2));
+                ({ PairImpl::inc(&({ (*x3.borrow()).decay().offset((i as usize)) }), 10) });
+                assert!((elem!(p3_0, i).with(|__s| __s.x) == 11));
+                assert!((elem!(p3_0, i).with(|__s| __s.y) == 12));
+            }
             i.prefix_inc();
         }
     }
@@ -154,10 +164,12 @@ pub fn RndStuff_2() {
     {
         let mut i: i32 = 0;
         'loop_: while (i < 50) {
-            ({ (*x3.borrow()).decay().offset((i as usize)) }).write(Pair {
-                x: -1_i32,
-                y: -2_i32,
-            });
+            'for_body: {
+                ({ (*x3.borrow()).decay().offset((i as usize)) }).write(Pair {
+                    x: -1_i32,
+                    y: -2_i32,
+                });
+            }
             i.prefix_inc();
         }
     }
@@ -166,11 +178,13 @@ pub fn RndStuff_2() {
     {
         let mut i: i32 = 0;
         'loop_: while (i < 50) {
-            assert!((elem!(p3_1, i).with(|__s| __s.x) == -1_i32));
-            assert!((elem!(p3_1, i).with(|__s| __s.y) == -2_i32));
-            ({ PairImpl::inc(&({ (*x3.borrow()).decay().offset((i as usize)) }), -10_i32) });
-            assert!((elem!(p3_1, i).with(|__s| __s.x) == -11_i32));
-            assert!((elem!(p3_1, i).with(|__s| __s.y) == -12_i32));
+            'for_body: {
+                assert!((elem!(p3_1, i).with(|__s| __s.x) == -1_i32));
+                assert!((elem!(p3_1, i).with(|__s| __s.y) == -2_i32));
+                ({ PairImpl::inc(&({ (*x3.borrow()).decay().offset((i as usize)) }), -10_i32) });
+                assert!((elem!(p3_1, i).with(|__s| __s.x) == -11_i32));
+                assert!((elem!(p3_1, i).with(|__s| __s.y) == -12_i32));
+            }
             i.prefix_inc();
         }
     }

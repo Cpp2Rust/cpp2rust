@@ -11,7 +11,9 @@ pub unsafe fn inner_0(mut count: i32, mut ap: *const VaArg) -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (count)) {
-            total += ap.arg::<i32>();
+            'for_body: {
+                total += ap.arg::<i32>();
+            }
             i.postfix_inc();
         }
     }

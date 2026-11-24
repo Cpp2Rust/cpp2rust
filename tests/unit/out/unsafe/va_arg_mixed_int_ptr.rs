@@ -13,12 +13,14 @@ pub unsafe fn mixed_args_0(mut count: i32, __args: Box<[VaArg]>) -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (count)) {
-            let mut tag: i32 = ap.arg::<i32>();
-            if ((tag) == (0)) {
-                total += ap.arg::<i32>();
-            } else {
-                let mut ptr: *mut i32 = ap.arg::<*mut i32>();
-                total += (*ptr);
+            'for_body: {
+                let mut tag: i32 = ap.arg::<i32>();
+                if ((tag) == (0)) {
+                    total += ap.arg::<i32>();
+                } else {
+                    let mut ptr: *mut i32 = ap.arg::<*mut i32>();
+                    total += (*ptr);
+                }
             }
             i.postfix_inc();
         }

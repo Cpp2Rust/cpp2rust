@@ -19,7 +19,9 @@ fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while (i < 8) {
-            assert!(({ ((elem!(words, i).read()) as i32) } == { (((i + 1) as u16) as i32) }));
+            'for_body: {
+                assert!(({ ((elem!(words, i).read()) as i32) } == { (((i + 1) as u16) as i32) }));
+            }
             i.postfix_inc();
         }
     }

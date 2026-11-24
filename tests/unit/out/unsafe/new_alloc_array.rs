@@ -27,7 +27,9 @@ unsafe fn main_0() -> i32 {
     {
         let mut p1: *mut i32 = array;
         'loop_: while ((*p1) >= (0)) {
-            (*p1) = 1;
+            'for_body: {
+                (*p1) = 1;
+            }
             p1.prefix_inc();
         }
     }
@@ -35,7 +37,9 @@ unsafe fn main_0() -> i32 {
     {
         let mut p1: *mut i32 = array;
         'loop_: while ((*p1) >= (0)) {
-            out += (*p1);
+            'for_body: {
+                out += (*p1);
+            }
             p1.prefix_inc();
         }
     }

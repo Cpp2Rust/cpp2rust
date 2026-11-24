@@ -69,11 +69,13 @@ pub unsafe fn check_from_0(
     {
         let mut i: u32 = (len as u32);
         'loop_: while ((i as usize) < (::std::mem::size_of::<libc::sockaddr_storage>())) {
-            assert!(
-                (((*((&mut from as *mut libc::sockaddr_storage) as *mut u8).offset((i) as isize))
-                    as i32)
-                    == (165))
-            );
+            'for_body: {
+                assert!(
+                    (((*((&mut from as *mut libc::sockaddr_storage) as *mut u8)
+                        .offset((i) as isize)) as i32)
+                        == (165))
+                );
+            }
             i.prefix_inc();
         }
     }

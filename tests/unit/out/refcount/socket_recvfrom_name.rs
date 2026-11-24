@@ -76,9 +76,12 @@ pub fn check_from_0(
     {
         let mut i: u32 = ((*len.borrow()) as u32);
         'loop_: while ((i as usize) < 128usize) {
-            assert!(
-                (((elem!(((from.as_pointer()).reinterpret_cast::<u8>()), i).read()) as i32) == 165)
-            );
+            'for_body: {
+                assert!(
+                    (((elem!(((from.as_pointer()).reinterpret_cast::<u8>()), i).read()) as i32)
+                        == 165)
+                );
+            }
             i.prefix_inc();
         }
     }

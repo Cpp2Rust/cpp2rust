@@ -99,7 +99,9 @@ fn main_0() -> i32 {
     {
         let mut i: usize = 0_usize;
         'loop_: while (i < count) {
-            data[(i) as usize] = { (((i).wrapping_mul(2_usize)) as i32) };
+            'for_body: {
+                data[(i) as usize] = { (((i).wrapping_mul(2_usize)) as i32) };
+            }
             i.postfix_inc();
         }
     }
@@ -107,7 +109,9 @@ fn main_0() -> i32 {
     {
         let mut i: usize = 0_usize;
         'loop_: while (i < count) {
-            total = { (total).wrapping_add((data[(i) as usize] as usize)) };
+            'for_body: {
+                total = { (total).wrapping_add((data[(i) as usize] as usize)) };
+            }
             i.postfix_inc();
         }
     }

@@ -40,7 +40,9 @@ pub static mut g_1: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsaf
                 {
                     let mut i: i32 = 1;
                     'loop_: while ((i) <= (4)) {
-                        s += i;
+                        'for_body: {
+                            s += i;
+                        }
                         i.postfix_inc();
                     }
                 }

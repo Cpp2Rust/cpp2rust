@@ -26,7 +26,9 @@ unsafe fn main_0() -> i32 {
         {
             let mut i: i32 = 0;
             'loop_: while ((i) < (4)) {
-                (*arr.offset((i) as isize)) = ((i) * (10));
+                'for_body: {
+                    (*arr.offset((i) as isize)) = ((i) * (10));
+                }
                 i.postfix_inc();
             }
         }
@@ -54,7 +56,9 @@ unsafe fn main_0() -> i32 {
         {
             let mut i: i32 = 0;
             'loop_: while ((i) < (4)) {
-                assert!(((*zeros.offset((i) as isize)) == (0)));
+                'for_body: {
+                    assert!(((*zeros.offset((i) as isize)) == (0)));
+                }
                 i.postfix_inc();
             }
         }
@@ -81,7 +85,9 @@ unsafe fn main_0() -> i32 {
         {
             let mut i: i32 = 0;
             'loop_: while ((i) < (4)) {
-                (*arr.offset((i) as isize)) = ((i) * (10));
+                'for_body: {
+                    (*arr.offset((i) as isize)) = ((i) * (10));
+                }
                 i.postfix_inc();
             }
         }
@@ -111,7 +117,9 @@ unsafe fn main_0() -> i32 {
         {
             let mut i: i32 = 0;
             'loop_: while ((i) < (4)) {
-                assert!(((*zeros.offset((i) as isize)) == (0)));
+                'for_body: {
+                    assert!(((*zeros.offset((i) as isize)) == (0)));
+                }
                 i.postfix_inc();
             }
         }

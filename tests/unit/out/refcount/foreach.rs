@@ -15,10 +15,12 @@ fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while (i < 10) {
-            {
-                let a0_clone = i.clone();
-                (*v.borrow_mut()).push(a0_clone)
-            };
+            'for_body: {
+                {
+                    let a0_clone = i.clone();
+                    (*v.borrow_mut()).push(a0_clone)
+                };
+            }
             i.prefix_inc();
         }
     }

@@ -47,7 +47,9 @@ fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while (i < 7) {
-            assert!(({ ((*arr.borrow())[(i) as usize] <= (*arr.borrow())[(i + 1) as usize]) }));
+            'for_body: {
+                assert!(({ ((*arr.borrow())[(i) as usize] <= (*arr.borrow())[(i + 1) as usize]) }));
+            }
             i.prefix_inc();
         }
     }

@@ -11,7 +11,9 @@ pub unsafe fn sum_0(mut p: *mut i32, mut n: i32) -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (n)) {
-            total += (*p.offset((i) as isize));
+            'for_body: {
+                total += (*p.offset((i) as isize));
+            }
             i.prefix_inc();
         }
     }
@@ -41,7 +43,9 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (4)) {
-            (*filled.offset((i) as isize)) = ((i) + (1));
+            'for_body: {
+                (*filled.offset((i) as isize)) = ((i) + (1));
+            }
             i.prefix_inc();
         }
     }

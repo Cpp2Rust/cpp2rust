@@ -44,7 +44,9 @@ pub fn sum_ref_1(v: Ptr<Vec<i32>>) -> i32 {
     {
         let mut i: usize = 0_usize;
         'loop_: while ({ i } < { (*v.upgrade().deref()).len() }) {
-            s += (index!(v, i).read());
+            'for_body: {
+                s += (index!(v, i).read());
+            }
             i.prefix_inc();
         }
     }

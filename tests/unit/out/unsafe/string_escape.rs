@@ -22,11 +22,13 @@ unsafe fn main_0() -> i32 {
                 .wrapping_div((::std::mem::size_of::<libc::c_char>() as usize)))
                 as i32))
         {
-            assert!(
-                (((*special.offset((i) as isize)) as i32)
-                    == ((*std::cell::LazyCell::force_mut(&mut *&raw mut expected_0))[(i) as usize]
-                        as i32))
-            );
+            'for_body: {
+                assert!(
+                    (((*special.offset((i) as isize)) as i32)
+                        == ((*std::cell::LazyCell::force_mut(&mut *&raw mut expected_0))
+                            [(i) as usize] as i32))
+                );
+            }
             i.postfix_inc();
         }
     }

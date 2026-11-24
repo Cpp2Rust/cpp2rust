@@ -26,7 +26,9 @@ fn main_0() -> i32 {
         {
             let mut i: i32 = 0;
             'loop_: while (i < 4) {
-                elem!(arr, i).write({ (i * 10) });
+                'for_body: {
+                    elem!(arr, i).write({ (i * 10) });
+                }
                 i.postfix_inc();
             }
         }
@@ -57,7 +59,9 @@ fn main_0() -> i32 {
         {
             let mut i: i32 = 0;
             'loop_: while (i < 4) {
-                assert!(((elem!(zeros, i).read()) == 0));
+                'for_body: {
+                    assert!(((elem!(zeros, i).read()) == 0));
+                }
                 i.postfix_inc();
             }
         }
@@ -84,7 +88,9 @@ fn main_0() -> i32 {
         {
             let mut i: i32 = 0;
             'loop_: while (i < 4) {
-                elem!(arr, i).write({ (i * 10) });
+                'for_body: {
+                    elem!(arr, i).write({ (i * 10) });
+                }
                 i.postfix_inc();
             }
         }
@@ -116,7 +122,9 @@ fn main_0() -> i32 {
         {
             let mut i: i32 = 0;
             'loop_: while (i < 4) {
-                assert!(((elem!(zeros, i).read()) == 0));
+                'for_body: {
+                    assert!(((elem!(zeros, i).read()) == 0));
+                }
                 i.postfix_inc();
             }
         }

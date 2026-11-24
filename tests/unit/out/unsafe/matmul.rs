@@ -12,32 +12,36 @@ pub unsafe fn matalloc_0(mut n: i32, mut p: i32, mut e: i32) -> Option<Box<[Opti
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (n)) {
-            match (
-                (m.as_deref()
-                    .map_or(::std::ptr::null_mut(), |s| {
-                        s.as_ptr() as *mut Option<Box<[i32]>>
-                    })
-                    .add((i as usize)) as *mut Option<Box<[i32]>>),
-                (&mut Some((0..(p as usize)).map(|_| 0_i32).collect::<Box<[_]>>())
-                    as *mut Option<Box<[i32]>>),
-            ) {
-                (__tmp_0, __tmp_1) => {
-                    (*__tmp_0) = (*__tmp_1).take();
-                }
-            };
-            {
-                let mut j: i32 = 0;
-                'loop_: while ((j) < (p)) {
-                    (*(*m
-                        .as_deref()
+            'for_body: {
+                match (
+                    (m.as_deref()
                         .map_or(::std::ptr::null_mut(), |s| {
                             s.as_ptr() as *mut Option<Box<[i32]>>
                         })
-                        .add((i as usize)))
-                    .as_deref()
-                    .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
-                    .add((j as usize))) = e;
-                    j.prefix_inc();
+                        .add((i as usize)) as *mut Option<Box<[i32]>>),
+                    (&mut Some((0..(p as usize)).map(|_| 0_i32).collect::<Box<[_]>>())
+                        as *mut Option<Box<[i32]>>),
+                ) {
+                    (__tmp_0, __tmp_1) => {
+                        (*__tmp_0) = (*__tmp_1).take();
+                    }
+                };
+                {
+                    let mut j: i32 = 0;
+                    'loop_: while ((j) < (p)) {
+                        'for_body: {
+                            (*(*m
+                                .as_deref()
+                                .map_or(::std::ptr::null_mut(), |s| {
+                                    s.as_ptr() as *mut Option<Box<[i32]>>
+                                })
+                                .add((i as usize)))
+                            .as_deref()
+                            .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
+                            .add((j as usize))) = e;
+                        }
+                        j.prefix_inc();
+                    }
                 }
             }
             i.prefix_inc();
@@ -57,14 +61,41 @@ pub unsafe fn matmul_1(
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (n1)) {
-            {
-                let mut j: i32 = 0;
-                let mut sum: i32 = 0;
-                'loop_: while ((j) < (p2)) {
-                    {
-                        let mut k: i32 = 0;
-                        'loop_: while ((k) < (p1)) {
-                            sum += ((*(*m1
+            'for_body: {
+                {
+                    let mut j: i32 = 0;
+                    let mut sum: i32 = 0;
+                    'loop_: while ((j) < (p2)) {
+                        'for_body: {
+                            {
+                                let mut k: i32 = 0;
+                                'loop_: while ((k) < (p1)) {
+                                    'for_body: {
+                                        sum += ((*(*m1
+                                            .as_deref()
+                                            .map_or(::std::ptr::null_mut(), |s| {
+                                                s.as_ptr() as *mut Option<Box<[i32]>>
+                                            })
+                                            .add((i as usize)))
+                                        .as_deref()
+                                        .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
+                                        .add((k as usize)))
+                                            * (*(*m2
+                                                .as_deref()
+                                                .map_or(::std::ptr::null_mut(), |s| {
+                                                    s.as_ptr() as *mut Option<Box<[i32]>>
+                                                })
+                                                .add((k as usize)))
+                                            .as_deref()
+                                            .map_or(::std::ptr::null_mut(), |s| {
+                                                s.as_ptr() as *mut i32
+                                            })
+                                            .add((j as usize))));
+                                    }
+                                    k.prefix_inc();
+                                }
+                            }
+                            (*(*m3
                                 .as_deref()
                                 .map_or(::std::ptr::null_mut(), |s| {
                                     s.as_ptr() as *mut Option<Box<[i32]>>
@@ -72,29 +103,10 @@ pub unsafe fn matmul_1(
                                 .add((i as usize)))
                             .as_deref()
                             .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
-                            .add((k as usize)))
-                                * (*(*m2
-                                    .as_deref()
-                                    .map_or(::std::ptr::null_mut(), |s| {
-                                        s.as_ptr() as *mut Option<Box<[i32]>>
-                                    })
-                                    .add((k as usize)))
-                                .as_deref()
-                                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
-                                .add((j as usize))));
-                            k.prefix_inc();
+                            .add((j as usize))) = sum;
                         }
+                        j.prefix_inc();
                     }
-                    (*(*m3
-                        .as_deref()
-                        .map_or(::std::ptr::null_mut(), |s| {
-                            s.as_ptr() as *mut Option<Box<[i32]>>
-                        })
-                        .add((i as usize)))
-                    .as_deref()
-                    .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
-                    .add((j as usize))) = sum;
-                    j.prefix_inc();
                 }
             }
             i.prefix_inc();

@@ -20,7 +20,9 @@ pub fn Find_0(mut head: Ptr<Node>, mut idx: i32) -> Ptr<Node> {
     {
         let mut i: i32 = 0;
         'loop_: while (i < idx) {
-            curr = { curr.with(|__s| __s.next.clone()) };
+            'for_body: {
+                curr = { curr.with(|__s| __s.next.clone()) };
+            }
             i.postfix_inc();
         }
     }

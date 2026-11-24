@@ -49,14 +49,17 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (2)) {
-            assert!(
-                ((*std::cell::LazyCell::force_mut(&mut *&raw mut entries_1))[(i) as usize].p)
-                    .is_null()
-            );
-            assert!(
-                ((*std::cell::LazyCell::force_mut(&mut *&raw mut arr_of_pointers_2))[(i) as usize])
-                    .is_null()
-            );
+            'for_body: {
+                assert!(
+                    ((*std::cell::LazyCell::force_mut(&mut *&raw mut entries_1))[(i) as usize].p)
+                        .is_null()
+                );
+                assert!(
+                    ((*std::cell::LazyCell::force_mut(&mut *&raw mut arr_of_pointers_2))
+                        [(i) as usize])
+                        .is_null()
+                );
+            }
             i.prefix_inc();
         }
     }

@@ -25,7 +25,9 @@ fn main_0() -> i32 {
     {
         let mut p1: Ptr<i32> = (array).clone();
         'loop_: while ((p1.read()) >= 0) {
-            p1.write(1);
+            'for_body: {
+                p1.write(1);
+            }
             p1.prefix_inc();
         }
     }
@@ -33,7 +35,9 @@ fn main_0() -> i32 {
     {
         let mut p1: Ptr<i32> = (array).clone();
         'loop_: while ((p1.read()) >= 0) {
-            out += { (p1.read()) };
+            'for_body: {
+                out += { (p1.read()) };
+            }
             p1.prefix_inc();
         }
     }

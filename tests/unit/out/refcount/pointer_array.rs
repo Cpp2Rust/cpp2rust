@@ -28,9 +28,11 @@ pub fn IncrementAll_0(s: Ptr<StackArray>) {
     {
         let mut i: i32 = 0;
         'loop_: while (i < 3) {
-            {
-                (array_elem!(s, arr, i).read()).with_mut(|__v| *__v = *__v + 1)
-            };
+            'for_body: {
+                {
+                    (array_elem!(s, arr, i).read()).with_mut(|__v| *__v = *__v + 1)
+                };
+            }
             i.prefix_inc();
         }
     }

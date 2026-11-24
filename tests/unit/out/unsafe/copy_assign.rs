@@ -98,10 +98,12 @@ impl Holder {
         {
             let mut __i0: usize = 0_usize;
             'loop_: while ((__i0) != (2_usize)) {
-                (unsafe {
-                    let _o: *const Partial = &(*_a0).arr[(__i0)];
-                    Partial::copy_assign(&mut self.arr[(__i0)], _o)
-                });
+                'for_body: {
+                    (unsafe {
+                        let _o: *const Partial = &(*_a0).arr[(__i0)];
+                        Partial::copy_assign(&mut self.arr[(__i0)], _o)
+                    });
+                }
                 __i0.prefix_inc();
             }
         }

@@ -76,12 +76,14 @@ fn main_0() -> i32 {
     {
         let mut i: u32 = 0_u32;
         'loop_: while ((i as usize) < ((*s2.borrow()).len() - 1)) {
-            assert!(
-                ({
-                    (((elem!(p2, i).read()) as i32) == (('a' as i8) as i32))
-                        && (({ (*s2.borrow())[(i as usize)] } as i32) == (('a' as i8) as i32))
-                })
-            );
+            'for_body: {
+                assert!(
+                    ({
+                        (((elem!(p2, i).read()) as i32) == (('a' as i8) as i32))
+                            && (({ (*s2.borrow())[(i as usize)] } as i32) == (('a' as i8) as i32))
+                    })
+                );
+            }
             i.prefix_inc();
         }
     }
@@ -94,12 +96,14 @@ fn main_0() -> i32 {
     {
         let mut i: u32 = 2_u32;
         'loop_: while ((i as usize) < ((*s2.borrow()).len() - 1)) {
-            assert!(
-                ({
-                    (((elem!(p2, i).read()) as i32) == (('a' as i8) as i32))
-                        && (({ (*s2.borrow())[(i as usize)] } as i32) == (('a' as i8) as i32))
-                })
-            );
+            'for_body: {
+                assert!(
+                    ({
+                        (((elem!(p2, i).read()) as i32) == (('a' as i8) as i32))
+                            && (({ (*s2.borrow())[(i as usize)] } as i32) == (('a' as i8) as i32))
+                    })
+                );
+            }
             i.prefix_inc();
         }
     }
@@ -115,13 +119,15 @@ fn main_0() -> i32 {
     {
         let mut i: u32 = 0_u32;
         'loop_: while ((i as usize) < ((*s3.borrow()).len() - 1)) {
-            assert!(
-                ({
-                    ({ ((elem!(p3, i).read()) as i32) } == {
-                        ({ (*s3.borrow())[(i as usize)] } as i32)
+            'for_body: {
+                assert!(
+                    ({
+                        ({ ((elem!(p3, i).read()) as i32) } == {
+                            ({ (*s3.borrow())[(i as usize)] } as i32)
+                        })
                     })
-                })
-            );
+                );
+            }
             i.prefix_inc();
         }
     }
@@ -149,13 +155,15 @@ fn main_0() -> i32 {
     {
         let mut i: u32 = 0_u32;
         'loop_: while ((i as usize) < ((*s4.borrow()).len() - 1)) {
-            assert!(
-                ({
-                    ({ ((elem!(p4, i).read()) as i32) } == {
-                        ({ (*s4.borrow())[(i as usize)] } as i32)
+            'for_body: {
+                assert!(
+                    ({
+                        ({ ((elem!(p4, i).read()) as i32) } == {
+                            ({ (*s4.borrow())[(i as usize)] } as i32)
+                        })
                     })
-                })
-            );
+                );
+            }
             i.prefix_inc();
         }
     }
@@ -172,13 +180,15 @@ fn main_0() -> i32 {
     {
         let mut i: u32 = 0_u32;
         'loop_: while ((i as usize) < ((*s5.borrow()).len() - 1)) {
-            assert!(
-                ({
-                    ({ ((elem!(p5, i).read()) as i32) } == {
-                        ({ (*s5.borrow())[(i as usize)] } as i32)
+            'for_body: {
+                assert!(
+                    ({
+                        ({ ((elem!(p5, i).read()) as i32) } == {
+                            ({ (*s5.borrow())[(i as usize)] } as i32)
+                        })
                     })
-                })
-            );
+                );
+            }
             i.prefix_inc();
         }
     }

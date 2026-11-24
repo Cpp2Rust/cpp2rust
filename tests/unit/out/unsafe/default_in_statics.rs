@@ -95,11 +95,13 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (3)) {
-            assert!(
-                ((*std::cell::LazyCell::force_mut(&mut *&raw mut static_outer_1)).arr
-                    [(i) as usize])
-                    .is_null()
-            );
+            'for_body: {
+                assert!(
+                    ((*std::cell::LazyCell::force_mut(&mut *&raw mut static_outer_1)).arr
+                        [(i) as usize])
+                        .is_null()
+                );
+            }
             i.prefix_inc();
         }
     }
@@ -112,12 +114,14 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (2)) {
-            assert!(
-                ((*std::cell::LazyCell::force_mut(&mut *&raw mut static_inner_array_2))
-                    [(i) as usize]
-                    .name)
-                    .is_null()
-            );
+            'for_body: {
+                assert!(
+                    ((*std::cell::LazyCell::force_mut(&mut *&raw mut static_inner_array_2))
+                        [(i) as usize]
+                        .name)
+                        .is_null()
+                );
+            }
             i.prefix_inc();
         }
     }
@@ -128,24 +132,26 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (2)) {
-            assert!(
-                ((*std::cell::LazyCell::force_mut(&mut *&raw mut static_foo_array_4))
-                    [(i) as usize]
-                    .s2)
-                    .is_null()
-            );
-            assert!(
-                ((*std::cell::LazyCell::force_mut(&mut *&raw mut static_foo_array_4))
-                    [(i) as usize]
-                    .fn1)
-                    .is_none()
-            );
-            assert!(
-                ((*std::cell::LazyCell::force_mut(&mut *&raw mut static_foo_array_4))
-                    [(i) as usize]
-                    .fn2)
-                    .is_none()
-            );
+            'for_body: {
+                assert!(
+                    ((*std::cell::LazyCell::force_mut(&mut *&raw mut static_foo_array_4))
+                        [(i) as usize]
+                        .s2)
+                        .is_null()
+                );
+                assert!(
+                    ((*std::cell::LazyCell::force_mut(&mut *&raw mut static_foo_array_4))
+                        [(i) as usize]
+                        .fn1)
+                        .is_none()
+                );
+                assert!(
+                    ((*std::cell::LazyCell::force_mut(&mut *&raw mut static_foo_array_4))
+                        [(i) as usize]
+                        .fn2)
+                        .is_none()
+                );
+            }
             i.prefix_inc();
         }
     }

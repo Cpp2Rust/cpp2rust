@@ -881,214 +881,220 @@ fn main_0() -> i32 {
     {
         let mut hit: i32 = 0;
         'loop_: while (hit < 2) {
-            let values: Value<Map<i32, (Value<i32>, Value<i32>)>> =
-                Rc::new(RefCell::new(Map::new()));
-            let keys: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([0, 1, 2, 3, 4, 5])));
-            if (hit != 0) {
+            'for_body: {
+                let values: Value<Map<i32, (Value<i32>, Value<i32>)>> =
+                    Rc::new(RefCell::new(Map::new()));
+                let keys: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([0, 1, 2, 3, 4, 5])));
+                if (hit != 0) {
+                    'loop_: for k in
+                        IterRange::new(keys.decay(), keys.decay().offset((6_i64) as isize))
+                    {
+                        let k: Value<i32> = Rc::new(RefCell::new((k.read())));
+                        ({ (*values.borrow_mut()).subscript(k.as_pointer(), || 0_i32) }).write(42);
+                    }
+                }
+                let moved: Value<i32> = Rc::new(RefCell::new(0));
+                let forwarded: Value<i32> = Rc::new(RefCell::new(0));
+                let xvalue: Value<i32> = Rc::new(RefCell::new(0));
+                let lvalue: Value<i32> = Rc::new(RefCell::new(0));
+                let assigned: Value<i32> = Rc::new(RefCell::new(0));
+                let nested: Value<i32> = Rc::new(RefCell::new(0));
+                let r0: Value<(
+                    Value<BidirectionalIterator<(Value<i32>, Value<i32>)>>,
+                    Value<bool>,
+                )> = Rc::new(RefCell::new(
+                    match ({
+                        let __tmp_48 = moved.as_pointer();
+                        __tmp_48.with_mut(|__v| {
+                            __v.prefix_inc();
+                        });
+                        __tmp_48
+                    },)
+                    {
+                        (__tmp_47,) => {
+                            let (__it, __inserted) =
+                                Map::emplace(values.as_pointer(), &keys.decay().offset(0), || {
+                                    (
+                                        Rc::new(RefCell::new(keys.decay().offset(0).read())),
+                                        Rc::new(RefCell::new((__tmp_47.read()))),
+                                    )
+                                });
+                            (
+                                Rc::new(RefCell::new(__it)),
+                                Rc::new(RefCell::new(__inserted)),
+                            )
+                        }
+                    },
+                ));
+                let r1: Value<(
+                    Value<BidirectionalIterator<(Value<i32>, Value<i32>)>>,
+                    Value<bool>,
+                )> = Rc::new(RefCell::new(
+                    match ({
+                        let __tmp_50 = forwarded.as_pointer();
+                        __tmp_50.with_mut(|__v| {
+                            __v.prefix_inc();
+                        });
+                        __tmp_50
+                    },)
+                    {
+                        (__tmp_49,) => {
+                            let (__it, __inserted) =
+                                Map::emplace(values.as_pointer(), &keys.decay().offset(1), || {
+                                    (
+                                        Rc::new(RefCell::new(keys.decay().offset(1).read())),
+                                        Rc::new(RefCell::new((__tmp_49.read()))),
+                                    )
+                                });
+                            (
+                                Rc::new(RefCell::new(__it)),
+                                Rc::new(RefCell::new(__inserted)),
+                            )
+                        }
+                    },
+                ));
+                let r2: Value<(
+                    Value<BidirectionalIterator<(Value<i32>, Value<i32>)>>,
+                    Value<bool>,
+                )> = Rc::new(RefCell::new(
+                    match ({
+                        let __tmp_52 = xvalue.as_pointer();
+                        __tmp_52.with_mut(|__v| {
+                            __v.prefix_inc();
+                        });
+                        __tmp_52
+                    },)
+                    {
+                        (__tmp_51,) => {
+                            let (__it, __inserted) =
+                                Map::emplace(values.as_pointer(), &keys.decay().offset(2), || {
+                                    (
+                                        Rc::new(RefCell::new(keys.decay().offset(2).read())),
+                                        Rc::new(RefCell::new((__tmp_51.read()))),
+                                    )
+                                });
+                            (
+                                Rc::new(RefCell::new(__it)),
+                                Rc::new(RefCell::new(__inserted)),
+                            )
+                        }
+                    },
+                ));
+                let r3: Value<(
+                    Value<BidirectionalIterator<(Value<i32>, Value<i32>)>>,
+                    Value<bool>,
+                )> = Rc::new(RefCell::new(
+                    match ({
+                        let __tmp_54 = lvalue.as_pointer();
+                        __tmp_54.with_mut(|__v| {
+                            __v.prefix_inc();
+                        });
+                        __tmp_54
+                    },)
+                    {
+                        (__tmp_53,) => {
+                            let (__it, __inserted) =
+                                Map::emplace(values.as_pointer(), &keys.decay().offset(3), || {
+                                    (
+                                        Rc::new(RefCell::new(keys.decay().offset(3).read())),
+                                        Rc::new(RefCell::new((__tmp_53.read()))),
+                                    )
+                                });
+                            (
+                                Rc::new(RefCell::new(__it)),
+                                Rc::new(RefCell::new(__inserted)),
+                            )
+                        }
+                    },
+                ));
+                let r4: Value<(
+                    Value<BidirectionalIterator<(Value<i32>, Value<i32>)>>,
+                    Value<bool>,
+                )> = Rc::new(RefCell::new(
+                    match (match ({ 5 }, assigned.as_pointer()) {
+                        (__tmp_57, __tmp_56) => {
+                            __tmp_56.write(__tmp_57);
+                            __tmp_56
+                        }
+                    },)
+                    {
+                        (__tmp_55,) => {
+                            let (__it, __inserted) =
+                                Map::emplace(values.as_pointer(), &keys.decay().offset(4), || {
+                                    (
+                                        Rc::new(RefCell::new(keys.decay().offset(4).read())),
+                                        Rc::new(RefCell::new((__tmp_55.read()))),
+                                    )
+                                });
+                            (
+                                Rc::new(RefCell::new(__it)),
+                                Rc::new(RefCell::new(__inserted)),
+                            )
+                        }
+                    },
+                ));
+                let r5: Value<(
+                    Value<BidirectionalIterator<(Value<i32>, Value<i32>)>>,
+                    Value<bool>,
+                )> = Rc::new(RefCell::new(
+                    match (match ({ 1 }, nested.as_pointer()) {
+                        (__tmp_60, __tmp_59) => {
+                            __tmp_59.with_mut(|__v| {
+                                *__v = (((*__v) as i32) + (__tmp_60 as i32)) as i32
+                            });
+                            __tmp_59
+                        }
+                    },)
+                    {
+                        (__tmp_58,) => {
+                            let (__it, __inserted) =
+                                Map::emplace(values.as_pointer(), &keys.decay().offset(5), || {
+                                    (
+                                        Rc::new(RefCell::new(keys.decay().offset(5).read())),
+                                        Rc::new(RefCell::new((__tmp_58.read()))),
+                                    )
+                                });
+                            (
+                                Rc::new(RefCell::new(__it)),
+                                Rc::new(RefCell::new(__inserted)),
+                            )
+                        }
+                    },
+                ));
+                assert!(
+                    ({
+                        ((((((*moved.borrow()) == 1) && ((*forwarded.borrow()) == 1))
+                            && ((*xvalue.borrow()) == 1))
+                            && ((*lvalue.borrow()) == 1))
+                            && ((*assigned.borrow()) == 5))
+                            && ((*nested.borrow()) == 1)
+                    })
+                );
+                assert!(
+                    ({
+                        (((((((*(*r0.borrow()).1.borrow()) as i32) == (!(hit != 0) as i32))
+                            && (((*(*r1.borrow()).1.borrow()) as i32) == (!(hit != 0) as i32)))
+                            && (((*(*r2.borrow()).1.borrow()) as i32) == (!(hit != 0) as i32)))
+                            && (((*(*r3.borrow()).1.borrow()) as i32) == (!(hit != 0) as i32)))
+                            && (((*(*r4.borrow()).1.borrow()) as i32) == (!(hit != 0) as i32)))
+                            && (((*(*r5.borrow()).1.borrow()) as i32) == (!(hit != 0) as i32))
+                    })
+                );
                 'loop_: for k in IterRange::new(keys.decay(), keys.decay().offset((6_i64) as isize))
                 {
                     let k: Value<i32> = Rc::new(RefCell::new((k.read())));
-                    ({ (*values.borrow_mut()).subscript(k.as_pointer(), || 0_i32) }).write(42);
+                    assert!(
+                        ({
+                            ((({ (*values.borrow_mut()).subscript(k.as_pointer(), || 0_i32) })
+                                .read())
+                                == (if (hit != 0) {
+                                    42
+                                } else {
+                                    if ((*k.borrow()) == 4) { 5 } else { 1 }
+                                }))
+                        })
+                    );
                 }
-            }
-            let moved: Value<i32> = Rc::new(RefCell::new(0));
-            let forwarded: Value<i32> = Rc::new(RefCell::new(0));
-            let xvalue: Value<i32> = Rc::new(RefCell::new(0));
-            let lvalue: Value<i32> = Rc::new(RefCell::new(0));
-            let assigned: Value<i32> = Rc::new(RefCell::new(0));
-            let nested: Value<i32> = Rc::new(RefCell::new(0));
-            let r0: Value<(
-                Value<BidirectionalIterator<(Value<i32>, Value<i32>)>>,
-                Value<bool>,
-            )> = Rc::new(RefCell::new(
-                match ({
-                    let __tmp_48 = moved.as_pointer();
-                    __tmp_48.with_mut(|__v| {
-                        __v.prefix_inc();
-                    });
-                    __tmp_48
-                },)
-                {
-                    (__tmp_47,) => {
-                        let (__it, __inserted) =
-                            Map::emplace(values.as_pointer(), &keys.decay().offset(0), || {
-                                (
-                                    Rc::new(RefCell::new(keys.decay().offset(0).read())),
-                                    Rc::new(RefCell::new((__tmp_47.read()))),
-                                )
-                            });
-                        (
-                            Rc::new(RefCell::new(__it)),
-                            Rc::new(RefCell::new(__inserted)),
-                        )
-                    }
-                },
-            ));
-            let r1: Value<(
-                Value<BidirectionalIterator<(Value<i32>, Value<i32>)>>,
-                Value<bool>,
-            )> = Rc::new(RefCell::new(
-                match ({
-                    let __tmp_50 = forwarded.as_pointer();
-                    __tmp_50.with_mut(|__v| {
-                        __v.prefix_inc();
-                    });
-                    __tmp_50
-                },)
-                {
-                    (__tmp_49,) => {
-                        let (__it, __inserted) =
-                            Map::emplace(values.as_pointer(), &keys.decay().offset(1), || {
-                                (
-                                    Rc::new(RefCell::new(keys.decay().offset(1).read())),
-                                    Rc::new(RefCell::new((__tmp_49.read()))),
-                                )
-                            });
-                        (
-                            Rc::new(RefCell::new(__it)),
-                            Rc::new(RefCell::new(__inserted)),
-                        )
-                    }
-                },
-            ));
-            let r2: Value<(
-                Value<BidirectionalIterator<(Value<i32>, Value<i32>)>>,
-                Value<bool>,
-            )> = Rc::new(RefCell::new(
-                match ({
-                    let __tmp_52 = xvalue.as_pointer();
-                    __tmp_52.with_mut(|__v| {
-                        __v.prefix_inc();
-                    });
-                    __tmp_52
-                },)
-                {
-                    (__tmp_51,) => {
-                        let (__it, __inserted) =
-                            Map::emplace(values.as_pointer(), &keys.decay().offset(2), || {
-                                (
-                                    Rc::new(RefCell::new(keys.decay().offset(2).read())),
-                                    Rc::new(RefCell::new((__tmp_51.read()))),
-                                )
-                            });
-                        (
-                            Rc::new(RefCell::new(__it)),
-                            Rc::new(RefCell::new(__inserted)),
-                        )
-                    }
-                },
-            ));
-            let r3: Value<(
-                Value<BidirectionalIterator<(Value<i32>, Value<i32>)>>,
-                Value<bool>,
-            )> = Rc::new(RefCell::new(
-                match ({
-                    let __tmp_54 = lvalue.as_pointer();
-                    __tmp_54.with_mut(|__v| {
-                        __v.prefix_inc();
-                    });
-                    __tmp_54
-                },)
-                {
-                    (__tmp_53,) => {
-                        let (__it, __inserted) =
-                            Map::emplace(values.as_pointer(), &keys.decay().offset(3), || {
-                                (
-                                    Rc::new(RefCell::new(keys.decay().offset(3).read())),
-                                    Rc::new(RefCell::new((__tmp_53.read()))),
-                                )
-                            });
-                        (
-                            Rc::new(RefCell::new(__it)),
-                            Rc::new(RefCell::new(__inserted)),
-                        )
-                    }
-                },
-            ));
-            let r4: Value<(
-                Value<BidirectionalIterator<(Value<i32>, Value<i32>)>>,
-                Value<bool>,
-            )> = Rc::new(RefCell::new(
-                match (match ({ 5 }, assigned.as_pointer()) {
-                    (__tmp_57, __tmp_56) => {
-                        __tmp_56.write(__tmp_57);
-                        __tmp_56
-                    }
-                },)
-                {
-                    (__tmp_55,) => {
-                        let (__it, __inserted) =
-                            Map::emplace(values.as_pointer(), &keys.decay().offset(4), || {
-                                (
-                                    Rc::new(RefCell::new(keys.decay().offset(4).read())),
-                                    Rc::new(RefCell::new((__tmp_55.read()))),
-                                )
-                            });
-                        (
-                            Rc::new(RefCell::new(__it)),
-                            Rc::new(RefCell::new(__inserted)),
-                        )
-                    }
-                },
-            ));
-            let r5: Value<(
-                Value<BidirectionalIterator<(Value<i32>, Value<i32>)>>,
-                Value<bool>,
-            )> = Rc::new(RefCell::new(
-                match (match ({ 1 }, nested.as_pointer()) {
-                    (__tmp_60, __tmp_59) => {
-                        __tmp_59
-                            .with_mut(|__v| *__v = (((*__v) as i32) + (__tmp_60 as i32)) as i32);
-                        __tmp_59
-                    }
-                },)
-                {
-                    (__tmp_58,) => {
-                        let (__it, __inserted) =
-                            Map::emplace(values.as_pointer(), &keys.decay().offset(5), || {
-                                (
-                                    Rc::new(RefCell::new(keys.decay().offset(5).read())),
-                                    Rc::new(RefCell::new((__tmp_58.read()))),
-                                )
-                            });
-                        (
-                            Rc::new(RefCell::new(__it)),
-                            Rc::new(RefCell::new(__inserted)),
-                        )
-                    }
-                },
-            ));
-            assert!(
-                ({
-                    ((((((*moved.borrow()) == 1) && ((*forwarded.borrow()) == 1))
-                        && ((*xvalue.borrow()) == 1))
-                        && ((*lvalue.borrow()) == 1))
-                        && ((*assigned.borrow()) == 5))
-                        && ((*nested.borrow()) == 1)
-                })
-            );
-            assert!(
-                ({
-                    (((((((*(*r0.borrow()).1.borrow()) as i32) == (!(hit != 0) as i32))
-                        && (((*(*r1.borrow()).1.borrow()) as i32) == (!(hit != 0) as i32)))
-                        && (((*(*r2.borrow()).1.borrow()) as i32) == (!(hit != 0) as i32)))
-                        && (((*(*r3.borrow()).1.borrow()) as i32) == (!(hit != 0) as i32)))
-                        && (((*(*r4.borrow()).1.borrow()) as i32) == (!(hit != 0) as i32)))
-                        && (((*(*r5.borrow()).1.borrow()) as i32) == (!(hit != 0) as i32))
-                })
-            );
-            'loop_: for k in IterRange::new(keys.decay(), keys.decay().offset((6_i64) as isize)) {
-                let k: Value<i32> = Rc::new(RefCell::new((k.read())));
-                assert!(
-                    ({
-                        ((({ (*values.borrow_mut()).subscript(k.as_pointer(), || 0_i32) }).read())
-                            == (if (hit != 0) {
-                                42
-                            } else {
-                                if ((*k.borrow()) == 4) { 5 } else { 1 }
-                            }))
-                    })
-                );
             }
             hit.prefix_inc();
         }
@@ -1096,423 +1102,399 @@ fn main_0() -> i32 {
     {
         let mut hit: i32 = 0;
         'loop_: while (hit < 2) {
-            {
-                let mut choose: i32 = 0;
-                'loop_: while (choose < 2) {
-                    let selected: Value<Map<i32, (Value<i32>, Value<Item>)>> =
-                        Rc::new(RefCell::new(Map::new()));
-                    let keys: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([0, 1, 2])));
-                    if (hit != 0) {
-                        'loop_: for k in
-                            IterRange::new(keys.decay(), keys.decay().offset((3_i64) as isize))
-                        {
-                            let k: Value<i32> = Rc::new(RefCell::new((k.read())));
-                            field!(
+            'for_body: {
+                {
+                    let mut choose: i32 = 0;
+                    'loop_: while (choose < 2) {
+                        'for_body: {
+                            let selected: Value<Map<i32, (Value<i32>, Value<Item>)>> =
+                                Rc::new(RefCell::new(Map::new()));
+                            let keys: Value<Box<[i32]>> =
+                                Rc::new(RefCell::new(Box::new([0, 1, 2])));
+                            if (hit != 0) {
+                                'loop_: for k in IterRange::new(
+                                    keys.decay(),
+                                    keys.decay().offset((3_i64) as isize),
+                                ) {
+                                    let k: Value<i32> = Rc::new(RefCell::new((k.read())));
+                                    field!(
+                                        ({
+                                            (*selected.borrow_mut())
+                                                .subscript(k.as_pointer(), || <Item>::default())
+                                        }),
+                                        value
+                                    )
+                                    .write(42);
+                                }
+                            }
+                            let a: Value<i32> = Rc::new(RefCell::new(0));
+                            let b: Value<i32> = Rc::new(RefCell::new(0));
+                            let c: Value<i32> = Rc::new(RefCell::new(0));
+                            let d: Value<i32> = Rc::new(RefCell::new(0));
+                            let e: Value<i32> = Rc::new(RefCell::new(0));
+                            let f: Value<i32> = Rc::new(RefCell::new(0));
+                            let prefix: Value<(
+                                Value<BidirectionalIterator<(Value<i32>, Value<Item>)>>,
+                                Value<bool>,
+                            )> = Rc::new(RefCell::new(
+                                match (if (choose != 0) {
+                                    {
+                                        let __tmp_62 = a.as_pointer();
+                                        __tmp_62.with_mut(|__v| {
+                                            __v.prefix_inc();
+                                        });
+                                        __tmp_62
+                                    }
+                                } else {
+                                    {
+                                        let __tmp_63 = b.as_pointer();
+                                        __tmp_63.with_mut(|__v| {
+                                            __v.prefix_inc();
+                                        });
+                                        __tmp_63
+                                    }
+                                },)
+                                {
+                                    (__tmp_61,) => {
+                                        let (__it, __inserted) = Map::emplace(
+                                            selected.as_pointer(),
+                                            &keys.decay().offset(0),
+                                            || {
+                                                (
+                                                    Rc::new(RefCell::new(
+                                                        keys.decay().offset(0).read(),
+                                                    )),
+                                                    Rc::new(RefCell::new(Item::new_2(
+                                                        { (__tmp_61).clone() },
+                                                        { 2 },
+                                                    ))),
+                                                )
+                                            },
+                                        );
+                                        (
+                                            Rc::new(RefCell::new(__it)),
+                                            Rc::new(RefCell::new(__inserted)),
+                                        )
+                                    }
+                                },
+                            ));
+                            let assignment: Value<(
+                                Value<BidirectionalIterator<(Value<i32>, Value<Item>)>>,
+                                Value<bool>,
+                            )> = Rc::new(RefCell::new(
+                                match (if (choose != 0) {
+                                    (match ({ 5 }, c.as_pointer()) {
+                                        (__tmp_66, __tmp_65) => {
+                                            __tmp_65.write(__tmp_66);
+                                            __tmp_65
+                                        }
+                                    })
+                                } else {
+                                    (match ({ 6 }, d.as_pointer()) {
+                                        (__tmp_68, __tmp_67) => {
+                                            __tmp_67.write(__tmp_68);
+                                            __tmp_67
+                                        }
+                                    })
+                                },)
+                                {
+                                    (__tmp_64,) => {
+                                        let (__it, __inserted) = Map::emplace(
+                                            selected.as_pointer(),
+                                            &keys.decay().offset(1),
+                                            || {
+                                                (
+                                                    Rc::new(RefCell::new(
+                                                        keys.decay().offset(1).read(),
+                                                    )),
+                                                    Rc::new(RefCell::new(Item::new_2(
+                                                        { (__tmp_64).clone() },
+                                                        { 2 },
+                                                    ))),
+                                                )
+                                            },
+                                        );
+                                        (
+                                            Rc::new(RefCell::new(__it)),
+                                            Rc::new(RefCell::new(__inserted)),
+                                        )
+                                    }
+                                },
+                            ));
+                            let compound: Value<(
+                                Value<BidirectionalIterator<(Value<i32>, Value<Item>)>>,
+                                Value<bool>,
+                            )> = Rc::new(RefCell::new(
+                                match (if (choose != 0) {
+                                    (match ({ 1 }, e.as_pointer()) {
+                                        (__tmp_71, __tmp_70) => {
+                                            __tmp_70.with_mut(|__v| {
+                                                *__v = (((*__v) as i32) + (__tmp_71 as i32)) as i32
+                                            });
+                                            __tmp_70
+                                        }
+                                    })
+                                } else {
+                                    (match ({ 2 }, f.as_pointer()) {
+                                        (__tmp_73, __tmp_72) => {
+                                            __tmp_72.with_mut(|__v| {
+                                                *__v = (((*__v) as i32) + (__tmp_73 as i32)) as i32
+                                            });
+                                            __tmp_72
+                                        }
+                                    })
+                                },)
+                                {
+                                    (__tmp_69,) => {
+                                        let (__it, __inserted) = Map::emplace(
+                                            selected.as_pointer(),
+                                            &keys.decay().offset(2),
+                                            || {
+                                                (
+                                                    Rc::new(RefCell::new(
+                                                        keys.decay().offset(2).read(),
+                                                    )),
+                                                    Rc::new(RefCell::new(Item::new_2(
+                                                        { (__tmp_69).clone() },
+                                                        { 2 },
+                                                    ))),
+                                                )
+                                            },
+                                        );
+                                        (
+                                            Rc::new(RefCell::new(__it)),
+                                            Rc::new(RefCell::new(__inserted)),
+                                        )
+                                    }
+                                },
+                            ));
+                            assert!(
                                 ({
-                                    (*selected.borrow_mut())
-                                        .subscript(k.as_pointer(), || <Item>::default())
-                                }),
-                                value
-                            )
-                            .write(42);
+                                    ((*a.borrow())
+                                        == (if (choose != 0) {
+                                            (if (hit != 0) { 1 } else { 3 })
+                                        } else {
+                                            0
+                                        }))
+                                        && ((*b.borrow())
+                                            == (if (choose != 0) {
+                                                0
+                                            } else {
+                                                (if (hit != 0) { 1 } else { 3 })
+                                            }))
+                                })
+                            );
+                            assert!(
+                                ({
+                                    ((*c.borrow())
+                                        == (if (choose != 0) {
+                                            (if (hit != 0) { 5 } else { 7 })
+                                        } else {
+                                            0
+                                        }))
+                                        && ((*d.borrow())
+                                            == (if (choose != 0) {
+                                                0
+                                            } else {
+                                                (if (hit != 0) { 6 } else { 8 })
+                                            }))
+                                })
+                            );
+                            assert!(
+                                ({
+                                    ((*e.borrow())
+                                        == (if (choose != 0) {
+                                            (if (hit != 0) { 1 } else { 3 })
+                                        } else {
+                                            0
+                                        }))
+                                        && ((*f.borrow())
+                                            == (if (choose != 0) {
+                                                0
+                                            } else {
+                                                (if (hit != 0) { 2 } else { 4 })
+                                            }))
+                                })
+                            );
+                            assert!(
+                                ({
+                                    ((((*(*prefix.borrow()).1.borrow()) as i32)
+                                        == (!(hit != 0) as i32))
+                                        && (((*(*assignment.borrow()).1.borrow()) as i32)
+                                            == (!(hit != 0) as i32)))
+                                        && (((*(*compound.borrow()).1.borrow()) as i32)
+                                            == (!(hit != 0) as i32))
+                                })
+                            );
+                            assert!(
+                                ({
+                                    (({ (*(*prefix.borrow()).0.borrow()).iter_deref() })
+                                        .with(|__s| (*__s.1.borrow()).value)
+                                        == (if (hit != 0) { 42 } else { 3 }))
+                                })
+                            );
+                            assert!(
+                                ({
+                                    (({ (*(*assignment.borrow()).0.borrow()).iter_deref() })
+                                        .with(|__s| (*__s.1.borrow()).value)
+                                        == (if (hit != 0) {
+                                            42
+                                        } else {
+                                            if (choose != 0) { 7 } else { 8 }
+                                        }))
+                                })
+                            );
+                            assert!(
+                                ({
+                                    (({ (*(*compound.borrow()).0.borrow()).iter_deref() })
+                                        .with(|__s| (*__s.1.borrow()).value)
+                                        == (if (hit != 0) {
+                                            42
+                                        } else {
+                                            if (choose != 0) { 3 } else { 4 }
+                                        }))
+                                })
+                            );
                         }
-                    }
-                    let a: Value<i32> = Rc::new(RefCell::new(0));
-                    let b: Value<i32> = Rc::new(RefCell::new(0));
-                    let c: Value<i32> = Rc::new(RefCell::new(0));
-                    let d: Value<i32> = Rc::new(RefCell::new(0));
-                    let e: Value<i32> = Rc::new(RefCell::new(0));
-                    let f: Value<i32> = Rc::new(RefCell::new(0));
-                    let prefix: Value<(
-                        Value<BidirectionalIterator<(Value<i32>, Value<Item>)>>,
-                        Value<bool>,
-                    )> = Rc::new(RefCell::new(
-                        match (if (choose != 0) {
-                            {
-                                let __tmp_62 = a.as_pointer();
-                                __tmp_62.with_mut(|__v| {
-                                    __v.prefix_inc();
-                                });
-                                __tmp_62
-                            }
-                        } else {
-                            {
-                                let __tmp_63 = b.as_pointer();
-                                __tmp_63.with_mut(|__v| {
-                                    __v.prefix_inc();
-                                });
-                                __tmp_63
-                            }
-                        },)
-                        {
-                            (__tmp_61,) => {
-                                let (__it, __inserted) = Map::emplace(
-                                    selected.as_pointer(),
-                                    &keys.decay().offset(0),
-                                    || {
-                                        (
-                                            Rc::new(RefCell::new(keys.decay().offset(0).read())),
-                                            Rc::new(RefCell::new(Item::new_2(
-                                                { (__tmp_61).clone() },
-                                                { 2 },
-                                            ))),
-                                        )
-                                    },
-                                );
-                                (
-                                    Rc::new(RefCell::new(__it)),
-                                    Rc::new(RefCell::new(__inserted)),
-                                )
-                            }
-                        },
-                    ));
-                    let assignment: Value<(
-                        Value<BidirectionalIterator<(Value<i32>, Value<Item>)>>,
-                        Value<bool>,
-                    )> = Rc::new(RefCell::new(
-                        match (if (choose != 0) {
-                            (match ({ 5 }, c.as_pointer()) {
-                                (__tmp_66, __tmp_65) => {
-                                    __tmp_65.write(__tmp_66);
-                                    __tmp_65
-                                }
-                            })
-                        } else {
-                            (match ({ 6 }, d.as_pointer()) {
-                                (__tmp_68, __tmp_67) => {
-                                    __tmp_67.write(__tmp_68);
-                                    __tmp_67
-                                }
-                            })
-                        },)
-                        {
-                            (__tmp_64,) => {
-                                let (__it, __inserted) = Map::emplace(
-                                    selected.as_pointer(),
-                                    &keys.decay().offset(1),
-                                    || {
-                                        (
-                                            Rc::new(RefCell::new(keys.decay().offset(1).read())),
-                                            Rc::new(RefCell::new(Item::new_2(
-                                                { (__tmp_64).clone() },
-                                                { 2 },
-                                            ))),
-                                        )
-                                    },
-                                );
-                                (
-                                    Rc::new(RefCell::new(__it)),
-                                    Rc::new(RefCell::new(__inserted)),
-                                )
-                            }
-                        },
-                    ));
-                    let compound: Value<(
-                        Value<BidirectionalIterator<(Value<i32>, Value<Item>)>>,
-                        Value<bool>,
-                    )> = Rc::new(RefCell::new(
-                        match (if (choose != 0) {
-                            (match ({ 1 }, e.as_pointer()) {
-                                (__tmp_71, __tmp_70) => {
-                                    __tmp_70.with_mut(|__v| {
-                                        *__v = (((*__v) as i32) + (__tmp_71 as i32)) as i32
-                                    });
-                                    __tmp_70
-                                }
-                            })
-                        } else {
-                            (match ({ 2 }, f.as_pointer()) {
-                                (__tmp_73, __tmp_72) => {
-                                    __tmp_72.with_mut(|__v| {
-                                        *__v = (((*__v) as i32) + (__tmp_73 as i32)) as i32
-                                    });
-                                    __tmp_72
-                                }
-                            })
-                        },)
-                        {
-                            (__tmp_69,) => {
-                                let (__it, __inserted) = Map::emplace(
-                                    selected.as_pointer(),
-                                    &keys.decay().offset(2),
-                                    || {
-                                        (
-                                            Rc::new(RefCell::new(keys.decay().offset(2).read())),
-                                            Rc::new(RefCell::new(Item::new_2(
-                                                { (__tmp_69).clone() },
-                                                { 2 },
-                                            ))),
-                                        )
-                                    },
-                                );
-                                (
-                                    Rc::new(RefCell::new(__it)),
-                                    Rc::new(RefCell::new(__inserted)),
-                                )
-                            }
-                        },
-                    ));
-                    assert!(
-                        ({
-                            ((*a.borrow())
-                                == (if (choose != 0) {
-                                    (if (hit != 0) { 1 } else { 3 })
-                                } else {
-                                    0
-                                }))
-                                && ((*b.borrow())
-                                    == (if (choose != 0) {
-                                        0
-                                    } else {
-                                        (if (hit != 0) { 1 } else { 3 })
-                                    }))
-                        })
-                    );
-                    assert!(
-                        ({
-                            ((*c.borrow())
-                                == (if (choose != 0) {
-                                    (if (hit != 0) { 5 } else { 7 })
-                                } else {
-                                    0
-                                }))
-                                && ((*d.borrow())
-                                    == (if (choose != 0) {
-                                        0
-                                    } else {
-                                        (if (hit != 0) { 6 } else { 8 })
-                                    }))
-                        })
-                    );
-                    assert!(
-                        ({
-                            ((*e.borrow())
-                                == (if (choose != 0) {
-                                    (if (hit != 0) { 1 } else { 3 })
-                                } else {
-                                    0
-                                }))
-                                && ((*f.borrow())
-                                    == (if (choose != 0) {
-                                        0
-                                    } else {
-                                        (if (hit != 0) { 2 } else { 4 })
-                                    }))
-                        })
-                    );
-                    assert!(
-                        ({
-                            ((((*(*prefix.borrow()).1.borrow()) as i32) == (!(hit != 0) as i32))
-                                && (((*(*assignment.borrow()).1.borrow()) as i32)
-                                    == (!(hit != 0) as i32)))
-                                && (((*(*compound.borrow()).1.borrow()) as i32)
-                                    == (!(hit != 0) as i32))
-                        })
-                    );
-                    assert!(
-                        ({
-                            (({ (*(*prefix.borrow()).0.borrow()).iter_deref() })
-                                .with(|__s| (*__s.1.borrow()).value)
-                                == (if (hit != 0) { 42 } else { 3 }))
-                        })
-                    );
-                    assert!(
-                        ({
-                            (({ (*(*assignment.borrow()).0.borrow()).iter_deref() })
-                                .with(|__s| (*__s.1.borrow()).value)
-                                == (if (hit != 0) {
-                                    42
-                                } else {
-                                    if (choose != 0) { 7 } else { 8 }
-                                }))
-                        })
-                    );
-                    assert!(
-                        ({
-                            (({ (*(*compound.borrow()).0.borrow()).iter_deref() })
-                                .with(|__s| (*__s.1.borrow()).value)
-                                == (if (hit != 0) {
-                                    42
-                                } else {
-                                    if (choose != 0) { 3 } else { 4 }
-                                }))
-                        })
-                    );
-                    choose.prefix_inc();
-                }
-            }
-            let values: Value<Map<i32, (Value<i32>, Value<i32>)>> =
-                Rc::new(RefCell::new(Map::new()));
-            let keys: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([0, 1, 2])));
-            if (hit != 0) {
-                'loop_: for k in IterRange::new(keys.decay(), keys.decay().offset((3_i64) as isize))
-                {
-                    let k: Value<i32> = Rc::new(RefCell::new((k.read())));
-                    ({ (*values.borrow_mut()).subscript(k.as_pointer(), || 0_i32) }).write(42);
-                }
-            }
-            let mut before: i32 = temporary_calls_4.with(|rc| *rc.borrow());
-            let mut index: i32 = 0;
-            let member: Value<(
-                Value<BidirectionalIterator<(Value<i32>, Value<i32>)>>,
-                Value<bool>,
-            )> = Rc::new(RefCell::new({
-                let __tmp_76: Value<Temporary>;
-                match ((match {
-                    __tmp_76 = Rc::new(RefCell::new(({ make_temporary_5() })));
-                    __tmp_76.as_pointer()
-                } {
-                    __tmp_75 => field_ptr!(__tmp_75, n),
-                }),)
-                {
-                    (__tmp_74,) => {
-                        let (__it, __inserted) =
-                            Map::emplace(values.as_pointer(), &keys.decay().offset(0), || {
-                                (
-                                    Rc::new(RefCell::new(keys.decay().offset(0).read())),
-                                    Rc::new(RefCell::new((__tmp_74.read()))),
-                                )
-                            });
-                        (
-                            Rc::new(RefCell::new(__it)),
-                            Rc::new(RefCell::new(__inserted)),
-                        )
+                        choose.prefix_inc();
                     }
                 }
-            }));
-            let nested: Value<(
-                Value<BidirectionalIterator<(Value<i32>, Value<i32>)>>,
-                Value<bool>,
-            )> = Rc::new(RefCell::new({
-                let __tmp_79: Value<Nested>;
-                match ((match {
-                    __tmp_79 = Rc::new(RefCell::new(({ make_nested_6() })));
-                    __tmp_79.as_pointer()
-                } {
-                    __tmp_78 => field_ptr!(field_ptr!(__tmp_78, inner), n),
-                }),)
-                {
-                    (__tmp_77,) => {
-                        let (__it, __inserted) =
-                            Map::emplace(values.as_pointer(), &keys.decay().offset(1), || {
-                                (
-                                    Rc::new(RefCell::new(keys.decay().offset(1).read())),
-                                    Rc::new(RefCell::new((__tmp_77.read()))),
-                                )
-                            });
-                        (
-                            Rc::new(RefCell::new(__it)),
-                            Rc::new(RefCell::new(__inserted)),
-                        )
+                let values: Value<Map<i32, (Value<i32>, Value<i32>)>> =
+                    Rc::new(RefCell::new(Map::new()));
+                let keys: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([0, 1, 2])));
+                if (hit != 0) {
+                    'loop_: for k in
+                        IterRange::new(keys.decay(), keys.decay().offset((3_i64) as isize))
+                    {
+                        let k: Value<i32> = Rc::new(RefCell::new((k.read())));
+                        ({ (*values.borrow_mut()).subscript(k.as_pointer(), || 0_i32) }).write(42);
                     }
                 }
-            }));
-            let element: Value<(
-                Value<BidirectionalIterator<(Value<i32>, Value<i32>)>>,
-                Value<bool>,
-            )> = Rc::new(RefCell::new({
-                let __tmp_82: Value<Temporary>;
-                match ((match {
-                    __tmp_82 = Rc::new(RefCell::new(({ make_temporary_5() })));
-                    __tmp_82.as_pointer()
-                } {
-                    __tmp_81 => array_field_ptr!(__tmp_81, data),
-                })
-                .offset((index.postfix_inc()) as isize),)
-                {
-                    (__tmp_80,) => {
-                        let (__it, __inserted) =
-                            Map::emplace(values.as_pointer(), &keys.decay().offset(2), || {
-                                (
-                                    Rc::new(RefCell::new(keys.decay().offset(2).read())),
-                                    Rc::new(RefCell::new((__tmp_80.read()))),
-                                )
-                            });
-                        (
-                            Rc::new(RefCell::new(__it)),
-                            Rc::new(RefCell::new(__inserted)),
-                        )
-                    }
-                }
-            }));
-            assert!((temporary_calls_4.with(|rc| *rc.borrow()) == (before + 3)) && (index == 1));
-            assert!(
-                ({
-                    ((((*(*member.borrow()).1.borrow()) as i32) == (!(hit != 0) as i32))
-                        && (((*(*nested.borrow()).1.borrow()) as i32) == (!(hit != 0) as i32)))
-                        && (((*(*element.borrow()).1.borrow()) as i32) == (!(hit != 0) as i32))
-                })
-            );
-            assert!(
-                ({
-                    (((*(*({ (*(*member.borrow()).0.borrow()).iter_deref() })
-                        .upgrade()
-                        .deref())
-                    .1
-                    .borrow())
-                        == (if (hit != 0) { 42 } else { 5 }))
-                        && ((*(*({ (*(*nested.borrow()).0.borrow()).iter_deref() })
-                            .upgrade()
-                            .deref())
-                        .1
-                        .borrow())
-                            == (if (hit != 0) { 42 } else { 5 })))
-                        && ((*(*({ (*(*element.borrow()).0.borrow()).iter_deref() })
-                            .upgrade()
-                            .deref())
-                        .1
-                        .borrow())
-                            == (if (hit != 0) { 42 } else { 6 }))
-                })
-            );
-            {
-                let mut choose: i32 = 0;
-                'loop_: while (choose < 2) {
-                    let references: Value<Map<i32, (Value<i32>, Value<Held>)>> =
-                        Rc::new(RefCell::new(Map::new()));
-                    let ordinary: Value<i32> = Rc::new(RefCell::new(9));
-                    if (hit != 0) {
-                        {
+                let mut before: i32 = temporary_calls_4.with(|rc| *rc.borrow());
+                let mut index: i32 = 0;
+                let member: Value<(
+                    Value<BidirectionalIterator<(Value<i32>, Value<i32>)>>,
+                    Value<bool>,
+                )> = Rc::new(RefCell::new({
+                    let __tmp_76: Value<Temporary>;
+                    match ((match {
+                        __tmp_76 = Rc::new(RefCell::new(({ make_temporary_5() })));
+                        __tmp_76.as_pointer()
+                    } {
+                        __tmp_75 => field_ptr!(__tmp_75, n),
+                    }),)
+                    {
+                        (__tmp_74,) => {
                             let (__it, __inserted) =
-                                Map::emplace(references.as_pointer(), &key.as_pointer(), || {
+                                Map::emplace(values.as_pointer(), &keys.decay().offset(0), || {
                                     (
-                                        Rc::new(RefCell::new(key.as_pointer().read())),
-                                        Rc::new(RefCell::new(Held::new_1({
-                                            ordinary.as_pointer()
-                                        }))),
+                                        Rc::new(RefCell::new(keys.decay().offset(0).read())),
+                                        Rc::new(RefCell::new((__tmp_74.read()))),
                                     )
                                 });
                             (
                                 Rc::new(RefCell::new(__it)),
                                 Rc::new(RefCell::new(__inserted)),
                             )
-                        };
+                        }
                     }
-                    before = temporary_calls_4.with(|rc| *rc.borrow());
-                    index = 0;
-                    let mut value: i32 = 0;
+                }));
+                let nested: Value<(
+                    Value<BidirectionalIterator<(Value<i32>, Value<i32>)>>,
+                    Value<bool>,
+                )> = Rc::new(RefCell::new({
+                    let __tmp_79: Value<Nested>;
+                    match ((match {
+                        __tmp_79 = Rc::new(RefCell::new(({ make_nested_6() })));
+                        __tmp_79.as_pointer()
+                    } {
+                        __tmp_78 => field_ptr!(field_ptr!(__tmp_78, inner), n),
+                    }),)
                     {
-                        let __tmp_85: Value<Nested>;
-                        let __tmp_87: Value<Temporary>;
-                        {
-                            match (if (choose != 0) {
-                                (match {
-                                    __tmp_85 = Rc::new(RefCell::new(({ make_nested_6() })));
-                                    __tmp_85.as_pointer()
-                                } {
-                                    __tmp_84 => field_ptr!(field_ptr!(__tmp_84, inner), n),
-                                })
-                            } else {
-                                (match {
-                                    __tmp_87 = Rc::new(RefCell::new(({ make_temporary_5() })));
-                                    __tmp_87.as_pointer()
-                                } {
-                                    __tmp_86 => array_field_ptr!(__tmp_86, data),
-                                })
-                                .offset((index.postfix_inc()) as isize)
-                            },)
-                            {
-                                (__tmp_83,) => {
+                        (__tmp_77,) => {
+                            let (__it, __inserted) =
+                                Map::emplace(values.as_pointer(), &keys.decay().offset(1), || {
+                                    (
+                                        Rc::new(RefCell::new(keys.decay().offset(1).read())),
+                                        Rc::new(RefCell::new((__tmp_77.read()))),
+                                    )
+                                });
+                            (
+                                Rc::new(RefCell::new(__it)),
+                                Rc::new(RefCell::new(__inserted)),
+                            )
+                        }
+                    }
+                }));
+                let element: Value<(
+                    Value<BidirectionalIterator<(Value<i32>, Value<i32>)>>,
+                    Value<bool>,
+                )> = Rc::new(RefCell::new({
+                    let __tmp_82: Value<Temporary>;
+                    match ((match {
+                        __tmp_82 = Rc::new(RefCell::new(({ make_temporary_5() })));
+                        __tmp_82.as_pointer()
+                    } {
+                        __tmp_81 => array_field_ptr!(__tmp_81, data),
+                    })
+                    .offset((index.postfix_inc()) as isize),)
+                    {
+                        (__tmp_80,) => {
+                            let (__it, __inserted) =
+                                Map::emplace(values.as_pointer(), &keys.decay().offset(2), || {
+                                    (
+                                        Rc::new(RefCell::new(keys.decay().offset(2).read())),
+                                        Rc::new(RefCell::new((__tmp_80.read()))),
+                                    )
+                                });
+                            (
+                                Rc::new(RefCell::new(__it)),
+                                Rc::new(RefCell::new(__inserted)),
+                            )
+                        }
+                    }
+                }));
+                assert!(
+                    (temporary_calls_4.with(|rc| *rc.borrow()) == (before + 3)) && (index == 1)
+                );
+                assert!(
+                    ({
+                        ((((*(*member.borrow()).1.borrow()) as i32) == (!(hit != 0) as i32))
+                            && (((*(*nested.borrow()).1.borrow()) as i32) == (!(hit != 0) as i32)))
+                            && (((*(*element.borrow()).1.borrow()) as i32) == (!(hit != 0) as i32))
+                    })
+                );
+                assert!(
+                    ({
+                        (((*(*({ (*(*member.borrow()).0.borrow()).iter_deref() })
+                            .upgrade()
+                            .deref())
+                        .1
+                        .borrow())
+                            == (if (hit != 0) { 42 } else { 5 }))
+                            && ((*(*({ (*(*nested.borrow()).0.borrow()).iter_deref() })
+                                .upgrade()
+                                .deref())
+                            .1
+                            .borrow())
+                                == (if (hit != 0) { 42 } else { 5 })))
+                            && ((*(*({ (*(*element.borrow()).0.borrow()).iter_deref() })
+                                .upgrade()
+                                .deref())
+                            .1
+                            .borrow())
+                                == (if (hit != 0) { 42 } else { 6 }))
+                    })
+                );
+                {
+                    let mut choose: i32 = 0;
+                    'loop_: while (choose < 2) {
+                        'for_body: {
+                            let references: Value<Map<i32, (Value<i32>, Value<Held>)>> =
+                                Rc::new(RefCell::new(Map::new()));
+                            let ordinary: Value<i32> = Rc::new(RefCell::new(9));
+                            if (hit != 0) {
+                                {
                                     let (__it, __inserted) = Map::emplace(
                                         references.as_pointer(),
                                         &key.as_pointer(),
@@ -1520,7 +1502,7 @@ fn main_0() -> i32 {
                                             (
                                                 Rc::new(RefCell::new(key.as_pointer().read())),
                                                 Rc::new(RefCell::new(Held::new_1({
-                                                    (__tmp_83).clone()
+                                                    ordinary.as_pointer()
                                                 }))),
                                             )
                                         },
@@ -1529,73 +1511,81 @@ fn main_0() -> i32 {
                                         Rc::new(RefCell::new(__it)),
                                         Rc::new(RefCell::new(__inserted)),
                                     )
+                                };
+                            }
+                            before = temporary_calls_4.with(|rc| *rc.borrow());
+                            index = 0;
+                            let mut value: i32 = 0;
+                            {
+                                let __tmp_85: Value<Nested>;
+                                let __tmp_87: Value<Temporary>;
+                                {
+                                    match (if (choose != 0) {
+                                        (match {
+                                            __tmp_85 = Rc::new(RefCell::new(({ make_nested_6() })));
+                                            __tmp_85.as_pointer()
+                                        } {
+                                            __tmp_84 => field_ptr!(field_ptr!(__tmp_84, inner), n),
+                                        })
+                                    } else {
+                                        (match {
+                                            __tmp_87 =
+                                                Rc::new(RefCell::new(({ make_temporary_5() })));
+                                            __tmp_87.as_pointer()
+                                        } {
+                                            __tmp_86 => array_field_ptr!(__tmp_86, data),
+                                        })
+                                        .offset((index.postfix_inc()) as isize)
+                                    },)
+                                    {
+                                        (__tmp_83,) => {
+                                            let (__it, __inserted) = Map::emplace(
+                                                references.as_pointer(),
+                                                &key.as_pointer(),
+                                                || {
+                                                    (
+                                                        Rc::new(RefCell::new(
+                                                            key.as_pointer().read(),
+                                                        )),
+                                                        Rc::new(RefCell::new(Held::new_1({
+                                                            (__tmp_83).clone()
+                                                        }))),
+                                                    )
+                                                },
+                                            );
+                                            (
+                                                Rc::new(RefCell::new(__it)),
+                                                Rc::new(RefCell::new(__inserted)),
+                                            )
+                                        }
+                                    };
+                                    let __rhs = (({
+                                        (*references.borrow_mut())
+                                            .subscript(key.as_pointer(), || <Held>::default())
+                                    })
+                                    .with(|__s| __s.ptr.clone())
+                                    .read());
+                                    value = __rhs
                                 }
                             };
-                            let __rhs = (({
-                                (*references.borrow_mut())
-                                    .subscript(key.as_pointer(), || <Held>::default())
-                            })
-                            .with(|__s| __s.ptr.clone())
-                            .read());
-                            value = __rhs
-                        }
-                    };
-                    assert!(
-                        (temporary_calls_4.with(|rc| *rc.borrow()) == (before + 1))
-                            && (index == (if (choose != 0) { 0 } else { 1 }))
-                    );
-                    assert!(
-                        (value
-                            == (if (hit != 0) {
-                                9
-                            } else {
-                                if (choose != 0) { 5 } else { 6 }
-                            }))
-                    );
-                    let arrays: Value<Map<i32, (Value<i32>, Value<Held>)>> =
-                        Rc::new(RefCell::new(Map::new()));
-                    let ordinary_array: Value<Box<[i32]>> =
-                        Rc::new(RefCell::new(Box::new([9, 10])));
-                    if (hit != 0) {
-                        {
-                            let (__it, __inserted) =
-                                Map::emplace(arrays.as_pointer(), &key.as_pointer(), || {
-                                    (
-                                        Rc::new(RefCell::new(key.as_pointer().read())),
-                                        Rc::new(RefCell::new(Held::new_3(
-                                            { ordinary_array.decay() },
-                                            { 0 },
-                                        ))),
-                                    )
-                                });
-                            (
-                                Rc::new(RefCell::new(__it)),
-                                Rc::new(RefCell::new(__inserted)),
-                            )
-                        };
-                    }
-                    before = temporary_calls_4.with(|rc| *rc.borrow());
-                    {
-                        let __tmp_90: Value<Nested>;
-                        let __tmp_92: Value<Temporary>;
-                        {
-                            match (if (choose != 0) {
-                                (match {
-                                    __tmp_90 = Rc::new(RefCell::new(({ make_nested_6() })));
-                                    __tmp_90.as_pointer()
-                                } {
-                                    __tmp_89 => array_field_ptr!(field_ptr!(__tmp_89, inner), data),
-                                })
-                            } else {
-                                (match {
-                                    __tmp_92 = Rc::new(RefCell::new(({ make_temporary_5() })));
-                                    __tmp_92.as_pointer()
-                                } {
-                                    __tmp_91 => array_field_ptr!(__tmp_91, data),
-                                })
-                            },)
-                            {
-                                (__tmp_88,) => {
+                            assert!(
+                                (temporary_calls_4.with(|rc| *rc.borrow()) == (before + 1))
+                                    && (index == (if (choose != 0) { 0 } else { 1 }))
+                            );
+                            assert!(
+                                (value
+                                    == (if (hit != 0) {
+                                        9
+                                    } else {
+                                        if (choose != 0) { 5 } else { 6 }
+                                    }))
+                            );
+                            let arrays: Value<Map<i32, (Value<i32>, Value<Held>)>> =
+                                Rc::new(RefCell::new(Map::new()));
+                            let ordinary_array: Value<Box<[i32]>> =
+                                Rc::new(RefCell::new(Box::new([9, 10])));
+                            if (hit != 0) {
+                                {
                                     let (__it, __inserted) = Map::emplace(
                                         arrays.as_pointer(),
                                         &key.as_pointer(),
@@ -1603,7 +1593,7 @@ fn main_0() -> i32 {
                                             (
                                                 Rc::new(RefCell::new(key.as_pointer().read())),
                                                 Rc::new(RefCell::new(Held::new_3(
-                                                    { (__tmp_88).clone() },
+                                                    { ordinary_array.decay() },
                                                     { 0 },
                                                 ))),
                                             )
@@ -1613,25 +1603,73 @@ fn main_0() -> i32 {
                                         Rc::new(RefCell::new(__it)),
                                         Rc::new(RefCell::new(__inserted)),
                                     )
+                                };
+                            }
+                            before = temporary_calls_4.with(|rc| *rc.borrow());
+                            {
+                                let __tmp_90: Value<Nested>;
+                                let __tmp_92: Value<Temporary>;
+                                {
+                                    match (if (choose != 0) {
+                                        (match {
+                                            __tmp_90 = Rc::new(RefCell::new(({ make_nested_6() })));
+                                            __tmp_90.as_pointer()
+                                        } {
+                                            __tmp_89 => {
+                                                array_field_ptr!(field_ptr!(__tmp_89, inner), data)
+                                            }
+                                        })
+                                    } else {
+                                        (match {
+                                            __tmp_92 =
+                                                Rc::new(RefCell::new(({ make_temporary_5() })));
+                                            __tmp_92.as_pointer()
+                                        } {
+                                            __tmp_91 => array_field_ptr!(__tmp_91, data),
+                                        })
+                                    },)
+                                    {
+                                        (__tmp_88,) => {
+                                            let (__it, __inserted) = Map::emplace(
+                                                arrays.as_pointer(),
+                                                &key.as_pointer(),
+                                                || {
+                                                    (
+                                                        Rc::new(RefCell::new(
+                                                            key.as_pointer().read(),
+                                                        )),
+                                                        Rc::new(RefCell::new(Held::new_3(
+                                                            { (__tmp_88).clone() },
+                                                            { 0 },
+                                                        ))),
+                                                    )
+                                                },
+                                            );
+                                            (
+                                                Rc::new(RefCell::new(__it)),
+                                                Rc::new(RefCell::new(__inserted)),
+                                            )
+                                        }
+                                    };
+                                    let __rhs = (elem!(
+                                        ({
+                                            (*arrays.borrow_mut())
+                                                .subscript(key.as_pointer(), || <Held>::default())
+                                        })
+                                        .with(|__s| __s.ptr.clone()),
+                                        1
+                                    )
+                                    .read());
+                                    value = __rhs
                                 }
                             };
-                            let __rhs = (elem!(
-                                ({
-                                    (*arrays.borrow_mut())
-                                        .subscript(key.as_pointer(), || <Held>::default())
-                                })
-                                .with(|__s| __s.ptr.clone()),
-                                1
-                            )
-                            .read());
-                            value = __rhs
+                            assert!(
+                                (temporary_calls_4.with(|rc| *rc.borrow()) == (before + 1))
+                                    && (value == (if (hit != 0) { 10 } else { 7 }))
+                            );
                         }
-                    };
-                    assert!(
-                        (temporary_calls_4.with(|rc| *rc.borrow()) == (before + 1))
-                            && (value == (if (hit != 0) { 10 } else { 7 }))
-                    );
-                    choose.prefix_inc();
+                        choose.prefix_inc();
+                    }
                 }
             }
             hit.prefix_inc();
@@ -1640,277 +1678,242 @@ fn main_0() -> i32 {
     {
         let mut hit: i32 = 0;
         'loop_: while (hit < 2) {
-            let values: Value<Map<i32, (Value<i32>, Value<i32>)>> =
-                Rc::new(RefCell::new(Map::new()));
-            let keys: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([0, 1, 2, 3, 4, 5])));
-            if (hit != 0) {
-                'loop_: for k in IterRange::new(keys.decay(), keys.decay().offset((6_i64) as isize))
-                {
-                    let k: Value<i32> = Rc::new(RefCell::new((k.read())));
-                    ({ (*values.borrow_mut()).subscript(k.as_pointer(), || 0_i32) }).write(42);
-                }
-            }
-            let mut before: i32 = temporary_calls_4.with(|rc| *rc.borrow());
-            let mut index: i32 = 0;
-            let arrow: Value<(
-                Value<BidirectionalIterator<(Value<i32>, Value<i32>)>>,
-                Value<bool>,
-            )> = Rc::new(RefCell::new({
-                let mut __tmp_94: Option<Value<Temporary>>;
-                match (field_ptr!(
-                    (*{
-                        __tmp_94 = Some(Rc::new(RefCell::new(Temporary::new())));
-                        &mut __tmp_94
-                    })
-                    .as_pointer(),
-                    n
-                ),)
-                {
-                    (__tmp_93,) => {
-                        let (__it, __inserted) =
-                            Map::emplace(values.as_pointer(), &keys.decay().offset(0), || {
-                                (
-                                    Rc::new(RefCell::new(keys.decay().offset(0).read())),
-                                    Rc::new(RefCell::new((__tmp_93.read()))),
-                                )
-                            });
-                        (
-                            Rc::new(RefCell::new(__it)),
-                            Rc::new(RefCell::new(__inserted)),
-                        )
+            'for_body: {
+                let values: Value<Map<i32, (Value<i32>, Value<i32>)>> =
+                    Rc::new(RefCell::new(Map::new()));
+                let keys: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([0, 1, 2, 3, 4, 5])));
+                if (hit != 0) {
+                    'loop_: for k in
+                        IterRange::new(keys.decay(), keys.decay().offset((6_i64) as isize))
+                    {
+                        let k: Value<i32> = Rc::new(RefCell::new((k.read())));
+                        ({ (*values.borrow_mut()).subscript(k.as_pointer(), || 0_i32) }).write(42);
                     }
                 }
-            }));
-            let nested: Value<(
-                Value<BidirectionalIterator<(Value<i32>, Value<i32>)>>,
-                Value<bool>,
-            )> = Rc::new(RefCell::new({
-                let mut __tmp_96: Option<Value<Nested>>;
-                match (field_ptr!(
-                    field_ptr!(
+                let mut before: i32 = temporary_calls_4.with(|rc| *rc.borrow());
+                let mut index: i32 = 0;
+                let arrow: Value<(
+                    Value<BidirectionalIterator<(Value<i32>, Value<i32>)>>,
+                    Value<bool>,
+                )> = Rc::new(RefCell::new({
+                    let mut __tmp_94: Option<Value<Temporary>>;
+                    match (field_ptr!(
                         (*{
-                            __tmp_96 = Some(Rc::new(RefCell::new(<Nested>::default())));
-                            &mut __tmp_96
+                            __tmp_94 = Some(Rc::new(RefCell::new(Temporary::new())));
+                            &mut __tmp_94
                         })
                         .as_pointer(),
-                        inner
-                    ),
-                    n
-                ),)
-                {
-                    (__tmp_95,) => {
-                        let (__it, __inserted) =
-                            Map::emplace(values.as_pointer(), &keys.decay().offset(1), || {
-                                (
-                                    Rc::new(RefCell::new(keys.decay().offset(1).read())),
-                                    Rc::new(RefCell::new((__tmp_95.read()))),
-                                )
-                            });
-                        (
-                            Rc::new(RefCell::new(__it)),
-                            Rc::new(RefCell::new(__inserted)),
-                        )
-                    }
-                }
-            }));
-            let element: Value<(
-                Value<BidirectionalIterator<(Value<i32>, Value<i32>)>>,
-                Value<bool>,
-            )> = Rc::new(RefCell::new({
-                let mut __tmp_98: Option<Value<Temporary>>;
-                match (array_field_ptr!(
-                    (*{
-                        __tmp_98 = Some(Rc::new(RefCell::new(Temporary::new())));
-                        &mut __tmp_98
-                    })
-                    .as_pointer(),
-                    data
-                )
-                .offset((index.postfix_inc()) as isize),)
-                {
-                    (__tmp_97,) => {
-                        let (__it, __inserted) =
-                            Map::emplace(values.as_pointer(), &keys.decay().offset(2), || {
-                                (
-                                    Rc::new(RefCell::new(keys.decay().offset(2).read())),
-                                    Rc::new(RefCell::new((__tmp_97.read()))),
-                                )
-                            });
-                        (
-                            Rc::new(RefCell::new(__it)),
-                            Rc::new(RefCell::new(__inserted)),
-                        )
-                    }
-                }
-            }));
-            let get: Value<(
-                Value<BidirectionalIterator<(Value<i32>, Value<i32>)>>,
-                Value<bool>,
-            )> = Rc::new(RefCell::new({
-                let mut __tmp_100: Option<Value<Temporary>>;
-                match (field_ptr!(
-                    (*{
-                        __tmp_100 = Some(Rc::new(RefCell::new(Temporary::new())));
-                        &mut __tmp_100
-                    })
-                    .as_pointer(),
-                    n
-                ),)
-                {
-                    (__tmp_99,) => {
-                        let (__it, __inserted) =
-                            Map::emplace(values.as_pointer(), &keys.decay().offset(3), || {
-                                (
-                                    Rc::new(RefCell::new(keys.decay().offset(3).read())),
-                                    Rc::new(RefCell::new((__tmp_99.read()))),
-                                )
-                            });
-                        (
-                            Rc::new(RefCell::new(__it)),
-                            Rc::new(RefCell::new(__inserted)),
-                        )
-                    }
-                }
-            }));
-            let deref: Value<(
-                Value<BidirectionalIterator<(Value<i32>, Value<i32>)>>,
-                Value<bool>,
-            )> = Rc::new(RefCell::new({
-                let mut __tmp_102: Option<Value<Temporary>>;
-                match (field_ptr!(
-                    ((*{
-                        __tmp_102 = Some(Rc::new(RefCell::new(Temporary::new())));
-                        &mut __tmp_102
-                    })
-                    .as_pointer()),
-                    n
-                ),)
-                {
-                    (__tmp_101,) => {
-                        let (__it, __inserted) =
-                            Map::emplace(values.as_pointer(), &keys.decay().offset(4), || {
-                                (
-                                    Rc::new(RefCell::new(keys.decay().offset(4).read())),
-                                    Rc::new(RefCell::new((__tmp_101.read()))),
-                                )
-                            });
-                        (
-                            Rc::new(RefCell::new(__it)),
-                            Rc::new(RefCell::new(__inserted)),
-                        )
-                    }
-                }
-            }));
-            let indirect: Value<(
-                Value<BidirectionalIterator<(Value<i32>, Value<i32>)>>,
-                Value<bool>,
-            )> = Rc::new(RefCell::new({
-                let mut __tmp_104: Option<Value<Option<Value<Temporary>>>>;
-                match (field_ptr!(
-                    ((*(*{
-                        __tmp_104 = Some(Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
-                            Temporary::new(),
-                        ))))));
-                        &mut __tmp_104
-                    })
-                    .as_pointer()
-                    .upgrade()
-                    .deref())
-                    .as_pointer()),
-                    n
-                ),)
-                {
-                    (__tmp_103,) => {
-                        let (__it, __inserted) =
-                            Map::emplace(values.as_pointer(), &keys.decay().offset(5), || {
-                                (
-                                    Rc::new(RefCell::new(keys.decay().offset(5).read())),
-                                    Rc::new(RefCell::new((__tmp_103.read()))),
-                                )
-                            });
-                        (
-                            Rc::new(RefCell::new(__it)),
-                            Rc::new(RefCell::new(__inserted)),
-                        )
-                    }
-                }
-            }));
-            assert!((temporary_calls_4.with(|rc| *rc.borrow()) == (before + 6)) && (index == 1));
-            assert!(
-                ({
-                    (((((((*(*arrow.borrow()).1.borrow()) as i32) == (!(hit != 0) as i32))
-                        && (((*(*nested.borrow()).1.borrow()) as i32) == (!(hit != 0) as i32)))
-                        && (((*(*element.borrow()).1.borrow()) as i32) == (!(hit != 0) as i32)))
-                        && (((*(*get.borrow()).1.borrow()) as i32) == (!(hit != 0) as i32)))
-                        && (((*(*deref.borrow()).1.borrow()) as i32) == (!(hit != 0) as i32)))
-                        && (((*(*indirect.borrow()).1.borrow()) as i32) == (!(hit != 0) as i32))
-                })
-            );
-            'loop_: for k in IterRange::new(keys.decay(), keys.decay().offset((6_i64) as isize)) {
-                let k: Value<i32> = Rc::new(RefCell::new((k.read())));
-                assert!(
-                    ({
-                        ((({ (*values.borrow_mut()).subscript(k.as_pointer(), || 0_i32) }).read())
-                            == (if (hit != 0) {
-                                42
-                            } else {
-                                if ((*k.borrow()) == 2) { 6 } else { 5 }
-                            }))
-                    })
-                );
-            }
-            {
-                let mut choose: i32 = 0;
-                'loop_: while (choose < 2) {
-                    let references: Value<Map<i32, (Value<i32>, Value<Held>)>> =
-                        Rc::new(RefCell::new(Map::new()));
-                    let ordinary: Value<i32> = Rc::new(RefCell::new(9));
-                    if (hit != 0) {
-                        {
+                        n
+                    ),)
+                    {
+                        (__tmp_93,) => {
                             let (__it, __inserted) =
-                                Map::emplace(references.as_pointer(), &key.as_pointer(), || {
+                                Map::emplace(values.as_pointer(), &keys.decay().offset(0), || {
                                     (
-                                        Rc::new(RefCell::new(key.as_pointer().read())),
-                                        Rc::new(RefCell::new(Held::new_1({
-                                            ordinary.as_pointer()
-                                        }))),
+                                        Rc::new(RefCell::new(keys.decay().offset(0).read())),
+                                        Rc::new(RefCell::new((__tmp_93.read()))),
                                     )
                                 });
                             (
                                 Rc::new(RefCell::new(__it)),
                                 Rc::new(RefCell::new(__inserted)),
                             )
-                        };
+                        }
                     }
-                    before = temporary_calls_4.with(|rc| *rc.borrow());
-                    index = 0;
-                    let mut value: i32 = 0;
+                }));
+                let nested: Value<(
+                    Value<BidirectionalIterator<(Value<i32>, Value<i32>)>>,
+                    Value<bool>,
+                )> = Rc::new(RefCell::new({
+                    let mut __tmp_96: Option<Value<Nested>>;
+                    match (field_ptr!(
+                        field_ptr!(
+                            (*{
+                                __tmp_96 = Some(Rc::new(RefCell::new(<Nested>::default())));
+                                &mut __tmp_96
+                            })
+                            .as_pointer(),
+                            inner
+                        ),
+                        n
+                    ),)
                     {
-                        let mut __tmp_106: Option<Value<Temporary>>;
-                        let mut __tmp_107: Option<Value<Temporary>>;
-                        {
-                            match (if (choose != 0) {
-                                field_ptr!(
-                                    (*{
-                                        __tmp_106 = Some(Rc::new(RefCell::new(Temporary::new())));
-                                        &mut __tmp_106
-                                    })
-                                    .as_pointer(),
-                                    n
-                                )
-                            } else {
-                                array_field_ptr!(
-                                    (*{
-                                        __tmp_107 = Some(Rc::new(RefCell::new(Temporary::new())));
-                                        &mut __tmp_107
-                                    })
-                                    .as_pointer(),
-                                    data
-                                )
-                                .offset((index.postfix_inc()) as isize)
-                            },)
-                            {
-                                (__tmp_105,) => {
+                        (__tmp_95,) => {
+                            let (__it, __inserted) =
+                                Map::emplace(values.as_pointer(), &keys.decay().offset(1), || {
+                                    (
+                                        Rc::new(RefCell::new(keys.decay().offset(1).read())),
+                                        Rc::new(RefCell::new((__tmp_95.read()))),
+                                    )
+                                });
+                            (
+                                Rc::new(RefCell::new(__it)),
+                                Rc::new(RefCell::new(__inserted)),
+                            )
+                        }
+                    }
+                }));
+                let element: Value<(
+                    Value<BidirectionalIterator<(Value<i32>, Value<i32>)>>,
+                    Value<bool>,
+                )> = Rc::new(RefCell::new({
+                    let mut __tmp_98: Option<Value<Temporary>>;
+                    match (array_field_ptr!(
+                        (*{
+                            __tmp_98 = Some(Rc::new(RefCell::new(Temporary::new())));
+                            &mut __tmp_98
+                        })
+                        .as_pointer(),
+                        data
+                    )
+                    .offset((index.postfix_inc()) as isize),)
+                    {
+                        (__tmp_97,) => {
+                            let (__it, __inserted) =
+                                Map::emplace(values.as_pointer(), &keys.decay().offset(2), || {
+                                    (
+                                        Rc::new(RefCell::new(keys.decay().offset(2).read())),
+                                        Rc::new(RefCell::new((__tmp_97.read()))),
+                                    )
+                                });
+                            (
+                                Rc::new(RefCell::new(__it)),
+                                Rc::new(RefCell::new(__inserted)),
+                            )
+                        }
+                    }
+                }));
+                let get: Value<(
+                    Value<BidirectionalIterator<(Value<i32>, Value<i32>)>>,
+                    Value<bool>,
+                )> = Rc::new(RefCell::new({
+                    let mut __tmp_100: Option<Value<Temporary>>;
+                    match (field_ptr!(
+                        (*{
+                            __tmp_100 = Some(Rc::new(RefCell::new(Temporary::new())));
+                            &mut __tmp_100
+                        })
+                        .as_pointer(),
+                        n
+                    ),)
+                    {
+                        (__tmp_99,) => {
+                            let (__it, __inserted) =
+                                Map::emplace(values.as_pointer(), &keys.decay().offset(3), || {
+                                    (
+                                        Rc::new(RefCell::new(keys.decay().offset(3).read())),
+                                        Rc::new(RefCell::new((__tmp_99.read()))),
+                                    )
+                                });
+                            (
+                                Rc::new(RefCell::new(__it)),
+                                Rc::new(RefCell::new(__inserted)),
+                            )
+                        }
+                    }
+                }));
+                let deref: Value<(
+                    Value<BidirectionalIterator<(Value<i32>, Value<i32>)>>,
+                    Value<bool>,
+                )> = Rc::new(RefCell::new({
+                    let mut __tmp_102: Option<Value<Temporary>>;
+                    match (field_ptr!(
+                        ((*{
+                            __tmp_102 = Some(Rc::new(RefCell::new(Temporary::new())));
+                            &mut __tmp_102
+                        })
+                        .as_pointer()),
+                        n
+                    ),)
+                    {
+                        (__tmp_101,) => {
+                            let (__it, __inserted) =
+                                Map::emplace(values.as_pointer(), &keys.decay().offset(4), || {
+                                    (
+                                        Rc::new(RefCell::new(keys.decay().offset(4).read())),
+                                        Rc::new(RefCell::new((__tmp_101.read()))),
+                                    )
+                                });
+                            (
+                                Rc::new(RefCell::new(__it)),
+                                Rc::new(RefCell::new(__inserted)),
+                            )
+                        }
+                    }
+                }));
+                let indirect: Value<(
+                    Value<BidirectionalIterator<(Value<i32>, Value<i32>)>>,
+                    Value<bool>,
+                )> = Rc::new(RefCell::new({
+                    let mut __tmp_104: Option<Value<Option<Value<Temporary>>>>;
+                    match (field_ptr!(
+                        ((*(*{
+                            __tmp_104 = Some(Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
+                                Temporary::new(),
+                            ))))));
+                            &mut __tmp_104
+                        })
+                        .as_pointer()
+                        .upgrade()
+                        .deref())
+                        .as_pointer()),
+                        n
+                    ),)
+                    {
+                        (__tmp_103,) => {
+                            let (__it, __inserted) =
+                                Map::emplace(values.as_pointer(), &keys.decay().offset(5), || {
+                                    (
+                                        Rc::new(RefCell::new(keys.decay().offset(5).read())),
+                                        Rc::new(RefCell::new((__tmp_103.read()))),
+                                    )
+                                });
+                            (
+                                Rc::new(RefCell::new(__it)),
+                                Rc::new(RefCell::new(__inserted)),
+                            )
+                        }
+                    }
+                }));
+                assert!(
+                    (temporary_calls_4.with(|rc| *rc.borrow()) == (before + 6)) && (index == 1)
+                );
+                assert!(
+                    ({
+                        (((((((*(*arrow.borrow()).1.borrow()) as i32) == (!(hit != 0) as i32))
+                            && (((*(*nested.borrow()).1.borrow()) as i32)
+                                == (!(hit != 0) as i32)))
+                            && (((*(*element.borrow()).1.borrow()) as i32)
+                                == (!(hit != 0) as i32)))
+                            && (((*(*get.borrow()).1.borrow()) as i32) == (!(hit != 0) as i32)))
+                            && (((*(*deref.borrow()).1.borrow()) as i32) == (!(hit != 0) as i32)))
+                            && (((*(*indirect.borrow()).1.borrow()) as i32) == (!(hit != 0) as i32))
+                    })
+                );
+                'loop_: for k in IterRange::new(keys.decay(), keys.decay().offset((6_i64) as isize))
+                {
+                    let k: Value<i32> = Rc::new(RefCell::new((k.read())));
+                    assert!(
+                        ({
+                            ((({ (*values.borrow_mut()).subscript(k.as_pointer(), || 0_i32) })
+                                .read())
+                                == (if (hit != 0) {
+                                    42
+                                } else {
+                                    if ((*k.borrow()) == 2) { 6 } else { 5 }
+                                }))
+                        })
+                    );
+                }
+                {
+                    let mut choose: i32 = 0;
+                    'loop_: while (choose < 2) {
+                        'for_body: {
+                            let references: Value<Map<i32, (Value<i32>, Value<Held>)>> =
+                                Rc::new(RefCell::new(Map::new()));
+                            let ordinary: Value<i32> = Rc::new(RefCell::new(9));
+                            if (hit != 0) {
+                                {
                                     let (__it, __inserted) = Map::emplace(
                                         references.as_pointer(),
                                         &key.as_pointer(),
@@ -1918,7 +1921,7 @@ fn main_0() -> i32 {
                                             (
                                                 Rc::new(RefCell::new(key.as_pointer().read())),
                                                 Rc::new(RefCell::new(Held::new_1({
-                                                    (__tmp_105).clone()
+                                                    ordinary.as_pointer()
                                                 }))),
                                             )
                                         },
@@ -1927,71 +1930,126 @@ fn main_0() -> i32 {
                                         Rc::new(RefCell::new(__it)),
                                         Rc::new(RefCell::new(__inserted)),
                                     )
-                                }
-                            };
-                            let __rhs = (({
-                                (*references.borrow_mut())
-                                    .subscript(key.as_pointer(), || <Held>::default())
-                            })
-                            .with(|__s| __s.ptr.clone())
-                            .read());
-                            value = __rhs
-                        }
-                    };
-                    assert!(
-                        (temporary_calls_4.with(|rc| *rc.borrow()) == (before + 1))
-                            && (index == (if (choose != 0) { 0 } else { 1 }))
-                    );
-                    assert!(
-                        (value
-                            == (if (hit != 0) {
-                                9
-                            } else {
-                                if (choose != 0) { 5 } else { 6 }
-                            }))
-                    );
-                    let owners: Value<Map<i32, (Value<i32>, Value<Held>)>> =
-                        Rc::new(RefCell::new(Map::new()));
-                    {
-                        let __tmp_109: Value<Owner>;
-                        {
-                            match (({
-                                OwnerImpl::value(&{
-                                    __tmp_109 = Rc::new(RefCell::new(Owner::new()));
-                                    __tmp_109.as_pointer()
-                                })
-                            }),)
+                                };
+                            }
+                            before = temporary_calls_4.with(|rc| *rc.borrow());
+                            index = 0;
+                            let mut value: i32 = 0;
                             {
-                                (__tmp_108,) => {
-                                    let (__it, __inserted) = Map::emplace(
-                                        owners.as_pointer(),
-                                        &key.as_pointer(),
-                                        || {
+                                let mut __tmp_106: Option<Value<Temporary>>;
+                                let mut __tmp_107: Option<Value<Temporary>>;
+                                {
+                                    match (if (choose != 0) {
+                                        field_ptr!(
+                                            (*{
+                                                __tmp_106 =
+                                                    Some(Rc::new(RefCell::new(Temporary::new())));
+                                                &mut __tmp_106
+                                            })
+                                            .as_pointer(),
+                                            n
+                                        )
+                                    } else {
+                                        array_field_ptr!(
+                                            (*{
+                                                __tmp_107 =
+                                                    Some(Rc::new(RefCell::new(Temporary::new())));
+                                                &mut __tmp_107
+                                            })
+                                            .as_pointer(),
+                                            data
+                                        )
+                                        .offset((index.postfix_inc()) as isize)
+                                    },)
+                                    {
+                                        (__tmp_105,) => {
+                                            let (__it, __inserted) = Map::emplace(
+                                                references.as_pointer(),
+                                                &key.as_pointer(),
+                                                || {
+                                                    (
+                                                        Rc::new(RefCell::new(
+                                                            key.as_pointer().read(),
+                                                        )),
+                                                        Rc::new(RefCell::new(Held::new_1({
+                                                            (__tmp_105).clone()
+                                                        }))),
+                                                    )
+                                                },
+                                            );
                                             (
-                                                Rc::new(RefCell::new(key.as_pointer().read())),
-                                                Rc::new(RefCell::new(Held::new_1({
-                                                    (__tmp_108).clone()
-                                                }))),
+                                                Rc::new(RefCell::new(__it)),
+                                                Rc::new(RefCell::new(__inserted)),
                                             )
-                                        },
-                                    );
-                                    (
-                                        Rc::new(RefCell::new(__it)),
-                                        Rc::new(RefCell::new(__inserted)),
-                                    )
+                                        }
+                                    };
+                                    let __rhs = (({
+                                        (*references.borrow_mut())
+                                            .subscript(key.as_pointer(), || <Held>::default())
+                                    })
+                                    .with(|__s| __s.ptr.clone())
+                                    .read());
+                                    value = __rhs
                                 }
                             };
-                            let __rhs = (({
-                                (*owners.borrow_mut())
-                                    .subscript(key.as_pointer(), || <Held>::default())
-                            })
-                            .with(|__s| __s.ptr.clone())
-                            .read());
-                            value = __rhs
+                            assert!(
+                                (temporary_calls_4.with(|rc| *rc.borrow()) == (before + 1))
+                                    && (index == (if (choose != 0) { 0 } else { 1 }))
+                            );
+                            assert!(
+                                (value
+                                    == (if (hit != 0) {
+                                        9
+                                    } else {
+                                        if (choose != 0) { 5 } else { 6 }
+                                    }))
+                            );
+                            let owners: Value<Map<i32, (Value<i32>, Value<Held>)>> =
+                                Rc::new(RefCell::new(Map::new()));
+                            {
+                                let __tmp_109: Value<Owner>;
+                                {
+                                    match (({
+                                        OwnerImpl::value(&{
+                                            __tmp_109 = Rc::new(RefCell::new(Owner::new()));
+                                            __tmp_109.as_pointer()
+                                        })
+                                    }),)
+                                    {
+                                        (__tmp_108,) => {
+                                            let (__it, __inserted) = Map::emplace(
+                                                owners.as_pointer(),
+                                                &key.as_pointer(),
+                                                || {
+                                                    (
+                                                        Rc::new(RefCell::new(
+                                                            key.as_pointer().read(),
+                                                        )),
+                                                        Rc::new(RefCell::new(Held::new_1({
+                                                            (__tmp_108).clone()
+                                                        }))),
+                                                    )
+                                                },
+                                            );
+                                            (
+                                                Rc::new(RefCell::new(__it)),
+                                                Rc::new(RefCell::new(__inserted)),
+                                            )
+                                        }
+                                    };
+                                    let __rhs = (({
+                                        (*owners.borrow_mut())
+                                            .subscript(key.as_pointer(), || <Held>::default())
+                                    })
+                                    .with(|__s| __s.ptr.clone())
+                                    .read());
+                                    value = __rhs
+                                }
+                            };
+                            assert!((value == 5));
                         }
-                    };
-                    assert!((value == 5));
-                    choose.prefix_inc();
+                        choose.prefix_inc();
+                    }
                 }
             }
             hit.prefix_inc();

@@ -121,8 +121,10 @@ pub unsafe fn test_8() {
     {
         let mut index: i32 = 0;
         'loop_: while ((index) < (3)) {
-            iterations.prefix_inc();
-            sum += index;
+            'for_body: {
+                iterations.prefix_inc();
+                sum += index;
+            }
             index.prefix_inc();
         }
     }
@@ -139,9 +141,11 @@ pub unsafe fn test_9() {
     {
         let mut index: i32 = 0;
         'loop_: while ((index) < (3)) {
-            let mut scoped: LifetimeTracked = LifetimeTracked::new();
-            let _dtor_scoped =
-                std::mem::DropGuard::new(&raw mut scoped, |__p| unsafe { (*__p).destructor() });
+            'for_body: {
+                let mut scoped: LifetimeTracked = LifetimeTracked::new();
+                let _dtor_scoped =
+                    std::mem::DropGuard::new(&raw mut scoped, |__p| unsafe { (*__p).destructor() });
+            }
             index.prefix_inc();
         }
     }
@@ -208,12 +212,16 @@ pub unsafe fn test_12() {
     {
         let mut index: i32 = 0;
         'loop_: while ((index) < (2)) {
-            {
-                let mut index: i32 = 10;
-                'loop_: while ((index) < (13)) {
-                    inner_iterations.prefix_inc();
-                    sum += index;
-                    index.prefix_inc();
+            'for_body: {
+                {
+                    let mut index: i32 = 10;
+                    'loop_: while ((index) < (13)) {
+                        'for_body: {
+                            inner_iterations.prefix_inc();
+                            sum += index;
+                        }
+                        index.prefix_inc();
+                    }
                 }
             }
             {

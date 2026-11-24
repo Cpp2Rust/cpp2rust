@@ -11,7 +11,9 @@ pub unsafe fn sum_bytes_0(mut buf: *const libc::c_char, mut len: u32) -> i32 {
     {
         let mut i: u32 = 0_u32;
         'loop_: while ((i) < (len)) {
-            sum += (((*buf.offset((i) as isize)) as u8) as i32);
+            'for_body: {
+                sum += (((*buf.offset((i) as isize)) as u8) as i32);
+            }
             i.postfix_inc();
         }
     }

@@ -57,13 +57,15 @@ pub fn fft_3(a: Ptr<Option<Value<Box<[Complex]>>>>, mut N: i32) -> Option<Value<
     {
         let mut i: i32 = 0;
         'loop_: while (i < N) {
-            let mut alpha: f64 =
-                ((((-2_i32 as f64) * 3.141592653589793_f64) * (i as f64)) / (N as f64));
-            let __rhs = Complex {
-                re: alpha.cos(),
-                img: alpha.sin(),
-            };
-            w.decay().offset((i as usize)).write(__rhs);
+            'for_body: {
+                let mut alpha: f64 =
+                    ((((-2_i32 as f64) * 3.141592653589793_f64) * (i as f64)) / (N as f64));
+                let __rhs = Complex {
+                    re: alpha.cos(),
+                    img: alpha.sin(),
+                };
+                w.decay().offset((i as usize)).write(__rhs);
+            }
             i.postfix_inc();
         }
     }
@@ -82,28 +84,30 @@ pub fn fft_3(a: Ptr<Option<Value<Box<[Complex]>>>>, mut N: i32) -> Option<Value<
     {
         let mut i: i32 = 0;
         'loop_: while (i < (N / 2)) {
-            let __rhs = Complex {
-                re: ({ (*a.upgrade().deref()).decay().offset(((i * 2) as usize)) })
+            'for_body: {
+                let __rhs = Complex {
+                    re: ({ (*a.upgrade().deref()).decay().offset(((i * 2) as usize)) })
+                        .with(|__s| __s.re),
+                    img: ({ (*a.upgrade().deref()).decay().offset(((i * 2) as usize)) })
+                        .with(|__s| __s.img),
+                };
+                ({ (*A0.borrow()).decay().offset((i as usize)) }).write(__rhs);
+                let __rhs = Complex {
+                    re: ({
+                        (*a.upgrade().deref())
+                            .decay()
+                            .offset((((i * 2) + 1) as usize))
+                    })
                     .with(|__s| __s.re),
-                img: ({ (*a.upgrade().deref()).decay().offset(((i * 2) as usize)) })
+                    img: ({
+                        (*a.upgrade().deref())
+                            .decay()
+                            .offset((((i * 2) + 1) as usize))
+                    })
                     .with(|__s| __s.img),
-            };
-            ({ (*A0.borrow()).decay().offset((i as usize)) }).write(__rhs);
-            let __rhs = Complex {
-                re: ({
-                    (*a.upgrade().deref())
-                        .decay()
-                        .offset((((i * 2) + 1) as usize))
-                })
-                .with(|__s| __s.re),
-                img: ({
-                    (*a.upgrade().deref())
-                        .decay()
-                        .offset((((i * 2) + 1) as usize))
-                })
-                .with(|__s| __s.img),
-            };
-            ({ (*A1.borrow()).decay().offset((i as usize)) }).write(__rhs);
+                };
+                ({ (*A1.borrow()).decay().offset((i as usize)) }).write(__rhs);
+            }
             i.postfix_inc();
         }
     }
@@ -112,36 +116,40 @@ pub fn fft_3(a: Ptr<Option<Value<Box<[Complex]>>>>, mut N: i32) -> Option<Value<
     {
         let mut k: i32 = 0;
         'loop_: while (k < (N / 2)) {
-            let mut yk: Complex = ({
-                let _z1: Complex = (*y0.decay().offset((k as usize)).upgrade().deref());
-                let _z2: Complex = ({
-                    let _z1: Complex = (*w.decay().offset((k as usize)).upgrade().deref());
-                    let _z2: Complex = (*y1.decay().offset((k as usize)).upgrade().deref());
-                    Product_0(_z1, _z2)
+            'for_body: {
+                let mut yk: Complex = ({
+                    let _z1: Complex = (*y0.decay().offset((k as usize)).upgrade().deref());
+                    let _z2: Complex = ({
+                        let _z1: Complex = (*w.decay().offset((k as usize)).upgrade().deref());
+                        let _z2: Complex = (*y1.decay().offset((k as usize)).upgrade().deref());
+                        Product_0(_z1, _z2)
+                    });
+                    Sum_1(_z1, _z2)
                 });
-                Sum_1(_z1, _z2)
-            });
-            y.decay().offset((k as usize)).write(Complex {
-                re: yk.re,
-                img: yk.img,
-            });
-            let mut yk_n2: Complex = ({
-                let _z1: Complex = (*y0.decay().offset((k as usize)).upgrade().deref());
-                let _z2: Complex = ({
-                    Neg_2(
-                        ({
-                            let _z1: Complex = (*w.decay().offset((k as usize)).upgrade().deref());
-                            let _z2: Complex = (*y1.decay().offset((k as usize)).upgrade().deref());
-                            Product_0(_z1, _z2)
-                        }),
-                    )
+                y.decay().offset((k as usize)).write(Complex {
+                    re: yk.re,
+                    img: yk.img,
                 });
-                Sum_1(_z1, _z2)
-            });
-            y.decay().offset(((k + (N / 2)) as usize)).write(Complex {
-                re: yk_n2.re,
-                img: yk_n2.img,
-            });
+                let mut yk_n2: Complex = ({
+                    let _z1: Complex = (*y0.decay().offset((k as usize)).upgrade().deref());
+                    let _z2: Complex = ({
+                        Neg_2(
+                            ({
+                                let _z1: Complex =
+                                    (*w.decay().offset((k as usize)).upgrade().deref());
+                                let _z2: Complex =
+                                    (*y1.decay().offset((k as usize)).upgrade().deref());
+                                Product_0(_z1, _z2)
+                            }),
+                        )
+                    });
+                    Sum_1(_z1, _z2)
+                });
+                y.decay().offset(((k + (N / 2)) as usize)).write(Complex {
+                    re: yk_n2.re,
+                    img: yk_n2.img,
+                });
+            }
             k.postfix_inc();
         }
     }
@@ -162,11 +170,13 @@ fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while (i < N) {
-            let __rhs = Complex {
-                re: ((i as f64) + 1_f64),
-                img: 0_f64,
-            };
-            ({ (*a.borrow()).decay().offset((i as usize)) }).write(__rhs);
+            'for_body: {
+                let __rhs = Complex {
+                    re: ((i as f64) + 1_f64),
+                    img: 0_f64,
+                };
+                ({ (*a.borrow()).decay().offset((i as usize)) }).write(__rhs);
+            }
             i.postfix_inc();
         }
     }
@@ -180,10 +190,12 @@ fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while (i < N) {
-            let __rhs = ((b.decay().offset((i as usize)).with(|__s| __s.re).round()) as i32);
-            reals.decay().offset((i as usize)).write(__rhs);
-            let __rhs = ((b.decay().offset((i as usize)).with(|__s| __s.img).round()) as i32);
-            imgs.decay().offset((i as usize)).write(__rhs);
+            'for_body: {
+                let __rhs = ((b.decay().offset((i as usize)).with(|__s| __s.re).round()) as i32);
+                reals.decay().offset((i as usize)).write(__rhs);
+                let __rhs = ((b.decay().offset((i as usize)).with(|__s| __s.img).round()) as i32);
+                imgs.decay().offset((i as usize)).write(__rhs);
+            }
             i.prefix_inc();
         }
     }

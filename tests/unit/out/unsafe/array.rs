@@ -19,7 +19,9 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (N)) {
-            arr1[(i) as usize] = ((i) + (arr2[(i) as usize]));
+            'for_body: {
+                arr1[(i) as usize] = ((i) + (arr2[(i) as usize]));
+            }
             i.prefix_inc();
         }
     }
@@ -27,7 +29,9 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (N)) {
-            fatorial *= arr1[(i) as usize];
+            'for_body: {
+                fatorial *= arr1[(i) as usize];
+            }
             i.prefix_inc();
         }
     }

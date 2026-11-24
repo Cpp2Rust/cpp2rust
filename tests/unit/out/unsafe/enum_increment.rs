@@ -22,7 +22,9 @@ unsafe fn main_0() -> i32 {
     {
         let mut c: color = color_RED;
         'loop_: while ((c as u32) < ((color_COLOR_LAST as i32) as u32)) {
-            count.postfix_inc();
+            'for_body: {
+                count.postfix_inc();
+            }
             c.postfix_inc();
         }
     }
