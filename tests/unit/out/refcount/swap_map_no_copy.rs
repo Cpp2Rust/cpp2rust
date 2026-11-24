@@ -220,20 +220,24 @@ pub fn swapped_once_6() -> bool {
         && (move_assigns_4.with(|rc| *rc.borrow()) == 2))
         && (moved_dtors_5.with(|rc| *rc.borrow()) == 1);
     moves_3.with(|rc| {
-        *rc.borrow_mut() = match (
-            {
-                match ({ 0 }, &mut (*moved_dtors_5.with(Value::clone).borrow_mut())) {
-                    (__tmp_2, __tmp_3) => {
-                        (*__tmp_3) = __tmp_2;
-                        (*__tmp_3).clone()
+        *rc.borrow_mut() = {
+            match (
+                {
+                    {
+                        match ({ 0 }, &mut (*moved_dtors_5.with(Value::clone).borrow_mut())) {
+                            (__tmp_2, __tmp_3) => {
+                                (*__tmp_3) = __tmp_2;
+                                (*__tmp_3).clone()
+                            }
+                        }
                     }
+                },
+                &mut (*move_assigns_4.with(Value::clone).borrow_mut()),
+            ) {
+                (__tmp_0, __tmp_1) => {
+                    (*__tmp_1) = __tmp_0;
+                    (*__tmp_1).clone()
                 }
-            },
-            &mut (*move_assigns_4.with(Value::clone).borrow_mut()),
-        ) {
-            (__tmp_0, __tmp_1) => {
-                (*__tmp_1) = __tmp_0;
-                (*__tmp_1).clone()
             }
         }
     });

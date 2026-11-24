@@ -2426,6 +2426,8 @@ void ConverterRefCount::ConvertAssignment(
     clang::Expr *lhs, clang::Expr *rhs, std::string_view assign_operator,
     clang::CompoundAssignOperator *compound) {
   if (compound || isRValue()) {
+    // End target borrows before an enclosing expression consumes the result.
+    PushBrace brace(*this);
     auto right = NewTempName();
     auto left = NewTempName();
     auto rhs_value = ConvertFreshRValue(

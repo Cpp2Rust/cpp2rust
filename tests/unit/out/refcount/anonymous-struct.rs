@@ -113,18 +113,22 @@ fn main_0() -> i32 {
     s.x = 1;
     s.z = 2;
     assert!(
-        (match ({ 1 }, &mut (s.x)) {
-            (__tmp_0, __tmp_1) => {
-                (*__tmp_1) = __tmp_0;
-                (*__tmp_1).clone()
+        ({
+            match ({ 1 }, &mut (s.x)) {
+                (__tmp_0, __tmp_1) => {
+                    (*__tmp_1) = __tmp_0;
+                    (*__tmp_1).clone()
+                }
             }
         } != 0)
     );
     assert!(
-        (match ({ 2 }, &mut (s.z)) {
-            (__tmp_2, __tmp_3) => {
-                (*__tmp_3) = __tmp_2;
-                (*__tmp_3).clone()
+        ({
+            match ({ 2 }, &mut (s.z)) {
+                (__tmp_2, __tmp_3) => {
+                    (*__tmp_3) = __tmp_2;
+                    (*__tmp_3).clone()
+                }
             }
         } != 0)
     );

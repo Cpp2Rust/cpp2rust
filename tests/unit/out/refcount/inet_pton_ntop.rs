@@ -30,10 +30,12 @@ pub fn test_s6_addr_access_0() {
         ((((elem!(In6Addr::s6_addr(addr.as_pointer()), 0).read()) as i32) == 32)
             && (((elem!(In6Addr::s6_addr((ap).clone()), 1).read()) as i32) == 1))
     );
-    match ({ 4 }, &(elem!(In6Addr::s6_addr(addr.as_pointer()), 15))) {
-        (__tmp_1, __tmp_2) => __tmp_2.with_mut(|__tmp_2| {
-            (*__tmp_2) = (((*__tmp_2) as i32) + (__tmp_1 as i32)) as u8;
-        }),
+    {
+        match ({ 4 }, &(elem!(In6Addr::s6_addr(addr.as_pointer()), 15))) {
+            (__tmp_1, __tmp_2) => __tmp_2.with_mut(|__tmp_2| {
+                (*__tmp_2) = (((*__tmp_2) as i32) + (__tmp_1 as i32)) as u8;
+            }),
+        }
     };
     elem!(In6Addr::s6_addr((ap).clone()), 15).with_mut(|__v| __v.postfix_inc());
     assert!((((elem!(In6Addr::s6_addr(addr.as_pointer()), 15).read()) as i32) == 6));

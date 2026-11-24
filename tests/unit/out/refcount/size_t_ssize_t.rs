@@ -35,19 +35,25 @@ fn main_0() -> i32 {
         (chain == (((20 + 10) + 5) as usize).wrapping_add((::std::mem::size_of::<i64>() as usize)))
     );
     let mut acc: usize = 100_usize;
-    match ({ ::std::mem::size_of::<f64>() }, &mut (acc)) {
-        (__tmp_0, __tmp_1) => {
-            (*__tmp_1) = (((*__tmp_1) as u64).wrapping_add((__tmp_0 as u64))) as usize;
+    {
+        match ({ ::std::mem::size_of::<f64>() }, &mut (acc)) {
+            (__tmp_0, __tmp_1) => {
+                (*__tmp_1) = (((*__tmp_1) as u64).wrapping_add((__tmp_0 as u64))) as usize;
+            }
         }
     };
-    match ({ 2_usize }, &mut (acc)) {
-        (__tmp_2, __tmp_3) => {
-            (*__tmp_3) = (((*__tmp_3) as usize).wrapping_mul((__tmp_2 as usize))) as usize;
+    {
+        match ({ 2_usize }, &mut (acc)) {
+            (__tmp_2, __tmp_3) => {
+                (*__tmp_3) = (((*__tmp_3) as usize).wrapping_mul((__tmp_2 as usize))) as usize;
+            }
         }
     };
-    match ({ (*ul.borrow()) }, &mut (acc)) {
-        (__tmp_4, __tmp_5) => {
-            (*__tmp_5) = (((*__tmp_5) as u64).wrapping_sub((__tmp_4 as u64))) as usize;
+    {
+        match ({ (*ul.borrow()) }, &mut (acc)) {
+            (__tmp_4, __tmp_5) => {
+                (*__tmp_5) = (((*__tmp_5) as u64).wrapping_sub((__tmp_4 as u64))) as usize;
+            }
         }
     };
     assert!(
@@ -119,10 +125,12 @@ fn main_0() -> i32 {
     {
         let mut i: usize = 0_usize;
         'loop_: while (i < count) {
-            match ({ (data[(i) as usize] as usize) }, &mut (total)) {
-                (__tmp_11, __tmp_12) => {
-                    (*__tmp_12) =
-                        (((*__tmp_12) as usize).wrapping_add((__tmp_11 as usize))) as usize;
+            {
+                match ({ (data[(i) as usize] as usize) }, &mut (total)) {
+                    (__tmp_11, __tmp_12) => {
+                        (*__tmp_12) =
+                            (((*__tmp_12) as usize).wrapping_add((__tmp_11 as usize))) as usize;
+                    }
                 }
             };
             i.postfix_inc();

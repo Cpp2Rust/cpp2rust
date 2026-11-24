@@ -55,10 +55,12 @@ fn main_0() -> i32 {
             };
         },
         |mut x: u32, mut y: u32| {
-            match ({ (x).wrapping_mul(y) }, &(total)) {
-                (__tmp_0, __tmp_1) => __tmp_1.with_mut(|__tmp_1| {
-                    (*__tmp_1) = (((*__tmp_1) as u32).wrapping_add((__tmp_0 as u32))) as i32;
-                }),
+            {
+                match ({ (x).wrapping_mul(y) }, &(total)) {
+                    (__tmp_0, __tmp_1) => __tmp_1.with_mut(|__tmp_1| {
+                        (*__tmp_1) = (((*__tmp_1) as u32).wrapping_add((__tmp_0 as u32))) as i32;
+                    }),
+                }
             };
         }
     )));

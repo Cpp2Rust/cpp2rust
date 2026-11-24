@@ -38,24 +38,26 @@ thread_local!(
     pub static assigned_4: Value<i32> = Rc::new(RefCell::new({
         let __tmp_4: Value<i32>;
         let __tmp_5: Value<i32>;
-        (match (
-            {
+        ({
+            match (
                 {
-                    __tmp_4 = Rc::new(RefCell::new(6));
-                    __tmp_5 = Rc::new(RefCell::new(5));
-                    (if CppLess::less(&__tmp_4.as_pointer(), &__tmp_5.as_pointer()) {
-                        __tmp_4.as_pointer()
-                    } else {
-                        __tmp_5.as_pointer()
+                    {
+                        __tmp_4 = Rc::new(RefCell::new(6));
+                        __tmp_5 = Rc::new(RefCell::new(5));
+                        (if CppLess::less(&__tmp_4.as_pointer(), &__tmp_5.as_pointer()) {
+                            __tmp_4.as_pointer()
+                        } else {
+                            __tmp_5.as_pointer()
+                        }
+                        .read())
                     }
-                    .read())
+                },
+                &mut (*x_2.with(Value::clone).borrow_mut()),
+            ) {
+                (__tmp_2, __tmp_3) => {
+                    (*__tmp_3) = __tmp_2;
+                    (*__tmp_3).clone()
                 }
-            },
-            &mut (*x_2.with(Value::clone).borrow_mut()),
-        ) {
-            (__tmp_2, __tmp_3) => {
-                (*__tmp_3) = __tmp_2;
-                (*__tmp_3).clone()
             }
         })
     }));
@@ -64,24 +66,26 @@ thread_local!(
     pub static accumulated_5: Value<i32> = Rc::new(RefCell::new({
         let __tmp_8: Value<i32>;
         let __tmp_9: Value<i32>;
-        (match (
-            {
+        ({
+            match (
                 {
-                    __tmp_8 = Rc::new(RefCell::new(1));
-                    __tmp_9 = Rc::new(RefCell::new(2));
-                    (if CppLess::less(&__tmp_8.as_pointer(), &__tmp_9.as_pointer()) {
-                        __tmp_9.as_pointer()
-                    } else {
-                        __tmp_8.as_pointer()
+                    {
+                        __tmp_8 = Rc::new(RefCell::new(1));
+                        __tmp_9 = Rc::new(RefCell::new(2));
+                        (if CppLess::less(&__tmp_8.as_pointer(), &__tmp_9.as_pointer()) {
+                            __tmp_9.as_pointer()
+                        } else {
+                            __tmp_8.as_pointer()
+                        }
+                        .read())
                     }
-                    .read())
+                },
+                &mut (*y_3.with(Value::clone).borrow_mut()),
+            ) {
+                (__tmp_6, __tmp_7) => {
+                    (*__tmp_7) = (((*__tmp_7) as i32) + (__tmp_6 as i32)) as i32;
+                    (*__tmp_7).clone()
                 }
-            },
-            &mut (*y_3.with(Value::clone).borrow_mut()),
-        ) {
-            (__tmp_6, __tmp_7) => {
-                (*__tmp_7) = (((*__tmp_7) as i32) + (__tmp_6 as i32)) as i32;
-                (*__tmp_7).clone()
             }
         })
     }));
@@ -89,18 +93,20 @@ thread_local!(
 thread_local!(
     pub static call_assigned_6: Value<i32> = Rc::new(RefCell::new({
         let __tmp_12: Value<i32>;
-        (match (
-            {
-                ({
-                    __tmp_12 = Rc::new(RefCell::new(5));
-                    read_0(__tmp_12.as_pointer())
-                })
-            },
-            &mut (*x_2.with(Value::clone).borrow_mut()),
-        ) {
-            (__tmp_10, __tmp_11) => {
-                (*__tmp_11) = __tmp_10;
-                (*__tmp_11).clone()
+        ({
+            match (
+                {
+                    ({
+                        __tmp_12 = Rc::new(RefCell::new(5));
+                        read_0(__tmp_12.as_pointer())
+                    })
+                },
+                &mut (*x_2.with(Value::clone).borrow_mut()),
+            ) {
+                (__tmp_10, __tmp_11) => {
+                    (*__tmp_11) = __tmp_10;
+                    (*__tmp_11).clone()
+                }
             }
         })
     }));

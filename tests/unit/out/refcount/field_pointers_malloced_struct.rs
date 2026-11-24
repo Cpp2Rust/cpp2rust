@@ -50,19 +50,23 @@ fn main_0() -> i32 {
     }
     assert!((s.with(|__s| __s.a) == 5) && (s.with(|__s| __s.c) == 1));
     let mut x: i32 = ({ s.with(|__s| __s.a) } + {
-        (match ({ 3 }, &(field!(s, b))) {
-            (__tmp_0, __tmp_1) => __tmp_1.with_mut(|__tmp_1| {
-                (*__tmp_1) = __tmp_0;
-                (*__tmp_1).clone()
-            }),
+        ({
+            match ({ 3 }, &(field!(s, b))) {
+                (__tmp_0, __tmp_1) => __tmp_1.with_mut(|__tmp_1| {
+                    (*__tmp_1) = __tmp_0;
+                    (*__tmp_1).clone()
+                }),
+            }
         })
     });
     assert!((x == 8) && (s.with(|__s| __s.b) == 3));
     let mut y: i32 = 0;
-    let __rhs = (match ({ 99 }, &mut (y)) {
-        (__tmp_2, __tmp_3) => {
-            (*__tmp_3) = __tmp_2;
-            (*__tmp_3).clone()
+    let __rhs = ({
+        match ({ 99 }, &mut (y)) {
+            (__tmp_2, __tmp_3) => {
+                (*__tmp_3) = __tmp_2;
+                (*__tmp_3).clone()
+            }
         }
     });
     field!(s, c).write(__rhs);

@@ -27,29 +27,35 @@ fn main_0() -> i32 {
             let total: Ptr<i32> = total.as_pointer();
         },
         || {
-            match (
-                {
-                    (::std::mem::size_of::<i8>() as usize)
-                        .wrapping_add((::std::mem::size_of::<i8>() as usize))
-                },
-                &(total),
-            ) {
-                (__tmp_0, __tmp_1) => __tmp_1.with_mut(|__tmp_1| {
-                    (*__tmp_1) = (((*__tmp_1) as usize).wrapping_add((__tmp_0 as usize))) as i32;
-                }),
+            {
+                match (
+                    {
+                        (::std::mem::size_of::<i8>() as usize)
+                            .wrapping_add((::std::mem::size_of::<i8>() as usize))
+                    },
+                    &(total),
+                ) {
+                    (__tmp_0, __tmp_1) => __tmp_1.with_mut(|__tmp_1| {
+                        (*__tmp_1) =
+                            (((*__tmp_1) as usize).wrapping_add((__tmp_0 as usize))) as i32;
+                    }),
+                }
             };
         },
         || {
-            match (
-                {
-                    (::std::mem::size_of::<i32>() as usize)
-                        .wrapping_add((::std::mem::size_of::<i8>() as usize))
-                },
-                &(total),
-            ) {
-                (__tmp_2, __tmp_3) => __tmp_3.with_mut(|__tmp_3| {
-                    (*__tmp_3) = (((*__tmp_3) as usize).wrapping_add((__tmp_2 as usize))) as i32;
-                }),
+            {
+                match (
+                    {
+                        (::std::mem::size_of::<i32>() as usize)
+                            .wrapping_add((::std::mem::size_of::<i8>() as usize))
+                    },
+                    &(total),
+                ) {
+                    (__tmp_2, __tmp_3) => __tmp_3.with_mut(|__tmp_3| {
+                        (*__tmp_3) =
+                            (((*__tmp_3) as usize).wrapping_add((__tmp_2 as usize))) as i32;
+                    }),
+                }
             };
         }
     )));

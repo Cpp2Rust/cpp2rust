@@ -22,17 +22,21 @@ pub fn main() {
 fn main_0() -> i32 {
     let mut a: i32 = 0;
     let mut b: i32 = 0_i32;
-    if (match ({ a }, &mut (b)) {
-        (__tmp_0, __tmp_1) => {
-            (*__tmp_1) = __tmp_0;
-            (*__tmp_1).clone()
+    if ({
+        match ({ a }, &mut (b)) {
+            (__tmp_0, __tmp_1) => {
+                (*__tmp_1) = __tmp_0;
+                (*__tmp_1).clone()
+            }
         }
     } != 0)
     {}
-    'loop_: while ((match ({ a }, &mut (b)) {
-        (__tmp_2, __tmp_3) => {
-            (*__tmp_3) = __tmp_2;
-            (*__tmp_3).clone()
+    'loop_: while (({
+        match ({ a }, &mut (b)) {
+            (__tmp_2, __tmp_3) => {
+                (*__tmp_3) = __tmp_2;
+                (*__tmp_3).clone()
+            }
         }
     }) != 0)
     {}
@@ -41,24 +45,30 @@ fn main_0() -> i32 {
     if (a < b) {}
     assert!((a == b));
     assert!(
-        !((match ({ b }, &mut (a)) {
-            (__tmp_4, __tmp_5) => {
-                (*__tmp_5) = __tmp_4;
-                (*__tmp_5).clone()
+        !(({
+            match ({ b }, &mut (a)) {
+                (__tmp_4, __tmp_5) => {
+                    (*__tmp_5) = __tmp_4;
+                    (*__tmp_5).clone()
+                }
             }
         }) != 0)
     );
     let mut c: bool = false;
-    c = (match ({ b }, &mut (a)) {
-        (__tmp_6, __tmp_7) => {
-            (*__tmp_7) = __tmp_6;
-            (*__tmp_7).clone()
+    c = ({
+        match ({ b }, &mut (a)) {
+            (__tmp_6, __tmp_7) => {
+                (*__tmp_7) = __tmp_6;
+                (*__tmp_7).clone()
+            }
         }
     } != 0);
-    c = ((match ({ a }, &mut (b)) {
-        (__tmp_8, __tmp_9) => {
-            (*__tmp_9) = __tmp_8;
-            (*__tmp_9).clone()
+    c = (({
+        match ({ a }, &mut (b)) {
+            (__tmp_8, __tmp_9) => {
+                (*__tmp_9) = __tmp_8;
+                (*__tmp_9).clone()
+            }
         }
     }) != 0);
     c = (a != 0);

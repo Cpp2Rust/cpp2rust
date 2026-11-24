@@ -24,11 +24,13 @@ impl Item {
     }
     pub fn new_2(counter: Ptr<i32>, mut amount: i32) -> Self {
         let __this: Item = Self {
-            value: match ({ amount }, &(counter)) {
-                (__tmp_0, __tmp_1) => __tmp_1.with_mut(|__tmp_1| {
-                    (*__tmp_1) = (((*__tmp_1) as i32) + (__tmp_0 as i32)) as i32;
-                    (*__tmp_1).clone()
-                }),
+            value: {
+                match ({ amount }, &(counter)) {
+                    (__tmp_0, __tmp_1) => __tmp_1.with_mut(|__tmp_1| {
+                        (*__tmp_1) = (((*__tmp_1) as i32) + (__tmp_0 as i32)) as i32;
+                        (*__tmp_1).clone()
+                    }),
+                }
             },
         };
         (*made_0.with(Value::clone).borrow_mut()).prefix_inc();

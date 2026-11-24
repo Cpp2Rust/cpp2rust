@@ -16,10 +16,12 @@ pub fn twice_2(mut x: u64) -> u64 {
     return (x).wrapping_mul(2_u64);
 }
 pub fn twice_in_place_3(x: Ptr<u64>) -> u64 {
-    match ({ 2_u64 }, &(x)) {
-        (__tmp_0, __tmp_1) => __tmp_1.with_mut(|__tmp_1| {
-            (*__tmp_1) = (((*__tmp_1) as u64).wrapping_mul((__tmp_0 as u64))) as u64;
-        }),
+    {
+        match ({ 2_u64 }, &(x)) {
+            (__tmp_0, __tmp_1) => __tmp_1.with_mut(|__tmp_1| {
+                (*__tmp_1) = (((*__tmp_1) as u64).wrapping_mul((__tmp_0 as u64))) as u64;
+            }),
+        }
     };
     return (x.read());
 }

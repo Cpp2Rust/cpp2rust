@@ -31,9 +31,11 @@ fn main_0() -> i32 {
             i.prefix_inc();
         }
     }
-    match ({ 5_u32 }, &mut (items[1_usize])) {
-        (__tmp_0, __tmp_1) => {
-            (*__tmp_1) = (((*__tmp_1) as u32).wrapping_add((__tmp_0 as u32))) as u32;
+    {
+        match ({ 5_u32 }, &mut (items[1_usize])) {
+            (__tmp_0, __tmp_1) => {
+                (*__tmp_1) = (((*__tmp_1) as u32).wrapping_add((__tmp_0 as u32))) as u32;
+            }
         }
     };
     items[2_usize].postfix_inc();
