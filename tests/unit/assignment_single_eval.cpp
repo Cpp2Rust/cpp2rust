@@ -17,6 +17,25 @@ template <class T> void test() {
   std::printf("simple %d %d %d %d\n", i, int(assigned), int(a[0]), int(a[1]));
 }
 
+template <class T> void test_comma() {
+  T x = 10;
+  int i = 0;
+  ((++i, x) += 5);
+  std::printf("direct void %d %d\n", i, int(x));
+  T result = ((++i, x) += 2);
+  std::printf("direct compound %d %d %d\n", i, int(result), int(x));
+  result = ((++i, x) = 99);
+  std::printf("direct simple %d %d %d\n", i, int(result), int(x));
+
+  T *p = &x;
+  ((++i, *p) += 5);
+  std::printf("indirect void %d %d\n", i, int(*p));
+  result = ((++i, *p) += 2);
+  std::printf("indirect compound %d %d %d\n", i, int(result), int(*p));
+  result = ((++i, *p) = 99);
+  std::printf("indirect simple %d %d %d\n", i, int(result), int(*p));
+}
+
 int global = 10;
 int observe_global(int assigned) { return assigned + global; }
 int observe(int assigned, const int *stored) { return assigned + *stored; }
@@ -45,6 +64,13 @@ int main() {
   test<unsigned>();
   test<short>();
   test<int>();
+  test_comma<unsigned>();
+  test_comma<short>();
+  unsigned values[2] = {10, 20};
+  unsigned (&ref)[2] = values;
+  int i = 0;
+  unsigned result = ((++i, ref)[0] += 5);
+  std::printf("array reference %d %u %u\n", i, result, values[0]);
   test_borrows();
   return 0;
 }

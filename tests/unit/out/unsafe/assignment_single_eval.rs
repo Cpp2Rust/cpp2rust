@@ -149,26 +149,268 @@ pub unsafe fn test_2() {
         )
     });
 }
-pub static mut global_3: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 10 });
-pub unsafe fn observe_global_4(mut assigned: i32) -> i32 {
-    return ((assigned) + (*std::cell::LazyCell::force_mut(&mut *&raw mut global_3)));
+pub unsafe fn test_comma_3() {
+    let mut x: u32 = 10_u32;
+    let mut i: i32 = 0;
+    match (
+        { 5_u32 },
+        &mut (*({
+            i.prefix_inc();
+            &mut x
+        })),
+    ) {
+        (__tmp_16, __tmp_17) => {
+            (*__tmp_17) = (((*__tmp_17) as u32).wrapping_add((__tmp_16 as u32))) as u32;
+        }
+    };
+    (unsafe {
+        libc::printf(
+            c"direct void %d %d\n".as_ptr() as *const libc::c_char,
+            (i),
+            (x as i32),
+        )
+    });
+    let mut result: u32 = (match (
+        { 2_u32 },
+        &mut (*({
+            i.prefix_inc();
+            &mut x
+        })),
+    ) {
+        (__tmp_18, __tmp_19) => {
+            (*__tmp_19) = (((*__tmp_19) as u32).wrapping_add((__tmp_18 as u32))) as u32;
+            (*__tmp_19).clone()
+        }
+    });
+    (unsafe {
+        libc::printf(
+            c"direct compound %d %d %d\n".as_ptr() as *const libc::c_char,
+            (i),
+            (result as i32),
+            (x as i32),
+        )
+    });
+    result = (match (
+        { 99_u32 },
+        &mut (*({
+            i.prefix_inc();
+            &mut x
+        })),
+    ) {
+        (__tmp_20, __tmp_21) => {
+            (*__tmp_21) = __tmp_20;
+            (*__tmp_21).clone()
+        }
+    });
+    (unsafe {
+        libc::printf(
+            c"direct simple %d %d %d\n".as_ptr() as *const libc::c_char,
+            (i),
+            (result as i32),
+            (x as i32),
+        )
+    });
+    let mut p: *mut u32 = (&mut x as *mut u32);
+    match (
+        { 5_u32 },
+        &mut (*({
+            i.prefix_inc();
+            (p).clone()
+        })),
+    ) {
+        (__tmp_22, __tmp_23) => {
+            (*__tmp_23) = (((*__tmp_23) as u32).wrapping_add((__tmp_22 as u32))) as u32;
+        }
+    };
+    (unsafe {
+        libc::printf(
+            c"indirect void %d %d\n".as_ptr() as *const libc::c_char,
+            (i),
+            ((*p) as i32),
+        )
+    });
+    result = (match (
+        { 2_u32 },
+        &mut (*({
+            i.prefix_inc();
+            (p).clone()
+        })),
+    ) {
+        (__tmp_24, __tmp_25) => {
+            (*__tmp_25) = (((*__tmp_25) as u32).wrapping_add((__tmp_24 as u32))) as u32;
+            (*__tmp_25).clone()
+        }
+    });
+    (unsafe {
+        libc::printf(
+            c"indirect compound %d %d %d\n".as_ptr() as *const libc::c_char,
+            (i),
+            (result as i32),
+            ((*p) as i32),
+        )
+    });
+    result = (match (
+        { 99_u32 },
+        &mut (*({
+            i.prefix_inc();
+            (p).clone()
+        })),
+    ) {
+        (__tmp_26, __tmp_27) => {
+            (*__tmp_27) = __tmp_26;
+            (*__tmp_27).clone()
+        }
+    });
+    (unsafe {
+        libc::printf(
+            c"indirect simple %d %d %d\n".as_ptr() as *const libc::c_char,
+            (i),
+            (result as i32),
+            ((*p) as i32),
+        )
+    });
 }
-pub unsafe fn observe_5(mut assigned: i32, mut stored: *const i32) -> i32 {
+pub unsafe fn test_comma_4() {
+    let mut x: i16 = 10_i16;
+    let mut i: i32 = 0;
+    match (
+        { 5 },
+        &mut (*({
+            i.prefix_inc();
+            &mut x
+        })),
+    ) {
+        (__tmp_28, __tmp_29) => {
+            (*__tmp_29) = (((*__tmp_29) as i32) + (__tmp_28 as i32)) as i16;
+        }
+    };
+    (unsafe {
+        libc::printf(
+            c"direct void %d %d\n".as_ptr() as *const libc::c_char,
+            (i),
+            (x as i32),
+        )
+    });
+    let mut result: i16 = (match (
+        { 2 },
+        &mut (*({
+            i.prefix_inc();
+            &mut x
+        })),
+    ) {
+        (__tmp_30, __tmp_31) => {
+            (*__tmp_31) = (((*__tmp_31) as i32) + (__tmp_30 as i32)) as i16;
+            (*__tmp_31).clone()
+        }
+    });
+    (unsafe {
+        libc::printf(
+            c"direct compound %d %d %d\n".as_ptr() as *const libc::c_char,
+            (i),
+            (result as i32),
+            (x as i32),
+        )
+    });
+    result = (match (
+        { 99_i16 },
+        &mut (*({
+            i.prefix_inc();
+            &mut x
+        })),
+    ) {
+        (__tmp_32, __tmp_33) => {
+            (*__tmp_33) = __tmp_32;
+            (*__tmp_33).clone()
+        }
+    });
+    (unsafe {
+        libc::printf(
+            c"direct simple %d %d %d\n".as_ptr() as *const libc::c_char,
+            (i),
+            (result as i32),
+            (x as i32),
+        )
+    });
+    let mut p: *mut i16 = (&mut x as *mut i16);
+    match (
+        { 5 },
+        &mut (*({
+            i.prefix_inc();
+            (p).clone()
+        })),
+    ) {
+        (__tmp_34, __tmp_35) => {
+            (*__tmp_35) = (((*__tmp_35) as i32) + (__tmp_34 as i32)) as i16;
+        }
+    };
+    (unsafe {
+        libc::printf(
+            c"indirect void %d %d\n".as_ptr() as *const libc::c_char,
+            (i),
+            ((*p) as i32),
+        )
+    });
+    result = (match (
+        { 2 },
+        &mut (*({
+            i.prefix_inc();
+            (p).clone()
+        })),
+    ) {
+        (__tmp_36, __tmp_37) => {
+            (*__tmp_37) = (((*__tmp_37) as i32) + (__tmp_36 as i32)) as i16;
+            (*__tmp_37).clone()
+        }
+    });
+    (unsafe {
+        libc::printf(
+            c"indirect compound %d %d %d\n".as_ptr() as *const libc::c_char,
+            (i),
+            (result as i32),
+            ((*p) as i32),
+        )
+    });
+    result = (match (
+        { 99_i16 },
+        &mut (*({
+            i.prefix_inc();
+            (p).clone()
+        })),
+    ) {
+        (__tmp_38, __tmp_39) => {
+            (*__tmp_39) = __tmp_38;
+            (*__tmp_39).clone()
+        }
+    });
+    (unsafe {
+        libc::printf(
+            c"indirect simple %d %d %d\n".as_ptr() as *const libc::c_char,
+            (i),
+            (result as i32),
+            ((*p) as i32),
+        )
+    });
+}
+pub static mut global_5: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 10 });
+pub unsafe fn observe_global_6(mut assigned: i32) -> i32 {
+    return ((assigned) + (*std::cell::LazyCell::force_mut(&mut *&raw mut global_5)));
+}
+pub unsafe fn observe_7(mut assigned: i32, mut stored: *const i32) -> i32 {
     return ((assigned) + (*stored));
 }
-pub unsafe fn test_borrows_6() {
+pub unsafe fn test_borrows_8() {
     (unsafe {
         libc::printf(
             c"%d\n".as_ptr() as *const libc::c_char,
             (unsafe {
-                observe_global_4(
+                observe_global_6(
                     match (
                         { 99 },
-                        &mut (*std::cell::LazyCell::force_mut(&mut *&raw mut global_3)),
+                        &mut (*std::cell::LazyCell::force_mut(&mut *&raw mut global_5)),
                     ) {
-                        (__tmp_16, __tmp_17) => {
-                            (*__tmp_17) = __tmp_16;
-                            (*__tmp_17).clone()
+                        (__tmp_40, __tmp_41) => {
+                            (*__tmp_41) = __tmp_40;
+                            (*__tmp_41).clone()
                         }
                     },
                 )
@@ -179,14 +421,14 @@ pub unsafe fn test_borrows_6() {
         libc::printf(
             c"%d\n".as_ptr() as *const libc::c_char,
             (unsafe {
-                observe_global_4(
+                observe_global_6(
                     match (
                         { 5 },
-                        &mut (*std::cell::LazyCell::force_mut(&mut *&raw mut global_3)),
+                        &mut (*std::cell::LazyCell::force_mut(&mut *&raw mut global_5)),
                     ) {
-                        (__tmp_18, __tmp_19) => {
-                            (*__tmp_19) = (((*__tmp_19) as i32) + (__tmp_18 as i32)) as i32;
-                            (*__tmp_19).clone()
+                        (__tmp_42, __tmp_43) => {
+                            (*__tmp_43) = (((*__tmp_43) as i32) + (__tmp_42 as i32)) as i32;
+                            (*__tmp_43).clone()
                         }
                     },
                 )
@@ -199,13 +441,13 @@ pub unsafe fn test_borrows_6() {
             c"%d\n".as_ptr() as *const libc::c_char,
             (unsafe {
                 let _assigned: i32 = match ({ 99 }, &mut (local)) {
-                    (__tmp_20, __tmp_21) => {
-                        (*__tmp_21) = __tmp_20;
-                        (*__tmp_21).clone()
+                    (__tmp_44, __tmp_45) => {
+                        (*__tmp_45) = __tmp_44;
+                        (*__tmp_45).clone()
                     }
                 };
                 let _stored: *const i32 = (&mut local as *mut i32).cast_const();
-                observe_5(_assigned, _stored)
+                observe_7(_assigned, _stored)
             }),
         )
     });
@@ -214,29 +456,29 @@ pub unsafe fn test_borrows_6() {
             c"%d\n".as_ptr() as *const libc::c_char,
             (unsafe {
                 let _assigned: i32 = match ({ 5 }, &mut (local)) {
-                    (__tmp_22, __tmp_23) => {
-                        (*__tmp_23) = (((*__tmp_23) as i32) + (__tmp_22 as i32)) as i32;
-                        (*__tmp_23).clone()
+                    (__tmp_46, __tmp_47) => {
+                        (*__tmp_47) = (((*__tmp_47) as i32) + (__tmp_46 as i32)) as i32;
+                        (*__tmp_47).clone()
                     }
                 };
                 let _stored: *const i32 = (&mut local as *mut i32).cast_const();
-                observe_5(_assigned, _stored)
+                observe_7(_assigned, _stored)
             }),
         )
     });
-    let mut record: Record_7 = Record_7 { value: 10 };
+    let mut record: Record_9 = Record_9 { value: 10 };
     (unsafe {
         libc::printf(
             c"%d\n".as_ptr() as *const libc::c_char,
             (unsafe {
                 let _assigned: i32 = match ({ 99 }, &mut (record.value)) {
-                    (__tmp_24, __tmp_25) => {
-                        (*__tmp_25) = __tmp_24;
-                        (*__tmp_25).clone()
+                    (__tmp_48, __tmp_49) => {
+                        (*__tmp_49) = __tmp_48;
+                        (*__tmp_49).clone()
                     }
                 };
                 let _stored: *const i32 = (&mut record.value as *mut i32).cast_const();
-                observe_5(_assigned, _stored)
+                observe_7(_assigned, _stored)
             }),
         )
     });
@@ -245,13 +487,13 @@ pub unsafe fn test_borrows_6() {
             c"%d\n".as_ptr() as *const libc::c_char,
             (unsafe {
                 let _assigned: i32 = match ({ 5 }, &mut (record.value)) {
-                    (__tmp_26, __tmp_27) => {
-                        (*__tmp_27) = (((*__tmp_27) as i32) + (__tmp_26 as i32)) as i32;
-                        (*__tmp_27).clone()
+                    (__tmp_50, __tmp_51) => {
+                        (*__tmp_51) = (((*__tmp_51) as i32) + (__tmp_50 as i32)) as i32;
+                        (*__tmp_51).clone()
                     }
                 };
                 let _stored: *const i32 = (&mut record.value as *mut i32).cast_const();
-                observe_5(_assigned, _stored)
+                observe_7(_assigned, _stored)
             }),
         )
     });
@@ -261,13 +503,13 @@ pub unsafe fn test_borrows_6() {
             c"%d\n".as_ptr() as *const libc::c_char,
             (unsafe {
                 let _assigned: i32 = match ({ 99 }, &mut (values[(0_usize)])) {
-                    (__tmp_28, __tmp_29) => {
-                        (*__tmp_29) = __tmp_28;
-                        (*__tmp_29).clone()
+                    (__tmp_52, __tmp_53) => {
+                        (*__tmp_53) = __tmp_52;
+                        (*__tmp_53).clone()
                     }
                 };
                 let _stored: *const i32 = (&mut values[(0_usize)] as *mut i32).cast_const();
-                observe_5(_assigned, _stored)
+                observe_7(_assigned, _stored)
             }),
         )
     });
@@ -276,20 +518,20 @@ pub unsafe fn test_borrows_6() {
             c"%d\n".as_ptr() as *const libc::c_char,
             (unsafe {
                 let _assigned: i32 = match ({ 5 }, &mut (values[(0_usize)])) {
-                    (__tmp_30, __tmp_31) => {
-                        (*__tmp_31) = (((*__tmp_31) as i32) + (__tmp_30 as i32)) as i32;
-                        (*__tmp_31).clone()
+                    (__tmp_54, __tmp_55) => {
+                        (*__tmp_55) = (((*__tmp_55) as i32) + (__tmp_54 as i32)) as i32;
+                        (*__tmp_55).clone()
                     }
                 };
                 let _stored: *const i32 = (&mut values[(0_usize)] as *mut i32).cast_const();
-                observe_5(_assigned, _stored)
+                observe_7(_assigned, _stored)
             }),
         )
     });
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
-pub struct Record_7 {
+pub struct Record_9 {
     pub value: i32,
 }
 pub fn main() {
@@ -302,9 +544,34 @@ unsafe fn main_0() -> i32 {
     (unsafe { test_0() });
     (unsafe { test_1() });
     (unsafe { test_2() });
-    (unsafe { test_borrows_6() });
+    (unsafe { test_comma_3() });
+    (unsafe { test_comma_4() });
+    let mut values: [u32; 2] = [10_u32, 20_u32];
+    let ref_: *mut [u32; 2] = &mut values;
+    let mut i: i32 = 0;
+    let mut result: u32 = (match (
+        { 5_u32 },
+        &mut ((*({
+            i.prefix_inc();
+            (ref_).clone()
+        }))[(0) as usize]),
+    ) {
+        (__tmp_56, __tmp_57) => {
+            (*__tmp_57) = (((*__tmp_57) as u32).wrapping_add((__tmp_56 as u32))) as u32;
+            (*__tmp_57).clone()
+        }
+    });
+    (unsafe {
+        libc::printf(
+            c"array reference %d %u %u\n".as_ptr() as *const libc::c_char,
+            (i),
+            (result),
+            (values[(0) as usize]),
+        )
+    });
+    (unsafe { test_borrows_8() });
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    std::cell::LazyCell::force(&*&raw const global_3);
+    std::cell::LazyCell::force(&*&raw const global_5);
 }

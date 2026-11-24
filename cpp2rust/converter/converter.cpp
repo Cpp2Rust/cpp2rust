@@ -3004,7 +3004,8 @@ bool Converter::VisitBinaryOperator(clang::BinaryOperator *expr) {
     ConvertAssignmentRef(expr);
     return false;
   }
-  if (expr->isAssignmentOp() && isLValue()) {
+  if (isLValue() &&
+      (expr->isAssignmentOp() || (expr->isCommaOp() && expr->isLValue()))) {
     EmitPointee(std::format("({})", ConvertFreshPointer(expr)), expr->getType(),
                 /*fresh=*/true);
     return false;
@@ -3082,6 +3083,8 @@ void Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
     StrCat(token::kSemiColon);
     if (isRValue()) {
       StrCat(ConvertFreshRValue(rhs));
+    } else if (isAddrOf()) {
+      StrCat(MakeFresh(ToString(rhs)));
     } else {
       Convert(rhs);
     }
@@ -3225,6 +3228,11 @@ void Converter::ConvertGenericBinaryOperator(clang::BinaryOperator *expr) {
 bool Converter::IsReferenceType(const clang::Expr *expr) const {
   const auto *e =
       IgnoreTransparentStdCall(ctx_, expr->IgnoreCasts())->IgnoreCasts();
+  if (const auto *comma =
+          clang::dyn_cast<clang::BinaryOperator>(e->IgnoreParens());
+      comma && comma->isCommaOp()) {
+    return IsReferenceType(comma->getRHS());
+  }
   if (const auto *call = clang::dyn_cast<clang::CallExpr>(e)) {
     return !clang::isa<clang::CXXOperatorCallExpr>(call) &&
            GetReturnTypeOfFunction(call)->isReferenceType();
