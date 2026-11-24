@@ -52,7 +52,11 @@ unsafe fn main_0() -> i32 {
     assert!(((s.ptr) == (a.as_mut_ptr().offset((2) as isize))) && ((a[(3) as usize]) == (24)));
     let mut b: *mut u8 = (a.as_mut_ptr() as *mut u8);
     (*b.offset((0) as isize)) = 7_u8;
-    (*b.offset((4) as isize)) = (((*b.offset((4) as isize)) as i32) + 1) as u8;
+    match ({ 1 }, &mut (*b.offset((4) as isize))) {
+        (__tmp_0, __tmp_1) => {
+            (*__tmp_1) = (((*__tmp_1) as i32) + (__tmp_0 as i32)) as u8;
+        }
+    };
     assert!(((a[(0) as usize]) == (7)) && ((a[(1) as usize]) == (3)));
     return 0;
 }

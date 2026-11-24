@@ -16,7 +16,13 @@ pub fn twice_2(mut x: u64) -> u64 {
     return (x).wrapping_mul(2_u64);
 }
 pub fn twice_in_place_3(x: Ptr<u64>) -> u64 {
-    x.write({ (x.read()).wrapping_mul(2_u64) });
+    {
+        match ({ 2_u64 }, &(x)) {
+            (__tmp_0, __tmp_1) => __tmp_1.with_mut(|__tmp_1| {
+                (*__tmp_1) = (((*__tmp_1) as u64).wrapping_mul((__tmp_0 as u64))) as u64;
+            }),
+        }
+    };
     return (x.read());
 }
 pub fn ret_size_4(mut v: i32) -> usize {
@@ -86,10 +92,10 @@ fn main_0() -> i32 {
     assert!(({ ((*m.borrow()) == 42_usize) }));
     assert!((({ call_fn_5(FnPtr::<fn(i32) -> usize>::new(ret_size_4), 3,) }) == 8_usize));
     let mut hh: HashHolder_unsigned_long__ptr__bool__ = {
-        let __tmp_0: Value<FnPtr<fn(bool) -> u64>> = Rc::new(RefCell::new(
+        let __tmp_2: Value<FnPtr<fn(bool) -> u64>> = Rc::new(RefCell::new(
             (FnPtr::<fn(bool) -> usize>::new(identity_hash_6)).cast::<fn(bool) -> u64>(),
         ));
-        HashHolder_unsigned_long__ptr__bool__::new({ __tmp_0.as_pointer() })
+        HashHolder_unsigned_long__ptr__bool__::new({ __tmp_2.as_pointer() })
     };
     assert!((({ hh.h.call(true,) }) == 1_u64));
     let mut handler: FnPtr<fn(i32)> = FnPtr::<fn(i32)>::new(add_to_total_8);

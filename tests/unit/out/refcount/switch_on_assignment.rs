@@ -12,8 +12,12 @@ pub fn switch_on_assignment_0(mut x: i32) -> i32 {
     'switch: {
         match {
             {
-                y = (x + 1);
-                y
+                match ({ (x + 1) }, &mut (y)) {
+                    (__tmp_0, __tmp_1) => {
+                        (*__tmp_1) = __tmp_0;
+                        (*__tmp_1).clone()
+                    }
+                }
             }
         } {
             __v if __v == 1 => {

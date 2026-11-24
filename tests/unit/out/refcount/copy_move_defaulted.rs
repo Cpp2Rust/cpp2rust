@@ -292,8 +292,12 @@ fn main_0() -> i32 {
     let g: Value<Explicit> = Rc::new(RefCell::new(Explicit::new({ 4 })));
     let _dtor_g = std::mem::DropGuard::new(g.clone(), |__p| __p.as_pointer().destructor());
     (*g.borrow_mut()) = {
-        (*e.borrow_mut()) = (*f.borrow()).clone();
-        (*e.borrow()).clone()
+        match ({ (*f.borrow()).clone() }, &mut (*e.borrow_mut())) {
+            (__tmp_2, __tmp_3) => {
+                (*__tmp_3) = __tmp_2;
+                (*__tmp_3).clone()
+            }
+        }
     };
     assert!(
         ({ same_0(g.as_pointer(), f.as_pointer(),) })
@@ -382,8 +386,8 @@ fn main_0() -> i32 {
         (*bufs.borrow_mut()).push(__a1)
     };
     {
-        let mut __tmp_2 = { Buffer::move_from({ bufs.decay().offset(0_usize) }) };
-        (*bufs.borrow_mut()).push(__tmp_2);
+        let mut __tmp_4 = { Buffer::move_from({ bufs.decay().offset(0_usize) }) };
+        (*bufs.borrow_mut()).push(__tmp_4);
     };
     assert!(
         ({

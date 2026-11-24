@@ -12,23 +12,43 @@ pub struct S {
     pub v: u32,
 }
 pub unsafe fn operator_add_assign_0(a: *mut S, b: *const S) -> *mut S {
-    (*a).v = ((*a).v).wrapping_add((*b).v);
+    match ({ (*b).v }, &mut ((*a).v)) {
+        (__tmp_0, __tmp_1) => {
+            (*__tmp_1) = (((*__tmp_1) as u32).wrapping_add((__tmp_0 as u32))) as u32;
+        }
+    };
     return a;
 }
 pub unsafe fn operator_sub_assign_1(a: *mut S, b: *const S) -> *mut S {
-    (*a).v = ((*a).v).wrapping_sub((*b).v);
+    match ({ (*b).v }, &mut ((*a).v)) {
+        (__tmp_2, __tmp_3) => {
+            (*__tmp_3) = (((*__tmp_3) as u32).wrapping_sub((__tmp_2 as u32))) as u32;
+        }
+    };
     return a;
 }
 pub unsafe fn operator_mul_assign_2(a: *mut S, b: *const S) -> *mut S {
-    (*a).v = ((*a).v).wrapping_mul((*b).v);
+    match ({ (*b).v }, &mut ((*a).v)) {
+        (__tmp_4, __tmp_5) => {
+            (*__tmp_5) = (((*__tmp_5) as u32).wrapping_mul((__tmp_4 as u32))) as u32;
+        }
+    };
     return a;
 }
 pub unsafe fn operator_div_assign_3(a: *mut S, b: *const S) -> *mut S {
-    (*a).v = ((*a).v).wrapping_div((*b).v);
+    match ({ (*b).v }, &mut ((*a).v)) {
+        (__tmp_6, __tmp_7) => {
+            (*__tmp_7) = (((*__tmp_7) as u32).wrapping_div((__tmp_6 as u32))) as u32;
+        }
+    };
     return a;
 }
 pub unsafe fn operator_rem_assign_4(a: *mut S, b: *const S) -> *mut S {
-    (*a).v = ((*a).v).wrapping_rem((*b).v);
+    match ({ (*b).v }, &mut ((*a).v)) {
+        (__tmp_8, __tmp_9) => {
+            (*__tmp_9) = (((*__tmp_9) as u32).wrapping_rem((__tmp_8 as u32))) as u32;
+        }
+    };
     return a;
 }
 pub unsafe fn operator_bitand_assign_5(a: *mut S, b: *const S) -> *mut S {

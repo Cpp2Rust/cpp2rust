@@ -277,12 +277,16 @@ pub trait Templated_char_Impl {
 }
 impl Templated_char_Impl for Ptr<Templated_char_> {
     fn destructor(&self) {
-        global_0.with(|rc| {
-            *rc.borrow_mut() = {
-                ((global_0.with(|rc| *rc.borrow()) as usize)
-                    .wrapping_add((::std::mem::size_of::<i8>() as usize))) as i32
+        {
+            match (
+                { ::std::mem::size_of::<i8>() },
+                &mut (*global_0.with(Value::clone).borrow_mut()),
+            ) {
+                (__tmp_0, __tmp_1) => {
+                    (*__tmp_1) = (((*__tmp_1) as usize).wrapping_add((__tmp_0 as usize))) as i32;
+                }
             }
-        });
+        };
     }
 }
 pub trait Templated_int_Impl {
@@ -290,12 +294,16 @@ pub trait Templated_int_Impl {
 }
 impl Templated_int_Impl for Ptr<Templated_int_> {
     fn destructor(&self) {
-        global_0.with(|rc| {
-            *rc.borrow_mut() = {
-                ((global_0.with(|rc| *rc.borrow()) as usize)
-                    .wrapping_add((::std::mem::size_of::<i32>() as usize))) as i32
+        {
+            match (
+                { ::std::mem::size_of::<i32>() },
+                &mut (*global_0.with(Value::clone).borrow_mut()),
+            ) {
+                (__tmp_2, __tmp_3) => {
+                    (*__tmp_3) = (((*__tmp_3) as usize).wrapping_add((__tmp_2 as usize))) as i32;
+                }
             }
-        });
+        };
     }
 }
 pub fn __cpp2rust_init_globals() {

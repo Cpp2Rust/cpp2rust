@@ -105,7 +105,13 @@ fn main_0() -> i32 {
     );
     let mut b: Ptr<u8> = a.decay().reinterpret_cast::<u8>();
     elem!(b, 0).write(7_u8);
-    elem!(b, 4).write({ (((elem!(b, 4).read()) as i32) + 1) as u8 });
+    {
+        match ({ 1 }, &(elem!(b, 4))) {
+            (__tmp_0, __tmp_1) => __tmp_1.with_mut(|__tmp_1| {
+                (*__tmp_1) = (((*__tmp_1) as i32) + (__tmp_0 as i32)) as u8;
+            }),
+        }
+    };
     assert!(({ ((*a.borrow())[(0) as usize] == 7) && ((*a.borrow())[(1) as usize] == 3) }));
     return 0;
 }

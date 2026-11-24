@@ -7,7 +7,13 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn array_ref_0(a: Ptr<u64>) -> u64 {
-    elem!(a, 0).write({ (elem!(a, 0).read()).wrapping_add(1_u64) });
+    {
+        match ({ 1_u64 }, &(elem!(a, 0))) {
+            (__tmp_0, __tmp_1) => __tmp_1.with_mut(|__tmp_1| {
+                (*__tmp_1) = (((*__tmp_1) as u64).wrapping_add((__tmp_0 as u64))) as u64;
+            }),
+        }
+    };
     return (elem!(a, (3_u64 as u64).wrapping_sub(1_u64)).read());
 }
 #[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]

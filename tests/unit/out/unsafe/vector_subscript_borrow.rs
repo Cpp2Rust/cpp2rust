@@ -27,7 +27,11 @@ unsafe fn main_0() -> i32 {
             i.prefix_inc();
         }
     }
-    items[(1_usize)] = (items[(1_usize)]).wrapping_add(5_u32);
+    match ({ 5_u32 }, &mut (items[(1_usize)])) {
+        (__tmp_0, __tmp_1) => {
+            (*__tmp_1) = (((*__tmp_1) as u32).wrapping_add((__tmp_0 as u32))) as u32;
+        }
+    };
     items[(2_usize)].postfix_inc();
     assert!(
         (((items[(0_usize)]) == (0_u32)) && ((items[(1_usize)]) == (7_u32)))

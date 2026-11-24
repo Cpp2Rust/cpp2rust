@@ -221,13 +221,24 @@ pub fn swapped_once_6() -> bool {
         && (moved_dtors_5.with(|rc| *rc.borrow()) == 1);
     moves_3.with(|rc| {
         *rc.borrow_mut() = {
-            move_assigns_4.with(|rc| {
-                *rc.borrow_mut() = {
-                    moved_dtors_5.with(|rc| *rc.borrow_mut() = 0);
-                    moved_dtors_5.with(|rc| *rc.borrow())
+            match (
+                {
+                    {
+                        match ({ 0 }, &mut (*moved_dtors_5.with(Value::clone).borrow_mut())) {
+                            (__tmp_2, __tmp_3) => {
+                                (*__tmp_3) = __tmp_2;
+                                (*__tmp_3).clone()
+                            }
+                        }
+                    }
+                },
+                &mut (*move_assigns_4.with(Value::clone).borrow_mut()),
+            ) {
+                (__tmp_0, __tmp_1) => {
+                    (*__tmp_1) = __tmp_0;
+                    (*__tmp_1).clone()
                 }
-            });
-            move_assigns_4.with(|rc| *rc.borrow())
+            }
         }
     });
     return ok;
@@ -261,10 +272,10 @@ fn main_0() -> i32 {
         let _o: Value<Tracked> = Rc::new(RefCell::new(Tracked::new_1({ 10 })));
         TrackedImpl::move_assign(
             &match (Rc::new(RefCell::new(1)).as_pointer(),) {
-                (__tmp_0,) => {
+                (__tmp_4,) => {
                     ({
                         (*m1.borrow_mut()).subscript_move(
-                            __tmp_0,
+                            __tmp_4,
                             |__k| cpp_move!(__k),
                             || <Tracked>::default(),
                         )
@@ -278,10 +289,10 @@ fn main_0() -> i32 {
         let _o: Value<Tracked> = Rc::new(RefCell::new(Tracked::new_1({ 20 })));
         TrackedImpl::move_assign(
             &match (Rc::new(RefCell::new(2)).as_pointer(),) {
-                (__tmp_1,) => {
+                (__tmp_5,) => {
                     ({
                         (*m1.borrow_mut()).subscript_move(
-                            __tmp_1,
+                            __tmp_5,
                             |__k| cpp_move!(__k),
                             || <Tracked>::default(),
                         )
@@ -296,10 +307,10 @@ fn main_0() -> i32 {
         let _o: Value<Tracked> = Rc::new(RefCell::new(Tracked::new_1({ 30 })));
         TrackedImpl::move_assign(
             &match (Rc::new(RefCell::new(3)).as_pointer(),) {
-                (__tmp_2,) => {
+                (__tmp_6,) => {
                     ({
                         (*m2.borrow_mut()).subscript_move(
-                            __tmp_2,
+                            __tmp_6,
                             |__k| cpp_move!(__k),
                             || <Tracked>::default(),
                         )
@@ -312,10 +323,10 @@ fn main_0() -> i32 {
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
     cpp_swap!(
         match (Rc::new(RefCell::new(1)).as_pointer(),) {
-            (__tmp_3,) => {
+            (__tmp_7,) => {
                 ({
                     (*m1.borrow_mut()).subscript_move(
-                        __tmp_3,
+                        __tmp_7,
                         |__k| cpp_move!(__k),
                         || <Tracked>::default(),
                     )
@@ -323,10 +334,10 @@ fn main_0() -> i32 {
             }
         },
         match (Rc::new(RefCell::new(2)).as_pointer(),) {
-            (__tmp_4,) => {
+            (__tmp_8,) => {
                 ({
                     (*m1.borrow_mut()).subscript_move(
-                        __tmp_4,
+                        __tmp_8,
                         |__k| cpp_move!(__k),
                         || <Tracked>::default(),
                     )
@@ -336,10 +347,10 @@ fn main_0() -> i32 {
     );
     assert!(
         (match (Rc::new(RefCell::new(1)).as_pointer(),) {
-            (__tmp_5,) => {
+            (__tmp_9,) => {
                 ({
                     (*m1.borrow_mut()).subscript_move(
-                        __tmp_5,
+                        __tmp_9,
                         |__k| cpp_move!(__k),
                         || <Tracked>::default(),
                     )
@@ -349,10 +360,10 @@ fn main_0() -> i32 {
         .with(|__s| __s.v)
             == 20)
             && (match (Rc::new(RefCell::new(2)).as_pointer(),) {
-                (__tmp_6,) => {
+                (__tmp_10,) => {
                     ({
                         (*m1.borrow_mut()).subscript_move(
-                            __tmp_6,
+                            __tmp_10,
                             |__k| cpp_move!(__k),
                             || <Tracked>::default(),
                         )
@@ -367,10 +378,10 @@ fn main_0() -> i32 {
     assert!(
         ((*m1.borrow()).len() == 1_usize)
             && (match (Rc::new(RefCell::new(3)).as_pointer(),) {
-                (__tmp_7,) => {
+                (__tmp_11,) => {
                     ({
                         (*m1.borrow_mut()).subscript_move(
-                            __tmp_7,
+                            __tmp_11,
                             |__k| cpp_move!(__k),
                             || <Tracked>::default(),
                         )
@@ -383,10 +394,10 @@ fn main_0() -> i32 {
     assert!(
         (((*m2.borrow()).len() == 2_usize)
             && (match (Rc::new(RefCell::new(1)).as_pointer(),) {
-                (__tmp_8,) => {
+                (__tmp_12,) => {
                     ({
                         (*m2.borrow_mut()).subscript_move(
-                            __tmp_8,
+                            __tmp_12,
                             |__k| cpp_move!(__k),
                             || <Tracked>::default(),
                         )
@@ -396,10 +407,10 @@ fn main_0() -> i32 {
             .with(|__s| __s.v)
                 == 20))
             && (match (Rc::new(RefCell::new(2)).as_pointer(),) {
-                (__tmp_9,) => {
+                (__tmp_13,) => {
                     ({
                         (*m2.borrow_mut()).subscript_move(
-                            __tmp_9,
+                            __tmp_13,
                             |__k| cpp_move!(__k),
                             || <Tracked>::default(),
                         )
@@ -426,12 +437,12 @@ fn main_0() -> i32 {
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
     let vec_: Value<Vec<Tracked>> = Rc::new(RefCell::new(Vec::new()));
     {
-        let mut __tmp_10 = { Tracked::new_1({ 4 }) };
-        (*vec_.borrow_mut()).push(__tmp_10);
+        let mut __tmp_14 = { Tracked::new_1({ 4 }) };
+        (*vec_.borrow_mut()).push(__tmp_14);
     };
     {
-        let mut __tmp_11 = { Tracked::new_1({ 5 }) };
-        (*vec_.borrow_mut()).push(__tmp_11);
+        let mut __tmp_15 = { Tracked::new_1({ 5 }) };
+        (*vec_.borrow_mut()).push(__tmp_15);
     };
     cpp_swap!(vec_.decay().offset(0_usize), vec_.decay().offset(1_usize));
     assert!(({ ({ (*vec_.borrow())[0_usize].v } == 5) && ({ (*vec_.borrow())[1_usize].v } == 4) }));
@@ -499,18 +510,18 @@ fn main_0() -> i32 {
     let grid: Value<Vec<Vec<Tracked>>> =
         Rc::new(RefCell::new(Vec::from_fn(2_usize, |_| Default::default())));
     match (grid.decay().offset(0_usize), { Tracked::new_1({ 1 }) }) {
-        (__tmp_12, mut __tmp_13) => {
-            __tmp_12.with_mut(|__v: &mut Vec<Tracked>| __v.push(__tmp_13));
+        (__tmp_16, mut __tmp_17) => {
+            __tmp_16.with_mut(|__v: &mut Vec<Tracked>| __v.push(__tmp_17));
         }
     };
     match (grid.decay().offset(0_usize), { Tracked::new_1({ 2 }) }) {
-        (__tmp_14, mut __tmp_15) => {
-            __tmp_14.with_mut(|__v: &mut Vec<Tracked>| __v.push(__tmp_15));
+        (__tmp_18, mut __tmp_19) => {
+            __tmp_18.with_mut(|__v: &mut Vec<Tracked>| __v.push(__tmp_19));
         }
     };
     match (grid.decay().offset(1_usize), { Tracked::new_1({ 3 }) }) {
-        (__tmp_16, mut __tmp_17) => {
-            __tmp_16.with_mut(|__v: &mut Vec<Tracked>| __v.push(__tmp_17));
+        (__tmp_20, mut __tmp_21) => {
+            __tmp_20.with_mut(|__v: &mut Vec<Tracked>| __v.push(__tmp_21));
         }
     };
     cpp_swap!(
@@ -538,10 +549,10 @@ fn main_0() -> i32 {
         let _o: Value<Tracked> = Rc::new(RefCell::new(Tracked::new_1({ 1 })));
         TrackedImpl::move_assign(
             &match (Rc::new(RefCell::new(1)).as_pointer(),) {
-                (__tmp_18,) => {
+                (__tmp_22,) => {
                     ({
                         (*maps.borrow_mut())[(0) as usize].subscript_move(
-                            __tmp_18,
+                            __tmp_22,
                             |__k| cpp_move!(__k),
                             || <Tracked>::default(),
                         )
@@ -555,10 +566,10 @@ fn main_0() -> i32 {
         let _o: Value<Tracked> = Rc::new(RefCell::new(Tracked::new_1({ 2 })));
         TrackedImpl::move_assign(
             &match (Rc::new(RefCell::new(2)).as_pointer(),) {
-                (__tmp_19,) => {
+                (__tmp_23,) => {
                     ({
                         (*maps.borrow_mut())[(1) as usize].subscript_move(
-                            __tmp_19,
+                            __tmp_23,
                             |__k| cpp_move!(__k),
                             || <Tracked>::default(),
                         )
@@ -572,10 +583,10 @@ fn main_0() -> i32 {
     assert!(
         ((*maps.borrow())[(0) as usize].len() == 1_usize)
             && (match (Rc::new(RefCell::new(2)).as_pointer(),) {
-                (__tmp_20,) => {
+                (__tmp_24,) => {
                     ({
                         (*maps.borrow_mut())[(0) as usize].subscript_move(
-                            __tmp_20,
+                            __tmp_24,
                             |__k| cpp_move!(__k),
                             || <Tracked>::default(),
                         )
@@ -588,10 +599,10 @@ fn main_0() -> i32 {
     assert!(
         ((*maps.borrow())[(1) as usize].len() == 1_usize)
             && (match (Rc::new(RefCell::new(1)).as_pointer(),) {
-                (__tmp_21,) => {
+                (__tmp_25,) => {
                     ({
                         (*maps.borrow_mut())[(1) as usize].subscript_move(
-                            __tmp_21,
+                            __tmp_25,
                             |__k| cpp_move!(__k),
                             || <Tracked>::default(),
                         )

@@ -19,7 +19,11 @@ pub unsafe fn twice_2(mut x: u64) -> u64 {
     return (x).wrapping_mul(2_u64);
 }
 pub unsafe fn twice_in_place_3(x: *mut u64) -> u64 {
-    (*x) = (*x).wrapping_mul(2_u64);
+    match ({ 2_u64 }, &mut (*x)) {
+        (__tmp_0, __tmp_1) => {
+            (*__tmp_1) = (((*__tmp_1) as u64).wrapping_mul((__tmp_0 as u64))) as u64;
+        }
+    };
     return (*x);
 }
 pub unsafe fn ret_size_4(mut v: i32) -> usize {
@@ -86,11 +90,11 @@ unsafe fn main_0() -> i32 {
     assert!(((m) == (42_usize)));
     assert!(((unsafe { call_fn_5(Some(ret_size_4), 3,) }) == (8_usize)));
     let mut hh: HashHolder_unsigned_long__ptr__bool__ = {
-        let mut __tmp_0: Option<unsafe fn(bool) -> u64> = std::mem::transmute::<
+        let mut __tmp_2: Option<unsafe fn(bool) -> u64> = std::mem::transmute::<
             Option<unsafe fn(bool) -> usize>,
             Option<unsafe fn(bool) -> u64>,
         >(Some(identity_hash_6));
-        HashHolder_unsigned_long__ptr__bool__::new({ &mut __tmp_0 })
+        HashHolder_unsigned_long__ptr__bool__::new({ &mut __tmp_2 })
     };
     assert!(((unsafe { (hh.h).unwrap()(true,) }) == (1_u64)));
     let mut handler: Option<unsafe fn(i32)> = Some(add_to_total_8);

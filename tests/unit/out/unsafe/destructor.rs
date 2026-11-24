@@ -74,9 +74,14 @@ pub struct Templated_char_ {
 }
 impl Templated_char_ {
     pub unsafe fn destructor(&mut self) {
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut global_0)) =
-            (((*std::cell::LazyCell::force_mut(&mut *&raw mut global_0)) as usize)
-                .wrapping_add((::std::mem::size_of::<libc::c_char>() as usize))) as i32;
+        match (
+            { ::std::mem::size_of::<libc::c_char>() },
+            &mut (*std::cell::LazyCell::force_mut(&mut *&raw mut global_0)),
+        ) {
+            (__tmp_0, __tmp_1) => {
+                (*__tmp_1) = (((*__tmp_1) as usize).wrapping_add((__tmp_0 as usize))) as i32;
+            }
+        };
     }
 }
 #[repr(C)]
@@ -86,9 +91,14 @@ pub struct Templated_int_ {
 }
 impl Templated_int_ {
     pub unsafe fn destructor(&mut self) {
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut global_0)) =
-            (((*std::cell::LazyCell::force_mut(&mut *&raw mut global_0)) as usize)
-                .wrapping_add((::std::mem::size_of::<i32>() as usize))) as i32;
+        match (
+            { ::std::mem::size_of::<i32>() },
+            &mut (*std::cell::LazyCell::force_mut(&mut *&raw mut global_0)),
+        ) {
+            (__tmp_2, __tmp_3) => {
+                (*__tmp_3) = (((*__tmp_3) as usize).wrapping_add((__tmp_2 as usize))) as i32;
+            }
+        };
     }
 }
 #[repr(C)]

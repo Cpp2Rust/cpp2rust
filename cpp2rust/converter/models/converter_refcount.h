@@ -299,8 +299,10 @@ public:
 
   std::string ConvertVarInitValue(clang::QualType qual_type, clang::Expr *expr);
 
-  void ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
-                         std::string_view assign_operator) override;
+  void
+  ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
+                    std::string_view assign_operator,
+                    clang::CompoundAssignOperator *compound = nullptr) override;
 
   bool ConvertCXXOperatorCallExpr(clang::CXXOperatorCallExpr *expr) override;
 
@@ -455,11 +457,6 @@ private:
   // be bound to a variable first.
   bool CanBraceAssignedValue(clang::Expr *lhs, clang::Expr *rhs,
                              std::string_view assign_operator);
-
-  // Emits `lhs = value`, where value is the result of the compound assignment
-  // `lhs op= rhs` and thus reads lhs.
-  void EmitCompoundSetOrAssign(clang::Expr *lhs, clang::Expr *rhs,
-                               std::string_view value);
 
   // If lhs is a direct reference to a global/static value (not a reference
   // type), emits `var.with(|rc| *rc.borrow_mut() <op> <rhs>)` and returns

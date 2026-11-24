@@ -55,7 +55,13 @@ fn main_0() -> i32 {
             };
         },
         |mut x: u32, mut y: u32| {
-            total.write({ (((total.read()) as u32).wrapping_add((x).wrapping_mul(y))) as i32 });
+            {
+                match ({ (x).wrapping_mul(y) }, &(total)) {
+                    (__tmp_0, __tmp_1) => __tmp_1.with_mut(|__tmp_1| {
+                        (*__tmp_1) = (((*__tmp_1) as u32).wrapping_add((__tmp_0 as u32))) as i32;
+                    }),
+                }
+            };
         }
     )));
     ({ (*accumulate.borrow()).spec::<fn(i32, i32)>(0).call(2, 3) });

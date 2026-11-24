@@ -15,16 +15,24 @@ pub fn sum_then_product_0(first: i32, __args: Box<[VaArg]>) -> i32 {
     (*ap.borrow_mut()) = __args.decay();
     let mut val: i32 = 0_i32;
     'loop_: while (({
-        val = (*ap.borrow_mut()).arg::<i32>();
-        val
+        match ({ (*ap.borrow_mut()).arg::<i32>() }, &mut (val)) {
+            (__tmp_0, __tmp_1) => {
+                (*__tmp_1) = __tmp_0;
+                (*__tmp_1).clone()
+            }
+        }
     }) != 0)
     {
         sum += val;
     }
     (*ap.borrow_mut()) = __args.decay();
     'loop_: while (({
-        val = (*ap.borrow_mut()).arg::<i32>();
-        val
+        match ({ (*ap.borrow_mut()).arg::<i32>() }, &mut (val)) {
+            (__tmp_2, __tmp_3) => {
+                (*__tmp_3) = __tmp_2;
+                (*__tmp_3).clone()
+            }
+        }
     }) != 0)
     {
         product *= val;

@@ -23,13 +23,21 @@ fn main_0() -> i32 {
     let mut a: i32 = 0;
     let mut b: i32 = 0_i32;
     if ({
-        b = a;
-        b
+        match ({ a }, &mut (b)) {
+            (__tmp_0, __tmp_1) => {
+                (*__tmp_1) = __tmp_0;
+                (*__tmp_1).clone()
+            }
+        }
     } != 0)
     {}
     'loop_: while (({
-        b = a;
-        b
+        match ({ a }, &mut (b)) {
+            (__tmp_2, __tmp_3) => {
+                (*__tmp_3) = __tmp_2;
+                (*__tmp_3).clone()
+            }
+        }
     }) != 0)
     {}
     if (a != 0) {}
@@ -38,18 +46,30 @@ fn main_0() -> i32 {
     assert!((a == b));
     assert!(
         !(({
-            a = b;
-            a
+            match ({ b }, &mut (a)) {
+                (__tmp_4, __tmp_5) => {
+                    (*__tmp_5) = __tmp_4;
+                    (*__tmp_5).clone()
+                }
+            }
         }) != 0)
     );
     let mut c: bool = false;
     c = ({
-        a = b;
-        a
+        match ({ b }, &mut (a)) {
+            (__tmp_6, __tmp_7) => {
+                (*__tmp_7) = __tmp_6;
+                (*__tmp_7).clone()
+            }
+        }
     } != 0);
     c = (({
-        b = a;
-        b
+        match ({ a }, &mut (b)) {
+            (__tmp_8, __tmp_9) => {
+                (*__tmp_9) = __tmp_8;
+                (*__tmp_9).clone()
+            }
+        }
     }) != 0);
     c = (a != 0);
     c = (a == b);

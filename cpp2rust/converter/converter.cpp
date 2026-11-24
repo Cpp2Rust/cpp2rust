@@ -3004,7 +3004,8 @@ bool Converter::VisitBinaryOperator(clang::BinaryOperator *expr) {
     ConvertAssignmentRef(expr);
     return false;
   }
-  if (expr->isAssignmentOp() && isLValue()) {
+  if (isLValue() &&
+      (expr->isAssignmentOp() || (expr->isCommaOp() && expr->isLValue()))) {
     EmitPointee(std::format("({})", ConvertFreshPointer(expr)), expr->getType(),
                 /*fresh=*/true);
     return false;
@@ -3045,11 +3046,6 @@ void Converter::ConvertAssignmentRef(clang::BinaryOperator *expr) {
   if (auto *compound = clang::dyn_cast<clang::CompoundAssignOperator>(expr)) {
     assignment =
         AssignPtrExpr(left, lhs->getType(), [&](std::string_view read) {
-          if (lhs->getType()->isPointerType()) {
-            return std::format(
-                "({}).offset({}({} as isize))", read,
-                expr->getOpcode() == clang::BO_SubAssign ? "-" : "", right);
-          }
           return ConvertCompoundAssignValue(compound, read, right);
         });
   }
@@ -3069,13 +3065,14 @@ void Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
   auto rhs_type = rhs->getType();
   std::string_view opcode_as_string = expr->getOpcodeStr();
 
-  if (auto *cmpd_assign_op =
-          llvm::dyn_cast<clang::CompoundAssignOperator>(expr);
-      expr->isCompoundAssignmentOp() &&
-      GetUnsafeTypeAsString(lhs_type) !=
-          GetUnsafeTypeAsString(cmpd_assign_op->getComputationResultType())) {
-    StrCat(ConvertLValue(lhs), token::kAssign,
-           ConvertCompoundAssignValue(cmpd_assign_op));
+  auto *compound = clang::dyn_cast<clang::CompoundAssignOperator>(expr);
+  if (expr->isAssignmentOp() &&
+      (isRValue() ||
+       (compound &&
+        (IsUnsignedArithOp(expr) ||
+         GetUnsafeTypeAsString(lhs_type) !=
+             GetUnsafeTypeAsString(compound->getComputationResultType()))))) {
+    ConvertAssignment(lhs, rhs, opcode_as_string, compound);
   } else if (expr->isCommaOp()) {
     PushBrace brace(*this);
     {
@@ -3086,22 +3083,18 @@ void Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
     StrCat(token::kSemiColon);
     if (isRValue()) {
       StrCat(ConvertFreshRValue(rhs));
+    } else if (isAddrOf()) {
+      StrCat(MakeFresh(ToString(rhs)));
     } else {
       Convert(rhs);
     }
   } else if (IsUnsignedArithOp(expr)) {
-    if (expr->isCompoundAssignmentOp()) {
-      Convert(lhs);
-      StrCat(token::kAssign);
-    }
     {
       PushParen paren(*this);
       ConvertUnsignedArithOperand(lhs, type);
     }
     ConvertUnsignedArithBinaryOperator(expr, rhs);
-    if (!expr->isCompoundAssignmentOp()) {
-      MarkFresh();
-    }
+    MarkFresh();
   } else if (expr->isAssignmentOp()) {
     if (expr->isCompoundAssignmentOp() && lhs_type->isPointerType() &&
         rhs_type->isIntegralOrEnumerationType()) {
@@ -3182,12 +3175,17 @@ Converter::ConvertCompoundAssignValue(clang::CompoundAssignOperator *expr,
                                       std::string_view rhs_value) {
   auto *lhs = expr->getLHS();
   auto computation_result_type = expr->getComputationResultType();
+  if (lhs->getType()->isPointerType()) {
+    return std::format("({}).offset({}({} as isize))", lhs_value,
+                       expr->getOpcode() == clang::BO_SubAssign ? "-" : "",
+                       rhs_value);
+  }
   Buffer buf(*this);
   {
     PushParen outer(*this);
     {
       PushParen inner(*this);
-      StrCat(lhs_value.empty() ? ConvertRValue(lhs) : lhs_value);
+      StrCat(lhs_value);
       ConvertCast(computation_result_type);
     }
     if (IsUnsignedArithOp(expr)) {
@@ -3196,12 +3194,8 @@ Converter::ConvertCompoundAssignValue(clang::CompoundAssignOperator *expr,
       std::string_view op = expr->getOpcodeStr();
       op.remove_suffix(1); // remove '=' from operator
       StrCat(op);
-      if (rhs_value.empty()) {
-        Convert(expr->getRHS(), computation_result_type);
-      } else {
-        StrCat(
-            ConvertScalarCast(std::string(rhs_value), computation_result_type));
-      }
+      StrCat(
+          ConvertScalarCast(std::string(rhs_value), computation_result_type));
     }
   }
   if (lhs->getType()->isBooleanType()) {
@@ -3234,6 +3228,11 @@ void Converter::ConvertGenericBinaryOperator(clang::BinaryOperator *expr) {
 bool Converter::IsReferenceType(const clang::Expr *expr) const {
   const auto *e =
       IgnoreTransparentStdCall(ctx_, expr->IgnoreCasts())->IgnoreCasts();
+  if (const auto *comma =
+          clang::dyn_cast<clang::BinaryOperator>(e->IgnoreParens());
+      comma && comma->isCommaOp()) {
+    return IsReferenceType(comma->getRHS());
+  }
   if (const auto *call = clang::dyn_cast<clang::CallExpr>(e)) {
     return !clang::isa<clang::CXXOperatorCallExpr>(call) &&
            GetReturnTypeOfFunction(call)->isReferenceType();
@@ -4936,7 +4935,34 @@ void Converter::ConvertArraySubscript(clang::Expr *base, clang::Expr *idx,
 }
 
 void Converter::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
-                                  std::string_view assign_operator) {
+                                  std::string_view assign_operator,
+                                  clang::CompoundAssignOperator *compound) {
+  if (compound || isRValue()) {
+    auto right = NewTempName();
+    auto left = NewTempName();
+    auto rhs_value = ConvertFreshRValue(
+        rhs, compound ? std::nullopt : std::optional(lhs->getType()));
+    auto lhs_value = ConvertLValue(lhs);
+    auto read = std::format("(*{})", left);
+    auto value =
+        compound ? ConvertCompoundAssignValue(compound, read, right) : right;
+    // Rust evaluates tuple operands left to right. Resolve the target only
+    // after the right operand, keeping its temporaries alive through the write.
+    StrCat("match ({ ", rhs_value, " }, &mut ");
+    {
+      PushParen paren(*this);
+      StrCat(lhs_value);
+    }
+    StrCat(") { (", right, ", ", left, ") => {", read, token::kAssign, value,
+           token::kSemiColon);
+    if (isRValue()) {
+      StrCat(read, ".clone()");
+    }
+    StrCat("} }");
+    MarkFresh();
+    return;
+  }
+
   std::string lhs_as_string;
   {
     ScopedPush init_type(curr_init_type_, lhs->getType());

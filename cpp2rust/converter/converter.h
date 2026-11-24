@@ -538,10 +538,10 @@ public:
   virtual void ConvertBinaryOperator(clang::BinaryOperator *expr);
 
   // The value that the compound assignment expr assigns to its left operand.
-  // Optional operand strings refer to values that have already been evaluated.
+  // Operand strings refer to values that have already been evaluated.
   std::string ConvertCompoundAssignValue(clang::CompoundAssignOperator *expr,
-                                         std::string_view lhs_value = {},
-                                         std::string_view rhs_value = {});
+                                         std::string_view lhs_value,
+                                         std::string_view rhs_value);
 
   virtual bool ConvertIncAndDec(clang::UnaryOperator *expr);
 
@@ -794,8 +794,10 @@ protected:
   void EmitFlexibleArrayElementPtr(clang::Expr *array, clang::Expr *idx,
                                    bool is_mut);
 
-  virtual void ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
-                                 std::string_view assign_operator);
+  virtual void
+  ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
+                    std::string_view assign_operator,
+                    clang::CompoundAssignOperator *compound = nullptr);
 
   virtual void ConvertFunctionParameters(clang::FunctionDecl *decl);
 

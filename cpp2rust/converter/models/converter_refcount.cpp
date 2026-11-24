@@ -1591,34 +1591,24 @@ void ConverterRefCount::ConvertBinaryOperator(clang::BinaryOperator *expr) {
   auto rhs_type = rhs->getType();
   std::string_view opcode_as_string = expr->getOpcodeStr();
 
-  if (auto *assign = llvm::dyn_cast<clang::CompoundAssignOperator>(expr);
-      assign && GetSafeTypeAsString(lhs_type) !=
-                    GetSafeTypeAsString(assign->getComputationResultType())) {
-    EmitCompoundSetOrAssign(lhs, rhs, ConvertCompoundAssignValue(assign));
+  auto *compound = clang::dyn_cast<clang::CompoundAssignOperator>(expr);
+  if (expr->isAssignmentOp() &&
+      (isRValue() ||
+       (compound &&
+        (IsUnsignedArithOp(expr) ||
+         GetSafeTypeAsString(lhs_type) !=
+             GetSafeTypeAsString(compound->getComputationResultType()))))) {
+    ConvertAssignment(lhs, rhs, opcode_as_string, compound);
     return;
   }
 
   if (IsUnsignedArithOp(expr)) {
-    std::optional<Buffer> buf;
-    if (expr->isCompoundAssignmentOp()) {
-      buf.emplace(*this);
-    }
     {
       PushParen paren(*this);
-      if (expr->isCompoundAssignmentOp() && lhs->isLValue()) {
-        StrCat(ConvertRValue(lhs));
-      } else {
-        ConvertUnsignedArithOperand(lhs, expr->getType());
-      }
+      ConvertUnsignedArithOperand(lhs, expr->getType());
     }
     ConvertUnsignedArithBinaryOperator(expr, rhs);
-    if (expr->isCompoundAssignmentOp()) {
-      auto value = std::move(*buf).str();
-      buf.reset();
-      EmitCompoundSetOrAssign(lhs, rhs, value);
-    } else {
-      MarkFresh();
-    }
+    MarkFresh();
     return;
   }
 
@@ -2432,21 +2422,42 @@ bool ConverterRefCount::CanBraceAssignedValue(
          !lhs->HasSideEffects(ctx_) && !rhs->HasSideEffects(ctx_);
 }
 
-void ConverterRefCount::EmitCompoundSetOrAssign(clang::Expr *lhs,
-                                                clang::Expr *rhs,
-                                                std::string_view value) {
-  if (CanBraceAssignedValue(lhs, rhs, "=")) {
-    PushBrace brace(*this, isRValue());
-    EmitSetOrAssign(lhs, std::format("{{ {} }}", value));
+void ConverterRefCount::ConvertAssignment(
+    clang::Expr *lhs, clang::Expr *rhs, std::string_view assign_operator,
+    clang::CompoundAssignOperator *compound) {
+  if (compound || isRValue()) {
+    // End target borrows before an enclosing expression consumes the result.
+    PushBrace brace(*this);
+    auto right = NewTempName();
+    auto left = NewTempName();
+    auto rhs_value = ConvertFreshRValue(
+        rhs, compound ? std::nullopt : std::optional(lhs->getType()));
+    auto lhs_value = ConvertLValue(lhs);
+    auto read = std::format("(*{})", left);
+    auto value =
+        compound ? ConvertCompoundAssignValue(compound, read, right) : right;
+    // Rust evaluates tuple operands left to right. Resolve the target only
+    // after the right operand, keeping its temporaries alive through the write.
+    StrCat("match ({ ", rhs_value, " }, ");
+    bool through_pointer = !pending_deref_.empty();
+    StrCat(through_pointer ? "&" : "&mut ");
+    {
+      PushParen paren(*this);
+      StrCat(through_pointer ? pending_deref_.take() : lhs_value);
+    }
+    StrCat(") { (", right, ", ", left, ") => ");
+    if (through_pointer) {
+      StrCat(left, ".with_mut(|", left, "| ");
+    }
+    StrCat('{', read, token::kAssign, value, token::kSemiColon);
+    if (isRValue()) {
+      StrCat(read, ".clone()");
+    }
+    StrCat(through_pointer ? "}) }" : "} }");
+    MarkFresh();
     return;
   }
-  PushBrace brace(*this);
-  StrCat(keyword::kLet, "rhs_0", token::kAssign, value, token::kSemiColon);
-  EmitSetOrAssign(lhs, "rhs_0");
-}
 
-void ConverterRefCount::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
-                                          std::string_view assign_operator) {
   auto rhs_as_string = ConvertFreshRValue(rhs, lhs->getType());
 
   PushBrace brace(*this, isRValue());

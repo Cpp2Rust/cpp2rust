@@ -14,8 +14,12 @@ pub fn sum_ints_0(first: i32, __args: Box<[VaArg]>) -> i32 {
     (*args.borrow_mut()) = __args.decay();
     let mut val: i32 = 0_i32;
     'loop_: while (({
-        val = (*args.borrow_mut()).arg::<i32>();
-        val
+        match ({ (*args.borrow_mut()).arg::<i32>() }, &mut (val)) {
+            (__tmp_0, __tmp_1) => {
+                (*__tmp_1) = __tmp_0;
+                (*__tmp_1).clone()
+            }
+        }
     }) != 0)
     {
         total += val;
