@@ -59,6 +59,41 @@ fn pad(out: &mut Vec<u8>, spec: &ConversionSpecifier, s: &[u8]) {
     }
 }
 
+// Zero has no logarithmic exponent. Format it without sprintf's normalization.
+fn scientific_zero(out: &mut Vec<u8>, spec: &ConversionSpecifier, negative: bool) {
+    let NumericParam::Literal(precision) = spec.precision else {
+        unreachable!()
+    };
+    let precision = precision as usize;
+    let mut number = Vec::new();
+    if negative {
+        number.push(b'-');
+    } else if spec.force_sign {
+        number.push(b'+');
+    } else if spec.space_sign {
+        number.push(b' ');
+    }
+    let point = precision > 0 || spec.alt_form;
+    if spec.zero_pad && !spec.left_adj {
+        let NumericParam::Literal(width) = spec.width else {
+            unreachable!()
+        };
+        let len = number.len() + 1 + usize::from(point) + precision + 4;
+        number.resize(number.len() + (width as usize).saturating_sub(len), b'0');
+    }
+    number.push(b'0');
+    if point {
+        number.push(b'.');
+    }
+    number.resize(number.len() + precision, b'0');
+    number.extend_from_slice(if spec.conversion_type == ConversionType::SciFloatUpper {
+        b"E+00"
+    } else {
+        b"e+00"
+    });
+    pad(out, spec, &number);
+}
+
 fn numeric_arg(conversion_type: ConversionType, arg: &VaArg) -> Arg {
     match conversion_type {
         ConversionType::DecInt => match arg {
@@ -87,7 +122,7 @@ fn numeric_arg(conversion_type: ConversionType, arg: &VaArg) -> Arg {
 
 // Formats like C's printf. The format, the strings and the result are bytes,
 // which need not be UTF-8, so %s and %c are formatted here; sprintf formats
-// the numbers, which are ASCII.
+// the numbers, which are ASCII, except for scientific zero.
 pub fn format_c(fmt: &[u8], va: &[VaArg]) -> Vec<u8> {
     let mut out = Vec::with_capacity(fmt.len());
     let mut va = va.iter();
@@ -121,6 +156,16 @@ pub fn format_c(fmt: &[u8], va: &[VaArg]) -> Vec<u8> {
             }
             conversion_type => {
                 let arg = numeric_arg(conversion_type, arg);
+                if let Arg::Double(value) = arg
+                    && value == 0.0
+                    && matches!(
+                        conversion_type,
+                        ConversionType::SciFloatLower | ConversionType::SciFloatUpper
+                    )
+                {
+                    scientific_zero(&mut out, &spec, value.is_sign_negative());
+                    continue;
+                }
                 match vsprintfp(&[FormatElement::Format(spec)], &[arg.as_printf()]) {
                     Ok(s) => out.extend_from_slice(s.as_bytes()),
                     Err(e) => panic!("format_c: cannot format {spec:?}: {e:?}"),
@@ -166,6 +211,28 @@ mod tests {
         );
         assert_eq!(format_c(b"%e", &[1500.0f64.into()]), b"1.500000e+03");
         assert_eq!(format_c(b"%g", &[0.5f64.into()]), b"0.5");
+    }
+
+    #[test]
+    fn scientific_zero() {
+        assert_eq!(
+            format_c(b"%e|%E", &[0.0f64.into(), (-0.0f64).into()]),
+            b"0.000000e+00|-0.000000E+00"
+        );
+        assert_eq!(
+            format_c(
+                b"%.0e|%#.0E|%02.2e",
+                &[0.0f64.into(), (-0.0f64).into(), 0.0f64.into()]
+            ),
+            b"0e+00|-0.E+00|0.00e+00"
+        );
+        assert_eq!(
+            format_c(
+                b"%+ 012.2e|%-#012.0E|% 12.1e",
+                &[0.0f64.into(), (-0.0f64).into(), 0.0f64.into()]
+            ),
+            b"+0000.00e+00|-0.E+00     |     0.0e+00"
+        );
     }
 
     #[test]
