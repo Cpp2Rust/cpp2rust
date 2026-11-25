@@ -11,21 +11,22 @@ pub unsafe fn loopctl_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (5)) {
-            goto_block!({
-                '__entry: {
-                    if ((i) == (1)) {
-                        i.postfix_inc();
-                        continue 'loop_;
+            'for_body: {
+                goto_block!({
+                    '__entry: {
+                        if ((i) == (1)) {
+                            break 'for_body;
+                        }
+                        if ((i) == (4)) {
+                            break 'loop_;
+                        }
+                        goto!('add);
                     }
-                    if ((i) == (4)) {
-                        break;
+                    'add: {
+                        sum += 1;
                     }
-                    goto!('add);
-                }
-                'add: {
-                    sum += 1;
-                }
-            });
+                });
+            }
             i.postfix_inc();
         }
     }

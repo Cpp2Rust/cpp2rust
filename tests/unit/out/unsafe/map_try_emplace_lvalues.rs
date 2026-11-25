@@ -498,407 +498,105 @@ unsafe fn main_0() -> i32 {
     {
         let mut hit: i32 = 0;
         'loop_: while ((hit) < (2)) {
-            let mut values: UnsafeMap<i32, (i32, i32)> = UnsafeMap::new();
-            let keys: [i32; 6] = [0, 1, 2, 3, 4, 5];
-            if (hit != 0) {
+            'for_body: {
+                let mut values: UnsafeMap<i32, (i32, i32)> = UnsafeMap::new();
+                let keys: [i32; 6] = [0, 1, 2, 3, 4, 5];
+                if (hit != 0) {
+                    'loop_: for k in
+                        IterRange::new(keys.as_ptr(), keys.as_ptr().offset((6_i64) as isize))
+                    {
+                        let mut k: i32 = (*k);
+                        (*values.subscript(&k, || 0_i32)) = 42;
+                    }
+                }
+                let mut moved: i32 = 0;
+                let mut forwarded: i32 = 0;
+                let mut xvalue: i32 = 0;
+                let mut lvalue: i32 = 0;
+                let mut assigned: i32 = 0;
+                let mut nested: i32 = 0;
+                let mut r0: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = match (({
+                    let __tmp_47 = &mut moved;
+                    (*__tmp_47).prefix_inc();
+                    __tmp_47
+                }
+                    as *mut i32),)
+                {
+                    (__tmp_46,) => values.try_emplace(keys[(0) as usize], || (*__tmp_46)),
+                };
+                let mut r1: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = match (({
+                    let __tmp_49 = &mut forwarded;
+                    (*__tmp_49).prefix_inc();
+                    __tmp_49
+                }
+                    as *mut i32),)
+                {
+                    (__tmp_48,) => values.try_emplace(keys[(1) as usize], || (*__tmp_48)),
+                };
+                let mut r2: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = match (({
+                    let __tmp_51 = &mut xvalue;
+                    (*__tmp_51).prefix_inc();
+                    __tmp_51
+                }
+                    as *mut i32),)
+                {
+                    (__tmp_50,) => values.try_emplace(keys[(2) as usize], || (*__tmp_50)),
+                };
+                let mut r3: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = match (({
+                    let __tmp_53 = &mut lvalue;
+                    (*__tmp_53).prefix_inc();
+                    __tmp_53
+                }
+                    as *mut i32),)
+                {
+                    (__tmp_52,) => values.try_emplace(keys[(3) as usize], || (*__tmp_52)),
+                };
+                let mut r4: (UnsafeBidirectionalIterator<(i32, i32)>, bool) =
+                    match ((match ({ 5 }, (&mut assigned as *mut i32)) {
+                        (__tmp_56, __tmp_55) => {
+                            __tmp_55.write(__tmp_56);
+                            __tmp_55
+                        }
+                    } as *mut i32),)
+                    {
+                        (__tmp_54,) => values.try_emplace(keys[(4) as usize], || (*__tmp_54)),
+                    };
+                let mut r5: (UnsafeBidirectionalIterator<(i32, i32)>, bool) =
+                    match ((match ({ 1 }, (&mut nested as *mut i32)) {
+                        (__tmp_59, __tmp_58) => {
+                            __tmp_58.write((((*__tmp_58) as i32) + (__tmp_59 as i32)) as i32);
+                            __tmp_58
+                        }
+                    } as *mut i32),)
+                    {
+                        (__tmp_57,) => values.try_emplace(keys[(5) as usize], || (*__tmp_57)),
+                    };
+                assert!(
+                    ((((((moved) == (1)) && ((forwarded) == (1))) && ((xvalue) == (1)))
+                        && ((lvalue) == (1)))
+                        && ((assigned) == (5)))
+                        && ((nested) == (1))
+                );
+                assert!(
+                    (((((((r0.1) as i32) == (!(hit != 0) as i32))
+                        && (((r1.1) as i32) == (!(hit != 0) as i32)))
+                        && (((r2.1) as i32) == (!(hit != 0) as i32)))
+                        && (((r3.1) as i32) == (!(hit != 0) as i32)))
+                        && (((r4.1) as i32) == (!(hit != 0) as i32)))
+                        && (((r5.1) as i32) == (!(hit != 0) as i32))
+                );
                 'loop_: for k in
                     IterRange::new(keys.as_ptr(), keys.as_ptr().offset((6_i64) as isize))
                 {
                     let mut k: i32 = (*k);
-                    (*values.subscript(&k, || 0_i32)) = 42;
-                }
-            }
-            let mut moved: i32 = 0;
-            let mut forwarded: i32 = 0;
-            let mut xvalue: i32 = 0;
-            let mut lvalue: i32 = 0;
-            let mut assigned: i32 = 0;
-            let mut nested: i32 = 0;
-            let mut r0: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = match (({
-                let __tmp_47 = &mut moved;
-                (*__tmp_47).prefix_inc();
-                __tmp_47
-            }
-                as *mut i32),)
-            {
-                (__tmp_46,) => values.try_emplace(keys[(0) as usize], || (*__tmp_46)),
-            };
-            let mut r1: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = match (({
-                let __tmp_49 = &mut forwarded;
-                (*__tmp_49).prefix_inc();
-                __tmp_49
-            }
-                as *mut i32),)
-            {
-                (__tmp_48,) => values.try_emplace(keys[(1) as usize], || (*__tmp_48)),
-            };
-            let mut r2: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = match (({
-                let __tmp_51 = &mut xvalue;
-                (*__tmp_51).prefix_inc();
-                __tmp_51
-            }
-                as *mut i32),)
-            {
-                (__tmp_50,) => values.try_emplace(keys[(2) as usize], || (*__tmp_50)),
-            };
-            let mut r3: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = match (({
-                let __tmp_53 = &mut lvalue;
-                (*__tmp_53).prefix_inc();
-                __tmp_53
-            }
-                as *mut i32),)
-            {
-                (__tmp_52,) => values.try_emplace(keys[(3) as usize], || (*__tmp_52)),
-            };
-            let mut r4: (UnsafeBidirectionalIterator<(i32, i32)>, bool) =
-                match ((match ({ 5 }, (&mut assigned as *mut i32)) {
-                    (__tmp_56, __tmp_55) => {
-                        __tmp_55.write(__tmp_56);
-                        __tmp_55
-                    }
-                } as *mut i32),)
-                {
-                    (__tmp_54,) => values.try_emplace(keys[(4) as usize], || (*__tmp_54)),
-                };
-            let mut r5: (UnsafeBidirectionalIterator<(i32, i32)>, bool) =
-                match ((match ({ 1 }, (&mut nested as *mut i32)) {
-                    (__tmp_59, __tmp_58) => {
-                        __tmp_58.write((((*__tmp_58) as i32) + (__tmp_59 as i32)) as i32);
-                        __tmp_58
-                    }
-                } as *mut i32),)
-                {
-                    (__tmp_57,) => values.try_emplace(keys[(5) as usize], || (*__tmp_57)),
-                };
-            assert!(
-                ((((((moved) == (1)) && ((forwarded) == (1))) && ((xvalue) == (1)))
-                    && ((lvalue) == (1)))
-                    && ((assigned) == (5)))
-                    && ((nested) == (1))
-            );
-            assert!(
-                (((((((r0.1) as i32) == (!(hit != 0) as i32))
-                    && (((r1.1) as i32) == (!(hit != 0) as i32)))
-                    && (((r2.1) as i32) == (!(hit != 0) as i32)))
-                    && (((r3.1) as i32) == (!(hit != 0) as i32)))
-                    && (((r4.1) as i32) == (!(hit != 0) as i32)))
-                    && (((r5.1) as i32) == (!(hit != 0) as i32))
-            );
-            'loop_: for k in IterRange::new(keys.as_ptr(), keys.as_ptr().offset((6_i64) as isize)) {
-                let mut k: i32 = (*k);
-                assert!(
-                    ((*values.subscript(&k, || 0_i32))
-                        == (if (hit != 0) {
-                            42
-                        } else {
-                            if ((k) == (4)) { 5 } else { 1 }
-                        }))
-                );
-            }
-            hit.prefix_inc();
-        }
-    }
-    {
-        let mut hit: i32 = 0;
-        'loop_: while ((hit) < (2)) {
-            {
-                let mut choose: i32 = 0;
-                'loop_: while ((choose) < (2)) {
-                    let mut selected: UnsafeMap<i32, (i32, Item)> = UnsafeMap::new();
-                    let keys: [i32; 3] = [0, 1, 2];
-                    if (hit != 0) {
-                        'loop_: for k in
-                            IterRange::new(keys.as_ptr(), keys.as_ptr().offset((3_i64) as isize))
-                        {
-                            let mut k: i32 = (*k);
-                            (*selected.subscript(&k, || <Item>::default())).value = 42;
-                        }
-                    }
-                    let mut a: i32 = 0;
-                    let mut b: i32 = 0;
-                    let mut c: i32 = 0;
-                    let mut d: i32 = 0;
-                    let mut e: i32 = 0;
-                    let mut f: i32 = 0;
-                    let mut prefix: (UnsafeBidirectionalIterator<(i32, Item)>, bool) =
-                        match ((if (choose != 0) {
-                            ({
-                                let __tmp_61 = &mut a;
-                                (*__tmp_61).prefix_inc();
-                                __tmp_61
-                            } as *mut i32)
-                        } else {
-                            ({
-                                let __tmp_62 = &mut b;
-                                (*__tmp_62).prefix_inc();
-                                __tmp_62
-                            } as *mut i32)
-                        } as *mut i32),)
-                        {
-                            (__tmp_60,) => selected.try_emplace(keys[(0) as usize], || {
-                                Item::new_2({ __tmp_60 }, { 2 })
-                            }),
-                        };
-                    let mut assignment: (UnsafeBidirectionalIterator<(i32, Item)>, bool) =
-                        match ((if (choose != 0) {
-                            ((match ({ 5 }, (&mut c as *mut i32)) {
-                                (__tmp_65, __tmp_64) => {
-                                    __tmp_64.write(__tmp_65);
-                                    __tmp_64
-                                }
-                            }) as *mut i32)
-                        } else {
-                            ((match ({ 6 }, (&mut d as *mut i32)) {
-                                (__tmp_67, __tmp_66) => {
-                                    __tmp_66.write(__tmp_67);
-                                    __tmp_66
-                                }
-                            }) as *mut i32)
-                        } as *mut i32),)
-                        {
-                            (__tmp_63,) => selected.try_emplace(keys[(1) as usize], || {
-                                Item::new_2({ __tmp_63 }, { 2 })
-                            }),
-                        };
-                    let mut compound: (UnsafeBidirectionalIterator<(i32, Item)>, bool) =
-                        match ((if (choose != 0) {
-                            ((match ({ 1 }, (&mut e as *mut i32)) {
-                                (__tmp_70, __tmp_69) => {
-                                    __tmp_69
-                                        .write((((*__tmp_69) as i32) + (__tmp_70 as i32)) as i32);
-                                    __tmp_69
-                                }
-                            }) as *mut i32)
-                        } else {
-                            ((match ({ 2 }, (&mut f as *mut i32)) {
-                                (__tmp_72, __tmp_71) => {
-                                    __tmp_71
-                                        .write((((*__tmp_71) as i32) + (__tmp_72 as i32)) as i32);
-                                    __tmp_71
-                                }
-                            }) as *mut i32)
-                        } as *mut i32),)
-                        {
-                            (__tmp_68,) => selected.try_emplace(keys[(2) as usize], || {
-                                Item::new_2({ __tmp_68 }, { 2 })
-                            }),
-                        };
                     assert!(
-                        ((a) == (if (choose != 0) {
-                            (if (hit != 0) { 1 } else { 3 })
-                        } else {
-                            0
-                        })) && ((b)
-                            == (if (choose != 0) {
-                                0
-                            } else {
-                                (if (hit != 0) { 1 } else { 3 })
-                            }))
-                    );
-                    assert!(
-                        ((c) == (if (choose != 0) {
-                            (if (hit != 0) { 5 } else { 7 })
-                        } else {
-                            0
-                        })) && ((d)
-                            == (if (choose != 0) {
-                                0
-                            } else {
-                                (if (hit != 0) { 6 } else { 8 })
-                            }))
-                    );
-                    assert!(
-                        ((e) == (if (choose != 0) {
-                            (if (hit != 0) { 1 } else { 3 })
-                        } else {
-                            0
-                        })) && ((f)
-                            == (if (choose != 0) {
-                                0
-                            } else {
-                                (if (hit != 0) { 2 } else { 4 })
-                            }))
-                    );
-                    assert!(
-                        ((((prefix.1) as i32) == (!(hit != 0) as i32))
-                            && (((assignment.1) as i32) == (!(hit != 0) as i32)))
-                            && (((compound.1) as i32) == (!(hit != 0) as i32))
-                    );
-                    assert!(
-                        (((*prefix.0.iter_deref()).1.value) == (if (hit != 0) { 42 } else { 3 }))
-                    );
-                    assert!(
-                        (((*assignment.0.iter_deref()).1.value)
+                        ((*values.subscript(&k, || 0_i32))
                             == (if (hit != 0) {
                                 42
                             } else {
-                                if (choose != 0) { 7 } else { 8 }
+                                if ((k) == (4)) { 5 } else { 1 }
                             }))
                     );
-                    assert!(
-                        (((*compound.0.iter_deref()).1.value)
-                            == (if (hit != 0) {
-                                42
-                            } else {
-                                if (choose != 0) { 3 } else { 4 }
-                            }))
-                    );
-                    choose.prefix_inc();
-                }
-            }
-            let mut values: UnsafeMap<i32, (i32, i32)> = UnsafeMap::new();
-            let keys: [i32; 3] = [0, 1, 2];
-            if (hit != 0) {
-                'loop_: for k in
-                    IterRange::new(keys.as_ptr(), keys.as_ptr().offset((3_i64) as isize))
-                {
-                    let mut k: i32 = (*k);
-                    (*values.subscript(&k, || 0_i32)) = 42;
-                }
-            }
-            let mut before: i32 =
-                (*std::cell::LazyCell::force_mut(&mut *&raw mut temporary_calls_4));
-            let mut index: i32 = 0;
-            let mut member: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
-                let mut __tmp_74: Temporary;
-                match ((&mut (*{
-                    __tmp_74 = (unsafe { make_temporary_5() });
-                    &mut __tmp_74
-                })
-                .n as *mut i32),)
-                {
-                    (__tmp_73,) => values.try_emplace(keys[(0) as usize], || (*__tmp_73)),
-                }
-            };
-            let mut nested: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
-                let mut __tmp_76: Nested;
-                match ((&mut (*&mut (*{
-                    __tmp_76 = (unsafe { make_nested_6() });
-                    &mut __tmp_76
-                })
-                .inner)
-                    .n as *mut i32),)
-                {
-                    (__tmp_75,) => values.try_emplace(keys[(1) as usize], || (*__tmp_75)),
-                }
-            };
-            let mut element: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
-                let mut __tmp_78: Temporary;
-                match ((&mut (*{
-                    __tmp_78 = (unsafe { make_temporary_5() });
-                    &mut __tmp_78
-                })
-                .data[(index.postfix_inc()) as usize] as *mut i32),)
-                {
-                    (__tmp_77,) => values.try_emplace(keys[(2) as usize], || (*__tmp_77)),
-                }
-            };
-            assert!(
-                ((*std::cell::LazyCell::force_mut(&mut *&raw mut temporary_calls_4))
-                    == ((before) + (3)))
-                    && ((index) == (1))
-            );
-            assert!(
-                ((((member.1) as i32) == (!(hit != 0) as i32))
-                    && (((nested.1) as i32) == (!(hit != 0) as i32)))
-                    && (((element.1) as i32) == (!(hit != 0) as i32))
-            );
-            assert!(
-                ((((*member.0.iter_deref()).1) == (if (hit != 0) { 42 } else { 5 }))
-                    && (((*nested.0.iter_deref()).1) == (if (hit != 0) { 42 } else { 5 })))
-                    && (((*element.0.iter_deref()).1) == (if (hit != 0) { 42 } else { 6 }))
-            );
-            {
-                let mut choose: i32 = 0;
-                'loop_: while ((choose) < (2)) {
-                    let mut references: UnsafeMap<i32, (i32, Held)> = UnsafeMap::new();
-                    let mut ordinary: i32 = 9;
-                    if (hit != 0) {
-                        references.try_emplace(key, || Held::new_1({ &ordinary }));
-                    }
-                    before = (*std::cell::LazyCell::force_mut(&mut *&raw mut temporary_calls_4));
-                    index = 0;
-                    let mut value: i32 = 0;
-                    {
-                        let mut __tmp_80: Nested;
-                        let mut __tmp_81: Temporary;
-                        {
-                            match ((if (choose != 0) {
-                                (&mut (*&mut (*{
-                                    __tmp_80 = (unsafe { make_nested_6() });
-                                    &mut __tmp_80
-                                })
-                                .inner)
-                                    .n as *mut i32)
-                            } else {
-                                (&mut (*{
-                                    __tmp_81 = (unsafe { make_temporary_5() });
-                                    &mut __tmp_81
-                                })
-                                .data[(index.postfix_inc()) as usize]
-                                    as *mut i32)
-                            } as *mut i32),)
-                            {
-                                (__tmp_79,) => {
-                                    references.try_emplace(key, || Held::new_1({ __tmp_79 }))
-                                }
-                            };
-                            value = (*(*references.subscript(&key, || <Held>::default())).ptr)
-                        }
-                    };
-                    assert!(
-                        ((*std::cell::LazyCell::force_mut(&mut *&raw mut temporary_calls_4))
-                            == ((before) + (1)))
-                            && ((index) == (if (choose != 0) { 0 } else { 1 }))
-                    );
-                    assert!(
-                        ((value)
-                            == (if (hit != 0) {
-                                9
-                            } else {
-                                if (choose != 0) { 5 } else { 6 }
-                            }))
-                    );
-                    let mut arrays: UnsafeMap<i32, (i32, Held)> = UnsafeMap::new();
-                    let ordinary_array: [i32; 2] = [9, 10];
-                    if (hit != 0) {
-                        arrays.try_emplace(key, || Held::new_3({ &ordinary_array }, { 0 }));
-                    }
-                    before = (*std::cell::LazyCell::force_mut(&mut *&raw mut temporary_calls_4));
-                    {
-                        let mut __tmp_83: Nested;
-                        let mut __tmp_84: Temporary;
-                        {
-                            match ((if (choose != 0) {
-                                (&mut (*&mut (*{
-                                    __tmp_83 = (unsafe { make_nested_6() });
-                                    &mut __tmp_83
-                                })
-                                .inner)
-                                    .data as *mut [i32; 2])
-                            } else {
-                                (&mut (*{
-                                    __tmp_84 = (unsafe { make_temporary_5() });
-                                    &mut __tmp_84
-                                })
-                                .data as *mut [i32; 2])
-                            } as *mut [i32; 2]),)
-                            {
-                                (__tmp_82,) => {
-                                    arrays.try_emplace(key, || Held::new_3({ __tmp_82 }, { 0 }))
-                                }
-                            };
-                            value = (*(*arrays.subscript(&key, || <Held>::default()))
-                                .ptr
-                                .offset((1) as isize))
-                        }
-                    };
-                    assert!(
-                        ((*std::cell::LazyCell::force_mut(&mut *&raw mut temporary_calls_4))
-                            == ((before) + (1)))
-                            && ((value) == (if (hit != 0) { 10 } else { 7 }))
-                    );
-                    choose.prefix_inc();
                 }
             }
             hit.prefix_inc();
@@ -907,216 +605,547 @@ unsafe fn main_0() -> i32 {
     {
         let mut hit: i32 = 0;
         'loop_: while ((hit) < (2)) {
-            let mut values: UnsafeMap<i32, (i32, i32)> = UnsafeMap::new();
-            let keys: [i32; 6] = [0, 1, 2, 3, 4, 5];
-            if (hit != 0) {
-                'loop_: for k in
-                    IterRange::new(keys.as_ptr(), keys.as_ptr().offset((6_i64) as isize))
+            'for_body: {
                 {
-                    let mut k: i32 = (*k);
-                    (*values.subscript(&k, || 0_i32)) = 42;
-                }
-            }
-            let mut before: i32 =
-                (*std::cell::LazyCell::force_mut(&mut *&raw mut temporary_calls_4));
-            let mut index: i32 = 0;
-            let mut arrow: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
-                let mut __tmp_86: Option<Box<Temporary>>;
-                match ((&mut (*(*{
-                    __tmp_86 = Some(Box::new(Temporary::new()));
-                    &mut __tmp_86
-                })
-                .as_deref()
-                .map_or(::std::ptr::null_mut(), |v| {
-                    v as *const Temporary as *mut Temporary
-                }))
-                .n as *mut i32),)
-                {
-                    (__tmp_85,) => values.try_emplace(keys[(0) as usize], || (*__tmp_85)),
-                }
-            };
-            let mut nested: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
-                let mut __tmp_88: Option<Box<Nested>>;
-                match ((&mut (*&mut (*(*{
-                    __tmp_88 = Some(Box::new(<Nested>::default()));
-                    &mut __tmp_88
-                })
-                .as_deref()
-                .map_or(::std::ptr::null_mut(), |v| {
-                    v as *const Nested as *mut Nested
-                }))
-                .inner)
-                    .n as *mut i32),)
-                {
-                    (__tmp_87,) => values.try_emplace(keys[(1) as usize], || (*__tmp_87)),
-                }
-            };
-            let mut element: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
-                let mut __tmp_90: Option<Box<Temporary>>;
-                match ((&mut (*(*{
-                    __tmp_90 = Some(Box::new(Temporary::new()));
-                    &mut __tmp_90
-                })
-                .as_deref()
-                .map_or(::std::ptr::null_mut(), |v| {
-                    v as *const Temporary as *mut Temporary
-                }))
-                .data[(index.postfix_inc()) as usize] as *mut i32),)
-                {
-                    (__tmp_89,) => values.try_emplace(keys[(2) as usize], || (*__tmp_89)),
-                }
-            };
-            let mut get: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
-                let mut __tmp_92: Option<Box<Temporary>>;
-                match ((&mut (*(*{
-                    __tmp_92 = Some(Box::new(Temporary::new()));
-                    &mut __tmp_92
-                })
-                .as_deref_mut()
-                .map_or(::std::ptr::null_mut(), |v| v as *mut Temporary))
-                .n as *mut i32),)
-                {
-                    (__tmp_91,) => values.try_emplace(keys[(3) as usize], || (*__tmp_91)),
-                }
-            };
-            let mut deref: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
-                let mut __tmp_94: Option<Box<Temporary>>;
-                match ((&mut (*((*{
-                    __tmp_94 = Some(Box::new(Temporary::new()));
-                    &mut __tmp_94
-                })
-                .as_deref()
-                .map_or(::std::ptr::null_mut(), |v| {
-                    v as *const Temporary as *mut Temporary
-                })))
-                .n as *mut i32),)
-                {
-                    (__tmp_93,) => values.try_emplace(keys[(4) as usize], || (*__tmp_93)),
-                }
-            };
-            let mut indirect: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
-                let mut __tmp_96: Option<Box<Option<Box<Temporary>>>>;
-                match ((&mut (*((*(*{
-                    __tmp_96 = Some(Box::new(Some(Box::new(Temporary::new()))));
-                    &mut __tmp_96
-                })
-                .as_deref()
-                .map_or(::std::ptr::null_mut(), |v| {
-                    v as *const Option<Box<Temporary>> as *mut Option<Box<Temporary>>
-                }))
-                .as_deref()
-                .map_or(::std::ptr::null_mut(), |v| {
-                    v as *const Temporary as *mut Temporary
-                })))
-                .n as *mut i32),)
-                {
-                    (__tmp_95,) => values.try_emplace(keys[(5) as usize], || (*__tmp_95)),
-                }
-            };
-            assert!(
-                ((*std::cell::LazyCell::force_mut(&mut *&raw mut temporary_calls_4))
-                    == ((before) + (6)))
-                    && ((index) == (1))
-            );
-            assert!(
-                (((((((arrow.1) as i32) == (!(hit != 0) as i32))
-                    && (((nested.1) as i32) == (!(hit != 0) as i32)))
-                    && (((element.1) as i32) == (!(hit != 0) as i32)))
-                    && (((get.1) as i32) == (!(hit != 0) as i32)))
-                    && (((deref.1) as i32) == (!(hit != 0) as i32)))
-                    && (((indirect.1) as i32) == (!(hit != 0) as i32))
-            );
-            'loop_: for k in IterRange::new(keys.as_ptr(), keys.as_ptr().offset((6_i64) as isize)) {
-                let mut k: i32 = (*k);
-                assert!(
-                    ((*values.subscript(&k, || 0_i32))
-                        == (if (hit != 0) {
-                            42
-                        } else {
-                            if ((k) == (2)) { 6 } else { 5 }
-                        }))
-                );
-            }
-            {
-                let mut choose: i32 = 0;
-                'loop_: while ((choose) < (2)) {
-                    let mut references: UnsafeMap<i32, (i32, Held)> = UnsafeMap::new();
-                    let mut ordinary: i32 = 9;
-                    if (hit != 0) {
-                        references.try_emplace(key, || Held::new_1({ &ordinary }));
-                    }
-                    before = (*std::cell::LazyCell::force_mut(&mut *&raw mut temporary_calls_4));
-                    index = 0;
-                    let mut value: i32 = 0;
-                    {
-                        let mut __tmp_98: Option<Box<Temporary>>;
-                        let mut __tmp_99: Option<Box<Temporary>>;
-                        {
-                            match ((if (choose != 0) {
-                                (&mut (*(*{
-                                    __tmp_98 = Some(Box::new(Temporary::new()));
-                                    &mut __tmp_98
-                                })
-                                .as_deref()
-                                .map_or(::std::ptr::null_mut(), |v| {
-                                    v as *const Temporary as *mut Temporary
-                                }))
-                                .n as *mut i32)
-                            } else {
-                                (&mut (*(*{
-                                    __tmp_99 = Some(Box::new(Temporary::new()));
-                                    &mut __tmp_99
-                                })
-                                .as_deref()
-                                .map_or(::std::ptr::null_mut(), |v| {
-                                    v as *const Temporary as *mut Temporary
-                                }))
-                                .data[(index.postfix_inc()) as usize]
-                                    as *mut i32)
-                            } as *mut i32),)
-                            {
-                                (__tmp_97,) => {
-                                    references.try_emplace(key, || Held::new_1({ __tmp_97 }))
+                    let mut choose: i32 = 0;
+                    'loop_: while ((choose) < (2)) {
+                        'for_body: {
+                            let mut selected: UnsafeMap<i32, (i32, Item)> = UnsafeMap::new();
+                            let keys: [i32; 3] = [0, 1, 2];
+                            if (hit != 0) {
+                                'loop_: for k in IterRange::new(
+                                    keys.as_ptr(),
+                                    keys.as_ptr().offset((3_i64) as isize),
+                                ) {
+                                    let mut k: i32 = (*k);
+                                    (*selected.subscript(&k, || <Item>::default())).value = 42;
                                 }
-                            };
-                            value = (*(*references.subscript(&key, || <Held>::default())).ptr)
-                        }
-                    };
-                    assert!(
-                        ((*std::cell::LazyCell::force_mut(&mut *&raw mut temporary_calls_4))
-                            == ((before) + (1)))
-                            && ((index) == (if (choose != 0) { 0 } else { 1 }))
-                    );
-                    assert!(
-                        ((value)
-                            == (if (hit != 0) {
-                                9
-                            } else {
-                                if (choose != 0) { 5 } else { 6 }
-                            }))
-                    );
-                    let mut owners: UnsafeMap<i32, (i32, Held)> = UnsafeMap::new();
-                    {
-                        let mut __tmp_101: Owner;
-                        {
-                            match (((unsafe {
-                                Owner::value(
-                                    &mut (*{
-                                        __tmp_101 = Owner::new();
-                                        &mut __tmp_101
+                            }
+                            let mut a: i32 = 0;
+                            let mut b: i32 = 0;
+                            let mut c: i32 = 0;
+                            let mut d: i32 = 0;
+                            let mut e: i32 = 0;
+                            let mut f: i32 = 0;
+                            let mut prefix: (UnsafeBidirectionalIterator<(i32, Item)>, bool) =
+                                match ((if (choose != 0) {
+                                    ({
+                                        let __tmp_61 = &mut a;
+                                        (*__tmp_61).prefix_inc();
+                                        __tmp_61
+                                    } as *mut i32)
+                                } else {
+                                    ({
+                                        let __tmp_62 = &mut b;
+                                        (*__tmp_62).prefix_inc();
+                                        __tmp_62
+                                    } as *mut i32)
+                                } as *mut i32),)
+                                {
+                                    (__tmp_60,) => selected.try_emplace(keys[(0) as usize], || {
+                                        Item::new_2({ __tmp_60 }, { 2 })
                                     }),
-                                )
-                            }) as *const i32),)
+                                };
+                            let mut assignment: (UnsafeBidirectionalIterator<(i32, Item)>, bool) =
+                                match ((if (choose != 0) {
+                                    ((match ({ 5 }, (&mut c as *mut i32)) {
+                                        (__tmp_65, __tmp_64) => {
+                                            __tmp_64.write(__tmp_65);
+                                            __tmp_64
+                                        }
+                                    }) as *mut i32)
+                                } else {
+                                    ((match ({ 6 }, (&mut d as *mut i32)) {
+                                        (__tmp_67, __tmp_66) => {
+                                            __tmp_66.write(__tmp_67);
+                                            __tmp_66
+                                        }
+                                    }) as *mut i32)
+                                } as *mut i32),)
+                                {
+                                    (__tmp_63,) => selected.try_emplace(keys[(1) as usize], || {
+                                        Item::new_2({ __tmp_63 }, { 2 })
+                                    }),
+                                };
+                            let mut compound: (UnsafeBidirectionalIterator<(i32, Item)>, bool) =
+                                match ((if (choose != 0) {
+                                    ((match ({ 1 }, (&mut e as *mut i32)) {
+                                        (__tmp_70, __tmp_69) => {
+                                            __tmp_69.write(
+                                                (((*__tmp_69) as i32) + (__tmp_70 as i32)) as i32,
+                                            );
+                                            __tmp_69
+                                        }
+                                    }) as *mut i32)
+                                } else {
+                                    ((match ({ 2 }, (&mut f as *mut i32)) {
+                                        (__tmp_72, __tmp_71) => {
+                                            __tmp_71.write(
+                                                (((*__tmp_71) as i32) + (__tmp_72 as i32)) as i32,
+                                            );
+                                            __tmp_71
+                                        }
+                                    }) as *mut i32)
+                                } as *mut i32),)
+                                {
+                                    (__tmp_68,) => selected.try_emplace(keys[(2) as usize], || {
+                                        Item::new_2({ __tmp_68 }, { 2 })
+                                    }),
+                                };
+                            assert!(
+                                ((a) == (if (choose != 0) {
+                                    (if (hit != 0) { 1 } else { 3 })
+                                } else {
+                                    0
+                                })) && ((b)
+                                    == (if (choose != 0) {
+                                        0
+                                    } else {
+                                        (if (hit != 0) { 1 } else { 3 })
+                                    }))
+                            );
+                            assert!(
+                                ((c) == (if (choose != 0) {
+                                    (if (hit != 0) { 5 } else { 7 })
+                                } else {
+                                    0
+                                })) && ((d)
+                                    == (if (choose != 0) {
+                                        0
+                                    } else {
+                                        (if (hit != 0) { 6 } else { 8 })
+                                    }))
+                            );
+                            assert!(
+                                ((e) == (if (choose != 0) {
+                                    (if (hit != 0) { 1 } else { 3 })
+                                } else {
+                                    0
+                                })) && ((f)
+                                    == (if (choose != 0) {
+                                        0
+                                    } else {
+                                        (if (hit != 0) { 2 } else { 4 })
+                                    }))
+                            );
+                            assert!(
+                                ((((prefix.1) as i32) == (!(hit != 0) as i32))
+                                    && (((assignment.1) as i32) == (!(hit != 0) as i32)))
+                                    && (((compound.1) as i32) == (!(hit != 0) as i32))
+                            );
+                            assert!(
+                                (((*prefix.0.iter_deref()).1.value)
+                                    == (if (hit != 0) { 42 } else { 3 }))
+                            );
+                            assert!(
+                                (((*assignment.0.iter_deref()).1.value)
+                                    == (if (hit != 0) {
+                                        42
+                                    } else {
+                                        if (choose != 0) { 7 } else { 8 }
+                                    }))
+                            );
+                            assert!(
+                                (((*compound.0.iter_deref()).1.value)
+                                    == (if (hit != 0) {
+                                        42
+                                    } else {
+                                        if (choose != 0) { 3 } else { 4 }
+                                    }))
+                            );
+                        }
+                        choose.prefix_inc();
+                    }
+                }
+                let mut values: UnsafeMap<i32, (i32, i32)> = UnsafeMap::new();
+                let keys: [i32; 3] = [0, 1, 2];
+                if (hit != 0) {
+                    'loop_: for k in
+                        IterRange::new(keys.as_ptr(), keys.as_ptr().offset((3_i64) as isize))
+                    {
+                        let mut k: i32 = (*k);
+                        (*values.subscript(&k, || 0_i32)) = 42;
+                    }
+                }
+                let mut before: i32 =
+                    (*std::cell::LazyCell::force_mut(&mut *&raw mut temporary_calls_4));
+                let mut index: i32 = 0;
+                let mut member: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
+                    let mut __tmp_74: Temporary;
+                    match ((&mut (*{
+                        __tmp_74 = (unsafe { make_temporary_5() });
+                        &mut __tmp_74
+                    })
+                    .n as *mut i32),)
+                    {
+                        (__tmp_73,) => values.try_emplace(keys[(0) as usize], || (*__tmp_73)),
+                    }
+                };
+                let mut nested: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
+                    let mut __tmp_76: Nested;
+                    match ((&mut (*&mut (*{
+                        __tmp_76 = (unsafe { make_nested_6() });
+                        &mut __tmp_76
+                    })
+                    .inner)
+                        .n as *mut i32),)
+                    {
+                        (__tmp_75,) => values.try_emplace(keys[(1) as usize], || (*__tmp_75)),
+                    }
+                };
+                let mut element: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
+                    let mut __tmp_78: Temporary;
+                    match ((&mut (*{
+                        __tmp_78 = (unsafe { make_temporary_5() });
+                        &mut __tmp_78
+                    })
+                    .data[(index.postfix_inc()) as usize] as *mut i32),)
+                    {
+                        (__tmp_77,) => values.try_emplace(keys[(2) as usize], || (*__tmp_77)),
+                    }
+                };
+                assert!(
+                    ((*std::cell::LazyCell::force_mut(&mut *&raw mut temporary_calls_4))
+                        == ((before) + (3)))
+                        && ((index) == (1))
+                );
+                assert!(
+                    ((((member.1) as i32) == (!(hit != 0) as i32))
+                        && (((nested.1) as i32) == (!(hit != 0) as i32)))
+                        && (((element.1) as i32) == (!(hit != 0) as i32))
+                );
+                assert!(
+                    ((((*member.0.iter_deref()).1) == (if (hit != 0) { 42 } else { 5 }))
+                        && (((*nested.0.iter_deref()).1) == (if (hit != 0) { 42 } else { 5 })))
+                        && (((*element.0.iter_deref()).1) == (if (hit != 0) { 42 } else { 6 }))
+                );
+                {
+                    let mut choose: i32 = 0;
+                    'loop_: while ((choose) < (2)) {
+                        'for_body: {
+                            let mut references: UnsafeMap<i32, (i32, Held)> = UnsafeMap::new();
+                            let mut ordinary: i32 = 9;
+                            if (hit != 0) {
+                                references.try_emplace(key, || Held::new_1({ &ordinary }));
+                            }
+                            before =
+                                (*std::cell::LazyCell::force_mut(&mut *&raw mut temporary_calls_4));
+                            index = 0;
+                            let mut value: i32 = 0;
                             {
-                                (__tmp_100,) => {
-                                    owners.try_emplace(key, || Held::new_1({ __tmp_100 }))
+                                let mut __tmp_80: Nested;
+                                let mut __tmp_81: Temporary;
+                                {
+                                    match ((if (choose != 0) {
+                                        (&mut (*&mut (*{
+                                            __tmp_80 = (unsafe { make_nested_6() });
+                                            &mut __tmp_80
+                                        })
+                                        .inner)
+                                            .n as *mut i32)
+                                    } else {
+                                        (&mut (*{
+                                            __tmp_81 = (unsafe { make_temporary_5() });
+                                            &mut __tmp_81
+                                        })
+                                        .data
+                                            [(index.postfix_inc()) as usize]
+                                            as *mut i32)
+                                    } as *mut i32),)
+                                    {
+                                        (__tmp_79,) => references
+                                            .try_emplace(key, || Held::new_1({ __tmp_79 })),
+                                    };
+                                    value =
+                                        (*(*references.subscript(&key, || <Held>::default())).ptr)
                                 }
                             };
-                            value = (*(*owners.subscript(&key, || <Held>::default())).ptr)
+                            assert!(
+                                ((*std::cell::LazyCell::force_mut(
+                                    &mut *&raw mut temporary_calls_4
+                                )) == ((before) + (1)))
+                                    && ((index) == (if (choose != 0) { 0 } else { 1 }))
+                            );
+                            assert!(
+                                ((value)
+                                    == (if (hit != 0) {
+                                        9
+                                    } else {
+                                        if (choose != 0) { 5 } else { 6 }
+                                    }))
+                            );
+                            let mut arrays: UnsafeMap<i32, (i32, Held)> = UnsafeMap::new();
+                            let ordinary_array: [i32; 2] = [9, 10];
+                            if (hit != 0) {
+                                arrays.try_emplace(key, || Held::new_3({ &ordinary_array }, { 0 }));
+                            }
+                            before =
+                                (*std::cell::LazyCell::force_mut(&mut *&raw mut temporary_calls_4));
+                            {
+                                let mut __tmp_83: Nested;
+                                let mut __tmp_84: Temporary;
+                                {
+                                    match ((if (choose != 0) {
+                                        (&mut (*&mut (*{
+                                            __tmp_83 = (unsafe { make_nested_6() });
+                                            &mut __tmp_83
+                                        })
+                                        .inner)
+                                            .data
+                                            as *mut [i32; 2])
+                                    } else {
+                                        (&mut (*{
+                                            __tmp_84 = (unsafe { make_temporary_5() });
+                                            &mut __tmp_84
+                                        })
+                                        .data
+                                            as *mut [i32; 2])
+                                    } as *mut [i32; 2]),)
+                                    {
+                                        (__tmp_82,) => arrays
+                                            .try_emplace(key, || Held::new_3({ __tmp_82 }, { 0 })),
+                                    };
+                                    value = (*(*arrays.subscript(&key, || <Held>::default()))
+                                        .ptr
+                                        .offset((1) as isize))
+                                }
+                            };
+                            assert!(
+                                ((*std::cell::LazyCell::force_mut(
+                                    &mut *&raw mut temporary_calls_4
+                                )) == ((before) + (1)))
+                                    && ((value) == (if (hit != 0) { 10 } else { 7 }))
+                            );
                         }
-                    };
-                    assert!(((value) == (5)));
-                    choose.prefix_inc();
+                        choose.prefix_inc();
+                    }
+                }
+            }
+            hit.prefix_inc();
+        }
+    }
+    {
+        let mut hit: i32 = 0;
+        'loop_: while ((hit) < (2)) {
+            'for_body: {
+                let mut values: UnsafeMap<i32, (i32, i32)> = UnsafeMap::new();
+                let keys: [i32; 6] = [0, 1, 2, 3, 4, 5];
+                if (hit != 0) {
+                    'loop_: for k in
+                        IterRange::new(keys.as_ptr(), keys.as_ptr().offset((6_i64) as isize))
+                    {
+                        let mut k: i32 = (*k);
+                        (*values.subscript(&k, || 0_i32)) = 42;
+                    }
+                }
+                let mut before: i32 =
+                    (*std::cell::LazyCell::force_mut(&mut *&raw mut temporary_calls_4));
+                let mut index: i32 = 0;
+                let mut arrow: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
+                    let mut __tmp_86: Option<Box<Temporary>>;
+                    match ((&mut (*(*{
+                        __tmp_86 = Some(Box::new(Temporary::new()));
+                        &mut __tmp_86
+                    })
+                    .as_deref()
+                    .map_or(::std::ptr::null_mut(), |v| {
+                        v as *const Temporary as *mut Temporary
+                    }))
+                    .n as *mut i32),)
+                    {
+                        (__tmp_85,) => values.try_emplace(keys[(0) as usize], || (*__tmp_85)),
+                    }
+                };
+                let mut nested: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
+                    let mut __tmp_88: Option<Box<Nested>>;
+                    match ((&mut (*&mut (*(*{
+                        __tmp_88 = Some(Box::new(<Nested>::default()));
+                        &mut __tmp_88
+                    })
+                    .as_deref()
+                    .map_or(::std::ptr::null_mut(), |v| {
+                        v as *const Nested as *mut Nested
+                    }))
+                    .inner)
+                        .n as *mut i32),)
+                    {
+                        (__tmp_87,) => values.try_emplace(keys[(1) as usize], || (*__tmp_87)),
+                    }
+                };
+                let mut element: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
+                    let mut __tmp_90: Option<Box<Temporary>>;
+                    match ((&mut (*(*{
+                        __tmp_90 = Some(Box::new(Temporary::new()));
+                        &mut __tmp_90
+                    })
+                    .as_deref()
+                    .map_or(::std::ptr::null_mut(), |v| {
+                        v as *const Temporary as *mut Temporary
+                    }))
+                    .data[(index.postfix_inc()) as usize] as *mut i32),)
+                    {
+                        (__tmp_89,) => values.try_emplace(keys[(2) as usize], || (*__tmp_89)),
+                    }
+                };
+                let mut get: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
+                    let mut __tmp_92: Option<Box<Temporary>>;
+                    match ((&mut (*(*{
+                        __tmp_92 = Some(Box::new(Temporary::new()));
+                        &mut __tmp_92
+                    })
+                    .as_deref_mut()
+                    .map_or(::std::ptr::null_mut(), |v| v as *mut Temporary))
+                    .n as *mut i32),)
+                    {
+                        (__tmp_91,) => values.try_emplace(keys[(3) as usize], || (*__tmp_91)),
+                    }
+                };
+                let mut deref: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
+                    let mut __tmp_94: Option<Box<Temporary>>;
+                    match ((&mut (*((*{
+                        __tmp_94 = Some(Box::new(Temporary::new()));
+                        &mut __tmp_94
+                    })
+                    .as_deref()
+                    .map_or(::std::ptr::null_mut(), |v| {
+                        v as *const Temporary as *mut Temporary
+                    })))
+                    .n as *mut i32),)
+                    {
+                        (__tmp_93,) => values.try_emplace(keys[(4) as usize], || (*__tmp_93)),
+                    }
+                };
+                let mut indirect: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
+                    let mut __tmp_96: Option<Box<Option<Box<Temporary>>>>;
+                    match ((&mut (*((*(*{
+                        __tmp_96 = Some(Box::new(Some(Box::new(Temporary::new()))));
+                        &mut __tmp_96
+                    })
+                    .as_deref()
+                    .map_or(::std::ptr::null_mut(), |v| {
+                        v as *const Option<Box<Temporary>> as *mut Option<Box<Temporary>>
+                    }))
+                    .as_deref()
+                    .map_or(::std::ptr::null_mut(), |v| {
+                        v as *const Temporary as *mut Temporary
+                    })))
+                    .n as *mut i32),)
+                    {
+                        (__tmp_95,) => values.try_emplace(keys[(5) as usize], || (*__tmp_95)),
+                    }
+                };
+                assert!(
+                    ((*std::cell::LazyCell::force_mut(&mut *&raw mut temporary_calls_4))
+                        == ((before) + (6)))
+                        && ((index) == (1))
+                );
+                assert!(
+                    (((((((arrow.1) as i32) == (!(hit != 0) as i32))
+                        && (((nested.1) as i32) == (!(hit != 0) as i32)))
+                        && (((element.1) as i32) == (!(hit != 0) as i32)))
+                        && (((get.1) as i32) == (!(hit != 0) as i32)))
+                        && (((deref.1) as i32) == (!(hit != 0) as i32)))
+                        && (((indirect.1) as i32) == (!(hit != 0) as i32))
+                );
+                'loop_: for k in
+                    IterRange::new(keys.as_ptr(), keys.as_ptr().offset((6_i64) as isize))
+                {
+                    let mut k: i32 = (*k);
+                    assert!(
+                        ((*values.subscript(&k, || 0_i32))
+                            == (if (hit != 0) {
+                                42
+                            } else {
+                                if ((k) == (2)) { 6 } else { 5 }
+                            }))
+                    );
+                }
+                {
+                    let mut choose: i32 = 0;
+                    'loop_: while ((choose) < (2)) {
+                        'for_body: {
+                            let mut references: UnsafeMap<i32, (i32, Held)> = UnsafeMap::new();
+                            let mut ordinary: i32 = 9;
+                            if (hit != 0) {
+                                references.try_emplace(key, || Held::new_1({ &ordinary }));
+                            }
+                            before =
+                                (*std::cell::LazyCell::force_mut(&mut *&raw mut temporary_calls_4));
+                            index = 0;
+                            let mut value: i32 = 0;
+                            {
+                                let mut __tmp_98: Option<Box<Temporary>>;
+                                let mut __tmp_99: Option<Box<Temporary>>;
+                                {
+                                    match ((if (choose != 0) {
+                                        (&mut (*(*{
+                                            __tmp_98 = Some(Box::new(Temporary::new()));
+                                            &mut __tmp_98
+                                        })
+                                        .as_deref()
+                                        .map_or(::std::ptr::null_mut(), |v| {
+                                            v as *const Temporary as *mut Temporary
+                                        }))
+                                        .n as *mut i32)
+                                    } else {
+                                        (&mut (*(*{
+                                            __tmp_99 = Some(Box::new(Temporary::new()));
+                                            &mut __tmp_99
+                                        })
+                                        .as_deref()
+                                        .map_or(::std::ptr::null_mut(), |v| {
+                                            v as *const Temporary as *mut Temporary
+                                        }))
+                                        .data
+                                            [(index.postfix_inc()) as usize]
+                                            as *mut i32)
+                                    } as *mut i32),)
+                                    {
+                                        (__tmp_97,) => references
+                                            .try_emplace(key, || Held::new_1({ __tmp_97 })),
+                                    };
+                                    value =
+                                        (*(*references.subscript(&key, || <Held>::default())).ptr)
+                                }
+                            };
+                            assert!(
+                                ((*std::cell::LazyCell::force_mut(
+                                    &mut *&raw mut temporary_calls_4
+                                )) == ((before) + (1)))
+                                    && ((index) == (if (choose != 0) { 0 } else { 1 }))
+                            );
+                            assert!(
+                                ((value)
+                                    == (if (hit != 0) {
+                                        9
+                                    } else {
+                                        if (choose != 0) { 5 } else { 6 }
+                                    }))
+                            );
+                            let mut owners: UnsafeMap<i32, (i32, Held)> = UnsafeMap::new();
+                            {
+                                let mut __tmp_101: Owner;
+                                {
+                                    match (((unsafe {
+                                        Owner::value(
+                                            &mut (*{
+                                                __tmp_101 = Owner::new();
+                                                &mut __tmp_101
+                                            }),
+                                        )
+                                    }) as *const i32),)
+                                    {
+                                        (__tmp_100,) => {
+                                            owners.try_emplace(key, || Held::new_1({ __tmp_100 }))
+                                        }
+                                    };
+                                    value = (*(*owners.subscript(&key, || <Held>::default())).ptr)
+                                }
+                            };
+                            assert!(((value) == (5)));
+                        }
+                        choose.prefix_inc();
+                    }
                 }
             }
             hit.prefix_inc();

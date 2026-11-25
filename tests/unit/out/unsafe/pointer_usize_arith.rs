@@ -57,7 +57,9 @@ unsafe fn main_0() -> i32 {
     {
         let mut it: *mut i32 = p;
         'loop_: while ((it) != (end)) {
-            sum += (*it);
+            'for_body: {
+                sum += (*it);
+            }
             it.prefix_inc();
         }
     }

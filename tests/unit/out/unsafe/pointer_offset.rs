@@ -18,35 +18,45 @@ unsafe fn main_0() -> i32 {
     {
         let mut ptr: *const i32 = (&mut arr[(0) as usize] as *mut i32).cast_const();
         'loop_: while ((*ptr) != (0)) {
-            out += (*ptr);
+            'for_body: {
+                out += (*ptr);
+            }
             ptr.prefix_inc();
         }
     }
     {
         let mut ptr: *mut i32 = (&mut arr[(1) as usize] as *mut i32);
         'loop_: while ((*ptr) != (4)) {
-            out += (*ptr);
+            'for_body: {
+                out += (*ptr);
+            }
             ptr.postfix_inc();
         }
     }
     {
         let mut ptr: *mut i32 = (&mut arr[(4) as usize] as *mut i32);
         'loop_: while ((*ptr) != (1)) {
-            out += (*ptr);
+            'for_body: {
+                out += (*ptr);
+            }
             ptr.postfix_dec();
         }
     }
     {
         let mut ptr: *const i32 = (&mut arr[(3) as usize] as *mut i32).cast_const();
         'loop_: while ((*ptr) != (2)) {
-            out += (*ptr);
+            'for_body: {
+                out += (*ptr);
+            }
             ptr.prefix_dec();
         }
     }
     {
         let mut ptr: *mut i32 = (&mut arr[(0) as usize] as *mut i32);
         'loop_: while ((*ptr) != (0)) {
-            out += (*ptr);
+            'for_body: {
+                out += (*ptr);
+            }
             ptr = ptr.offset((1) as isize);
         }
     }
@@ -54,7 +64,9 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (5)) {
-            out += (*ptr.offset((i) as isize));
+            'for_body: {
+                out += (*ptr.offset((i) as isize));
+            }
             i.prefix_inc();
         }
     }

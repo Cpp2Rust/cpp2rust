@@ -25,7 +25,9 @@ pub unsafe fn sum_0(mut p: *const i32, mut n: i32) -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (n)) {
-            s += (*p.offset((i) as isize));
+            'for_body: {
+                s += (*p.offset((i) as isize));
+            }
             i.prefix_inc();
         }
     }

@@ -41,32 +41,36 @@ pub unsafe fn lehmer_3(mut sigma: *const u32, mut len: u32, mut code: *mut u32) 
     {
         let mut i: u32 = 0_u32;
         'loop_: while ((i) < (len)) {
-            items[(i as usize)] = i;
+            'for_body: {
+                items[(i as usize)] = i;
+            }
             i.prefix_inc();
         }
     }
     {
         let mut i: u32 = 0_u32;
         'loop_: while ((i) < (len)) {
-            let mut it: UnsafeRandomAccessIterator<u32> = {
-                let mut __tmp_0 = { items.begin() };
-                let mut __tmp_1 = { items.end() };
-                let mut __it = (__tmp_0).clone();
-                while __it != __tmp_1 && *__it.iter_deref() != (*sigma.offset((i) as isize)) {
-                    __it.iter_inc();
-                }
-                __it
-            };
-            assert!(it != items.end());
-            (*code.offset((i) as isize)) = ((it.iter_distance(&items.begin())) as u32);
-            {
-                let mut __tmp_2 = { <UnsafeRandomAccessIterator<u32>>::from((it).clone()) };
-                let pos = __tmp_2
-                    .iter_distance(&UnsafeRandomAccessIterator::Vec(items.as_mut_ptr()))
-                    as usize;
-                items.remove(pos);
-                (__tmp_2).clone()
-            };
+            'for_body: {
+                let mut it: UnsafeRandomAccessIterator<u32> = {
+                    let mut __tmp_0 = { items.begin() };
+                    let mut __tmp_1 = { items.end() };
+                    let mut __it = (__tmp_0).clone();
+                    while __it != __tmp_1 && *__it.iter_deref() != (*sigma.offset((i) as isize)) {
+                        __it.iter_inc();
+                    }
+                    __it
+                };
+                assert!(it != items.end());
+                (*code.offset((i) as isize)) = ((it.iter_distance(&items.begin())) as u32);
+                {
+                    let mut __tmp_2 = { <UnsafeRandomAccessIterator<u32>>::from((it).clone()) };
+                    let pos = __tmp_2
+                        .iter_distance(&UnsafeRandomAccessIterator::Vec(items.as_mut_ptr()))
+                        as usize;
+                    items.remove(pos);
+                    (__tmp_2).clone()
+                };
+            }
             i.prefix_inc();
         }
     }
@@ -76,7 +80,9 @@ pub unsafe fn sum_4(v: *mut Vec<i32>) -> i32 {
     {
         let mut it: UnsafeRandomAccessIterator<i32> = (*v).begin();
         'loop_: while it != (*v).end() {
-            s += (*it.iter_deref());
+            'for_body: {
+                s += (*it.iter_deref());
+            }
             {
                 it.iter_inc();
             };

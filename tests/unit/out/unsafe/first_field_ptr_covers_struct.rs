@@ -62,7 +62,9 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (4)) {
-            (*bz.offset((i) as isize)) = 1_u8;
+            'for_body: {
+                (*bz.offset((i) as isize)) = 1_u8;
+            }
             i.postfix_inc();
         }
     }

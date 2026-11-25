@@ -22,7 +22,9 @@ pub unsafe fn Find_0(mut head: *mut Node, mut idx: i32) -> *mut Node {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (idx)) {
-            curr = (*curr).next;
+            'for_body: {
+                curr = (*curr).next;
+            }
             i.postfix_inc();
         }
     }

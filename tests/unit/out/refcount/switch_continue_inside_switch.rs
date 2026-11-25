@@ -11,19 +11,20 @@ pub fn continue_inside_switch_0(mut n: i32) -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while (i < n) {
-            'switch: {
-                match { i } {
-                    __v if __v == 0 || __v == 2 || __v == 4 => {
-                        i.prefix_inc();
-                        continue 'loop_;
+            'for_body: {
+                'switch: {
+                    match { i } {
+                        __v if __v == 0 || __v == 2 || __v == 4 => {
+                            break 'for_body;
+                        }
+                        _ => {
+                            r += i;
+                            break 'switch;
+                        }
                     }
-                    _ => {
-                        r += i;
-                        break 'switch;
-                    }
-                }
-            };
-            r += 1000;
+                };
+                r += 1000;
+            }
             i.prefix_inc();
         }
     }

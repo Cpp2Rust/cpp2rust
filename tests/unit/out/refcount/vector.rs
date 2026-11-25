@@ -161,13 +161,15 @@ fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while (i < 4) {
-            {
-                let mut __tmp_10 =
-                    { <RandomAccessIterator<i32>>::from(v2.decay().begin().iter_add(1_isize)) };
-                v2.as_pointer()
-                    .with_mut(|__v: &mut Vec<i32>| __v.remove(__tmp_10.index()));
-                (__tmp_10).clone()
-            };
+            'for_body: {
+                {
+                    let mut __tmp_10 =
+                        { <RandomAccessIterator<i32>>::from(v2.decay().begin().iter_add(1_isize)) };
+                    v2.as_pointer()
+                        .with_mut(|__v: &mut Vec<i32>| __v.remove(__tmp_10.index()));
+                    (__tmp_10).clone()
+                };
+            }
             i.prefix_inc();
         }
     }
@@ -183,7 +185,9 @@ fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while (i < 100) {
-            assert!(({ ({ (*v3.borrow())[(i as usize)] } == 1) }));
+            'for_body: {
+                assert!(({ ({ (*v3.borrow())[(i as usize)] } == 1) }));
+            }
             i.prefix_inc();
         }
     }
@@ -192,7 +196,9 @@ fn main_0() -> i32 {
     {
         let mut i: u32 = 0_u32;
         'loop_: while ((i as usize) < v4.len()) {
-            assert!((v4[(i as usize)]).is_null());
+            'for_body: {
+                assert!((v4[(i as usize)]).is_null());
+            }
             i.prefix_inc();
         }
     }
@@ -201,7 +207,9 @@ fn main_0() -> i32 {
     {
         let mut i: u32 = 0_u32;
         'loop_: while ((i as usize) < v5.len()) {
-            assert!((v5[(i as usize)]).is_null());
+            'for_body: {
+                assert!((v5[(i as usize)]).is_null());
+            }
             i.prefix_inc();
         }
     }
@@ -210,7 +218,9 @@ fn main_0() -> i32 {
     {
         let mut i: u32 = 0_u32;
         'loop_: while ((i as usize) < s2) {
-            assert!(({ ({ (*v6.borrow())[(i as usize)] } == 2_f64) }));
+            'for_body: {
+                assert!(({ ({ (*v6.borrow())[(i as usize)] } == 2_f64) }));
+            }
             i.prefix_inc();
         }
     }
@@ -225,12 +235,14 @@ fn main_0() -> i32 {
     {
         let mut i: u32 = 0_u32;
         'loop_: while (i < 200_u32) {
-            assert!(
-                ({
-                    ((*(*v7.borrow())[(i as usize)].0.borrow()).is_null())
-                        && ((*(*v7.borrow())[(i as usize)].1.borrow()) == 0)
-                })
-            );
+            'for_body: {
+                assert!(
+                    ({
+                        ((*(*v7.borrow())[(i as usize)].0.borrow()).is_null())
+                            && ((*(*v7.borrow())[(i as usize)].1.borrow()) == 0)
+                    })
+                );
+            }
             i.prefix_inc();
         }
     }

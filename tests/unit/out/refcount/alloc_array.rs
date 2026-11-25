@@ -13,7 +13,9 @@ pub fn All_0(arr: Ptr<Option<Value<Box<[i32]>>>>, mut N: i32, mut element: i32) 
     {
         let mut i: i32 = 0;
         'loop_: while (i < N) {
-            all.decay().offset((i as usize)).write(element);
+            'for_body: {
+                all.decay().offset((i as usize)).write(element);
+            }
             i.prefix_inc();
         }
     }

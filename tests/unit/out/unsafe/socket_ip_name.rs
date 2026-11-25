@@ -50,7 +50,9 @@ pub unsafe fn check_buf_0(
     {
         let mut j: u32 = copied;
         'loop_: while ((j) < (size)) {
-            assert!((((*buf.offset((j) as isize)) as i32) == (165)));
+            'for_body: {
+                assert!((((*buf.offset((j) as isize)) as i32) == (165)));
+            }
             j.prefix_inc();
         }
     }
@@ -96,37 +98,39 @@ pub unsafe fn check_name_1(mut family: i32) {
             < ((::std::mem::size_of::<[libc::socklen_t; 6]>() as usize)
                 .wrapping_div((::std::mem::size_of::<libc::socklen_t>() as usize))))
         {
-            let mut out: [u8; 136] = [0_u8; 136];
-            (unsafe {
-                let _buf: *mut u8 = out.as_mut_ptr();
-                let _size: u32 = (::std::mem::size_of::<[u8; 136]>() as u32);
-                check_buf_0(
-                    fd,
-                    _buf,
-                    _size,
-                    capacities[(i) as usize],
-                    ((&mut full as *mut libc::sockaddr_storage) as *const ::libc::c_void),
-                    actual,
-                )
-            });
-            let mut size: u32 = (if (capacities[(i) as usize] != 0) {
-                capacities[(i) as usize]
-            } else {
-                (1 as libc::socklen_t)
-            } as u32);
-            let mut small: *mut u8 = (libcc2rs::malloc_unsafe((size as usize)) as *mut u8);
-            assert!(!(small).is_null());
-            (unsafe {
-                check_buf_0(
-                    fd,
-                    small,
-                    size,
-                    capacities[(i) as usize],
-                    ((&mut full as *mut libc::sockaddr_storage) as *const ::libc::c_void),
-                    actual,
-                )
-            });
-            libcc2rs::free_unsafe((small as *mut ::libc::c_void));
+            'for_body: {
+                let mut out: [u8; 136] = [0_u8; 136];
+                (unsafe {
+                    let _buf: *mut u8 = out.as_mut_ptr();
+                    let _size: u32 = (::std::mem::size_of::<[u8; 136]>() as u32);
+                    check_buf_0(
+                        fd,
+                        _buf,
+                        _size,
+                        capacities[(i) as usize],
+                        ((&mut full as *mut libc::sockaddr_storage) as *const ::libc::c_void),
+                        actual,
+                    )
+                });
+                let mut size: u32 = (if (capacities[(i) as usize] != 0) {
+                    capacities[(i) as usize]
+                } else {
+                    (1 as libc::socklen_t)
+                } as u32);
+                let mut small: *mut u8 = (libcc2rs::malloc_unsafe((size as usize)) as *mut u8);
+                assert!(!(small).is_null());
+                (unsafe {
+                    check_buf_0(
+                        fd,
+                        small,
+                        size,
+                        capacities[(i) as usize],
+                        ((&mut full as *mut libc::sockaddr_storage) as *const ::libc::c_void),
+                        actual,
+                    )
+                });
+                libcc2rs::free_unsafe((small as *mut ::libc::c_void));
+            }
             i.prefix_inc();
         }
     }

@@ -11,7 +11,9 @@ pub fn sum_bytes_0(mut buf: Ptr<i8>, mut len: u32) -> i32 {
     {
         let mut i: u32 = 0_u32;
         'loop_: while (i < len) {
-            sum += (((elem!(buf, i).read()) as u8) as i32);
+            'for_body: {
+                sum += (((elem!(buf, i).read()) as u8) as i32);
+            }
             i.postfix_inc();
         }
     }

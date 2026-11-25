@@ -26,7 +26,9 @@ fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while (i < N) {
-            sum += { (elem!(arr, i).read()) };
+            'for_body: {
+                sum += { (elem!(arr, i).read()) };
+            }
             i.prefix_inc();
         }
     }

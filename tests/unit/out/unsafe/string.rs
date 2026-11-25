@@ -96,10 +96,12 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: u32 = 0_u32;
         'loop_: while ((i as usize) < (s2.len() - 1)) {
-            assert!(
-                (((*p2.offset((i) as isize)) as i32) == (('a' as libc::c_char) as i32))
-                    && ((s2[(i as usize)] as i32) == (('a' as libc::c_char) as i32))
-            );
+            'for_body: {
+                assert!(
+                    (((*p2.offset((i) as isize)) as i32) == (('a' as libc::c_char) as i32))
+                        && ((s2[(i as usize)] as i32) == (('a' as libc::c_char) as i32))
+                );
+            }
             i.prefix_inc();
         }
     }
@@ -112,10 +114,12 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: u32 = 2_u32;
         'loop_: while ((i as usize) < (s2.len() - 1)) {
-            assert!(
-                (((*p2.offset((i) as isize)) as i32) == (('a' as libc::c_char) as i32))
-                    && ((s2[(i as usize)] as i32) == (('a' as libc::c_char) as i32))
-            );
+            'for_body: {
+                assert!(
+                    (((*p2.offset((i) as isize)) as i32) == (('a' as libc::c_char) as i32))
+                        && ((s2[(i as usize)] as i32) == (('a' as libc::c_char) as i32))
+                );
+            }
             i.prefix_inc();
         }
     }
@@ -135,7 +139,9 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: u32 = 0_u32;
         'loop_: while ((i as usize) < (s3.len() - 1)) {
-            assert!((((*p3.offset((i) as isize)) as i32) == (s3[(i as usize)] as i32)));
+            'for_body: {
+                assert!((((*p3.offset((i) as isize)) as i32) == (s3[(i as usize)] as i32)));
+            }
             i.prefix_inc();
         }
     }
@@ -163,7 +169,9 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: u32 = 0_u32;
         'loop_: while ((i as usize) < (s4.len() - 1)) {
-            assert!((((*p4.offset((i) as isize)) as i32) == (s4[(i as usize)] as i32)));
+            'for_body: {
+                assert!((((*p4.offset((i) as isize)) as i32) == (s4[(i as usize)] as i32)));
+            }
             i.prefix_inc();
         }
     }
@@ -185,7 +193,9 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: u32 = 0_u32;
         'loop_: while ((i as usize) < (s5.len() - 1)) {
-            assert!((((*p5.offset((i) as isize)) as i32) == (s5[(i as usize)] as i32)));
+            'for_body: {
+                assert!((((*p5.offset((i) as isize)) as i32) == (s5[(i as usize)] as i32)));
+            }
             i.prefix_inc();
         }
     }

@@ -21,11 +21,13 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (3)) {
-            (unsafe {
-                let _row: *mut libc::c_char = grid[(i) as usize].as_mut_ptr();
-                let _c: libc::c_char = ((('a' as i32) + (i)) as libc::c_char);
-                fill_row_0(_row, _c)
-            });
+            'for_body: {
+                (unsafe {
+                    let _row: *mut libc::c_char = grid[(i) as usize].as_mut_ptr();
+                    let _c: libc::c_char = ((('a' as i32) + (i)) as libc::c_char);
+                    fill_row_0(_row, _c)
+                });
+            }
             i.postfix_inc();
         }
     }

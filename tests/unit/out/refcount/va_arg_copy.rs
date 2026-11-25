@@ -17,7 +17,9 @@ pub fn sum_with_copy_0(count: i32, __args: Box<[VaArg]>) -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while (i < (*count.borrow())) {
-            sum1 += (*ap.borrow_mut()).arg::<i32>();
+            'for_body: {
+                sum1 += (*ap.borrow_mut()).arg::<i32>();
+            }
             i.postfix_inc();
         }
     };
@@ -25,7 +27,9 @@ pub fn sum_with_copy_0(count: i32, __args: Box<[VaArg]>) -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while (i < (*count.borrow())) {
-            sum2 += (*aq.borrow_mut()).arg::<i32>();
+            'for_body: {
+                sum2 += (*aq.borrow_mut()).arg::<i32>();
+            }
             i.postfix_inc();
         }
     };

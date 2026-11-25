@@ -53,7 +53,9 @@ pub unsafe fn sum_ref_1(v: *const Vec<i32>) -> i32 {
     {
         let mut i: usize = 0_usize;
         'loop_: while ((i) < ((*v).len())) {
-            s += (&(*v))[(i)];
+            'for_body: {
+                s += (&(*v))[(i)];
+            }
             i.prefix_inc();
         }
     }

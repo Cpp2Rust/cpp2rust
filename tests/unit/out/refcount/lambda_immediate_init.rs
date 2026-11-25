@@ -43,7 +43,9 @@ thread_local!(
                     {
                         let mut i: i32 = 1;
                         'loop_: while (i <= 4) {
-                            s += i;
+                            'for_body: {
+                                s += i;
+                            }
                             i.postfix_inc();
                         }
                     }

@@ -40,54 +40,55 @@ fn main_0() -> i32 {
     let mut ifa: Ptr<libcc2rs::Ifaddrs> = Ptr::<libcc2rs::Ifaddrs>::null();
     ifa = (*list.borrow()).clone();
     'loop_: while (!((ifa).is_null())) {
-        assert!((!((ifa.with(|__s| __s.ifa_name.clone())).is_null())));
-        if ((ifa.with(|__s| __s.ifa_addr.clone())).is_null()) {
-            ifa = { ifa.with(|__s| __s.ifa_next.clone()) };
-            continue 'loop_;
-        }
-        if ((ifa
-            .with(|__s| __s.ifa_addr.clone())
-            .with(|__s| __s.sa_family) as i32)
-            != libc::AF_INET)
-        {
-            ifa = { ifa.with(|__s| __s.ifa_next.clone()) };
-            continue 'loop_;
-        }
-        let mut sin: Ptr<libcc2rs::SockaddrIn> = ifa
-            .with(|__s| __s.ifa_addr.clone())
-            .reinterpret_cast::<libcc2rs::SockaddrIn>();
-        let lo_be: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([127_u8, 0_u8, 0_u8, 1_u8])));
-        if ((field_ptr!(sin, sin_addr))
-            .to_any()
-            .memcmp(&(lo_be.decay()).to_any(), 4_usize)
-            == 0)
-        {
-            found_loopback = 1;
-            assert!((ifa.with(|__s| __s.ifa_flags) != 0_u32));
-            assert!((!((ifa.with(|__s| __s.ifa_netmask.clone())).is_null())));
-            let mut mask: Ptr<libcc2rs::SockaddrIn> = ifa
-                .with(|__s| __s.ifa_netmask.clone())
+        'for_body: {
+            assert!((!((ifa.with(|__s| __s.ifa_name.clone())).is_null())));
+            if ((ifa.with(|__s| __s.ifa_addr.clone())).is_null()) {
+                break 'for_body;
+            }
+            if ((ifa
+                .with(|__s| __s.ifa_addr.clone())
+                .with(|__s| __s.sa_family) as i32)
+                != libc::AF_INET)
+            {
+                break 'for_body;
+            }
+            let mut sin: Ptr<libcc2rs::SockaddrIn> = ifa
+                .with(|__s| __s.ifa_addr.clone())
                 .reinterpret_cast::<libcc2rs::SockaddrIn>();
-            let mask_be: Value<Box<[u8]>> =
-                Rc::new(RefCell::new(Box::new([255_u8, 0_u8, 0_u8, 0_u8])));
-            assert!(
-                ((field_ptr!(mask, sin_addr))
-                    .to_any()
-                    .memcmp(&(mask_be.decay()).to_any(), 4_usize)
-                    == 0)
-            );
-            assert!(
-                (match ifa
-                    .with(|__s| __s.ifa_name.clone())
-                    .with_c_bytes(nix::net::if_::if_nametoindex)
-                {
-                    Ok(__i) => __i,
-                    Err(__e) => {
-                        libcc2rs::cpp2rust_errno().write(__e as i32);
-                        0
-                    }
-                } > 0_u32)
-            );
+            let lo_be: Value<Box<[u8]>> =
+                Rc::new(RefCell::new(Box::new([127_u8, 0_u8, 0_u8, 1_u8])));
+            if ((field_ptr!(sin, sin_addr))
+                .to_any()
+                .memcmp(&(lo_be.decay()).to_any(), 4_usize)
+                == 0)
+            {
+                found_loopback = 1;
+                assert!((ifa.with(|__s| __s.ifa_flags) != 0_u32));
+                assert!((!((ifa.with(|__s| __s.ifa_netmask.clone())).is_null())));
+                let mut mask: Ptr<libcc2rs::SockaddrIn> =
+                    ifa.with(|__s| __s.ifa_netmask.clone())
+                        .reinterpret_cast::<libcc2rs::SockaddrIn>();
+                let mask_be: Value<Box<[u8]>> =
+                    Rc::new(RefCell::new(Box::new([255_u8, 0_u8, 0_u8, 0_u8])));
+                assert!(
+                    ((field_ptr!(mask, sin_addr))
+                        .to_any()
+                        .memcmp(&(mask_be.decay()).to_any(), 4_usize)
+                        == 0)
+                );
+                assert!(
+                    (match ifa
+                        .with(|__s| __s.ifa_name.clone())
+                        .with_c_bytes(nix::net::if_::if_nametoindex)
+                    {
+                        Ok(__i) => __i,
+                        Err(__e) => {
+                            libcc2rs::cpp2rust_errno().write(__e as i32);
+                            0
+                        }
+                    } > 0_u32)
+                );
+            }
         }
         ifa = { ifa.with(|__s| __s.ifa_next.clone()) };
     }

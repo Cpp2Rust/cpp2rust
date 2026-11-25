@@ -32,7 +32,9 @@ impl Buffer {
         {
             let mut i: i32 = 0;
             'loop_: while (i < 4) {
-                array_elem!(this, data, i).write({ if (i < size) { i } else { -1_i32 } });
+                'for_body: {
+                    array_elem!(this, data, i).write({ if (i < size) { i } else { -1_i32 } });
+                }
                 i.prefix_inc();
             }
         }
@@ -48,7 +50,9 @@ impl Buffer {
         {
             let mut i: i32 = 0;
             'loop_: while (i < 4) {
-                array_elem!(this, data, i).write({ (array_elem!(o, data, i).read()) });
+                'for_body: {
+                    array_elem!(this, data, i).write({ (array_elem!(o, data, i).read()) });
+                }
                 i.prefix_inc();
             }
         }
@@ -81,7 +85,9 @@ pub fn sum_2(b: Ptr<Buffer>) -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ({ i } < { b.with(|__s| __s.size) }) {
-            s += (array_elem!(b, data, i).read());
+            'for_body: {
+                s += (array_elem!(b, data, i).read());
+            }
             i.prefix_inc();
         }
     }
@@ -152,7 +158,9 @@ impl BufferImpl for Ptr<Buffer> {
         {
             let mut i: i32 = 0;
             'loop_: while (i < 4) {
-                array_elem!((*self), data, i).write({ (array_elem!(o, data, i).read()) });
+                'for_body: {
+                    array_elem!((*self), data, i).write({ (array_elem!(o, data, i).read()) });
+                }
                 i.prefix_inc();
             }
         }

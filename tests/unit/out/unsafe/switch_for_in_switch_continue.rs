@@ -14,11 +14,12 @@ pub unsafe fn for_in_switch_continue_0(mut n: i32) -> i32 {
                 {
                     let mut i: i32 = 0;
                     'loop_: while ((i) < (5)) {
-                        if (((i) % (2)) == (0)) {
-                            i.prefix_inc();
-                            continue 'loop_;
+                        'for_body: {
+                            if (((i) % (2)) == (0)) {
+                                break 'for_body;
+                            }
+                            r += i;
                         }
-                        r += i;
                         i.prefix_inc();
                     }
                 }

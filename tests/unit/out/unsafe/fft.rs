@@ -64,14 +64,16 @@ pub unsafe fn fft_3(a: *mut Option<Box<[Complex]>>, mut N: i32) -> Option<Box<[C
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (N)) {
-            let mut alpha: f64 =
-                ((((-2_i32 as f64) * (3.141592653589793_f64)) * (i as f64)) / (N as f64));
-            (*w.as_deref()
-                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Complex)
-                .add((i as usize))) = Complex {
-                re: alpha.cos(),
-                img: alpha.sin(),
-            };
+            'for_body: {
+                let mut alpha: f64 =
+                    ((((-2_i32 as f64) * (3.141592653589793_f64)) * (i as f64)) / (N as f64));
+                (*w.as_deref()
+                    .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Complex)
+                    .add((i as usize))) = Complex {
+                    re: alpha.cos(),
+                    img: alpha.sin(),
+                };
+            }
             i.postfix_inc();
         }
     }
@@ -88,34 +90,36 @@ pub unsafe fn fft_3(a: *mut Option<Box<[Complex]>>, mut N: i32) -> Option<Box<[C
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < ((N) / (2))) {
-            (*A0.as_deref()
-                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Complex)
-                .add((i as usize))) = Complex {
-                re: (*(*a)
-                    .as_deref()
+            'for_body: {
+                (*A0.as_deref()
                     .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Complex)
-                    .add((((i) * (2)) as usize)))
-                .re,
-                img: (*(*a)
-                    .as_deref()
+                    .add((i as usize))) = Complex {
+                    re: (*(*a)
+                        .as_deref()
+                        .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Complex)
+                        .add((((i) * (2)) as usize)))
+                    .re,
+                    img: (*(*a)
+                        .as_deref()
+                        .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Complex)
+                        .add((((i) * (2)) as usize)))
+                    .img,
+                };
+                (*A1.as_deref()
                     .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Complex)
-                    .add((((i) * (2)) as usize)))
-                .img,
-            };
-            (*A1.as_deref()
-                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Complex)
-                .add((i as usize))) = Complex {
-                re: (*(*a)
-                    .as_deref()
-                    .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Complex)
-                    .add(((((i) * (2)) + (1)) as usize)))
-                .re,
-                img: (*(*a)
-                    .as_deref()
-                    .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Complex)
-                    .add(((((i) * (2)) + (1)) as usize)))
-                .img,
-            };
+                    .add((i as usize))) = Complex {
+                    re: (*(*a)
+                        .as_deref()
+                        .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Complex)
+                        .add(((((i) * (2)) + (1)) as usize)))
+                    .re,
+                    img: (*(*a)
+                        .as_deref()
+                        .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Complex)
+                        .add(((((i) * (2)) + (1)) as usize)))
+                    .img,
+                };
+            }
             i.postfix_inc();
         }
     }
@@ -124,58 +128,60 @@ pub unsafe fn fft_3(a: *mut Option<Box<[Complex]>>, mut N: i32) -> Option<Box<[C
     {
         let mut k: i32 = 0;
         'loop_: while ((k) < ((N) / (2))) {
-            let mut yk: Complex = (unsafe {
-                let _z1: Complex = (*y0
-                    .as_deref()
-                    .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Complex)
-                    .add((k as usize)));
-                let _z2: Complex = (unsafe {
-                    let _z1: Complex = (*w
+            'for_body: {
+                let mut yk: Complex = (unsafe {
+                    let _z1: Complex = (*y0
                         .as_deref()
                         .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Complex)
                         .add((k as usize)));
-                    let _z2: Complex = (*y1
+                    let _z2: Complex = (unsafe {
+                        let _z1: Complex = (*w
+                            .as_deref()
+                            .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Complex)
+                            .add((k as usize)));
+                        let _z2: Complex = (*y1
+                            .as_deref()
+                            .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Complex)
+                            .add((k as usize)));
+                        Product_0(_z1, _z2)
+                    });
+                    Sum_1(_z1, _z2)
+                });
+                (*y.as_deref()
+                    .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Complex)
+                    .add((k as usize))) = Complex {
+                    re: yk.re,
+                    img: yk.img,
+                };
+                let mut yk_n2: Complex = (unsafe {
+                    let _z1: Complex = (*y0
                         .as_deref()
                         .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Complex)
                         .add((k as usize)));
-                    Product_0(_z1, _z2)
+                    let _z2: Complex = (unsafe {
+                        Neg_2(
+                            (unsafe {
+                                let _z1: Complex = (*w
+                                    .as_deref()
+                                    .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Complex)
+                                    .add((k as usize)));
+                                let _z2: Complex = (*y1
+                                    .as_deref()
+                                    .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Complex)
+                                    .add((k as usize)));
+                                Product_0(_z1, _z2)
+                            }),
+                        )
+                    });
+                    Sum_1(_z1, _z2)
                 });
-                Sum_1(_z1, _z2)
-            });
-            (*y.as_deref()
-                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Complex)
-                .add((k as usize))) = Complex {
-                re: yk.re,
-                img: yk.img,
-            };
-            let mut yk_n2: Complex = (unsafe {
-                let _z1: Complex = (*y0
-                    .as_deref()
+                (*y.as_deref()
                     .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Complex)
-                    .add((k as usize)));
-                let _z2: Complex = (unsafe {
-                    Neg_2(
-                        (unsafe {
-                            let _z1: Complex = (*w
-                                .as_deref()
-                                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Complex)
-                                .add((k as usize)));
-                            let _z2: Complex = (*y1
-                                .as_deref()
-                                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Complex)
-                                .add((k as usize)));
-                            Product_0(_z1, _z2)
-                        }),
-                    )
-                });
-                Sum_1(_z1, _z2)
-            });
-            (*y.as_deref()
-                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Complex)
-                .add((((k) + ((N) / (2))) as usize))) = Complex {
-                re: yk_n2.re,
-                img: yk_n2.img,
-            };
+                    .add((((k) + ((N) / (2))) as usize))) = Complex {
+                    re: yk_n2.re,
+                    img: yk_n2.img,
+                };
+            }
             k.postfix_inc();
         }
     }
@@ -197,12 +203,14 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (N)) {
-            (*a.as_deref()
-                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Complex)
-                .add((i as usize))) = Complex {
-                re: ((i as f64) + (1_f64)),
-                img: 0_f64,
-            };
+            'for_body: {
+                (*a.as_deref()
+                    .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Complex)
+                    .add((i as usize))) = Complex {
+                    re: ((i as f64) + (1_f64)),
+                    img: 0_f64,
+                };
+            }
             i.postfix_inc();
         }
     }
@@ -213,24 +221,26 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (N)) {
-            (*reals
-                .as_deref()
-                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
-                .add((i as usize))) = (((*b
-                .as_deref()
-                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Complex)
-                .add((i as usize)))
-            .re
-            .round()) as i32);
-            (*imgs
-                .as_deref()
-                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
-                .add((i as usize))) = (((*b
-                .as_deref()
-                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Complex)
-                .add((i as usize)))
-            .img
-            .round()) as i32);
+            'for_body: {
+                (*reals
+                    .as_deref()
+                    .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
+                    .add((i as usize))) = (((*b
+                    .as_deref()
+                    .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Complex)
+                    .add((i as usize)))
+                .re
+                .round()) as i32);
+                (*imgs
+                    .as_deref()
+                    .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
+                    .add((i as usize))) = (((*b
+                    .as_deref()
+                    .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Complex)
+                    .add((i as usize)))
+                .img
+                .round()) as i32);
+            }
             i.prefix_inc();
         }
     }

@@ -17,7 +17,9 @@ pub fn sum_0(n: i32, __args: Box<[VaArg]>) -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while (i < (*n.borrow())) {
-            total += { (*guard.borrow()).ap.clone() }.with_mut(|__v| __v.arg::<i32>());
+            'for_body: {
+                total += { (*guard.borrow()).ap.clone() }.with_mut(|__v| __v.arg::<i32>());
+            }
             i.prefix_inc();
         }
     }
@@ -53,7 +55,9 @@ pub fn sum_ptr_2(n: i32, __args: Box<[VaArg]>) -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while (i < (*n.borrow())) {
-            total += cursor.ap.with_mut(|__v| __v.arg::<i32>());
+            'for_body: {
+                total += cursor.ap.with_mut(|__v| __v.arg::<i32>());
+            }
             i.prefix_inc();
         }
     };

@@ -18,7 +18,9 @@ fn main_0() -> i32 {
     {
         let mut i: u32 = 0_u32;
         'loop_: while (i < 10_u32) {
-            elem!(p1, i).write({ (i as i32) });
+            'for_body: {
+                elem!(p1, i).write({ (i as i32) });
+            }
             i.prefix_inc();
         }
     }

@@ -16,7 +16,9 @@ pub unsafe fn sum_0(mut n: i32, __args: Box<[VaArg]>) -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (n)) {
-            total += (*guard.ap).arg::<i32>();
+            'for_body: {
+                total += (*guard.ap).arg::<i32>();
+            }
             i.prefix_inc();
         }
     }
@@ -51,7 +53,9 @@ pub unsafe fn sum_ptr_2(mut n: i32, __args: Box<[VaArg]>) -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (n)) {
-            total += (*cursor.ap).arg::<i32>();
+            'for_body: {
+                total += (*cursor.ap).arg::<i32>();
+            }
             i.prefix_inc();
         }
     };

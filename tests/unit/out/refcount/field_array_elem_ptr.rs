@@ -45,7 +45,9 @@ pub fn sum_0(mut p: Ptr<i32>, mut n: i32) -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while (i < n) {
-            s += { (elem!(p, i).read()) };
+            'for_body: {
+                s += { (elem!(p, i).read()) };
+            }
             i.prefix_inc();
         }
     }

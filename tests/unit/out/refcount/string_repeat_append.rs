@@ -69,55 +69,67 @@ fn main_0() -> i32 {
                 {
                     let mut shrink: i32 = 0;
                     'loop_: while (shrink < 2) {
-                        let s: Value<Vec<i8>> = Rc::new(RefCell::new(
-                            vec![('x' as i8); (length) as usize]
-                                .iter()
-                                .cloned()
-                                .chain(std::iter::once(0))
-                                .collect(),
-                        ));
-                        {
-                            let mut i: usize = 0_usize;
-                            'loop_: while (i < length) {
-                                let __rhs = initial[((i)
-                                    .wrapping_rem((::std::mem::size_of::<[i8; 5]>() as usize)))
-                                    as usize];
-                                (*s.borrow_mut())[i] = __rhs;
-                                i.prefix_inc();
+                        'for_body: {
+                            let s: Value<Vec<i8>> = Rc::new(RefCell::new(
+                                vec![('x' as i8); (length) as usize]
+                                    .iter()
+                                    .cloned()
+                                    .chain(std::iter::once(0))
+                                    .collect(),
+                            ));
+                            {
+                                let mut i: usize = 0_usize;
+                                'loop_: while (i < length) {
+                                    'for_body: {
+                                        let __rhs = initial[((i).wrapping_rem(
+                                            (::std::mem::size_of::<[i8; 5]>() as usize),
+                                        ))
+                                            as usize];
+                                        (*s.borrow_mut())[i] = __rhs;
+                                    }
+                                    i.prefix_inc();
+                                }
                             }
-                        }
-                        if (shrink != 0) {
-                            (*s.borrow_mut()).shrink_to_fit();
-                        }
-                        s.with_mut(|__b0| {
-                            (*__b0).pop();
-                            (*__b0).resize((*__b0).len() + count, character);
-                            (*__b0).push(0);
-                        });
-                        assert!(({ (((*s.borrow()).len() - 1) == (length).wrapping_add(count)) }));
-                        let mut data: Ptr<i8> = s.decay();
-                        {
-                            let mut i: usize = 0_usize;
-                            'loop_: while (i < (length).wrapping_add(count)) {
-                                assert!(
-                                    ({ ((elem!(data, i).read()) as i32) } == {
-                                        ((if (i < length) {
-                                            initial[((i).wrapping_rem(
-                                                (::std::mem::size_of::<[i8; 5]>() as usize),
-                                            ))
-                                                as usize]
-                                        } else {
-                                            character
-                                        }) as i32)
-                                    })
-                                );
-                                i.prefix_inc();
+                            if (shrink != 0) {
+                                (*s.borrow_mut()).shrink_to_fit();
                             }
+                            s.with_mut(|__b0| {
+                                (*__b0).pop();
+                                (*__b0).resize((*__b0).len() + count, character);
+                                (*__b0).push(0);
+                            });
+                            assert!(
+                                ({ (((*s.borrow()).len() - 1) == (length).wrapping_add(count)) })
+                            );
+                            let mut data: Ptr<i8> = s.decay();
+                            {
+                                let mut i: usize = 0_usize;
+                                'loop_: while (i < (length).wrapping_add(count)) {
+                                    'for_body: {
+                                        assert!(
+                                            ({ ((elem!(data, i).read()) as i32) } == {
+                                                ((if (i < length) {
+                                                    initial[((i).wrapping_rem(
+                                                        (::std::mem::size_of::<[i8; 5]>() as usize),
+                                                    ))
+                                                        as usize]
+                                                } else {
+                                                    character
+                                                })
+                                                    as i32)
+                                            })
+                                        );
+                                    }
+                                    i.prefix_inc();
+                                }
+                            }
+                            assert!(
+                                ({
+                                    (((elem!(data, ((*s.borrow()).len() - 1)).read()) as i32) == 0)
+                                })
+                            );
+                            cases.prefix_inc();
                         }
-                        assert!(
-                            ({ (((elem!(data, ((*s.borrow()).len() - 1)).read()) as i32) == 0) })
-                        );
-                        cases.prefix_inc();
                         shrink.prefix_inc();
                     }
                 }

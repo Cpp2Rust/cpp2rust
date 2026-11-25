@@ -63,14 +63,18 @@ fn main_0() -> i32 {
         {
             let mut i: i32 = 0;
             'loop_: while (i < 10) {
-                assert!(({ (((*buf.borrow())[(i) as usize] as i32) == 0) }));
+                'for_body: {
+                    assert!(({ (((*buf.borrow())[(i) as usize] as i32) == 0) }));
+                }
                 i.prefix_inc();
             }
         }
         {
             let mut i: i32 = 10;
             'loop_: while (i < 16) {
-                assert!(({ (((*buf.borrow())[(i) as usize] as i32) == (('X' as i8) as i32)) }));
+                'for_body: {
+                    assert!(({ (((*buf.borrow())[(i) as usize] as i32) == (('X' as i8) as i32)) }));
+                }
                 i.prefix_inc();
             }
         }
@@ -107,14 +111,18 @@ fn main_0() -> i32 {
         {
             let mut i: i32 = 0;
             'loop_: while (i < 10) {
-                assert!(({ (((*buf.borrow())[(i) as usize] as i32) == 0) }));
+                'for_body: {
+                    assert!(({ (((*buf.borrow())[(i) as usize] as i32) == 0) }));
+                }
                 i.prefix_inc();
             }
         }
         {
             let mut i: i32 = 10;
             'loop_: while (i < 16) {
-                assert!(({ (((*buf.borrow())[(i) as usize] as i32) == (('X' as i8) as i32)) }));
+                'for_body: {
+                    assert!(({ (((*buf.borrow())[(i) as usize] as i32) == (('X' as i8) as i32)) }));
+                }
                 i.prefix_inc();
             }
         }

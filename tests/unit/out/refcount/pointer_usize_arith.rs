@@ -53,7 +53,9 @@ fn main_0() -> i32 {
     {
         let mut it: Ptr<i32> = (p).clone();
         'loop_: while ({ (it).clone() } != { (end).clone() }) {
-            sum += { (it.read()) };
+            'for_body: {
+                sum += { (it.read()) };
+            }
             it.prefix_inc();
         }
     }

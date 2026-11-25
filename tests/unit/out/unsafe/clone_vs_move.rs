@@ -99,10 +99,12 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (N)) {
-            {
-                let a0_clone = i.clone();
-                v1.push(a0_clone)
-            };
+            'for_body: {
+                {
+                    let a0_clone = i.clone();
+                    v1.push(a0_clone)
+                };
+            }
             i.prefix_inc();
         }
     }
@@ -110,22 +112,28 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (N)) {
-            assert!(((v2[(i as usize)]) == (i)));
+            'for_body: {
+                assert!(((v2[(i as usize)]) == (i)));
+            }
             i.prefix_inc();
         }
     }
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (N)) {
-            v2[(i as usize)].prefix_inc();
+            'for_body: {
+                v2[(i as usize)].prefix_inc();
+            }
             i.prefix_inc();
         }
     }
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (N)) {
-            assert!(((v2[(i as usize)]) == ((i) + (1))));
-            assert!(((v1[(i as usize)]) == (i)));
+            'for_body: {
+                assert!(((v2[(i as usize)]) == ((i) + (1))));
+                assert!(((v1[(i as usize)]) == (i)));
+            }
             i.prefix_inc();
         }
     }
@@ -133,10 +141,12 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (N)) {
-            {
-                let __a1 = Vec::from_fn(10_usize, |_| 0_i32);
-                m1.push(__a1)
-            };
+            'for_body: {
+                {
+                    let __a1 = Vec::from_fn(10_usize, |_| 0_i32);
+                    m1.push(__a1)
+                };
+            }
             i.prefix_inc();
         }
     }
@@ -144,14 +154,18 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (N)) {
-            assert!(((m1[(i as usize)].len()) == (10_usize)));
-            assert!(((m2[(i as usize)].len()) == (10_usize)));
-            {
-                let mut j: i32 = 0;
-                'loop_: while ((j) < (10)) {
-                    assert!(((m1[(i as usize)][(j as usize)]) == (0)));
-                    assert!(((m2[(i as usize)][(j as usize)]) == (0)));
-                    j.prefix_inc();
+            'for_body: {
+                assert!(((m1[(i as usize)].len()) == (10_usize)));
+                assert!(((m2[(i as usize)].len()) == (10_usize)));
+                {
+                    let mut j: i32 = 0;
+                    'loop_: while ((j) < (10)) {
+                        'for_body: {
+                            assert!(((m1[(i as usize)][(j as usize)]) == (0)));
+                            assert!(((m2[(i as usize)][(j as usize)]) == (0)));
+                        }
+                        j.prefix_inc();
+                    }
                 }
             }
             i.prefix_inc();
@@ -160,11 +174,15 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (N)) {
-            {
-                let mut j: i32 = 0;
-                'loop_: while ((j) < (10)) {
-                    m2[(i as usize)][(j as usize)].postfix_inc();
-                    j.prefix_inc();
+            'for_body: {
+                {
+                    let mut j: i32 = 0;
+                    'loop_: while ((j) < (10)) {
+                        'for_body: {
+                            m2[(i as usize)][(j as usize)].postfix_inc();
+                        }
+                        j.prefix_inc();
+                    }
                 }
             }
             i.prefix_inc();
@@ -173,14 +191,18 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (N)) {
-            assert!(((m1[(i as usize)].len()) == (10_usize)));
-            assert!(((m2[(i as usize)].len()) == (10_usize)));
-            {
-                let mut j: i32 = 0;
-                'loop_: while ((j) < (10)) {
-                    assert!(((m1[(i as usize)][(j as usize)]) == (0)));
-                    assert!(((m2[(i as usize)][(j as usize)]) == (1)));
-                    j.prefix_inc();
+            'for_body: {
+                assert!(((m1[(i as usize)].len()) == (10_usize)));
+                assert!(((m2[(i as usize)].len()) == (10_usize)));
+                {
+                    let mut j: i32 = 0;
+                    'loop_: while ((j) < (10)) {
+                        'for_body: {
+                            assert!(((m1[(i as usize)][(j as usize)]) == (0)));
+                            assert!(((m2[(i as usize)][(j as usize)]) == (1)));
+                        }
+                        j.prefix_inc();
+                    }
                 }
             }
             i.prefix_inc();
@@ -190,7 +212,9 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (N)) {
-            (*map1.subscript(&i, || 0_i32)) = i;
+            'for_body: {
+                (*map1.subscript(&i, || 0_i32)) = i;
+            }
             i.prefix_inc();
         }
     }
@@ -198,16 +222,20 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (N)) {
-            assert!(((*map2.subscript(&i, || 0_i32)) == (i)));
-            (*map2.subscript(&i, || 0_i32)).prefix_inc();
+            'for_body: {
+                assert!(((*map2.subscript(&i, || 0_i32)) == (i)));
+                (*map2.subscript(&i, || 0_i32)).prefix_inc();
+            }
             i.prefix_inc();
         }
     }
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (N)) {
-            assert!(((*map1.subscript(&i, || 0_i32)) == (i)));
-            assert!(((*map2.subscript(&i, || 0_i32)) == ((i) + (1))));
+            'for_body: {
+                assert!(((*map1.subscript(&i, || 0_i32)) == (i)));
+                assert!(((*map2.subscript(&i, || 0_i32)) == ((i) + (1))));
+            }
             i.prefix_inc();
         }
     }
@@ -258,16 +286,20 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (N)) {
-            assert!(((v4[(i as usize)]) == ((i) + (1))));
-            v4[(i as usize)].prefix_inc();
+            'for_body: {
+                assert!(((v4[(i as usize)]) == ((i) + (1))));
+                v4[(i as usize)].prefix_inc();
+            }
             i.prefix_inc();
         }
     }
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (N)) {
-            assert!(((v4[(i as usize)]) == ((i) + (2))));
-            assert!(((v2[(i as usize)]) == ((i) + (1))));
+            'for_body: {
+                assert!(((v4[(i as usize)]) == ((i) + (2))));
+                assert!(((v2[(i as usize)]) == ((i) + (1))));
+            }
             i.prefix_inc();
         }
     }

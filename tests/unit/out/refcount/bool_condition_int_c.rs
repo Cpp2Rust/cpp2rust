@@ -51,7 +51,9 @@ fn main_0() -> i32 {
     {
         let mut i: i32 = 5;
         'loop_: while (i != 0) {
-            loop_count.prefix_inc();
+            'for_body: {
+                loop_count.prefix_inc();
+            }
             i.prefix_dec();
         }
     }

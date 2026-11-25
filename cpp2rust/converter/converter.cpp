@@ -1576,9 +1576,9 @@ bool Converter::VisitAttributedStmt(clang::AttributedStmt *stmt) {
 }
 
 bool Converter::VisitWhileStmt(clang::WhileStmt *stmt) {
-  ScopedValue break_loop(break_switch_, false);
+  ScopedValue break_loop(break_label_, "");
   StrCat("'loop_:");
-  ScopedValue no_inc(curr_for_inc_, nullptr);
+  ScopedValue no_inc(continue_for_, false);
   if (auto *cond_var = stmt->getConditionVariableDeclStmt()) {
     StrCat(keyword::kLoop);
     PushBrace loop_brace(*this);
@@ -1605,7 +1605,7 @@ void Converter::ConvertConditionVariableTest(clang::DeclStmt *cond_var,
 }
 
 bool Converter::VisitDoStmt(clang::DoStmt *stmt) {
-  ScopedValue break_loop(break_switch_, false);
+  ScopedValue break_loop(break_label_, "");
   const char *control_var = "__do_while";
   StrCat(keyword::kLet, "mut", control_var, token::kAssign, keyword::kTrue,
          token::kSemiColon);
@@ -1617,14 +1617,14 @@ bool Converter::VisitDoStmt(clang::DoStmt *stmt) {
   {
     PushBrace loop_brace(*this);
     StrCat(control_var, token::kAssign, keyword::kFalse, token::kSemiColon);
-    ScopedValue no_inc(curr_for_inc_, nullptr);
+    ScopedValue no_inc(continue_for_, false);
     ConvertBodyStmts(stmt->getBody());
   }
   return false;
 }
 
 bool Converter::VisitForStmt(clang::ForStmt *stmt) {
-  ScopedValue break_loop(break_switch_, false);
+  ScopedValue break_loop(break_label_, stmt->getInc() ? "'loop_" : "");
   // The variables of the init statement are only visible in the for.
   PushBrace scope(*this, stmt->getInit() &&
                              clang::isa<clang::DeclStmt>(stmt->getInit()));
@@ -1647,7 +1647,14 @@ bool Converter::VisitForStmt(clang::ForStmt *stmt) {
       ConvertConditionVariableTest(cond_var, stmt->getCond());
     }
     {
-      ScopedValue inc(curr_for_inc_, stmt->getInc());
+      ScopedValue inc(continue_for_, stmt->getInc() != nullptr);
+      // Leaving the body, including via continue, destroys its locals before
+      // the increment. The condition variable stays alive through the
+      // increment.
+      if (continue_for_) {
+        StrCat("'for_body:");
+      }
+      PushBrace body(*this, continue_for_);
       ConvertBodyStmts(stmt->getBody());
     }
     Convert(stmt->getInc());
@@ -1657,7 +1664,7 @@ bool Converter::VisitForStmt(clang::ForStmt *stmt) {
 }
 
 bool Converter::VisitCXXForRangeStmt(clang::CXXForRangeStmt *stmt) {
-  ScopedValue break_loop(break_switch_, false);
+  ScopedValue break_loop(break_label_, "");
   Convert(stmt->getInit());
   Convert(stmt->getRangeStmt());
   auto *begin =
@@ -1672,7 +1679,7 @@ bool Converter::VisitCXXForRangeStmt(clang::CXXForRangeStmt *stmt) {
          ConvertFreshRValue(end->getInit()), ')');
   {
     PushBrace brace(*this);
-    ScopedValue no_inc(curr_for_inc_, nullptr);
+    ScopedValue no_inc(continue_for_, false);
     Convert(stmt->getLoopVarStmt());
     ConvertBodyStmts(stmt->getBody());
   }
@@ -1680,20 +1687,16 @@ bool Converter::VisitCXXForRangeStmt(clang::CXXForRangeStmt *stmt) {
 }
 
 bool Converter::VisitBreakStmt([[maybe_unused]] clang::BreakStmt *stmt) {
-  StrCat(keyword::kBreak);
-  if (break_switch_) {
-    StrCat("'switch");
-  }
+  StrCat(keyword::kBreak, break_label_);
   return false;
 }
 
 bool Converter::VisitContinueStmt([[maybe_unused]] clang::ContinueStmt *stmt) {
-  if (curr_for_inc_) {
-    Convert(curr_for_inc_);
-    StrCat(token::kSemiColon);
+  if (continue_for_) {
+    StrCat(keyword::kBreak, "'for_body");
+  } else {
+    StrCat(keyword::kContinue, "'loop_");
   }
-  StrCat(keyword::kContinue);
-  StrCat("'loop_");
   return false;
 }
 
@@ -4524,7 +4527,7 @@ bool Converter::VisitSwitchStmt(clang::SwitchStmt *stmt) {
     return !arm.label.empty() || arm.has_fallthrough;
   });
 
-  ScopedValue break_switch(break_switch_, !needs_switch_macro);
+  ScopedValue break_switch(break_label_, needs_switch_macro ? "" : "'switch");
 
   // The variables of the init statement and of the condition are only
   // visible in the switch.

@@ -72,51 +72,58 @@ unsafe fn main_0() -> i32 {
                 {
                     let mut shrink: i32 = 0;
                     'loop_: while ((shrink) < (2)) {
-                        let mut s: Vec<libc::c_char> =
-                            vec![('x' as libc::c_char); (length) as usize]
-                                .iter()
-                                .cloned()
-                                .chain(std::iter::once(0))
-                                .collect();
-                        {
-                            let mut i: usize = 0_usize;
-                            'loop_: while ((i) < (length)) {
-                                s[(i)] = initial[((i).wrapping_rem(
-                                    (::std::mem::size_of::<[libc::c_char; 5]>() as usize),
-                                ))];
-                                i.prefix_inc();
+                        'for_body: {
+                            let mut s: Vec<libc::c_char> =
+                                vec![('x' as libc::c_char); (length) as usize]
+                                    .iter()
+                                    .cloned()
+                                    .chain(std::iter::once(0))
+                                    .collect();
+                            {
+                                let mut i: usize = 0_usize;
+                                'loop_: while ((i) < (length)) {
+                                    'for_body: {
+                                        s[(i)] = initial[((i).wrapping_rem(
+                                            (::std::mem::size_of::<[libc::c_char; 5]>() as usize),
+                                        ))];
+                                    }
+                                    i.prefix_inc();
+                                }
                             }
-                        }
-                        if (shrink != 0) {
-                            s.shrink_to_fit();
-                        }
-                        {
-                            s.splice(
-                                s.len() - 1..s.len() - 1,
-                                ::std::vec::from_elem(character, count as usize),
-                            );
-                        };
-                        assert!(((s.len() - 1) == ((length).wrapping_add(count))));
-                        let mut data: *const libc::c_char = (s.as_mut_ptr()).cast_const();
-                        {
-                            let mut i: usize = 0_usize;
-                            'loop_: while ((i) < ((length).wrapping_add(count))) {
-                                assert!(
-                                    (((*data.offset((i) as isize)) as i32)
-                                        == ((if ((i) < (length)) {
-                                            initial[((i).wrapping_rem(
-                                                (::std::mem::size_of::<[libc::c_char; 5]>()
-                                                    as usize),
-                                            ))]
-                                        } else {
-                                            character
-                                        }) as i32))
+                            if (shrink != 0) {
+                                s.shrink_to_fit();
+                            }
+                            {
+                                s.splice(
+                                    s.len() - 1..s.len() - 1,
+                                    ::std::vec::from_elem(character, count as usize),
                                 );
-                                i.prefix_inc();
+                            };
+                            assert!(((s.len() - 1) == ((length).wrapping_add(count))));
+                            let mut data: *const libc::c_char = (s.as_mut_ptr()).cast_const();
+                            {
+                                let mut i: usize = 0_usize;
+                                'loop_: while ((i) < ((length).wrapping_add(count))) {
+                                    'for_body: {
+                                        assert!(
+                                            (((*data.offset((i) as isize)) as i32)
+                                                == ((if ((i) < (length)) {
+                                                    initial[((i).wrapping_rem(
+                                                        (::std::mem::size_of::<[libc::c_char; 5]>()
+                                                            as usize),
+                                                    ))]
+                                                } else {
+                                                    character
+                                                })
+                                                    as i32))
+                                        );
+                                    }
+                                    i.prefix_inc();
+                                }
                             }
+                            assert!((((*data.offset((s.len() - 1) as isize)) as i32) == (0)));
+                            cases.prefix_inc();
                         }
-                        assert!((((*data.offset((s.len() - 1) as isize)) as i32) == (0)));
-                        cases.prefix_inc();
                         shrink.prefix_inc();
                     }
                 }

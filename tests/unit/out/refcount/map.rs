@@ -494,41 +494,49 @@ fn main_0() -> i32 {
     {
         let mut i: u32 = 60_u32;
         'loop_: while (i > 30_u32) {
-            {
-                let __a1 = (i as i32);
-                (*indexes.borrow_mut()).push(__a1)
-            };
+            'for_body: {
+                {
+                    let __a1 = (i as i32);
+                    (*indexes.borrow_mut()).push(__a1)
+                };
+            }
             i.prefix_dec();
         }
     }
     {
         let mut i: u32 = 100_u32;
         'loop_: while (i > 60_u32) {
-            {
-                let __a1 = (i as i32);
-                (*indexes.borrow_mut()).push(__a1)
-            };
+            'for_body: {
+                {
+                    let __a1 = (i as i32);
+                    (*indexes.borrow_mut()).push(__a1)
+                };
+            }
             i.prefix_dec();
         }
     }
     {
         let mut i: u32 = 30_u32;
         'loop_: while (i > 0_u32) {
-            {
-                let __a1 = (i as i32);
-                (*indexes.borrow_mut()).push(__a1)
-            };
+            'for_body: {
+                {
+                    let __a1 = (i as i32);
+                    (*indexes.borrow_mut()).push(__a1)
+                };
+            }
             i.prefix_dec();
         }
     }
     {
         let mut i: u32 = 0_u32;
         'loop_: while ((i as usize) < (*indexes.borrow()).len()) {
-            let __rhs = ((i).wrapping_rem(2_u32) != 0);
-            match (indexes.decay().offset((i as usize)),) {
-                (__tmp_41,) => ({ (*m2.borrow_mut()).subscript(__tmp_41, || false) }),
+            'for_body: {
+                let __rhs = ((i).wrapping_rem(2_u32) != 0);
+                match (indexes.decay().offset((i as usize)),) {
+                    (__tmp_41,) => ({ (*m2.borrow_mut()).subscript(__tmp_41, || false) }),
+                }
+                .write(__rhs);
             }
-            .write(__rhs);
             i.prefix_inc();
         }
     }

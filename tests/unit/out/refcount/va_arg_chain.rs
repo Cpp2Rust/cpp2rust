@@ -11,7 +11,9 @@ pub fn extract_nth_0(mut n: i32, ap: Ptr<VaArg>) -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while (i < n) {
-            (*ap.borrow_mut()).arg::<i32>();
+            'for_body: {
+                (*ap.borrow_mut()).arg::<i32>();
+            }
             i.postfix_inc();
         }
     }

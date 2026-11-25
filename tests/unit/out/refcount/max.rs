@@ -190,20 +190,22 @@ fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while (i < 3) {
-            let __rhs = (({
-                let __tmp_13: Value<u64> = Rc::new(RefCell::new((largest as u64)));
-                (match (Rc::new(RefCell::new((({ size_of_2(i) }) as u64))).as_pointer(),) {
-                    (__tmp_12,) => {
-                        if CppLess::less(&__tmp_13.as_pointer(), &(__tmp_12).clone()) {
-                            (__tmp_12).clone()
-                        } else {
-                            __tmp_13.as_pointer()
+            'for_body: {
+                let __rhs = (({
+                    let __tmp_13: Value<u64> = Rc::new(RefCell::new((largest as u64)));
+                    (match (Rc::new(RefCell::new((({ size_of_2(i) }) as u64))).as_pointer(),) {
+                        (__tmp_12,) => {
+                            if CppLess::less(&__tmp_13.as_pointer(), &(__tmp_12).clone()) {
+                                (__tmp_12).clone()
+                            } else {
+                                __tmp_13.as_pointer()
+                            }
                         }
                     }
-                }
-                .read())
-            }) as usize);
-            largest = __rhs;
+                    .read())
+                }) as usize);
+                largest = __rhs;
+            }
             i.prefix_inc();
         }
     }

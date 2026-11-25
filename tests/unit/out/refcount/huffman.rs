@@ -134,34 +134,36 @@ pub fn CollectCode_3(
     {
         let mut i: i32 = 0;
         'loop_: while (i < top) {
-            let __rhs = ((({
-                (*out.upgrade().deref())
-                    .decay()
-                    .offset(((next.read()) as usize))
-            })
-            .read())
-                * 10);
-            ({
-                (*out.upgrade().deref())
-                    .decay()
-                    .offset(((next.read()) as usize))
-            })
-            .write(__rhs);
-            let __rhs =
+            'for_body: {
+                let __rhs = ((({
+                    (*out.upgrade().deref())
+                        .decay()
+                        .offset(((next.read()) as usize))
+                })
+                .read())
+                    * 10);
                 ({
-                    (({
-                        (*out.upgrade().deref())
-                            .decay()
-                            .offset(((next.read()) as usize))
-                    })
-                    .read())
-                } + { (({ (*arr.upgrade().deref()).decay().offset((i as usize)) }).read()) });
-            ({
-                (*out.upgrade().deref())
-                    .decay()
-                    .offset(((next.read()) as usize))
-            })
-            .write(__rhs);
+                    (*out.upgrade().deref())
+                        .decay()
+                        .offset(((next.read()) as usize))
+                })
+                .write(__rhs);
+                let __rhs =
+                    ({
+                        (({
+                            (*out.upgrade().deref())
+                                .decay()
+                                .offset(((next.read()) as usize))
+                        })
+                        .read())
+                    } + { (({ (*arr.upgrade().deref()).decay().offset((i as usize)) }).read()) });
+                ({
+                    (*out.upgrade().deref())
+                        .decay()
+                        .offset(((next.read()) as usize))
+                })
+                .write(__rhs);
+            }
             i.prefix_inc();
         }
     }
@@ -263,10 +265,12 @@ fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while (i < size) {
-            let __rhs = arr1[(i) as usize];
-            ({ (*data.borrow()).decay().offset((i as usize)) }).write(__rhs);
-            let __rhs = arr2[(i) as usize];
-            ({ (*freq.borrow()).decay().offset((i as usize)) }).write(__rhs);
+            'for_body: {
+                let __rhs = arr1[(i) as usize];
+                ({ (*data.borrow()).decay().offset((i as usize)) }).write(__rhs);
+                let __rhs = arr2[(i) as usize];
+                ({ (*freq.borrow()).decay().offset((i as usize)) }).write(__rhs);
+            }
             i.prefix_inc();
         }
     }
@@ -429,28 +433,32 @@ impl MinHeapImpl for Ptr<MinHeap> {
         {
             let mut i: i32 = 0;
             'loop_: while (i < n) {
-                (*self)
-                    .with(|__s| __s.arr.clone())
-                    .decay()
-                    .offset((field!((*self), size).with_mut(|__v| __v.postfix_inc()) as usize))
-                    .write(
-                        ({
-                            let _data: i8 =
-                                (({ (*data.upgrade().deref()).decay().offset((i as usize)) })
-                                    .read());
-                            let _freq: i32 =
-                                (({ (*freq.upgrade().deref()).decay().offset((i as usize)) })
-                                    .read());
-                            MinHeapImpl::Alloc(self, _data, _freq)
-                        }),
-                    );
+                'for_body: {
+                    (*self)
+                        .with(|__s| __s.arr.clone())
+                        .decay()
+                        .offset((field!((*self), size).with_mut(|__v| __v.postfix_inc()) as usize))
+                        .write(
+                            ({
+                                let _data: i8 =
+                                    (({ (*data.upgrade().deref()).decay().offset((i as usize)) })
+                                        .read());
+                                let _freq: i32 =
+                                    (({ (*freq.upgrade().deref()).decay().offset((i as usize)) })
+                                        .read());
+                                MinHeapImpl::Alloc(self, _data, _freq)
+                            }),
+                        );
+                }
                 i.prefix_inc();
             }
         }
         {
             let mut i: i32 = (((*self).with(|__s| __s.size) - 2) / 2);
             'loop_: while (i >= 0) {
-                ({ MinHeapImpl::Heapify(self, i) });
+                'for_body: {
+                    ({ MinHeapImpl::Heapify(self, i) });
+                }
                 i.prefix_dec();
             }
         }

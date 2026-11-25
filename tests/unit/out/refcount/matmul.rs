@@ -17,27 +17,32 @@ pub fn matalloc_0(
     {
         let mut i: i32 = 0;
         'loop_: while (i < n) {
-            match (
-                m.decay().offset((i as usize)),
-                Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
-                    (0..(p as usize)).map(|_| 0_i32).collect::<Box<[_]>>(),
-                )))))
-                .as_pointer(),
-            ) {
-                (__tmp_0, __tmp_1) => __tmp_0.with_mut(|__b0| {
-                    (*__b0) = __tmp_1.with_mut(|__v: &mut Option<Value<Box<[i32]>>>| __v.take());
-                }),
-            };
-            {
-                let mut j: i32 = 0;
-                'loop_: while (j < p) {
-                    ({
-                        (*m.decay().offset((i as usize)).upgrade().deref())
-                            .decay()
-                            .offset((j as usize))
-                    })
-                    .write(e);
-                    j.prefix_inc();
+            'for_body: {
+                match (
+                    m.decay().offset((i as usize)),
+                    Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
+                        (0..(p as usize)).map(|_| 0_i32).collect::<Box<[_]>>(),
+                    )))))
+                    .as_pointer(),
+                ) {
+                    (__tmp_0, __tmp_1) => __tmp_0.with_mut(|__b0| {
+                        (*__b0) =
+                            __tmp_1.with_mut(|__v: &mut Option<Value<Box<[i32]>>>| __v.take());
+                    }),
+                };
+                {
+                    let mut j: i32 = 0;
+                    'loop_: while (j < p) {
+                        'for_body: {
+                            ({
+                                (*m.decay().offset((i as usize)).upgrade().deref())
+                                    .decay()
+                                    .offset((j as usize))
+                            })
+                            .write(e);
+                        }
+                        j.prefix_inc();
+                    }
                 }
             }
             i.prefix_inc();
@@ -57,35 +62,41 @@ pub fn matmul_1(
     {
         let mut i: i32 = 0;
         'loop_: while (i < n1) {
-            {
-                let mut j: i32 = 0;
-                let mut sum: i32 = 0;
-                'loop_: while (j < p2) {
-                    {
-                        let mut k: i32 = 0;
-                        'loop_: while (k < p1) {
-                            sum += ((({
-                                (*m1.decay().offset((i as usize)).upgrade().deref())
+            'for_body: {
+                {
+                    let mut j: i32 = 0;
+                    let mut sum: i32 = 0;
+                    'loop_: while (j < p2) {
+                        'for_body: {
+                            {
+                                let mut k: i32 = 0;
+                                'loop_: while (k < p1) {
+                                    'for_body: {
+                                        sum += ((({
+                                            (*m1.decay().offset((i as usize)).upgrade().deref())
+                                                .decay()
+                                                .offset((k as usize))
+                                        })
+                                        .read())
+                                            * (({
+                                                (*m2.decay().offset((k as usize)).upgrade().deref())
+                                                    .decay()
+                                                    .offset((j as usize))
+                                            })
+                                            .read()));
+                                    }
+                                    k.prefix_inc();
+                                }
+                            }
+                            ({
+                                (*m3.decay().offset((i as usize)).upgrade().deref())
                                     .decay()
-                                    .offset((k as usize))
+                                    .offset((j as usize))
                             })
-                            .read())
-                                * (({
-                                    (*m2.decay().offset((k as usize)).upgrade().deref())
-                                        .decay()
-                                        .offset((j as usize))
-                                })
-                                .read()));
-                            k.prefix_inc();
+                            .write(sum);
                         }
+                        j.prefix_inc();
                     }
-                    ({
-                        (*m3.decay().offset((i as usize)).upgrade().deref())
-                            .decay()
-                            .offset((j as usize))
-                    })
-                    .write(sum);
-                    j.prefix_inc();
                 }
             }
             i.prefix_inc();

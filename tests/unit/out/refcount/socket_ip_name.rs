@@ -41,7 +41,9 @@ pub fn check_buf_0(
     {
         let mut j: u32 = copied;
         'loop_: while (j < size) {
-            assert!((((elem!(buf, j).read()) as i32) == 165));
+            'for_body: {
+                assert!((((elem!(buf, j).read()) as i32) == 165));
+            }
             j.prefix_inc();
         }
     }
@@ -118,39 +120,41 @@ pub fn check_name_1(mut family: i32) {
             < (::std::mem::size_of::<[libc::socklen_t; 6]>() as usize)
                 .wrapping_div((::std::mem::size_of::<libc::socklen_t>() as usize)))
         {
-            let out: Value<Box<[u8]>> =
-                Rc::new(RefCell::new((0..136).map(|_| 0_u8).collect::<Box<[u8]>>()));
-            ({
-                let _buf: Ptr<u8> = out.decay();
-                let _size: u32 = (::std::mem::size_of::<[u8; 136]>() as u32);
-                check_buf_0(
-                    fd,
-                    _buf,
-                    _size,
-                    capacities[(i) as usize],
-                    (full.as_pointer()).to_any(),
-                    actual,
-                )
-            });
-            let mut size: u32 = (if (capacities[(i) as usize] != 0) {
-                capacities[(i) as usize]
-            } else {
-                (1 as libc::socklen_t)
-            } as u32);
-            let mut small: Ptr<u8> =
-                libcc2rs::malloc_refcount((size as usize)).reinterpret_cast::<u8>();
-            assert!(!(small).is_null());
-            ({
-                check_buf_0(
-                    fd,
-                    (small).clone(),
-                    size,
-                    capacities[(i) as usize],
-                    (full.as_pointer()).to_any(),
-                    actual,
-                )
-            });
-            libcc2rs::free_refcount((small).to_any());
+            'for_body: {
+                let out: Value<Box<[u8]>> =
+                    Rc::new(RefCell::new((0..136).map(|_| 0_u8).collect::<Box<[u8]>>()));
+                ({
+                    let _buf: Ptr<u8> = out.decay();
+                    let _size: u32 = (::std::mem::size_of::<[u8; 136]>() as u32);
+                    check_buf_0(
+                        fd,
+                        _buf,
+                        _size,
+                        capacities[(i) as usize],
+                        (full.as_pointer()).to_any(),
+                        actual,
+                    )
+                });
+                let mut size: u32 = (if (capacities[(i) as usize] != 0) {
+                    capacities[(i) as usize]
+                } else {
+                    (1 as libc::socklen_t)
+                } as u32);
+                let mut small: Ptr<u8> =
+                    libcc2rs::malloc_refcount((size as usize)).reinterpret_cast::<u8>();
+                assert!(!(small).is_null());
+                ({
+                    check_buf_0(
+                        fd,
+                        (small).clone(),
+                        size,
+                        capacities[(i) as usize],
+                        (full.as_pointer()).to_any(),
+                        actual,
+                    )
+                });
+                libcc2rs::free_refcount((small).to_any());
+            }
             i.prefix_inc();
         }
     }

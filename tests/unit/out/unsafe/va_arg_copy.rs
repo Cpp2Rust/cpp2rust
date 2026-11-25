@@ -15,7 +15,9 @@ pub unsafe fn sum_with_copy_0(mut count: i32, __args: Box<[VaArg]>) -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (count)) {
-            sum1 += ap.arg::<i32>();
+            'for_body: {
+                sum1 += ap.arg::<i32>();
+            }
             i.postfix_inc();
         }
     };
@@ -23,7 +25,9 @@ pub unsafe fn sum_with_copy_0(mut count: i32, __args: Box<[VaArg]>) -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (count)) {
-            sum2 += aq.arg::<i32>();
+            'for_body: {
+                sum2 += aq.arg::<i32>();
+            }
             i.postfix_inc();
         }
     };

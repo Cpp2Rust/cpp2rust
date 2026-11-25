@@ -11,23 +11,25 @@ pub fn switch_in_loop_0(mut n: i32) -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while (i < n) {
-            'switch: {
-                match { (i % 3) } {
-                    __v if __v == 0 => {
-                        r += 1;
-                        break 'switch;
+            'for_body: {
+                'switch: {
+                    match { (i % 3) } {
+                        __v if __v == 0 => {
+                            r += 1;
+                            break 'switch;
+                        }
+                        __v if __v == 1 => {
+                            r += 2;
+                            break 'switch;
+                        }
+                        _ => {
+                            r += 3;
+                            break 'switch;
+                        }
                     }
-                    __v if __v == 1 => {
-                        r += 2;
-                        break 'switch;
-                    }
-                    _ => {
-                        r += 3;
-                        break 'switch;
-                    }
-                }
-            };
-            r += 10;
+                };
+                r += 10;
+            }
             i.prefix_inc();
         }
     }

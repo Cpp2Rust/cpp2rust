@@ -11,10 +11,12 @@ pub unsafe fn All_0(arr: *mut Option<Box<[i32]>>, mut N: i32, mut element: i32) 
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (N)) {
-            (*all
-                .as_deref()
-                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
-                .add((i as usize))) = element;
+            'for_body: {
+                (*all
+                    .as_deref()
+                    .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
+                    .add((i as usize))) = element;
+            }
             i.prefix_inc();
         }
     }

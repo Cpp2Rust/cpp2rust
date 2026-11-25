@@ -1066,16 +1066,16 @@ protected:
   bool constant_evaluated_ = false;
   std::optional<bool> autoref_mut_;
 
-  // The increment of the innermost loop, which continue runs.
-  clang::Expr *curr_for_inc_ = nullptr;
+  // Whether continue exits 'for_body to run the for-loop increment.
+  bool continue_for_ = false;
   // The names of the iterators of range-based for loops.
   std::unordered_map<const clang::ValueDecl *, std::string>
       range_iterator_names_;
   std::vector<clang::QualType> curr_init_type_;
 
-  // Whether break exits a switch labeled 'switch, rather than a loop or a
-  // switch! macro, which a plain break exits.
-  bool break_switch_ = false;
+  // Breaks in a for body must leave the loop, not just the labeled body.
+  // A switch! macro owns plain breaks; a plain match uses 'switch.
+  const char *break_label_ = "";
 
   // Local variables hoisted outside a goto_block so that all labels can see and
   // use the variables.

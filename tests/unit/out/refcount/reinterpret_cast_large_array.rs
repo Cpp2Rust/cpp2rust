@@ -17,7 +17,9 @@ fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while (i < N) {
-            elem!(arr, i).write(0_u32);
+            'for_body: {
+                elem!(arr, i).write(0_u32);
+            }
             i.postfix_inc();
         }
     }

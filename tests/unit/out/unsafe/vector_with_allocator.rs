@@ -158,7 +158,9 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (100)) {
-            assert!(((v3[(i as usize)]) == (1)));
+            'for_body: {
+                assert!(((v3[(i as usize)]) == (1)));
+            }
             i.prefix_inc();
         }
     }
@@ -167,7 +169,9 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: u32 = 0_u32;
         'loop_: while ((i as usize) < (s2)) {
-            assert!(((v6[(i as usize)]) == (2_f64)));
+            'for_body: {
+                assert!(((v6[(i as usize)]) == (2_f64)));
+            }
             i.prefix_inc();
         }
     }

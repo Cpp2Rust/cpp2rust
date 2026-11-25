@@ -147,9 +147,11 @@ fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while (i < 3) {
-            assert!(
-                (array_elem!(static_outer_1.with(|v| v.as_pointer()), arr, i).read()).is_null()
-            );
+            'for_body: {
+                assert!(
+                    (array_elem!(static_outer_1.with(|v| v.as_pointer()), arr, i).read()).is_null()
+                );
+            }
             i.prefix_inc();
         }
     }
@@ -167,16 +169,18 @@ fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while (i < 2) {
-            assert!(
-                ({
+            'for_body: {
+                assert!(
                     ({
-                        (*static_inner_array_2.with(Value::clone).borrow())[(i) as usize]
-                            .name
-                            .clone()
+                        ({
+                            (*static_inner_array_2.with(Value::clone).borrow())[(i) as usize]
+                                .name
+                                .clone()
+                        })
+                        .is_null()
                     })
-                    .is_null()
-                })
-            );
+                );
+            }
             i.prefix_inc();
         }
     }
@@ -187,36 +191,38 @@ fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while (i < 2) {
-            assert!(
-                ({
+            'for_body: {
+                assert!(
                     ({
-                        (*static_foo_array_4.with(Value::clone).borrow())[(i) as usize]
-                            .s2
-                            .clone()
+                        ({
+                            (*static_foo_array_4.with(Value::clone).borrow())[(i) as usize]
+                                .s2
+                                .clone()
+                        })
+                        .is_null()
                     })
-                    .is_null()
-                })
-            );
-            assert!(
-                ({
+                );
+                assert!(
                     ({
-                        (*static_foo_array_4.with(Value::clone).borrow())[(i) as usize]
-                            .fn1
-                            .clone()
+                        ({
+                            (*static_foo_array_4.with(Value::clone).borrow())[(i) as usize]
+                                .fn1
+                                .clone()
+                        })
+                        .is_null()
                     })
-                    .is_null()
-                })
-            );
-            assert!(
-                ({
+                );
+                assert!(
                     ({
-                        (*static_foo_array_4.with(Value::clone).borrow())[(i) as usize]
-                            .fn2
-                            .clone()
+                        ({
+                            (*static_foo_array_4.with(Value::clone).borrow())[(i) as usize]
+                                .fn2
+                                .clone()
+                        })
+                        .is_null()
                     })
-                    .is_null()
-                })
-            );
+                );
+            }
             i.prefix_inc();
         }
     }

@@ -103,7 +103,9 @@ pub unsafe fn sum_0(mut p: *const i32, mut n: i32) -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (n)) {
-            s += (*p.offset((i) as isize));
+            'for_body: {
+                s += (*p.offset((i) as isize));
+            }
             i.prefix_inc();
         }
     }
@@ -113,11 +115,15 @@ pub unsafe fn fill_1(mut s: *mut State) {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (2)) {
-            {
-                let mut j: i32 = 0;
-                'loop_: while ((j) < (3)) {
-                    (*s).grid[(i) as usize][(j) as usize] = (((i) * (3)) + (j));
-                    j.prefix_inc();
+            'for_body: {
+                {
+                    let mut j: i32 = 0;
+                    'loop_: while ((j) < (3)) {
+                        'for_body: {
+                            (*s).grid[(i) as usize][(j) as usize] = (((i) * (3)) + (j));
+                        }
+                        j.prefix_inc();
+                    }
                 }
             }
             i.prefix_inc();
@@ -128,11 +134,13 @@ pub unsafe fn fill_1(mut s: *mut State) {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (3)) {
-            (&mut (*s)).elems[(i as usize)].id = i;
-            (&mut (*s)).elems[(i as usize)].hist[(i) as usize] = ((10) * (i));
-            (&mut (*s)).elems[(i as usize)]
-                .coeffs
-                .resize(4_usize, (i as i16));
+            'for_body: {
+                (&mut (*s)).elems[(i as usize)].id = i;
+                (&mut (*s)).elems[(i as usize)].hist[(i) as usize] = ((10) * (i));
+                (&mut (*s)).elems[(i as usize)]
+                    .coeffs
+                    .resize(4_usize, (i as i16));
+            }
             i.prefix_inc();
         }
     }
@@ -205,7 +213,9 @@ unsafe fn main_0() -> i32 {
     {
         let mut k: i32 = 0;
         'loop_: while ((k) < (4)) {
-            (*h.offset((k) as isize)) += k;
+            'for_body: {
+                (*h.offset((k) as isize)) += k;
+            }
             k.prefix_inc();
         }
     }

@@ -169,14 +169,17 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (4)) {
-            {
-                let mut __tmp_6 =
-                    { <UnsafeRandomAccessIterator<i32>>::from(v2.begin().iter_add(1_isize)) };
-                let pos = __tmp_6.iter_distance(&UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr()))
-                    as usize;
-                v2.remove(pos);
-                (__tmp_6).clone()
-            };
+            'for_body: {
+                {
+                    let mut __tmp_6 =
+                        { <UnsafeRandomAccessIterator<i32>>::from(v2.begin().iter_add(1_isize)) };
+                    let pos = __tmp_6
+                        .iter_distance(&UnsafeRandomAccessIterator::Vec(v2.as_mut_ptr()))
+                        as usize;
+                    v2.remove(pos);
+                    (__tmp_6).clone()
+                };
+            }
             i.prefix_inc();
         }
     }
@@ -192,7 +195,9 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (100)) {
-            assert!(((v3[(i as usize)]) == (1)));
+            'for_body: {
+                assert!(((v3[(i as usize)]) == (1)));
+            }
             i.prefix_inc();
         }
     }
@@ -201,7 +206,9 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: u32 = 0_u32;
         'loop_: while ((i as usize) < (v4.len())) {
-            assert!((v4[(i as usize)]).is_null());
+            'for_body: {
+                assert!((v4[(i as usize)]).is_null());
+            }
             i.prefix_inc();
         }
     }
@@ -210,7 +217,9 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: u32 = 0_u32;
         'loop_: while ((i as usize) < (v5.len())) {
-            assert!((v5[(i as usize)]).is_null());
+            'for_body: {
+                assert!((v5[(i as usize)]).is_null());
+            }
             i.prefix_inc();
         }
     }
@@ -219,7 +228,9 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: u32 = 0_u32;
         'loop_: while ((i as usize) < (s2)) {
-            assert!(((v6[(i as usize)]) == (2_f64)));
+            'for_body: {
+                assert!(((v6[(i as usize)]) == (2_f64)));
+            }
             i.prefix_inc();
         }
     }
@@ -229,7 +240,9 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: u32 = 0_u32;
         'loop_: while ((i) < (200_u32)) {
-            assert!(((v7[(i as usize)].0).is_null()) && ((v7[(i as usize)].1) == (0)));
+            'for_body: {
+                assert!(((v7[(i as usize)].0).is_null()) && ((v7[(i as usize)].1) == (0)));
+            }
             i.prefix_inc();
         }
     }

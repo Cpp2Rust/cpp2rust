@@ -49,13 +49,15 @@ fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while (i < 4) {
-            assert!(
-                ({
-                    let __idx0 = (i) as usize;
-                    arr_of_ptr_3.with(|rc| rc.borrow()[__idx0].clone())
-                })
-                .is_null()
-            );
+            'for_body: {
+                assert!(
+                    ({
+                        let __idx0 = (i) as usize;
+                        arr_of_ptr_3.with(|rc| rc.borrow()[__idx0].clone())
+                    })
+                    .is_null()
+                );
+            }
             i.prefix_inc();
         }
     }
@@ -63,13 +65,15 @@ fn main_0() -> i32 {
     {
         let mut i: i32 = 0;
         'loop_: while (i < 3) {
-            assert!(
-                ({
-                    let __idx0 = (i) as usize;
-                    const_arr_of_ptr_5.with(|rc| rc.borrow()[__idx0].clone())
-                })
-                .is_null()
-            );
+            'for_body: {
+                assert!(
+                    ({
+                        let __idx0 = (i) as usize;
+                        const_arr_of_ptr_5.with(|rc| rc.borrow()[__idx0].clone())
+                    })
+                    .is_null()
+                );
+            }
             i.prefix_inc();
         }
     }

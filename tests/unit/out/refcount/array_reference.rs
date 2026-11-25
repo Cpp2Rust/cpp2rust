@@ -27,7 +27,9 @@ pub fn fill_3(a: Ptr<i32>, mut v: i32) {
     {
         let mut i: i32 = 0;
         'loop_: while (i < 3) {
-            elem!(a, i).write(v);
+            'for_body: {
+                elem!(a, i).write(v);
+            }
             i.prefix_inc();
         }
     }

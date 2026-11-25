@@ -155,9 +155,11 @@ pub unsafe fn RndStuff_2() {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (100)) {
-            (*x2.as_deref()
-                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
-                .add((i as usize))) = 1;
+            'for_body: {
+                (*x2.as_deref()
+                    .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
+                    .add((i as usize))) = 1;
+            }
             i.prefix_inc();
         }
     }
@@ -167,9 +169,11 @@ pub unsafe fn RndStuff_2() {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (200)) {
-            (*x2.as_deref()
-                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
-                .add((i as usize))) = 2;
+            'for_body: {
+                (*x2.as_deref()
+                    .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
+                    .add((i as usize))) = 2;
+            }
             i.prefix_inc();
         }
     }
@@ -179,7 +183,9 @@ pub unsafe fn RndStuff_2() {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (200)) {
-            assert!(((*p2.offset((i) as isize)) == (2)));
+            'for_body: {
+                assert!(((*p2.offset((i) as isize)) == (2)));
+            }
             i.prefix_inc();
         }
     }
@@ -191,9 +197,11 @@ pub unsafe fn RndStuff_2() {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (10)) {
-            (*x3.as_deref()
-                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Pair)
-                .add((i as usize))) = Pair { x: 1, y: 2 };
+            'for_body: {
+                (*x3.as_deref()
+                    .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Pair)
+                    .add((i as usize))) = Pair { x: 1, y: 2 };
+            }
             i.prefix_inc();
         }
     }
@@ -203,19 +211,21 @@ pub unsafe fn RndStuff_2() {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (10)) {
-            assert!((((*p3_0.offset((i) as isize)).x) == (1)));
-            assert!((((*p3_0.offset((i) as isize)).y) == (2)));
-            (unsafe {
-                Pair::inc(
-                    &mut (*x3
-                        .as_deref()
-                        .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Pair)
-                        .add((i as usize))),
-                    10,
-                )
-            });
-            assert!((((*p3_0.offset((i) as isize)).x) == (11)));
-            assert!((((*p3_0.offset((i) as isize)).y) == (12)));
+            'for_body: {
+                assert!((((*p3_0.offset((i) as isize)).x) == (1)));
+                assert!((((*p3_0.offset((i) as isize)).y) == (2)));
+                (unsafe {
+                    Pair::inc(
+                        &mut (*x3
+                            .as_deref()
+                            .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Pair)
+                            .add((i as usize))),
+                        10,
+                    )
+                });
+                assert!((((*p3_0.offset((i) as isize)).x) == (11)));
+                assert!((((*p3_0.offset((i) as isize)).y) == (12)));
+            }
             i.prefix_inc();
         }
     }
@@ -227,12 +237,14 @@ pub unsafe fn RndStuff_2() {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (50)) {
-            (*x3.as_deref()
-                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Pair)
-                .add((i as usize))) = Pair {
-                x: -1_i32,
-                y: -2_i32,
-            };
+            'for_body: {
+                (*x3.as_deref()
+                    .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Pair)
+                    .add((i as usize))) = Pair {
+                    x: -1_i32,
+                    y: -2_i32,
+                };
+            }
             i.prefix_inc();
         }
     }
@@ -243,19 +255,21 @@ pub unsafe fn RndStuff_2() {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (50)) {
-            assert!((((*p3_1.offset((i) as isize)).x) == (-1_i32)));
-            assert!((((*p3_1.offset((i) as isize)).y) == (-2_i32)));
-            (unsafe {
-                Pair::inc(
-                    &mut (*x3
-                        .as_deref()
-                        .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Pair)
-                        .add((i as usize))),
-                    -10_i32,
-                )
-            });
-            assert!((((*p3_1.offset((i) as isize)).x) == (-11_i32)));
-            assert!((((*p3_1.offset((i) as isize)).y) == (-12_i32)));
+            'for_body: {
+                assert!((((*p3_1.offset((i) as isize)).x) == (-1_i32)));
+                assert!((((*p3_1.offset((i) as isize)).y) == (-2_i32)));
+                (unsafe {
+                    Pair::inc(
+                        &mut (*x3
+                            .as_deref()
+                            .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Pair)
+                            .add((i as usize))),
+                        -10_i32,
+                    )
+                });
+                assert!((((*p3_1.offset((i) as isize)).x) == (-11_i32)));
+                assert!((((*p3_1.offset((i) as isize)).y) == (-12_i32)));
+            }
             i.prefix_inc();
         }
     }

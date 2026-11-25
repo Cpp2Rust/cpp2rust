@@ -95,7 +95,9 @@ unsafe fn main_0() -> i32 {
                 {
                     let mut i: i32 = 0;
                     'loop_: while ((i) < (n)) {
-                        s += ap.arg::<i32>();
+                        'for_body: {
+                            s += ap.arg::<i32>();
+                        }
                         i.postfix_inc();
                     }
                 };

@@ -23,7 +23,9 @@ unsafe fn main_0() -> i32 {
     {
         let mut i: u32 = 0_u32;
         'loop_: while ((i as usize) < (items.len())) {
-            items[(i as usize)] = (i).wrapping_mul(2_u32);
+            'for_body: {
+                items[(i as usize)] = (i).wrapping_mul(2_u32);
+            }
             i.prefix_inc();
         }
     }
