@@ -211,6 +211,10 @@ mod tests {
         );
         assert_eq!(format_c(b"%e", &[1500.0f64.into()]), b"1.500000e+03");
         assert_eq!(format_c(b"%g", &[0.5f64.into()]), b"0.5");
+        assert_eq!(
+            format_c(b"%f|%F", &[0.0f64.into(), (-0.0f64).into()]),
+            b"0.000000|-0.000000"
+        );
     }
 
     #[test]
