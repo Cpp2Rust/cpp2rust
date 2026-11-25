@@ -59,6 +59,54 @@ fn pad(out: &mut Vec<u8>, spec: &ConversionSpecifier, s: &[u8]) {
     }
 }
 
+// Zero has no logarithmic exponent. Format it without sprintf's normalization.
+fn float_zero(out: &mut Vec<u8>, spec: &ConversionSpecifier, negative: bool) {
+    let NumericParam::Literal(precision) = spec.precision else {
+        unreachable!()
+    };
+    let scientific = matches!(
+        spec.conversion_type,
+        ConversionType::SciFloatLower | ConversionType::SciFloatUpper
+    );
+    let precision = if scientific {
+        precision as usize
+    } else if spec.alt_form {
+        precision.max(1) as usize - 1
+    } else {
+        0
+    };
+    let mut number = Vec::new();
+    if negative {
+        number.push(b'-');
+    } else if spec.force_sign {
+        number.push(b'+');
+    } else if spec.space_sign {
+        number.push(b' ');
+    }
+    let point = precision > 0 || spec.alt_form;
+    if spec.zero_pad && !spec.left_adj {
+        let NumericParam::Literal(width) = spec.width else {
+            unreachable!()
+        };
+        let len =
+            number.len() + 1 + usize::from(point) + precision + if scientific { 4 } else { 0 };
+        number.resize(number.len() + (width as usize).saturating_sub(len), b'0');
+    }
+    number.push(b'0');
+    if point {
+        number.push(b'.');
+    }
+    number.resize(number.len() + precision, b'0');
+    if scientific {
+        number.extend_from_slice(if spec.conversion_type == ConversionType::SciFloatUpper {
+            b"E+00"
+        } else {
+            b"e+00"
+        });
+    }
+    pad(out, spec, &number);
+}
+
 fn numeric_arg(conversion_type: ConversionType, arg: &VaArg) -> Arg {
     match conversion_type {
         ConversionType::DecInt => match arg {
@@ -87,7 +135,7 @@ fn numeric_arg(conversion_type: ConversionType, arg: &VaArg) -> Arg {
 
 // Formats like C's printf. The format, the strings and the result are bytes,
 // which need not be UTF-8, so %s and %c are formatted here; sprintf formats
-// the numbers, which are ASCII.
+// the numbers, which are ASCII, except for scientific and compact zero.
 pub fn format_c(fmt: &[u8], va: &[VaArg]) -> Vec<u8> {
     let mut out = Vec::with_capacity(fmt.len());
     let mut va = va.iter();
@@ -121,6 +169,19 @@ pub fn format_c(fmt: &[u8], va: &[VaArg]) -> Vec<u8> {
             }
             conversion_type => {
                 let arg = numeric_arg(conversion_type, arg);
+                if let Arg::Double(value) = arg
+                    && value == 0.0
+                    && matches!(
+                        conversion_type,
+                        ConversionType::SciFloatLower
+                            | ConversionType::SciFloatUpper
+                            | ConversionType::CompactFloatLower
+                            | ConversionType::CompactFloatUpper
+                    )
+                {
+                    float_zero(&mut out, &spec, value.is_sign_negative());
+                    continue;
+                }
                 match vsprintfp(&[FormatElement::Format(spec)], &[arg.as_printf()]) {
                     Ok(s) => out.extend_from_slice(s.as_bytes()),
                     Err(e) => panic!("format_c: cannot format {spec:?}: {e:?}"),
