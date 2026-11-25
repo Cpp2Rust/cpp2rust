@@ -60,11 +60,21 @@ fn pad(out: &mut Vec<u8>, spec: &ConversionSpecifier, s: &[u8]) {
 }
 
 // Zero has no logarithmic exponent. Format it without sprintf's normalization.
-fn scientific_zero(out: &mut Vec<u8>, spec: &ConversionSpecifier, negative: bool) {
+fn float_zero(out: &mut Vec<u8>, spec: &ConversionSpecifier, negative: bool) {
     let NumericParam::Literal(precision) = spec.precision else {
         unreachable!()
     };
-    let precision = precision as usize;
+    let scientific = matches!(
+        spec.conversion_type,
+        ConversionType::SciFloatLower | ConversionType::SciFloatUpper
+    );
+    let precision = if scientific {
+        precision as usize
+    } else if spec.alt_form {
+        precision.max(1) as usize - 1
+    } else {
+        0
+    };
     let mut number = Vec::new();
     if negative {
         number.push(b'-');
@@ -78,7 +88,8 @@ fn scientific_zero(out: &mut Vec<u8>, spec: &ConversionSpecifier, negative: bool
         let NumericParam::Literal(width) = spec.width else {
             unreachable!()
         };
-        let len = number.len() + 1 + usize::from(point) + precision + 4;
+        let len =
+            number.len() + 1 + usize::from(point) + precision + if scientific { 4 } else { 0 };
         number.resize(number.len() + (width as usize).saturating_sub(len), b'0');
     }
     number.push(b'0');
@@ -86,11 +97,13 @@ fn scientific_zero(out: &mut Vec<u8>, spec: &ConversionSpecifier, negative: bool
         number.push(b'.');
     }
     number.resize(number.len() + precision, b'0');
-    number.extend_from_slice(if spec.conversion_type == ConversionType::SciFloatUpper {
-        b"E+00"
-    } else {
-        b"e+00"
-    });
+    if scientific {
+        number.extend_from_slice(if spec.conversion_type == ConversionType::SciFloatUpper {
+            b"E+00"
+        } else {
+            b"e+00"
+        });
+    }
     pad(out, spec, &number);
 }
 
@@ -122,7 +135,7 @@ fn numeric_arg(conversion_type: ConversionType, arg: &VaArg) -> Arg {
 
 // Formats like C's printf. The format, the strings and the result are bytes,
 // which need not be UTF-8, so %s and %c are formatted here; sprintf formats
-// the numbers, which are ASCII, except for scientific zero.
+// the numbers, which are ASCII, except for scientific and compact zero.
 pub fn format_c(fmt: &[u8], va: &[VaArg]) -> Vec<u8> {
     let mut out = Vec::with_capacity(fmt.len());
     let mut va = va.iter();
@@ -160,10 +173,13 @@ pub fn format_c(fmt: &[u8], va: &[VaArg]) -> Vec<u8> {
                     && value == 0.0
                     && matches!(
                         conversion_type,
-                        ConversionType::SciFloatLower | ConversionType::SciFloatUpper
+                        ConversionType::SciFloatLower
+                            | ConversionType::SciFloatUpper
+                            | ConversionType::CompactFloatLower
+                            | ConversionType::CompactFloatUpper
                     )
                 {
-                    scientific_zero(&mut out, &spec, value.is_sign_negative());
+                    float_zero(&mut out, &spec, value.is_sign_negative());
                     continue;
                 }
                 match vsprintfp(&[FormatElement::Format(spec)], &[arg.as_printf()]) {
@@ -236,6 +252,47 @@ mod tests {
                 &[0.0f64.into(), (-0.0f64).into(), 0.0f64.into()]
             ),
             b"+0000.00e+00|-0.E+00     |     0.0e+00"
+        );
+        assert_eq!(
+            format_c(b"% .1e|% 012.1e", &[0.0f64.into(), 0.0f64.into()]),
+            b" 0.0e+00| 00000.0e+00"
+        );
+    }
+
+    #[test]
+    fn compact_zero() {
+        assert_eq!(
+            format_c(
+                b"%g|%G|%#g",
+                &[0.0f64.into(), (-0.0f64).into(), 0.0f64.into()]
+            ),
+            b"0|-0|0.00000"
+        );
+        assert_eq!(
+            format_c(
+                b"%.0g|%.1g|%#.0g|%#.1G|%#.4g",
+                &[
+                    0.0f64.into(),
+                    (-0.0f64).into(),
+                    0.0f64.into(),
+                    (-0.0f64).into(),
+                    0.0f64.into()
+                ]
+            ),
+            b"0|-0|0.|-0.|0.000"
+        );
+        assert_eq!(
+            format_c(
+                b"%+ 08g|% g|% 08G|%-#08.4G|%02.4g",
+                &[
+                    0.0f64.into(),
+                    0.0f64.into(),
+                    0.0f64.into(),
+                    (-0.0f64).into(),
+                    0.0f64.into()
+                ]
+            ),
+            b"+0000000| 0| 0000000|-0.000  |00"
         );
     }
 
