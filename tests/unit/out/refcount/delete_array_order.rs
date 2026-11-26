@@ -41,30 +41,6 @@ fn main_0() -> i32 {
         __p.delete();
     };
     printf!(b"\n");
-    let mut n: i32 = 1;
-    let mut b: Ptr<Element> = Ptr::alloc_array(
-        (0..(n as usize))
-            .map(|_| <Element>::default())
-            .collect::<Box<[Element]>>(),
-    );
-    field!(elem!(b, 0), id).write(4_i64);
-    field!(elem!(b, 0), value).write(40_i64);
-    {
-        let __p = b;
-        for __i in 0..__p.len() {
-            __p.offset(__i as isize).destructor();
-        }
-        __p.delete();
-    };
-    printf!(b"\n");
-    let mut empty: Ptr<Element> = Ptr::<Element>::null();
-    {
-        let __p = empty;
-        for __i in 0..__p.len() {
-            __p.offset(__i as isize).destructor();
-        }
-        __p.delete();
-    };
     return 0;
 }
 pub trait ElementImpl {

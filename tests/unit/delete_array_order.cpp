@@ -11,14 +11,5 @@ int main() {
   delete[] a;
   printf("\n");
 
-  int n = 1;
-  Element *b = new Element[n];
-  b[0].id = 4;
-  b[0].value = 40;
-  delete[] b;
-  printf("\n");
-
-  Element *empty = nullptr;
-  delete[] empty;
   return 0;
 }

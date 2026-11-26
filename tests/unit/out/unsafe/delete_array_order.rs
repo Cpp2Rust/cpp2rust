@@ -61,47 +61,6 @@ unsafe fn main_0() -> i32 {
         }
     };
     (unsafe { libc::printf(c"\n".as_ptr() as *const libc::c_char) });
-    let mut n: i32 = 1;
-    let mut b: *mut Element = Box::leak(
-        (0..(n as usize))
-            .map(|_| <Element>::default())
-            .collect::<Box<[Element]>>(),
-    )
-    .as_mut_ptr();
-    (*b.offset((0) as isize)).id = 4_i64;
-    (*b.offset((0) as isize)).value = 40_i64;
-    {
-        let __p = b;
-        if !__p.is_null() {
-            for __i in 0..libcc2rs::malloc_usable_size(__p as *mut ::libc::c_void)
-                / ::std::mem::size_of::<Element>()
-            {
-                Element::destructor(&mut *__p.add(__i));
-            }
-            ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
-                __p,
-                libcc2rs::malloc_usable_size(__p as *mut ::libc::c_void)
-                    / ::std::mem::size_of::<Element>(),
-            )))
-        }
-    };
-    (unsafe { libc::printf(c"\n".as_ptr() as *const libc::c_char) });
-    let mut empty: *mut Element = std::ptr::null_mut();
-    {
-        let __p = empty;
-        if !__p.is_null() {
-            for __i in 0..libcc2rs::malloc_usable_size(__p as *mut ::libc::c_void)
-                / ::std::mem::size_of::<Element>()
-            {
-                Element::destructor(&mut *__p.add(__i));
-            }
-            ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
-                __p,
-                libcc2rs::malloc_usable_size(__p as *mut ::libc::c_void)
-                    / ::std::mem::size_of::<Element>(),
-            )))
-        }
-    };
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}
