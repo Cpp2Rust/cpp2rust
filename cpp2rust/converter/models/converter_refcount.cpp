@@ -2025,7 +2025,7 @@ bool ConverterRefCount::VisitCXXDeleteExpr(clang::CXXDeleteExpr *expr) {
   StrCat(keyword::kLet, "__p", token::kAssign, ToString(expr->getArgument()),
          token::kSemiColon);
   if (expr->isArrayForm()) {
-    StrCat(std::format("for __i in 0..__p.len() {{ __p.offset(__i as "
+    StrCat(std::format("for __i in (0..__p.len()).rev() {{ __p.offset(__i as "
                        "isize).{}(); }}",
                        kDestructorName));
   } else {

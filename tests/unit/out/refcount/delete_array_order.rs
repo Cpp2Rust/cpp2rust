@@ -35,7 +35,7 @@ fn main_0() -> i32 {
     ]));
     {
         let __p = a;
-        for __i in 0..__p.len() {
+        for __i in (0..__p.len()).rev() {
             __p.offset(__i as isize).destructor();
         }
         __p.delete();

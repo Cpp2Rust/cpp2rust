@@ -48,8 +48,9 @@ unsafe fn main_0() -> i32 {
     {
         let __p = a;
         if !__p.is_null() {
-            for __i in 0..libcc2rs::malloc_usable_size(__p as *mut ::libc::c_void)
-                / ::std::mem::size_of::<Element>()
+            for __i in (0..libcc2rs::malloc_usable_size(__p as *mut ::libc::c_void)
+                / ::std::mem::size_of::<Element>())
+                .rev()
             {
                 Element::destructor(&mut *__p.add(__i));
             }
