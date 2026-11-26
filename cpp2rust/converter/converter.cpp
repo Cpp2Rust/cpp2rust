@@ -4554,17 +4554,22 @@ bool Converter::VisitSwitchStmt(clang::SwitchStmt *stmt) {
 
   PushBrace match_brace(*this);
 
+  // switch! keeps source order for fallthrough and reorders only dispatch.
   const SwitchArm *default_arm = nullptr;
   for (const auto &arm : arms) {
     if (arm.is_default_case) {
       default_arm = &arm;
-      continue;
+      if (!needs_switch_macro) {
+        continue;
+      }
     }
-    EmitSwitchArm(arm, /*is_default=*/false);
+    EmitSwitchArm(arm, arm.is_default_case);
   }
 
   if (default_arm) {
-    EmitSwitchArm(*default_arm, /*is_default=*/true);
+    if (!needs_switch_macro) {
+      EmitSwitchArm(*default_arm, /*is_default=*/true);
+    }
   } else {
     StrCat(R"( _ => {})");
   }
