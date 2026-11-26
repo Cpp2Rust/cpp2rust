@@ -107,6 +107,26 @@ fn switch_default_case() {
 }
 
 #[test]
+fn switch_nonfinal_default() {
+    for (input, expected) in [(0, 1), (1, 32), (2, 2)] {
+        let mut out = 0;
+        switch!(match input {
+            _ if input == 0 => {
+                out = 1;
+                break;
+            }
+            _ => {
+                out = 3;
+            }
+            0 | 2 => {
+                out = out * 10 + 2;
+            }
+        });
+        assert_eq!(out, expected);
+    }
+}
+
+#[test]
 fn switch_or_pattern() {
     for x in [1, 2, 5] {
         let mut v = "other";

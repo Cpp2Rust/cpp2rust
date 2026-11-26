@@ -240,7 +240,14 @@ impl SwitchStateMachine {
 
     fn build_dispatch_arm(&self, user_arms: &[Arm], label: &Lifetime, state: &Ident) -> Arm {
         let cond = &self.condition;
-        let case_arms = self.cases.iter().map(|c| {
+        // Dispatch default last, without changing the body order used for fallthrough.
+        let is_default = |c: &&DispatchCase| c.guard.is_none() && matches!(c.pat, Pat::Wild(_));
+        let cases = self
+            .cases
+            .iter()
+            .filter(|c| !is_default(c))
+            .chain(self.cases.iter().filter(is_default));
+        let case_arms = cases.map(|c| {
             let target_pos = user_arms
                 .iter()
                 .position(|a| a.label == c.target)
