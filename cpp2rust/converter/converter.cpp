@@ -4161,10 +4161,11 @@ bool Converter::VisitCXXDeleteExpr(clang::CXXDeleteExpr *expr) {
   }
   auto record_name = GetRecordName(destroyed_type->getAsCXXRecordDecl());
   if (expr->isArrayForm()) {
-    StrCat(std::format("for __i in 0..libcc2rs::malloc_usable_size(__p as *mut "
-                       "::libc::c_void) / ::std::mem::size_of::<{0}>() {{ "
-                       "{0}::{1}(&mut *__p.add(__i)); }}",
-                       record_name, kDestructorName));
+    StrCat(
+        std::format("for __i in (0..libcc2rs::malloc_usable_size(__p as *mut "
+                    "::libc::c_void) / ::std::mem::size_of::<{0}>()).rev() {{ "
+                    "{0}::{1}(&mut *__p.add(__i)); }}",
+                    record_name, kDestructorName));
   } else {
     StrCat(std::format("{}::{}(&mut *__p)", record_name, kDestructorName),
            token::kSemiColon);
