@@ -461,7 +461,8 @@ fn type_derives<'tcx>(
         .into_iter()
         .flatten()
         .filter(|&trait_def_id| {
-            let args = vec![ty; tcx.generics_of(trait_def_id).count()];
+            let arity = tcx.generics_of(trait_def_id).count();
+            let args = std::iter::repeat_n(ty, arity);
             infcx
                 .type_implements_trait(trait_def_id, args, param_env)
                 .must_apply_modulo_regions()
